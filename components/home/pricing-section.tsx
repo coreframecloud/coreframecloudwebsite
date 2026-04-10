@@ -1,44 +1,56 @@
-import { Card, CardContent } from "@/components/ui/card";
+import Link from "next/link";
 
-const items = [
-  {
-    title: "Under ₹100/hr",
-    text: "Launch entry RTX options like RTX A4000 and RTX 4000 Ada.",
-  },
-  {
-    title: "Hourly RTX",
-    text: "Use hourly pricing for rendering, CAD, D5, and visualization workloads.",
-  },
-  {
-    title: "Monthly Linux",
-    text: "Use monthly GPU nodes for AI training, inference, and simulation.",
-  },
+const pricingRows = [
+  { model: "RTX A4000 16GB", price: "₹75 / hr" },
+  { model: "RTX 4000 Ada 20GB", price: "₹99 / hr" },
+  { model: "RTX A5000 24GB", price: "₹129 / hr" },
+  { model: "RTX A6000 48GB", price: "₹249 / hr" },
 ];
 
 export function PricingSection() {
   return (
-    <section id="pricing" className="mx-auto max-w-7xl px-6 py-16 md:py-20">
-      <div className="max-w-3xl">
-        <div className="text-sm font-medium uppercase tracking-[0.25em] text-cyan-300">
-          Pricing
-        </div>
-        <h2 className="mt-3 text-3xl font-semibold tracking-tight md:text-5xl">
-          Clear commercial positioning from the first scroll.
-        </h2>
-      </div>
+    <section id="pricing" className="border-b border-white/10">
+      <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+        <div className="max-w-3xl">
+          <div className="cf-eyebrow">PRICING</div>
 
-      <div className="mt-10 grid gap-6 md:grid-cols-3">
-        {items.map((item) => (
-          <Card
-            key={item.title}
-            className="rounded-[1.6rem] border border-white/12 bg-white/6 shadow-[0_20px_50px_rgba(0,0,0,0.22)] backdrop-blur-2xl"
-          >
-            <CardContent className="p-6">
-              <div className="text-2xl font-semibold text-white">{item.title}</div>
-              <div className="mt-4 text-sm leading-7 text-slate-300">{item.text}</div>
-            </CardContent>
-          </Card>
-        ))}
+          <h2 className="mt-4 cf-section-title">
+            Start rendering instantly. Pay per hour.
+          </h2>
+
+          <p className="mt-5 cf-section-copy">
+            Transparent hourly pricing for GPU instances. Launch, render,
+            and stop when done — no commitments required.
+          </p>
+        </div>
+
+        <div className="mt-10 overflow-hidden rounded-[28px] border border-white/10 bg-white/[0.03]">
+          <div className="grid grid-cols-[1fr_auto] border-b border-white/10 px-6 py-4 text-[11px] font-semibold uppercase tracking-[0.22em] text-white/45">
+            <div>GPU MODEL</div>
+            <div>PRICE</div>
+          </div>
+
+          {pricingRows.map((row) => (
+            <div
+              key={row.model}
+              className="grid grid-cols-[1fr_auto] items-center border-b border-white/10 px-6 py-5 last:border-b-0"
+            >
+              <div className="text-lg font-medium text-white">
+                {row.model}
+              </div>
+
+              <div className="text-lg font-semibold text-emerald-300">
+                {row.price}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-8">
+          <Link href="/#reserve-access" className="cf-btn-primary">
+            Reserve Access
+          </Link>
+        </div>
       </div>
     </section>
   );

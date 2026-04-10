@@ -6,10 +6,10 @@ import { Menu, X } from "lucide-react";
 import { CoreframeWordmarkAtlas } from "@/components/brand/coreframe-wordmark-atlas";
 
 const navItems = [
-  { label: "Launch GPUs", href: "#launch-gpus" },
-  { label: "AI Nodes", href: "#ai-nodes" },
-  { label: "Pricing", href: "#pricing" },
-  { label: "Reserve Access", href: "#reserve-access" },
+  { label: "Launch GPUs", href: "/#launch-gpus" },
+  { label: "AI Nodes", href: "/#ai-nodes" },
+  { label: "Pricing", href: "/#pricing" },
+  { label: "Reserve Access", href: "/#reserve-access" },
 ];
 
 export function SiteHeader() {
@@ -36,9 +36,7 @@ export function SiteHeader() {
 
         <div className="hidden shrink-0 xl:flex">
           <Link
-            href="https://wa.me/916366889488"
-            target="_blank"
-            rel="noreferrer"
+            href="/#reserve-access"
             className="inline-flex items-center justify-center rounded-2xl border border-emerald-400/20 bg-emerald-400/[0.06] px-5 py-2.5 text-sm font-semibold text-white transition hover:border-emerald-300/35 hover:bg-emerald-400/[0.1]"
           >
             Reserve Access
@@ -74,9 +72,7 @@ export function SiteHeader() {
             ))}
 
             <Link
-              href="https://wa.me/916366889488"
-              target="_blank"
-              rel="noreferrer"
+              href="/#reserve-access"
               className="mt-3 inline-flex items-center justify-center rounded-xl border border-emerald-400/20 bg-emerald-400/[0.06] px-5 py-3 text-sm font-semibold text-white"
             >
               Reserve Access
