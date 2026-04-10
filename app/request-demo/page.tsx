@@ -3,15 +3,7 @@ import { SiteFooter } from "@/components/home/site-footer";
 import { SiteHeader } from "@/components/home/site-header";
 import RequestDemoForm from "./request-demo-form";
 
-export const dynamic = "force-dynamic";
-
-export default async function RequestDemoPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ gpu?: string; type?: string }>;
-}) {
-  const params = await searchParams;
-
+export default function RequestDemoPage() {
   return (
     <div className="min-h-screen text-white">
       <BackgroundGlow />
@@ -31,10 +23,7 @@ export default async function RequestDemoPage({
           </p>
         </div>
 
-        <RequestDemoForm
-          initialGpu={params.gpu ?? ""}
-          initialType={params.type ?? "RTX / 3D Rendering"}
-        />
+        <RequestDemoForm />
       </main>
 
       <SiteFooter />
