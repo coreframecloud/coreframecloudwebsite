@@ -1,14 +1,17 @@
-import { Suspense } from "react";
 import { BackgroundGlow } from "@/components/home/background-glow";
 import { SiteFooter } from "@/components/home/site-footer";
 import { SiteHeader } from "@/components/home/site-header";
 import RequestDemoForm from "./request-demo-form";
 
-export default function RequestDemoPage({
+export const dynamic = "force-dynamic";
+
+export default async function RequestDemoPage({
   searchParams,
 }: {
   searchParams: Promise<{ gpu?: string; type?: string }>;
 }) {
+  const params = await searchParams;
+
   return (
     <div className="min-h-screen text-white">
       <BackgroundGlow />
@@ -28,9 +31,10 @@ export default function RequestDemoPage({
           </p>
         </div>
 
-        <Suspense fallback={<div className="mt-12 text-slate-300">Loading form...</div>}>
-          <RequestDemoForm searchParams={searchParams} />
-        </Suspense>
+        <RequestDemoForm
+          initialGpu={params.gpu ?? ""}
+          initialType={params.type ?? "RTX / 3D Rendering"}
+        />
       </main>
 
       <SiteFooter />

@@ -1,24 +1,21 @@
 "use client";
 
-import { use } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Mail, MessageCircle } from "lucide-react";
-import { useState } from "react";
 
 export default function RequestDemoForm({
-  searchParams,
+  initialGpu,
+  initialType,
 }: {
-  searchParams: Promise<{ gpu?: string; type?: string }>;
+  initialGpu: string;
+  initialType: string;
 }) {
-  const params = use(searchParams);
-
   const [email, setEmail] = useState("");
   const [mobile, setMobile] = useState("");
-  const [workload, setWorkload] = useState(
-    params.type || "RTX / 3D Rendering"
-  );
-  const [gpu, setGpu] = useState(params.gpu || "");
+  const [workload, setWorkload] = useState(initialType);
+  const [gpu, setGpu] = useState(initialGpu);
 
   const handleWhatsAppSubmit = () => {
     const message = `Hi Coreframe Cloud, I would like to reserve access.
