@@ -1,91 +1,89 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Mail } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import { Menu, X } from "lucide-react";
+import { CoreframeWordmarkAtlas } from "@/components/brand/coreframe-wordmark-atlas";
+
+const navItems = [
+  { label: "Launch GPUs", href: "#launch-gpus" },
+  { label: "AI Nodes", href: "#ai-nodes" },
+  { label: "Pricing", href: "#pricing" },
+  { label: "Reserve Access", href: "#reserve-access" },
+];
 
 export function SiteHeader() {
-  const [scrolled, setScrolled] = useState(false);
-
-  useEffect(() => {
-    const onScroll = () => {
-      setScrolled(window.scrollY > 12);
-    };
-
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-
-    return () => {
-      window.removeEventListener("scroll", onScroll);
-    };
-  }, []);
+  const [open, setOpen] = useState(false);
 
   return (
-    <header
-      className={`sticky top-0 z-40 transition-all duration-300 ${
-        scrolled
-          ? "border-b border-white/10 bg-slate-950/70 shadow-[0_10px_40px_rgba(0,0,0,0.28)] backdrop-blur-2xl"
-          : "border-b border-white/6 bg-slate-950/35 backdrop-blur-xl"
-      }`}
-    >
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-        <Link href="/" className="flex items-center">
-          <Image
-            src="/logo-horizontal.png"
-            alt="Coreframe Cloud"
-            width={160}
-            height={40}
-            priority
-            className="h-8 w-auto md:h-9"
-          />
+    <header className="sticky top-0 z-50 border-b border-white/10 bg-[#03101d]/88 backdrop-blur-xl">
+      <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+        <Link href="/" aria-label="COREFRAME CLOUD Home" className="shrink-0">
+          <CoreframeWordmarkAtlas iconSize={52} compact />
         </Link>
 
-        <nav className="hidden items-center gap-8 text-sm text-slate-300 lg:flex">
-          <a href="/#launch-gpus" className="transition hover:text-white">
-            Launch GPUs
-          </a>
-          <a href="/#ai-nodes" className="transition hover:text-white">
-            AI Nodes
-          </a>
-          <a href="/#pricing" className="transition hover:text-white">
-            Pricing
-          </a>
-          <a href="/request-demo" className="transition hover:text-white">
-            Reserve Access
-          </a>
+        <nav className="hidden flex-1 items-center justify-center gap-10 xl:flex">
+          {navItems.map((item) => (
+            <Link
+              key={item.label}
+              href={item.href}
+              className="text-[15px] font-medium text-white/80 transition hover:text-white"
+            >
+              {item.label}
+            </Link>
+          ))}
         </nav>
 
-        <div className="flex items-center gap-3">
-          <a href="mailto:hi@coreframecloud.com" className="hidden md:inline-flex">
-            <Button
-              variant="outline"
-              className={`rounded-2xl text-white transition-all ${
-                scrolled
-                  ? "border-white/12 bg-white/8 backdrop-blur-xl hover:bg-white/12"
-                  : "border-white/10 bg-white/6 backdrop-blur-xl hover:bg-white/10"
-              }`}
-            >
-              <Mail className="mr-2 h-4 w-4" />
-              hi@coreframecloud.com
-            </Button>
-          </a>
+        <div className="hidden shrink-0 xl:flex">
+          <Link
+            href="https://wa.me/916366889488"
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center justify-center rounded-2xl border border-emerald-400/20 bg-emerald-400/[0.06] px-5 py-2.5 text-sm font-semibold text-white transition hover:border-emerald-300/35 hover:bg-emerald-400/[0.1]"
+          >
+            Reserve Access
+          </Link>
+        </div>
 
-          <a href="/request-demo">
-            <Button
-              className={`rounded-2xl px-5 text-white transition-all ${
-                scrolled
-                  ? "border border-cyan-300/25 bg-cyan-400/12 shadow-[0_0_28px_rgba(34,211,238,0.14)] hover:bg-cyan-400/18"
-                  : "border border-cyan-300/20 bg-cyan-400/10 hover:bg-cyan-400/15"
-              }`}
+        <button
+          type="button"
+          aria-label={open ? "Close menu" : "Open menu"}
+          onClick={() => setOpen((prev) => !prev)}
+          className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-white xl:hidden"
+        >
+          {open ? <X size={20} /> : <Menu size={20} />}
+        </button>
+      </div>
+
+      {open && (
+        <div className="border-t border-white/10 bg-[#03101d] xl:hidden">
+          <div className="mx-auto flex max-w-7xl flex-col px-4 py-4 sm:px-6">
+            <div className="mb-4">
+              <CoreframeWordmarkAtlas iconSize={44} compact />
+            </div>
+
+            {navItems.map((item) => (
+              <Link
+                key={item.label}
+                href={item.href}
+                onClick={() => setOpen(false)}
+                className="rounded-lg px-3 py-3 text-sm font-medium text-white/85 transition hover:bg-white/5 hover:text-white"
+              >
+                {item.label}
+              </Link>
+            ))}
+
+            <Link
+              href="https://wa.me/916366889488"
+              target="_blank"
+              rel="noreferrer"
+              className="mt-3 inline-flex items-center justify-center rounded-xl border border-emerald-400/20 bg-emerald-400/[0.06] px-5 py-3 text-sm font-semibold text-white"
             >
               Reserve Access
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
-          </a>
+            </Link>
+          </div>
         </div>
-      </div>
+      )}
     </header>
   );
 }

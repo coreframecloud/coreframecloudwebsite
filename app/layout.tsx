@@ -1,11 +1,12 @@
-import type { Metadata } from "next";
 import "./globals.css";
-import { ParticleBackground } from "@/components/home/particle-background";
+import type { Metadata } from "next";
+import { SiteHeader } from "@/components/home/site-header";
+import { SiteFooter } from "@/components/home/site-footer";
 
 export const metadata: Metadata = {
   title: "Coreframe Cloud",
   description:
-    "Launch RTX GPU workstations and reserve AI compute nodes.",
+    "Cloud GPU infrastructure for D5 Render, Revit, AI nodes, and high-performance workloads.",
 };
 
 export default function RootLayout({
@@ -15,9 +16,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="relative overflow-x-hidden bg-slate-950 text-white">
-        <ParticleBackground />
-        <div className="relative z-10">{children}</div>
+      <body className="bg-[#030b16] text-white antialiased">
+        <SiteHeader />
+        {children}
+        <SiteFooter />
       </body>
     </html>
   );

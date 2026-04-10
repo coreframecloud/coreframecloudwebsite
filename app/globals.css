@@ -1,8 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  --background: #020617;
-  --foreground: #f8fafc;
+  color-scheme: dark;
 }
 
 html {
@@ -10,46 +9,96 @@ html {
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background:
+    radial-gradient(circle at top center, rgba(0, 153, 255, 0.14), transparent 28%),
+    linear-gradient(180deg, #020816 0%, #04101d 100%);
+  color: white;
 }
 
-.glow-orb-1 {
-  animation: floatOne 14s ease-in-out infinite alternate;
+* {
+  box-sizing: border-box;
 }
 
-.glow-orb-2 {
-  animation: floatTwo 18s ease-in-out infinite alternate;
-}
-
-.glow-orb-3 {
-  animation: floatThree 16s ease-in-out infinite alternate;
-}
-
-@keyframes floatOne {
-  0% {
-    transform: translateX(-50%) translateY(0px) scale(1);
-  }
+@keyframes cfPulse {
+  0%,
   100% {
-    transform: translateX(-50%) translateY(18px) scale(1.04);
+    transform: scale(1);
+    opacity: 0.88;
+  }
+  50% {
+    transform: scale(1.04);
+    opacity: 1;
   }
 }
 
-@keyframes floatTwo {
-  0% {
-    transform: translate3d(0px, 0px, 0px);
-  }
+@keyframes cfCore {
+  0%,
   100% {
-    transform: translate3d(18px, -12px, 0px);
+    opacity: 0.92;
+  }
+  50% {
+    opacity: 1;
   }
 }
 
-@keyframes floatThree {
-  0% {
-    transform: translate3d(0px, 0px, 0px);
-  }
+@keyframes cfFloat {
+  0%,
   100% {
-    transform: translate3d(-14px, 10px, 0px);
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-1px);
   }
 }
+
+.cf-logo-pulse {
+  transform-origin: center;
+  animation: cfPulse 3.6s ease-in-out infinite;
+}
+
+.cf-logo-core {
+  transform-origin: center;
+  animation: cfCore 3s ease-in-out infinite;
+}
+
+.cf-logo-float {
+  transform-origin: center;
+  animation: cfFloat 4s ease-in-out infinite;
+}
+
+.cf-btn-primary {
+  @apply inline-flex items-center justify-center rounded-2xl border border-emerald-400/20 bg-emerald-400/[0.08] px-6 py-3.5 text-sm font-semibold uppercase tracking-[0.16em] text-white transition;
+}
+
+.cf-btn-primary:hover {
+  @apply border-emerald-300/35 bg-emerald-400/[0.12];
+}
+
+.cf-btn-secondary {
+  @apply inline-flex items-center justify-center rounded-2xl border border-white/12 bg-white/[0.03] px-6 py-3.5 text-sm font-semibold uppercase tracking-[0.16em] text-white/88 transition;
+}
+
+.cf-btn-secondary:hover {
+  @apply bg-white/[0.06] text-white;
+}
+
+.cf-eyebrow {
+  @apply text-[11px] font-semibold uppercase tracking-[0.24em] text-white/42;
+}
+
+.cf-section-title {
+  @apply text-3xl font-semibold tracking-[-0.035em] text-white sm:text-4xl;
+}
+
+.cf-section-copy {
+  @apply text-base leading-8 text-white/68 sm:text-lg;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cf-logo-pulse,
+  .cf-logo-core,
+  .cf-logo-float {
+    animation: none !important;
+  }
+}
+
