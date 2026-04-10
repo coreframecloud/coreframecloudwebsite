@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useMemo, useState } from "react";
 
 type FormState = {
   name: string;
@@ -22,12 +22,46 @@ const initialState: FormState = {
   notes: "",
 };
 
+const renderingGpuOptions = [
+  "RTX A4000 16GB — ₹75/hr",
+  "RTX 4000 Ada 20GB — ₹99/hr",
+  "RTX A5000 24GB — ₹129/hr",
+  "RTX A6000 48GB — ₹249/hr",
+];
+
+const aiGpuOptions = [
+  "AI Node — Shared (Custom quote)",
+  "AI Node — Dedicated (Custom quote)",
+];
+
 export function ContactSection() {
   const [form, setForm] = useState<FormState>(initialState);
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const gpuOptions = useMemo(() => {
+    if (form.workload === "AI") {
+      return aiGpuOptions;
+    }
+
+    if (form.workload === "3D Rendering") {
+      return renderingGpuOptions;
+    }
+
+    return [];
+  }, [form.workload]);
 
   function update<K extends keyof FormState>(key: K, value: FormState[K]) {
-    setForm((prev) => ({ ...prev, [key]: value }));
+    setForm((prev) => {
+      const next = { ...prev, [key]: value };
+
+      if (key === "workload") {
+        next.gpu = "";
+      }
+
+      return next;
+    });
   }
 
   function buildWhatsAppMessage(values: FormState) {
@@ -45,16 +79,47 @@ export function ContactSection() {
     return encodeURIComponent(lines.join("\n"));
   }
 
-  function handleSubmit(e: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setSubmitted(true);
+    setErrorMessage("");
+    setSubmitted(false);
+    setIsSubmitting(true);
 
-    const message = buildWhatsAppMessage(form);
-    const whatsappUrl = `https://wa.me/916366889488?text=${message}`;
+    try {
+      const response = await fetch("/api/lead", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...form,
+          source: "coreframecloud.com",
+        }),
+      });
 
-    window.open(whatsappUrl, "_blank", "noopener,noreferrer");
+      const result = await response.json();
 
-    setForm(initialState);
+      if (!response.ok || !result.success) {
+        throw new Error(result.error || "Failed to save your details.");
+      }
+
+      setSubmitted(true);
+
+      const message = buildWhatsAppMessage(form);
+      const whatsappUrl = `https://wa.me/916366889488?text=${message}`;
+
+      window.open(whatsappUrl, "_blank", "noopener,noreferrer");
+
+      setForm(initialState);
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : "Something went wrong. Please try again."
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
@@ -68,8 +133,7 @@ export function ContactSection() {
           </h2>
 
           <p className="mt-5 cf-section-copy">
-            Tell us what you want to run, choose your preferred GPU tier, and
-            continue the conversation on WhatsApp. Fast intake. Clear follow-up.
+            Choose your workload, pick the right GPU tier, and continue the conversation on WhatsApp.
           </p>
 
           <div className="mt-8 space-y-6 border-t border-white/10 pt-8">
@@ -87,7 +151,7 @@ export function ContactSection() {
                 STEP 2
               </div>
               <div className="mt-2 text-lg text-white/84">
-                We open a WhatsApp thread with your requirements pre-filled
+                Your details are recorded automatically
               </div>
             </div>
 
@@ -96,19 +160,9 @@ export function ContactSection() {
                 STEP 3
               </div>
               <div className="mt-2 text-lg text-white/84">
-                We confirm availability and next steps
+                We continue the conversation on WhatsApp
               </div>
             </div>
-          </div>
-
-          <div className="mt-10 rounded-[24px] border border-emerald-400/15 bg-emerald-400/[0.04] p-5">
-            <div className="text-sm font-semibold uppercase tracking-[0.18em] text-emerald-300">
-              Fastest path
-            </div>
-            <p className="mt-3 text-base leading-7 text-white/72">
-              Best for D5 rendering, Revit visualization, one-off GPU sessions,
-              and teams evaluating hourly access.
-            </p>
           </div>
         </div>
 
@@ -117,10 +171,7 @@ export function ContactSection() {
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid gap-6 sm:grid-cols-2">
                 <div>
-                  <label
-                    htmlFor="name"
-                    className="text-[11px] font-semibold uppercase tracking-[0.22em] text-white/45"
-                  >
+                  <label htmlFor="name" className="text-[11px] font-semibold uppercase tracking-[0.22em] text-white/45">
                     Name
                   </label>
                   <input
@@ -135,10 +186,7 @@ export function ContactSection() {
                 </div>
 
                 <div>
-                  <label
-                    htmlFor="company"
-                    className="text-[11px] font-semibold uppercase tracking-[0.22em] text-white/45"
-                  >
+                  <label htmlFor="company" className="text-[11px] font-semibold uppercase tracking-[0.22em] text-white/45">
                     Company
                   </label>
                   <input
@@ -152,10 +200,7 @@ export function ContactSection() {
                 </div>
 
                 <div>
-                  <label
-                    htmlFor="email"
-                    className="text-[11px] font-semibold uppercase tracking-[0.22em] text-white/45"
-                  >
+                  <label htmlFor="email" className="text-[11px] font-semibold uppercase tracking-[0.22em] text-white/45">
                     Email
                   </label>
                   <input
@@ -170,10 +215,7 @@ export function ContactSection() {
                 </div>
 
                 <div>
-                  <label
-                    htmlFor="phone"
-                    className="text-[11px] font-semibold uppercase tracking-[0.22em] text-white/45"
-                  >
+                  <label htmlFor="phone" className="text-[11px] font-semibold uppercase tracking-[0.22em] text-white/45">
                     Phone / WhatsApp
                   </label>
                   <input
@@ -190,10 +232,7 @@ export function ContactSection() {
 
               <div className="grid gap-6 sm:grid-cols-2">
                 <div>
-                  <label
-                    htmlFor="workload"
-                    className="text-[11px] font-semibold uppercase tracking-[0.22em] text-white/45"
-                  >
+                  <label htmlFor="workload" className="text-[11px] font-semibold uppercase tracking-[0.22em] text-white/45">
                     Primary workload
                   </label>
                   <select
@@ -204,42 +243,37 @@ export function ContactSection() {
                     className="mt-2 w-full rounded-2xl border border-white/10 bg-[#07121e] px-4 py-3 text-white outline-none transition focus:border-emerald-300/35"
                   >
                     <option value="">Select workload</option>
-                    <option value="D5 Render">D5 Render</option>
-                    <option value="Revit visualization">Revit visualization</option>
-                    <option value="3D rendering">3D rendering</option>
-                    <option value="AI workloads">AI workloads</option>
-                    <option value="Mixed rendering + AI">Mixed rendering + AI</option>
+                    <option value="3D Rendering">3D Rendering</option>
+                    <option value="AI">AI</option>
                   </select>
                 </div>
 
                 <div>
-                  <label
-                    htmlFor="gpu"
-                    className="text-[11px] font-semibold uppercase tracking-[0.22em] text-white/45"
-                  >
-                    Preferred GPU
+                  <label htmlFor="gpu" className="text-[11px] font-semibold uppercase tracking-[0.22em] text-white/45">
+                    Preferred GPU / Node
                   </label>
                   <select
                     id="gpu"
                     required
                     value={form.gpu}
                     onChange={(e) => update("gpu", e.target.value)}
-                    className="mt-2 w-full rounded-2xl border border-white/10 bg-[#07121e] px-4 py-3 text-white outline-none transition focus:border-emerald-300/35"
+                    disabled={!form.workload}
+                    className="mt-2 w-full rounded-2xl border border-white/10 bg-[#07121e] px-4 py-3 text-white outline-none transition focus:border-emerald-300/35 disabled:cursor-not-allowed disabled:opacity-50"
                   >
-                    <option value="">Select GPU</option>
-                    <option value="RTX A4000 16GB — ₹75/hr">RTX A4000 16GB — ₹75/hr</option>
-                    <option value="RTX 4000 Ada 20GB — ₹99/hr">RTX 4000 Ada 20GB — ₹99/hr</option>
-                    <option value="RTX A5000 24GB — ₹129/hr">RTX A5000 24GB — ₹129/hr</option>
-                    <option value="RTX A6000 48GB — ₹249/hr">RTX A6000 48GB — ₹249/hr</option>
+                    <option value="">
+                      {form.workload ? "Select option" : "Choose workload first"}
+                    </option>
+                    {gpuOptions.map((option) => (
+                      <option key={option} value={option}>
+                        {option}
+                      </option>
+                    ))}
                   </select>
                 </div>
               </div>
 
               <div>
-                <label
-                  htmlFor="notes"
-                  className="text-[11px] font-semibold uppercase tracking-[0.22em] text-white/45"
-                >
+                <label htmlFor="notes" className="text-[11px] font-semibold uppercase tracking-[0.22em] text-white/45">
                   Notes
                 </label>
                 <textarea
@@ -248,23 +282,33 @@ export function ContactSection() {
                   value={form.notes}
                   onChange={(e) => update("notes", e.target.value)}
                   className="mt-2 w-full rounded-2xl border border-white/10 bg-[#07121e] px-4 py-3 text-white outline-none transition placeholder:text-white/28 focus:border-emerald-300/35"
-                  placeholder="Tell us about your project, render scene size, timing, or questions."
+                  placeholder="Tell us about your project, scene size, AI use case, timing, or questions."
                 />
               </div>
 
               <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div className="text-sm text-white/50">
-                  Submit this form to continue on WhatsApp.
+                  Submit the form and continue on WhatsApp.
                 </div>
 
-                <button type="submit" className="cf-btn-primary">
-                  Reserve Access
+                <button
+                  type="submit"
+                  className="cf-btn-primary"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? "Submitting..." : "Reserve Access"}
                 </button>
               </div>
 
               {submitted && (
                 <div className="rounded-2xl border border-emerald-400/15 bg-emerald-400/[0.05] px-4 py-3 text-sm text-emerald-300">
-                  Form captured. Opening WhatsApp with your details.
+                  Lead recorded successfully. Opening WhatsApp.
+                </div>
+              )}
+
+              {errorMessage && (
+                <div className="rounded-2xl border border-red-400/15 bg-red-400/[0.05] px-4 py-3 text-sm text-red-300">
+                  {errorMessage}
                 </div>
               )}
             </form>
