@@ -2,9 +2,9 @@ import { BackgroundGlow } from "@/components/home/background-glow";
 import { AiNodesSection } from "@/components/home/ai-nodes-section";
 import { ContactSection } from "@/components/home/contact-section";
 import { HeroSection } from "@/components/home/hero-section";
-import { LaunchCardsSection } from "@/components/home/launch-cards-section";
 import { PricingSection } from "@/components/home/pricing-section";
 import { WhatsAppButton } from "@/components/home/whatsapp-button";
+import { WorkflowSection } from "@/components/home/workflow-section";
 
 export default function Page() {
   return (
@@ -13,7 +13,7 @@ export default function Page() {
 
       <main className="relative">
         <HeroSection />
-        <LaunchCardsSection />
+        <WorkflowSection />
         <AiNodesSection />
         <PricingSection />
         <ContactSection />
