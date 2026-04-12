@@ -1,15 +1,20 @@
 import { InPageLink } from "@/components/ui/in-page-link";
 
-const aiOptions = [
+const aiOffers = [
   {
-    title: "AI Node - Shared",
-    description: "Best for testing inference, lightweight training, and evaluation runs.",
-    price: "Custom quote",
+    title: "AI Node · NVIDIA L4 24GB",
+    description: "Linux environment for inference, lightweight fine-tuning, and applied AI workloads.",
+    price: "Starts from ₹120/hr",
   },
   {
-    title: "AI Node - Dedicated",
-    description: "Reserved capacity for larger experiments, sustained runs, and team usage.",
-    price: "Custom quote",
+    title: "AI Node · RTX 6000 Ada 48GB",
+    description: "Higher VRAM Linux node for larger models, sustained runs, and production-grade workloads.",
+    price: "Starts from ₹299/hr",
+  },
+  {
+    title: "AI Node · H100 94GB",
+    description: "High-end Linux compute for advanced training, heavier experimentation, and premium AI capacity.",
+    price: "Custom pricing",
   },
 ];
 
@@ -19,23 +24,29 @@ export function AiNodesSection() {
       <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
         <div className="max-w-3xl">
           <div className="cf-eyebrow">AI NODES</div>
+
           <h2 className="mt-4 cf-section-title">
-            Dedicated GPU capacity for AI workloads.
+            Dedicated Linux GPU nodes for AI workloads.
           </h2>
+
           <p className="mt-5 cf-section-copy">
-            For AI workloads, pricing and allocation depend on your runtime,
-            storage, and GPU profile. Reserve access and we’ll size the right node.
+            Reserved GPU capacity for inference, fine-tuning, experimentation,
+            and sustained AI runs. Clear model options, Linux-based environments,
+            and direct commercial positioning from the first scroll.
           </p>
         </div>
 
-        <div className="mt-10 grid gap-6 lg:grid-cols-2">
-          {aiOptions.map((item) => (
+        <div className="mt-10 grid gap-6 lg:grid-cols-3">
+          {aiOffers.map((item) => (
             <div
               key={item.title}
               className="rounded-[28px] border border-white/10 bg-white/[0.03] p-6"
             >
-              <div className="text-2xl font-semibold text-white">{item.title}</div>
-              <p className="mt-4 text-base leading-7 text-white/62">
+              <div className="text-2xl font-semibold leading-tight text-white">
+                {item.title}
+              </div>
+
+              <p className="mt-4 min-h-[96px] text-base leading-7 text-white/62">
                 {item.description}
               </p>
 
@@ -49,7 +60,7 @@ export function AiNodesSection() {
               </div>
 
               <div className="mt-5 text-sm font-medium text-emerald-300/85">
-                Limited slots available
+                Dedicated capacity only
               </div>
 
               <InPageLink
