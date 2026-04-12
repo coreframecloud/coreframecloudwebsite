@@ -1,26 +1,37 @@
-import "./globals.css";
 import type { Metadata } from "next";
-import { SiteHeader } from "@/components/home/site-header";
-import { SiteFooter } from "@/components/home/site-footer";
+import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Coreframe Cloud",
+  title: "Coreframe Cloud | D5 Render Cloud Workstation",
   description:
-    "Cloud GPU infrastructure for D5 Render, Revit, AI nodes, and high-performance workloads.",
+    "Run D5 Render on RTX GPUs in the cloud. Launch ready-to-use Windows workstations, render faster, and download results. Start from ₹90/hr.",
+
+  keywords: [
+    "D5 render cloud",
+    "RTX render workstation",
+    "cloud rendering for architects",
+    "GPU rendering service India",
+    "D5 render GPU server",
+  ],
+
+  openGraph: {
+    title: "D5 Render Cloud Workstation",
+    description:
+      "Launch RTX-powered rendering in under 2 minutes. No setup. No commitment.",
+    url: "https://coreframecloud.com",
+    siteName: "Coreframe Cloud",
+    type: "website",
+  },
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en">
-      <body className="bg-[#030b16] text-white antialiased">
-        <SiteHeader />
-        {children}
-        <SiteFooter />
-      </body>
+      <body>{children}</body>
     </html>
   );
 }
