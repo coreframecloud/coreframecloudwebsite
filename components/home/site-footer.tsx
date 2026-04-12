@@ -11,7 +11,7 @@ export function SiteFooter() {
           </Link>
 
           <p className="mt-8 max-w-xl text-lg leading-9 text-white/65">
-            Cloud GPU infrastructure for D5 Render, Revit, AI workloads, and high-performance visual computing.
+            D5 Render Ready Workstations, managed file transfer workflow, and dedicated Linux GPU nodes for AI workloads.
           </p>
 
           <div className="mt-6">
@@ -31,16 +31,16 @@ export function SiteFooter() {
             Navigation
           </h3>
           <div className="mt-4 flex flex-col gap-3">
-            <Link href="#launch-gpus" className="text-sm text-white/65 transition hover:text-white">
-              Launch GPUs
+            <Link href="/#launch-gpus" className="text-sm text-white/65 transition hover:text-white">
+              D5 Workstations
             </Link>
-            <Link href="#ai-nodes" className="text-sm text-white/65 transition hover:text-white">
+            <Link href="/#ai-nodes" className="text-sm text-white/65 transition hover:text-white">
               AI Nodes
             </Link>
-            <Link href="#pricing" className="text-sm text-white/65 transition hover:text-white">
+            <Link href="/#pricing" className="text-sm text-white/65 transition hover:text-white">
               Pricing
             </Link>
-            <Link href="#reserve-access" className="text-sm text-white/65 transition hover:text-white">
+            <Link href="/#reserve-access" className="text-sm text-white/65 transition hover:text-white">
               Reserve Access
             </Link>
           </div>
@@ -51,8 +51,8 @@ export function SiteFooter() {
             Contact
           </h3>
           <div className="mt-4 flex flex-col gap-3 text-sm text-white/65">
-            <p>COREFRAME CLOUD</p>
-            <p>GPU Infrastructure for Design & AI</p>
+            <p>Coreframe Cloud</p>
+            <p>D5 Render Ready Infrastructure</p>
             <Link
               href="https://wa.me/916366889488"
               target="_blank"

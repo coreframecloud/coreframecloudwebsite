@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { SiteHeader } from "@/components/home/site-header";
+import { SiteFooter } from "@/components/home/site-footer";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://coreframecloud.com"),
@@ -12,15 +14,19 @@ export const metadata: Metadata = {
   description:
     "Run D5 Render on RTX GPUs in the cloud. Launch ready-to-use workstations, render faster, and download results. Start from ₹90/hr.",
 
-  keywords: [
-    "D5 render cloud",
-    "RTX render workstation",
-    "cloud rendering for architects",
-    "GPU rendering India",
-  ],
+  applicationName: "Coreframe Cloud",
 
   alternates: {
     canonical: "/",
+  },
+
+  icons: {
+    icon: [
+      { url: "/icon.png", type: "image/png", sizes: "512x512" },
+      { url: "/favicon.ico", rel: "icon" },
+    ],
+    apple: [{ url: "/apple-icon.png", sizes: "180x180", type: "image/png" }],
+    shortcut: ["/favicon.ico"],
   },
 
   openGraph: {
@@ -30,13 +36,22 @@ export const metadata: Metadata = {
     url: "https://coreframecloud.com",
     siteName: "Coreframe Cloud",
     type: "website",
+    images: [
+      {
+        url: "/icon.png",
+        width: 512,
+        height: 512,
+        alt: "Coreframe Cloud",
+      },
+    ],
   },
 
   twitter: {
-    card: "summary_large_image",
+    card: "summary",
     title: "Coreframe Cloud",
     description:
       "RTX-powered D5 Render workstations in the cloud. Start rendering instantly.",
+    images: ["/icon.png"],
   },
 };
 
@@ -47,7 +62,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body className="bg-[#030b16] text-white antialiased">
+        <SiteHeader />
+        {children}
+        <SiteFooter />
+      </body>
     </html>
   );
 }
