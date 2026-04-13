@@ -1,6 +1,7 @@
 "use client";
 
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
+import { trackClarityEvent, trackEvent } from "@/lib/analytics";
 
 type FormState = {
   name: string;
@@ -23,15 +24,16 @@ const initialState: FormState = {
 };
 
 const renderingGpuOptions = [
-  "RTX A4000 16GB — ₹75/hr",
-  "RTX 4000 Ada 20GB — ₹99/hr",
-  "RTX A5000 24GB — ₹129/hr",
-  "RTX A6000 48GB — ₹249/hr",
+  "RTX A4000 16GB — ₹90/hr",
+  "RTX 4000 Ada 20GB — ₹119/hr",
+  "RTX A5000 24GB — ₹155/hr",
+  "RTX A6000 48GB — ₹299/hr",
 ];
 
 const aiGpuOptions = [
-  "AI Node — Shared (Custom quote)",
-  "AI Node — Dedicated (Custom quote)",
+  "NVIDIA L4 24GB — Starting from ₹120/hr",
+  "RTX 6000 Ada 48GB — Starting from ₹299/hr",
+  "H100 94GB — Custom pricing",
 ];
 
 export function ContactSection() {
@@ -39,29 +41,40 @@ export function ContactSection() {
   const [submitted, setSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const startedRef = useRef(false);
 
   const gpuOptions = useMemo(() => {
-    if (form.workload === "AI") {
-      return aiGpuOptions;
-    }
-
-    if (form.workload === "3D Rendering") {
-      return renderingGpuOptions;
-    }
-
+    if (form.workload === "AI") return aiGpuOptions;
+    if (form.workload === "3D Rendering") return renderingGpuOptions;
     return [];
   }, [form.workload]);
+
+  useEffect(() => {
+    const hasAnyValue = Object.values(form).some((value) => value.trim() !== "");
+    if (!hasAnyValue || submitted) return;
+
+    const handleBeforeUnload = () => {
+      trackEvent("form_abandoned", { location: "reserve_access" });
+      trackClarityEvent("form_abandoned");
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [form, submitted]);
 
   function update<K extends keyof FormState>(key: K, value: FormState[K]) {
     setForm((prev) => {
       const next = { ...prev, [key]: value };
-
-      if (key === "workload") {
-        next.gpu = "";
-      }
-
+      if (key === "workload") next.gpu = "";
       return next;
     });
+  }
+
+  function handleFormStart() {
+    if (startedRef.current) return;
+    startedRef.current = true;
+    trackEvent("form_started", { location: "reserve_access" });
+    trackClarityEvent("form_started");
   }
 
   function buildWhatsAppMessage(values: FormState) {
@@ -86,6 +99,12 @@ export function ContactSection() {
     setIsSubmitting(true);
 
     try {
+      trackEvent("form_submit_attempt", {
+        location: "reserve_access",
+        workload: form.workload || "unknown",
+      });
+      trackClarityEvent("form_submit_attempt");
+
       const response = await fetch("/api/lead", {
         method: "POST",
         headers: {
@@ -103,15 +122,25 @@ export function ContactSection() {
         throw new Error(result.error || "Failed to save your details.");
       }
 
+      trackEvent("form_submitted", {
+        location: "reserve_access",
+        workload: form.workload || "unknown",
+        gpu: form.gpu || "unknown",
+      });
+      trackClarityEvent("form_submitted");
+
       setSubmitted(true);
 
       const message = buildWhatsAppMessage(form);
       const whatsappUrl = `https://wa.me/916366889488?text=${message}`;
 
       window.open(whatsappUrl, "_blank", "noopener,noreferrer");
-
       setForm(initialState);
+      startedRef.current = false;
     } catch (error) {
+      trackEvent("form_submit_error", { location: "reserve_access" });
+      trackClarityEvent("form_submit_error");
+
       setErrorMessage(
         error instanceof Error
           ? error.message
@@ -133,37 +162,8 @@ export function ContactSection() {
           </h2>
 
           <p className="mt-5 cf-section-copy">
-            Choose your workload, pick the right GPU tier, and continue the conversation on WhatsApp.
+            Choose your workload, pick the right server profile, and continue the conversation on WhatsApp.
           </p>
-
-          <div className="mt-8 space-y-6 border-t border-white/10 pt-8">
-            <div>
-              <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-white/42">
-                STEP 1
-              </div>
-              <div className="mt-2 text-lg text-white/84">
-                Fill the quick intake form
-              </div>
-            </div>
-
-            <div>
-              <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-white/42">
-                STEP 2
-              </div>
-              <div className="mt-2 text-lg text-white/84">
-                Your details are recorded automatically
-              </div>
-            </div>
-
-            <div>
-              <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-white/42">
-                STEP 3
-              </div>
-              <div className="mt-2 text-lg text-white/84">
-                We continue the conversation on WhatsApp
-              </div>
-            </div>
-          </div>
         </div>
 
         <div>
@@ -179,6 +179,7 @@ export function ContactSection() {
                     type="text"
                     required
                     value={form.name}
+                    onFocus={handleFormStart}
                     onChange={(e) => update("name", e.target.value)}
                     className="mt-2 w-full rounded-2xl border border-white/10 bg-[#07121e] px-4 py-3 text-white outline-none transition placeholder:text-white/28 focus:border-emerald-300/35"
                     placeholder="Your name"
@@ -193,6 +194,7 @@ export function ContactSection() {
                     id="company"
                     type="text"
                     value={form.company}
+                    onFocus={handleFormStart}
                     onChange={(e) => update("company", e.target.value)}
                     className="mt-2 w-full rounded-2xl border border-white/10 bg-[#07121e] px-4 py-3 text-white outline-none transition placeholder:text-white/28 focus:border-emerald-300/35"
                     placeholder="Studio or company"
@@ -208,6 +210,7 @@ export function ContactSection() {
                     type="email"
                     required
                     value={form.email}
+                    onFocus={handleFormStart}
                     onChange={(e) => update("email", e.target.value)}
                     className="mt-2 w-full rounded-2xl border border-white/10 bg-[#07121e] px-4 py-3 text-white outline-none transition placeholder:text-white/28 focus:border-emerald-300/35"
                     placeholder="you@company.com"
@@ -223,6 +226,7 @@ export function ContactSection() {
                     type="tel"
                     required
                     value={form.phone}
+                    onFocus={handleFormStart}
                     onChange={(e) => update("phone", e.target.value)}
                     className="mt-2 w-full rounded-2xl border border-white/10 bg-[#07121e] px-4 py-3 text-white outline-none transition placeholder:text-white/28 focus:border-emerald-300/35"
                     placeholder="+91 ..."
@@ -239,6 +243,7 @@ export function ContactSection() {
                     id="workload"
                     required
                     value={form.workload}
+                    onFocus={handleFormStart}
                     onChange={(e) => update("workload", e.target.value)}
                     className="mt-2 w-full rounded-2xl border border-white/10 bg-[#07121e] px-4 py-3 text-white outline-none transition focus:border-emerald-300/35"
                   >
@@ -256,6 +261,7 @@ export function ContactSection() {
                     id="gpu"
                     required
                     value={form.gpu}
+                    onFocus={handleFormStart}
                     onChange={(e) => update("gpu", e.target.value)}
                     disabled={!form.workload}
                     className="mt-2 w-full rounded-2xl border border-white/10 bg-[#07121e] px-4 py-3 text-white outline-none transition focus:border-emerald-300/35 disabled:cursor-not-allowed disabled:opacity-50"
@@ -280,6 +286,7 @@ export function ContactSection() {
                   id="notes"
                   rows={5}
                   value={form.notes}
+                  onFocus={handleFormStart}
                   onChange={(e) => update("notes", e.target.value)}
                   className="mt-2 w-full rounded-2xl border border-white/10 bg-[#07121e] px-4 py-3 text-white outline-none transition placeholder:text-white/28 focus:border-emerald-300/35"
                   placeholder="Tell us about your project, scene size, AI use case, timing, or questions."

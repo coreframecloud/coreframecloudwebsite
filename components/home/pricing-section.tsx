@@ -1,4 +1,7 @@
+"use client";
+
 import { InPageLink } from "@/components/ui/in-page-link";
+import { trackEvent } from "@/lib/analytics";
 
 const pricingRows = [
   {
@@ -62,8 +65,29 @@ export function PricingSection() {
           ))}
         </div>
 
-        <div className="mt-8">
-          <InPageLink targetId="reserve-access" className="cf-btn-primary">
+        <div className="mt-10">
+          <a
+            href="/d5-render"
+            className="text-sm text-emerald-300 hover:underline"
+            onClick={() =>
+              trackEvent("internal_link_click", {
+                location: "pricing",
+                target: "/d5-render",
+              })
+            }
+          >
+            Explore full D5 render workstation →
+          </a>
+        </div>
+
+        <div className="mt-6">
+          <InPageLink
+            targetId="reserve-access"
+            className="cf-btn-primary"
+            onClick={() =>
+              trackEvent("reserve_click", { location: "pricing_section" })
+            }
+          >
             Reserve Access
           </InPageLink>
         </div>

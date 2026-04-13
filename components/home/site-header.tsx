@@ -6,6 +6,7 @@ import { useState, MouseEvent } from "react";
 import { Menu, X } from "lucide-react";
 import { CoreframeWordmarkAtlas } from "@/components/brand/coreframe-wordmark-atlas";
 import { InPageLink } from "@/components/ui/in-page-link";
+import { trackEvent } from "@/lib/analytics";
 
 const navItems = [
   { label: "Launch GPUs", targetId: "launch-gpus" },
@@ -19,6 +20,8 @@ export function SiteHeader() {
   const pathname = usePathname();
 
   function handleLogoClick(e: MouseEvent<HTMLAnchorElement>) {
+    trackEvent("logo_click", { location: "header", path: pathname });
+
     if (pathname === "/") {
       e.preventDefault();
       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -30,7 +33,12 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-50 border-b border-white/10 bg-[#03101d]/88 backdrop-blur-xl">
       <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        <Link href="/" aria-label="COREFRAME CLOUD Home" className="shrink-0" onClick={handleLogoClick}>
+        <Link
+          href="/"
+          aria-label="COREFRAME CLOUD Home"
+          className="shrink-0"
+          onClick={handleLogoClick}
+        >
           <CoreframeWordmarkAtlas iconSize={52} compact />
         </Link>
 
@@ -40,6 +48,12 @@ export function SiteHeader() {
               key={item.label}
               targetId={item.targetId}
               className="text-[15px] font-medium text-white/80 transition hover:text-white"
+              onClick={() =>
+                trackEvent("nav_click", {
+                  label: item.label,
+                  location: "header_nav",
+                })
+              }
             >
               {item.label}
             </InPageLink>
@@ -50,6 +64,11 @@ export function SiteHeader() {
           <InPageLink
             targetId="reserve-access"
             className="inline-flex items-center justify-center rounded-2xl border border-emerald-400/20 bg-emerald-400/[0.06] px-5 py-2.5 text-sm font-semibold text-white transition hover:border-emerald-300/35 hover:bg-emerald-400/[0.1]"
+            onClick={() =>
+              trackEvent("reserve_click", {
+                location: "header_cta",
+              })
+            }
           >
             Reserve Access
           </InPageLink>
@@ -58,7 +77,10 @@ export function SiteHeader() {
         <button
           type="button"
           aria-label={open ? "Close menu" : "Open menu"}
-          onClick={() => setOpen((prev) => !prev)}
+          onClick={() => {
+            setOpen((prev) => !prev);
+            trackEvent("mobile_menu_toggle", { open: !open });
+          }}
           className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-white xl:hidden"
         >
           {open ? <X size={20} /> : <Menu size={20} />}
@@ -78,7 +100,13 @@ export function SiteHeader() {
               <InPageLink
                 key={item.label}
                 targetId={item.targetId}
-                onClick={() => setOpen(false)}
+                onClick={() => {
+                  setOpen(false);
+                  trackEvent("nav_click", {
+                    label: item.label,
+                    location: "mobile_menu",
+                  });
+                }}
                 className="rounded-lg px-3 py-3 text-sm font-medium text-white/85 transition hover:bg-white/5 hover:text-white"
               >
                 {item.label}
@@ -87,7 +115,12 @@ export function SiteHeader() {
 
             <InPageLink
               targetId="reserve-access"
-              onClick={() => setOpen(false)}
+              onClick={() => {
+                setOpen(false);
+                trackEvent("reserve_click", {
+                  location: "mobile_menu_cta",
+                });
+              }}
               className="mt-3 inline-flex items-center justify-center rounded-xl border border-emerald-400/20 bg-emerald-400/[0.06] px-5 py-3 text-sm font-semibold text-white"
             >
               Reserve Access
