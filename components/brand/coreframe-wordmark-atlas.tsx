@@ -1,5 +1,4 @@
 import clsx from "clsx";
-import { CoreframeAnimatedLogo } from "./coreframe-animated-logo";
 
 type Props = {
   iconSize?: number;
@@ -11,31 +10,22 @@ type Props = {
 export function CoreframeWordmarkAtlas({
   iconSize = 56,
   className,
-  animated = true,
   compact = false,
 }: Props) {
-  return (
-    <div className={clsx("flex items-center", compact ? "gap-3" : "gap-4", className)}>
-      <CoreframeAnimatedLogo size={iconSize} animated={animated} />
+  const fontSize = compact ? 20 : Math.max(28, Math.round(iconSize * 0.4));
 
-      <div className="leading-none">
-        <div
-          className={clsx(
-            "font-semibold uppercase tracking-[0.14em] text-white",
-            compact ? "text-[20px]" : "text-[34px]"
-          )}
-        >
-          COREFRAME
-        </div>
-        <div
-          className={clsx(
-            "mt-2 font-semibold uppercase tracking-[0.26em] text-emerald-400",
-            compact ? "text-[13px]" : "text-[18px]"
-          )}
-        >
-          CLOUD
-        </div>
-      </div>
+  return (
+    <div
+      aria-label="COREFRAME"
+      className={clsx(
+        "inline-flex items-center gap-1.5 leading-none",
+        "font-semibold uppercase tracking-[0.12em]",
+        className
+      )}
+      style={{ fontSize }}
+    >
+      <span className="text-white">CORE</span>
+      <span className="text-[#2D7FF9]">FRAME</span>
     </div>
   );
 }

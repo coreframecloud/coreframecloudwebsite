@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "D5 Render Cloud Workstation (RTX GPU)",
@@ -31,9 +32,9 @@ export default function Page() {
       </div>
 
       <div className="mt-10 space-y-2 text-emerald-300">
-        <a href="/" className="block hover:underline">← Back to Home</a>
-        <a href="/#pricing" className="block hover:underline">View Pricing</a>
-        <a href="/#reserve-access" className="block hover:underline">Reserve Access</a>
+        <Link href="/" className="block hover:underline">← Back to Home</Link>
+        <Link href="/#pricing" className="block hover:underline">View Pricing</Link>
+        <Link href="/#reserve-access" className="block hover:underline">Reserve Access</Link>
       </div>
 
     </div>

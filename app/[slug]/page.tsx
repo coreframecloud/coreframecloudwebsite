@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 
 type PageData = {
   title: string;
@@ -120,12 +121,12 @@ export default function Page({
 
       {/* Internal links */}
       <div className="mt-10 text-emerald-300 space-y-2">
-        <a href="/" className="block hover:underline">
+        <Link href="/" className="block hover:underline">
           ← Back to Home
-        </a>
-        <a href="/d5-render" className="block hover:underline">
+        </Link>
+        <Link href="/d5-render" className="block hover:underline">
           D5 Render Workstation →
-        </a>
+        </Link>
       </div>
     </div>
   );

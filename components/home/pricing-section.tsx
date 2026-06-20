@@ -2,6 +2,7 @@
 
 import { InPageLink } from "@/components/ui/in-page-link";
 import { trackEvent } from "@/lib/analytics";
+import Link from "next/link";
 
 const pricingRows = [
   {
@@ -66,7 +67,7 @@ export function PricingSection() {
         </div>
 
         <div className="mt-10">
-          <a
+          <Link
             href="/d5-render"
             className="text-sm text-emerald-300 hover:underline"
             onClick={() =>
@@ -77,7 +78,7 @@ export function PricingSection() {
             }
           >
             Explore full D5 render workstation →
-          </a>
+          </Link>
         </div>
 
         <div className="mt-6">

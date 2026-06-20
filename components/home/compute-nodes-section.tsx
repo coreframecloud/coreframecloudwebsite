@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import Link from "next/link";
 
 type ComputeNodesSectionProps = {
   compact?: boolean;
@@ -214,12 +215,12 @@ export function ComputeNodesSection({
 
         {compact ? (
           <div className="mt-8">
-            <a
+            <Link
               href="/compute-nodes"
               className="text-sm text-cyan-300 hover:text-cyan-200"
             >
               View full compute node list →
-            </a>
+            </Link>
           </div>
         ) : null}
       </div>

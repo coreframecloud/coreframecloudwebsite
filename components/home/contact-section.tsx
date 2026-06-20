@@ -79,7 +79,7 @@ export function ContactSection() {
 
   function buildWhatsAppMessage(values: FormState) {
     const lines = [
-      "Hi CoreFrame Cloud, I want to reserve access.",
+      "Hi Coreframe Cloud, I want to reserve access.",
       `Name: ${values.name || "-"}`,
       `Company: ${values.company || "-"}`,
       `Email: ${values.email || "-"}`,

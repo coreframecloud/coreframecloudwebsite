@@ -2,6 +2,7 @@
 
 import { InPageLink } from "@/components/ui/in-page-link";
 import { trackClarityEvent, trackEvent } from "@/lib/analytics";
+import Link from "next/link";
 
 const d5Options = [
   { vram: "16GB", gpu: "RTX A4000", price: "₹90/hr" },
@@ -63,7 +64,7 @@ export function HeroSection() {
           </div>
 
           <div className="mt-6 space-y-2 text-sm text-emerald-300">
-            <a
+            <Link
               href="/d5-render"
               className="block hover:underline"
               onClick={() => {
@@ -75,8 +76,8 @@ export function HeroSection() {
               }}
             >
               Full D5 workflow →
-            </a>
-            <a
+            </Link>
+            <Link
               href="/cloud-rendering-for-architects"
               className="block hover:underline"
               onClick={() => {
@@ -88,7 +89,7 @@ export function HeroSection() {
               }}
             >
               For architecture teams →
-            </a>
+            </Link>
           </div>
         </div>
 

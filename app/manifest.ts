@@ -5,7 +5,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: "Coreframe Cloud",
     short_name: "Coreframe",
     description:
-      "D5 Render Ready Workstations with RTX GPUs in the cloud.",
+      "Cloud GPU workstations and managed AI infrastructure from Coreframe Cloud.",
     start_url: "/",
     display: "standalone",
     background_color: "#030b16",

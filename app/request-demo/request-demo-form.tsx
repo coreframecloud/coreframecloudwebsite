@@ -16,6 +16,7 @@ export default function RequestDemoForm() {
     const gpuParam = params.get("gpu");
     const typeParam = params.get("type");
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (gpuParam) setGpu(gpuParam);
     if (typeParam) setWorkload(typeParam);
   }, []);
@@ -97,8 +98,8 @@ Selected GPU: ${gpu || "Not selected"}`;
 
         <div className="rounded-[1.6rem] border border-white/12 bg-white/6 p-6 backdrop-blur-2xl">
           <div className="text-sm text-slate-400">Email</div>
-          <div className="mt-2 text-xl font-semibold">hi@coreframecloud.com</div>
-          <a href="mailto:hi@coreframecloud.com" className="mt-6 inline-block">
+          <div className="mt-2 text-xl font-semibold">admin@coreframecloud.com</div>
+          <a href="mailto:admin@coreframecloud.com" className="mt-6 inline-block">
             <Button
               variant="outline"
               className="rounded-xl border-white/12 bg-white/6 text-white hover:bg-white/10"

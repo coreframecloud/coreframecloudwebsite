@@ -35,7 +35,7 @@ export function SiteHeader() {
       <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <Link
           href="/"
-          aria-label="COREFRAME CLOUD Home"
+          aria-label="COREFRAME Home"
           className="shrink-0"
           onClick={handleLogoClick}
         >

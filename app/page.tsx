@@ -9,12 +9,15 @@ import { ContactSection } from "@/components/home/contact-section";
 import { WhatsAppButton } from "@/components/home/whatsapp-button";
 
 export const metadata: Metadata = {
-  title: "D5 Render Cloud Workstation | RTX GPU Rendering",
+  title: "Coreframe Cloud | Cloud GPU Workstations and AI Infrastructure",
   description:
-    "Launch D5 Render on RTX GPUs in under 2 minutes. 16GB–48GB VRAM workstations. Start from ₹90/hr.",
+    "Launch cloud GPU workstations for RTX rendering, AI workloads, and managed infrastructure with Coreframe Cloud.",
 
   alternates: {
     canonical: "/",
+  },
+  other: {
+    "contact:email": "admin@coreframecloud.com",
   },
 };
 

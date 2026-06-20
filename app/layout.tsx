@@ -7,11 +7,11 @@ import { SiteFooter } from "@/components/home/site-footer";
 export const metadata: Metadata = {
   metadataBase: new URL("https://coreframecloud.com"),
   title: {
-    default: "Coreframe Cloud | D5 Render Cloud Workstation",
+    default: "Coreframe Cloud | Cloud GPU Workstations and AI Infrastructure",
     template: "%s | Coreframe Cloud",
   },
   description:
-    "Run D5 Render on RTX GPUs in the cloud. Launch ready-to-use workstations, render faster, and download results. Start from ₹90/hr.",
+    "Coreframe Cloud provides cloud GPU workstations, RTX rendering capacity, and managed AI infrastructure for professional teams.",
   keywords: [
     "D5 render cloud",
     "RTX render workstation",
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Coreframe Cloud",
     description:
-      "D5 Render Ready Workstations with RTX GPUs. Launch in minutes.",
+      "Cloud GPU workstations, RTX rendering capacity, and managed AI infrastructure for professional teams.",
     url: "https://coreframecloud.com",
     siteName: "Coreframe Cloud",
     type: "website",
@@ -50,8 +50,11 @@ export const metadata: Metadata = {
     card: "summary",
     title: "Coreframe Cloud",
     description:
-      "RTX-powered D5 Render workstations in the cloud. Start rendering instantly.",
+      "Cloud GPU workstations and managed AI infrastructure for professional teams.",
     images: ["/icon.png"],
+  },
+  other: {
+    "contact:email": "admin@coreframecloud.com",
   },
 };
 

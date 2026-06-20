@@ -1,4 +1,5 @@
 import { InPageLink } from "@/components/ui/in-page-link";
+import Link from "next/link";
 
 export function WorkflowSection() {
   return (
@@ -24,9 +25,9 @@ export function WorkflowSection() {
 
         {/* 🔥 INTERNAL LINK (NEW) */}
         <div className="mt-10">
-          <a href="/d5-render" className="text-emerald-300 hover:underline">
+          <Link href="/d5-render" className="text-emerald-300 hover:underline">
             See full D5 workflow →
-          </a>
+          </Link>
         </div>
 
         <div className="mt-8 text-sm text-white/60">

@@ -3,6 +3,7 @@ import { SiteFooter } from "@/components/home/site-footer";
 import { SiteHeader } from "@/components/home/site-header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import Link from "next/link";
 import {
   ArrowRight,
   HardDrive,
@@ -115,12 +116,12 @@ export default function SolutionsPage() {
             </p>
 
             <div className="mt-6 flex flex-wrap gap-4">
-              <a href="/request-demo">
+              <Link href="/request-demo">
                 <Button className="rounded-2xl px-6">
                   Talk to Us
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
-              </a>
+              </Link>
 
               <a
                 href="https://wa.me/916366889488?text=Hi%20Coreframe%20Cloud%2C%20I%20want%20to%20discuss%20a%20GPU%20requirement."
@@ -136,7 +137,7 @@ export default function SolutionsPage() {
                 </Button>
               </a>
 
-              <a href="mailto:hi@coreframecloud.com">
+              <a href="mailto:admin@coreframecloud.com">
                 <Button
                   variant="outline"
                   className="rounded-2xl border-white/15 bg-white/5 text-white hover:bg-white/10"
