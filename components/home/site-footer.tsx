@@ -4,7 +4,7 @@ import { CoreframeWordmarkAtlas } from "@/components/brand/coreframe-wordmark-at
 export function SiteFooter() {
   return (
     <footer className="border-t border-white/10 bg-[#020b16]">
-      <div className="mx-auto grid max-w-7xl gap-10 px-4 py-14 sm:px-6 lg:grid-cols-[1.35fr_0.75fr_1.25fr] lg:px-8">
+      <div className="mx-auto grid max-w-7xl gap-10 px-4 py-14 sm:px-6 lg:grid-cols-[1.25fr_0.7fr_0.75fr_1.2fr] lg:px-8">
         <div>
           <Link href="/" aria-label="COREFRAME Home" className="inline-flex">
             <CoreframeWordmarkAtlas iconSize={84} animated={false} />
@@ -42,6 +42,23 @@ export function SiteFooter() {
             </Link>
             <Link href="/#reserve-access" className="text-sm text-white/65 transition hover:text-white">
               Reserve Access
+            </Link>
+          </div>
+        </div>
+
+        <div>
+          <h3 className="text-sm font-semibold uppercase tracking-[0.18em] text-white/90">
+            Legal
+          </h3>
+          <div className="mt-4 flex flex-col gap-3">
+            <Link href="/privacy-policy" className="text-sm text-white/65 transition hover:text-white">
+              Privacy Policy
+            </Link>
+            <Link href="/terms-of-service" className="text-sm text-white/65 transition hover:text-white">
+              Terms of Service
+            </Link>
+            <Link href="/refund-policy" className="text-sm text-white/65 transition hover:text-white">
+              Refund Policy
             </Link>
           </div>
         </div>
