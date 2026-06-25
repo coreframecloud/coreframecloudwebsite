@@ -2,16 +2,15 @@ import type { Metadata } from "next";
 import { BackgroundGlow } from "@/components/home/background-glow";
 import { HeroSection } from "@/components/home/hero-section";
 import { WorkflowSection } from "@/components/home/workflow-section";
-import { AiNodesSection } from "@/components/home/ai-nodes-section";
 import { PricingSection } from "@/components/home/pricing-section";
 import { FaqSection } from "@/components/home/faq-section";
 import { ContactSection } from "@/components/home/contact-section";
 import { WhatsAppButton } from "@/components/home/whatsapp-button";
 
 export const metadata: Metadata = {
-  title: "Coreframe Cloud | Cloud GPU Workstations and AI Infrastructure",
+  title: "Coreframe Cloud | RTX GPU Workstations for Design & Visualisation",
   description:
-    "Launch cloud GPU workstations for RTX rendering, AI workloads, and managed infrastructure with Coreframe Cloud.",
+    "Launch RTX 5070 Ti GPU workstations for D5 Render, Lumion, Enscape and 3D visualisation. Pay-as-you-go or committed monthly plans. Hosted in India.",
 
   alternates: {
     canonical: "/",
@@ -29,7 +28,6 @@ export default function Page() {
       <main className="relative">
         <HeroSection />
         <WorkflowSection />
-        <AiNodesSection />
         <PricingSection />
         <FaqSection />
         <ContactSection />

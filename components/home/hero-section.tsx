@@ -4,11 +4,12 @@ import { InPageLink } from "@/components/ui/in-page-link";
 import { trackClarityEvent, trackEvent } from "@/lib/analytics";
 import Link from "next/link";
 
-const d5Options = [
-  { vram: "16GB", gpu: "RTX A4000", price: "₹90/hr" },
-  { vram: "20GB", gpu: "RTX 4000 Ada", price: "₹119/hr" },
-  { vram: "24GB", gpu: "RTX A5000", price: "₹155/hr" },
-  { vram: "48GB", gpu: "RTX A6000", price: "₹299/hr" },
+const gpuSpecs = [
+  { label: "GPU", value: "RTX 5070 Ti" },
+  { label: "VRAM", value: "16 GB GDDR7" },
+  { label: "System RAM", value: "64 GB ECC" },
+  { label: "vCPU", value: "6-core EPYC" },
+  { label: "Storage", value: "NVMe scratch" },
 ];
 
 export function HeroSection() {
@@ -32,7 +33,7 @@ export function HeroSection() {
           </p>
 
           <div className="mt-6 text-lg font-medium text-emerald-300">
-            Start rendering from ₹90/hr · No setup · No commitment
+            Ad-hoc from ₹400/hr · Committed plans from ₹250/hr · No setup
           </div>
 
           <div className="mt-10 flex gap-4">
@@ -95,33 +96,35 @@ export function HeroSection() {
 
         <div className="relative">
           <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-8 backdrop-blur-xl">
-            <div className="text-xl font-semibold text-white">
-              D5 Render Ready Server
+            <div className="text-xs font-semibold uppercase tracking-[0.22em] text-white/40">
+              Every GPU Instance
             </div>
+            <div className="mt-3 text-2xl font-bold text-white">RTX 5070 Ti</div>
+            <div className="mt-1 text-sm text-emerald-300">Consumer RTX · Not available on any other cloud</div>
 
-            <div className="mt-2 text-sm text-white/60">
-              Choose VRAM based on your scene size
-            </div>
-
-            <div className="mt-6 space-y-4">
-              {d5Options.map((item) => (
-                <div
-                  key={item.vram}
-                  className="flex items-center justify-between border-b border-white/10 pb-3"
-                >
-                  <div>
-                    <div className="font-medium text-white">{item.vram} VRAM</div>
-                    <div className="text-xs text-white/50">{item.gpu}</div>
-                  </div>
-
-                  <div className="font-semibold text-emerald-300">
-                    {item.price}
-                  </div>
+            <div className="mt-6 space-y-3">
+              {gpuSpecs.map((item) => (
+                <div key={item.label} className="flex items-center justify-between border-b border-white/8 pb-3 last:border-b-0">
+                  <div className="text-sm text-white/50">{item.label}</div>
+                  <div className="text-sm font-medium text-white">{item.value}</div>
                 </div>
               ))}
             </div>
 
-            <div className="mt-8">
+            <div className="mt-6 grid grid-cols-2 gap-3">
+              <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4 text-center">
+                <div className="text-xs text-white/40 uppercase tracking-wider mb-1">Ad-hoc</div>
+                <div className="text-2xl font-bold text-emerald-300">₹400</div>
+                <div className="text-xs text-white/40">/ GPU-hour</div>
+              </div>
+              <div className="rounded-2xl border border-cyan-400/20 bg-cyan-400/[0.05] p-4 text-center">
+                <div className="text-xs text-cyan-300/70 uppercase tracking-wider mb-1">Committed</div>
+                <div className="text-2xl font-bold text-cyan-300">₹250</div>
+                <div className="text-xs text-cyan-300/50">/ GPU-hour</div>
+              </div>
+            </div>
+
+            <div className="mt-6">
               <InPageLink
                 targetId="reserve-access"
                 className="cf-btn-primary w-full text-center"
@@ -130,7 +133,7 @@ export function HeroSection() {
                   trackClarityEvent("reserve_click_product_card");
                 }}
               >
-                Launch Workstation
+                Get Started
               </InPageLink>
             </div>
           </div>
