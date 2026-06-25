@@ -66,7 +66,7 @@ export function PricingSection() {
               <li className="flex gap-2"><span className="text-cyan-400">✓</span> Persistent NAS storage (2–10 TB)</li>
               <li className="flex gap-2"><span className="text-cyan-400">✓</span> 5–25 named render seats</li>
               <li className="flex gap-2"><span className="text-cyan-400">✓</span> Included GPU-hours each month</li>
-              <li className="flex gap-2"><span className="text-cyan-400">✓</span> Plans from ₹16,000/month</li>
+              <li className="flex gap-2"><span className="text-cyan-400">✓</span> Plans from ₹24,000/month</li>
             </ul>
 
             <div className="mt-8">

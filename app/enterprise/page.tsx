@@ -13,7 +13,7 @@ const plans = [
   {
     name: "Studio",
     tagline: "Small teams · 3–5 people",
-    price: "₹16,000",
+    price: "₹24,000",
     storage: "2 TB",
     seats: "5",
     includedHours: "40",
@@ -22,7 +22,7 @@ const plans = [
   {
     name: "Medium Firm",
     tagline: "Growing studios · 8–12 people",
-    price: "₹38,000",
+    price: "₹50,000",
     storage: "5 TB",
     seats: "12",
     includedHours: "120",
@@ -31,7 +31,7 @@ const plans = [
   {
     name: "Big Firm",
     tagline: "Established practices · 15–25 people",
-    price: "₹85,000",
+    price: "₹1,00,000",
     storage: "10 TB",
     seats: "25",
     includedHours: "300",
