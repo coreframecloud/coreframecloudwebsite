@@ -11,6 +11,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${base}/lumion-cloud-gpu`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
     { url: `${base}/enscape-cloud-gpu`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
     { url: `${base}/cloud-rendering-for-architects`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
+    { url: `${base}/ansys-cfd-gpu`, lastModified: now, changeFrequency: "monthly", priority: 0.9 },
     { url: `${base}/solutions`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     { url: `${base}/compute-nodes`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     { url: `${base}/contact`, lastModified: now, changeFrequency: "yearly", priority: 0.5 },
