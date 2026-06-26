@@ -7,17 +7,22 @@ import { SiteFooter } from "@/components/home/site-footer";
 export const metadata: Metadata = {
   metadataBase: new URL("https://coreframecloud.com"),
   title: {
-    default: "Coreframe Cloud | Cloud GPU Workstations and AI Infrastructure",
+    default: "Coreframe Cloud | RTX GPU Workstations for Design & Visualisation — India",
     template: "%s | Coreframe Cloud",
   },
   description:
-    "Coreframe Cloud provides cloud GPU workstations, RTX rendering capacity, and managed AI infrastructure for professional teams.",
+    "RTX 5070 Ti GPU workstations on demand for D5 Render, Lumion, Enscape, and 3D visualisation. Pay-as-you-go from ₹400/hr or committed plans from ₹24,000/month. Hosted in Bengaluru, India.",
   keywords: [
-    "D5 render cloud",
-    "RTX render workstation",
-    "cloud rendering for architects",
-    "GPU rendering India",
-    "D5 render ready workstation",
+    "D5 Render cloud GPU India",
+    "cloud GPU workstation India",
+    "RTX rendering cloud India",
+    "Lumion cloud GPU India",
+    "Enscape cloud rendering India",
+    "cloud rendering architects India",
+    "GPU workstation rent India",
+    "D5 Render ready workstation",
+    "cloud render farm India",
+    "RTX 5070 Ti cloud India",
   ],
   alternates: {
     canonical: "/",
@@ -31,9 +36,9 @@ export const metadata: Metadata = {
     shortcut: ["/favicon.ico"],
   },
   openGraph: {
-    title: "Coreframe Cloud",
+    title: "Coreframe Cloud — RTX GPU Workstations for Design Studios, India",
     description:
-      "Cloud GPU workstations, RTX rendering capacity, and managed AI infrastructure for professional teams.",
+      "RTX 5070 Ti GPU workstations on demand for D5 Render, Lumion, Enscape. Pay-as-you-go or committed plans. Hosted in Bengaluru.",
     url: "https://coreframecloud.com",
     siteName: "Coreframe Cloud",
     type: "website",
@@ -91,6 +96,77 @@ export default function RootLayout({
             })(window, document, "clarity", "script", "wb428x6n53");
           `}
         </Script>
+
+        {/* Structured data — Organisation + LocalBusiness */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@graph": [
+                {
+                  "@type": ["Organization", "LocalBusiness"],
+                  "@id": "https://coreframecloud.com/#organization",
+                  name: "Coreframe Compute Labs Private Limited",
+                  alternateName: "Coreframe Cloud",
+                  url: "https://coreframecloud.com",
+                  logo: "https://coreframecloud.com/icon.png",
+                  description:
+                    "RTX 5070 Ti GPU workstations on demand for D5 Render, Lumion, Enscape, and 3D visualisation studios. Hosted in Bengaluru, India.",
+                  telephone: "+916366889488",
+                  email: "admin@coreframecloud.com",
+                  address: {
+                    "@type": "PostalAddress",
+                    streetAddress:
+                      "Innov8, Prestige Tech Platina, 11th Floor, No. 32/2, 34/1, Kadubeesanahalli",
+                    addressLocality: "Bengaluru",
+                    addressRegion: "Karnataka",
+                    postalCode: "560087",
+                    addressCountry: "IN",
+                  },
+                  areaServed: "IN",
+                  sameAs: [],
+                  priceRange: "₹₹",
+                },
+                {
+                  "@type": "Service",
+                  "@id": "https://coreframecloud.com/#gpu-workstation-service",
+                  name: "RTX 5070 Ti Cloud GPU Workstation",
+                  provider: { "@id": "https://coreframecloud.com/#organization" },
+                  description:
+                    "On-demand Windows GPU workstations with NVIDIA RTX 5070 Ti (16 GB GDDR7) for D5 Render, Lumion, Enscape, SolidWorks, and 3ds Max. Pay-as-you-go from ₹400/hr or committed plans from ₹24,000/month.",
+                  areaServed: "IN",
+                  offers: [
+                    {
+                      "@type": "Offer",
+                      name: "Ad-hoc GPU-hour",
+                      price: "400",
+                      priceCurrency: "INR",
+                      priceSpecification: {
+                        "@type": "UnitPriceSpecification",
+                        price: "400",
+                        priceCurrency: "INR",
+                        unitText: "GPU-hour",
+                      },
+                    },
+                    {
+                      "@type": "Offer",
+                      name: "Committed Monthly — Studio",
+                      price: "24000",
+                      priceCurrency: "INR",
+                      priceSpecification: {
+                        "@type": "UnitPriceSpecification",
+                        price: "24000",
+                        priceCurrency: "INR",
+                        unitText: "month",
+                      },
+                    },
+                  ],
+                },
+              ],
+            }),
+          }}
+        />
 
         <SiteHeader />
         {children}

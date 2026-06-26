@@ -2,29 +2,34 @@ import { InPageLink } from "@/components/ui/in-page-link";
 
 const faqs = [
   {
-    question: "Do I need to install D5 Render?",
+    question: "What GPU do the workstations use?",
     answer:
-      "No. The workstation is prepared for D5 workflows. You bring your own D5 license and start working without environment setup.",
+      "Every instance runs an NVIDIA RTX 5070 Ti with 16 GB GDDR7 VRAM and 64 GB ECC system RAM. It's a consumer-grade RTX card with full WDDM display drivers — exactly what D5 Render, Lumion, and Enscape require.",
+  },
+  {
+    question: "Do I need to install D5 Render / Lumion / Enscape myself?",
+    answer:
+      "Yes — all software is BYOL (Bring Your Own Licence). You install your app on the workstation and activate your existing named-user licence. No additional software fees from Coreframe.",
   },
   {
     question: "How does file transfer work?",
     answer:
-      "Project files move through the managed transfer path to the provisioned workstation, and rendered output is downloaded back to your local machine after the job is complete.",
+      "You transfer project files to the workstation over the secure RDP connection. On committed plans, your files persist on NAS storage between sessions. On ad-hoc, you get 50 GB NVMe scratch that is cleared after the session.",
   },
   {
     question: "Is my project data isolated?",
     answer:
-      "Yes. Files are delivered to the provisioned machine for your session, and workspace contents are removed when the instance is terminated.",
+      "Yes. Your workstation is a dedicated VM — other customers cannot access it. On ad-hoc, all session data is deleted when you shut down. Committed-plan customers get private persistent NAS storage hosted in Bengaluru.",
   },
   {
     question: "How am I charged?",
     answer:
-      "Pricing is hourly based on the workstation profile you select, from 16GB to 48GB VRAM configurations.",
+      "Ad-hoc sessions are ₹400/GPU-hour, billed to the minute. Committed plans start at ₹24,000/month and include a block of GPU-hours at the ₹250/hr rate. Extra hours beyond the plan are billed at ₹250/hr. All prices exclude GST.",
   },
   {
     question: "How quickly can I start rendering?",
     answer:
-      "The D5 Render Ready Server is designed to be ready in under 2 minutes.",
+      "The workstation is ready in under 2 minutes. Create your account, add credit, and launch — the instance boots and you connect via RDP from anywhere.",
   },
 ];
 
@@ -38,7 +43,7 @@ export function FaqSection() {
             Questions teams usually ask before they launch
           </h2>
           <p className="mt-5 cf-section-copy">
-            Clear answers on setup, security, transfer flow, and billing for D5 Render Ready Servers.
+            Clear answers on GPU specs, licensing, file storage, and billing for Coreframe Cloud workstations.
           </p>
         </div>
 

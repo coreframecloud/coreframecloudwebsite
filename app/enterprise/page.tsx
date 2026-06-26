@@ -3,9 +3,17 @@ import { BackgroundGlow } from "@/components/home/background-glow";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Committed Plans for Studios & Firms",
+  title: "Monthly GPU Plans for Design Studios & Firms — India",
   description:
-    "Committed monthly GPU compute plans for design and visualisation studios. Persistent storage, named render seats, and the best per-hour rate — hosted in India.",
+    "Committed monthly cloud GPU workstation plans for architecture and design studios. RTX 5070 Ti, persistent NAS storage, named seats, ₹250/GPU-hr. Plans from ₹24,000/month. Hosted in Bengaluru, India.",
+  keywords: [
+    "cloud GPU plan India",
+    "GPU workstation monthly plan India",
+    "cloud rendering subscription India",
+    "D5 Render monthly plan India",
+    "architecture studio cloud GPU",
+    "committed cloud GPU India",
+  ],
   alternates: { canonical: "/enterprise" },
 };
 
