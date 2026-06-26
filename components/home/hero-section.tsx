@@ -67,19 +67,6 @@ export function HeroSection() {
 
           <div className="mt-4 flex flex-wrap gap-x-4 gap-y-1 text-sm text-emerald-300">
             <Link
-              href="/d5-render"
-              className="block hover:underline"
-              onClick={() => {
-                trackEvent("internal_link_click", {
-                  location: "hero",
-                  target: "/d5-render",
-                });
-                trackClarityEvent("internal_link_d5_hero");
-              }}
-            >
-              Full D5 workflow →
-            </Link>
-            <Link
               href="/cloud-rendering-for-architects"
               className="block hover:underline"
               onClick={() => {
