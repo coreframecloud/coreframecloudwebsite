@@ -9,7 +9,7 @@ import { trackEvent } from "@/lib/analytics";
 
 const navLinks = [
   { label: "Render 5× Faster", href: "/d5-render" },
-  { label: "CFD in Hours", href: "/ansys-cfd-gpu" },
+  { label: "CFD in Minutes", href: "/ansys-cfd-gpu" },
   { label: "Pricing", href: "/#pricing" },
   { label: "Enterprise", href: "/enterprise" },
 ];

@@ -24,7 +24,7 @@ export function HeroSection() {
           <h1 className="mt-4 text-4xl font-semibold leading-tight text-white sm:text-5xl">
             5× faster rendering.
             <br />
-            CFD in hours, not days.
+            CFD in minutes, not days.
           </h1>
 
           <p className="mt-4 text-base leading-7 text-white/70">

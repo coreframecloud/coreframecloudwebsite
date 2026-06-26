@@ -8,7 +8,7 @@ import { ContactSection } from "@/components/home/contact-section";
 import { WhatsAppButton } from "@/components/home/whatsapp-button";
 
 export const metadata: Metadata = {
-  title: "5× Faster Rendering & CFD in Hours — GPU Cloud India | Coreframe",
+  title: "5× Faster Rendering & CFD in Minutes — GPU Cloud India | Coreframe",
   description:
     "Tired of overnight renders and 3-day CFD jobs? Coreframe gives you RTX 5070 Ti for D5 Render, Lumion & Enscape — and H100/RTX 6000 Pro for Ansys CFD. Pay per hour. No hardware. Bengaluru, India.",
 

@@ -3,9 +3,9 @@ import { BackgroundGlow } from "@/components/home/background-glow";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Ansys CFD in Hours Not Days — H100 & RTX 6000 Pro Cloud India",
+  title: "Ansys CFD in Minutes Not Days — H100 & RTX 6000 Pro Cloud India",
   description:
-    "Why wait 3 days for a CFD solve? Run Ansys Fluent on H100 (80 GB HBM3) or RTX 6000 Pro (96 GB) and finish the same job in hours. Per-job pricing by element count. Ansys cloud partner. Bengaluru, India.",
+    "Why wait 3 days for a CFD solve? Run Ansys Fluent on H100 (80 GB HBM3) or RTX 6000 Pro (96 GB) and finish the same job in minutes. Per-job pricing by element count. Ansys cloud partner. Bengaluru, India.",
   keywords: [
     "Ansys CFD cloud GPU India",
     "GPU CFD simulation India",
@@ -22,7 +22,7 @@ const whyGpu = [
   {
     icon: "⚡",
     title: "5–20× faster solve times",
-    body: "Ansys Fluent's GPU solver offloads the pressure-velocity coupling and linear algebra to thousands of CUDA cores in parallel. What takes 8 hours on a CPU cluster resolves in under an hour on an H100.",
+    body: "Ansys Fluent's GPU solver offloads the pressure-velocity coupling and linear algebra to thousands of CUDA cores in parallel. What takes 8 hours on a CPU cluster resolves in minutes on an H100.",
   },
   {
     icon: "🧠",
