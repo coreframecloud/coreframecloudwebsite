@@ -4,93 +4,78 @@ import { CoreframeWordmarkAtlas } from "@/components/brand/coreframe-wordmark-at
 export function SiteFooter() {
   return (
     <footer className="border-t border-white/10 bg-[#020b16]">
-      <div className="mx-auto grid max-w-7xl gap-10 px-4 py-14 sm:px-6 lg:grid-cols-[1.25fr_0.7fr_0.75fr_1.2fr] lg:px-8">
-        <div>
-          <Link href="/" aria-label="COREFRAME Home" className="inline-flex">
-            <CoreframeWordmarkAtlas iconSize={84} animated={false} />
-          </Link>
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
 
-          <p className="mt-8 max-w-xl text-lg leading-9 text-white/65">
-            D5 Render Ready Workstations, managed file transfer workflow, and dedicated Linux GPU nodes for AI workloads.
+        {/* Main row */}
+        <div className="grid gap-8 lg:grid-cols-[1fr_auto_auto_auto]">
+
+          {/* Brand + tagline */}
+          <div>
+            <Link href="/" aria-label="COREFRAME Home" className="inline-flex">
+              <CoreframeWordmarkAtlas iconSize={40} animated={false} />
+            </Link>
+            <p className="mt-3 max-w-xs text-xs leading-5 text-white/45">
+              RTX 5070 Ti GPU workstations for D5 Render, Lumion, and Enscape. Hosted in Bengaluru, India.
+            </p>
+            <Link
+              href="https://wa.me/916366889488"
+              target="_blank"
+              rel="noreferrer"
+              className="mt-3 inline-block text-xs font-medium text-emerald-400 hover:text-emerald-300 transition"
+            >
+              WhatsApp: +91 6366889488
+            </Link>
+          </div>
+
+          {/* Navigation */}
+          <div>
+            <h3 className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/40">Product</h3>
+            <div className="mt-3 flex flex-col gap-2">
+              {[
+                { label: "D5 Render", href: "/d5-render" },
+                { label: "Lumion", href: "/lumion-cloud-gpu" },
+                { label: "Enscape", href: "/enscape-cloud-gpu" },
+                { label: "Pricing", href: "/#pricing" },
+                { label: "Enterprise plans", href: "/enterprise" },
+              ].map((l) => (
+                <Link key={l.href} href={l.href} className="text-xs text-white/50 hover:text-white transition">{l.label}</Link>
+              ))}
+            </div>
+          </div>
+
+          {/* Legal */}
+          <div>
+            <h3 className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/40">Legal</h3>
+            <div className="mt-3 flex flex-col gap-2">
+              {[
+                { label: "Privacy Policy", href: "/privacy-policy" },
+                { label: "Terms of Service", href: "/terms-of-service" },
+                { label: "Refund Policy", href: "/refund-policy" },
+              ].map((l) => (
+                <Link key={l.href} href={l.href} className="text-xs text-white/50 hover:text-white transition">{l.label}</Link>
+              ))}
+            </div>
+          </div>
+
+          {/* Contact */}
+          <div>
+            <h3 className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/40">Contact</h3>
+            <div className="mt-3 flex flex-col gap-2">
+              <Link href="mailto:admin@coreframecloud.com" className="text-xs text-white/50 hover:text-white transition">admin@coreframecloud.com</Link>
+              <Link href="https://wa.me/916366889488" target="_blank" rel="noreferrer" className="text-xs text-white/50 hover:text-white transition">+91 6366889488</Link>
+              <Link href="/signup" className="text-xs text-cyan-400 hover:text-cyan-300 transition">Sign up →</Link>
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom bar */}
+        <div className="mt-8 border-t border-white/8 pt-5 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-[10px] text-white/30">
+            © {new Date().getFullYear()} Coreframe Compute Labs Private Limited · CIN U63119KA2026PTC220789
           </p>
-
-          <div className="mt-6">
-            <Link
-              href="https://wa.me/916366889488"
-              target="_blank"
-              rel="noreferrer"
-              className="text-xl font-medium text-emerald-400 transition hover:text-emerald-300"
-            >
-              Chat on WhatsApp: +91 6366889488
-            </Link>
-          </div>
-        </div>
-
-        <div>
-          <h3 className="text-sm font-semibold uppercase tracking-[0.18em] text-white/90">
-            Navigation
-          </h3>
-          <div className="mt-4 flex flex-col gap-3">
-            <Link href="/#launch-gpus" className="text-sm text-white/65 transition hover:text-white">
-              D5 Workstations
-            </Link>
-            <Link href="/#ai-nodes" className="text-sm text-white/65 transition hover:text-white">
-              AI Nodes
-            </Link>
-            <Link href="/#pricing" className="text-sm text-white/65 transition hover:text-white">
-              Pricing
-            </Link>
-            <Link href="/#reserve-access" className="text-sm text-white/65 transition hover:text-white">
-              Reserve Access
-            </Link>
-          </div>
-        </div>
-
-        <div>
-          <h3 className="text-sm font-semibold uppercase tracking-[0.18em] text-white/90">
-            Legal
-          </h3>
-          <div className="mt-4 flex flex-col gap-3">
-            <Link href="/privacy-policy" className="text-sm text-white/65 transition hover:text-white">
-              Privacy Policy
-            </Link>
-            <Link href="/terms-of-service" className="text-sm text-white/65 transition hover:text-white">
-              Terms of Service
-            </Link>
-            <Link href="/refund-policy" className="text-sm text-white/65 transition hover:text-white">
-              Refund Policy
-            </Link>
-          </div>
-        </div>
-
-        <div>
-          <h3 className="text-sm font-semibold uppercase tracking-[0.18em] text-white/90">
-            Company
-          </h3>
-          <div className="mt-4 flex flex-col gap-3 text-sm leading-6 text-white/65">
-            <p className="font-medium text-white/80">
-              COREFRAME COMPUTE LABS PRIVATE LIMITED
-            </p>
-            <p>CIN: U63119KA2026PTC220789</p>
-            <p>
-              Registered Office: Innov8 Prestige Tech Platina, 11th Floor, No.
-              32/2, 34/1, Kadubeesanahalli, Bangalore, Karnataka – 560087
-            </p>
-            <Link href="mailto:admin@coreframecloud.com" className="transition hover:text-white">
-              Email: admin@coreframecloud.com
-            </Link>
-            <Link
-              href="https://wa.me/916366889488"
-              target="_blank"
-              rel="noreferrer"
-              className="transition hover:text-white"
-            >
-              Phone: +91 6366889488
-            </Link>
-            <Link href="https://coreframecloud.com" className="transition hover:text-white">
-              Website: coreframecloud.com
-            </Link>
-          </div>
+          <p className="text-[10px] text-white/25">
+            Innov8, Prestige Tech Platina, Kadubeesanahalli, Bengaluru – 560087
+          </p>
         </div>
       </div>
     </footer>

@@ -50,7 +50,7 @@ function Arrow({ label }: { label?: string }) {
 export function WorkflowSection() {
   return (
     <section id="how-it-works" className="border-b border-white/10">
-      <div className="mx-auto max-w-7xl px-6 py-20">
+      <div className="mx-auto max-w-7xl px-6 py-10 lg:py-14">
 
         <div className="cf-eyebrow">How it works</div>
         <h2 className="mt-4 cf-section-title">
@@ -62,7 +62,7 @@ export function WorkflowSection() {
         </p>
 
         {/* ── B2B Committed ── */}
-        <div className="mt-14">
+        <div className="mt-8">
           <div className="flex items-center gap-3 mb-5">
             <span className="rounded-full bg-cyan-400/10 border border-cyan-400/20 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-cyan-300">
               Studio / Committed plan
@@ -72,19 +72,21 @@ export function WorkflowSection() {
 
           <div className="rounded-[24px] border border-cyan-400/15 bg-cyan-400/[0.02] p-6 md:p-8">
             {/* Users row */}
-            <div className="flex flex-wrap items-center gap-2 mb-4">
+            <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-2 mb-4">
               <div className="flex gap-2">
                 <Node icon="👩‍💻" label="Architect" sub="User 1" accent="slate" />
                 <Node icon="👨‍💻" label="Designer" sub="User 2" accent="slate" />
                 <Node icon="🧑‍💻" label="Renderer" sub="User 3" accent="slate" />
               </div>
-              <Arrow label="each logs in" />
-              <div className="flex-1 min-w-[140px]">
-                <Node icon="🖥️" label="GPU Workstation" sub="RTX 5070 Ti · Windows" accent="cyan" />
-              </div>
-              <Arrow label="reads & writes" />
-              <div className="flex-1 min-w-[140px]">
-                <Node icon="🗄️" label="NAS Storage" sub="2–10 TB · always on" accent="cyan" />
+              <div className="flex items-center gap-2 sm:contents">
+                <Arrow label="each logs in" />
+                <div className="flex-1 min-w-[140px]">
+                  <Node icon="🖥️" label="GPU Workstation" sub="RTX 5070 Ti · Windows" accent="cyan" />
+                </div>
+                <Arrow label="reads & writes" />
+                <div className="flex-1 min-w-[140px]">
+                  <Node icon="🗄️" label="NAS Storage" sub="2–10 TB · always on" accent="cyan" />
+                </div>
               </div>
             </div>
 
@@ -111,7 +113,7 @@ export function WorkflowSection() {
         </div>
 
         {/* ── B2C Ad-hoc ── */}
-        <div className="mt-8">
+        <div className="mt-5">
           <div className="flex items-center gap-3 mb-5">
             <span className="rounded-full bg-emerald-400/10 border border-emerald-400/20 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-emerald-300">
               Ad-hoc · Pay-as-you-go
@@ -120,18 +122,22 @@ export function WorkflowSection() {
           </div>
 
           <div className="rounded-[24px] border border-white/10 bg-white/[0.03] p-6 md:p-8">
-            <div className="flex flex-wrap items-center gap-2 mb-4">
-              <Node icon="🧑‍🎨" label="You" sub="one user" accent="slate" />
-              <Arrow label="launch" />
-              <div className="flex-1 min-w-[140px]">
-                <Node icon="🖥️" label="GPU Workstation" sub="RTX 5070 Ti · Windows" accent="emerald" />
+            <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-2 mb-4">
+              <div className="flex items-center gap-2">
+                <Node icon="🧑‍🎨" label="You" sub="one user" accent="slate" />
+                <Arrow label="launch" />
+                <div className="flex-1 min-w-[120px]">
+                  <Node icon="🖥️" label="GPU Workstation" sub="RTX 5070 Ti · Windows" accent="emerald" />
+                </div>
               </div>
-              <Arrow label="render to" />
-              <div className="flex-1 min-w-[140px]">
-                <Node icon="⚡" label="NVMe Scratch" sub="50 GB · session only" accent="amber" />
+              <div className="flex items-center gap-2">
+                <Arrow label="render to" />
+                <div className="flex-1 min-w-[120px]">
+                  <Node icon="⚡" label="NVMe Scratch" sub="50 GB · session only" accent="amber" />
+                </div>
+                <Arrow label="download & done" />
+                <Node icon="💾" label="Your machine" sub="results saved locally" accent="slate" />
               </div>
-              <Arrow label="download & shutdown" />
-              <Node icon="💾" label="Your machine" sub="results saved locally" accent="slate" />
             </div>
 
             <div className="mt-4 grid gap-3 sm:grid-cols-3 text-sm">

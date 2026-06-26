@@ -24,16 +24,14 @@ const initialState: FormState = {
 };
 
 const renderingGpuOptions = [
-  "RTX A4000 16GB — ₹90/hr",
-  "RTX 4000 Ada 20GB — ₹119/hr",
-  "RTX A5000 24GB — ₹155/hr",
-  "RTX A6000 48GB — ₹299/hr",
+  "RTX 5070 Ti 16GB — ₹400/hr (ad-hoc)",
+  "Committed Studio plan — ₹24,000/month",
+  "Committed Medium Firm — ₹50,000/month",
+  "Committed Big Firm — ₹1,00,000/month",
 ];
 
 const aiGpuOptions = [
-  "NVIDIA L4 24GB — Starting from ₹120/hr",
-  "RTX 6000 Ada 48GB — Starting from ₹299/hr",
-  "H100 94GB — Custom pricing",
+  "Custom GPU compute — contact us",
 ];
 
 export function ContactSection() {
@@ -153,7 +151,7 @@ export function ContactSection() {
 
   return (
     <section id="reserve-access" className="border-b border-white/10">
-      <div className="mx-auto grid max-w-7xl gap-12 px-4 py-20 sm:px-6 lg:grid-cols-[0.9fr_1.1fr] lg:px-8">
+      <div className="mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:px-6 lg:grid-cols-[0.9fr_1.1fr] lg:px-8 lg:py-14">
         <div className="max-w-xl">
           <div className="cf-eyebrow">RESERVE ACCESS</div>
 
@@ -284,7 +282,7 @@ export function ContactSection() {
                 </label>
                 <textarea
                   id="notes"
-                  rows={5}
+                  rows={3}
                   value={form.notes}
                   onFocus={handleFormStart}
                   onChange={(e) => update("notes", e.target.value)}

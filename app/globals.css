@@ -87,11 +87,11 @@ body {
 }
 
 .cf-section-title {
-  @apply text-3xl font-semibold tracking-[-0.035em] text-white sm:text-4xl;
+  @apply text-2xl font-semibold tracking-[-0.03em] text-white sm:text-3xl;
 }
 
 .cf-section-copy {
-  @apply text-base leading-8 text-white/68 sm:text-lg;
+  @apply text-sm leading-7 text-white/65;
 }
 
 @media (prefers-reduced-motion: reduce) {

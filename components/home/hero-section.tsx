@@ -15,28 +15,28 @@ const gpuSpecs = [
 export function HeroSection() {
   return (
     <section className="border-b border-white/10">
-      <div className="max-w-7xl mx-auto grid gap-16 px-6 py-24 lg:grid-cols-2">
+      <div className="max-w-7xl mx-auto grid gap-8 px-6 py-12 lg:grid-cols-2 lg:gap-12 lg:py-16">
         <div className="max-w-2xl">
           <div className="text-xs uppercase tracking-[0.3em] text-emerald-300">
             D5 Render Ready Workstation
           </div>
 
-          <h1 className="mt-6 text-5xl font-semibold leading-tight text-white">
+          <h1 className="mt-4 text-3xl font-semibold leading-tight text-white sm:text-4xl">
             Launch RTX-powered
             <br />
             D5 rendering in 2 minutes
           </h1>
 
-          <p className="mt-6 text-lg leading-8 text-white/70">
+          <p className="mt-4 text-sm leading-7 text-white/70">
             Skip GPU upgrades. Launch a ready-to-use Windows workstation with WDDM enabled,
             run D5 Render, upload your files, render, download results, and shut down.
           </p>
 
-          <div className="mt-6 text-lg font-medium text-emerald-300">
+          <div className="mt-3 text-sm font-medium text-emerald-300">
             Ad-hoc from ₹400/hr · Committed plans from ₹250/hr · No setup
           </div>
 
-          <div className="mt-10 flex flex-wrap gap-4">
+          <div className="mt-6 flex flex-wrap gap-3">
             <Link
               href="/signup"
               className="cf-btn-primary"
@@ -60,11 +60,11 @@ export function HeroSection() {
             </InPageLink>
           </div>
 
-          <div className="mt-10 text-sm text-white/50">
+          <div className="mt-4 text-xs text-white/40">
             Limited slots available · Dedicated workstation per session
           </div>
 
-          <div className="mt-6 space-y-2 text-sm text-emerald-300">
+          <div className="mt-4 flex flex-wrap gap-x-4 gap-y-1 text-sm text-emerald-300">
             <Link
               href="/d5-render"
               className="block hover:underline"
@@ -99,8 +99,8 @@ export function HeroSection() {
             <div className="text-xs font-semibold uppercase tracking-[0.22em] text-white/40">
               Every GPU Instance
             </div>
-            <div className="mt-3 text-2xl font-bold text-white">RTX 5070 Ti</div>
-            <div className="mt-1 text-sm text-emerald-300">Consumer RTX · Not available on any other cloud</div>
+            <div className="mt-2 text-xl font-bold text-white">RTX 5070 Ti</div>
+            <div className="mt-0.5 text-xs text-emerald-300">Consumer RTX · Not available on any other cloud</div>
 
             <div className="mt-6 space-y-3">
               {gpuSpecs.map((item) => (
