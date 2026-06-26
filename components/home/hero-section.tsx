@@ -18,22 +18,23 @@ export function HeroSection() {
       <div className="max-w-7xl mx-auto grid gap-8 px-6 py-12 lg:grid-cols-2 lg:gap-12 lg:py-16">
         <div className="max-w-2xl">
           <div className="text-xs uppercase tracking-[0.3em] text-emerald-300">
-            D5 Render Ready Workstation
+            Managed GPU Cloud · India
           </div>
 
-          <h1 className="mt-4 text-3xl font-semibold leading-tight text-white sm:text-4xl">
-            Launch RTX-powered
+          <h1 className="mt-4 text-4xl font-semibold leading-tight text-white sm:text-5xl">
+            5× faster rendering.
             <br />
-            D5 rendering in 2 minutes
+            CFD in hours, not days.
           </h1>
 
-          <p className="mt-4 text-sm leading-7 text-white/70">
-            Skip GPU upgrades. Launch a ready-to-use Windows workstation with WDDM enabled,
-            run D5 Render, upload your files, render, download results, and shut down.
+          <p className="mt-4 text-base leading-7 text-white/70">
+            Tired of waiting overnight for a render to finish? Or a CFD job that runs for three
+            days on your workstation? Coreframe puts RTX 5070 Ti and H100 GPU power in your
+            hands — on demand, pay per hour, no hardware to buy.
           </p>
 
           <div className="mt-3 text-sm font-medium text-emerald-300">
-            Ad-hoc from ₹400/hr · Committed plans from ₹250/hr · No setup
+            3D Rendering from ₹400/hr · CFD per job · No setup · Data in India
           </div>
 
           <div className="mt-6 flex flex-wrap gap-3">

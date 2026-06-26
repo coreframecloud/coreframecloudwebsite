@@ -3,9 +3,9 @@ import { BackgroundGlow } from "@/components/home/background-glow";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "D5 Render Cloud GPU Workstation — RTX 5070 Ti, India",
+  title: "D5 Render 5× Faster — RTX 5070 Ti Cloud GPU India | Coreframe",
   description:
-    "Run D5 Render on an RTX 5070 Ti (16 GB GDDR7) cloud workstation. Pay-as-you-go from ₹400/hr. No hardware upgrades, no setup. Hosted in Bengaluru, India.",
+    "Render D5 scenes 5× faster than a mid-range local GPU. Launch an RTX 5070 Ti cloud workstation in under 2 minutes. ₹400/hr, no setup, no hardware. Hosted in Bengaluru, India.",
   keywords: [
     "D5 Render cloud GPU",
     "D5 Render cloud workstation India",

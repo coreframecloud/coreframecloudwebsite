@@ -7,22 +7,24 @@ import { SiteFooter } from "@/components/home/site-footer";
 export const metadata: Metadata = {
   metadataBase: new URL("https://coreframecloud.com"),
   title: {
-    default: "Coreframe Cloud | RTX GPU Workstations for Design & Visualisation — India",
+    default: "Coreframe Cloud | 5× Faster Rendering & CFD in Hours — GPU Cloud India",
     template: "%s | Coreframe Cloud",
   },
   description:
-    "RTX 5070 Ti GPU workstations on demand for D5 Render, Lumion, Enscape, and 3D visualisation. Pay-as-you-go from ₹400/hr or committed plans from ₹24,000/month. Hosted in Bengaluru, India.",
+    "Want renders 5× faster? CFD analysis in hours instead of days? Coreframe gives you managed RTX GPU workstations for D5 Render, Lumion, Enscape — and H100/RTX 6000 Pro for Ansys CFD. Pay per hour. Hosted in Bengaluru, India.",
   keywords: [
-    "D5 Render cloud GPU India",
+    "faster D5 Render cloud India",
+    "5x faster rendering India",
+    "CFD simulation faster India",
+    "Ansys CFD cloud GPU India",
     "cloud GPU workstation India",
     "RTX rendering cloud India",
     "Lumion cloud GPU India",
     "Enscape cloud rendering India",
-    "cloud rendering architects India",
     "GPU workstation rent India",
-    "D5 Render ready workstation",
     "cloud render farm India",
-    "RTX 5070 Ti cloud India",
+    "fast CFD analysis India",
+    "GPU accelerated CFD India",
   ],
   alternates: {
     canonical: "/",

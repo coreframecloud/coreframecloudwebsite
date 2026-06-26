@@ -15,7 +15,7 @@ export function SiteFooter() {
               <CoreframeWordmarkAtlas iconSize={40} animated={false} />
             </Link>
             <p className="mt-3 max-w-xs text-xs leading-5 text-white/45">
-              RTX 5070 Ti GPU workstations for D5 Render, Lumion, and Enscape. Hosted in Bengaluru, India.
+              3D rendering managed workstations and ultra-fast CFD analysis. Hosted in Bengaluru, India.
             </p>
             <Link
               href="https://wa.me/916366889488"

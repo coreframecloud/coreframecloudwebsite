@@ -3,9 +3,9 @@ import { BackgroundGlow } from "@/components/home/background-glow";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Ansys CFD GPU Cloud — RTX 6000 Pro & H100, India",
+  title: "Ansys CFD in Hours Not Days — H100 & RTX 6000 Pro Cloud India",
   description:
-    "GPU-accelerated Ansys CFD simulations on RTX 6000 Pro (96 GB) and H100 (80 GB HBM3). Per-job pricing by element count. Coreframe is an Ansys cloud partner. Hosted in Bengaluru, India.",
+    "Why wait 3 days for a CFD solve? Run Ansys Fluent on H100 (80 GB HBM3) or RTX 6000 Pro (96 GB) and finish the same job in hours. Per-job pricing by element count. Ansys cloud partner. Bengaluru, India.",
   keywords: [
     "Ansys CFD cloud GPU India",
     "GPU CFD simulation India",
