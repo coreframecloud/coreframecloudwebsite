@@ -14,7 +14,7 @@ const faqs = [
   {
     question: "How does file transfer work?",
     answer:
-      "You transfer project files to the workstation over the secure RDP connection. On committed plans, your files persist on NAS storage between sessions. On ad-hoc, you get 50 GB NVMe scratch that is cleared after the session.",
+      "You upload project files directly to Coreframe's secure storage layer over an encrypted transfer. On committed plans your files live on persistent NAS storage and are accessible to your whole team any time. On ad-hoc, files land on session scratch storage and you download outputs before shutting down.",
   },
   {
     question: "Is my project data isolated?",
@@ -24,18 +24,18 @@ const faqs = [
   {
     question: "How am I charged?",
     answer:
-      "Ad-hoc sessions are ₹400/GPU-hour, billed to the minute. Committed plans start at ₹24,000/month and include a block of GPU-hours at the ₹250/hr rate. Extra hours beyond the plan are billed at ₹250/hr. All prices exclude GST.",
+      "Ad-hoc sessions are ₹400/GPU-hour, charged per full hour. Committed plans start at ₹24,000/month and include a block of GPU-hours — extra hours vary by plan tier (₹200–₹350/hr). All prices exclude GST.",
   },
   {
     question: "How quickly can I start rendering?",
     answer:
-      "The workstation is ready in under 2 minutes. Create your account, add credit, and launch — the instance boots and you connect via RDP from anywhere.",
+      "The workstation is ready in under 2 minutes. Create your account, add credit, and launch — the instance boots and you connect from anywhere.",
   },
 ];
 
 export function FaqSection() {
   return (
-    <section className="border-b border-white/10">
+    <section id="faq" className="border-b border-white/10">
       <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
         <div className="max-w-3xl">
           <div className="cf-eyebrow">FAQ</div>

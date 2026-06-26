@@ -28,24 +28,24 @@ export function PricingSection() {
               <span className="mb-1.5 text-lg text-white/50">/ GPU-hour</span>
             </div>
             <p className="mt-4 text-sm leading-6 text-white/60">
-              Spin up anytime. 50 GB NVMe scratch storage per session, cleared after use — no persistent storage. Pay only for the hours you run.
+              Spin up anytime, no contract. Charged per full hour. Best for one-off renders or trying the platform before committing.
             </p>
 
             <ul className="mt-6 space-y-2 text-sm text-white/70">
               <li className="flex gap-2"><span className="text-emerald-400">✓</span> No commitment, cancel anytime</li>
               <li className="flex gap-2"><span className="text-emerald-400">✓</span> Full Windows desktop via RDP</li>
               <li className="flex gap-2"><span className="text-emerald-400">✓</span> RTX 5070 Ti · 16 GB GDDR7</li>
-              <li className="flex gap-2"><span className="text-white/30">—</span> <span className="text-white/40">No persistent storage</span></li>
+              <li className="flex gap-2"><span className="text-white/30">—</span> <span className="text-white/40">Session scratch storage only — download outputs before shutting down</span></li>
             </ul>
 
             <div className="mt-8">
-              <InPageLink
-                targetId="reserve-access"
-                className="cf-btn-primary w-full text-center"
-                onClick={() => trackEvent("reserve_click", { location: "pricing_adhoc" })}
+              <Link
+                href="/signup"
+                className="cf-btn-primary w-full text-center block"
+                onClick={() => trackEvent("signup_click", { location: "pricing_adhoc" })}
               >
-                Get Started
-              </InPageLink>
+                Get started
+              </Link>
             </div>
           </div>
 
@@ -59,7 +59,7 @@ export function PricingSection() {
               <span className="mb-1.5 text-lg text-white/50">/ GPU-hour</span>
             </div>
             <p className="mt-4 text-sm leading-6 text-white/60">
-              Bundle persistent storage, render seats, and included GPU-hours at the best rate. Extra hours beyond your plan billed at ₹250/hr.
+              Bundle persistent storage, render seats, and included GPU-hours. Extra-hour rates drop as you move up — ₹350/hr on Studio, ₹250/hr on Medium Firm, ₹200/hr on Big Firm.
             </p>
 
             <ul className="mt-6 space-y-2 text-sm text-white/70">

@@ -97,7 +97,7 @@ export default function EnscapePage() {
           {[
             { title: "RTX ray tracing", body: "Enscape's ray-traced reflections, shadows, and GI run natively on the RTX 5070 Ti's dedicated RT cores — the same cores powering local RTX machines." },
             { title: "Works with your host app", body: "Install Revit, SketchUp, Rhino, or ArchiCAD on the same workstation. Enscape plugs in exactly as it does locally." },
-            { title: "No GPU upgrade needed", body: "Instead of buying a ₹60,000+ GPU to run Enscape smoothly, spin up a workstation for ₹400/hr and pay only when you need it." },
+            { title: "Skip the CapEx entirely", body: "A high-end RTX workstation with server-grade RAM, managed OS, and a dedicated connection costs lakhs to buy and maintain. With Coreframe you get the same hardware as a fully managed service — no procurement, no IT overhead, no upgrades." },
           ].map((c) => (
             <div key={c.title} className="rounded-[20px] border border-white/8 bg-white/[0.02] p-6">
               <h3 className="font-semibold text-white">{c.title}</h3>

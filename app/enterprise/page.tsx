@@ -25,6 +25,8 @@ const plans = [
     storage: "2 TB",
     seats: "5",
     includedHours: "40",
+    extraRate: "₹350",
+    extraNote: "Best for occasional renders",
     highlight: false,
   },
   {
@@ -34,6 +36,8 @@ const plans = [
     storage: "5 TB",
     seats: "12",
     includedHours: "120",
+    extraRate: "₹250",
+    extraNote: "Best value per GPU-hour",
     highlight: true,
   },
   {
@@ -43,6 +47,8 @@ const plans = [
     storage: "10 TB",
     seats: "25",
     includedHours: "300",
+    extraRate: "₹200",
+    extraNote: "Volume discount",
     highlight: false,
   },
 ];
@@ -69,8 +75,10 @@ export default function EnterprisePage() {
           </h1>
           <p className="mt-5 max-w-xl text-base leading-8 text-slate-300">
             Lock in a monthly plan and get persistent project storage, named render seats,
-            and the best GPU-hour rate available — <span className="text-white font-medium">₹250/hr</span> vs ₹400/hr ad-hoc.
-            Extra hours beyond your included allocation are billed at ₹250/hr.
+            and a significantly better GPU-hour rate than ad-hoc ₹400/hr.
+            Extra-hour rates drop as you move up — from ₹350/hr on Studio down to{" "}
+            <span className="text-white font-medium">₹200/hr on Big Firm</span>.
+            Most studios find Medium Firm is where the value concentrates.
           </p>
         </div>
 
@@ -108,20 +116,25 @@ export default function EnterprisePage() {
                 <span className="text-4xl font-bold text-white">{plan.price}</span>
                 <span className="mb-1 text-sm text-white/40">/ month</span>
               </div>
-              <div className="mt-1 text-xs text-white/40">+ ₹250 / GPU-hour beyond included · Excl. GST</div>
+              <div className="mt-1 flex items-center gap-2">
+                <span className="text-xs text-white/40">+ {plan.extraRate} / GPU-hr beyond included · Excl. GST</span>
+                <span className={`text-[10px] font-semibold rounded-full px-2 py-0.5 ${plan.highlight ? "bg-cyan-400/15 text-cyan-300" : "bg-white/8 text-white/40"}`}>
+                  {plan.extraNote}
+                </span>
+              </div>
 
               <div className="mt-7 space-y-3 border-t border-white/8 pt-6">
                 {[
                   { label: "Persistent storage", value: plan.storage },
                   { label: "Named render seats", value: plan.seats },
                   { label: "Included GPU-hrs / mo", value: plan.includedHours + " hrs" },
-                  { label: "Extra GPU-hours", value: "₹250 / hr" },
+                  { label: "Extra GPU-hours", value: `${plan.extraRate} / hr` },
                   { label: "GPU", value: "RTX 5070 Ti" },
                   { label: "Minimum term", value: "1 month" },
                 ].map(({ label, value }) => (
                   <div key={label} className="flex items-center justify-between text-sm">
                     <span className="text-white/50">{label}</span>
-                    <span className="font-medium text-white">{value}</span>
+                    <span className={`font-medium ${label === "Extra GPU-hours" && plan.highlight ? "text-cyan-300" : "text-white"}`}>{value}</span>
                   </div>
                 ))}
               </div>

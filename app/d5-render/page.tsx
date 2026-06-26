@@ -22,7 +22,7 @@ const steps = [
   { n: "03", title: "Install D5 & activate your licence", body: "D5 Render is BYOL. Install it, sign in to your named-user account, and your licence activates instantly." },
   { n: "04", title: "Transfer your project", body: "Upload your scene files over the encrypted connection. Large project files transfer fast over our 1 Gbps dedicated link." },
   { n: "05", title: "Render", body: "Run D5 Render at full RTX 5070 Ti speed — GPU ray tracing, DLSS, and real-time path tracing all work. Render times typically drop 3–5× vs a mid-range local GPU." },
-  { n: "06", title: "Download & shut down", body: "Download your outputs and end the session. Billing stops to the minute. Scratch storage is cleared automatically." },
+  { n: "06", title: "Download & shut down", body: "Download your outputs and end the session. You are charged for the full hour. Scratch storage is cleared automatically." },
 ];
 
 const specs = [
@@ -62,7 +62,7 @@ export default function D5RenderPage() {
         name: "How much does a D5 Render cloud session cost?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Ad-hoc sessions are ₹400/GPU-hour, billed to the minute. Committed monthly plans start at ₹24,000/month and bring the rate down to ₹250/GPU-hour.",
+          text: "Ad-hoc sessions are ₹400/GPU-hour, charged per full hour. Committed monthly plans start at ₹24,000/month with lower per-hour overage rates depending on the tier.",
         },
       },
     ],
@@ -87,7 +87,7 @@ export default function D5RenderPage() {
         <p className="mt-5 max-w-2xl text-base leading-8 text-slate-300">
           Skip the GPU upgrade cycle. Launch an RTX 5070 Ti Windows workstation in under 2 minutes,
           render your D5 scene at full speed, and shut down when you're done.
-          Billing stops to the minute. Data stays in India.
+          Charged per full hour. Data stays in India.
         </p>
 
         <div className="mt-6 flex flex-wrap gap-4 text-sm">

@@ -9,10 +9,9 @@ import { InPageLink } from "@/components/ui/in-page-link";
 import { trackEvent } from "@/lib/analytics";
 
 const navItems = [
-  { label: "Launch GPUs", targetId: "launch-gpus" },
-  { label: "AI Nodes", targetId: "ai-nodes" },
+  { label: "How it works", targetId: "how-it-works" },
   { label: "Pricing", targetId: "pricing" },
-  { label: "Reserve Access", targetId: "reserve-access" },
+  { label: "FAQ", targetId: "faq" },
 ];
 
 export function SiteHeader() {
@@ -60,18 +59,21 @@ export function SiteHeader() {
           ))}
         </nav>
 
-        <div className="hidden shrink-0 xl:flex">
-          <InPageLink
-            targetId="reserve-access"
-            className="inline-flex items-center justify-center rounded-2xl border border-emerald-400/20 bg-emerald-400/[0.06] px-5 py-2.5 text-sm font-semibold text-white transition hover:border-emerald-300/35 hover:bg-emerald-400/[0.1]"
-            onClick={() =>
-              trackEvent("reserve_click", {
-                location: "header_cta",
-              })
-            }
+        <div className="hidden shrink-0 items-center gap-3 xl:flex">
+          <Link
+            href="https://control.coreframecloud.com/customer/"
+            className="text-sm font-medium text-white/60 transition hover:text-white"
+            onClick={() => trackEvent("signin_click", { location: "header_cta" })}
           >
-            Reserve Access
-          </InPageLink>
+            Sign in
+          </Link>
+          <Link
+            href="/signup"
+            className="inline-flex items-center justify-center rounded-2xl bg-cyan-400 px-5 py-2.5 text-sm font-semibold text-slate-900 transition hover:bg-cyan-300"
+            onClick={() => trackEvent("signup_click", { location: "header_cta" })}
+          >
+            Sign up
+          </Link>
         </div>
 
         <button
@@ -113,18 +115,22 @@ export function SiteHeader() {
               </InPageLink>
             ))}
 
-            <InPageLink
-              targetId="reserve-access"
-              onClick={() => {
-                setOpen(false);
-                trackEvent("reserve_click", {
-                  location: "mobile_menu_cta",
-                });
-              }}
-              className="mt-3 inline-flex items-center justify-center rounded-xl border border-emerald-400/20 bg-emerald-400/[0.06] px-5 py-3 text-sm font-semibold text-white"
-            >
-              Reserve Access
-            </InPageLink>
+            <div className="mt-3 flex gap-3">
+              <Link
+                href="https://control.coreframecloud.com/customer/"
+                onClick={() => { setOpen(false); trackEvent("signin_click", { location: "mobile_menu" }); }}
+                className="flex-1 inline-flex items-center justify-center rounded-xl border border-white/10 px-5 py-3 text-sm font-medium text-white/70"
+              >
+                Sign in
+              </Link>
+              <Link
+                href="/signup"
+                onClick={() => { setOpen(false); trackEvent("signup_click", { location: "mobile_menu" }); }}
+                className="flex-1 inline-flex items-center justify-center rounded-xl bg-cyan-400 px-5 py-3 text-sm font-semibold text-slate-900"
+              >
+                Sign up
+              </Link>
+            </div>
           </div>
         </div>
       )}

@@ -52,7 +52,7 @@ export default function LumionPage() {
         name: "How much does Lumion cloud GPU cost in India?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Ad-hoc sessions are ₹400/GPU-hour, billed to the minute. Committed monthly plans start at ₹24,000/month and bring the rate to ₹250/GPU-hour.",
+          text: "Ad-hoc sessions are ₹400/GPU-hour, charged per full hour. Committed monthly plans start at ₹24,000/month with lower per-hour overage rates by tier.",
         },
       },
     ],

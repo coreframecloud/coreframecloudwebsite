@@ -9,7 +9,7 @@ const gpuSpecs = [
   { label: "VRAM", value: "16 GB GDDR7" },
   { label: "System RAM", value: "64 GB ECC" },
   { label: "vCPU", value: "6-core EPYC" },
-  { label: "Storage", value: "NVMe scratch" },
+  { label: "Storage", value: "Persistent NAS" },
 ];
 
 export function HeroSection() {
@@ -36,17 +36,17 @@ export function HeroSection() {
             Ad-hoc from ₹400/hr · Committed plans from ₹250/hr · No setup
           </div>
 
-          <div className="mt-10 flex gap-4">
-            <InPageLink
-              targetId="reserve-access"
+          <div className="mt-10 flex flex-wrap gap-4">
+            <Link
+              href="/signup"
               className="cf-btn-primary"
               onClick={() => {
-                trackEvent("reserve_click", { location: "hero_primary" });
-                trackClarityEvent("reserve_click_hero");
+                trackEvent("signup_click", { location: "hero_primary" });
+                trackClarityEvent("signup_click_hero");
               }}
             >
-              Reserve Access
-            </InPageLink>
+              Get started
+            </Link>
 
             <InPageLink
               targetId="pricing"
@@ -56,7 +56,7 @@ export function HeroSection() {
                 trackClarityEvent("pricing_click_hero");
               }}
             >
-              View Pricing
+              View pricing
             </InPageLink>
           </div>
 
