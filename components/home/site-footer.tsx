@@ -63,7 +63,6 @@ export function SiteFooter() {
             <div className="mt-3 flex flex-col gap-2">
               <Link href="mailto:admin@coreframecloud.com" className="text-xs text-white/50 hover:text-white transition">admin@coreframecloud.com</Link>
               <Link href="https://wa.me/916366889488" target="_blank" rel="noreferrer" className="text-xs text-white/50 hover:text-white transition">+91 6366889488</Link>
-              <Link href="/signup" className="text-xs text-cyan-400 hover:text-cyan-300 transition">Sign up →</Link>
             </div>
           </div>
         </div>
