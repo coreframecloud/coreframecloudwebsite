@@ -74,19 +74,6 @@ function UserAvatar({ initials, onSignOut }: { initials: string; onSignOut: () =
       </button>
       {dropdownOpen && (
         <div className="absolute right-0 top-10 z-50 min-w-[160px] rounded-xl border border-white/10 bg-[#03101d] py-1 shadow-xl">
-          <a
-            href="https://control.coreframecloud.com/customer/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-2 px-4 py-2.5 text-sm text-white/80 transition hover:bg-white/5 hover:text-white"
-            onClick={() => {
-              setDropdownOpen(false);
-              trackEvent("dashboard_click", { location: "header_avatar_dropdown" });
-            }}
-          >
-            Dashboard
-            <span className="ml-auto text-white/40">→</span>
-          </a>
           <button
             type="button"
             onClick={onSignOut}
@@ -191,16 +178,15 @@ export function SiteHeader() {
         <div className="hidden shrink-0 items-center gap-3 xl:flex">
           {mounted && auth ? (
             <>
-              {/* Wallet chip — links to My Activity */}
+              {/* Wallet chip — display only until Razorpay payment page is live */}
               {balance && (
-                <Link
-                  href="/my-activity"
-                  className="inline-flex items-center gap-1.5 text-xs font-semibold bg-emerald-400/10 text-emerald-300 border border-emerald-400/20 px-2.5 py-1 rounded-full hover:bg-emerald-400/20 transition"
-                  onClick={() => trackEvent("wallet_chip_click", { location: "header_cta" })}
+                <span
+                  title="Recharge coming soon"
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold bg-emerald-400/10 text-emerald-300 border border-emerald-400/20 px-2.5 py-1 rounded-full cursor-default"
                 >
                   <WalletIcon />
                   {balance}
-                </Link>
+                </span>
               )}
               {/* My Activity link */}
               <Link
@@ -282,15 +268,6 @@ export function SiteHeader() {
                 >
                   My Activity
                 </Link>
-                <a
-                  href="https://control.coreframecloud.com/customer/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={() => { setOpen(false); trackEvent("dashboard_click", { location: "mobile_menu" }); }}
-                  className="rounded-xl px-3 py-2.5 text-sm font-medium text-white/80 transition hover:bg-white/5 hover:text-white"
-                >
-                  Dashboard →
-                </a>
                 <button
                   type="button"
                   onClick={() => { setOpen(false); handleSignOut(); }}

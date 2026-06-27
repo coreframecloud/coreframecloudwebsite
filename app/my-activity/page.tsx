@@ -102,12 +102,17 @@ export default function MyActivityPage() {
 
     const headers = { Authorization: `Bearer ${t}` };
 
-    const authFetch = (url: string) =>
-      fetch(url, { headers }).then(async (r) => {
+    const authFetch = async (url: string) => {
+      try {
+        const r = await fetch(url, { headers });
         if (r.status === 401 || r.status === 403) throw new Error("auth_failed");
-        if (!r.ok) return null; // non-auth errors return null, don't clear token
+        if (!r.ok) return null;
         return r.json();
-      });
+      } catch (err: unknown) {
+        if (err instanceof Error && err.message === "auth_failed") throw err;
+        return null; // network errors or missing endpoints → treat as empty
+      }
+    };
 
     Promise.all([
       authFetch(`${API}/me/wallet`),
@@ -124,9 +129,8 @@ export default function MyActivityPage() {
           localStorage.removeItem("cf_customer_token");
           localStorage.removeItem("cf_customer_user");
           setToken(null);
-        } else {
-          setError("Failed to load activity data. Please try again.");
         }
+        // other errors: still render the page with whatever loaded
       })
       .finally(() => setLoading(false));
   }, []);
@@ -333,19 +337,16 @@ export default function MyActivityPage() {
           )}
         </div>
 
-        {/* CTA */}
-        <div className="flex flex-col items-center gap-4 rounded-2xl border border-white/10 bg-white/[0.03] px-6 py-10 text-center">
-          <p className="cf-section-copy text-white/60 max-w-sm">
-            Ready to run your next simulation? Launch a cloud session with one click.
+        {/* Recharge placeholder */}
+        <div className="flex flex-col items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.03] px-6 py-10 text-center">
+          <p className="text-sm font-semibold text-white/40 uppercase tracking-wider">Recharge Wallet</p>
+          <p className="text-sm text-white/50 max-w-sm">
+            Online recharge coming soon. To add credits, contact{" "}
+            <a href="mailto:admin@coreframecloud.com" className="text-cyan-400 hover:text-cyan-300">
+              admin@coreframecloud.com
+            </a>
+            .
           </p>
-          <a
-            href="https://control.coreframecloud.com/customer/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center justify-center rounded-xl bg-cyan-400 px-6 py-2.5 text-sm font-semibold text-slate-900 transition hover:bg-cyan-300"
-          >
-            Launch a Session →
-          </a>
         </div>
 
       </div>
