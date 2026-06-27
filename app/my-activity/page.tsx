@@ -102,22 +102,20 @@ export default function MyActivityPage() {
 
     const headers = { Authorization: `Bearer ${t}` };
 
+    const authFetch = (url: string) =>
+      fetch(url, { headers }).then(async (r) => {
+        if (r.status === 401 || r.status === 403) throw new Error("auth_failed");
+        if (!r.ok) return null; // non-auth errors return null, don't clear token
+        return r.json();
+      });
+
     Promise.all([
-      fetch(`${API}/me/wallet`, { headers }).then((r) => {
-        if (!r.ok) throw new Error("auth_failed");
-        return r.json();
-      }),
-      fetch(`${API}/me/sessions`, { headers }).then((r) => {
-        if (!r.ok) throw new Error("auth_failed");
-        return r.json();
-      }),
-      fetch(`${API}/payments/history`, { headers }).then((r) => {
-        if (!r.ok) throw new Error("auth_failed");
-        return r.json();
-      }),
+      authFetch(`${API}/me/wallet`),
+      authFetch(`${API}/me/sessions`),
+      authFetch(`${API}/payments/history`),
     ])
       .then(([w, s, p]) => {
-        setWallet(w);
+        if (w) setWallet(w);
         setSessions(Array.isArray(s) ? s : []);
         setPayments(Array.isArray(p) ? p : []);
       })
@@ -127,7 +125,7 @@ export default function MyActivityPage() {
           localStorage.removeItem("cf_customer_user");
           setToken(null);
         } else {
-          setError("Failed to load data. Please try again.");
+          setError("Failed to load activity data. Please try again.");
         }
       })
       .finally(() => setLoading(false));

@@ -191,12 +191,16 @@ export function SiteHeader() {
         <div className="hidden shrink-0 items-center gap-3 xl:flex">
           {mounted && auth ? (
             <>
-              {/* Wallet chip */}
+              {/* Wallet chip — links to My Activity */}
               {balance && (
-                <span className="inline-flex items-center gap-1.5 text-xs font-semibold bg-emerald-400/10 text-emerald-300 border border-emerald-400/20 px-2.5 py-1 rounded-full">
+                <Link
+                  href="/my-activity"
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold bg-emerald-400/10 text-emerald-300 border border-emerald-400/20 px-2.5 py-1 rounded-full hover:bg-emerald-400/20 transition"
+                  onClick={() => trackEvent("wallet_chip_click", { location: "header_cta" })}
+                >
                   <WalletIcon />
                   {balance}
-                </span>
+                </Link>
               )}
               {/* My Activity link */}
               <Link
