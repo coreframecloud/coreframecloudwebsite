@@ -18,13 +18,14 @@ export function CoreframeWordmarkAtlas({
     <div
       aria-label="COREFRAME"
       className={clsx(
-        "inline-flex items-center gap-1.5 leading-none",
-        "font-semibold uppercase tracking-[0.12em]",
+        "inline-flex items-center gap-0 leading-none",
+        "font-semibold uppercase tracking-[0.06em]",
         className
       )}
       style={{ fontSize }}
     >
-      <span className="text-white">CORE</span>
+      {/* -mr compensates for trailing letter-spacing on "E" so E and F nearly touch */}
+      <span className="text-white -mr-[0.06em]">CORE</span>
       <span className="text-[#2D7FF9]">FRAME</span>
     </div>
   );

@@ -197,36 +197,38 @@ export default function MyActivityPage() {
           </h1>
         </div>
 
-        {/* Wallet summary card */}
-        {wallet && (
+        {/* Wallet + Recharge — side by side */}
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          {/* Wallet balance */}
           <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
-            <h2 className="text-sm font-semibold text-white/40 uppercase tracking-wider mb-4">
+            <h2 className="text-xs font-semibold text-white/40 uppercase tracking-wider mb-4">
               Wallet
             </h2>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-              <div>
-                <p className="text-2xl font-bold text-emerald-300">
-                  ₹{wallet.wallet_balance_rupees.toFixed(2)}
-                </p>
-                <p className="text-xs text-white/50 mt-0.5">Current balance</p>
-              </div>
-              <div>
-                <p className="text-2xl font-bold text-white">
-                  ₹{wallet.hourly_rate_rupees_per_hour.toFixed(2)}
-                  <span className="text-sm font-normal text-white/40">/hr</span>
-                </p>
-                <p className="text-xs text-white/50 mt-0.5">Hourly rate</p>
-              </div>
-              <div>
-                <p className="text-2xl font-bold text-white">
-                  {wallet.trial_credit_hours}
-                  <span className="text-sm font-normal text-white/40"> hrs</span>
-                </p>
-                <p className="text-xs text-white/50 mt-0.5">Trial credit remaining</p>
-              </div>
-            </div>
+            <p className="text-3xl font-bold text-emerald-300">
+              ₹{wallet ? wallet.wallet_balance_rupees.toFixed(2) : "0.00"}
+            </p>
+            <p className="text-xs text-white/50 mt-1">Current balance</p>
           </div>
-        )}
+
+          {/* Recharge */}
+          <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 flex flex-col justify-between">
+            <div>
+              <h2 className="text-xs font-semibold text-white/40 uppercase tracking-wider mb-2">
+                Recharge Wallet
+              </h2>
+              <p className="text-sm text-white/50">
+                Top up your balance to start or continue GPU sessions.
+              </p>
+            </div>
+            <button
+              disabled
+              title="Coming soon"
+              className="mt-6 inline-flex items-center justify-center rounded-xl bg-cyan-400/20 text-cyan-400/50 border border-cyan-400/20 px-5 py-2.5 text-sm font-semibold cursor-not-allowed"
+            >
+              Recharge — Coming Soon
+            </button>
+          </div>
+        </div>
 
         {/* Recent Sessions */}
         <div className="rounded-2xl border border-white/10 bg-white/[0.03] overflow-hidden">
@@ -337,17 +339,6 @@ export default function MyActivityPage() {
           )}
         </div>
 
-        {/* Recharge placeholder */}
-        <div className="flex flex-col items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.03] px-6 py-10 text-center">
-          <p className="text-sm font-semibold text-white/40 uppercase tracking-wider">Recharge Wallet</p>
-          <p className="text-sm text-white/50 max-w-sm">
-            Online recharge coming soon. To add credits, contact{" "}
-            <a href="mailto:admin@coreframecloud.com" className="text-cyan-400 hover:text-cyan-300">
-              admin@coreframecloud.com
-            </a>
-            .
-          </p>
-        </div>
 
       </div>
     </main>
