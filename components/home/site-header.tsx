@@ -202,7 +202,7 @@ export function SiteHeader() {
           ) : (
             <>
               <Link
-                href="https://control.coreframecloud.com/customer/"
+                href="/login"
                 className="text-sm font-medium text-white/55 transition hover:text-white"
                 onClick={() => trackEvent("signin_click", { location: "header_cta" })}
               >
@@ -279,7 +279,7 @@ export function SiteHeader() {
             ) : (
               <div className="mt-3 flex gap-3">
                 <Link
-                  href="https://control.coreframecloud.com/customer/"
+                  href="/login"
                   onClick={() => { setOpen(false); trackEvent("signin_click", { location: "mobile_menu" }); }}
                   className="flex-1 inline-flex items-center justify-center rounded-xl border border-white/10 px-5 py-2.5 text-sm font-medium text-white/70"
                 >
