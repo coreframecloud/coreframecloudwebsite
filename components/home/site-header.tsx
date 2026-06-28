@@ -209,11 +209,11 @@ export function SiteHeader() {
                 Sign in
               </Link>
               <Link
-                href="/signup"
+                href="/login"
                 className="inline-flex items-center justify-center rounded-xl bg-cyan-400 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:bg-cyan-300"
                 onClick={() => trackEvent("signup_click", { location: "header_cta" })}
               >
-                Sign up
+                Get started
               </Link>
             </>
           )}
@@ -286,11 +286,11 @@ export function SiteHeader() {
                   Sign in
                 </Link>
                 <Link
-                  href="/signup"
+                  href="/login"
                   onClick={() => { setOpen(false); trackEvent("signup_click", { location: "mobile_menu" }); }}
                   className="flex-1 inline-flex items-center justify-center rounded-xl bg-cyan-400 px-5 py-2.5 text-sm font-semibold text-slate-900"
                 >
-                  Sign up
+                  Get started
                 </Link>
               </div>
             )}
