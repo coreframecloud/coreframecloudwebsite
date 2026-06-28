@@ -145,10 +145,10 @@ export default function MyActivityPage() {
             Please sign in to view your activity.
           </p>
           <a
-            href="https://control.coreframecloud.com/customer/"
+            href="/login"
             className="inline-flex items-center justify-center rounded-xl bg-cyan-400 px-6 py-2.5 text-sm font-semibold text-slate-900 transition hover:bg-cyan-300"
           >
-            Sign in to Dashboard
+            Sign in
           </a>
         </div>
       </main>
