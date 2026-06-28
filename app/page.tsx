@@ -5,7 +5,6 @@ import { WorkflowSection } from "@/components/home/workflow-section";
 import { PricingSection } from "@/components/home/pricing-section";
 import { FaqSection } from "@/components/home/faq-section";
 import { ContactSection } from "@/components/home/contact-section";
-import { WhatsAppButton } from "@/components/home/whatsapp-button";
 
 export const metadata: Metadata = {
   title: "5× Faster Rendering & CFD in Minutes — GPU Cloud India | Coreframe",
@@ -33,7 +32,6 @@ export default function Page() {
         <ContactSection />
       </main>
 
-      <WhatsAppButton />
     </div>
   );
 }
