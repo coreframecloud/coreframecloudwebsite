@@ -99,27 +99,52 @@ export function SiteHeader() {
     const userRaw = localStorage.getItem("cf_customer_user");
     if (!token || !userRaw) return;
 
-    let user: AuthState["user"];
+    // Decode JWT exp to clear stale token immediately (no flicker)
+    function isExpired(tok: string): boolean {
+      try {
+        const payload = JSON.parse(atob(tok.split(".")[1]));
+        return payload.exp * 1000 < Date.now();
+      } catch { return true; }
+    }
+    if (isExpired(token)) {
+      localStorage.removeItem("cf_customer_token");
+      localStorage.removeItem("cf_customer_user");
+      return;
+    }
+
+    let cachedUser: AuthState["user"];
     try {
-      user = JSON.parse(userRaw);
+      cachedUser = JSON.parse(userRaw);
     } catch {
       return;
     }
 
-    fetch("https://control.coreframecloud.com/api/me/wallet", {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error("unauthorized");
-        return res.json();
-      })
-      .then((wallet: WalletData) => {
+    // Fetch wallet + fresh user info (so role/customer_type are always current)
+    Promise.all([
+      fetch("https://control.coreframecloud.com/api/me/wallet", {
+        headers: { Authorization: `Bearer ${token}` },
+      }),
+      fetch("https://control.coreframecloud.com/api/me", {
+        headers: { Authorization: `Bearer ${token}` },
+      }),
+    ])
+      .then(async ([walletRes, meRes]) => {
+        if (walletRes.status === 401 || meRes.status === 401) throw new Error("unauthorized");
+        const wallet: WalletData = walletRes.ok ? await walletRes.json() : null;
+        const freshUser = meRes.ok ? await meRes.json() : null;
+        // Merge fresh role/customer_type into cached user
+        const user = freshUser
+          ? { ...cachedUser, role: freshUser.role, customer_type: freshUser.customer_type }
+          : cachedUser;
+        // Persist updated role so other pages see it
+        localStorage.setItem("cf_customer_user", JSON.stringify(user));
         setAuth({ token, user, wallet });
       })
       .catch(() => {
-        // Token expired or invalid — clear and fall back to sign-in
+        // Token expired or invalid — clear immediately
         localStorage.removeItem("cf_customer_token");
         localStorage.removeItem("cf_customer_user");
+        setAuth(null);
       });
   }, []);
 
