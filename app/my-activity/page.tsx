@@ -201,7 +201,7 @@ export default function MyActivityPage() {
 
         {/* Wallet section — layout depends on role */}
         {user?.role === "org_admin" ? (
-          /* Org admin: balance + recharge link side by side */
+          /* B2B Org admin: balance card + link to org portal */
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div className="rounded-2xl border border-emerald-400/20 bg-emerald-400/5 p-6">
               <h2 className="text-xs font-semibold text-emerald-300/60 uppercase tracking-wider mb-4">
@@ -215,10 +215,10 @@ export default function MyActivityPage() {
             <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 flex flex-col justify-between">
               <div>
                 <h2 className="text-xs font-semibold text-white/40 uppercase tracking-wider mb-2">
-                  Add Funds
+                  Manage Team &amp; Wallet
                 </h2>
                 <p className="text-sm text-white/50">
-                  Top up your org wallet to keep GPU sessions running for your team.
+                  Top up your org wallet, invite team members, and view usage from the Org Portal.
                 </p>
               </div>
               <a
@@ -229,8 +229,39 @@ export default function MyActivityPage() {
               </a>
             </div>
           </div>
+        ) : user?.role === "r_customer" ? (
+          /* B2C retail customer: balance + recharge coming soon */
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div className="rounded-2xl border border-emerald-400/20 bg-emerald-400/5 p-6">
+              <h2 className="text-xs font-semibold text-emerald-300/60 uppercase tracking-wider mb-4">
+                Wallet Balance
+              </h2>
+              <p className="text-3xl font-bold text-emerald-300">
+                ₹{wallet ? wallet.wallet_balance_rupees.toFixed(2) : "0.00"}
+              </p>
+              <p className="text-xs text-white/40 mt-1">
+                ₹{wallet?.hourly_rate_rupees_per_hour ?? 99}/hr GPU rate
+              </p>
+            </div>
+            <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 flex flex-col justify-between">
+              <div>
+                <h2 className="text-xs font-semibold text-white/40 uppercase tracking-wider mb-2">
+                  Add Funds
+                </h2>
+                <p className="text-sm text-white/50">
+                  Online recharge is coming soon. To top up now, contact us and we&apos;ll credit your wallet within 1 business day.
+                </p>
+              </div>
+              <a
+                href="mailto:support@coreframecloud.com?subject=Wallet%20Top-up%20Request"
+                className="mt-6 inline-flex items-center justify-center rounded-xl bg-cyan-400 text-slate-900 px-5 py-2.5 text-sm font-semibold hover:bg-cyan-300 transition"
+              >
+                Request Top-up →
+              </a>
+            </div>
+          </div>
         ) : (
-          /* Engineers: balance only, no recharge */
+          /* B2B engineer: balance only, managed by org admin */
           <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
             <h2 className="text-xs font-semibold text-white/40 uppercase tracking-wider mb-4">
               Wallet Balance
@@ -238,11 +269,7 @@ export default function MyActivityPage() {
             <p className="text-3xl font-bold text-emerald-300">
               ₹{wallet ? wallet.wallet_balance_rupees.toFixed(2) : "0.00"}
             </p>
-            <p className="text-xs text-white/50 mt-1">
-              {user?.customer_type === "b2b"
-                ? "Managed by your organization admin"
-                : "Current balance"}
-            </p>
+            <p className="text-xs text-white/50 mt-1">Managed by your organization admin</p>
           </div>
         )}
 

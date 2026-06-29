@@ -78,8 +78,10 @@ export default function OrgAdminPage() {
       fetch(`${API}/org-admin/me`, { headers: { Authorization: `Bearer ${tok}` } }),
       fetch(`${API}/org-admin/team`, { headers: { Authorization: `Bearer ${tok}` } }),
     ]).then(async ([meRes, teamRes]) => {
+      if (meRes.status === 401) throw new Error("token_expired");
       if (meRes.status === 403) throw new Error("access_denied");
-      if (!meRes.ok) throw new Error("auth_failed");
+      if (meRes.status === 404) throw new Error("not_deployed");
+      if (!meRes.ok) throw new Error(`api_error_${meRes.status}`);
       const me: OrgInfo = await meRes.json();
       const members: TeamMember[] = teamRes.ok ? await teamRes.json() : [];
       setOrgInfo(me);
@@ -190,7 +192,28 @@ export default function OrgAdminPage() {
     return (
       <div className="min-h-screen bg-[#03101d] flex items-center justify-center flex-col gap-3 text-center px-4">
         <p className="text-white/60 text-sm">This portal is only accessible to organization admins.</p>
+        <p className="text-white/30 text-xs">Ask your Coreframe admin to grant you the org_admin role.</p>
         <Link href="/my-activity" className="text-cyan-400 text-sm hover:underline">← Back to My Activity</Link>
+      </div>
+    );
+  }
+
+  if (error === "token_expired") {
+    // Clear stale token and redirect to login
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("cf_customer_token");
+      localStorage.removeItem("cf_customer_user");
+      window.location.href = "/login";
+    }
+    return null;
+  }
+
+  if (error === "not_deployed") {
+    return (
+      <div className="min-h-screen bg-[#03101d] flex items-center justify-center flex-col gap-3 text-center px-4">
+        <p className="text-amber-400 text-sm">Org portal API not yet available.</p>
+        <p className="text-white/30 text-xs">Rebuild and deploy the API container to enable this feature.</p>
+        <Link href="/my-activity" className="text-cyan-400 text-sm hover:underline">← Back</Link>
       </div>
     );
   }
@@ -198,7 +221,7 @@ export default function OrgAdminPage() {
   if (error) {
     return (
       <div className="min-h-screen bg-[#03101d] flex items-center justify-center flex-col gap-3 text-center px-4">
-        <p className="text-red-400 text-sm">Failed to load. Please sign in again.</p>
+        <p className="text-red-400 text-sm">Failed to load ({error}). Please sign in again.</p>
         <Link href="/login" className="text-cyan-400 text-sm hover:underline">Sign in</Link>
       </div>
     );
