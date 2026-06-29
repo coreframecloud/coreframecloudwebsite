@@ -22,7 +22,7 @@ interface WalletData {
 
 interface AuthState {
   token: string;
-  user: { full_name: string; email: string; id: string };
+  user: { full_name: string; email: string; id: string; role?: string; customer_type?: string };
   wallet: WalletData | null;
 }
 
@@ -196,6 +196,16 @@ export function SiteHeader() {
               >
                 My Activity
               </Link>
+              {/* Org admin link — visible only to org_admin role */}
+              {auth.user?.role === "org_admin" && (
+                <Link
+                  href="/org-admin"
+                  className="text-sm font-medium text-cyan-400/80 transition hover:text-cyan-300"
+                  onClick={() => trackEvent("org_admin_click", { location: "header_cta" })}
+                >
+                  Org Portal
+                </Link>
+              )}
               {/* Avatar + dropdown */}
               <UserAvatar initials={initials} onSignOut={handleSignOut} />
             </>
@@ -268,6 +278,15 @@ export function SiteHeader() {
                 >
                   My Activity
                 </Link>
+                {auth.user?.role === "org_admin" && (
+                  <Link
+                    href="/org-admin"
+                    onClick={() => { setOpen(false); trackEvent("org_admin_click", { location: "mobile_menu" }); }}
+                    className="rounded-xl px-3 py-2.5 text-sm font-medium text-cyan-400/80 transition hover:bg-white/5 hover:text-cyan-300"
+                  >
+                    Org Portal
+                  </Link>
+                )}
                 <button
                   type="button"
                   onClick={() => { setOpen(false); handleSignOut(); }}

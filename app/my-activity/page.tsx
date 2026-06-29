@@ -33,6 +33,8 @@ interface UserInfo {
   full_name: string;
   email: string;
   id: string;
+  role?: string;
+  customer_type?: string;
 }
 
 function formatDuration(minutes: number): string {
@@ -197,38 +199,52 @@ export default function MyActivityPage() {
           </h1>
         </div>
 
-        {/* Wallet + Recharge — side by side */}
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          {/* Wallet balance */}
+        {/* Wallet section — layout depends on role */}
+        {user?.role === "org_admin" ? (
+          /* Org admin: balance + recharge link side by side */
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div className="rounded-2xl border border-emerald-400/20 bg-emerald-400/5 p-6">
+              <h2 className="text-xs font-semibold text-emerald-300/60 uppercase tracking-wider mb-4">
+                Org Wallet Balance
+              </h2>
+              <p className="text-3xl font-bold text-emerald-300">
+                ₹{wallet ? wallet.wallet_balance_rupees.toFixed(2) : "0.00"}
+              </p>
+              <p className="text-xs text-white/40 mt-1">Shared across your organization</p>
+            </div>
+            <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 flex flex-col justify-between">
+              <div>
+                <h2 className="text-xs font-semibold text-white/40 uppercase tracking-wider mb-2">
+                  Add Funds
+                </h2>
+                <p className="text-sm text-white/50">
+                  Top up your org wallet to keep GPU sessions running for your team.
+                </p>
+              </div>
+              <a
+                href="/org-admin"
+                className="mt-6 inline-flex items-center justify-center rounded-xl bg-cyan-400 text-slate-900 px-5 py-2.5 text-sm font-semibold hover:bg-cyan-300 transition"
+              >
+                Go to Org Portal →
+              </a>
+            </div>
+          </div>
+        ) : (
+          /* Engineers: balance only, no recharge */
           <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
             <h2 className="text-xs font-semibold text-white/40 uppercase tracking-wider mb-4">
-              Wallet
+              Wallet Balance
             </h2>
             <p className="text-3xl font-bold text-emerald-300">
               ₹{wallet ? wallet.wallet_balance_rupees.toFixed(2) : "0.00"}
             </p>
-            <p className="text-xs text-white/50 mt-1">Current balance</p>
+            <p className="text-xs text-white/50 mt-1">
+              {user?.customer_type === "b2b"
+                ? "Managed by your organization admin"
+                : "Current balance"}
+            </p>
           </div>
-
-          {/* Recharge */}
-          <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 flex flex-col justify-between">
-            <div>
-              <h2 className="text-xs font-semibold text-white/40 uppercase tracking-wider mb-2">
-                Recharge Wallet
-              </h2>
-              <p className="text-sm text-white/50">
-                Top up your balance to start or continue GPU sessions.
-              </p>
-            </div>
-            <button
-              disabled
-              title="Coming soon"
-              className="mt-6 inline-flex items-center justify-center rounded-xl bg-cyan-400/20 text-cyan-400/50 border border-cyan-400/20 px-5 py-2.5 text-sm font-semibold cursor-not-allowed"
-            >
-              Recharge — Coming Soon
-            </button>
-          </div>
-        </div>
+        )}
 
         {/* Recent Sessions */}
         <div className="rounded-2xl border border-white/10 bg-white/[0.03] overflow-hidden">
