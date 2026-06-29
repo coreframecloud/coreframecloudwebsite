@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Loader2, Mail, CheckCircle, ArrowRight } from "lucide-react";
@@ -82,8 +82,15 @@ function SentCard({ email, label }: { email: string; label: string }) {
 
 // ══════════════════════════════════════════════════════════════════════════════
 export default function LoginForm() {
+  // When opened from Coreframe Connect (?source=connect), default to "code" tab.
+  // Magic-link emails open in the system browser and can't complete inside the app.
   const [tab, setTab] = useState<Tab>("link");
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("source") === "connect") setTab("code");
+  }, []);
 
   // ── Email Link state ────────────────────────────────────────────────────────
   const [linkStep, setLinkStep] = useState<LinkStep>("email");
