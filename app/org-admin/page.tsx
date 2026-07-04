@@ -17,6 +17,8 @@ interface OrgInfo {
   org_plan: string;
   org_status: string;
   email_domain: string | null;
+  gstin: string | null;
+  billing_state: string | null;
   member_count: number;
 }
 
@@ -72,6 +74,13 @@ export default function OrgAdminPage() {
   const [topupNote, setTopupNote] = useState("");
   const [topupLoading, setTopupLoading] = useState(false);
   const [topupMsg, setTopupMsg] = useState<{ ok: boolean; text: string } | null>(null);
+
+  // Billing profile (GSTIN) modal state
+  const [showBilling, setShowBilling] = useState(false);
+  const [billingGstin, setBillingGstin] = useState("");
+  const [billingState, setBillingState] = useState("");
+  const [billingLoading, setBillingLoading] = useState(false);
+  const [billingMsg, setBillingMsg] = useState<{ ok: boolean; text: string } | null>(null);
 
   const loadData = useCallback((tok: string) => {
     return Promise.all([
@@ -143,6 +152,34 @@ export default function OrgAdminPage() {
       setTopupMsg({ ok: false, text: e instanceof Error ? e.message : "Error" });
     } finally {
       setTopupLoading(false);
+    }
+  }
+
+  async function handleBillingUpdate(e: React.FormEvent) {
+    e.preventDefault();
+    if (!token) return;
+    const gstin = billingGstin.trim().toUpperCase() || null;
+    if (gstin && !/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/.test(gstin)) {
+      setBillingMsg({ ok: false, text: "Invalid GSTIN format (15 chars, e.g. 29ABCDE1234F1Z5)" });
+      return;
+    }
+    setBillingLoading(true);
+    setBillingMsg(null);
+    try {
+      const res = await fetch(`${API}/org-admin/billing`, {
+        method: "PATCH",
+        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+        body: JSON.stringify({ gstin, billing_state: billingState || null }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.detail || "Failed");
+      setBillingMsg({ ok: true, text: "Billing profile saved" });
+      loadData(token).catch(() => {});
+      setTimeout(() => setShowBilling(false), 1200);
+    } catch (e: unknown) {
+      setBillingMsg({ ok: false, text: e instanceof Error ? e.message : "Error" });
+    } finally {
+      setBillingLoading(false);
     }
   }
 
@@ -245,6 +282,22 @@ export default function OrgAdminPage() {
               <span className="bg-cyan-400/10 text-cyan-300 border border-cyan-400/20 px-2.5 py-1 rounded-full text-xs font-medium">
                 @{orgInfo.email_domain}
               </span>
+            )}
+            {orgInfo?.gstin ? (
+              <button
+                onClick={() => { setBillingGstin(orgInfo.gstin || ""); setBillingState(orgInfo.billing_state || ""); setBillingMsg(null); setShowBilling(true); }}
+                className="bg-emerald-400/10 text-emerald-300 border border-emerald-400/20 px-2.5 py-1 rounded-full text-xs font-mono hover:bg-emerald-400/20 transition"
+                title="Edit GSTIN"
+              >
+                GST: {orgInfo.gstin}
+              </button>
+            ) : (
+              <button
+                onClick={() => { setBillingGstin(orgInfo?.gstin || ""); setBillingState(orgInfo?.billing_state || ""); setBillingMsg(null); setShowBilling(true); }}
+                className="text-amber-400/70 hover:text-amber-300 text-xs border border-amber-400/20 px-2 py-1 rounded-full transition"
+              >
+                + Add GSTIN
+              </button>
             )}
             <span className={`text-xs px-2.5 py-1 rounded-full border font-medium ${orgInfo?.org_plan === "postpaid" ? "bg-purple-400/10 text-purple-300 border-purple-400/20" : "bg-emerald-400/10 text-emerald-300 border-emerald-400/20"}`}>
               {orgInfo?.org_plan}
@@ -470,6 +523,59 @@ export default function OrgAdminPage() {
           <a href="mailto:support@coreframecloud.com" className="text-cyan-400/60 hover:text-cyan-400">support@coreframecloud.com</a>.
         </p>
       </div>
+
+      {/* ── Billing Profile Modal ─────────────────────────────────────────── */}
+      {showBilling && (
+        <div className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4">
+          <div className="bg-[#0a1628] border border-white/10 rounded-2xl p-6 w-full max-w-md">
+            <h3 className="text-base font-semibold mb-1">GST Billing Profile</h3>
+            <p className="text-white/40 text-xs mb-5">
+              Your GSTIN appears on all invoices as the buyer. Required to claim GST input tax credit.
+            </p>
+            <form onSubmit={handleBillingUpdate} className="space-y-4">
+              <div>
+                <label className="block text-xs text-white/50 mb-1.5">GSTIN <span className="text-white/30">(optional)</span></label>
+                <input
+                  type="text"
+                  value={billingGstin}
+                  onChange={(e) => setBillingGstin(e.target.value.toUpperCase())}
+                  placeholder="e.g. 29ABCDE1234F1Z5"
+                  maxLength={15}
+                  className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder-white/25 focus:outline-none focus:border-cyan-400/50 font-mono tracking-wider"
+                />
+              </div>
+              <div>
+                <label className="block text-xs text-white/50 mb-1.5">Billing State <span className="text-white/30">(for CGST/SGST vs IGST routing)</span></label>
+                <select
+                  value={billingState}
+                  onChange={(e) => setBillingState(e.target.value)}
+                  className="w-full rounded-lg border border-white/10 bg-[#0a1628] px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-400/50"
+                >
+                  <option value="">— Select state —</option>
+                  {["Andhra Pradesh","Arunachal Pradesh","Assam","Bihar","Chhattisgarh","Goa","Gujarat","Haryana","Himachal Pradesh","Jharkhand","Karnataka","Kerala","Madhya Pradesh","Maharashtra","Manipur","Meghalaya","Mizoram","Nagaland","Odisha","Punjab","Rajasthan","Sikkim","Tamil Nadu","Telangana","Tripura","Uttar Pradesh","Uttarakhand","West Bengal","Delhi","Jammu and Kashmir","Ladakh","Chandigarh","Puducherry"].map((s) => (
+                    <option key={s} value={s}>{s}</option>
+                  ))}
+                </select>
+              </div>
+              {billingMsg && (
+                <p className={`text-xs px-3 py-2 rounded-lg ${billingMsg.ok ? "bg-emerald-400/10 text-emerald-300" : "bg-red-400/10 text-red-300"}`}>
+                  {billingMsg.text}
+                </p>
+              )}
+              <div className="flex gap-2 pt-1">
+                <button type="submit" disabled={billingLoading}
+                  className="flex-1 rounded-xl bg-cyan-400 px-4 py-2.5 text-sm font-semibold text-slate-900 hover:bg-cyan-300 transition disabled:opacity-50">
+                  {billingLoading ? "Saving…" : "Save"}
+                </button>
+                <button type="button" onClick={() => { setShowBilling(false); setBillingMsg(null); }}
+                  className="rounded-xl border border-white/10 px-4 py-2.5 text-sm text-white/60 hover:bg-white/5 transition">
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
