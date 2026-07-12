@@ -225,6 +225,8 @@ function CheckChip({ checked, onChange, label }: {
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 
+const API_BASE = "https://control.coreframecloud.com/api";
+
 export default function CfdIntakeForm() {
   const [page, setPage] = useState(0);
   const [form, setForm] = useState<FormData>(INITIAL);
@@ -232,6 +234,8 @@ export default function CfdIntakeForm() {
   const [submitted, setSubmitted] = useState(false);
   const [refId, setRefId] = useState("");
   const [errors, setErrors] = useState<string[]>([]);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
 
   const set = useCallback(<K extends keyof FormData>(key: K, val: FormData[K]) => {
     setForm((f) => ({ ...f, [key]: val }));
@@ -289,13 +293,36 @@ export default function CfdIntakeForm() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const errs = validatePage(5);
     if (errs.length) { setErrors(errs); return; }
-    const ref = "CF-" + Math.random().toString(36).slice(2, 8).toUpperCase();
-    setRefId(ref);
-    setSubmitted(true);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    setSubmitError("");
+    setSubmitting(true);
+    try {
+      const payload = {
+        ...form,
+        bcRows: bcRows.map(({ id: _id, ...rest }) => rest),
+      };
+      const res = await fetch(`${API_BASE}/cfd-jobs`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) {
+        const msg = await res.text().catch(() => "Unknown error");
+        throw new Error(msg);
+      }
+      const data = await res.json();
+      setRefId(data.ref_id);
+      setSubmitted(true);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } catch (err: unknown) {
+      setSubmitError(
+        err instanceof Error ? err.message : "Submission failed — please try again or WhatsApp us."
+      );
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   // ── Success screen ──────────────────────────────────────────────────────────
@@ -351,12 +378,20 @@ export default function CfdIntakeForm() {
   );
 
   // ── Error banner ────────────────────────────────────────────────────────────
-  const ErrorBanner = () =>
-    errors.length ? (
-      <div className="mb-5 rounded-xl border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-300">
-        <strong>Please fill in:</strong> {errors.join(", ")}
-      </div>
-    ) : null;
+  const ErrorBanner = () => (
+    <>
+      {errors.length > 0 && (
+        <div className="mb-5 rounded-xl border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-300">
+          <strong>Please fill in:</strong> {errors.join(", ")}
+        </div>
+      )}
+      {submitError && (
+        <div className="mb-5 rounded-xl border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-300">
+          <strong>Submission error:</strong> {submitError}
+        </div>
+      )}
+    </>
+  );
 
   // ── Nav buttons ─────────────────────────────────────────────────────────────
   const NavRow = ({ onNext, nextLabel = "Next →", isLast = false }: {
@@ -373,13 +408,14 @@ export default function CfdIntakeForm() {
       <button
         type="button"
         onClick={onNext}
-        className={`rounded-xl px-6 py-2.5 text-sm font-semibold text-white transition ${
+        disabled={isLast && submitting}
+        className={`rounded-xl px-6 py-2.5 text-sm font-semibold text-white transition disabled:opacity-60 ${
           isLast
             ? "bg-green-600 hover:bg-green-500"
             : "bg-blue-600 hover:bg-blue-500"
         }`}
       >
-        {nextLabel}
+        {isLast && submitting ? "Submitting…" : nextLabel}
       </button>
     </div>
   );
