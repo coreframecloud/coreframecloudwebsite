@@ -173,18 +173,17 @@ export default function AnsysCfdPage() {
 
         <div className="mt-5 flex flex-wrap gap-3">
           <a
-            href={wa("Hi Coreframe, I'd like to discuss GPU CFD simulation for my Ansys project.")}
-            target="_blank" rel="noreferrer"
+            href="/cfd-intake"
             className="rounded-full bg-cyan-400 px-5 py-2.5 text-sm font-semibold text-slate-900 hover:bg-cyan-300 transition"
           >
-            Get a quote →
+            Submit a CFD job →
           </a>
           <a
-            href={wa("Hi Coreframe, I want to submit an Ansys CFD job. My mesh has approximately X million elements.")}
+            href={wa("Hi Coreframe, I'd like to discuss GPU CFD simulation for my Ansys project.")}
             target="_blank" rel="noreferrer"
             className="rounded-full border border-white/15 px-5 py-2.5 text-sm text-white hover:bg-white/8 transition"
           >
-            Submit a job
+            WhatsApp us
           </a>
         </div>
 
@@ -318,17 +317,17 @@ export default function AnsysCfdPage() {
           </p>
           <div className="mt-4 flex flex-wrap gap-3">
             <a
-              href={wa("Hi Coreframe, I'd like a quote for an Ansys CFD job. My mesh has approximately [X] million elements.")}
-              target="_blank" rel="noreferrer"
+              href="/cfd-intake"
               className="rounded-xl bg-cyan-400 px-5 py-2.5 text-xs font-semibold text-slate-900 hover:bg-cyan-300 transition"
             >
-              Get a quote on WhatsApp
+              Submit a CFD job →
             </a>
             <a
-              href="mailto:admin@coreframecloud.com?subject=Ansys CFD job enquiry"
+              href={wa("Hi Coreframe, I'd like a quote for an Ansys CFD job. My mesh has approximately [X] million elements.")}
+              target="_blank" rel="noreferrer"
               className="rounded-xl border border-white/12 bg-white/[0.04] px-5 py-2.5 text-xs font-medium text-white hover:bg-white/8 transition"
             >
-              Email us
+              WhatsApp for quick quote
             </a>
           </div>
         </div>
