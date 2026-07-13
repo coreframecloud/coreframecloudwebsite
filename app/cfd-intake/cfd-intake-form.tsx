@@ -122,6 +122,63 @@ const INITIAL: FormData = {
   confirmAccuracy: false, confirmData: false, signature: "",
 };
 
+// ─── Domain-aware CAD checklist ──────────────────────────────────────────────
+
+const CHECKLIST_COMMON = [
+  "Geometry must be fully watertight — no open edges or missing faces",
+  "No self-intersecting surfaces",
+  "Consistent face normals (all pointing uniformly outward or inward)",
+  "Remove features smaller than your target mesh cell size",
+  "Export as STEP (.step), IGES (.iges), or binary STL — avoid ASCII STL for files > 10 MB",
+];
+
+const CHECKLIST_BY_TYPE: Record<string, string[]> = {
+  "HVAC": [
+    "Remove all doors and windows not part of the ventilation study",
+    "Delete furniture, cubicle partitions, shelving, and decorative objects",
+    "Remove embedded text labels, dimension arrows, and annotation geometry",
+    "Repair broken or disconnected duct sections — all ductwork must be continuous",
+    "Confirm supply diffusers and return grilles are correctly positioned and oriented",
+    "Suppress bolts, screws, and details smaller than your mesh target (< 2 mm)",
+    "Ensure floor, walls, and ceiling form a fully closed volume with no gaps",
+  ],
+  "External Aerodynamics": [
+    "Keep only the external shell — remove all interior rooms, partitions, and services",
+    "Close any surface gaps on the vehicle or building envelope",
+    "Remove floating elements (antennas, small projections) unless specifically studied",
+    "Suppress window frames, grooves, and details < 5 mm unless studying surface roughness",
+    "Model orientation: approaching flow must align with +X axis",
+  ],
+  "Wind Engineering": [
+    "Keep only the external building envelope — strip all interior",
+    "Close any surface gaps on facade, roof, and soffit",
+    "Suppress facade details < 5 mm unless key to the study",
+    "Wind approach direction must align with +X axis; use flat ground plane",
+    "Remove terrain geometry if providing it separately",
+  ],
+  "Automotive": [
+    "Keep only external body panels — remove all interior components and trim",
+    "Close all surface gaps (doors, hood, trunk fit lines, grille openings)",
+    "Remove underfloor clutter not critical to underbody flow",
+    "Wheel geometry must be solid — no open hollow spokes",
+    "Model orientation: vehicle nose pointing in +X direction",
+  ],
+  "Electronics Cooling": [
+    "All component and heatsink bodies must be solid — not hollow shells",
+    "Heatsink fins must contact the component case with no gaps",
+    "Remove PCB assembly hardware (standoffs, screws) unless critical to airflow",
+    "Enclosure must be fully closed — ICs sit inside a sealed box",
+    "Confirm accurate board height, component heights, and fin pitch",
+  ],
+};
+
+function getChecklistItems(applicationType: string): string[] {
+  const key = Object.keys(CHECKLIST_BY_TYPE).find((k) =>
+    applicationType.toLowerCase().includes(k.toLowerCase().split(" ")[0])
+  );
+  return [...(key ? CHECKLIST_BY_TYPE[key] : []), ...CHECKLIST_COMMON];
+}
+
 const STEPS = ["Project", "Geometry", "Boundaries", "Physics", "Solver", "Sign-off"];
 
 const BC_TYPES = [
@@ -236,6 +293,12 @@ export default function CfdIntakeForm() {
   const [errors, setErrors] = useState<string[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
+  // File upload state (shown on success screen)
+  const [uploadFile, setUploadFile] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [uploadDone, setUploadDone] = useState(false);
+  const [uploadError, setUploadError] = useState("");
+  const [validationResult, setValidationResult] = useState<Record<string, unknown> | null>(null);
 
   const set = useCallback(<K extends keyof FormData>(key: K, val: FormData[K]) => {
     setForm((f) => ({ ...f, [key]: val }));
@@ -325,30 +388,161 @@ export default function CfdIntakeForm() {
     }
   };
 
+  const handleFileUpload = async () => {
+    if (!uploadFile) return;
+    setUploading(true);
+    setUploadError("");
+    try {
+      const fd = new FormData();
+      fd.append("file", uploadFile);
+      const res = await fetch(`${API_BASE}/cfd-jobs/${refId}/upload`, {
+        method: "POST",
+        body: fd,
+      });
+      if (!res.ok) {
+        const msg = await res.text().catch(() => "Upload failed");
+        throw new Error(msg);
+      }
+      setUploadDone(true);
+      // Poll for validation result (trimesh runs in background ~1-5s)
+      let attempts = 0;
+      const poll = async () => {
+        if (attempts++ > 20) return; // give up after ~40s
+        try {
+          const r = await fetch(`${API_BASE}/cfd-jobs/${refId}/validation`);
+          if (!r.ok) return;
+          const data = await r.json();
+          const status = (data.validation as Record<string, unknown>)?.status;
+          if (status === "pending") {
+            setTimeout(poll, 2000);
+          } else {
+            setValidationResult(data.validation as Record<string, unknown>);
+          }
+        } catch {
+          // ignore poll errors
+        }
+      };
+      setTimeout(poll, 1500);
+    } catch (err: unknown) {
+      setUploadError(err instanceof Error ? err.message : "Upload failed — please try again.");
+    } finally {
+      setUploading(false);
+    }
+  };
+
   // ── Success screen ──────────────────────────────────────────────────────────
   if (submitted) {
     return (
-      <div className="mx-auto max-w-lg py-16 text-center">
-        <div className="mb-6 text-6xl">🚀</div>
-        <h2 className="text-3xl font-bold tracking-tight">Job submitted!</h2>
-        <p className="mt-4 text-slate-300">
-          Our engineering team will review your inputs and send you a quote within 1 business day.
-          Email your CAD files to{" "}
-          <a href="mailto:cfd@coreframecloud.com" className="text-blue-400 underline">
-            cfd@coreframecloud.com
-          </a>{" "}
-          with the reference ID below in the subject line.
-        </p>
-        <div className="my-8 inline-block rounded-2xl border border-blue-500/30 bg-blue-500/10 px-8 py-4 font-mono text-2xl font-bold tracking-widest text-blue-300">
-          {refId}
+      <div className="mx-auto max-w-2xl py-10">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <div className="mb-4 text-5xl">🚀</div>
+          <h2 className="text-3xl font-bold tracking-tight">Job submitted!</h2>
+          <p className="mt-3 max-w-md mx-auto text-slate-300 text-sm leading-6">
+            Our engineering team will review your inputs and send a quote within 1 business day.
+          </p>
+          <div className="my-6 inline-block rounded-2xl border border-blue-500/30 bg-blue-500/10 px-8 py-4 font-mono text-2xl font-bold tracking-widest text-blue-300">
+            {refId}
+          </div>
+          <p className="text-xs text-slate-500">Save this ID — use it for all correspondence about this job.</p>
         </div>
-        <p className="mb-8 text-sm text-slate-500">Save this ID — use it for all future correspondence about this job.</p>
-        <button
-          onClick={() => { setSubmitted(false); setForm(INITIAL); setBcRows(DEFAULT_BC_ROWS); setPage(0); }}
-          className="rounded-xl bg-blue-600 px-6 py-2.5 text-sm font-semibold text-white hover:bg-blue-500 transition"
-        >
-          Submit another job
-        </button>
+
+        {/* CAD file upload */}
+        <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-6 mb-6">
+          <div className="mb-4 flex items-start gap-3 border-b border-white/8 pb-4">
+            <span className="text-2xl">📁</span>
+            <div>
+              <div className="font-semibold text-white">Upload your CAD file</div>
+              <div className="mt-0.5 text-xs text-slate-400">
+                STL files are validated automatically. STEP / IGES reviewed by our engineer. Max 80 MB.
+              </div>
+            </div>
+          </div>
+
+          {!uploadDone ? (
+            <div className="space-y-4">
+              <div className="flex flex-col sm:flex-row gap-3 items-start">
+                <label className="flex-1 cursor-pointer rounded-xl border-2 border-dashed border-white/15 p-4 text-center hover:border-blue-500/40 transition">
+                  <input
+                    type="file"
+                    accept=".stl,.step,.stp,.iges,.igs,.x_t,.x_b"
+                    className="sr-only"
+                    onChange={(e) => setUploadFile(e.target.files?.[0] ?? null)}
+                  />
+                  {uploadFile ? (
+                    <span className="text-sm text-blue-300 font-medium">
+                      {uploadFile.name} ({(uploadFile.size / 1024 / 1024).toFixed(1)} MB)
+                    </span>
+                  ) : (
+                    <span className="text-sm text-slate-500">
+                      Click to select CAD file (.stl, .step, .iges, .stp, .x_t)
+                    </span>
+                  )}
+                </label>
+                <button
+                  type="button"
+                  disabled={!uploadFile || uploading}
+                  onClick={handleFileUpload}
+                  className="rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue-500 transition disabled:opacity-40"
+                >
+                  {uploading ? "Uploading…" : "Upload"}
+                </button>
+              </div>
+              {uploadError && (
+                <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-300">
+                  {uploadError}
+                </div>
+              )}
+              <p className="text-xs text-slate-600">
+                Or email files to{" "}
+                <a href="mailto:cfd@coreframecloud.com" className="text-blue-400/70">
+                  cfd@coreframecloud.com
+                </a>{" "}
+                with <span className="text-slate-500 font-mono">{refId}</span> in the subject line.
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {validationResult === null ? (
+                <div className="flex items-center gap-3 text-sm text-slate-400">
+                  <span className="animate-spin text-base leading-none">⟳</span>
+                  Validating geometry…
+                </div>
+              ) : validationResult.status === "complete" ? (
+                <>
+                  <div className={`flex items-center gap-2 font-semibold text-sm ${validationResult.ready_for_meshing ? "text-green-400" : "text-amber-400"}`}>
+                    {validationResult.ready_for_meshing ? "✓ Geometry looks good — ready for meshing" : "⚠ Issues found — please review before your job starts"}
+                  </div>
+                  {(validationResult.issues as Array<{ severity: string; message: string; fix: string }>).map((issue, i) => (
+                    <div key={i} className={`rounded-xl border p-3 text-sm ${issue.severity === "error" ? "border-red-500/30 bg-red-500/8 text-red-300" : "border-amber-500/30 bg-amber-500/8 text-amber-300"}`}>
+                      <div className="font-medium">{issue.severity === "error" ? "🔴" : "🟡"} {issue.message}</div>
+                      <div className="mt-1 text-xs opacity-75">Fix: {issue.fix}</div>
+                    </div>
+                  ))}
+                  {!(validationResult.issues as unknown[]).length && (
+                    <p className="text-sm text-slate-400">No issues detected. Your geometry is mesh-ready.</p>
+                  )}
+                </>
+              ) : (
+                <p className="text-sm text-slate-400">
+                  {(validationResult.message as string) || "File received — our engineer will review the geometry."}
+                </p>
+              )}
+            </div>
+          )}
+        </div>
+
+        <div className="text-center">
+          <button
+            onClick={() => {
+              setSubmitted(false); setForm(INITIAL); setBcRows(DEFAULT_BC_ROWS); setPage(0);
+              setUploadFile(null); setUploadDone(false); setValidationResult(null); setUploadError("");
+            }}
+            className="rounded-xl border border-white/10 bg-white/5 px-6 py-2.5 text-sm font-semibold text-slate-300 hover:bg-white/10 transition"
+          >
+            Submit another job
+          </button>
+        </div>
       </div>
     );
   }
@@ -528,6 +722,22 @@ export default function CfdIntakeForm() {
               </Field>
             </div>
           </Panel>
+
+          {form.applicationType && (
+            <Panel icon="✅" title="CAD Pre-submission Checklist" subtitle={`Requirements for ${form.applicationType}`}>
+              <div className="mb-4 rounded-xl border border-amber-500/20 bg-amber-500/8 px-4 py-3 text-xs text-amber-300/90">
+                ⚠️ Violations delay your quote. Please fix these in your CAD tool before uploading.
+              </div>
+              <ul className="space-y-2">
+                {getChecklistItems(form.applicationType).map((item, i) => (
+                  <li key={i} className="flex items-start gap-2.5 text-sm text-slate-300">
+                    <span className="mt-0.5 text-xs text-blue-400/70 flex-shrink-0 font-bold">{i + 1}.</span>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </Panel>
+          )}
 
           <Panel icon="🔲" title="Computational Domain">
             <div className="grid gap-4 sm:grid-cols-3">
