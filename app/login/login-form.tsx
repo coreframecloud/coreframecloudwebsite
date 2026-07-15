@@ -116,7 +116,10 @@ export default function LoginForm() {
   function storeAndRedirect(data: { access_token: string; user: unknown }) {
     localStorage.setItem("cf_customer_token", data.access_token);
     localStorage.setItem("cf_customer_user", JSON.stringify(data.user));
-    window.location.href = "/my-activity";
+    const params = new URLSearchParams(window.location.search);
+    const next = params.get("next");
+    // Only allow relative paths (no open redirect)
+    window.location.href = next && next.startsWith("/") ? next : "/my-activity";
   }
 
   function switchTab(t: Tab) {
