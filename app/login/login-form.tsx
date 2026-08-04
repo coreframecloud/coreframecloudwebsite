@@ -118,6 +118,16 @@ export default function LoginForm() {
     localStorage.setItem("cf_customer_user", JSON.stringify(data.user));
     const params = new URLSearchParams(window.location.search);
     const next = params.get("next");
+
+    // An account still awaiting approval almost always needs to finish identity
+    // verification — send them straight there rather than to an account page
+    // that can only tell them they cannot do anything yet.
+    const user = data.user as { status?: string } | null;
+    if (user?.status === "pending_approval" && !next) {
+      window.location.href = "/verify";
+      return;
+    }
+
     // Only allow relative paths (no open redirect)
     window.location.href = next && next.startsWith("/") ? next : "/my-activity";
   }
