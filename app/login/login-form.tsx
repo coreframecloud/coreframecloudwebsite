@@ -186,6 +186,10 @@ export default function LoginForm() {
     e.preventDefault();
     setError("");
     if (!linkName.trim()) return setError("Full name is required.");
+    // 10 digits after stripping +91 / spaces / dashes.
+    if (linkPhone.replace(/\D/g, "").replace(/^91/, "").length !== 10) {
+      return setError("Enter a valid 10-digit Indian mobile number.");
+    }
     // Only a business needs a company name — for an individual it is friction
     // for no gain, so we fall back to their own name as the workspace label.
     if (linkAccountType === "b2b" && !linkOrg.trim()) {
@@ -203,7 +207,7 @@ export default function LoginForm() {
           email: linkEmail.trim(),
           full_name: linkName.trim(),
           org_name: linkOrg.trim() || linkName.trim(),
-          phone: linkPhone.trim() || undefined,
+          phone: linkPhone.trim(),
           customer_type: linkAccountType,
           gstin: linkAccountType === "b2b" ? linkGstin.trim().toUpperCase() : undefined,
         }),
@@ -426,8 +430,26 @@ export default function LoginForm() {
                     />
                   </Field>
                 </div>
-                <Field label={<>Phone <span className="text-slate-600">(optional)</span></>}>
-                  <Input type="tel" value={linkPhone} onChange={(e) => { setLinkPhone(e.target.value); }} className={inputCls} placeholder="+91 98765 43210" />
+                {/* Required, not optional. Indian law (CERT-In Direction
+                    20(3)/2022) makes us hold a validated contact number for
+                    anyone renting compute, and the verification step needs one.
+                    Asking here is one field; asking later means bouncing someone
+                    out of verification to go and add it. */}
+                <Field label="Mobile number">
+                  <Input
+                    type="tel"
+                    inputMode="tel"
+                    value={linkPhone}
+                    onChange={(e) => { setLinkPhone(e.target.value); setError(""); }}
+                    className={inputCls}
+                    placeholder="+91 98765 43210"
+                    autoComplete="tel"
+                    required
+                  />
+                  <p className="mt-1 text-xs text-slate-500">
+                    Used for identity verification and account security. Indian regulations
+                    require us to hold a verified contact number for compute rental.
+                  </p>
                 </Field>
                 {error && <ErrorBox msg={error} />}
                 <Button type="submit" disabled={linkLoading} className="h-12 rounded-xl text-base font-semibold">

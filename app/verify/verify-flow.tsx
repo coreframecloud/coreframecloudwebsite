@@ -658,11 +658,14 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
         </p>
       )}
 
-      {otpOutstanding && (
-        <p className="mb-4 rounded-xl border border-amber-500/25 bg-amber-500/10 px-4 py-3 text-sm text-amber-200">
-          {status?.has_phone_number
-            ? "You will also need to confirm your mobile number with an OTP before activation."
-            : "Add a mobile number to your account before verifying — we need it for your subscriber record."}
+      {/* No longer a demand for action. DigiLocker returns the Aadhaar-linked
+          mobile — UIDAI has just OTP'd it — so in almost every case the contact
+          number requirement is satisfied by the step the customer is about to
+          take. Telling them to go and add one first was busywork. */}
+      {otpOutstanding && !status?.has_phone_number && (
+        <p className="mb-4 rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-slate-300">
+          We will record the mobile number linked to your Aadhaar as your contact
+          number — Indian regulations require us to hold a verified one.
         </p>
       )}
 
