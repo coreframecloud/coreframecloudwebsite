@@ -11,7 +11,7 @@ interface DownloadInfo {
   url?: string;
 }
 
-type Stage = "loading" | "unauthenticated" | "ready" | "unavailable" | "error";
+type Stage = "loading" | "unauthenticated" | "ready" | "unavailable" | "paused" | "error";
 
 export default function DownloadPage() {
   const [stage, setStage] = useState<Stage>("loading");
@@ -20,17 +20,22 @@ export default function DownloadPage() {
 
   useEffect(() => {
     const token = localStorage.getItem("cf_customer_token");
-    if (!token) {
-      setStage("unauthenticated");
-      return;
-    }
-
+    // Ask the server first even without a token: while downloads are paused the
+    // answer is the same for everyone, and telling a signed-out visitor to log
+    // in for something that is switched off wastes their time.
     fetch("/api/download/client", {
-      headers: { Authorization: `Bearer ${token}` },
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
     })
       .then(async (res) => {
+        // 503 + paused = downloads are deliberately off, not broken. Say so
+        // plainly rather than showing an error the customer might retry at.
+        if (res.status === 503) {
+          const body = await res.json().catch(() => ({}));
+          if (body?.paused) { setStage("paused"); return; }
+        }
         if (res.status === 401) { setStage("unauthenticated"); return; }
         if (!res.ok) { setStage("error"); return; }
+        if (!token) { setStage("unauthenticated"); return; }
         const data: DownloadInfo = await res.json();
         setInfo(data);
         setStage(data.available ? "ready" : "unavailable");
@@ -70,6 +75,22 @@ export default function DownloadPage() {
           <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-8 text-center">
             <div className="mx-auto h-6 w-6 animate-spin rounded-full border-2 border-cyan-400/30 border-t-cyan-400" />
             <p className="mt-4 text-sm text-white/40">Verifying your account…</p>
+          </div>
+        )}
+
+        {/* Downloads paused — deliberate, not a fault */}
+        {stage === "paused" && (
+          <div className="rounded-2xl border border-amber-400/25 bg-amber-400/[0.06] p-8 text-center">
+            <p className="text-base text-amber-100">
+              Coreframe Connect downloads are paused while we finish onboarding.
+            </p>
+            <p className="mt-3 text-sm text-amber-200/70">
+              Your account is unaffected. We will email you the moment the client is
+              available — there is nothing you need to do.
+            </p>
+            <Link href="/contact" className="cf-btn-primary mt-6 inline-block">
+              Talk to us
+            </Link>
           </div>
         )}
 

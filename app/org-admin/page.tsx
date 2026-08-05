@@ -22,6 +22,16 @@ interface OrgInfo {
   member_count: number;
 }
 
+interface PendingMember {
+  user_id: number;
+  full_name: string;
+  email: string;
+  requested_at: string | null;
+  identity_verified: boolean;
+  identity_name: string | null;
+  account_status: string;
+}
+
 interface TeamMember {
   id: number;
   email: string;
@@ -57,6 +67,10 @@ export default function OrgAdminPage() {
   const [token, setToken] = useState<string | null>(null);
   const [orgInfo, setOrgInfo] = useState<OrgInfo | null>(null);
   const [team, setTeam] = useState<TeamMember[]>([]);
+  // Colleagues who signed up on the company email domain and are waiting on
+  // this admin to say whether their usage should bill to the company.
+  const [pending, setPending] = useState<PendingMember[]>([]);
+  const [decidingId, setDecidingId] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState("");
@@ -86,7 +100,8 @@ export default function OrgAdminPage() {
     return Promise.all([
       fetch(`${API}/org-admin/me`, { headers: { Authorization: `Bearer ${tok}` } }),
       fetch(`${API}/org-admin/team`, { headers: { Authorization: `Bearer ${tok}` } }),
-    ]).then(async ([meRes, teamRes]) => {
+      fetch(`${API}/org-admin/pending-members`, { headers: { Authorization: `Bearer ${tok}` } }),
+    ]).then(async ([meRes, teamRes, pendingRes]) => {
       if (meRes.status === 401) throw new Error("token_expired");
       if (meRes.status === 403) throw new Error("access_denied");
       if (meRes.status === 404) throw new Error("not_deployed");
@@ -95,6 +110,9 @@ export default function OrgAdminPage() {
       const members: TeamMember[] = teamRes.ok ? await teamRes.json() : [];
       setOrgInfo(me);
       setTeam(members);
+      // Tolerate a 404 here so the page still works against an older API.
+      const pendingBody = pendingRes.ok ? await pendingRes.json() : { pending: [] };
+      setPending(Array.isArray(pendingBody.pending) ? pendingBody.pending : []);
     });
   }, []);
 
@@ -180,6 +198,39 @@ export default function OrgAdminPage() {
       setBillingMsg({ ok: false, text: e instanceof Error ? e.message : "Error" });
     } finally {
       setBillingLoading(false);
+    }
+  }
+
+  async function decideMembership(member: PendingMember, approve: boolean) {
+    if (!token) return;
+    const verb = approve ? "approve" : "decline";
+    const note = window.prompt(
+      approve
+        ? `Approve ${member.full_name || member.email}?\n\nTheir usage will be billed to the company account.\n\nOptional note:`
+        : `Decline ${member.full_name || member.email}?\n\nThey keep their own account and can pay for their own usage — this only stops company billing.\n\nOptional note:`
+    );
+    if (note === null) return;
+
+    setDecidingId(member.user_id);
+    try {
+      const res = await fetch(
+        `${API}/org-admin/members/${member.user_id}/${verb === "approve" ? "approve-membership" : "reject-membership"}`,
+        {
+          method: "POST",
+          headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+          body: JSON.stringify({ note: note || null }),
+        }
+      );
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body.detail || `Could not ${verb} this member.`);
+      }
+      setPending((prev) => prev.filter((p) => p.user_id !== member.user_id));
+      await loadData(token);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : `Could not ${verb} this member.`);
+    } finally {
+      setDecidingId(null);
     }
   }
 
@@ -430,6 +481,70 @@ export default function OrgAdminPage() {
                   </button>
                 </div>
               </form>
+            </div>
+          </div>
+        )}
+
+        {/* Pending membership requests — only rendered when there are any, so
+            the page is unchanged for an org with nothing waiting. */}
+        {pending.length > 0 && (
+          <div className="mb-6 rounded-xl border border-amber-400/25 bg-amber-400/[0.06] overflow-hidden">
+            <div className="px-5 py-3 border-b border-amber-400/20">
+              <h2 className="text-sm font-semibold text-amber-200">
+                Waiting for your approval ({pending.length})
+              </h2>
+              <p className="mt-1 text-xs text-amber-200/70">
+                These people signed up with your company&apos;s email domain. Approving them
+                bills their usage to the company account. They can already use Coreframe on
+                their own wallet — this decision is only about who pays.
+              </p>
+            </div>
+            <div className="divide-y divide-white/5">
+              {pending.map((m) => (
+                <div key={m.user_id} className="flex flex-wrap items-center gap-3 px-5 py-4">
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-medium text-white">
+                        {m.full_name || m.email}
+                      </span>
+                      {m.identity_verified ? (
+                        <span className="rounded-full border border-emerald-400/25 bg-emerald-400/10 px-2 py-0.5 text-[10px] font-medium text-emerald-300">
+                          identity verified
+                        </span>
+                      ) : (
+                        <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[10px] text-white/50">
+                          identity pending
+                        </span>
+                      )}
+                    </div>
+                    <div className="mt-0.5 text-xs text-white/50">{m.email}</div>
+                    {m.identity_name && m.identity_name !== m.full_name && (
+                      <div className="mt-0.5 text-xs text-white/40">
+                        Verified as {m.identity_name}
+                      </div>
+                    )}
+                    <div className="mt-0.5 text-[11px] text-white/35">
+                      Requested {ago(m.requested_at)}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => decideMembership(m, true)}
+                      disabled={decidingId === m.user_id}
+                      className="rounded-lg bg-emerald-500/90 px-3 py-1.5 text-xs font-medium text-white hover:bg-emerald-500 disabled:opacity-50"
+                    >
+                      {decidingId === m.user_id ? "…" : "Approve"}
+                    </button>
+                    <button
+                      onClick={() => decideMembership(m, false)}
+                      disabled={decidingId === m.user_id}
+                      className="rounded-lg border border-white/15 px-3 py-1.5 text-xs font-medium text-white/70 hover:bg-white/5 disabled:opacity-50"
+                    >
+                      Decline
+                    </button>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         )}

@@ -393,14 +393,17 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
         />
         <div className="grid gap-3">
           <Button asChild className="h-12 rounded-xl text-base font-semibold">
-            <Link href="/download">
+            <Link href="/my-activity">
               <ArrowRight className="mr-2 h-4 w-4" />
-              Download Coreframe Connect
+              Go to my account
             </Link>
           </Button>
-          <Link href="/my-activity" className="text-center text-sm text-cyan-400 hover:underline">
-            Go to my account →
-          </Link>
+          {/* The desktop client is not being handed out yet. Saying so here is
+              better than sending someone to a page that turns them away. */}
+          <p className="text-center text-xs text-slate-500">
+            Coreframe Connect is not open for download yet — we will email you as soon
+            as your workstation is ready.
+          </p>
         </div>
       </Card>
     );
