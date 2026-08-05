@@ -35,8 +35,11 @@ function MagicLinkVerifier() {
         localStorage.setItem("cf_customer_token", data.access_token);
         localStorage.setItem("cf_customer_user", JSON.stringify(data.user));
         setStatus("success");
+        // An account still awaiting approval has identity verification left to
+        // do — send it there rather than to a dashboard it cannot use.
+        const next = data.user?.status === "pending_approval" ? "/verify" : "/my-activity";
         setTimeout(() => {
-          window.location.href = "/my-activity";
+          window.location.href = next;
         }, 1200);
       })
       .catch(() => {

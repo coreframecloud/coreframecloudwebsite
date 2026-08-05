@@ -72,8 +72,19 @@ function SentCard({ email, label }: { email: string; label: string }) {
       </div>
       <div>
         <p className="font-semibold text-white">Check your inbox</p>
+        {/* The API answers identically whether or not the account exists, so
+            that an attacker cannot use this form to discover which emails are
+            registered. The copy has to match that — claiming "we sent you a
+            code" is a lie for an address that has never signed up, and it sent
+            people hunting through spam folders for an email that was never
+            generated. */}
         <p className="mt-1 text-sm text-slate-400">
-          We sent a {label} to <span className="text-white">{email}</span>. It expires in 15 minutes.
+          If an account exists for <span className="text-white">{email}</span>, a {label} is on
+          its way. It expires in 15 minutes.
+        </p>
+        <p className="mt-2 text-xs text-slate-500">
+          Nothing arrived? You may not have an account yet — use{" "}
+          <b className="text-slate-300">Email link</b> above to create one.
         </p>
       </div>
     </div>
@@ -99,6 +110,11 @@ export default function LoginForm() {
   const [linkName, setLinkName] = useState("");
   const [linkOrg, setLinkOrg] = useState("");
   const [linkPhone, setLinkPhone] = useState("");
+  // Individual vs registered business. A business additionally verifies its
+  // GSTIN — the signatory's DigiLocker proves the person, the GSTIN proves the
+  // entity. Neither substitutes for the other.
+  const [linkAccountType, setLinkAccountType] = useState<"b2c" | "b2b">("b2c");
+  const [linkGstin, setLinkGstin] = useState("");
   const [linkLoading, setLinkLoading] = useState(false);
 
   // ── Email Code state ────────────────────────────────────────────────────────
@@ -170,7 +186,14 @@ export default function LoginForm() {
     e.preventDefault();
     setError("");
     if (!linkName.trim()) return setError("Full name is required.");
-    if (!linkOrg.trim()) return setError("Studio / company name is required.");
+    // Only a business needs a company name — for an individual it is friction
+    // for no gain, so we fall back to their own name as the workspace label.
+    if (linkAccountType === "b2b" && !linkOrg.trim()) {
+      return setError("Registered business name is required.");
+    }
+    if (linkAccountType === "b2b" && linkGstin.trim().length !== 15) {
+      return setError("A GSTIN is 15 characters. You can also add it later during verification.");
+    }
     setLinkLoading(true);
     try {
       const res = await fetch(`${API}/auth/request-magic-link`, {
@@ -179,8 +202,10 @@ export default function LoginForm() {
         body: JSON.stringify({
           email: linkEmail.trim(),
           full_name: linkName.trim(),
-          org_name: linkOrg.trim(),
+          org_name: linkOrg.trim() || linkName.trim(),
           phone: linkPhone.trim() || undefined,
+          customer_type: linkAccountType,
+          gstin: linkAccountType === "b2b" ? linkGstin.trim().toUpperCase() : undefined,
         }),
       });
       const data = await res.json();
@@ -335,12 +360,70 @@ export default function LoginForm() {
                 <div className="rounded-xl border border-cyan-500/20 bg-cyan-500/8 px-4 py-3 text-xs text-cyan-300">
                   No account found for <strong>{linkEmail}</strong> — fill in your details below to create one.
                 </div>
+
+                <Field label="What kind of account is this?">
+                  <div className="grid grid-cols-2 gap-3">
+                    <button
+                      type="button"
+                      onClick={() => { setLinkAccountType("b2c"); setError(""); }}
+                      className={`rounded-xl border px-4 py-3 text-left transition-colors ${
+                        linkAccountType === "b2c"
+                          ? "border-cyan-400/50 bg-cyan-400/10"
+                          : "border-white/10 bg-white/5 hover:border-white/20"
+                      }`}
+                    >
+                      <span className="block text-sm font-medium text-white">Individual</span>
+                      <span className="mt-0.5 block text-xs text-slate-400">
+                        Freelancer or personal use
+                      </span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => { setLinkAccountType("b2b"); setError(""); }}
+                      className={`rounded-xl border px-4 py-3 text-left transition-colors ${
+                        linkAccountType === "b2b"
+                          ? "border-cyan-400/50 bg-cyan-400/10"
+                          : "border-white/10 bg-white/5 hover:border-white/20"
+                      }`}
+                    >
+                      <span className="block text-sm font-medium text-white">Business</span>
+                      <span className="mt-0.5 block text-xs text-slate-400">
+                        GST-registered, needs invoices
+                      </span>
+                    </button>
+                  </div>
+                </Field>
+
+                {linkAccountType === "b2b" && (
+                  <Field label="GSTIN">
+                    <Input
+                      value={linkGstin}
+                      onChange={(e) => { setLinkGstin(e.target.value.toUpperCase()); setError(""); }}
+                      className={`${inputCls} font-mono tracking-wide`}
+                      placeholder="29AAICP2912R1ZR"
+                      maxLength={15}
+                      required
+                    />
+                    <p className="mt-1 text-xs text-slate-500">
+                      We verify this against the GST register. It also sets your place of
+                      supply for invoices.
+                    </p>
+                  </Field>
+                )}
                 <div className="grid grid-cols-2 gap-3">
                   <Field label="Full name">
                     <Input value={linkName} onChange={(e) => { setLinkName(e.target.value); setError(""); }} className={inputCls} placeholder="Rahul Sharma" required />
                   </Field>
-                  <Field label="Company / Studio">
-                    <Input value={linkOrg} onChange={(e) => { setLinkOrg(e.target.value); setError(""); }} className={inputCls} placeholder="Acme Studio" required />
+                  <Field label={linkAccountType === "b2b"
+                    ? "Registered business name"
+                    : <>Studio name <span className="text-slate-600">(optional)</span></>}>
+                    <Input
+                      value={linkOrg}
+                      onChange={(e) => { setLinkOrg(e.target.value); setError(""); }}
+                      className={inputCls}
+                      placeholder={linkAccountType === "b2b" ? "Acme Design Pvt Ltd" : "Acme Studio"}
+                      required={linkAccountType === "b2b"}
+                    />
                   </Field>
                 </div>
                 <Field label={<>Phone <span className="text-slate-600">(optional)</span></>}>

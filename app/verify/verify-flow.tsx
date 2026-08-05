@@ -22,9 +22,11 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
   ArrowRight,
+  Building2,
   CheckCircle2,
   Clock,
   Fingerprint,
+  Landmark,
   Loader2,
   RefreshCw,
   ShieldCheck,
@@ -35,7 +37,30 @@ const API = "https://control.coreframecloud.com/api";
 const POLL_MS = 3000;
 const POLL_TIMEOUT_MS = 3 * 60 * 1000;
 
+interface BankState {
+  required: boolean;
+  verified: boolean;
+  status: string | null;
+  name_at_bank: string | null;
+  account_masked: string | null;
+  failure_reason: string | null;
+}
+
+interface BusinessState {
+  bank?: BankState;
+  business_verified: boolean;
+  gstin: string | null;
+  gstin_status: string | null;
+  legal_name: string | null;
+  trade_name: string | null;
+  constitution: string | null;
+  registered_state: string | null;
+  failure_reason: string | null;
+}
+
 interface VerificationStatus {
+  customer_type?: string;
+  business?: BusinessState;
   kyc_required: boolean;
   kyc_status: string;
   identity_verified: boolean;
@@ -49,7 +74,7 @@ interface VerificationStatus {
   verified_name: string | null;
 }
 
-type Phase = "loading" | "intro" | "redirecting" | "polling" | "approved" | "review" | "failed" | "error";
+type Phase = "loading" | "intro" | "gstin" | "bank" | "redirecting" | "polling" | "approved" | "review" | "failed" | "error";
 
 const FAILURE_COPY: Record<string, string> = {
   expired: "The DigiLocker link expired before it was completed. Links are valid for 10 minutes.",
@@ -86,6 +111,12 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
   const [status, setStatus] = useState<VerificationStatus | null>(null);
   const [error, setError] = useState("");
   const [reason, setReason] = useState("");
+  const [gstin, setGstin] = useState("");
+  const [gstinBusy, setGstinBusy] = useState(false);
+  const [business, setBusiness] = useState<BusinessState | null>(null);
+  const [bank, setBank] = useState<{ upi_link?: string; qr?: string; expected?: string } | null>(null);
+  const [bankBusy, setBankBusy] = useState(false);
+  const [bankHint, setBankHint] = useState("");
   const pollStarted = useRef<number>(0);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -115,10 +146,18 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
         if (!res.ok) throw new Error("Could not load your verification status.");
         setStatus(data);
 
+        const needsGstin =
+          data.customer_type === "b2b" && !data.business?.business_verified;
+
         if (data.identity_verified || data.kyc_status === "verified") {
-          setPhase("approved");
+          // Identity is done. A business still has to prove the ENTITY.
+          setPhase(needsGstin ? "gstin" : "approved");
         } else if (resume) {
           setPhase("polling");
+        } else if (needsGstin) {
+          // GSTIN first: it is instant and free of a browser round trip, so a
+          // wrong GSTIN is caught before we spend a DigiLocker verification.
+          setPhase("gstin");
         } else {
           setPhase("intro");
         }
@@ -154,6 +193,14 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
         }
 
         if (data.verified) {
+          // The token we used to get here is verification-scoped and works
+          // nowhere else. When verification activates the account the API
+          // returns a full one — swap it in so the customer is simply logged
+          // in, rather than bounced back to the login page.
+          if (data.access_token) {
+            localStorage.setItem("cf_customer_token", data.access_token);
+            if (data.user) localStorage.setItem("cf_customer_user", JSON.stringify(data.user));
+          }
           setPhase(data.auto_approved || !data.awaiting_review ? "approved" : "review");
           return;
         }
@@ -184,6 +231,118 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [phase]);
+
+  async function submitGstin(e: React.FormEvent) {
+    e.preventDefault();
+    setError("");
+    const value = gstin.trim().toUpperCase();
+    if (value.length !== 15) {
+      setError("A GSTIN is 15 characters — 2-digit state code, PAN, then 3 more.");
+      return;
+    }
+    setGstinBusy(true);
+    try {
+      const res = await fetch(`${API}/verification/gstin`, {
+        method: "POST",
+        headers: authHeaders(),
+        body: JSON.stringify({ gstin: value }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.detail ?? "Could not verify that GSTIN.");
+
+      if (!data.verified) {
+        setError(
+          data.gstin_status === "not_found"
+            ? "That GSTIN is not on the GST register. Check it against your GST certificate."
+            : data.reason || "That GST registration is not active."
+        );
+        return;
+      }
+
+      if (data.access_token) {
+        localStorage.setItem("cf_customer_token", data.access_token);
+        if (data.user) localStorage.setItem("cf_customer_user", JSON.stringify(data.user));
+      }
+      setBusiness({
+        business_verified: true,
+        gstin: value,
+        gstin_status: data.gstin_status,
+        legal_name: data.legal_name,
+        trade_name: data.trade_name,
+        constitution: data.constitution,
+        registered_state: data.registered_state,
+        failure_reason: null,
+      });
+      // GST done. Bank control is next for a business, then identity.
+      if (status?.business?.bank?.required && !status?.business?.bank?.verified) {
+        setPhase("bank");
+      } else if (status?.identity_verified || status?.kyc_status === "verified") {
+        setPhase(data.account_active ? "approved" : "review");
+      } else {
+        setPhase("intro");
+      }
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Could not verify that GSTIN.");
+    } finally {
+      setGstinBusy(false);
+    }
+  }
+
+  async function startBankCheck() {
+    setError("");
+    setBankBusy(true);
+    try {
+      const res = await fetch(`${API}/verification/bank/start`, {
+        method: "POST",
+        headers: authHeaders(),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.detail ?? "Could not start the bank check.");
+      setBank({ upi_link: data.upi_link, qr: data.qr_code_base64, expected: data.expected_name });
+      setBankHint("Send the ₹1 from your company account, then press Check payment.");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Could not start the bank check.");
+    } finally {
+      setBankBusy(false);
+    }
+  }
+
+  async function checkBankPayment() {
+    setError("");
+    setBankBusy(true);
+    try {
+      const res = await fetch(`${API}/verification/bank/complete`, {
+        method: "POST",
+        headers: authHeaders(),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.detail ?? "Could not check the payment.");
+
+      if (data.verified) {
+        if (data.access_token) {
+          localStorage.setItem("cf_customer_token", data.access_token);
+          if (data.user) localStorage.setItem("cf_customer_user", JSON.stringify(data.user));
+        }
+        if (status?.identity_verified || status?.kyc_status === "verified") {
+          setPhase(data.account_active ? "approved" : "review");
+        } else {
+          setPhase("intro");
+        }
+        return;
+      }
+      if (data.pending) {
+        setBankHint("No payment received yet. Complete the ₹1 UPI payment, then check again.");
+        return;
+      }
+      setBankHint("");
+      setError(data.reason || "That attempt did not complete. Start a new one.");
+      setBank(null);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Could not check the payment.");
+    } finally {
+      setBankBusy(false);
+    }
+  }
 
   // ── start ─────────────────────────────────────────────────────────────────
   async function startVerification(userFlow: "signup" | "signin") {
@@ -301,6 +460,140 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
     );
   }
 
+  if (phase === "gstin") {
+    return (
+      <Card>
+        <Header
+          icon={<Building2 className="h-5 w-5" />}
+          title="Verify your business"
+          sub="We check your GSTIN against the GST register. Instant, and it sets your place of supply for invoices."
+        />
+
+        {business?.business_verified && (
+          <div className="mb-5 rounded-xl border border-green-500/25 bg-green-500/10 px-4 py-3 text-sm text-green-200">
+            <b>{business.legal_name || business.trade_name}</b> confirmed
+            {business.constitution ? ` · ${business.constitution}` : ""}
+            {business.registered_state ? ` · ${business.registered_state}` : ""}
+          </div>
+        )}
+
+        <form onSubmit={submitGstin} className="grid gap-4">
+          <div className="grid gap-1.5">
+            <label className="text-xs text-slate-400">GSTIN</label>
+            <input
+              value={gstin}
+              onChange={(e) => { setGstin(e.target.value.toUpperCase()); setError(""); }}
+              maxLength={15}
+              placeholder="29AAICP2912R1ZR"
+              className="h-12 rounded-xl border border-white/10 bg-white/5 px-4 font-mono tracking-widest text-white placeholder:text-slate-600 focus:border-cyan-400/50 focus:outline-none"
+              required
+            />
+            <p className="text-xs text-slate-500">
+              15 characters, exactly as printed on your GST certificate.
+            </p>
+          </div>
+
+          {error && (
+            <p className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+              {error}
+            </p>
+          )}
+
+          <Button type="submit" disabled={gstinBusy} className="h-12 rounded-xl text-base font-semibold">
+            {gstinBusy ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ArrowRight className="mr-2 h-4 w-4" />}
+            {gstinBusy ? "Checking the GST register…" : "Verify GSTIN"}
+          </Button>
+        </form>
+
+        <p className="mt-5 text-xs text-slate-500">
+          A business account needs two things: this, which proves the company is
+          real and GST-active, and a DigiLocker check on you as the signatory,
+          which proves a real person is accountable for the account. You will do
+          that next.
+        </p>
+      </Card>
+    );
+  }
+
+  if (phase === "bank") {
+    return (
+      <Card>
+        <Header
+          icon={<Landmark className="h-5 w-5" />}
+          title="Confirm your company bank account"
+          sub="Send ₹1 by UPI from the company's account. We refund it within 48 hours."
+        />
+
+        <p className="mb-5 text-sm text-slate-400">
+          A GSTIN is printed on every invoice your company issues, so quoting one
+          proves very little. Sending money from the account proves you actually
+          control it — which is the point of this step.
+        </p>
+
+        {!bank ? (
+          <Button
+            onClick={startBankCheck}
+            disabled={bankBusy}
+            className="h-12 w-full rounded-xl text-base font-semibold"
+          >
+            {bankBusy ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ArrowRight className="mr-2 h-4 w-4" />}
+            {bankBusy ? "Preparing…" : "Start bank verification"}
+          </Button>
+        ) : (
+          <div className="grid gap-4">
+            {bank.qr && (
+              <div className="flex justify-center rounded-xl border border-white/10 bg-white p-4">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={`data:image/png;base64,${bank.qr}`}
+                  alt="UPI QR code for the ₹1 verification payment"
+                  className="h-48 w-48"
+                />
+              </div>
+            )}
+
+            {bank.upi_link && (
+              <a
+                href={bank.upi_link}
+                className="rounded-xl border border-cyan-400/30 bg-cyan-400/10 px-4 py-3 text-center text-sm font-medium text-cyan-200 hover:bg-cyan-400/15"
+              >
+                Open a UPI app on this device →
+              </a>
+            )}
+
+            <p className="text-xs text-slate-500">
+              Pay from the account held by{" "}
+              <b className="text-slate-300">{bank.expected || "your company"}</b>.
+              A personal account will not match and the check will be held for review.
+              The link expires in 10 minutes.
+            </p>
+
+            {bankHint && (
+              <p className="rounded-xl border border-amber-500/25 bg-amber-500/10 px-4 py-3 text-sm text-amber-200">
+                {bankHint}
+              </p>
+            )}
+
+            <Button
+              onClick={checkBankPayment}
+              disabled={bankBusy}
+              className="h-12 rounded-xl text-base font-semibold"
+            >
+              {bankBusy ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <RefreshCw className="mr-2 h-4 w-4" />}
+              {bankBusy ? "Checking…" : "Check payment"}
+            </Button>
+          </div>
+        )}
+
+        {error && (
+          <p className="mt-4 rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+            {error}
+          </p>
+        )}
+      </Card>
+    );
+  }
+
   if (phase === "redirecting" || phase === "polling") {
     return (
       <Card>
@@ -351,6 +644,13 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
           </span>
         </li>
       </ul>
+
+      {business?.business_verified && (
+        <p className="mb-4 rounded-xl border border-green-500/25 bg-green-500/10 px-4 py-3 text-sm text-green-200">
+          Business verified: <b>{business.legal_name || business.trade_name}</b>. One step left —
+          confirm your own identity as the signatory.
+        </p>
+      )}
 
       {status?.failure_reason && (
         <p className="mb-4 rounded-xl border border-amber-500/25 bg-amber-500/10 px-4 py-3 text-sm text-amber-200">
