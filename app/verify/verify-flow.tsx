@@ -683,12 +683,15 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
           <ArrowRight className="mr-2 h-4 w-4" />
           Verify with DigiLocker
         </Button>
+        <p className="text-center text-xs text-slate-500">
+          Already have DigiLocker? Use the button above — you will sign in with an OTP.
+        </p>
         <button
           type="button"
           onClick={() => startVerification("signup")}
           className="text-center text-sm text-slate-400 hover:text-slate-200"
         >
-          I don&apos;t have a DigiLocker account yet →
+          New to DigiLocker? Create an account as part of this →
         </button>
       </div>
 

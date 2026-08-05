@@ -107,11 +107,17 @@ export default function MyActivityPage() {
     const authFetch = async (url: string) => {
       try {
         const r = await fetch(url, { headers });
-        if (r.status === 401 || r.status === 403) throw new Error("auth_failed");
+        // 401 = the token is bad; sign them out.
+        // 403 = the token is FINE but the account is not verified yet — it is a
+        // verification-scoped token, which is supposed to be refused here.
+        // Deleting it on 403 signed people out while the header still showed
+        // them as logged in, which is where the contradiction came from.
+        if (r.status === 401) throw new Error("auth_failed");
+        if (r.status === 403) throw new Error("needs_verification");
         if (!r.ok) return null;
         return r.json();
       } catch (err: unknown) {
-        if (err instanceof Error && err.message === "auth_failed") throw err;
+        if (err instanceof Error && ["auth_failed", "needs_verification"].includes(err.message)) throw err;
         return null; // network errors or missing endpoints → treat as empty
       }
     };
@@ -127,6 +133,11 @@ export default function MyActivityPage() {
         setPayments(Array.isArray(p) ? p : []);
       })
       .catch((err) => {
+        if (err.message === "needs_verification") {
+          // Keep the session; send them to finish verifying.
+          window.location.href = "/verify";
+          return;
+        }
         if (err.message === "auth_failed") {
           localStorage.removeItem("cf_customer_token");
           localStorage.removeItem("cf_customer_user");

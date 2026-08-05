@@ -22,7 +22,7 @@ interface WalletData {
 
 interface AuthState {
   token: string;
-  user: { full_name: string; email: string; id: string; role?: string; customer_type?: string };
+  user: { full_name: string; email: string; id: string; role?: string; customer_type?: string; status?: string };
   wallet: WalletData | null;
 }
 
@@ -130,6 +130,14 @@ export function SiteHeader() {
     ])
       .then(async ([walletRes, meRes]) => {
         if (walletRes.status === 401 || meRes.status === 401) throw new Error("unauthorized");
+        // 403 = a valid but verification-scoped token. The account exists and
+        // the person IS signed in — they just cannot use the product yet. Keep
+        // the session so "Sign out" works and stays truthful; the header used
+        // to say "Sign out" while every page said "please sign in".
+        if (walletRes.status === 403 || meRes.status === 403) {
+          setAuth({ token, user: { ...cachedUser, status: "pending_approval" }, wallet: null });
+          return;
+        }
         const wallet: WalletData = walletRes.ok ? await walletRes.json() : null;
         const freshUser = meRes.ok ? await meRes.json() : null;
         // Merge fresh role/customer_type into cached user
@@ -215,7 +223,7 @@ export function SiteHeader() {
               )}
               {/* My Activity link */}
               <Link
-                href="/my-activity"
+                href={auth.user?.status === "pending_approval" ? "/verify" : "/my-activity"}
                 className="text-sm font-medium text-white/70 transition hover:text-white"
                 onClick={() => trackEvent("my_activity_click", { location: "header_cta" })}
               >
@@ -296,12 +304,15 @@ export function SiteHeader() {
                     <span className="text-sm text-white/60">{auth.user.full_name}</span>
                   </div>
                 )}
+                {/* An unverified account cannot load My Activity — the API
+                    refuses its verification-scoped token — so send it to the
+                    step that actually unblocks the person. */}
                 <Link
-                  href="/my-activity"
+                  href={auth.user?.status === "pending_approval" ? "/verify" : "/my-activity"}
                   onClick={() => { setOpen(false); trackEvent("my_activity_click", { location: "mobile_menu" }); }}
                   className="rounded-xl px-3 py-2.5 text-sm font-medium text-white/80 transition hover:bg-white/5 hover:text-white"
                 >
-                  My Activity
+                  {auth.user?.status === "pending_approval" ? "Finish verification" : "My Activity"}
                 </Link>
                 {auth.user?.role === "org_admin" && (
                   <Link
