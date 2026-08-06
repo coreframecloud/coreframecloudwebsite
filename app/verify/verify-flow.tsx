@@ -64,6 +64,10 @@ interface VerificationStatus {
   kyc_required: boolean;
   kyc_status: string;
   identity_verified: boolean;
+  // Whether the ACCOUNT is usable — distinct from whether the identity checked
+  // out. A verified identity with a poor name match is held for review, so
+  // `identity_verified` alone must never be treated as approval.
+  account_active: boolean;
   mobile_otp_required: boolean;
   mobile_verified: boolean;
   email_verified: boolean;
@@ -155,8 +159,16 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
           data.customer_type === "b2b" && !data.business?.business_verified;
 
         if (data.identity_verified || data.kyc_status === "verified") {
-          // Identity is done. A business still has to prove the ENTITY.
-          setPhase(needsGstin ? "gstin" : "approved");
+          // Identity is done — which is NOT the same as the account being
+          // usable. A verified identity with a poor name match is held for a
+          // human to look at, and this branch used to jump straight to
+          // "approved" on that basis alone, so a held account was told "your
+          // account is active" every time it opened this page.
+          //
+          // A business additionally has to prove the ENTITY before either.
+          setPhase(
+            needsGstin ? "gstin" : data.account_active ? "approved" : "review",
+          );
         } else if (resume) {
           setPhase("polling");
         } else if (needsGstin) {
@@ -368,7 +380,8 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
       const data = await res.json();
       if (!res.ok) throw new Error(data.detail ?? "Could not start verification.");
       if (data.already_verified) {
-        setPhase("approved");
+        // Already verified is not the same as already approved.
+        setPhase(data.account_active ? "approved" : "review");
         return;
       }
       window.location.href = data.url;
