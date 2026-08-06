@@ -7,8 +7,15 @@ const API = "https://control.coreframecloud.com/api";
 
 interface WalletData {
   wallet_balance_rupees: number;
+  // Per-customer override, NOT_NULL DEFAULT 99. Do not display it — since rates
+  // moved to the rate card it is a number nobody is billed, and showing it as
+  // "₹99/hr GPU rate" next to a real ₹399 charge is how billing disputes start.
   hourly_rate_rupees_per_hour: number;
   trial_credit_hours: number;
+  // Cheapest live rate for this customer's segment. This is the one to show.
+  gpu_rate_from_rupees: number | null;
+  next_expiry: { expires_at: string; amount_rupees: number } | null;
+  credit_validity_days: number;
 }
 
 interface Session {
@@ -251,15 +258,30 @@ export default function MyActivityPage() {
                 ₹{wallet ? wallet.wallet_balance_rupees.toFixed(2) : "0.00"}
               </p>
               {/*
-                No hardcoded fallback rate. If the wallet API does not return a
-                rate we show an em-dash: a stale price shown to a signed-in
-                customer is worse than no price at all.
+                "from ₹X/hr", because there is no single rate any more — it
+                depends which workstation you launch. This reads the cheapest
+                live rate for the customer's segment from the rate card.
+
+                It previously showed `hourly_rate_rupees_per_hour`, the
+                per-customer override, which defaults to 99 and is charged to
+                nobody. A customer seeing "₹99/hr" here and then a ₹399 line on
+                their invoice has every reason to dispute it.
+
+                No hardcoded fallback: an em-dash beats a wrong price.
               */}
               <p className="text-xs text-white/40 mt-1">
-                {wallet?.hourly_rate_rupees_per_hour != null
-                  ? `₹${wallet.hourly_rate_rupees_per_hour}/hr GPU rate`
-                  : "— GPU rate unavailable"}
+                {wallet?.gpu_rate_from_rupees != null
+                  ? `GPU time from ₹${Math.round(wallet.gpu_rate_from_rupees)}/hr · GST included`
+                  : "— rates unavailable"}
               </p>
+              {wallet?.next_expiry && (
+                <p className="text-xs text-amber-300/80 mt-2">
+                  ₹{Math.round(wallet.next_expiry.amount_rupees).toLocaleString("en-IN")} expires on{" "}
+                  {new Date(wallet.next_expiry.expires_at).toLocaleDateString("en-IN", {
+                    day: "numeric", month: "short", year: "numeric",
+                  })}
+                </p>
+              )}
             </div>
             <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 flex flex-col justify-between">
               <div>
