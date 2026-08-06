@@ -3,14 +3,14 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Loader2, Mail, CheckCircle, ArrowRight } from "lucide-react";
+// CheckCircle went with the password tab's "signed in" state.
+import { Loader2, Mail, ArrowRight } from "lucide-react";
 
 const API = "https://control.coreframecloud.com/api";
 
-type Tab = "link" | "code" | "password";
+type Tab = "link" | "code";
 type LinkStep = "email" | "details" | "sent";
 type CodeStep = "email" | "code" | "done";
-type PwStep = "form" | "done";
 
 // ── Google icon ────────────────────────────────────────────────────────────────
 function GoogleIcon() {
@@ -123,11 +123,6 @@ export default function LoginForm() {
   const [codeValue, setCodeValue] = useState("");
   const [codeLoading, setCodeLoading] = useState(false);
 
-  // ── Password state ──────────────────────────────────────────────────────────
-  const [pwStep, setPwStep] = useState<PwStep>("form");
-  const [pwEmail, setPwEmail] = useState("");
-  const [pwPassword, setPwPassword] = useState("");
-  const [pwLoading, setPwLoading] = useState(false);
 
   function storeAndRedirect(data: { access_token: string; user: unknown }) {
     localStorage.setItem("cf_customer_token", data.access_token);
@@ -268,29 +263,6 @@ export default function LoginForm() {
     }
   }
 
-  // ── Password handler ────────────────────────────────────────────────────────
-
-  async function handlePasswordSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setError("");
-    if (!pwEmail.trim() || !pwPassword) return setError("Email and password are required.");
-    setPwLoading(true);
-    try {
-      const res = await fetch(`${API}/auth/user/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: pwEmail.trim(), password: pwPassword }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.detail ?? `Error ${res.status}`);
-      storeAndRedirect(data);
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Invalid credentials.");
-    } finally {
-      setPwLoading(false);
-    }
-  }
-
   // ══════════════════════════════════════════════════════════════════════════
   return (
     <div className="w-full max-w-[440px]">
@@ -323,11 +295,23 @@ export default function LoginForm() {
           <div className="h-px flex-1 bg-white/10" />
         </div>
 
-        {/* Tab switcher */}
+        {/* Tab switcher.
+            Only the email link can CREATE an account — the 6-digit code path
+            signs in an existing one and silently does nothing for an address it
+            has never seen, which is exactly how a new customer gets stuck on a
+            screen saying a code was sent. So the code tab is offered only to
+            people who already have an account.
+
+            Password sign-in is gone entirely. Nothing issues a customer
+            password, so the tab could only ever fail; keeping it also meant
+            keeping a password surface to attack for no benefit. */}
         <div className="mb-5 flex gap-1 rounded-xl bg-white/5 p-1">
-          <TabBtn active={tab === "link"} onClick={() => switchTab("link")}>Email link</TabBtn>
-          <TabBtn active={tab === "code"} onClick={() => switchTab("code")}>Email code</TabBtn>
-          <TabBtn active={tab === "password"} onClick={() => switchTab("password")}>Password</TabBtn>
+          <TabBtn active={tab === "link"} onClick={() => switchTab("link")}>
+            Email link
+          </TabBtn>
+          <TabBtn active={tab === "code"} onClick={() => switchTab("code")}>
+            I already have an account
+          </TabBtn>
         </div>
 
         {/* ── EMAIL LINK TAB ────────────────────────────────────────────── */}
@@ -532,39 +516,16 @@ export default function LoginForm() {
           </div>
         )}
 
-        {/* ── PASSWORD TAB ──────────────────────────────────────────────── */}
-        {tab === "password" && (
-          <form onSubmit={handlePasswordSubmit} className="grid gap-4">
-            <Field label="Email address">
-              <Input
-                type="email"
-                value={pwEmail}
-                onChange={(e) => { setPwEmail(e.target.value); setError(""); }}
-                className={inputCls}
-                placeholder="you@studio.com"
-                autoComplete="email"
-                autoFocus
-                required
-              />
-            </Field>
-            <Field label="Password">
-              <Input
-                type="password"
-                value={pwPassword}
-                onChange={(e) => { setPwPassword(e.target.value); setError(""); }}
-                className={inputCls}
-                placeholder="Your password"
-                autoComplete="current-password"
-                required
-              />
-            </Field>
-            {error && <ErrorBox msg={error} />}
-            <Button type="submit" disabled={pwLoading} className="h-12 rounded-xl text-base font-semibold">
-              {pwLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-              {pwLoading ? "Signing in…" : "Sign in"}
-            </Button>
-          </form>
-        )}
+        {/* The password tab was removed here.
+
+            Nothing in the product ever issued a customer password: accounts are
+            created by magic link and signed in by link or 6-digit code. The tab
+            could therefore only ever fail, while still presenting a password
+            field to credential-stuffing traffic. Deleting it removes an attack
+            surface that protected nothing.
+
+            `handlePasswordSubmit` and the /auth/login call it used are gone with
+            it. The admin panel has its own password login and is unaffected. */}
 
       </div>
 

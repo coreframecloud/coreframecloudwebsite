@@ -108,6 +108,11 @@ function Header({ icon, title, sub }: { icon: React.ReactNode; title: string; su
 
 export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
   const [phase, setPhase] = useState<Phase>("loading");
+  // The name as verified by THIS run, taken from the completion response.
+  // `status.verified_name` is fetched when the page loads — before verification
+  // has happened — so reading the confirmed name from it shows whatever was on
+  // the account beforehand, which is either nothing or a previous attempt.
+  const [verifiedName, setVerifiedName] = useState<string | null>(null);
   const [status, setStatus] = useState<VerificationStatus | null>(null);
   const [error, setError] = useState("");
   const [reason, setReason] = useState("");
@@ -201,7 +206,14 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
             localStorage.setItem("cf_customer_token", data.access_token);
             if (data.user) localStorage.setItem("cf_customer_user", JSON.stringify(data.user));
           }
-          setPhase(data.auto_approved || !data.awaiting_review ? "approved" : "review");
+          // `account_active` is the authority — it is the server saying the
+          // account is usable. The old test was
+          // `auto_approved || !awaiting_review`, and when the API omitted
+          // `awaiting_review` that read as `!undefined` === true, so a held
+          // account was shown "your account is active" and then bounced back
+          // here from every page. Never infer success from a missing field.
+          setVerifiedName(data.verified_name ?? null);
+          setPhase(data.account_active ? "approved" : "review");
           return;
         }
         if (data.retry_required || ["expired", "consent_denied", "failed"].includes(data.kyc_status)) {
@@ -386,17 +398,26 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
           icon={<CheckCircle2 className="h-5 w-5" />}
           title="You're verified"
           sub={
-            status?.verified_name
-              ? `Identity confirmed as ${status.verified_name}. Your account is active.`
+            (verifiedName ?? status?.verified_name)
+              ? `Identity confirmed as ${verifiedName ?? status?.verified_name}. Your account is active.`
               : "Your identity has been confirmed and your account is active."
           }
         />
         <div className="grid gap-3">
+          {/* Hard navigation, not a client-side Link. The token was swapped for
+              a full one moments ago; a soft transition can carry stale auth
+              state into /my-activity, which then 403s and bounces the customer
+              straight back here — the loop reported after the first live run. */}
           <Button asChild className="h-12 rounded-xl text-base font-semibold">
-            <Link href="/my-activity">
+            {/* eslint-disable-next-line @next/next/no-html-link-for-pages --
+                a full page load is the point. The verification-scoped token was
+                swapped for a full one moments ago; a client-side <Link/> keeps
+                the running JS context, which can carry the old token into
+                /my-activity, get a 403 and bounce the customer back here. */}
+            <a href="/my-activity">
               <ArrowRight className="mr-2 h-4 w-4" />
               Go to my account
-            </Link>
+            </a>
           </Button>
           {/* The desktop client is not being handed out yet. Saying so here is
               better than sending someone to a page that turns them away. */}

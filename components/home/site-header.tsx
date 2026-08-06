@@ -221,14 +221,29 @@ export function SiteHeader() {
                   {balance}
                 </span>
               )}
-              {/* My Activity link */}
-              <Link
-                href={auth.user?.status === "pending_approval" ? "/verify" : "/my-activity"}
-                className="text-sm font-medium text-white/70 transition hover:text-white"
-                onClick={() => trackEvent("my_activity_click", { location: "header_cta" })}
-              >
-                My Activity
-              </Link>
+              {/* Account link. A pending account cannot load My Activity — the
+                  API refuses it — so the label has to say what the link
+                  actually does. The href was already conditional here while the
+                  label stayed "My Activity", which sent people to a
+                  verification page they had not asked for. The mobile menu got
+                  this right; the desktop nav did not. */}
+              {auth.user?.status === "pending_approval" ? (
+                <Link
+                  href="/verify"
+                  className="text-sm font-semibold text-amber-300 transition hover:text-amber-200"
+                  onClick={() => trackEvent("finish_verification_click", { location: "header_cta" })}
+                >
+                  Complete verification
+                </Link>
+              ) : (
+                <Link
+                  href="/my-activity"
+                  className="text-sm font-medium text-white/70 transition hover:text-white"
+                  onClick={() => trackEvent("my_activity_click", { location: "header_cta" })}
+                >
+                  My Activity
+                </Link>
+              )}
               {/* Org admin link — visible only to org_admin role */}
               {auth.user?.role === "org_admin" && (
                 <Link
@@ -312,7 +327,7 @@ export function SiteHeader() {
                   onClick={() => { setOpen(false); trackEvent("my_activity_click", { location: "mobile_menu" }); }}
                   className="rounded-xl px-3 py-2.5 text-sm font-medium text-white/80 transition hover:bg-white/5 hover:text-white"
                 >
-                  {auth.user?.status === "pending_approval" ? "Finish verification" : "My Activity"}
+                  {auth.user?.status === "pending_approval" ? "Complete verification" : "My Activity"}
                 </Link>
                 {auth.user?.role === "org_admin" && (
                   <Link
