@@ -11,7 +11,7 @@ export const metadata: Metadata = {
     template: "%s | Coreframe Cloud",
   },
   description:
-    "Want renders 5× faster? CFD analysis in minutes instead of days? Coreframe gives you managed RTX GPU workstations for D5 Render, Lumion, Enscape — and H100/RTX 6000 Pro for Ansys CFD. Pay per hour. Hosted in Bengaluru, India.",
+    "Want renders 5× faster? CFD analysis in minutes instead of days? Coreframe gives you managed RTX 5080 GPU workstations for D5 Render, Lumion, Enscape — plus managed per-job Ansys CFD. Pay per hour. Hosted in Bengaluru, India.",
   keywords: [
     "faster D5 Render cloud India",
     "5x faster rendering India",
@@ -40,7 +40,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Coreframe Cloud — RTX GPU Workstations for Design Studios, India",
     description:
-      "RTX 5070 Ti GPU workstations on demand for D5 Render, Lumion, Enscape. Pay-as-you-go or committed plans. Hosted in Bengaluru.",
+      "RTX 5080 GPU workstations on demand for D5 Render, Lumion, Enscape. Pay-as-you-go or committed plans. Hosted in Bengaluru.",
     url: "https://coreframecloud.com",
     siteName: "Coreframe Cloud",
     type: "website",
@@ -114,7 +114,7 @@ export default function RootLayout({
                   url: "https://coreframecloud.com",
                   logo: "https://coreframecloud.com/icon.png",
                   description:
-                    "RTX 5070 Ti GPU workstations on demand for D5 Render, Lumion, Enscape, and 3D visualisation studios. Hosted in Bengaluru, India.",
+                    "RTX 5080 GPU workstations on demand for D5 Render, Lumion, Enscape, and 3D visualisation studios. Hosted in Bengaluru, India.",
                   telephone: "+916366889488",
                   email: "admin@coreframecloud.com",
                   address: {
@@ -133,34 +133,52 @@ export default function RootLayout({
                 {
                   "@type": "Service",
                   "@id": "https://coreframecloud.com/#gpu-workstation-service",
-                  name: "RTX 5070 Ti Cloud GPU Workstation",
+                  name: "RTX 5080 Cloud GPU Workstation",
                   provider: { "@id": "https://coreframecloud.com/#organization" },
                   description:
-                    "On-demand Windows GPU workstations with NVIDIA RTX 5070 Ti (16 GB GDDR7) for D5 Render, Lumion, Enscape, SolidWorks, and 3ds Max. Pay-as-you-go from ₹400/hr or committed plans from ₹24,000/month.",
+                    "On-demand Windows GPU workstations with NVIDIA RTX 5080 (16 GB GDDR7) for D5 Render, Lumion, Enscape, SolidWorks, and 3ds Max. Pay-as-you-go from ₹399/hr or committed plans from ₹19,000/month. All prices include 18% GST.",
                   areaServed: "IN",
                   offers: [
                     {
                       "@type": "Offer",
                       name: "Ad-hoc GPU-hour",
-                      price: "400",
+                      price: "399",
                       priceCurrency: "INR",
+                      valueAddedTaxIncluded: true,
                       priceSpecification: {
                         "@type": "UnitPriceSpecification",
-                        price: "400",
+                        price: "399",
                         priceCurrency: "INR",
+                        valueAddedTaxIncluded: true,
                         unitText: "GPU-hour",
                       },
                     },
                     {
                       "@type": "Offer",
                       name: "Committed Monthly — Studio",
-                      price: "24000",
+                      price: "19000",
                       priceCurrency: "INR",
+                      valueAddedTaxIncluded: true,
                       priceSpecification: {
                         "@type": "UnitPriceSpecification",
-                        price: "24000",
+                        price: "19000",
                         priceCurrency: "INR",
+                        valueAddedTaxIncluded: true,
                         unitText: "month",
+                      },
+                    },
+                    {
+                      "@type": "Offer",
+                      name: "Persistent NAS storage",
+                      price: "1999",
+                      priceCurrency: "INR",
+                      valueAddedTaxIncluded: true,
+                      priceSpecification: {
+                        "@type": "UnitPriceSpecification",
+                        price: "1999",
+                        priceCurrency: "INR",
+                        valueAddedTaxIncluded: true,
+                        unitText: "TB per month",
                       },
                     },
                   ],

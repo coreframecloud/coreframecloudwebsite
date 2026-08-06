@@ -5,7 +5,7 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "Monthly GPU Plans for Design Studios & Firms — India",
   description:
-    "Committed monthly cloud GPU workstation plans for architecture and design studios. RTX 5070 Ti, persistent NAS storage, named seats, ₹250/GPU-hr. Plans from ₹24,000/month. Hosted in Bengaluru, India.",
+    "Committed monthly cloud GPU workstation plans for architecture and design studios. RTX 5080, persistent NAS storage, named seats, GPU-hours from ₹339 — cheaper than the ₹399 ad-hoc rate. Plans from ₹19,000/month, GST included. Hosted in Bengaluru, India.",
   keywords: [
     "cloud GPU plan India",
     "GPU workstation monthly plan India",
@@ -17,38 +17,59 @@ export const metadata: Metadata = {
   alternates: { canonical: "/enterprise" },
 };
 
+const ADHOC_RATE = "₹399";
+
 const plans = [
   {
     name: "Studio",
     tagline: "Small teams · 3–5 people",
-    price: "₹24,000",
+    price: "₹19,000",
     storage: "2 TB",
+    retention: "30 days",
     seats: "5",
     includedHours: "40",
-    extraRate: "₹350",
-    extraNote: "Best for occasional renders",
+    extraRate: "₹379",
+    extraNote: "₹20/hr under ad-hoc",
+    dedicated: false,
     highlight: false,
   },
   {
     name: "Medium Firm",
     tagline: "Growing studios · 8–12 people",
-    price: "₹50,000",
+    price: "₹53,000",
     storage: "5 TB",
+    retention: "90 days",
     seats: "12",
     includedHours: "120",
-    extraRate: "₹250",
-    extraNote: "Best value per GPU-hour",
+    extraRate: "₹359",
+    extraNote: "₹40/hr under ad-hoc",
+    dedicated: false,
     highlight: true,
   },
   {
     name: "Big Firm",
     tagline: "Established practices · 15–25 people",
-    price: "₹1,00,000",
+    price: "₹1,21,000",
     storage: "10 TB",
+    retention: "365 days",
     seats: "25",
     includedHours: "300",
-    extraRate: "₹200",
-    extraNote: "Volume discount",
+    extraRate: "₹339",
+    extraNote: "₹60/hr under ad-hoc",
+    dedicated: false,
+    highlight: false,
+  },
+  {
+    name: "Big Firm Dedicated",
+    tagline: "A node reserved entirely for one practice",
+    price: "₹1,89,000",
+    storage: "10 TB",
+    retention: "365 days",
+    seats: "25",
+    includedHours: "500",
+    extraRate: "₹339",
+    extraNote: "Reserved node",
+    dedicated: true,
     highlight: false,
   },
 ];
@@ -74,22 +95,27 @@ export default function EnterprisePage() {
             Render more. Pay less.
           </h1>
           <p className="mt-5 max-w-xl text-base leading-8 text-slate-300">
-            Lock in a monthly plan and get persistent project storage, named render seats,
-            and a significantly better GPU-hour rate than ad-hoc ₹400/hr.
-            Extra-hour rates drop as you move up — from ₹350/hr on Studio down to{" "}
-            <span className="text-white font-medium">₹200/hr on Big Firm</span>.
-            Most studios find Medium Firm is where the value concentrates.
+            Committing is genuinely cheaper per hour. Every committed tier bills extra GPU-hours
+            below the {ADHOC_RATE}/hr ad-hoc rate — {" "}
+            <span className="text-white font-medium">₹379 on Studio, ₹359 on Medium Firm, ₹339 on Big Firm</span>
+            {" "}— and you get persistent project storage and named render seats on top.
+            Storage is billed openly at ₹1,999/TB/month, a rate you can compare line-for-line
+            with AWS S3. Most studios find Medium Firm is where the value concentrates.
+          </p>
+          <p className="mt-3 max-w-xl text-sm leading-7 text-white/45">
+            All prices include 18% GST. What you see is what you pay, and every invoice shows the
+            taxable value and GST split so you can claim input tax credit.
           </p>
         </div>
 
         {/* GPU badge */}
-        <div className="mt-8 inline-flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.04] px-5 py-3">
+        <div className="mt-8 inline-flex flex-wrap items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.04] px-5 py-3">
           <span className="text-xs font-semibold uppercase tracking-wider text-white/40">Every instance</span>
-          <span className="text-sm font-bold text-white">RTX 5070 Ti · 16 GB GDDR7 · 64 GB ECC RAM · 6-core EPYC</span>
+          <span className="text-sm font-bold text-white">RTX 5080 · 16 GB GDDR7 · 960 GB/s · 64 GB ECC RAM · 6-core EPYC</span>
         </div>
 
         {/* Plans */}
-        <div className="mt-12 grid gap-6 lg:grid-cols-3">
+        <div className="mt-12 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
           {plans.map((plan) => (
             <div
               key={plan.name}
@@ -116,8 +142,8 @@ export default function EnterprisePage() {
                 <span className="text-4xl font-bold text-white">{plan.price}</span>
                 <span className="mb-1 text-sm text-white/40">/ month</span>
               </div>
-              <div className="mt-1 flex items-center gap-2">
-                <span className="text-xs text-white/40">+ {plan.extraRate} / GPU-hr beyond included · Excl. GST</span>
+              <div className="mt-1 flex flex-wrap items-center gap-2">
+                <span className="text-xs text-white/40">+ {plan.extraRate} / GPU-hr beyond included · incl. 18% GST</span>
                 <span className={`text-[10px] font-semibold rounded-full px-2 py-0.5 ${plan.highlight ? "bg-cyan-400/15 text-cyan-300" : "bg-white/8 text-white/40"}`}>
                   {plan.extraNote}
                 </span>
@@ -126,10 +152,11 @@ export default function EnterprisePage() {
               <div className="mt-7 space-y-3 border-t border-white/8 pt-6">
                 {[
                   { label: "Persistent storage", value: plan.storage },
+                  { label: "File retention", value: plan.retention },
                   { label: "Named render seats", value: plan.seats },
                   { label: "Included GPU-hrs / mo", value: plan.includedHours + " hrs" },
                   { label: "Extra GPU-hours", value: `${plan.extraRate} / hr` },
-                  { label: "GPU", value: "RTX 5070 Ti" },
+                  { label: "GPU", value: plan.dedicated ? "RTX 5080 (dedicated node)" : "RTX 5080" },
                   { label: "Minimum term", value: "1 month" },
                 ].map(({ label, value }) => (
                   <div key={label} className="flex items-center justify-between text-sm">
@@ -155,8 +182,36 @@ export default function EnterprisePage() {
           ))}
         </div>
 
+        {/* Storage add-on — standalone, purchasable by anyone */}
+        <div className="mt-8 rounded-[20px] border border-white/10 bg-white/[0.03] px-8 py-7 md:flex md:items-center md:justify-between md:gap-8">
+          <div>
+            <h2 className="text-base font-semibold text-white">Persistent NAS storage — add-on</h2>
+            <p className="mt-3 max-w-2xl text-sm leading-7 text-white/55">
+              Extra storage beyond the capacity included in your plan, or storage on its own without a
+              committed plan — anyone can buy it, including ad-hoc customers. Files are retained
+              for as long as the storage subscription is active. Priced openly so you can compare
+              it directly against AWS S3 and the rest of the market.
+            </p>
+          </div>
+          <div className="mt-5 shrink-0 md:mt-0 md:text-right">
+            <div className="text-4xl font-bold text-white">₹1,999</div>
+            <div className="text-sm text-white/50">/ TB / month · incl. 18% GST</div>
+          </div>
+        </div>
+
+        {/* Ad-hoc comparison */}
+        <div className="mt-6 rounded-[20px] border border-white/8 bg-white/[0.02] px-8 py-7">
+          <h2 className="text-base font-semibold text-white">Not ready to commit?</h2>
+          <p className="mt-3 max-w-3xl text-sm leading-7 text-white/55">
+            Ad-hoc is {ADHOC_RATE}/GPU-hour with no contract, billed per full hour. Session scratch
+            storage only, with 7-day retention — download your outputs before shutting down, or add
+            persistent NAS storage above. Every committed tier bills extra hours below {ADHOC_RATE},
+            so the more you render, the more the commitment pays for itself.
+          </p>
+        </div>
+
         {/* BYOL + licensing note */}
-        <div className="mt-12 rounded-[20px] border border-white/8 bg-white/[0.02] px-8 py-7">
+        <div className="mt-6 rounded-[20px] border border-white/8 bg-white/[0.02] px-8 py-7">
           <h2 className="text-base font-semibold text-white">Software licences — BYOL</h2>
           <p className="mt-3 text-sm leading-7 text-white/55">
             All software is <span className="text-white/80 font-medium">Bring Your Own Licence (BYOL)</span>.

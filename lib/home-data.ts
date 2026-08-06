@@ -91,24 +91,9 @@ export const processSteps = [
   "Scale based on usage, results, and business fit",
 ];
 
-export const faqs = [
-  {
-    q: "Do you only support full-time VDI users?",
-    a: "No. Coreframe Cloud is also designed for teams that mainly need centralized rendering or burst GPU access without moving every user into a virtual desktop full-time.",
-  },
-  {
-    q: "Can this work for Revit and D5 Render workflows?",
-    a: "Yes. The platform positioning and deployment model are designed around architecture and visualization workloads like Revit, CAD, and D5 Render.",
-  },
-  {
-    q: "Can we start with a pilot before scaling?",
-    a: "Yes. The recommended rollout is to begin with a focused pilot using one live project, validate performance and workflow fit, and then expand only if it makes business sense.",
-  },
-  {
-    q: "Is this only for architecture teams?",
-    a: "No. Coreframe Cloud is positioned for architecture, visualization, engineering, and other GPU-heavy professional workflows.",
-  },
-];
+// The stale second `faqs` array that used to live here was removed: it was only
+// ever consumed by now-deleted components, and the live FAQ copy is owned by
+// components/home/faq-section.tsx. Do not reintroduce a second source of truth.
 
 export const whyThisWorks = [
   "Designed for rendering and design workflows, not generic desktops",

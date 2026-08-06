@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { CoreframeWordmarkAtlas } from "@/components/brand/coreframe-wordmark-atlas";
+import { COMPANY, COMPANY_ADDRESS_LINE } from "@/lib/company";
 
 export function SiteFooter() {
   return (
@@ -68,13 +69,15 @@ export function SiteFooter() {
         </div>
 
         {/* Bottom bar */}
-        <div className="mt-8 border-t border-white/8 pt-5 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+        {/* Registered identity. Must match the GST certificate exactly — see lib/company.ts */}
+        <div className="mt-8 border-t border-white/8 pt-5 flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
           <p className="text-[10px] text-white/30">
-            © {new Date().getFullYear()} Coreframe Compute Labs Private Limited · CIN U63119KA2026PTC220789
+            © {new Date().getFullYear()} {COMPANY.displayName} · CIN {COMPANY.cin}
           </p>
-          <p className="text-[10px] text-white/25">
-            Innov8, Prestige Tech Platina, Kadubeesanahalli, Bengaluru – 560087
-          </p>
+          <div className="text-[10px] text-white/25 sm:text-right">
+            <p>{COMPANY_ADDRESS_LINE}</p>
+            <p className="mt-0.5">GSTIN {COMPANY.gstin} · All prices include GST</p>
+          </div>
         </div>
       </div>
     </footer>

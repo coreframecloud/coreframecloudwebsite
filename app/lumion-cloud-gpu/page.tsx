@@ -3,9 +3,9 @@ import { BackgroundGlow } from "@/components/home/background-glow";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Lumion Cloud GPU Workstation — RTX 5070 Ti, India",
+  title: "Lumion Cloud GPU Workstation — RTX 5080, India",
   description:
-    "Run Lumion on an RTX 5070 Ti cloud workstation in India. Real-time rendering at full GPU speed. Pay-as-you-go from ₹400/hr. BYOL — bring your own Lumion licence.",
+    "Run Lumion on an RTX 5080 cloud workstation in India. Real-time rendering at full GPU speed. Pay-as-you-go from ₹399/hr, GST included. BYOL — bring your own Lumion licence.",
   keywords: [
     "Lumion cloud GPU India",
     "Lumion cloud rendering India",
@@ -17,8 +17,9 @@ export const metadata: Metadata = {
 };
 
 const specs = [
-  { label: "GPU", value: "NVIDIA RTX 5070 Ti" },
-  { label: "VRAM", value: "16 GB GDDR7" },
+  { label: "GPU", value: "NVIDIA RTX 5080" },
+  { label: "VRAM", value: "16 GB GDDR7 · 960 GB/s" },
+  { label: "CUDA cores", value: "10,752 (Blackwell)" },
   { label: "System RAM", value: "64 GB ECC" },
   { label: "vCPU", value: "6-core EPYC" },
   { label: "OS", value: "Windows 11, full RDP desktop" },
@@ -36,7 +37,7 @@ export default function LumionPage() {
         name: "Does Lumion work on a cloud GPU?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Yes. Lumion requires a WDDM-enabled GPU. Coreframe Cloud provides Windows workstations with a full WDDM display driver on the RTX 5070 Ti, so Lumion runs at full real-time rendering speed.",
+          text: "Yes. Lumion requires a WDDM-enabled GPU. Coreframe Cloud provides Windows workstations with a full WDDM display driver on the RTX 5080, so Lumion runs at full real-time rendering speed.",
         },
       },
       {
@@ -52,7 +53,7 @@ export default function LumionPage() {
         name: "How much does Lumion cloud GPU cost in India?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Ad-hoc sessions are ₹400/GPU-hour, charged per full hour. Committed monthly plans start at ₹24,000/month with lower per-hour overage rates by tier.",
+          text: "Ad-hoc sessions are ₹399/GPU-hour, charged per full hour. Committed monthly plans start at ₹19,000/month and bill extra hours below the ad-hoc rate at every tier — ₹379/hr on Studio, ₹359/hr on Medium Firm, ₹339/hr on Big Firm. All prices include 18% GST, and a GST invoice showing the tax split is issued.",
         },
       },
     ],
@@ -72,10 +73,10 @@ export default function LumionPage() {
           Lumion · Cloud GPU · India
         </div>
         <h1 className="mt-3 text-4xl font-semibold tracking-tight md:text-5xl">
-          Run Lumion on RTX 5070 Ti.<br className="hidden md:block" /> Real-time. No hardware.
+          Run Lumion on RTX 5080.<br className="hidden md:block" /> Real-time. No hardware.
         </h1>
         <p className="mt-5 max-w-2xl text-base leading-8 text-slate-300">
-          Lumion's real-time rendering engine is GPU-bound. Launch an RTX 5070 Ti Windows workstation
+          Lumion's real-time rendering engine is GPU-bound. Launch an RTX 5080 Windows workstation
           and run Lumion at speeds your local machine can't match — without buying new hardware.
           Bring your own Lumion licence and you're ready in minutes.
         </p>
@@ -89,11 +90,11 @@ export default function LumionPage() {
           </Link>
         </div>
 
-        {/* Why RTX 5070 Ti for Lumion */}
+        {/* Why RTX 5080 for Lumion */}
         <div className="mt-16 grid gap-5 md:grid-cols-3">
           {[
             { title: "16 GB GDDR7 VRAM", body: "Large Lumion scenes with detailed assets, high-res textures, and complex vegetation fit comfortably in 16 GB." },
-            { title: "Consumer RTX drivers", body: "Lumion requires WDDM display drivers. Our RTX 5070 Ti runs full consumer drivers — unlike datacenter cards which use compute-only drivers." },
+            { title: "Consumer RTX drivers", body: "Lumion requires WDDM display drivers. Our RTX 5080 runs full consumer drivers — unlike datacenter cards which use compute-only drivers." },
             { title: "Data stays in India", body: "Your project files never leave Indian servers. Critical for studios with NDA projects and enterprise clients." },
           ].map((c) => (
             <div key={c.title} className="rounded-[20px] border border-white/8 bg-white/[0.02] p-6">
@@ -120,13 +121,13 @@ export default function LumionPage() {
         <div className="mt-14 grid gap-4 md:grid-cols-2">
           <div className="rounded-[20px] border border-white/10 bg-white/[0.03] p-6">
             <div className="text-xs uppercase tracking-wider text-white/40 mb-3">Ad-hoc</div>
-            <div className="text-4xl font-bold text-white">₹400 <span className="text-lg font-normal text-white/40">/ GPU-hr</span></div>
-            <p className="mt-3 text-sm text-white/50">No commitment. Pay only for the hours you render.</p>
+            <div className="text-4xl font-bold text-white">₹399 <span className="text-lg font-normal text-white/40">/ GPU-hr</span></div>
+            <p className="mt-3 text-sm text-white/50">No commitment. Pay only for the hours you render. Session scratch storage only, 7-day retention.</p>
           </div>
           <div className="rounded-[20px] border border-cyan-400/20 bg-cyan-400/[0.04] p-6">
             <div className="text-xs uppercase tracking-wider text-cyan-300/60 mb-3">Committed plans from</div>
-            <div className="text-4xl font-bold text-white">₹250 <span className="text-lg font-normal text-white/40">/ GPU-hr</span></div>
-            <p className="mt-3 text-sm text-white/50">Persistent project storage + named seats for your studio.</p>
+            <div className="text-4xl font-bold text-white">₹339 <span className="text-lg font-normal text-white/40">/ GPU-hr</span></div>
+            <p className="mt-3 text-sm text-white/50">Cheaper per hour than ad-hoc at every tier, from ₹19,000/month. Persistent project storage + named seats for your studio. Extra NAS storage ₹1,999/TB/month.</p>
             <Link href="/enterprise" className="mt-4 inline-block text-sm text-cyan-400 hover:underline">See plans →</Link>
           </div>
         </div>
@@ -135,7 +136,8 @@ export default function LumionPage() {
           <p className="text-sm leading-6 text-white/50">
             <span className="font-semibold text-white/70">Lumion licence is BYOL.</span>{" "}
             Named-user and floating licences both work. Install Lumion, activate your seat, and start rendering.
-            All prices exclusive of GST.
+            All prices include 18% GST — what you see is what you pay, and a GST invoice showing the
+            taxable value and tax split is issued.
           </p>
         </div>
 

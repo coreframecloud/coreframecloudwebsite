@@ -250,8 +250,15 @@ export default function MyActivityPage() {
               <p className="text-3xl font-bold text-emerald-300">
                 ₹{wallet ? wallet.wallet_balance_rupees.toFixed(2) : "0.00"}
               </p>
+              {/*
+                No hardcoded fallback rate. If the wallet API does not return a
+                rate we show an em-dash: a stale price shown to a signed-in
+                customer is worse than no price at all.
+              */}
               <p className="text-xs text-white/40 mt-1">
-                ₹{wallet?.hourly_rate_rupees_per_hour ?? 99}/hr GPU rate
+                {wallet?.hourly_rate_rupees_per_hour != null
+                  ? `₹${wallet.hourly_rate_rupees_per_hour}/hr GPU rate`
+                  : "— GPU rate unavailable"}
               </p>
             </div>
             <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 flex flex-col justify-between">

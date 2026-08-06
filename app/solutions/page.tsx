@@ -1,6 +1,4 @@
 import { BackgroundGlow } from "@/components/home/background-glow";
-import { SiteFooter } from "@/components/home/site-footer";
-import { SiteHeader } from "@/components/home/site-header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
@@ -47,7 +45,6 @@ export default function SolutionsPage() {
   return (
     <div className="min-h-screen text-white">
       <BackgroundGlow />
-      <SiteHeader />
 
       <main className="relative mx-auto max-w-7xl px-6 pb-20 pt-20 md:pt-28">
         <div className="max-w-3xl">
@@ -150,8 +147,6 @@ export default function SolutionsPage() {
           </div>
         </div>
       </main>
-
-      <SiteFooter />
     </div>
   );
 }

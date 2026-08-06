@@ -1,0 +1,1076 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CFD Analysis Job Intake — Coreframe Cloud</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #0d0f14;
+      --surface:  #161a22;
+      --surface2: #1e2330;
+      --border:   #2a2f3d;
+      --accent:   #4f8ef7;
+      --accent2:  #3a70d6;
+      --text:     #e2e8f0;
+      --muted:    #8892a4;
+      --success:  #34d399;
+      --warn:     #fbbf24;
+      --radius:   10px;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    .header {
+      background: linear-gradient(135deg, #0d1626 0%, #162040 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 28px 40px 24px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+    .header-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .logo-icon {
+      width: 42px;
+      height: 42px;
+      background: var(--accent);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+    }
+    .logo-text h1 { font-size: 20px; font-weight: 700; letter-spacing: -0.3px; }
+    .logo-text p  { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .header-badge {
+      margin-left: auto;
+      background: rgba(79,142,247,0.15);
+      border: 1px solid rgba(79,142,247,0.4);
+      color: var(--accent);
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    /* ── Page layout ── */
+    .page { max-width: 900px; margin: 0 auto; padding: 36px 20px 60px; }
+
+    .page-title {
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      margin-bottom: 6px;
+    }
+    .page-subtitle { color: var(--muted); font-size: 14px; margin-bottom: 32px; }
+
+    /* ── Progress steps ── */
+    .steps {
+      display: flex;
+      gap: 0;
+      margin-bottom: 36px;
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    .step {
+      flex: 1;
+      padding: 10px 6px;
+      text-align: center;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--muted);
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+      letter-spacing: 0.3px;
+    }
+    .step:last-child { border-right: none; }
+    .step.active { background: var(--accent); color: #fff; }
+    .step.done   { background: rgba(52,211,153,0.12); color: var(--success); }
+    .step-num { display: block; font-size: 16px; font-weight: 800; margin-bottom: 2px; }
+
+    /* ── Section panels ── */
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 24px;
+      overflow: hidden;
+    }
+    .panel-header {
+      background: var(--surface2);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .panel-icon { font-size: 18px; }
+    .panel-title { font-size: 15px; font-weight: 700; }
+    .panel-subtitle { color: var(--muted); font-size: 12px; margin-top: 1px; }
+    .panel-body { padding: 20px; }
+
+    /* ── Grid helpers ── */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+    .span-2 { grid-column: span 2; }
+    .span-3 { grid-column: span 3; }
+
+    @media (max-width: 640px) {
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+      .span-2, .span-3 { grid-column: span 1; }
+      .header { padding: 18px 16px; flex-wrap: wrap; }
+      .page { padding: 20px 12px 40px; }
+    }
+
+    /* ── Form fields ── */
+    .field { display: flex; flex-direction: column; gap: 6px; }
+    .field label { font-size: 12px; font-weight: 600; color: var(--muted); letter-spacing: 0.4px; text-transform: uppercase; }
+    .field label .req { color: var(--warn); margin-left: 2px; }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="date"],
+    input[type="number"],
+    select,
+    textarea {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      padding: 9px 12px;
+      font-size: 14px;
+      font-family: inherit;
+      width: 100%;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none;
+    }
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(79,142,247,0.15);
+    }
+    textarea { resize: vertical; min-height: 80px; }
+    select option { background: #1e2330; }
+
+    /* ── Radio / Checkbox groups ── */
+    .radio-group, .check-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .radio-group label, .check-group label {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 7px 12px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text);
+      text-transform: none;
+      letter-spacing: normal;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .radio-group label:hover, .check-group label:hover {
+      border-color: var(--accent);
+      background: rgba(79,142,247,0.07);
+    }
+    .radio-group input[type="radio"],
+    .check-group input[type="checkbox"] {
+      width: auto;
+      border: none;
+      padding: 0;
+      accent-color: var(--accent);
+    }
+
+    /* ── Boundary conditions table ── */
+    .bc-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .bc-table th {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      padding: 8px 10px;
+      text-align: left;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+    .bc-table td {
+      border: 1px solid var(--border);
+      padding: 6px 8px;
+    }
+    .bc-table input[type="text"],
+    .bc-table select {
+      padding: 6px 8px;
+      font-size: 13px;
+      border-radius: 4px;
+    }
+    .bc-table tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+
+    /* ── Add-row button ── */
+    .btn-add-row {
+      margin-top: 10px;
+      background: transparent;
+      border: 1px dashed var(--border);
+      color: var(--muted);
+      padding: 7px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 600;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .btn-add-row:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* ── Divider ── */
+    .divider { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
+
+    /* ── Info callout ── */
+    .info-box {
+      background: rgba(79,142,247,0.08);
+      border: 1px solid rgba(79,142,247,0.25);
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 13px;
+      color: #93b4f8;
+      margin-bottom: 16px;
+      display: flex;
+      gap: 10px;
+    }
+    .info-box .icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+
+    /* ── Navigation buttons ── */
+    .nav-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 28px;
+      gap: 12px;
+    }
+    .btn {
+      padding: 10px 24px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      transition: opacity 0.2s, transform 0.1s;
+    }
+    .btn:active { transform: scale(0.98); }
+    .btn-ghost {
+      background: var(--surface2);
+      color: var(--muted);
+      border: 1px solid var(--border);
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+      box-shadow: 0 2px 12px rgba(79,142,247,0.35);
+    }
+    .btn-primary:hover { background: var(--accent2); }
+    .btn-success {
+      background: var(--success);
+      color: #0d1a12;
+      box-shadow: 0 2px 12px rgba(52,211,153,0.35);
+    }
+
+    /* ── Signature area ── */
+    .sig-box {
+      background: var(--bg);
+      border: 1px dashed var(--border);
+      border-radius: 8px;
+      height: 90px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+      font-size: 13px;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+    .sig-box:hover { border-color: var(--accent); }
+
+    /* ── Success screen ── */
+    .success-screen {
+      text-align: center;
+      padding: 60px 20px;
+    }
+    .success-icon {
+      font-size: 64px;
+      margin-bottom: 20px;
+    }
+    .success-screen h2 { font-size: 28px; font-weight: 700; margin-bottom: 10px; }
+    .success-screen p  { color: var(--muted); max-width: 480px; margin: 0 auto 28px; }
+    .ref-id {
+      display: inline-block;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 24px;
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: var(--accent);
+      margin-bottom: 28px;
+    }
+
+    /* ── Page visibility ── */
+    .form-page { display: none; }
+    .form-page.active { display: block; }
+  </style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div class="header-logo">
+    <div class="logo-icon">⚡</div>
+    <div class="logo-text">
+      <h1>Coreframe Cloud</h1>
+      <p>GPU Workstation Platform</p>
+    </div>
+  </div>
+  <div class="header-badge">CFD JOB INTAKE</div>
+</div>
+
+<!-- Main -->
+<div class="page">
+  <div class="page-title">CFD Analysis Job Request</div>
+  <div class="page-subtitle">Complete all sections so our engineers can prepare an accurate quote and timeline. Required fields are marked <span style="color:var(--warn)">✱</span></div>
+
+  <!-- Progress steps -->
+  <div class="steps">
+    <div class="step active" onclick="goTo(0)"><span class="step-num">1</span>Project</div>
+    <div class="step" onclick="goTo(1)"><span class="step-num">2</span>Geometry</div>
+    <div class="step" onclick="goTo(2)"><span class="step-num">3</span>Boundaries</div>
+    <div class="step" onclick="goTo(3)"><span class="step-num">4</span>Physics</div>
+    <div class="step" onclick="goTo(4)"><span class="step-num">5</span>Solver</div>
+    <div class="step" onclick="goTo(5)"><span class="step-num">6</span>Sign-off</div>
+  </div>
+
+  <form id="cfdForm" novalidate>
+
+    <!-- ══════════════ PAGE 1 — Project Overview ══════════════ -->
+    <div class="form-page active" id="page-0">
+
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-icon">🏢</span>
+          <div>
+            <div class="panel-title">Client & Project Details</div>
+            <div class="panel-subtitle">Basic identification — used on your final report and invoice</div>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div class="grid-2">
+            <div class="field">
+              <label>Company / Organisation <span class="req">✱</span></label>
+              <input type="text" name="company" placeholder="e.g. Acme HVAC Pvt. Ltd." required />
+            </div>
+            <div class="field">
+              <label>Project Name <span class="req">✱</span></label>
+              <input type="text" name="project_name" placeholder="e.g. Office Building HVAC Study" required />
+            </div>
+            <div class="field">
+              <label>Your Name <span class="req">✱</span></label>
+              <input type="text" name="contact_name" placeholder="Full name" required />
+            </div>
+            <div class="field">
+              <label>Designation</label>
+              <input type="text" name="designation" placeholder="e.g. CFD Engineer" />
+            </div>
+            <div class="field">
+              <label>Email <span class="req">✱</span></label>
+              <input type="email" name="email" placeholder="you@company.com" required />
+            </div>
+            <div class="field">
+              <label>Phone / WhatsApp</label>
+              <input type="text" name="phone" placeholder="+91 98765 43210" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-icon">📋</span>
+          <div>
+            <div class="panel-title">Project Scope & Timeline</div>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div class="grid-2">
+            <div class="field">
+              <label>CFD Application Type <span class="req">✱</span></label>
+              <select name="application_type" required>
+                <option value="">— Select —</option>
+                <option>HVAC / Indoor Thermal Comfort</option>
+                <option>External Aerodynamics</option>
+                <option>Electronics Cooling</option>
+                <option>Process / Industrial Fluid Flow</option>
+                <option>Automotive / Vehicle Aerodynamics</option>
+                <option>Combustion / Reacting Flow</option>
+                <option>Hydraulics / Pipe Network</option>
+                <option>Wind Engineering / Building Facade</option>
+                <option>Biomedical / Hemodynamics</option>
+                <option>Other</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Preferred Solver Software <span class="req">✱</span></label>
+              <select name="solver_software" required>
+                <option value="">— Select —</option>
+                <option>ANSYS Fluent</option>
+                <option>OpenFOAM</option>
+                <option>STAR-CCM+</option>
+                <option>ANSYS CFX</option>
+                <option>Simcenter FLOEFD</option>
+                <option>Autodesk CFD</option>
+                <option>No preference — recommend one</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Results Needed By <span class="req">✱</span></label>
+              <input type="date" name="deadline" required />
+            </div>
+            <div class="field">
+              <label>Budget Range (₹)</label>
+              <select name="budget">
+                <option value="">— Optional —</option>
+                <option>Under ₹10,000</option>
+                <option>₹10,000 – ₹25,000</option>
+                <option>₹25,000 – ₹50,000</option>
+                <option>₹50,000 – ₹1,00,000</option>
+                <option>Above ₹1,00,000</option>
+              </select>
+            </div>
+            <div class="field span-2">
+              <label>Brief Project Description <span class="req">✱</span></label>
+              <textarea name="description" rows="3" placeholder="What is the objective of this simulation? What decisions will the results drive?" required></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="nav-row">
+        <div></div>
+        <button type="button" class="btn btn-primary" onclick="nextPage(0)">Next: Geometry →</button>
+      </div>
+    </div>
+
+    <!-- ══════════════ PAGE 2 — CAD / Geometry ══════════════ -->
+    <div class="form-page" id="page-1">
+
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-icon">📐</span>
+          <div>
+            <div class="panel-title">CAD Geometry</div>
+            <div class="panel-subtitle">Upload info and model details — attach files via email after submission</div>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div class="info-box">
+            <span class="icon">ℹ️</span>
+            <span>After submitting this form you will receive a reference ID. Upload your CAD files (STEP, IGES, STL, or native format) to <strong>cfd@coreframecloud.com</strong> with the reference ID in the subject line.</span>
+          </div>
+
+          <div class="grid-2">
+            <div class="field">
+              <label>CAD File Format</label>
+              <select name="cad_format">
+                <option value="">— Select —</option>
+                <option>STEP (.step / .stp)</option>
+                <option>IGES (.igs / .iges)</option>
+                <option>STL (.stl)</option>
+                <option>Parasolid (.x_t / .x_b)</option>
+                <option>SolidWorks (.sldprt / .sldasm)</option>
+                <option>CATIA (.CATProduct / .CATPart)</option>
+                <option>SpaceClaim / ANSYS Discovery</option>
+                <option>No CAD — I need geometry creation</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Model Units</label>
+              <select name="model_units">
+                <option>Millimetres (mm)</option>
+                <option>Metres (m)</option>
+                <option>Inches (in)</option>
+                <option>Centimetres (cm)</option>
+                <option>Unknown — please verify</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Overall Model Dimensions (L × W × H)</label>
+              <input type="text" name="dimensions" placeholder="e.g. 50m × 30m × 10m" />
+            </div>
+            <div class="field">
+              <label>Approximate Number of Components</label>
+              <select name="component_count">
+                <option value="">— Select —</option>
+                <option>1 – 5</option>
+                <option>6 – 20</option>
+                <option>21 – 100</option>
+                <option>100+</option>
+              </select>
+            </div>
+          </div>
+
+          <hr class="divider" />
+
+          <div class="grid-2">
+            <div class="field">
+              <label>Symmetry / Periodicity</label>
+              <div class="radio-group">
+                <label><input type="radio" name="symmetry" value="none" checked /> No symmetry</label>
+                <label><input type="radio" name="symmetry" value="1-plane" /> 1-plane symmetry</label>
+                <label><input type="radio" name="symmetry" value="periodic" /> Periodic</label>
+                <label><input type="radio" name="symmetry" value="axisymmetric" /> Axisymmetric</label>
+              </div>
+            </div>
+            <div class="field">
+              <label>CAD Simplification Needed?</label>
+              <div class="radio-group">
+                <label><input type="radio" name="simplification" value="no" checked /> No — model is CFD-ready</label>
+                <label><input type="radio" name="simplification" value="yes" /> Yes — needs defeaturing</label>
+                <label><input type="radio" name="simplification" value="unsure" /> Unsure</label>
+              </div>
+            </div>
+            <div class="field span-2">
+              <label>Features to Retain / Suppress (explain key details or tolerances)</label>
+              <textarea name="geometry_notes" rows="2" placeholder="e.g. Retain all diffuser louvres; suppress bolts and fillets < 2mm"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-icon">🔲</span>
+          <div>
+            <div class="panel-title">Computational Domain</div>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div class="grid-3">
+            <div class="field">
+              <label>Domain Type <span class="req">✱</span></label>
+              <select name="domain_type" required>
+                <option value="">— Select —</option>
+                <option>Internal flow (inside geometry)</option>
+                <option>External flow (around geometry)</option>
+                <option>Both internal + external</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Target Mesh Size (cells)</label>
+              <select name="mesh_size">
+                <option value="">— Estimate / unsure —</option>
+                <option>&lt; 1 Million</option>
+                <option>1 – 5 Million</option>
+                <option>5 – 20 Million</option>
+                <option>20 – 50 Million</option>
+                <option>50 – 100 Million</option>
+                <option>100 Million+</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Wall y⁺ Requirement</label>
+              <select name="yplus">
+                <option value="">— Not sure —</option>
+                <option>y⁺ ≈ 1 (wall-resolved)</option>
+                <option>y⁺ 30–300 (wall functions)</option>
+                <option>Solver default</option>
+              </select>
+            </div>
+          </div>
+          <div class="field" style="margin-top:16px">
+            <label>External domain extents (for external-flow cases)</label>
+            <input type="text" name="domain_extents" placeholder="e.g. 10D upstream, 20D downstream, 5D lateral (D = characteristic length)" />
+          </div>
+        </div>
+      </div>
+
+      <div class="nav-row">
+        <button type="button" class="btn btn-ghost" onclick="prevPage(1)">← Back</button>
+        <button type="button" class="btn btn-primary" onclick="nextPage(1)">Next: Boundary Conditions →</button>
+      </div>
+    </div>
+
+    <!-- ══════════════ PAGE 3 — Boundary Conditions ══════════════ -->
+    <div class="form-page" id="page-2">
+
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-icon">🌀</span>
+          <div>
+            <div class="panel-title">Boundary Conditions</div>
+            <div class="panel-subtitle">Define each inlet, outlet, and wall. Add as many rows as needed.</div>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div style="overflow-x:auto">
+            <table class="bc-table">
+              <thead>
+                <tr>
+                  <th>Boundary Name</th>
+                  <th>Type</th>
+                  <th>Value / Specification</th>
+                  <th>Temperature (°C)</th>
+                  <th>Turbulence Spec</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="bcBody">
+                <!-- default rows injected by JS -->
+              </tbody>
+            </table>
+          </div>
+          <button type="button" class="btn-add-row" onclick="addBCRow()">＋ Add boundary</button>
+
+          <hr class="divider" />
+
+          <div class="grid-2">
+            <div class="field">
+              <label>Reference Pressure</label>
+              <input type="text" name="ref_pressure" placeholder="e.g. 101325 Pa (atmospheric)" />
+            </div>
+            <div class="field">
+              <label>Gravity Direction</label>
+              <select name="gravity">
+                <option>−Y (standard)</option>
+                <option>−Z</option>
+                <option>No gravity / microgravity</option>
+                <option>Custom — I'll specify</option>
+              </select>
+            </div>
+            <div class="field span-2">
+              <label>Additional boundary condition notes</label>
+              <textarea name="bc_notes" rows="2" placeholder="Heat fluxes, rotating walls, porous regions, custom profiles, etc."></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="nav-row">
+        <button type="button" class="btn btn-ghost" onclick="prevPage(2)">← Back</button>
+        <button type="button" class="btn btn-primary" onclick="nextPage(2)">Next: Flow Physics →</button>
+      </div>
+    </div>
+
+    <!-- ══════════════ PAGE 4 — Flow Physics ══════════════ -->
+    <div class="form-page" id="page-3">
+
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-icon">⚛️</span>
+          <div>
+            <div class="panel-title">Flow Physics & Fluid Properties</div>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div class="grid-3">
+            <div class="field">
+              <label>Flow Regime <span class="req">✱</span></label>
+              <select name="flow_regime" required>
+                <option value="">— Select —</option>
+                <option>Steady-state</option>
+                <option>Transient (time-varying)</option>
+                <option>Quasi-steady (time-averaged)</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Fluid Type <span class="req">✱</span></label>
+              <select name="fluid_type" required>
+                <option value="">— Select —</option>
+                <option>Air (incompressible)</option>
+                <option>Air (compressible)</option>
+                <option>Water (liquid)</option>
+                <option>Oil / Lubricant</option>
+                <option>Multi-phase (air + water)</option>
+                <option>Non-Newtonian</option>
+                <option>Custom / mixed</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Compressibility</label>
+              <select name="compressibility">
+                <option>Incompressible (Ma &lt; 0.3)</option>
+                <option>Weakly compressible</option>
+                <option>Compressible (Ma &gt; 0.3)</option>
+                <option>Supersonic / hypersonic</option>
+              </select>
+            </div>
+          </div>
+
+          <hr class="divider" />
+
+          <div class="grid-2" style="margin-bottom:16px">
+            <div class="field">
+              <label>Turbulence Modelling <span class="req">✱</span></label>
+              <select name="turbulence_model" required>
+                <option value="">— Select —</option>
+                <option>k-ε Realizable</option>
+                <option>k-ε Standard</option>
+                <option>k-ω SST</option>
+                <option>Spalart-Allmaras</option>
+                <option>LES (Large Eddy Simulation)</option>
+                <option>DES / DDES</option>
+                <option>Laminar (no turbulence)</option>
+                <option>Recommend for my case</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Reynolds Number (approx.)</label>
+              <input type="text" name="reynolds" placeholder="e.g. ~5×10⁵ or 'unknown'" />
+            </div>
+          </div>
+
+          <div class="field" style="margin-bottom:16px">
+            <label>Additional Physics — select all that apply</label>
+            <div class="check-group">
+              <label><input type="checkbox" name="physics_heat" /> Heat Transfer</label>
+              <label><input type="checkbox" name="physics_buoyancy" /> Buoyancy / Natural Convection</label>
+              <label><input type="checkbox" name="physics_radiation" /> Thermal Radiation</label>
+              <label><input type="checkbox" name="physics_combustion" /> Combustion / Species</label>
+              <label><input type="checkbox" name="physics_particles" /> Particle / Droplet Tracking (DPM)</label>
+              <label><input type="checkbox" name="physics_multiphase" /> Multiphase (VOF / Eulerian)</label>
+              <label><input type="checkbox" name="physics_moving" /> Moving Mesh / Rotating Zones</label>
+              <label><input type="checkbox" name="physics_porous" /> Porous Media</label>
+              <label><input type="checkbox" name="physics_fsi" /> Fluid-Structure Interaction</label>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="field">
+              <label>Fluid Temperature (reference, °C)</label>
+              <input type="number" name="fluid_temp" placeholder="e.g. 25" />
+            </div>
+            <div class="field">
+              <label>Operating Pressure (Pa)</label>
+              <input type="number" name="operating_pressure" placeholder="e.g. 101325" />
+            </div>
+            <div class="field span-2">
+              <label>Custom Fluid Properties (if non-standard)</label>
+              <textarea name="fluid_props" rows="2" placeholder="Density, viscosity, thermal conductivity, Cp — or paste material data sheet reference"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="nav-row">
+        <button type="button" class="btn btn-ghost" onclick="prevPage(3)">← Back</button>
+        <button type="button" class="btn btn-primary" onclick="nextPage(3)">Next: Solver & Outputs →</button>
+      </div>
+    </div>
+
+    <!-- ══════════════ PAGE 5 — Solver & Post-processing ══════════════ -->
+    <div class="form-page" id="page-4">
+
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-icon">⚙️</span>
+          <div>
+            <div class="panel-title">Solver Settings</div>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div class="grid-3">
+            <div class="field">
+              <label>Convergence Target (residuals)</label>
+              <select name="convergence">
+                <option>10⁻³ (standard)</option>
+                <option>10⁻⁴</option>
+                <option>10⁻⁵</option>
+                <option>10⁻⁶ (high accuracy)</option>
+                <option>Monitor-based (mass flux / force)</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Max Iterations (steady) / Time Steps (transient)</label>
+              <input type="text" name="iterations" placeholder="e.g. 2000 or 5000 × 0.01s" />
+            </div>
+            <div class="field">
+              <label>Time Step Size (transient only)</label>
+              <input type="text" name="timestep" placeholder="e.g. 0.01 s" />
+            </div>
+          </div>
+
+          <hr class="divider" />
+
+          <div class="field">
+            <label>Pressure–Velocity Coupling Scheme</label>
+            <div class="radio-group">
+              <label><input type="radio" name="coupling" value="simple" checked /> SIMPLE</label>
+              <label><input type="radio" name="coupling" value="simplec" /> SIMPLEC</label>
+              <label><input type="radio" name="coupling" value="piso" /> PISO (transient)</label>
+              <label><input type="radio" name="coupling" value="coupled" /> Coupled (pressure-based)</label>
+              <label><input type="radio" name="coupling" value="auto" /> Auto-select</label>
+            </div>
+          </div>
+
+          <hr class="divider" />
+
+          <div class="field">
+            <label>Additional solver / HPC notes</label>
+            <textarea name="solver_notes" rows="2" placeholder="MPI core count target, memory limit, UDF or custom boundary condition files, etc."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-icon">📊</span>
+          <div>
+            <div class="panel-title">Post-processing & Deliverables</div>
+            <div class="panel-subtitle">What results do you need from us?</div>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div class="field" style="margin-bottom:16px">
+            <label>Required Output — select all that apply</label>
+            <div class="check-group">
+              <label><input type="checkbox" name="out_velocity" /> Velocity contours / vectors</label>
+              <label><input type="checkbox" name="out_pressure" /> Pressure distribution</label>
+              <label><input type="checkbox" name="out_temperature" /> Temperature contours</label>
+              <label><input type="checkbox" name="out_streamlines" /> Streamlines / pathlines</label>
+              <label><input type="checkbox" name="out_turbulence" /> Turbulence intensity / TKE</label>
+              <label><input type="checkbox" name="out_forces" /> Lift / drag / force coefficients</label>
+              <label><input type="checkbox" name="out_pressure_drop" /> Pressure drop across components</label>
+              <label><input type="checkbox" name="out_mass_flow" /> Mass flow rate balance</label>
+              <label><input type="checkbox" name="out_residence" /> Residence time / age of air</label>
+              <label><input type="checkbox" name="out_iso" /> Iso-surfaces</label>
+              <label><input type="checkbox" name="out_animation" /> Transient animation (video)</label>
+              <label><input type="checkbox" name="out_report" /> Engineering report (PDF)</label>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="field">
+              <label>Report Format</label>
+              <select name="report_format">
+                <option>PDF report with figures</option>
+                <option>Raw data files (.csv) only</option>
+                <option>ParaView / CFD-Post project files</option>
+                <option>ANSYS Fluent case + data files</option>
+                <option>All of the above</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Key Performance Metric (KPI) to optimise</label>
+              <input type="text" name="kpi" placeholder="e.g. Minimise pressure drop across heat exchanger" />
+            </div>
+            <div class="field span-2">
+              <label>Specific quantities / planes / probe points of interest</label>
+              <textarea name="postproc_notes" rows="2" placeholder="e.g. Velocity profile at x=5m section; pressure at all outlet faces; temperature map on occupant-height plane (1.2 m)"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="nav-row">
+        <button type="button" class="btn btn-ghost" onclick="prevPage(4)">← Back</button>
+        <button type="button" class="btn btn-primary" onclick="nextPage(4)">Next: Sign-off →</button>
+      </div>
+    </div>
+
+    <!-- ══════════════ PAGE 6 — Sign-off ══════════════ -->
+    <div class="form-page" id="page-5">
+
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-icon">✅</span>
+          <div>
+            <div class="panel-title">Client Declaration & Sign-off</div>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div class="grid-2" style="margin-bottom:20px">
+            <div class="field">
+              <label>Authorising Name <span class="req">✱</span></label>
+              <input type="text" name="auth_name" placeholder="Name of person authorising this job" required />
+            </div>
+            <div class="field">
+              <label>Date <span class="req">✱</span></label>
+              <input type="date" name="auth_date" required />
+            </div>
+            <div class="field span-2">
+              <label>Any final notes or special requests</label>
+              <textarea name="final_notes" rows="3" placeholder="NDA requirements, confidentiality, custom invoicing, delivery address for physical media, etc."></textarea>
+            </div>
+          </div>
+
+          <hr class="divider" />
+
+          <div style="margin-bottom:18px">
+            <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:13px;color:var(--text)">
+              <input type="checkbox" name="confirm_accuracy" id="confirmAccuracy" style="width:auto;border:none;padding:0;margin-top:3px;accent-color:var(--accent)" required />
+              <span>I confirm that the information provided in this form is accurate and complete to the best of my knowledge. I understand that Coreframe Cloud will prepare a quote and timeline based on these inputs, and that significant changes post-quote may affect cost and schedule. <span class="req">✱</span></span>
+            </label>
+          </div>
+
+          <div style="margin-bottom:18px">
+            <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:13px;color:var(--text)">
+              <input type="checkbox" name="confirm_data" style="width:auto;border:none;padding:0;margin-top:3px;accent-color:var(--accent)" />
+              <span>I consent to Coreframe Cloud storing this project data for the purpose of job execution and account management.</span>
+            </label>
+          </div>
+
+          <hr class="divider" />
+
+          <div class="field">
+            <label>Digital Signature (type full name)</label>
+            <input type="text" name="signature" placeholder="Type your full name as digital signature" />
+          </div>
+        </div>
+      </div>
+
+      <div class="nav-row">
+        <button type="button" class="btn btn-ghost" onclick="prevPage(5)">← Back</button>
+        <button type="button" class="btn btn-success" onclick="submitForm()">Submit CFD Job Request ✓</button>
+      </div>
+    </div>
+
+  </form>
+
+  <!-- ══════════════ SUCCESS ══════════════ -->
+  <div id="successScreen" style="display:none" class="success-screen">
+    <div class="success-icon">🚀</div>
+    <h2>Job Request Submitted!</h2>
+    <p>Our engineering team will review your inputs and send you a quote within 1 business day. Please email your CAD files to <strong>cfd@coreframecloud.com</strong> with this reference ID in the subject line.</p>
+    <div class="ref-id" id="refIdDisplay">CF-000000</div>
+    <p style="margin-bottom:16px;font-size:13px;color:var(--muted)">Save this reference ID — you'll need it for all future correspondence about this job.</p>
+    <button class="btn btn-primary" onclick="location.reload()">Submit another job</button>
+  </div>
+
+</div><!-- /page -->
+
+<script>
+  // ─── State ───────────────────────────────────────────────────
+  let currentPage = 0;
+  const totalPages = 6;
+
+  // ─── BC Table defaults ───────────────────────────────────────
+  const defaultBCs = [
+    { name: 'Supply Air Inlet 1', type: 'Velocity Inlet',    value: '1.5 m/s', temp: '18', turb: '5% intensity, 0.01m L_t' },
+    { name: 'Return Air Outlet 1', type: 'Pressure Outlet',  value: '0 Pa gauge',  temp: '',   turb: 'Backflow 5%' },
+    { name: 'Walls / Ceiling',    type: 'No-slip Wall',      value: '—',        temp: '25',  turb: '—' },
+    { name: 'Floor',              type: 'No-slip Wall',      value: '—',        temp: '28',  turb: '—' },
+  ];
+
+  function createBCRow(data = {}) {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><input type="text" name="bc_name[]" value="${data.name||''}" placeholder="e.g. Inlet 1" /></td>
+      <td>
+        <select name="bc_type[]">
+          <option ${data.type==='Velocity Inlet'?'selected':''}>Velocity Inlet</option>
+          <option ${data.type==='Mass Flow Inlet'?'selected':''}>Mass Flow Inlet</option>
+          <option ${data.type==='Pressure Inlet'?'selected':''}>Pressure Inlet</option>
+          <option ${data.type==='Pressure Outlet'?'selected':''}>Pressure Outlet</option>
+          <option ${data.type==='Outflow'?'selected':''}>Outflow</option>
+          <option ${data.type==='No-slip Wall'?'selected':''}>No-slip Wall</option>
+          <option ${data.type==='Moving Wall'?'selected':''}>Moving Wall</option>
+          <option ${data.type==='Symmetry'?'selected':''}>Symmetry</option>
+          <option ${data.type==='Periodic'?'selected':''}>Periodic</option>
+          <option ${data.type==='Interior'?'selected':''}>Interior</option>
+        </select>
+      </td>
+      <td><input type="text" name="bc_value[]" value="${data.value||''}" placeholder="velocity / pressure / flow rate" /></td>
+      <td><input type="text" name="bc_temp[]" value="${data.temp||''}" placeholder="°C or —" style="width:72px" /></td>
+      <td><input type="text" name="bc_turb[]" value="${data.turb||''}" placeholder="intensity %, length scale" /></td>
+      <td><button type="button" onclick="this.closest('tr').remove()" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:4px">✕</button></td>
+    `;
+    return tr;
+  }
+
+  function addBCRow() {
+    document.getElementById('bcBody').appendChild(createBCRow());
+  }
+
+  // Seed default rows
+  defaultBCs.forEach(d => document.getElementById('bcBody').appendChild(createBCRow(d)));
+
+  // ─── Navigation ──────────────────────────────────────────────
+  function goTo(idx) {
+    document.querySelectorAll('.form-page').forEach((p, i) => {
+      p.classList.toggle('active', i === idx);
+    });
+    document.querySelectorAll('.step').forEach((s, i) => {
+      s.classList.remove('active', 'done');
+      if (i === idx) s.classList.add('active');
+      else if (i < idx) s.classList.add('done');
+    });
+    currentPage = idx;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function nextPage(from) {
+    if (from < totalPages - 1) goTo(from + 1);
+  }
+  function prevPage(from) {
+    if (from > 0) goTo(from - 1);
+  }
+
+  // ─── Submit ──────────────────────────────────────────────────
+  function submitForm() {
+    const required = document.querySelectorAll('#cfdForm [required]');
+    let missing = false;
+    required.forEach(el => {
+      el.style.borderColor = '';
+      if (!el.value) {
+        el.style.borderColor = '#ef4444';
+        missing = true;
+      }
+    });
+    if (missing) {
+      // find the first page with an invalid field
+      let invalidPage = -1;
+      required.forEach(el => {
+        if (!el.value && invalidPage < 0) {
+          const page = el.closest('.form-page');
+          if (page) {
+            const pages = [...document.querySelectorAll('.form-page')];
+            invalidPage = pages.indexOf(page);
+          }
+        }
+      });
+      if (invalidPage >= 0) goTo(invalidPage);
+      return;
+    }
+
+    // Generate reference ID
+    const ref = 'CF-' + Date.now().toString(36).toUpperCase().slice(-6);
+    document.getElementById('refIdDisplay').textContent = ref;
+    document.getElementById('cfdForm').style.display = 'none';
+    document.querySelector('.steps').style.display = 'none';
+    document.querySelector('.page-title').style.display = 'none';
+    document.querySelector('.page-subtitle').style.display = 'none';
+    document.getElementById('successScreen').style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+</script>
+
+</body>
+</html>

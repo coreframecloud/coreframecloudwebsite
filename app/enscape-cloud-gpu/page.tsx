@@ -3,9 +3,9 @@ import { BackgroundGlow } from "@/components/home/background-glow";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Enscape Cloud GPU Workstation — RTX 5070 Ti, India",
+  title: "Enscape Cloud GPU Workstation — RTX 5080, India",
   description:
-    "Run Enscape on an RTX 5070 Ti cloud workstation in India. Real-time architectural visualisation at GPU speed. Pay-as-you-go from ₹400/hr. BYOL — bring your Enscape subscription.",
+    "Run Enscape on an RTX 5080 cloud workstation in India. Real-time architectural visualisation at GPU speed. Pay-as-you-go from ₹399/hr, GST included. BYOL — bring your Enscape subscription.",
   keywords: [
     "Enscape cloud GPU India",
     "Enscape cloud rendering India",
@@ -19,8 +19,9 @@ export const metadata: Metadata = {
 };
 
 const specs = [
-  { label: "GPU", value: "NVIDIA RTX 5070 Ti" },
-  { label: "VRAM", value: "16 GB GDDR7" },
+  { label: "GPU", value: "NVIDIA RTX 5080" },
+  { label: "VRAM", value: "16 GB GDDR7 · 960 GB/s" },
+  { label: "CUDA cores", value: "10,752 (Blackwell)" },
   { label: "System RAM", value: "64 GB ECC" },
   { label: "vCPU", value: "6-core EPYC" },
   { label: "OS", value: "Windows 11, full RDP desktop" },
@@ -39,7 +40,7 @@ export default function EnscapePage() {
         name: "Does Enscape work on a cloud GPU?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Yes. Enscape requires a WDDM-enabled GPU with RTX support for ray tracing. Coreframe Cloud provides Windows workstations with full WDDM drivers on the RTX 5070 Ti, so Enscape runs at full real-time speed including ray tracing.",
+          text: "Yes. Enscape requires a WDDM-enabled GPU with RTX support for ray tracing. Coreframe Cloud provides Windows workstations with full WDDM drivers on the RTX 5080, so Enscape runs at full real-time speed including ray tracing.",
         },
       },
       {
@@ -75,11 +76,11 @@ export default function EnscapePage() {
           Enscape · Cloud GPU · India
         </div>
         <h1 className="mt-3 text-4xl font-semibold tracking-tight md:text-5xl">
-          Run Enscape on RTX 5070 Ti.<br className="hidden md:block" /> Ray tracing. No hardware.
+          Run Enscape on RTX 5080.<br className="hidden md:block" /> Ray tracing. No hardware.
         </h1>
         <p className="mt-5 max-w-2xl text-base leading-8 text-slate-300">
           Enscape's real-time ray tracing pushes hard on GPU VRAM and compute.
-          Launch an RTX 5070 Ti Windows workstation, install Enscape alongside
+          Launch an RTX 5080 Windows workstation, install Enscape alongside
           Revit or SketchUp, and render walkthroughs and stills at speeds your local machine can't match.
         </p>
 
@@ -92,10 +93,10 @@ export default function EnscapePage() {
           </Link>
         </div>
 
-        {/* Why RTX 5070 Ti for Enscape */}
+        {/* Why RTX 5080 for Enscape */}
         <div className="mt-16 grid gap-5 md:grid-cols-3">
           {[
-            { title: "RTX ray tracing", body: "Enscape's ray-traced reflections, shadows, and GI run natively on the RTX 5070 Ti's dedicated RT cores — the same cores powering local RTX machines." },
+            { title: "RTX ray tracing", body: "Enscape's ray-traced reflections, shadows, and GI run natively on the RTX 5080's dedicated RT cores — the same cores powering local RTX machines." },
             { title: "Works with your host app", body: "Install Revit, SketchUp, Rhino, or ArchiCAD on the same workstation. Enscape plugs in exactly as it does locally." },
             { title: "Skip the CapEx entirely", body: "A high-end RTX workstation with server-grade RAM, managed OS, and a dedicated connection costs lakhs to buy and maintain. With Coreframe you get the same hardware as a fully managed service — no procurement, no IT overhead, no upgrades." },
           ].map((c) => (
@@ -123,13 +124,13 @@ export default function EnscapePage() {
         <div className="mt-14 grid gap-4 md:grid-cols-2">
           <div className="rounded-[20px] border border-white/10 bg-white/[0.03] p-6">
             <div className="text-xs uppercase tracking-wider text-white/40 mb-3">Ad-hoc</div>
-            <div className="text-4xl font-bold text-white">₹400 <span className="text-lg font-normal text-white/40">/ GPU-hr</span></div>
-            <p className="mt-3 text-sm text-white/50">No commitment. Pay only for the hours you use.</p>
+            <div className="text-4xl font-bold text-white">₹399 <span className="text-lg font-normal text-white/40">/ GPU-hr</span></div>
+            <p className="mt-3 text-sm text-white/50">No commitment. Pay only for the hours you use. Session scratch storage only, 7-day retention.</p>
           </div>
           <div className="rounded-[20px] border border-cyan-400/20 bg-cyan-400/[0.04] p-6">
             <div className="text-xs uppercase tracking-wider text-cyan-300/60 mb-3">Committed plans from</div>
-            <div className="text-4xl font-bold text-white">₹250 <span className="text-lg font-normal text-white/40">/ GPU-hr</span></div>
-            <p className="mt-3 text-sm text-white/50">Persistent storage + named seats for your whole practice.</p>
+            <div className="text-4xl font-bold text-white">₹339 <span className="text-lg font-normal text-white/40">/ GPU-hr</span></div>
+            <p className="mt-3 text-sm text-white/50">Cheaper per hour than ad-hoc at every tier, from ₹19,000/month. Persistent storage + named seats for your whole practice. Extra NAS storage ₹1,999/TB/month.</p>
             <Link href="/enterprise" className="mt-4 inline-block text-sm text-cyan-400 hover:underline">See plans →</Link>
           </div>
         </div>
@@ -138,7 +139,8 @@ export default function EnscapePage() {
           <p className="text-sm leading-6 text-white/50">
             <span className="font-semibold text-white/70">Enscape licence is BYOL.</span>{" "}
             Sign in to your Enscape account on the workstation to activate your seat.
-            Named-user and floating licences both work. All prices exclusive of GST.
+            Named-user and floating licences both work. All prices include 18% GST — what you see is
+            what you pay, and a GST invoice showing the taxable value and tax split is issued.
           </p>
         </div>
 

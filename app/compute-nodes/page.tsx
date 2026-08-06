@@ -1,116 +1,46 @@
+import type { Metadata } from "next";
 import { BackgroundGlow } from "@/components/home/background-glow";
-import { SiteFooter } from "@/components/home/site-footer";
-import { SiteHeader } from "@/components/home/site-header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+
+export const metadata: Metadata = {
+  title: "Compute Nodes — RTX 5080 GPU Workstations, ₹399/GPU-hour",
+  description:
+    "One node, one GPU: NVIDIA RTX 5080 with 16 GB GDDR7, 64 GB ECC RAM and a 6-core EPYC. ₹399 per GPU-hour, GST included, billed per minute from stream start. Hosted in Bengaluru, India.",
+  alternates: { canonical: "/compute-nodes" },
+};
 
 const whatsapp = (message: string) =>
   `https://wa.me/916366889488?text=${encodeURIComponent(message)}`;
 
-const rtxNodes = [
-  {
-    tag: "3D / WINDOWS",
-    name: "RTX A4000 16GB",
-    vram: "16GB",
-    vcpu: "16",
-    ram: "64GB",
-    disk: "200GB SSD",
-    price: "₹75/hr",
-  },
-  {
-    tag: "3D / WINDOWS",
-    name: "RTX A5000 24GB",
-    vram: "24GB",
-    vcpu: "16",
-    ram: "64GB",
-    disk: "250GB SSD",
-    price: "₹129/hr",
-  },
-  {
-    tag: "3D / WINDOWS",
-    name: "RTX A6000 48GB",
-    vram: "48GB",
-    vcpu: "32",
-    ram: "96GB",
-    disk: "300GB SSD",
-    price: "₹249/hr",
-  },
-  {
-    tag: "3D / WINDOWS",
-    name: "RTX 4000 Ada 20GB",
-    vram: "20GB",
-    vcpu: "32",
-    ram: "64GB",
-    disk: "250GB SSD",
-    price: "₹99/hr",
-  },
-  {
-    tag: "3D / WINDOWS",
-    name: "RTX 6000 Ada 48GB",
-    vram: "48GB",
-    vcpu: "64",
-    ram: "192GB",
-    disk: "400GB SSD",
-    price: "₹499/hr",
-  },
-];
+const node = {
+  tag: "3D / WINDOWS",
+  name: "NVIDIA RTX 5080",
+  price: "₹399/hr",
+  specs: [
+    { label: "GPU", value: "NVIDIA RTX 5080 (Blackwell)" },
+    { label: "VRAM", value: "16 GB GDDR7" },
+    { label: "Memory bandwidth", value: "960 GB/s" },
+    { label: "CUDA cores", value: "10,752" },
+    { label: "System RAM", value: "64 GB ECC" },
+    { label: "CPU", value: "6-core EPYC" },
+    { label: "Storage", value: "500 GB NVMe" },
+    { label: "Board power", value: "360 W" },
+  ],
+};
 
-const aiNodes = [
+const goodFor = [
   {
-    tag: "A-SERIES / LINUX",
-    name: "A16 16GB",
-    use: "Light inference, VDI density, lightweight compute",
-    vram: "16GB",
-    plan: "₹32,000/month",
+    title: "Design and visualisation",
+    text: "D5 Render, Lumion, Enscape, Revit, AutoCAD, 3ds Max and SolidWorks on a full Windows desktop over RDP.",
   },
   {
-    tag: "A-SERIES / LINUX",
-    name: "A30 24GB",
-    use: "Balanced AI compute and inference",
-    vram: "24GB",
-    plan: "₹66,000/month",
+    title: "Final-frame and animation output",
+    text: "Run long renders on the node instead of your workstation, and keep working locally while frames finish.",
   },
   {
-    tag: "A-SERIES / LINUX",
-    name: "A40 48GB",
-    use: "Inference, simulation, render-adjacent compute",
-    vram: "48GB",
-    plan: "₹150,000/month",
-  },
-  {
-    tag: "A-SERIES / LINUX",
-    name: "A100 80GB",
-    use: "Training and heavier AI workloads",
-    vram: "80GB",
-    plan: "Pricing on request",
-  },
-  {
-    tag: "L-SERIES / LINUX",
-    name: "L4 24GB",
-    use: "Efficient inference and video AI",
-    vram: "24GB",
-    plan: "₹67,960/month",
-  },
-  {
-    tag: "L-SERIES / LINUX",
-    name: "L40S 48GB",
-    use: "High-end inference and visual compute",
-    vram: "48GB",
-    plan: "₹81,320/month",
-  },
-  {
-    tag: "H-SERIES / LINUX",
-    name: "H100 94GB",
-    use: "Advanced AI training",
-    vram: "94GB",
-    plan: "₹399,000/month",
-  },
-  {
-    tag: "H-SERIES / LINUX",
-    name: "H200 141GB",
-    use: "Next-gen training and memory-heavy workloads",
-    vram: "141GB",
-    plan: "₹420,000/month",
+    title: "Client review sessions",
+    text: "Spin a node up for a walkthrough or a review call, then shut it down — you only pay for the minutes it streamed.",
   },
 ];
 
@@ -118,7 +48,6 @@ export default function ComputeNodesPage() {
   return (
     <div className="min-h-screen bg-slate-950 text-white">
       <BackgroundGlow />
-      <SiteHeader />
 
       <main className="relative mx-auto max-w-7xl px-6 pb-20 pt-20 md:pt-28">
         <div className="max-w-3xl">
@@ -126,12 +55,13 @@ export default function ComputeNodesPage() {
             Compute Nodes
           </div>
           <h1 className="mt-3 text-4xl font-semibold tracking-tight md:text-6xl">
-            Select the right GPU profile for your workload.
+            One node. One GPU. No configuration to get wrong.
           </h1>
           <p className="mt-5 max-w-2xl text-base leading-8 text-slate-300 md:text-lg">
-            RTX nodes are for 3D rendering and design workflows on hourly usage.
-            A, L, and H series nodes are for Linux-based AI, inference, and
-            training workloads on monthly plans.
+            Every Coreframe node is the same machine: an NVIDIA RTX 5080 with
+            16 GB GDDR7, 64 GB ECC RAM and a 6-core EPYC, hosted in Bengaluru.
+            One SKU means the price you see is the price you are billed, and
+            there is no wrong tier to pick.
           </p>
         </div>
 
@@ -140,115 +70,149 @@ export default function ComputeNodesPage() {
             3D Rendering / Hourly
           </div>
           <h2 className="mt-3 text-3xl font-semibold md:text-4xl">
-            RTX series for rendering and visualization.
+            RTX 5080 for rendering and visualization.
           </h2>
 
-          <div className="mt-8 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-            {rtxNodes.map((gpu) => (
-              <Card
-                key={gpu.name}
-                className="rounded-[1.6rem] border-white/10 bg-white/5"
-              >
-                <CardContent className="p-6">
-                  <div className="inline-flex rounded-md border border-cyan-400/25 bg-cyan-400/10 px-3 py-1 text-xs font-medium text-cyan-200">
-                    {gpu.tag}
-                  </div>
+          <div className="mt-8 grid gap-6 lg:grid-cols-3">
+            <Card className="rounded-[1.6rem] border-white/10 bg-white/5 lg:col-span-2">
+              <CardContent className="p-6 md:p-8">
+                <div className="inline-flex rounded-md border border-cyan-400/25 bg-cyan-400/10 px-3 py-1 text-xs font-medium text-cyan-200">
+                  {node.tag}
+                </div>
 
-                  <div className="mt-5 text-3xl font-semibold tracking-tight">
-                    {gpu.name}
-                  </div>
+                <div className="mt-5 text-3xl font-semibold tracking-tight md:text-4xl">
+                  {node.name}
+                </div>
 
-                  <div className="mt-6 grid gap-2 text-sm text-slate-300 sm:grid-cols-2">
-                    <div>{gpu.vram} VRAM</div>
-                    <div>{gpu.vcpu} vCPU</div>
-                    <div>{gpu.ram} RAM</div>
-                    <div>{gpu.disk}</div>
-                  </div>
-
-                  <div className="mt-8 flex items-center justify-between gap-4 border-t border-white/10 pt-6">
-                    <div>
-                      <div className="text-sm text-slate-400">Starting at</div>
-                      <div className="text-2xl font-semibold text-cyan-300">
-                        {gpu.price}
-                      </div>
-                    </div>
-                    <a
-                      href={whatsapp(
-                        `Hi Coreframe Cloud, I want to reserve ${gpu.name} for a 3D rendering / visualization workload.`
-                      )}
-                      target="_blank"
-                      rel="noreferrer"
+                <div className="mt-6 grid gap-x-8 gap-y-3 sm:grid-cols-2">
+                  {node.specs.map((spec) => (
+                    <div
+                      key={spec.label}
+                      className="flex items-baseline justify-between gap-4 border-b border-white/8 pb-2 text-sm"
                     >
-                      <Button className="rounded-xl">Reserve</Button>
-                    </a>
+                      <span className="text-slate-400">{spec.label}</span>
+                      <span className="font-medium text-white">
+                        {spec.value}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="mt-8 flex flex-wrap items-center justify-between gap-4 border-t border-white/10 pt-6">
+                  <div>
+                    <div className="text-sm text-slate-400">
+                      Pay-as-you-go, GST included
+                    </div>
+                    <div className="text-3xl font-semibold text-cyan-300">
+                      {node.price}
+                    </div>
+                    <div className="mt-1 text-xs text-slate-400">
+                      Per GPU-hour · billed per minute from stream start
+                    </div>
                   </div>
-                </CardContent>
-              </Card>
-            ))}
+                  <a
+                    href={whatsapp(
+                      "Hi Coreframe Cloud, I want to reserve an RTX 5080 node for a 3D rendering / visualization workload."
+                    )}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    <Button className="rounded-xl">Reserve</Button>
+                  </a>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="rounded-[1.6rem] border-white/10 bg-white/5">
+              <CardContent className="p-6 md:p-8">
+                <div className="text-sm uppercase tracking-[0.2em] text-cyan-300">
+                  How billing works
+                </div>
+                <ul className="mt-5 space-y-4 text-sm leading-6 text-slate-300">
+                  <li>
+                    <span className="font-medium text-white">
+                      ₹399 per GPU-hour, GST included.
+                    </span>{" "}
+                    What you see is what you pay — the 18% GST component is
+                    inside the rate, and business customers get a full tax
+                    invoice showing the split.
+                  </li>
+                  <li>
+                    <span className="font-medium text-white">
+                      Billed per minute from stream start.
+                    </span>{" "}
+                    The clock starts when your session begins streaming.
+                    Provisioning time is free.
+                  </li>
+                  <li>
+                    <span className="font-medium text-white">
+                      No commitment.
+                    </span>{" "}
+                    Spin up anytime and shut down when you are done. Committed
+                    monthly plans are cheaper per hour if you run regularly.
+                  </li>
+                  <li>
+                    <span className="font-medium text-white">
+                      Session scratch storage only.
+                    </span>{" "}
+                    Download your outputs before shutting down, or add
+                    persistent NAS storage to the account.
+                  </li>
+                </ul>
+              </CardContent>
+            </Card>
           </div>
         </section>
 
         <section className="mt-20">
           <div className="text-sm uppercase tracking-[0.25em] text-cyan-300">
-            AI / Linux / Monthly
+            What it is for
           </div>
           <h2 className="mt-3 text-3xl font-semibold md:text-4xl">
-            A, L, and H series for training and inference.
+            Built around design and rendering workflows.
           </h2>
 
-          <div className="mt-8 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
-            {aiNodes.map((gpu) => (
+          <div className="mt-8 grid gap-6 md:grid-cols-3">
+            {goodFor.map((item) => (
               <Card
-                key={gpu.name}
+                key={item.title}
                 className="rounded-[1.6rem] border-white/10 bg-white/5"
               >
                 <CardContent className="p-6">
-                  <div className="inline-flex rounded-md border border-cyan-400/25 bg-cyan-400/10 px-3 py-1 text-xs font-medium text-cyan-200">
-                    {gpu.tag}
+                  <div className="text-lg font-semibold text-white">
+                    {item.title}
                   </div>
-                  <div className="mt-5 text-2xl font-semibold tracking-tight">
-                    {gpu.name}
-                  </div>
-                  <div className="mt-3 text-sm text-slate-400">{gpu.vram} VRAM</div>
-                  <p className="mt-4 text-sm leading-7 text-slate-300">
-                    {gpu.use}
+                  <p className="mt-3 text-sm leading-7 text-slate-300">
+                    {item.text}
                   </p>
-
-                  <div className="mt-8 flex items-center justify-between gap-4 border-t border-white/10 pt-6">
-                    <div>
-                      <div className="text-sm text-slate-400">Ballpark monthly</div>
-                      <div className="text-lg font-semibold text-cyan-300">
-                        {gpu.plan}
-                      </div>
-                    </div>
-                    <a
-                      href={whatsapp(
-                        `Hi Coreframe Cloud, I want pricing and configuration details for ${gpu.name} on a monthly Linux plan.`
-                      )}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      <Button
-                        variant="outline"
-                        className="rounded-xl border-white/15 bg-white/5 text-white hover:bg-white/10"
-                      >
-                        Contact
-                      </Button>
-                    </a>
-                  </div>
                 </CardContent>
               </Card>
             ))}
           </div>
         </section>
 
+        <div className="mt-14 flex flex-wrap items-center gap-4">
+          <a
+            href={whatsapp(
+              "Hi Coreframe Cloud, I'd like to talk about RTX 5080 compute nodes for my team."
+            )}
+            target="_blank"
+            rel="noreferrer"
+          >
+            <Button className="rounded-xl">Talk to us on WhatsApp</Button>
+          </a>
+          <span className="text-sm text-slate-400">
+            Software licences are BYOL — bring your own D5 Render, Lumion,
+            Enscape or SolidWorks seat.
+          </span>
+        </div>
+
         <p className="mt-10 text-sm text-slate-400">
-          Customizations can be done as per needs, including CPU, RAM, storage,
-          operating system, and GPU combinations.
+          Need something outside this configuration — more storage, a different
+          OS image, or a longer-running reserved node? Talk to us and we will
+          tell you honestly whether we can run it.
         </p>
       </main>
-
-      <SiteFooter />
     </div>
   );
 }

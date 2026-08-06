@@ -24,10 +24,12 @@ const initialState: FormState = {
 };
 
 const renderingGpuOptions = [
-  "RTX 5070 Ti 16GB — ₹400/hr (ad-hoc)",
-  "Committed Studio plan — ₹24,000/month",
-  "Committed Medium Firm — ₹50,000/month",
-  "Committed Big Firm — ₹1,00,000/month",
+  "RTX 5080 16GB — ₹399/hr (ad-hoc)",
+  "Committed Studio plan — ₹19,000/month",
+  "Committed Medium Firm — ₹53,000/month",
+  "Committed Big Firm — ₹1,21,000/month",
+  "Big Firm Dedicated — ₹1,89,000/month",
+  "Persistent NAS storage add-on — ₹1,999/TB/month",
 ];
 
 const aiGpuOptions = [

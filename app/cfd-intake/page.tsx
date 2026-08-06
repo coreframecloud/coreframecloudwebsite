@@ -43,15 +43,23 @@ export default function CfdIntakePage() {
               <span className="text-green-400">✓</span> Fully headless solver runs
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="text-green-400">✓</span> Results delivered as PDF + data
+              <span className="text-green-400">✓</span> Results as PDF + data files
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="text-green-400">✓</span> Quote within 1 business day
+              <span className="text-cyan-400">⚡</span> CFD in minutes
+              <span className="text-white/30 text-xs">*</span>
             </span>
           </div>
         </div>
 
         <CfdIntakeForm />
+
+        {/* Footnote */}
+        <p className="mt-10 text-xs text-slate-600 border-t border-white/5 pt-6">
+          * With clean CAD geometry up to 10 million cells, typical wall-clock solve time is under 1 hour.
+          Cases between 10–50 million cells typically complete within 4 hours.
+          Complex physics (combustion, multiphase, FSI) or meshing work may extend timelines — our team will confirm before starting.
+        </p>
       </main>
     </div>
   );

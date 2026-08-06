@@ -3,16 +3,15 @@ import { BackgroundGlow } from "@/components/home/background-glow";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Ansys CFD in Minutes Not Days — H100 & RTX 6000 Pro Cloud India",
+  title: "Ansys CFD in Minutes Not Days — GPU CFD as a Managed Service, India",
   description:
-    "Why wait 3 days for a CFD solve? Run Ansys Fluent on H100 (80 GB HBM3) or RTX 6000 Pro (96 GB) and finish the same job in minutes. Per-job pricing by element count. Ansys cloud partner. Bengaluru, India.",
+    "Why wait 3 days for a CFD solve? Submit your Ansys Fluent job and we run it on GPU hardware sized to your mesh. Per-job pricing by element count. Ansys cloud partner. Bengaluru, India.",
   keywords: [
     "Ansys CFD cloud GPU India",
     "GPU CFD simulation India",
     "Ansys Fluent GPU cloud",
     "CFD cloud computing India",
-    "H100 CFD simulation India",
-    "RTX 6000 Pro CFD India",
+    "managed CFD service India",
     "per job CFD cloud India",
   ],
   alternates: { canonical: "/ansys-cfd-gpu" },
@@ -22,45 +21,22 @@ const whyGpu = [
   {
     icon: "⚡",
     title: "5–20× faster solve times",
-    body: "Ansys Fluent's GPU solver offloads the pressure-velocity coupling and linear algebra to thousands of CUDA cores in parallel. What takes 8 hours on a CPU cluster resolves in minutes on an H100.",
+    body: "Ansys Fluent's GPU solver offloads the pressure-velocity coupling and linear algebra to thousands of CUDA cores in parallel. What takes 8 hours on a CPU cluster can resolve in minutes on a suitably sized GPU.",
   },
   {
     icon: "🧠",
     title: "VRAM determines mesh ceiling",
-    body: "The number of elements your solver can hold in memory is bounded by GPU VRAM. RTX 6000 Pro gives 96 GB GDDR7 — enough for most industrial meshes up to ~80 M elements without decomposition.",
+    body: "The number of elements your solver can hold in memory is bounded by GPU VRAM. We size the hardware to your mesh, so large industrial cases run without you having to decompose them by hand.",
   },
   {
     icon: "🌊",
     title: "Memory bandwidth for convergence",
-    body: "Each solver iteration moves the full mesh state across memory repeatedly. H100's 3.35 TB/s HBM3 bandwidth keeps iterations fast even for large turbulent flow problems.",
+    body: "Each solver iteration moves the full mesh state across memory repeatedly. High-bandwidth GPU memory keeps iterations fast even for large turbulent flow problems.",
   },
   {
     icon: "💸",
     title: "No idle hardware cost",
-    body: "A dedicated H100 workstation costs ₹50–80 lakh upfront, then sits idle between jobs. Per-job cloud billing means you pay only when the simulation is actually running.",
-  },
-];
-
-const gpus = [
-  {
-    name: "RTX 6000 Pro",
-    badge: "Mid-to-large meshes",
-    vram: "96 GB GDDR7",
-    bandwidth: "960 GB/s",
-    cuda: "18,176 CUDA cores",
-    mesh: "Up to ~80 M elements",
-    best: "Building wind loads, HVAC, electronics cooling, external aero up to medium scale",
-    highlight: false,
-  },
-  {
-    name: "NVIDIA H100",
-    badge: "Industrial scale",
-    vram: "80 GB HBM3",
-    bandwidth: "3.35 TB/s",
-    cuda: "16,896 CUDA cores + 528 Tensor cores",
-    mesh: "100 M+ elements, multi-physics",
-    best: "Full-aircraft aerodynamics, large-scale combustion, parametric sweeps, transient simulations",
-    highlight: true,
+    body: "A dedicated CFD-class GPU workstation is a multi-lakh capital purchase that then sits idle between jobs. Per-job billing means you pay only when the simulation is actually running.",
   },
 ];
 
@@ -77,28 +53,24 @@ const pricingTiers = [
   {
     label: "Validation",
     elements: "Up to 2 M elements",
-    gpu: "RTX 6000 Pro",
     useFor: "Concept checks, quick parameter sweeps",
     price: "Contact us",
   },
   {
     label: "Engineering",
     elements: "2 M – 20 M elements",
-    gpu: "RTX 6000 Pro",
     useFor: "Design validation, steady-state RANS",
     price: "Contact us",
   },
   {
     label: "Industrial",
     elements: "20 M – 80 M elements",
-    gpu: "RTX 6000 Pro",
     useFor: "Full-scale external aero, large HVAC, wind tunnel",
     price: "Contact us",
   },
   {
     label: "Large Scale",
     elements: "80 M – 200 M elements",
-    gpu: "H100",
     useFor: "Complex multi-physics, LES, transient, parametric campaigns",
     price: "Contact us",
   },
@@ -118,10 +90,10 @@ const jsonLd = {
     },
     {
       "@type": "Question",
-      name: "How many mesh elements can run on RTX 6000 Pro?",
+      name: "How large a mesh can you run?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "RTX 6000 Pro has 96 GB GDDR7 VRAM. Ansys Fluent's GPU solver requires roughly 1–1.5 GB per million elements for a double-precision k-ω SST case. Practically, meshes up to ~60–80 M elements fit comfortably within single-GPU memory.",
+        text: "Ansys Fluent's GPU solver requires roughly 1–1.5 GB of GPU memory per million elements for a double-precision k-ω SST case. We size the hardware to the job, and routinely run cases well into the tens of millions of elements. Send us your element count and we will confirm what is feasible before you commit.",
       },
     },
     {
@@ -137,7 +109,7 @@ const jsonLd = {
       name: "How is CFD job pricing calculated?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Pricing is based on mesh element count (the primary driver of memory and compute cost), GPU tier (RTX 6000 Pro vs H100), and estimated solve time. Contact Coreframe with your .cas file or element count for an accurate quote.",
+        text: "Pricing is per job, based on mesh element count (the primary driver of memory and compute cost), solver type, and estimated solve time. Contact Coreframe with your .cas file or element count for an accurate quote.",
       },
     },
   ],
@@ -163,12 +135,16 @@ export default function AnsysCfdPage() {
         </div>
         <h1 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">
           GPU-accelerated CFD.<br className="hidden sm:block" />
-          Ansys Fluent on H100 & RTX 6000 Pro.
+          Ansys Fluent, run as a managed service.
         </h1>
         <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-300">
           Solve large Ansys CFD meshes 5–20× faster than CPU clusters. Submit a job, specify
-          your element count, and Coreframe's GPU infrastructure handles the rest — no hardware
+          your element count, and we run it on GPU hardware appropriate to the case — no hardware
           to procure, no licences to manage. Per-job pricing, hosted in Bengaluru.
+        </p>
+        <p className="mt-3 max-w-2xl text-xs leading-6 text-white/40">
+          CFD is a per-job service, not self-serve GPU rental. There is no hourly CFD node to
+          book — you send the job, we return the results.
         </p>
 
         <div className="mt-5 flex flex-wrap gap-3">
@@ -203,44 +179,31 @@ export default function AnsysCfdPage() {
           </div>
         </div>
 
-        {/* GPU specs */}
+        {/* How the hardware is chosen */}
         <div className="mt-12">
           <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-white/35 mb-5">
-            GPU options
+            How we size the hardware
           </h2>
-          <div className="grid gap-4 sm:grid-cols-2">
-            {gpus.map((g) => (
-              <div key={g.name} className={`relative rounded-[20px] border p-6 ${g.highlight ? "border-cyan-400/25 bg-cyan-400/[0.04]" : "border-white/10 bg-white/[0.03]"}`}>
-                {g.highlight && (
-                  <span className="absolute -top-3 left-5 rounded-full bg-cyan-400 px-3 py-0.5 text-[10px] font-bold uppercase tracking-wider text-slate-900">
-                    Highest performance
-                  </span>
-                )}
-                <div className={`text-[10px] font-semibold uppercase tracking-wider mb-1 ${g.highlight ? "text-cyan-300/60" : "text-white/35"}`}>
-                  {g.badge}
-                </div>
-                <div className="text-lg font-bold text-white">{g.name}</div>
-
-                <div className="mt-4 space-y-2">
-                  {[
-                    { l: "VRAM", v: g.vram },
-                    { l: "Memory bandwidth", v: g.bandwidth },
-                    { l: "Compute", v: g.cuda },
-                    { l: "Max mesh size", v: g.mesh },
-                  ].map(({ l, v }) => (
-                    <div key={l} className="flex justify-between text-xs border-b border-white/6 pb-2 last:border-b-0">
-                      <span className="text-white/45">{l}</span>
-                      <span className="font-medium text-white">{v}</span>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="mt-4 rounded-xl bg-white/[0.03] px-3 py-2">
-                  <div className="text-[10px] text-white/35 mb-1">Best for</div>
-                  <p className="text-xs leading-5 text-white/60">{g.best}</p>
-                </div>
-              </div>
-            ))}
+          <div className="rounded-[20px] border border-white/10 bg-white/[0.03] p-6">
+            <p className="text-xs leading-6 text-white/60">
+              You do not pick a GPU. Send us the mesh — element count, solver, turbulence model,
+              steady or transient — and we run the job on hardware appropriate to it. Memory is
+              usually the binding constraint: Ansys Fluent&apos;s GPU solver needs roughly
+              1–1.5 GB of GPU memory per million elements for a double-precision case, so the
+              mesh size decides the machine, not the other way round.
+            </p>
+            <p className="mt-3 text-xs leading-6 text-white/60">
+              If a case will not run well, we will tell you before you pay rather than quote you
+              for something that will not converge.
+            </p>
+            <p className="mt-3 text-xs leading-6 text-white/40">
+              Note: CFD hardware is separate from our self-serve rendering fleet. The only GPU you
+              can rent by the hour on Coreframe is the RTX 5080 — see{" "}
+              <Link href="/compute-nodes" className="text-cyan-300 hover:text-cyan-200 transition">
+                compute nodes
+              </Link>
+              .
+            </p>
           </div>
         </div>
 
@@ -293,20 +256,18 @@ export default function AnsysCfdPage() {
             Priced per simulation job based on mesh element count — the primary driver of GPU memory and compute time.
           </p>
           <div className="overflow-hidden rounded-[20px] border border-white/10">
-            <div className="grid grid-cols-4 gap-0 border-b border-white/8 bg-white/[0.02] px-5 py-2.5 text-[10px] font-semibold uppercase tracking-wider text-white/35">
+            <div className="grid grid-cols-3 gap-0 border-b border-white/8 bg-white/[0.02] px-5 py-2.5 text-[10px] font-semibold uppercase tracking-wider text-white/35">
               <span>Tier</span>
               <span>Element count</span>
-              <span>GPU</span>
               <span>Use for</span>
             </div>
             {pricingTiers.map((t, i) => (
               <div
                 key={t.label}
-                className={`grid grid-cols-4 gap-0 px-5 py-4 text-xs ${i < pricingTiers.length - 1 ? "border-b border-white/6" : ""} ${i === pricingTiers.length - 1 ? "bg-cyan-400/[0.03]" : ""}`}
+                className={`grid grid-cols-3 gap-0 px-5 py-4 text-xs ${i < pricingTiers.length - 1 ? "border-b border-white/6" : ""} ${i === pricingTiers.length - 1 ? "bg-cyan-400/[0.03]" : ""}`}
               >
                 <span className="font-semibold text-white">{t.label}</span>
                 <span className="text-white/60">{t.elements}</span>
-                <span className={`font-medium ${t.gpu === "H100" ? "text-cyan-300" : "text-white/70"}`}>{t.gpu}</span>
                 <span className="text-white/45">{t.useFor}</span>
               </div>
             ))}

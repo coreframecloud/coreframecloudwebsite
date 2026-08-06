@@ -1,13 +1,10 @@
 import { BackgroundGlow } from "@/components/home/background-glow";
-import { SiteFooter } from "@/components/home/site-footer";
-import { SiteHeader } from "@/components/home/site-header";
 import RequestDemoForm from "./request-demo-form";
 
 export default function RequestDemoPage() {
   return (
     <div className="min-h-screen text-white">
       <BackgroundGlow />
-      <SiteHeader />
 
       <main className="relative mx-auto max-w-5xl px-6 pb-20 pt-20 md:pt-28">
         <div className="max-w-3xl">
@@ -25,8 +22,6 @@ export default function RequestDemoPage() {
 
         <RequestDemoForm />
       </main>
-
-      <SiteFooter />
     </div>
   );
 }

@@ -95,7 +95,7 @@ export function WorkflowSection() {
             <span className="rounded-full border border-cyan-400/20 bg-cyan-400/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-cyan-300">
               Studio · Committed plan
             </span>
-            <span className="text-sm text-white/38">₹250/GPU-hr · Persistent NAS storage</span>
+            <span className="text-sm text-white/38">From ₹339/GPU-hr · Persistent NAS storage</span>
           </div>
 
           <div className="rounded-[24px] border border-cyan-400/15 bg-cyan-400/[0.02] p-6 md:p-8">
@@ -103,7 +103,7 @@ export function WorkflowSection() {
               <div className="flex min-w-max items-center">
                 <TeamBlock />
                 <Arrow label="each logs in" />
-                <FlowNode icon="🖥️" label="GPU Workstation" sub="RTX 5070 Ti · Windows" accent="cyan" />
+                <FlowNode icon="🖥️" label="GPU Workstation" sub="RTX 5080 · Windows" accent="cyan" />
                 <Arrow label="reads & writes" />
                 <FlowNode icon="🗄️" label="NAS Storage" sub="2–10 TB · always on" accent="cyan" />
               </div>
@@ -127,7 +127,7 @@ export function WorkflowSection() {
             <span className="rounded-full border border-emerald-400/20 bg-emerald-400/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-emerald-300">
               Ad-hoc · Pay-as-you-go
             </span>
-            <span className="text-sm text-white/38">₹400/GPU-hr · No commitment</span>
+            <span className="text-sm text-white/38">₹399/GPU-hr · No commitment</span>
           </div>
 
           <div className="rounded-[24px] border border-white/10 bg-white/[0.03] p-6 md:p-8">
@@ -135,7 +135,7 @@ export function WorkflowSection() {
               <div className="flex min-w-max items-center">
                 <FlowNode icon="🧑‍🎨" label="You" sub="one user" accent="slate" />
                 <Arrow label="launch" />
-                <FlowNode icon="🖥️" label="GPU Workstation" sub="RTX 5070 Ti · Windows" accent="emerald" />
+                <FlowNode icon="🖥️" label="GPU Workstation" sub="RTX 5080 · Windows" accent="emerald" />
                 <Arrow label="render to" />
                 <FlowNode icon="⚡" label="NVMe Scratch" sub="50 GB · session only" accent="amber" />
                 <Arrow label="download & done" />

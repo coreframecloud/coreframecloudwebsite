@@ -71,7 +71,7 @@ This improves rendering speed and ensures stable performance for large models.
     content: `
 GPU rendering services allow users to access high-performance RTX GPUs without upfront investment.
 
-Start rendering from ₹90/hr and scale based on your project needs.
+Start rendering from ₹399/hr (GST included) and scale based on your project needs.
 
 This model is ideal for architects, freelancers, and studios handling variable workloads.
 `,

@@ -3,9 +3,9 @@ import { BackgroundGlow } from "@/components/home/background-glow";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "D5 Render 5× Faster — RTX 5070 Ti Cloud GPU India | Coreframe",
+  title: "D5 Render 5× Faster — RTX 5080 Cloud GPU India | Coreframe",
   description:
-    "Render D5 scenes 5× faster than a mid-range local GPU. Launch an RTX 5070 Ti cloud workstation in under 2 minutes. ₹400/hr, no setup, no hardware. Hosted in Bengaluru, India.",
+    "Render D5 scenes 5× faster than a mid-range local GPU. Launch an RTX 5080 cloud workstation in under 2 minutes. ₹399/hr including GST, no setup, no hardware. Hosted in Bengaluru, India.",
   keywords: [
     "D5 Render cloud GPU",
     "D5 Render cloud workstation India",
@@ -18,19 +18,20 @@ export const metadata: Metadata = {
 
 const steps = [
   { n: "01", title: "Create your account", body: "Sign up at coreframecloud.com and add wallet credit. Takes under 2 minutes." },
-  { n: "02", title: "Launch a workstation", body: "One click spins up an RTX 5070 Ti Windows machine. Full WDDM display driver — D5 Render runs exactly as it does on a local GPU." },
+  { n: "02", title: "Launch a workstation", body: "One click spins up an RTX 5080 Windows machine. Full WDDM display driver — D5 Render runs exactly as it does on a local GPU." },
   { n: "03", title: "Install D5 & activate your licence", body: "D5 Render is BYOL. Install it, sign in to your named-user account, and your licence activates instantly." },
   { n: "04", title: "Transfer your project", body: "Upload your scene files over the encrypted connection. Large project files transfer fast over our 1 Gbps dedicated link." },
-  { n: "05", title: "Render", body: "Run D5 Render at full RTX 5070 Ti speed — GPU ray tracing, DLSS, and real-time path tracing all work. Render times typically drop 3–5× vs a mid-range local GPU." },
+  { n: "05", title: "Render", body: "Run D5 Render at full RTX 5080 speed — GPU ray tracing, DLSS, and real-time path tracing all work. Render times typically drop 3–5× vs a mid-range local GPU." },
   { n: "06", title: "Download & shut down", body: "Download your outputs and end the session. You are charged for the full hour. Scratch storage is cleared automatically." },
 ];
 
 const specs = [
-  { label: "GPU", value: "NVIDIA RTX 5070 Ti" },
-  { label: "VRAM", value: "16 GB GDDR7" },
+  { label: "GPU", value: "NVIDIA RTX 5080" },
+  { label: "VRAM", value: "16 GB GDDR7 · 960 GB/s" },
+  { label: "CUDA cores", value: "10,752 (Blackwell)" },
   { label: "System RAM", value: "64 GB ECC" },
   { label: "vCPU", value: "6-core EPYC" },
-  { label: "Local scratch", value: "NVMe — cleared after session" },
+  { label: "Local scratch", value: "NVMe — 7-day retention, cleared after session" },
   { label: "OS", value: "Windows 11, full RDP desktop" },
   { label: "Display driver", value: "WDDM (required for D5 Render)" },
   { label: "Location", value: "Bengaluru, India" },
@@ -46,7 +47,7 @@ export default function D5RenderPage() {
         name: "Does D5 Render work on a cloud GPU?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Yes. D5 Render requires a WDDM-enabled GPU with RTX support. Coreframe Cloud provisions Windows workstations with a full WDDM display driver on the RTX 5070 Ti, so D5 runs identically to a local machine.",
+          text: "Yes. D5 Render requires a WDDM-enabled GPU with RTX support. Coreframe Cloud provisions Windows workstations with a full WDDM display driver on the RTX 5080, so D5 runs identically to a local machine.",
         },
       },
       {
@@ -62,7 +63,7 @@ export default function D5RenderPage() {
         name: "How much does a D5 Render cloud session cost?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Ad-hoc sessions are ₹400/GPU-hour, charged per full hour. Committed monthly plans start at ₹24,000/month with lower per-hour overage rates depending on the tier.",
+          text: "Ad-hoc sessions are ₹399/GPU-hour, charged per full hour. Committed monthly plans start at ₹19,000/month and bill extra hours below the ad-hoc rate at every tier — ₹379/hr on Studio, ₹359/hr on Medium Firm, ₹339/hr on Big Firm. All prices include 18% GST, and a GST invoice showing the tax split is issued.",
         },
       },
     ],
@@ -82,10 +83,10 @@ export default function D5RenderPage() {
           D5 Render · Cloud GPU · India
         </div>
         <h1 className="mt-3 text-4xl font-semibold tracking-tight md:text-5xl">
-          Run D5 Render on RTX 5070 Ti.<br className="hidden md:block" /> No hardware. Pay by the hour.
+          Run D5 Render on RTX 5080.<br className="hidden md:block" /> No hardware. Pay by the hour.
         </h1>
         <p className="mt-5 max-w-2xl text-base leading-8 text-slate-300">
-          Skip the GPU upgrade cycle. Launch an RTX 5070 Ti Windows workstation in under 2 minutes,
+          Skip the GPU upgrade cycle. Launch an RTX 5080 Windows workstation in under 2 minutes,
           render your D5 scene at full speed, and shut down when you're done.
           Charged per full hour. Data stays in India.
         </p>
@@ -111,7 +112,7 @@ export default function D5RenderPage() {
             ))}
           </div>
           <p className="mt-3 text-xs text-white/30">
-            RTX 5070 Ti is a consumer card with full gaming-driver support — not available on any other cloud provider.
+            RTX 5080 is a consumer card with full gaming-driver support — not available on any other cloud provider.
           </p>
         </div>
 
@@ -133,16 +134,21 @@ export default function D5RenderPage() {
         <div className="mt-16 grid gap-4 md:grid-cols-2">
           <div className="rounded-[20px] border border-white/10 bg-white/[0.03] p-6">
             <div className="text-xs uppercase tracking-wider text-white/40 mb-3">Ad-hoc</div>
-            <div className="text-4xl font-bold text-white">₹400 <span className="text-lg font-normal text-white/40">/ GPU-hr</span></div>
-            <p className="mt-3 text-sm text-white/50">No commitment. Spin up anytime, pay only for what you use.</p>
+            <div className="text-4xl font-bold text-white">₹399 <span className="text-lg font-normal text-white/40">/ GPU-hr</span></div>
+            <p className="mt-3 text-sm text-white/50">No commitment. Spin up anytime, pay only for what you use. Session scratch storage only, 7-day retention.</p>
           </div>
           <div className="rounded-[20px] border border-cyan-400/20 bg-cyan-400/[0.04] p-6">
             <div className="text-xs uppercase tracking-wider text-cyan-300/60 mb-3">Committed plans from</div>
-            <div className="text-4xl font-bold text-white">₹250 <span className="text-lg font-normal text-white/40">/ GPU-hr</span></div>
-            <p className="mt-3 text-sm text-white/50">Monthly plans with persistent storage and named render seats.</p>
+            <div className="text-4xl font-bold text-white">₹339 <span className="text-lg font-normal text-white/40">/ GPU-hr</span></div>
+            <p className="mt-3 text-sm text-white/50">Cheaper per hour than ad-hoc at every tier, from ₹19,000/month. Persistent storage and named render seats included. Extra NAS storage ₹1,999/TB/month.</p>
             <Link href="/enterprise" className="mt-4 inline-block text-sm text-cyan-400 hover:underline">See plans →</Link>
           </div>
         </div>
+
+        <p className="mt-4 text-xs leading-5 text-white/35">
+          All prices include 18% GST — what you see is what you pay, and every business customer
+          gets a GST invoice showing the taxable value and tax split.
+        </p>
 
         {/* BYOL note */}
         <div className="mt-8 rounded-[16px] border border-white/8 bg-white/[0.02] px-6 py-5">

@@ -439,7 +439,7 @@ export default function CfdIntakeForm() {
           <div className="mb-4 text-5xl">🚀</div>
           <h2 className="text-3xl font-bold tracking-tight">Job submitted!</h2>
           <p className="mt-3 max-w-md mx-auto text-slate-300 text-sm leading-6">
-            Our engineering team will review your inputs and send a quote within 1 business day.
+            Upload your CAD file below and we&apos;ll spin up the solver — results delivered as PDF + data files.
           </p>
           <div className="my-6 inline-block rounded-2xl border border-blue-500/30 bg-blue-500/10 px-8 py-4 font-mono text-2xl font-bold tracking-widest text-blue-300">
             {refId}

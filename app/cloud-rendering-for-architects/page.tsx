@@ -3,9 +3,9 @@ import { BackgroundGlow } from "@/components/home/background-glow";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Cloud Rendering for Architects — RTX 5070 Ti, India",
+  title: "Cloud Rendering for Architects — RTX 5080, India",
   description:
-    "Cloud GPU workstations for architecture studios. Run D5 Render, Lumion, Enscape, Revit on RTX 5070 Ti. Persistent project storage, named seats, data hosted in Bengaluru.",
+    "Cloud GPU workstations for architecture studios. Run D5 Render, Lumion, Enscape, Revit on RTX 5080. Persistent project storage, named seats, data hosted in Bengaluru.",
   keywords: [
     "cloud rendering for architects India",
     "cloud GPU architecture India",
@@ -21,7 +21,7 @@ const useCases = [
   {
     icon: "🏛️",
     title: "D5 Render walkthroughs",
-    body: "Fly-through animations and real-time walkthroughs need sustained GPU throughput your local machine can't sustain for long sessions. Offload to RTX 5070 Ti and let the render run.",
+    body: "Fly-through animations and real-time walkthroughs need sustained GPU throughput your local machine can't sustain for long sessions. Offload to RTX 5080 and let the render run.",
   },
   {
     icon: "🪟",
@@ -46,24 +46,25 @@ const useCases = [
   {
     icon: "📐",
     title: "Scale for deadline crunches",
-    body: "Before a presentation, multiple team members can run separate render sessions simultaneously. Each gets their own RTX 5070 Ti instance. Scale up, scale down.",
+    body: "Before a presentation, multiple team members can run separate render sessions simultaneously. Each gets their own RTX 5080 instance. Scale up, scale down.",
   },
 ];
 
 const workflow = [
   { n: "01", title: "Create account & add credit", body: "Sign up, verify email, and add wallet credit. Takes under 5 minutes." },
-  { n: "02", title: "Launch a Windows workstation", body: "One click. RTX 5070 Ti boots with WDDM display drivers. Ready in under 2 minutes." },
+  { n: "02", title: "Launch a Windows workstation", body: "One click. RTX 5080 boots with WDDM display drivers. Ready in under 2 minutes." },
   { n: "03", title: "Install your apps", body: "Install D5 Render, Lumion, Enscape, Revit, or SketchUp and sign in with your existing licences. BYOL — no extra software fees." },
   { n: "04", title: "Transfer your project files", body: "Upload scene files and assets to Coreframe's secure storage layer over an encrypted transfer." },
-  { n: "05", title: "Render", body: "Run at full RTX 5070 Ti speed. For committed-plan studios, files persist on NAS so any team member can continue the session." },
+  { n: "05", title: "Render", body: "Run at full RTX 5080 speed. For committed-plan studios, files persist on NAS so any team member can continue the session." },
   { n: "06", title: "Download & shut down", body: "Download outputs. Shut down the workstation. Billing stops. Committed-plan files stay on NAS for next time." },
 ];
 
 const plans = [
-  { name: "Ad-hoc", price: "₹400/hr", note: "Per full hour, no commitment. Download outputs before shutting down.", cta: "Get started", href: "/signup", highlight: false },
-  { name: "Studio", price: "₹24,000/mo", note: "2 TB NAS · 5 seats · 40 GPU-hrs · ₹350/hr extra", cta: "Get a quote", href: "https://wa.me/916366889488?text=Hi%20Coreframe%2C%20I%27d%20like%20to%20discuss%20the%20Studio%20plan%20for%20my%20architecture%20studio.", highlight: false },
-  { name: "Medium Firm", price: "₹50,000/mo", note: "5 TB NAS · 12 seats · 120 GPU-hrs · ₹250/hr extra", cta: "Get a quote", href: "https://wa.me/916366889488?text=Hi%20Coreframe%2C%20I%27d%20like%20to%20discuss%20the%20Medium%20Firm%20plan.", highlight: true },
-  { name: "Big Firm", price: "₹1,00,000/mo", note: "10 TB NAS · 25 seats · 300 GPU-hrs · ₹200/hr extra", cta: "Get a quote", href: "https://wa.me/916366889488?text=Hi%20Coreframe%2C%20I%27d%20like%20to%20discuss%20the%20Big%20Firm%20plan.", highlight: false },
+  { name: "Ad-hoc", price: "₹399/hr", note: "Per full hour, no commitment. Session scratch storage only, 7-day retention — download outputs before shutting down.", cta: "Get started", href: "/signup", highlight: false },
+  { name: "Studio", price: "₹19,000/mo", note: "2 TB NAS · 30-day retention · 5 seats · 40 GPU-hrs · ₹379/hr extra", cta: "Get a quote", href: "https://wa.me/916366889488?text=Hi%20Coreframe%2C%20I%27d%20like%20to%20discuss%20the%20Studio%20plan%20for%20my%20architecture%20studio.", highlight: false },
+  { name: "Medium Firm", price: "₹53,000/mo", note: "5 TB NAS · 90-day retention · 12 seats · 120 GPU-hrs · ₹359/hr extra", cta: "Get a quote", href: "https://wa.me/916366889488?text=Hi%20Coreframe%2C%20I%27d%20like%20to%20discuss%20the%20Medium%20Firm%20plan.", highlight: true },
+  { name: "Big Firm", price: "₹1,21,000/mo", note: "10 TB NAS · 365-day retention · 25 seats · 300 GPU-hrs · ₹339/hr extra", cta: "Get a quote", href: "https://wa.me/916366889488?text=Hi%20Coreframe%2C%20I%27d%20like%20to%20discuss%20the%20Big%20Firm%20plan.", highlight: false },
+  { name: "Big Firm Dedicated", price: "₹1,89,000/mo", note: "A node reserved entirely for one practice. 10 TB NAS · 365-day retention · 25 seats · 500 GPU-hrs · ₹339/hr extra", cta: "Get a quote", href: "https://wa.me/916366889488?text=Hi%20Coreframe%2C%20I%27d%20like%20to%20discuss%20the%20Big%20Firm%20Dedicated%20plan.", highlight: false },
 ];
 
 const jsonLd = {
@@ -91,7 +92,7 @@ const jsonLd = {
       name: "Is cloud rendering faster than a local workstation for architects?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "It depends on your local GPU. An RTX 5070 Ti with 16 GB GDDR7 outperforms most mid-range local GPUs for D5 Render, Lumion, and Enscape. The bigger benefit is removing the local bottleneck — your machine stays free while the cloud GPU renders.",
+        text: "It depends on your local GPU. An RTX 5080 with 16 GB GDDR7 outperforms most mid-range local GPUs for D5 Render, Lumion, and Enscape. The bigger benefit is removing the local bottleneck — your machine stays free while the cloud GPU renders.",
       },
     },
   ],
@@ -109,10 +110,10 @@ export default function ArchitectsPage() {
           Cloud Rendering · Architecture Studios · India
         </div>
         <h1 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">
-          Cloud GPU for Architecture Studios.<br className="hidden sm:block" /> RTX 5070 Ti. Hosted in India.
+          Cloud GPU for Architecture Studios.<br className="hidden sm:block" /> RTX 5080. Hosted in India.
         </h1>
         <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-300">
-          Skip GPU hardware upgrades. Launch an RTX 5070 Ti Windows workstation for D5 Render,
+          Skip GPU hardware upgrades. Launch an RTX 5080 Windows workstation for D5 Render,
           Lumion, Enscape, or Revit. Persistent NAS storage keeps your team's projects accessible
           anytime. All data stays in Bengaluru.
         </p>
@@ -157,7 +158,7 @@ export default function ArchitectsPage() {
         {/* Plans */}
         <div className="mt-12">
           <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-white/35 mb-5">Plans</h2>
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
             {plans.map((p) => (
               <div key={p.name} className={`relative rounded-[18px] border p-5 ${p.highlight ? "border-cyan-400/25 bg-cyan-400/[0.04]" : "border-white/8 bg-white/[0.02]"}`}>
                 {p.highlight && (
@@ -179,7 +180,12 @@ export default function ArchitectsPage() {
               </div>
             ))}
           </div>
-          <p className="mt-3 text-[11px] text-white/30">All prices exclusive of GST · Software is BYOL · Named-user licences work</p>
+          <p className="mt-3 text-[11px] leading-5 text-white/30">
+            All prices include 18% GST — what you see is what you pay, and every invoice shows the
+            taxable value and GST split. Committed tiers bill extra GPU-hours below the ₹399 ad-hoc
+            rate. Persistent NAS storage beyond your plan, or on its own, is ₹1,999/TB/month and is
+            retained for as long as it is subscribed. Software is BYOL · Named-user licences work.
+          </p>
         </div>
 
         <div className="mt-10 flex flex-wrap gap-4 text-sm">

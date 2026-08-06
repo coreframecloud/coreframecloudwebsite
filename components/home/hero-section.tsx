@@ -5,7 +5,7 @@ import { trackClarityEvent, trackEvent } from "@/lib/analytics";
 import Link from "next/link";
 
 const gpuSpecs = [
-  { label: "GPU", value: "RTX 5070 Ti" },
+  { label: "GPU", value: "RTX 5080" },
   { label: "VRAM", value: "16 GB GDDR7" },
   { label: "System RAM", value: "64 GB ECC" },
   { label: "vCPU", value: "6-core EPYC" },
@@ -29,12 +29,12 @@ export function HeroSection() {
 
           <p className="mt-4 text-base leading-7 text-white/70">
             Tired of waiting overnight for a render to finish? Or a CFD job that runs for three
-            days on your workstation? Coreframe puts RTX 5070 Ti and H100 GPU power in your
-            hands — on demand, pay per hour, no hardware to buy.
+            days on your workstation? Coreframe puts RTX 5080 GPU power in your hands — on
+            demand, pay per hour, no hardware to buy — and runs your Ansys CFD jobs for you.
           </p>
 
           <div className="mt-3 text-sm font-medium text-emerald-300">
-            3D Rendering from ₹400/hr · CFD per job · No setup · Data in India
+            3D Rendering from ₹399/hr (GST included) · CFD per job · No setup · Data in India
           </div>
 
           <div className="mt-6 flex flex-wrap gap-3">
@@ -87,7 +87,7 @@ export function HeroSection() {
             <div className="text-xs font-semibold uppercase tracking-[0.22em] text-white/40">
               Every GPU Instance
             </div>
-            <div className="mt-2 text-xl font-bold text-white">RTX 5070 Ti</div>
+            <div className="mt-2 text-xl font-bold text-white">RTX 5080</div>
             <div className="mt-0.5 text-xs text-emerald-300">Consumer RTX · Not available on any other cloud</div>
 
             <div className="mt-6 space-y-3">
@@ -102,14 +102,18 @@ export function HeroSection() {
             <div className="mt-6 grid grid-cols-2 gap-3">
               <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4 text-center">
                 <div className="text-xs text-white/40 uppercase tracking-wider mb-1">Ad-hoc</div>
-                <div className="text-2xl font-bold text-emerald-300">₹400</div>
+                <div className="text-2xl font-bold text-emerald-300">₹399</div>
                 <div className="text-xs text-white/40">/ GPU-hour</div>
               </div>
               <div className="rounded-2xl border border-cyan-400/20 bg-cyan-400/[0.05] p-4 text-center">
-                <div className="text-xs text-cyan-300/70 uppercase tracking-wider mb-1">Committed</div>
-                <div className="text-2xl font-bold text-cyan-300">₹250</div>
+                <div className="text-xs text-cyan-300/70 uppercase tracking-wider mb-1">Committed from</div>
+                <div className="text-2xl font-bold text-cyan-300">₹339</div>
                 <div className="text-xs text-cyan-300/50">/ GPU-hour</div>
               </div>
+            </div>
+
+            <div className="mt-3 text-center text-[11px] text-white/35">
+              Both rates include 18% GST
             </div>
 
             <div className="mt-6">
