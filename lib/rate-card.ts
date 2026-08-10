@@ -29,6 +29,18 @@ export type RateCardGpu = {
   tax_breakdown?: { taxable_rupees: number; gst_rupees: number };
 };
 
+export type TrialTerms = {
+  enabled: boolean;
+  gpu_minutes: number;
+  gpu_validity_days: number;
+  storage_gb: number;
+  storage_validity_days: number;
+  requires_identity_verification: boolean;
+  one_per_person: boolean;
+  first_topup_bonus_percent: number;
+  first_topup_bonus_cap_rupees: number;
+};
+
 export type RateCard = {
   currency: string;
   prices_include_gst: boolean;
@@ -42,6 +54,9 @@ export type RateCard = {
     max_topup_rupees: number;
     one_time_setup_fee_rupees: number;
   };
+  // Optional so an older control plane that predates this field does not break
+  // the build — callers treat a missing block as "no trial to advertise".
+  trial?: TrialTerms;
   gpus: RateCardGpu[];
 };
 
@@ -63,6 +78,21 @@ export async function getRateCard(): Promise<RateCard | null> {
   } catch {
     return null;
   }
+}
+
+/**
+ * Trial terms, or null when there is nothing honest to advertise.
+ *
+ * Null on three counts: the control plane is unreachable, the field predates
+ * this deploy, or trials are switched off. All three mean the same thing to a
+ * caller — say nothing. Advertising a trial the platform will not grant costs
+ * more than not advertising one, because the customer finds out after signing
+ * up and handing over their Aadhaar.
+ */
+export function getTrialTerms(card: RateCard | null): TrialTerms | null {
+  if (!card?.trial?.enabled) return null;
+  if (!card.trial.gpu_minutes) return null;
+  return card.trial;
 }
 
 /** "₹399/hr", or "On request" where no public price is set. */

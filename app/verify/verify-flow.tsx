@@ -78,7 +78,7 @@ interface VerificationStatus {
   verified_name: string | null;
 }
 
-type Phase = "loading" | "intro" | "gstin" | "bank" | "redirecting" | "polling" | "approved" | "review" | "failed" | "error";
+type Phase = "loading" | "intro" | "gstin" | "bank" | "redirecting" | "polling" | "approved" | "review" | "failed" | "duplicate" | "error";
 
 const FAILURE_COPY: Record<string, string> = {
   expired: "The DigiLocker link expired before it was completed. Links are valid for 10 minutes.",
@@ -86,6 +86,8 @@ const FAILURE_COPY: Record<string, string> = {
   AADHAAR_NOT_LINKED:
     "Your Aadhaar is not linked in DigiLocker yet. Sign in to DigiLocker, link your Aadhaar, then try again.",
   failed: "We could not read your documents from DigiLocker.",
+  duplicate_identity:
+    "This identity is already registered to another Coreframe account. We allow one account per person.",
 };
 
 function Card({ children }: { children: React.ReactNode }) {
@@ -226,6 +228,13 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
           // here from every page. Never infer success from a missing field.
           setVerifiedName(data.verified_name ?? null);
           setPhase(data.account_active ? "approved" : "review");
+          return;
+        }
+        // Terminal and NOT retryable — a retry button here would invite the
+        // customer to burn attempts on something that can never succeed.
+        if (data.kyc_status === "duplicate_identity") {
+          setReason(FAILURE_COPY.duplicate_identity);
+          setPhase("duplicate");
           return;
         }
         if (data.retry_required || ["expired", "consent_denied", "failed"].includes(data.kyc_status)) {
@@ -481,6 +490,27 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
             Try again
           </Button>
         )}
+      </Card>
+    );
+  }
+
+  if (phase === "duplicate") {
+    return (
+      <Card>
+        <Header
+          icon={<XCircle className="h-5 w-5" />}
+          title="This identity is already registered"
+          sub={reason}
+        />
+        <p className="rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-200">
+          Coreframe allows one account per person. Sign in to your existing
+          account instead — or if you have lost access to it,{" "}
+          <Link href="/contact" className="underline">contact us</Link> and we
+          will help you recover it.
+        </p>
+        <Button asChild className="mt-4 h-12 w-full rounded-xl text-base font-semibold">
+          <Link href="/login">Sign in to my account</Link>
+        </Button>
       </Card>
     );
   }

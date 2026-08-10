@@ -5,7 +5,8 @@ import { WorkflowSection } from "@/components/home/workflow-section";
 import { PricingSection } from "@/components/home/pricing-section";
 import { FaqSection } from "@/components/home/faq-section";
 import { ContactSection } from "@/components/home/contact-section";
-import { getRateCard, formatHourly } from "@/lib/rate-card";
+import { TrialBanner } from "@/components/home/trial-banner";
+import { getRateCard, formatHourly, getTrialTerms } from "@/lib/rate-card";
 
 export const metadata: Metadata = {
   title: "5× Faster Rendering & CFD in Minutes — GPU Cloud India | Coreframe",
@@ -27,6 +28,10 @@ export default async function Page() {
   const rateCard = await getRateCard();
   const entry = rateCard?.gpus.find((g) => !g.quote_on_request);
   const adhocRate = entry ? formatHourly(entry).replace("/hr", "") : undefined;
+  // Same rule as the price: null means say nothing. The banner disappears the
+  // moment trials are switched off in the control plane, rather than advertising
+  // an offer the platform will refuse after someone has handed over their ID.
+  const trial = getTrialTerms(rateCard);
 
   return (
     <div className="min-h-screen text-white">
@@ -34,6 +39,7 @@ export default async function Page() {
 
       <main className="relative">
         <HeroSection />
+        <TrialBanner terms={trial} />
         <WorkflowSection />
         <PricingSection adhocRate={adhocRate} />
         <FaqSection />
