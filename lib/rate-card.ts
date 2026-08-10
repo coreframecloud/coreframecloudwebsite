@@ -73,9 +73,23 @@ export async function getRateCard(): Promise<RateCard | null> {
     const res = await fetch(`${API}/public/rate-card`, {
       next: { revalidate: 3600 },
     });
-    if (!res.ok) return null;
+    if (!res.ok) {
+      // Log loudly. This used to `return null` in silence, so a failed
+      // build-time fetch produced a homepage with a blank price and no trace
+      // anywhere — the page renders, nothing errors, and the only symptom is a
+      // missing number that nobody connects to a fetch that happened during a
+      // Vercel build days earlier. A 403 here means the control plane is up but
+      // something in front of it (Cloudflare WAF, bot protection) is refusing
+      // a datacenter request that carries no browser headers.
+      console.error(
+        `[rate-card] ${API}/public/rate-card returned ${res.status} ${res.statusText} — ` +
+          `prices and trial terms will be hidden on this build`,
+      );
+      return null;
+    }
     return (await res.json()) as RateCard;
-  } catch {
+  } catch (err) {
+    console.error(`[rate-card] could not reach ${API}/public/rate-card —`, err);
     return null;
   }
 }
