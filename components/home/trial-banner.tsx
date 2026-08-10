@@ -44,6 +44,20 @@ export function TrialBanner({ terms }: { terms: TrialTerms | null }) {
             </p>
 
             <ul className="mt-4 space-y-1.5 text-sm text-white/60">
+              {/*
+                The clock objection, answered before it is raised. Someone
+                pricing this against a laptop assumes a slow upload eats their
+                free time, and quietly decides 200 minutes is not much. It is
+                also simply true: billing anchors on the first
+                `moonlight_stream_started` event, a session that never streams
+                bills zero, and files are copied to the NAS over SMB with no
+                session running at all.
+              */}
+              <li>
+                · Upload your project files first — copying to your Coreframe
+                storage costs nothing. The clock starts when the desktop
+                appears, not before
+              </li>
               <li>
                 · Free minutes are used first — your wallet only starts paying
                 once they run out

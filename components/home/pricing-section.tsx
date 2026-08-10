@@ -43,8 +43,9 @@ export function PricingSection({ adhocRate }: { adhocRate?: string }) {
             </div>
             <p className="mt-4 text-sm leading-6 text-white/60">
               Spin up anytime, no contract. Billed per minute from the moment your
-              session starts streaming — provisioning time is free. Best for one-off
-              renders or trying the platform before committing.
+              session starts streaming — provisioning, uploads and failed connects
+              are all free. Best for one-off renders or trying the platform before
+              committing.
             </p>
 
             <ul className="mt-6 space-y-2 text-sm text-white/70">
