@@ -3,6 +3,7 @@ import Script from "next/script";
 import "./globals.css";
 import { SiteHeader } from "@/components/home/site-header";
 import { SiteFooter } from "@/components/home/site-footer";
+import { TrialStrip } from "@/components/home/trial-strip";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://coreframecloud.com"),
@@ -188,6 +189,13 @@ export default function RootLayout({
           }}
         />
 
+        {/*
+          Above the header, so it is the first thing on every page — including
+          the SEO landing pages (/d5-render, /enscape-cloud-gpu) that a search
+          visitor arrives on without ever seeing the homepage. Those carry the
+          highest intent, and until now the offer was only on the front page.
+        */}
+        <TrialStrip />
         <SiteHeader />
         {children}
         <SiteFooter />
