@@ -74,16 +74,25 @@ export async function getRateCard(): Promise<RateCard | null> {
       next: { revalidate: 3600 },
     });
     if (!res.ok) {
-      // Log loudly. This used to `return null` in silence, so a failed
-      // build-time fetch produced a homepage with a blank price and no trace
-      // anywhere — the page renders, nothing errors, and the only symptom is a
-      // missing number that nobody connects to a fetch that happened during a
-      // Vercel build days earlier. A 403 here means the control plane is up but
-      // something in front of it (Cloudflare WAF, bot protection) is refusing
-      // a datacenter request that carries no browser headers.
+      // Log loudly, and log WHO refused. This used to `return null` in silence,
+      // so a failed build-time fetch produced a homepage with a blank price and
+      // no trace anywhere.
+      //
+      // The status alone is not enough: a bare 403 was chased through three
+      // wrong theories — a stale build cache, a WAF managed rule, and bot
+      // protection — because nothing said which layer produced it. Cloudflare
+      // block pages carry a Ray ID and a numbered error (1020 = firewall rule,
+      // 1010 = browser integrity, 1006/1007 = IP access rule), and `server`
+      // distinguishes a Cloudflare refusal from an nginx one. That names the
+      // culprit in one build instead of one per hypothesis.
+      const body = (await res.text().catch(() => "")).slice(0, 400).replace(/\s+/g, " ");
       console.error(
         `[rate-card] ${API}/public/rate-card returned ${res.status} ${res.statusText} — ` +
-          `prices and trial terms will be hidden on this build`,
+          `prices and trial terms will be hidden on this build\n` +
+          `[rate-card]   server=${res.headers.get("server") ?? "?"} ` +
+          `cf-ray=${res.headers.get("cf-ray") ?? "none"} ` +
+          `cf-mitigated=${res.headers.get("cf-mitigated") ?? "none"}\n` +
+          `[rate-card]   body: ${body}`,
       );
       return null;
     }
