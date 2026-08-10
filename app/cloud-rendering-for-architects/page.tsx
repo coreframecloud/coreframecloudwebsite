@@ -161,9 +161,13 @@ export default function ArchitectsPage() {
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
             {plans.map((p) => (
               <div key={p.name} className={`relative rounded-[18px] border p-5 ${p.highlight ? "border-cyan-400/25 bg-cyan-400/[0.04]" : "border-white/8 bg-white/[0.02]"}`}>
+                {/* Same fix as the enterprise page: left-1/2 shrink-to-fit gives
+                    the badge only half the card to lay out in. "Best value" is
+                    short enough to survive that today, which is exactly why it
+                    would break silently later. */}
                 {p.highlight && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                    <span className="rounded-full bg-cyan-400 px-3 py-0.5 text-[10px] font-bold uppercase tracking-wider text-slate-900">Best value</span>
+                  <div className="absolute -top-3 inset-x-0 flex justify-center">
+                    <span className="whitespace-nowrap rounded-full bg-cyan-400 px-3 py-0.5 text-[10px] font-bold uppercase tracking-wider text-slate-900">Best value</span>
                   </div>
                 )}
                 <div className={`text-[10px] font-semibold uppercase tracking-wider ${p.highlight ? "text-cyan-300/70" : "text-white/40"}`}>{p.name}</div>

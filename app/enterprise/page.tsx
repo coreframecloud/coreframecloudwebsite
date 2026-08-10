@@ -125,9 +125,18 @@ export default function EnterprisePage() {
                   : "border-white/10 bg-white/[0.03]"
               }`}
             >
+              {/*
+                Badge uses `inset-x-0 flex justify-center`, NOT
+                `left-1/2 -translate-x-1/2`. An absolutely positioned box
+                shrink-to-fits within the space from its left edge to the
+                container's right edge, so anchoring at 50% left it only half the
+                card to lay out in — "MOST POPULAR" wrapped onto two lines and
+                broke the pill. Spanning the full width and centring with flex
+                removes the constraint; whitespace-nowrap prevents a regression.
+              */}
               {plan.highlight && (
-                <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
-                  <span className="rounded-full bg-cyan-400 px-4 py-1 text-xs font-bold uppercase tracking-wider text-slate-900">
+                <div className="absolute -top-3.5 inset-x-0 flex justify-center">
+                  <span className="whitespace-nowrap rounded-full bg-cyan-400 px-4 py-1 text-xs font-bold uppercase tracking-wider text-slate-900">
                     Most Popular
                   </span>
                 </div>
