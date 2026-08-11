@@ -22,7 +22,7 @@ interface WalletData {
 
 interface AuthState {
   token: string;
-  user: { full_name: string; email: string; id: string; role?: string; customer_type?: string; status?: string };
+  user: { full_name: string; email: string; id: string; role?: string; customer_type?: string; status?: string; account_number?: number | null };
   wallet: WalletData | null;
 }
 
@@ -46,7 +46,7 @@ function WalletIcon() {
   );
 }
 
-function UserAvatar({ initials, onSignOut }: { initials: string; onSignOut: () => void }) {
+function UserAvatar({ initials, accountNumber, onSignOut }: { initials: string; accountNumber?: number | null; onSignOut: () => void }) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -73,7 +73,24 @@ function UserAvatar({ initials, onSignOut }: { initials: string; onSignOut: () =
         {initials}
       </button>
       {dropdownOpen && (
-        <div className="absolute right-0 top-10 z-50 min-w-[160px] rounded-xl border border-white/10 bg-[#03101d] py-1 shadow-xl">
+        <div className="absolute right-0 top-10 z-50 min-w-[220px] rounded-xl border border-white/10 bg-[#03101d] py-1 shadow-xl">
+          {/*
+            Account number, front and centre. It is the first thing support asks
+            for and the reference on every invoice, so it belongs where someone
+            can read it out without hunting. Safe to display: it identifies the
+            account but authorises nothing — joining an organisation needs a
+            join code, never this number.
+          */}
+          {accountNumber ? (
+            <div className="border-b border-white/10 px-4 py-2.5">
+              <div className="text-[10px] uppercase tracking-[0.18em] text-white/35">
+                Account number
+              </div>
+              <div className="mt-0.5 font-mono text-sm text-white/90 select-all">
+                {accountNumber}
+              </div>
+            </div>
+          ) : null}
           <button
             type="button"
             onClick={onSignOut}
@@ -173,6 +190,7 @@ export function SiteHeader() {
     }
   }
 
+  const accountNumber = auth?.user?.account_number ?? null;
   const initials = auth?.user?.full_name
     ? auth.user.full_name.trim().charAt(0).toUpperCase()
     : "?";
@@ -255,7 +273,7 @@ export function SiteHeader() {
                 </Link>
               )}
               {/* Avatar + dropdown */}
-              <UserAvatar initials={initials} onSignOut={handleSignOut} />
+              <UserAvatar initials={initials} accountNumber={accountNumber} onSignOut={handleSignOut} />
             </>
           ) : (
             <>
