@@ -153,7 +153,7 @@ export default function ComputeNodesPage() {
                   </li>
                   <li>
                     <span className="font-medium text-white">
-                      Session scratch storage only.
+                      20 GB persistent storage free, 50 GB with credit. Session scratch cleared at session end.
                     </span>{" "}
                     Download your outputs before shutting down, or add
                     persistent NAS storage to the account.

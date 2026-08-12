@@ -122,7 +122,7 @@ export default function LumionPage() {
           <div className="rounded-[20px] border border-white/10 bg-white/[0.03] p-6">
             <div className="text-xs uppercase tracking-wider text-white/40 mb-3">Ad-hoc</div>
             <div className="text-4xl font-bold text-white">₹399 <span className="text-lg font-normal text-white/40">/ GPU-hr</span></div>
-            <p className="mt-3 text-sm text-white/50">No commitment. Pay only for the hours you render. Session scratch storage only, 7-day retention.</p>
+            <p className="mt-3 text-sm text-white/50">No commitment. Pay only for the hours you render. 20 GB persistent storage free, 50 GB once you add credit. Session scratch is cleared when the session ends.</p>
           </div>
           <div className="rounded-[20px] border border-cyan-400/20 bg-cyan-400/[0.04] p-6">
             <div className="text-xs uppercase tracking-wider text-cyan-300/60 mb-3">Committed plans from</div>

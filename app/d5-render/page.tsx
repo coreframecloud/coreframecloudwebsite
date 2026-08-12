@@ -31,7 +31,8 @@ const specs = [
   { label: "CUDA cores", value: "10,752 (Blackwell)" },
   { label: "System RAM", value: "64 GB ECC" },
   { label: "vCPU", value: "6-core EPYC" },
-  { label: "Local scratch", value: "NVMe — 7-day retention, cleared after session" },
+  { label: "Local scratch", value: "50 GB NVMe — cleared when the session ends" },
+  { label: "Persistent storage", value: "20 GB free · 50 GB with credit · 30-day retention" },
   { label: "OS", value: "Windows 11, full RDP desktop" },
   { label: "Display driver", value: "WDDM (required for D5 Render)" },
   { label: "Location", value: "Bengaluru, India" },
@@ -135,7 +136,7 @@ export default function D5RenderPage() {
           <div className="rounded-[20px] border border-white/10 bg-white/[0.03] p-6">
             <div className="text-xs uppercase tracking-wider text-white/40 mb-3">Ad-hoc</div>
             <div className="text-4xl font-bold text-white">₹399 <span className="text-lg font-normal text-white/40">/ GPU-hr</span></div>
-            <p className="mt-3 text-sm text-white/50">No commitment. Spin up anytime, pay only for what you use. Session scratch storage only, 7-day retention.</p>
+            <p className="mt-3 text-sm text-white/50">No commitment. Spin up anytime, pay only for what you use. 20 GB persistent storage free, 50 GB once you add credit. Session scratch is cleared when the session ends.</p>
           </div>
           <div className="rounded-[20px] border border-cyan-400/20 bg-cyan-400/[0.04] p-6">
             <div className="text-xs uppercase tracking-wider text-cyan-300/60 mb-3">Committed plans from</div>

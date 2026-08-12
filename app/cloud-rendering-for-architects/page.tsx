@@ -60,7 +60,7 @@ const workflow = [
 ];
 
 const plans = [
-  { name: "Ad-hoc", price: "₹399/hr", note: "Per full hour, no commitment. Session scratch storage only, 7-day retention — download outputs before shutting down.", cta: "Get started", href: "/signup", highlight: false },
+  { name: "Ad-hoc", price: "₹399/hr", note: "Per full hour, no commitment. 20 GB persistent storage free, 50 GB with credit · 30-day retention. Session scratch cleared at session end — download outputs first.", cta: "Get started", href: "/signup", highlight: false },
   { name: "Studio", price: "₹19,000/mo", note: "2 TB NAS · 30-day retention · 5 seats · 40 GPU-hrs · ₹379/hr extra", cta: "Get a quote", href: "https://wa.me/916366889488?text=Hi%20Coreframe%2C%20I%27d%20like%20to%20discuss%20the%20Studio%20plan%20for%20my%20architecture%20studio.", highlight: false },
   { name: "Medium Firm", price: "₹53,000/mo", note: "5 TB NAS · 90-day retention · 12 seats · 120 GPU-hrs · ₹359/hr extra", cta: "Get a quote", href: "https://wa.me/916366889488?text=Hi%20Coreframe%2C%20I%27d%20like%20to%20discuss%20the%20Medium%20Firm%20plan.", highlight: true },
   { name: "Big Firm", price: "₹1,21,000/mo", note: "10 TB NAS · 365-day retention · 25 seats · 300 GPU-hrs · ₹339/hr extra", cta: "Get a quote", href: "https://wa.me/916366889488?text=Hi%20Coreframe%2C%20I%27d%20like%20to%20discuss%20the%20Big%20Firm%20plan.", highlight: false },

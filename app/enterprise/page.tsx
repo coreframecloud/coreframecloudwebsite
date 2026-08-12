@@ -212,9 +212,9 @@ export default function EnterprisePage() {
         <div className="mt-6 rounded-[20px] border border-white/8 bg-white/[0.02] px-8 py-7">
           <h2 className="text-base font-semibold text-white">Not ready to commit?</h2>
           <p className="mt-3 max-w-3xl text-sm leading-7 text-white/55">
-            Ad-hoc is {ADHOC_RATE}/GPU-hour with no contract, billed per full hour. Session scratch
-            storage only, with 7-day retention — download your outputs before shutting down, or add
-            persistent NAS storage above. Every committed tier bills extra hours below {ADHOC_RATE},
+            Ad-hoc is {ADHOC_RATE}/GPU-hour with no contract, billed per full hour, and includes 20 GB
+            persistent storage free — 50 GB once you add credit, kept for 30 days. Session scratch is
+            cleared when the session ends, so download your outputs first, or add persistent NAS above. Every committed tier bills extra hours below {ADHOC_RATE},
             so the more you render, the more the commitment pays for itself.
           </p>
         </div>

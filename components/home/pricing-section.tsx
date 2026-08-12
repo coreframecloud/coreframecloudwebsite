@@ -52,7 +52,7 @@ export function PricingSection({ adhocRate }: { adhocRate?: string }) {
               <li className="flex gap-2"><span className="text-emerald-400">✓</span> No commitment, cancel anytime</li>
               <li className="flex gap-2"><span className="text-emerald-400">✓</span> Full Windows desktop via RDP</li>
               <li className="flex gap-2"><span className="text-emerald-400">✓</span> RTX 5080 · 16 GB GDDR7</li>
-              <li className="flex gap-2"><span className="text-white/30">—</span> <span className="text-white/40">Session scratch storage only, 7-day retention — download outputs before shutting down</span></li>
+              <li className="flex gap-2"><span className="text-emerald-400">✓</span> <span className="text-white/40">20 GB persistent storage free, 50 GB with credit · kept 30 days · session scratch cleared at session end</span></li>
             </ul>
 
             <div className="mt-8">

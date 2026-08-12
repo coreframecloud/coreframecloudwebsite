@@ -14,7 +14,7 @@ const faqs = [
   {
     question: "How does file transfer work?",
     answer:
-      "You upload project files directly to Coreframe's secure storage layer over an encrypted transfer. On committed plans your files live on persistent NAS storage and are accessible to your whole team any time — retained for 30 days on Studio, 90 days on Medium Firm, and 365 days on Big Firm. On ad-hoc, files land on session scratch storage with 7-day retention, so download outputs before shutting down. Persistent NAS storage can also be added to any account for ₹1,999/TB/month, retained for as long as you keep the subscription.",
+      "You upload project files directly to Coreframe's secure storage layer over an encrypted transfer. On committed plans your files live on persistent NAS storage and are accessible to your whole team any time — retained for 30 days on Studio, 90 days on Medium Firm, and 365 days on Big Firm. On ad-hoc, you get 20 GB of persistent storage free and 50 GB once you add credit, kept for 30 days — your files stay as long as you use at least an hour of GPU time in any 30-day window. Session scratch is separate and is cleared when the session ends, so download outputs before shutting down. Persistent NAS storage can also be added to any account for ₹1,999/TB/month, retained for as long as you keep the subscription.",
   },
   {
     question: "Is my project data isolated?",

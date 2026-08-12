@@ -145,7 +145,7 @@ export function WorkflowSection() {
 
             <div className="mt-6 grid gap-3 sm:grid-cols-3">
               <InfoTile title="No setup" titleColor="text-emerald-300" body="Launch a workstation, install your app, render. Ready in under 2 minutes. No contract." />
-              <InfoTile title="Session storage" titleColor="text-amber-300" body="50 GB NVMe scratch for the duration. Download before shutting down — scratch is cleared on session end." />
+              <InfoTile title="Session storage" titleColor="text-amber-300" body="50 GB NVMe scratch for the duration, cleared on session end. Your 20 GB persistent storage (50 GB with credit) survives — only scratch is wiped." />
               <InfoTile title="Charged by the hour" titleColor="text-emerald-300" body="Pay only for active GPU hours. Shut down when done and billing stops. No hidden charges." />
             </div>
 
