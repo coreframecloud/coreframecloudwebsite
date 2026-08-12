@@ -3,6 +3,7 @@
 import { InPageLink } from "@/components/ui/in-page-link";
 import { trackEvent } from "@/lib/analytics";
 import Link from "next/link";
+import { STORAGE, type StorageTerms } from "@/lib/storage-terms";
 
 /**
  * `adhocRate` is the live pay-as-you-go price from the control-plane rate card,
@@ -13,12 +14,15 @@ import Link from "next/link";
  * unreachable at build time. That fallback is the last hardcoded price on this
  * page — every other GPU price now comes from the database.
  *
- * NOT yet database-driven: the committed monthly plans below. Those tiers
- * (storage, seats, included hours, tapering extra-hour rates) have no model in
- * the control plane at all, so they cannot be served from it. They need either
- * a plans table or removal — see docs.
+ * `storage` is likewise live — B2C persistent storage and its retention rule
+ * come from the same endpoint, because six pages once carried a "7-day
+ * retention" claim that was simply untrue.
+ *
+ * The committed monthly plan FIGURES below are still inline. A `plans` table now
+ * exists and is served on /public/rate-card, so this block should read it — the
+ * remaining hardcoded numbers on this page are those tier prices.
  */
-export function PricingSection({ adhocRate }: { adhocRate?: string }) {
+export function PricingSection({ adhocRate, storage = STORAGE }: { adhocRate?: string; storage?: StorageTerms }) {
   return (
     <section id="pricing" className="border-b border-white/10">
       <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
@@ -52,7 +56,7 @@ export function PricingSection({ adhocRate }: { adhocRate?: string }) {
               <li className="flex gap-2"><span className="text-emerald-400">✓</span> No commitment, cancel anytime</li>
               <li className="flex gap-2"><span className="text-emerald-400">✓</span> Full Windows desktop via RDP</li>
               <li className="flex gap-2"><span className="text-emerald-400">✓</span> RTX 5080 · 16 GB GDDR7</li>
-              <li className="flex gap-2"><span className="text-emerald-400">✓</span> <span className="text-white/40">20 GB persistent storage free, 50 GB with credit · kept 30 days · session scratch cleared at session end</span></li>
+              <li className="flex gap-2"><span className="text-emerald-400">✓</span> <span className="text-white/40">{storage.trialGb} GB persistent storage free, {storage.paidGb} GB with credit · kept {storage.retentionDays} days · session scratch cleared at session end</span></li>
             </ul>
 
             <div className="mt-8">

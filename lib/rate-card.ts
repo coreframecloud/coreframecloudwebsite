@@ -41,6 +41,15 @@ export type TrialTerms = {
   first_topup_bonus_cap_rupees: number;
 };
 
+export type B2cStorage = {
+  trial_gb: number;
+  paid_gb: number;
+  retention_days: number;
+  retention_active_minutes: number;
+  scratch_gb: number;
+  scratch_cleared_at_session_end: boolean;
+};
+
 export type RateCard = {
   currency: string;
   prices_include_gst: boolean;
@@ -57,6 +66,9 @@ export type RateCard = {
   // Optional so an older control plane that predates this field does not break
   // the build — callers treat a missing block as "no trial to advertise".
   trial?: TrialTerms;
+  // Optional so a control plane predating this field does not break the build —
+  // storageTerms() falls back to constants when it is absent.
+  b2c_storage?: B2cStorage;
   gpus: RateCardGpu[];
 };
 

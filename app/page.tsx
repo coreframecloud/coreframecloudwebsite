@@ -7,6 +7,7 @@ import { FaqSection } from "@/components/home/faq-section";
 import { ContactSection } from "@/components/home/contact-section";
 import { TrialBanner } from "@/components/home/trial-banner";
 import { getRateCard, formatHourly, getTrialTerms } from "@/lib/rate-card";
+import { storageTerms } from "@/lib/storage-terms";
 
 export const metadata: Metadata = {
   title: "5× Faster Rendering & CFD in Minutes — GPU Cloud India | Coreframe",
@@ -32,6 +33,8 @@ export default async function Page() {
   // moment trials are switched off in the control plane, rather than advertising
   // an offer the platform will refuse after someone has handed over their ID.
   const trial = getTrialTerms(rateCard);
+  // Live storage figures, falling back to constants if the fetch failed.
+  const storage = storageTerms(rateCard);
 
   return (
     <div className="min-h-screen text-white">
@@ -41,7 +44,7 @@ export default async function Page() {
         <HeroSection />
         <TrialBanner terms={trial} />
         <WorkflowSection />
-        <PricingSection adhocRate={adhocRate} />
+        <PricingSection adhocRate={adhocRate} storage={storage} />
         <FaqSection />
         <ContactSection />
       </main>
