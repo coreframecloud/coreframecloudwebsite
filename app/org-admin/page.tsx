@@ -22,6 +22,28 @@ interface OrgInfo {
   member_count: number;
 }
 
+interface Usage {
+  billing_mode: string;
+  credit_limit_rupees: number | null;
+  credit_used_rupees: number | null;
+  balance_rupees: number;
+  month_to_date: {
+    period_start: string;
+    billed_rupees: number;
+    billable_hours: number;
+    session_count: number;
+    active_sessions: number;
+  };
+  storage: {
+    used_bytes: number;
+    used_gb: number;
+    quota_gb: number | null;
+    percent_used: number | null;
+    source?: "zfs" | "estimate";
+  };
+  member_count: number;
+}
+
 interface PendingMember {
   user_id: number;
   full_name: string;
@@ -70,6 +92,7 @@ export default function OrgAdminPage() {
   // Colleagues who signed up on the company email domain and are waiting on
   // this admin to say whether their usage should bill to the company.
   const [pending, setPending] = useState<PendingMember[]>([]);
+  const [usage, setUsage] = useState<Usage | null>(null);
   const [decidingId, setDecidingId] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -86,6 +109,9 @@ export default function OrgAdminPage() {
   const [showTopup, setShowTopup] = useState(false);
   const [topupAmount, setTopupAmount] = useState("");
   const [topupNote, setTopupNote] = useState("");
+  const [topupRef, setTopupRef] = useState("");
+  const [topupMethod, setTopupMethod] = useState("neft");
+  const [topupPaidAt, setTopupPaidAt] = useState("");
   const [topupLoading, setTopupLoading] = useState(false);
   const [topupMsg, setTopupMsg] = useState<{ ok: boolean; text: string } | null>(null);
 
@@ -101,7 +127,8 @@ export default function OrgAdminPage() {
       fetch(`${API}/org-admin/me`, { headers: { Authorization: `Bearer ${tok}` } }),
       fetch(`${API}/org-admin/team`, { headers: { Authorization: `Bearer ${tok}` } }),
       fetch(`${API}/org-admin/pending-members`, { headers: { Authorization: `Bearer ${tok}` } }),
-    ]).then(async ([meRes, teamRes, pendingRes]) => {
+      fetch(`${API}/org-admin/usage`, { headers: { Authorization: `Bearer ${tok}` } }),
+    ]).then(async ([meRes, teamRes, pendingRes, usageRes]) => {
       if (meRes.status === 401) throw new Error("token_expired");
       if (meRes.status === 403) throw new Error("access_denied");
       if (meRes.status === 404) throw new Error("not_deployed");
@@ -113,6 +140,10 @@ export default function OrgAdminPage() {
       // Tolerate a 404 here so the page still works against an older API.
       const pendingBody = pendingRes.ok ? await pendingRes.json() : { pending: [] };
       setPending(Array.isArray(pendingBody.pending) ? pendingBody.pending : []);
+      // Tolerated the same way as pending-members: a 404 here means the API
+      // predates /usage, and the page should still show the team rather than
+      // failing wholesale over a stat card.
+      setUsage(usageRes.ok ? await usageRes.json() : null);
     });
   }, []);
 
@@ -152,18 +183,36 @@ export default function OrgAdminPage() {
     if (!token) return;
     const amt = parseFloat(topupAmount);
     if (!amt || amt <= 0) { setTopupMsg({ ok: false, text: "Enter a valid amount" }); return; }
+    if (topupRef.trim().length < 4) {
+      // The reference is what an admin searches for in the bank statement. A
+      // claim without one cannot be confirmed, so it cannot be accepted.
+      setTopupMsg({ ok: false, text: "Enter the UTR / transaction reference from your bank" });
+      return;
+    }
     setTopupLoading(true);
     setTopupMsg(null);
     try {
-      const res = await fetch(`${API}/org-admin/wallet/topup`, {
+      // /wallet/topup-request, NOT /wallet/topup. The old endpoint credited the
+      // caller's own wallet with no payment confirmation and was removed — this
+      // button had been calling a 404 ever since. Submitting now RECORDS a claim;
+      // the balance moves only when Coreframe confirms the transfer.
+      const res = await fetch(`${API}/org-admin/wallet/topup-request`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-        body: JSON.stringify({ amount_rupees: amt, note: topupNote.trim() || null }),
+        body: JSON.stringify({
+          amount_rupees: amt,
+          payment_method: topupMethod,
+          payment_reference: topupRef.trim(),
+          paid_at: topupPaidAt ? new Date(topupPaidAt).toISOString() : null,
+          note: topupNote.trim() || null,
+        }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.detail || "Failed");
-      setTopupMsg({ ok: true, text: `₹${amt.toFixed(0)} added. New balance: ₹${data.new_balance_rupees.toFixed(2)}` });
+      // Never claim the money is available. It is not, until an admin confirms.
+      setTopupMsg({ ok: true, text: data.message });
       setTopupAmount("");
+      setTopupRef("");
       setTopupNote("");
       loadData(token).catch(() => {});
     } catch (e: unknown) {
@@ -350,9 +399,17 @@ export default function OrgAdminPage() {
                 + Add GSTIN
               </button>
             )}
-            <span className={`text-xs px-2.5 py-1 rounded-full border font-medium ${orgInfo?.org_plan === "postpaid" ? "bg-purple-400/10 text-purple-300 border-purple-400/20" : "bg-emerald-400/10 text-emerald-300 border-emerald-400/20"}`}>
-              {orgInfo?.org_plan}
-            </span>
+            {/* billing_mode only. This used to render `org_plan`, which holds
+                plan_type — an internal value like "monthly" that means nothing
+                to a customer and was left over from an earlier design. No
+                fallback: showing the legacy field when /usage is unavailable
+                would put "monthly" back on the screen intermittently, which is
+                worse than showing nothing. */}
+            {usage?.billing_mode && (
+              <span className={`text-xs px-2.5 py-1 rounded-full border font-medium ${usage.billing_mode === "postpaid" ? "bg-purple-400/10 text-purple-300 border-purple-400/20" : "bg-emerald-400/10 text-emerald-300 border-emerald-400/20"}`}>
+                {usage.billing_mode}
+              </span>
+            )}
             <Link href="/my-activity" className="text-cyan-400 hover:text-cyan-300 transition text-xs">
               ← My Activity
             </Link>
@@ -361,6 +418,88 @@ export default function OrgAdminPage() {
       </div>
 
       <div className="mx-auto max-w-7xl px-6 py-8 space-y-8">
+
+        {/* ── This month, and what is left ──────────────────────────────────
+            The three questions an admin opens this page to answer: what have
+            we spent, how much storage is left, and is anyone rendering now.
+            Rendered only when /usage responded, so an older API degrades to
+            the team table rather than to a row of dashes. */}
+        {usage && (
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="rounded-xl border border-cyan-400/20 bg-cyan-400/[0.05] px-5 py-4">
+              <p className="text-[11px] text-white/40 mb-1">Month to date</p>
+              <p className="text-2xl font-bold">
+                ₹{usage.month_to_date.billed_rupees.toLocaleString("en-IN", { maximumFractionDigits: 0 })}
+              </p>
+              <p className="text-[11px] text-white/40 mt-1">
+                {usage.month_to_date.billable_hours.toFixed(1)} GPU-h · {usage.month_to_date.session_count} sessions
+              </p>
+            </div>
+
+            <div className="rounded-xl border border-white/10 bg-white/[0.03] px-5 py-4">
+              <p className="text-[11px] text-white/40 mb-1">Storage used</p>
+              <p className="text-2xl font-bold">
+                {usage.storage.used_gb.toFixed(1)}
+                <span className="text-base font-normal text-white/40">
+                  {usage.storage.quota_gb ? ` / ${usage.storage.quota_gb} GB` : " GB"}
+                </span>
+              </p>
+              {usage.storage.percent_used !== null && (
+                <div className="mt-2 h-1.5 w-full rounded-full bg-white/10 overflow-hidden">
+                  <div
+                    className={`h-full rounded-full ${usage.storage.percent_used >= 90 ? "bg-red-400" : usage.storage.percent_used >= 75 ? "bg-amber-400" : "bg-cyan-400"}`}
+                    style={{ width: `${Math.max(2, usage.storage.percent_used)}%` }}
+                  />
+                </div>
+              )}
+              {usage.storage.quota_gb === null && (
+                <p className="text-[11px] text-white/30 mt-1">No quota set</p>
+              )}
+              {/* An estimate must not look like a measurement. When the NAS is
+                  unreachable this figure is summed from upload records and
+                  overstates anything since deleted, so it says so. */}
+              {usage.storage.source === "estimate" && (
+                <p className="text-[11px] text-amber-400/70 mt-1" title="Summed from upload history because the storage server could not be reached. Deleted files are still counted.">
+                  Estimated · NAS unreachable
+                </p>
+              )}
+            </div>
+
+            <div className="rounded-xl border border-white/10 bg-white/[0.03] px-5 py-4">
+              <p className="text-[11px] text-white/40 mb-1">Rendering now</p>
+              <p className="text-2xl font-bold">{usage.month_to_date.active_sessions}</p>
+              <p className="text-[11px] text-white/40 mt-1">of {usage.member_count} members</p>
+            </div>
+
+            {/* Prepaid shows the shared balance; postpaid shows credit consumed
+                against the limit. They are different questions and must not be
+                shown with the same label. */}
+            {usage.billing_mode === "postpaid" ? (
+              <div className="rounded-xl border border-purple-400/20 bg-purple-400/[0.05] px-5 py-4">
+                <p className="text-[11px] text-white/40 mb-1">Credit used</p>
+                <p className="text-2xl font-bold">
+                  ₹{(usage.credit_used_rupees ?? 0).toLocaleString("en-IN", { maximumFractionDigits: 0 })}
+                  {usage.credit_limit_rupees != null && (
+                    <span className="text-base font-normal text-white/40">
+                      {" / "}₹{usage.credit_limit_rupees.toLocaleString("en-IN", { maximumFractionDigits: 0 })}
+                    </span>
+                  )}
+                </p>
+                <p className="text-[11px] text-white/40 mt-1">
+                  {usage.credit_limit_rupees == null ? "No limit set · invoiced monthly" : "Invoiced monthly"}
+                </p>
+              </div>
+            ) : (
+              <div className="rounded-xl border border-emerald-400/20 bg-emerald-400/[0.05] px-5 py-4">
+                <p className="text-[11px] text-white/40 mb-1">Shared balance</p>
+                <p className="text-2xl font-bold">
+                  ₹{usage.balance_rupees.toLocaleString("en-IN", { maximumFractionDigits: 0 })}
+                </p>
+                <p className="text-[11px] text-white/40 mt-1">Funds every member&apos;s sessions</p>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Stats + wallet row */}
         <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
@@ -395,11 +534,18 @@ export default function OrgAdminPage() {
         {showTopup && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4">
             <div className="w-full max-w-sm rounded-2xl border border-white/10 bg-[#0d1f35] p-6 shadow-2xl">
-              <h2 className="text-base font-semibold mb-1">Add Funds to Wallet</h2>
-              <p className="text-xs text-white/40 mb-5">Contact support after transfer to confirm. Balance will be credited within 1 business day.</p>
+              <h2 className="text-base font-semibold mb-1">Record a bank transfer</h2>
+              {/* States plainly that this is a claim, not a payment. A customer
+                  who thinks the money is available and then has a session
+                  refused concludes the platform is broken. */}
+              <p className="text-xs text-white/40 mb-5">
+                Transfer to the Coreframe account, then enter the details below.
+                Your balance is credited once we confirm the transfer — usually
+                within one business day.
+              </p>
               <form onSubmit={handleTopup} className="space-y-3">
                 <div>
-                  <label className="text-xs text-white/50 mb-1 block">Amount (₹)</label>
+                  <label className="text-xs text-white/50 mb-1 block">Amount transferred (₹)</label>
                   <input
                     type="number" min="1" step="1" required
                     value={topupAmount} onChange={(e) => setTopupAmount(e.target.value)}
@@ -408,11 +554,42 @@ export default function OrgAdminPage() {
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-white/50 mb-1 block">Reference / Note (optional)</label>
+                  <label className="text-xs text-white/50 mb-1 block">Paid by</label>
+                  <select
+                    value={topupMethod} onChange={(e) => setTopupMethod(e.target.value)}
+                    className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-400/50"
+                  >
+                    {["neft", "rtgs", "imps", "upi", "cheque", "other"].map((m) => (
+                      <option key={m} value={m} className="bg-[#0d1f35]">{m.toUpperCase()}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  {/* Required, not optional. This is the string an admin searches
+                      for in the bank statement — without it the claim cannot be
+                      confirmed and the money cannot be credited. */}
+                  <label className="text-xs text-white/50 mb-1 block">UTR / transaction reference</label>
+                  <input
+                    type="text" required minLength={4}
+                    value={topupRef} onChange={(e) => setTopupRef(e.target.value)}
+                    placeholder="e.g. SBIN0123456789"
+                    className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-white placeholder-white/25 focus:outline-none focus:border-emerald-400/50 font-mono"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs text-white/50 mb-1 block">Date of transfer</label>
+                  <input
+                    type="date"
+                    value={topupPaidAt} onChange={(e) => setTopupPaidAt(e.target.value)}
+                    className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-400/50"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs text-white/50 mb-1 block">Note (optional)</label>
                   <input
                     type="text"
                     value={topupNote} onChange={(e) => setTopupNote(e.target.value)}
-                    placeholder="UTR / transaction ID"
+                    placeholder="Anything we should know"
                     className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-white placeholder-white/25 focus:outline-none focus:border-emerald-400/50"
                   />
                 </div>
@@ -424,7 +601,7 @@ export default function OrgAdminPage() {
                 <div className="flex gap-3 pt-1">
                   <button type="submit" disabled={topupLoading}
                     className="flex-1 rounded-xl bg-emerald-400 px-4 py-2.5 text-sm font-semibold text-slate-900 hover:bg-emerald-300 transition disabled:opacity-50">
-                    {topupLoading ? "Processing…" : "Submit Request"}
+                    {topupLoading ? "Submitting…" : "Submit for confirmation"}
                   </button>
                   <button type="button" onClick={() => setShowTopup(false)}
                     className="rounded-xl border border-white/10 px-4 py-2.5 text-sm text-white/60 hover:bg-white/5 transition">
@@ -574,7 +751,11 @@ export default function OrgAdminPage() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-white/10 text-left text-[11px] text-white/40 uppercase tracking-wide">
-                  {["Name", "Email", "Role", "Status", "Sign-in", "Enrolled", "Last Login", "Sessions", "GPU hrs", "Storage", "Actions"].map((h) => (
+                  {/* Name and email in ONE column. Eleven columns overflowed
+                      horizontally, and the two that identify the person were the
+                      first to scroll out of view — leaving a table of numbers
+                      with no way to tell whose they were. */}
+                  {["Member", "Role", "Status", "Sign-in", "Enrolled", "Last Login", "Sessions", "GPU hrs", "Storage", "Actions"].map((h) => (
                     <th key={h} className="px-4 py-3 font-medium whitespace-nowrap">{h}</th>
                   ))}
                 </tr>
@@ -582,15 +763,17 @@ export default function OrgAdminPage() {
               <tbody className="divide-y divide-white/5">
                 {filtered.length === 0 ? (
                   <tr>
-                    <td colSpan={11} className="px-4 py-8 text-center text-white/30 text-sm">
+                    <td colSpan={10} className="px-4 py-8 text-center text-white/30 text-sm">
                       {search ? "No members match your search." : "No team members yet. Use '+ Invite' to add someone."}
                     </td>
                   </tr>
                 ) : (
                   filtered.map((m) => (
                     <tr key={m.id} className={`hover:bg-white/[0.02] transition ${m.status !== "active" ? "opacity-50" : ""}`}>
-                      <td className="px-4 py-3 font-medium whitespace-nowrap">{m.full_name}</td>
-                      <td className="px-4 py-3 text-white/60 text-xs">{m.email}</td>
+                      <td className="px-4 py-3 whitespace-nowrap">
+                        <div className="font-medium">{m.full_name || "—"}</div>
+                        <div className="text-xs text-white/50">{m.email}</div>
+                      </td>
                       <td className="px-4 py-3">
                         <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[11px] font-medium ${m.role === "org_admin" ? "bg-cyan-400/15 text-cyan-300 border-cyan-400/25" : "bg-white/10 text-white/60 border-white/10"}`}>
                           {m.role}
