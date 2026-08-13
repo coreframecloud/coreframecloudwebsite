@@ -247,7 +247,12 @@ export default function MyActivityPage() {
               </a>
             </div>
           </div>
-        ) : user?.role === "r_customer" ? (
+        ) : user?.customer_type !== "b2b" ? (
+          /* `role === "r_customer"` — a role deleted in the roles refresh and
+             mapped to `member`. This condition was therefore false for every
+             user, so no B2C customer saw their wallet or recharge option here
+             at all. Keyed on customer_type now: retail is a SEGMENT, not a
+             capability, which is the whole reason the role was removed. */
           /* B2C retail customer: balance + recharge coming soon */
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div className="rounded-2xl border border-emerald-400/20 bg-emerald-400/5 p-6">
