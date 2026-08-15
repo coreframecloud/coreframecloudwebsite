@@ -17,6 +17,11 @@ const DOWNLOADS_ENABLED = process.env.DOWNLOADS_ENABLED === "true";
 const CLIENT_VERSION = process.env.CLIENT_VERSION || "0.1.48";
 const CLIENT_SHA256 = process.env.CLIENT_SHA256 || "28b0c312c93d6ace3ff6a2eb799abfc87f8a94f3909e6c4b1e0123812905f7a1";
 const CLIENT_FILENAME = `Coreframe Cloud Connect Setup ${CLIENT_VERSION}.exe`;
+// Flip to "true" in Vercel env once the code-signing certificate is issued and
+// a signed build is published. The download page shows the full
+// SmartScreen/UAC walkthrough while this is false, and drops it when true —
+// no code change needed on signing day, just the env var + redeploy.
+const INSTALLER_SIGNED = process.env.INSTALLER_SIGNED === "true";
 
 export async function GET(req: NextRequest) {
   // Checked before authentication: there is nothing to authorise while the
@@ -59,6 +64,7 @@ export async function GET(req: NextRequest) {
       sha256: CLIENT_SHA256,
       filename: CLIENT_FILENAME,
       available: false,
+      signed: INSTALLER_SIGNED,
     });
   }
 
@@ -68,5 +74,6 @@ export async function GET(req: NextRequest) {
     filename: CLIENT_FILENAME,
     available: true,
     url: DOWNLOAD_URL,
+    signed: INSTALLER_SIGNED,
   });
 }

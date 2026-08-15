@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Script from "next/script";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 import { SiteHeader } from "@/components/home/site-header";
 import { SiteFooter } from "@/components/home/site-footer";
@@ -235,6 +236,7 @@ export default function RootLayout({
             <span>WhatsApp</span>
           </span>
         </a>
+        <SpeedInsights />
       </body>
     </html>
   );

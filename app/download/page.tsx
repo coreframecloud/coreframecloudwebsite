@@ -9,6 +9,9 @@ interface DownloadInfo {
   filename: string;
   available: boolean;
   url?: string;
+  // False until our code-signing certificate is issued (applied for). Drives
+  // the SmartScreen/UAC walkthrough below; flips via the INSTALLER_SIGNED env.
+  signed?: boolean;
 }
 
 type Stage = "loading" | "unauthenticated" | "ready" | "unavailable" | "paused" | "error";
@@ -155,12 +158,47 @@ export default function DownloadPage() {
               <p className="break-all font-mono text-[11px] text-white/40">{info.sha256}</p>
             </div>
 
-            {/* SmartScreen note */}
-            <p className="mt-4 text-xs leading-relaxed text-white/30">
-              Windows SmartScreen may show a warning because the installer is not yet code-signed.
-              Click <strong className="text-white/40">More info → Run anyway</strong> to proceed.
-              This will be resolved before public launch.
-            </p>
+            {/* Unsigned-installer walkthrough — shown until code signing is live.
+                The route returns signed:true once INSTALLER_SIGNED is set, and
+                this whole block disappears without a code change. */}
+            {!info.signed && (
+              <div className="mt-5 rounded-xl border border-amber-400/25 bg-amber-400/[0.06] p-5">
+                <p className="text-sm font-semibold text-amber-100">
+                  Windows will warn you about this installer — here&apos;s why, and what to do
+                </p>
+                <p className="mt-2 text-xs leading-relaxed text-amber-200/70">
+                  Our code-signing certificate is being issued right now (we&apos;ve applied and it&apos;s in
+                  progress). Until it arrives, Windows can&apos;t verify the publisher, so it shows
+                  standard warnings for the installer. The app is safe — you can verify the file
+                  yourself with the SHA-256 checksum above.
+                </p>
+                <ol className="mt-3 space-y-2 text-xs leading-relaxed text-amber-100/80">
+                  <li>
+                    <strong>1. Browser warning</strong> — if your browser flags the download, choose
+                    <em> Keep</em> (Chrome/Edge: Downloads → ⋯ → Keep).
+                  </li>
+                  <li>
+                    <strong>2. SmartScreen</strong> — when you run the installer and see
+                    &ldquo;Windows protected your PC&rdquo;, click <em>More info</em>, then
+                    <em> Run anyway</em>.
+                  </li>
+                  <li>
+                    <strong>3. Permission pop-ups</strong> — on first connect, Windows will ask to
+                    allow Coreframe&apos;s secure network component (Tailscale) and firewall access.
+                    Click <em>Yes / Allow</em> on these — they create the private, encrypted link to
+                    your GPU workstation. This happens once.
+                  </li>
+                </ol>
+                <p className="mt-3 text-[11px] leading-relaxed text-amber-200/50">
+                  To verify the download: open PowerShell in your Downloads folder and run{" "}
+                  <code className="rounded bg-black/30 px-1 py-0.5 font-mono text-[10px]">
+                    certutil -hashfile &quot;{info.filename}&quot; SHA256
+                  </code>{" "}
+                  — the output must match the checksum shown above. This notice will disappear once
+                  our signed installer ships.
+                </p>
+              </div>
+            )}
           </div>
         )}
 
