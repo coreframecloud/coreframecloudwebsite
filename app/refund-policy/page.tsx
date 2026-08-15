@@ -41,11 +41,6 @@ const policySections = [
       "GPU session time, persistent NAS storage and any other service you have used are non-refundable. Sessions are billed per minute from the moment your workstation starts streaming — provisioning time and failed connections are never charged.",
   },
   {
-    title: "The one-time account setup fee",
-    body:
-      "The ₹350 setup fee charged on your first recharge covers identity verification and account provisioning, both of which we pay for at signup. It is non-refundable and is shown as a separate line on your first tax invoice.",
-  },
-  {
     title: "Duplicate and failed payments",
     body:
       "This is the exception, and it is unconditional. If you are charged twice for the same recharge, or money leaves your account without the credit appearing, we refund it in full to the original payment method. Contact us and we will resolve it — you should never have to raise a chargeback for our error.",

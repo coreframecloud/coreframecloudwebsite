@@ -61,6 +61,7 @@ export type RateCard = {
   wallet: {
     min_topup_rupees: number;
     max_topup_rupees: number;
+    /** Always 0 — the one-time setup fee is retired. */
     one_time_setup_fee_rupees: number;
   };
   // Optional so an older control plane that predates this field does not break
