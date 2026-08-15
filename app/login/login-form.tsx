@@ -453,8 +453,18 @@ export default function LoginForm() {
                       aria-label="Country dialling code"
                     >
                       {countries.map((c) => (
-                        <option key={c.dial_code} value={c.dial_code}>
-                          +{c.dial_code} {c.country.split(" ")[0]}
+                        // The option needs its OWN colours. Chrome on Windows
+                        // paints the native dropdown with a white system
+                        // background while <option> inherits text-white from
+                        // the select above - white on white, so every row read
+                        // as blank except the highlighted one, which got the
+                        // system blue behind it.
+                        <option
+                          key={c.dial_code}
+                          value={c.dial_code}
+                          className="bg-slate-900 text-white"
+                        >
+                          +{c.dial_code} {(c.country || "").split(" ")[0]}
                         </option>
                       ))}
                     </select>
