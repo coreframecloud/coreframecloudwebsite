@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import TopUpDialog from "@/components/wallet/top-up-dialog";
 
 const API = "https://control.coreframecloud.com/api";
 
@@ -86,9 +87,16 @@ export default function MyActivityPage() {
   const [payments, setPayments] = useState<Payment[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  // The header's wallet chip links to /my-activity#add-funds, so arriving with
+  // that hash opens the dialog straight away rather than landing the customer
+  // on a page and making them hunt for the button they just clicked.
+  const [topUpOpen, setTopUpOpen] = useState(false);
 
   useEffect(() => {
     setMounted(true);
+    if (typeof window !== "undefined" && window.location.hash === "#add-funds") {
+      setTopUpOpen(true);
+    }
     const t = localStorage.getItem("cf_customer_token");
     const uRaw = localStorage.getItem("cf_customer_user");
 
@@ -288,21 +296,28 @@ export default function MyActivityPage() {
                 </p>
               )}
             </div>
-            <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 flex flex-col justify-between">
+            <div id="add-funds" className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 flex flex-col justify-between">
               <div>
                 <h2 className="text-xs font-semibold text-white/40 uppercase tracking-wider mb-2">
                   Add Funds
                 </h2>
+                {/* This card used to say "online recharge is coming soon" and
+                    offer a mailto link. Nothing was gating it — the web wallet
+                    had simply never been wired to the payment endpoints the API
+                    and the Connect client already had. The dialog asks the
+                    server whether recharge is configured and falls back to the
+                    contact route only if it says no. */}
                 <p className="text-sm text-white/50">
-                  Online recharge is coming soon. To top up now, contact us and we&apos;ll credit your wallet within 1 business day.
+                  Top up instantly by card, UPI or netbanking. A GST invoice is issued automatically.
                 </p>
               </div>
-              <a
-                href="mailto:support@coreframecloud.com?subject=Wallet%20Top-up%20Request"
+              <button
+                type="button"
+                onClick={() => setTopUpOpen(true)}
                 className="mt-6 inline-flex items-center justify-center rounded-xl bg-cyan-400 text-slate-900 px-5 py-2.5 text-sm font-semibold hover:bg-cyan-300 transition"
               >
-                Request Top-up →
-              </a>
+                Add Funds →
+              </button>
             </div>
           </div>
         ) : (
@@ -429,6 +444,21 @@ export default function MyActivityPage() {
 
 
       </div>
+
+      <TopUpDialog
+        open={topUpOpen}
+        onClose={() => {
+          setTopUpOpen(false);
+          // Clear the deep-link hash so a refresh does not reopen the dialog.
+          if (typeof window !== "undefined" && window.location.hash === "#add-funds") {
+            window.history.replaceState(null, "", window.location.pathname);
+          }
+        }}
+        onCredited={(balance) =>
+          setWallet((w) => (w ? { ...w, wallet_balance_rupees: balance } : w))
+        }
+        user={user}
+      />
     </main>
   );
 }

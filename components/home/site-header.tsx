@@ -231,13 +231,18 @@ export function SiteHeader() {
             <>
               {/* Wallet chip — display only until Razorpay payment page is live */}
               {balance && (
-                <span
-                  title="Recharge coming soon"
-                  className="inline-flex items-center gap-1.5 text-xs font-semibold bg-emerald-400/10 text-emerald-300 border border-emerald-400/20 px-2.5 py-1 rounded-full cursor-default"
+                /* The chip was inert and captioned "Recharge coming soon".
+                   It is the most obvious place a customer clicks to add money,
+                   so it now goes where that happens. */
+                <Link
+                  href="/my-activity#add-funds"
+                  title="Add funds"
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold bg-emerald-400/10 text-emerald-300 border border-emerald-400/20 px-2.5 py-1 rounded-full transition hover:bg-emerald-400/20 hover:text-emerald-200"
+                  onClick={() => trackEvent("wallet_chip_click", { location: "header" })}
                 >
                   <WalletIcon />
                   {balance}
-                </span>
+                </Link>
               )}
               {/* Account link. A pending account cannot load My Activity — the
                   API refuses it — so the label has to say what the link
@@ -330,10 +335,14 @@ export function SiteHeader() {
               <div className="mt-3 flex flex-col gap-2">
                 {balance && (
                   <div className="flex items-center gap-2 px-3 py-2">
-                    <span className="inline-flex items-center gap-1.5 text-xs font-semibold bg-emerald-400/10 text-emerald-300 border border-emerald-400/20 px-2.5 py-1 rounded-full">
+                    <Link
+                      href="/my-activity#add-funds"
+                      onClick={() => { setOpen(false); trackEvent("wallet_chip_click", { location: "mobile_menu" }); }}
+                      className="inline-flex items-center gap-1.5 text-xs font-semibold bg-emerald-400/10 text-emerald-300 border border-emerald-400/20 px-2.5 py-1 rounded-full"
+                    >
                       <WalletIcon />
                       {balance}
-                    </span>
+                    </Link>
                     <span className="text-sm text-white/60">{auth.user.full_name}</span>
                   </div>
                 )}
