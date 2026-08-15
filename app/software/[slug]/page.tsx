@@ -25,8 +25,14 @@ export function generateStaticParams() {
 
 export const dynamicParams = false;
 
-export function generateMetadata({ params }: { params: { slug: string } }): Metadata {
-  const page = SOFTWARE_PAGES_BY_SLUG[params.slug];
+// Next.js 16 passes `params` as a Promise — await it or every lookup misses.
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const page = SOFTWARE_PAGES_BY_SLUG[slug];
   if (!page) return { title: "Page not found" };
   return {
     title: page.title,
@@ -52,8 +58,13 @@ function faqSchema(page: SoftwarePage) {
   };
 }
 
-export default function SoftwareLandingPage({ params }: { params: { slug: string } }) {
-  const page = SOFTWARE_PAGES_BY_SLUG[params.slug];
+export default async function SoftwareLandingPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
+  const page = SOFTWARE_PAGES_BY_SLUG[slug];
   if (!page) notFound();
 
   const related = page.related

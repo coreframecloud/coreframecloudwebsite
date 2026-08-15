@@ -79,12 +79,17 @@ This model is ideal for architects, freelancers, and studios handling variable w
   },
 };
 
-export function generateMetadata({
+// Next.js 16: `params` is a Promise and MUST be awaited. Reading `.slug`
+// straight off it yields undefined, every lookup misses, and every page in
+// this route 404s — silently, while still being listed in the sitemap. That
+// is exactly what happened to these five pages.
+export async function generateMetadata({
   params,
 }: {
-  params: { slug: string };
-}): Metadata {
-  const data = pagesData[params.slug];
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const data = pagesData[slug];
 
   if (!data) {
     return {
@@ -96,17 +101,18 @@ export function generateMetadata({
     title: data.title,
     description: data.description,
     alternates: {
-      canonical: `/${params.slug}`,
+      canonical: `/${slug}`,
     },
   };
 }
 
-export default function Page({
+export default async function Page({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }) {
-  const data = pagesData[params.slug];
+  const { slug } = await params;
+  const data = pagesData[slug];
 
   // notFound() rather than a "Page not found" div: rendering the message with
   // a 200 status is a SOFT 404, and it made every made-up URL on the domain
