@@ -17,6 +17,94 @@ interface WalletData {
   gpu_rate_from_rupees: number | null;
   next_expiry: { expires_at: string; amount_rupees: number } | null;
   credit_validity_days: number;
+  // Spendable NOW, from the server. Not `trial_credit_hours`, which keeps its
+  // granted value after expiry so support can explain where credit went.
+  trial_minutes_remaining: number;
+  trial_expires_at: string | null;
+  trial_storage_gb: number;
+  trial_storage_expires_at: string | null;
+  storage_used_bytes: number;
+  storage_quota_bytes: number | null;
+}
+
+function formatBytes(bytes: number): string {
+  if (!bytes) return "0 GB";
+  const gb = bytes / 1024 ** 3;
+  if (gb < 0.1) return `${(bytes / 1024 ** 2).toFixed(0)} MB`;
+  return `${gb.toFixed(gb < 10 ? 1 : 0)} GB`;
+}
+
+/** Free minutes and disk both run out, and both were invisible to customers —
+ *  the wallet chip only ever showed money. A trial that expires unannounced
+ *  reads as the product silently taking something away. */
+function UsageCards({ wallet }: { wallet: WalletData | null }) {
+  if (!wallet) return null;
+  const mins = wallet.trial_minutes_remaining ?? 0;
+  const usedPct =
+    wallet.storage_quota_bytes && wallet.storage_quota_bytes > 0
+      ? Math.min(100, (wallet.storage_used_bytes / wallet.storage_quota_bytes) * 100)
+      : null;
+
+  return (
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 mt-4">
+      <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
+        <h2 className="text-xs font-semibold text-white/40 uppercase tracking-wider mb-3">
+          Free GPU minutes
+        </h2>
+        {mins > 0 ? (
+          <>
+            <p className="text-3xl font-bold text-cyan-300">{mins}</p>
+            <p className="text-xs text-white/40 mt-1">
+              remaining
+              {wallet.trial_expires_at
+                ? ` · expires ${formatDate(wallet.trial_expires_at)}`
+                : ""}
+            </p>
+            <p className="text-xs text-white/30 mt-2">
+              Free minutes are spent before wallet money.
+            </p>
+          </>
+        ) : (
+          <>
+            <p className="text-3xl font-bold text-white/30">0</p>
+            <p className="text-xs text-white/40 mt-1">
+              {wallet.trial_expires_at
+                ? `Trial ended ${formatDate(wallet.trial_expires_at)}. Sessions now bill from your wallet.`
+                : "Sessions bill from your wallet."}
+            </p>
+          </>
+        )}
+      </div>
+
+      <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
+        <h2 className="text-xs font-semibold text-white/40 uppercase tracking-wider mb-3">
+          Storage used
+        </h2>
+        <p className="text-3xl font-bold text-white">
+          {formatBytes(wallet.storage_used_bytes ?? 0)}
+          {wallet.storage_quota_bytes ? (
+            <span className="text-base font-normal text-white/40">
+              {" "}/ {formatBytes(wallet.storage_quota_bytes)}
+            </span>
+          ) : null}
+        </p>
+        {usedPct != null && (
+          <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-white/10">
+            <div
+              className={`h-full rounded-full ${usedPct > 90 ? "bg-red-400" : usedPct > 75 ? "bg-amber-400" : "bg-emerald-400"}`}
+              style={{ width: `${usedPct}%` }}
+            />
+          </div>
+        )}
+        <p className="text-xs text-white/30 mt-2">
+          Project files persist between sessions. The workstation itself is wiped each time.
+          {wallet.trial_storage_gb > 0 && wallet.trial_storage_expires_at
+            ? ` Includes ${wallet.trial_storage_gb} GB free until ${formatDate(wallet.trial_storage_expires_at)}.`
+            : ""}
+        </p>
+      </div>
+    </div>
+  );
 }
 
 interface Session {
@@ -332,6 +420,11 @@ export default function MyActivityPage() {
             <p className="text-xs text-white/50 mt-1">Managed by your organization admin</p>
           </div>
         )}
+
+        {/* Free minutes and disk. Rendered for every segment: a B2B engineer
+            on the org's pooled wallet still has their own storage and their
+            own trial clock. */}
+        <UsageCards wallet={wallet} />
 
         {/* Recent Sessions */}
         <div className="rounded-2xl border border-white/10 bg-white/[0.03] overflow-hidden">
