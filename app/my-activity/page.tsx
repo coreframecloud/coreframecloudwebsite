@@ -68,6 +68,11 @@ function UsageCards({ wallet }: { wallet: WalletData | null }) {
   const freeTier = wallet.storage_free_tier_gb || 20;
   const capGb = wallet.storage_paid_cap_gb || 50;
   // Retention is measured in billable minutes; customers think in hours.
+  // Fallbacks matter here: these fields ship with an API build the site does
+  // not control the timing of, and a missing number rendered a sentence that
+  // read "every  days". Copy that depends on an API field must never be able
+  // to render blank — default to the configured policy instead.
+  const retentionDays = wallet.storage_retention_days || 30;
   const retentionMins = wallet.storage_retention_active_minutes || 60;
   const retentionHours =
     retentionMins >= 60 && retentionMins % 60 === 0
@@ -239,9 +244,9 @@ function UsageCards({ wallet }: { wallet: WalletData | null }) {
           <span className="mt-0.5 text-sm text-cyan-300/70" aria-hidden="true">↻</span>
           <p className="text-xs leading-5 text-white/45">
             <b className="text-white/70">Keep working, keep your files.</b> Use at least{" "}
-            {retentionHours} of GPU time every {wallet.storage_retention_days} days and your
-            project files stay put between sessions. Go quiet for longer and we clear the space —
-            we will always email you first.
+            {retentionHours} of GPU time every {retentionDays} days and your project files stay
+            where you left them. If the account goes quiet for longer than that, we clear the
+            drive to free the space.
           </p>
         </div>
         <p className="mt-2 text-xs text-white/25">
