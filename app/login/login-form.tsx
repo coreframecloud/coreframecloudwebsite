@@ -1,6 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import {
+  COUNTRIES,
+  fetchCountries,
+  validateGstin,
+  validatePhone,
+  type Country,
+} from "@/lib/validation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 // CheckCircle went with the password tab's "signed in" state.
@@ -101,6 +108,11 @@ export default function LoginForm() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     if (params.get("source") === "connect") setTab("code");
+    fetchCountries(API).then((list) => {
+      setCountries(list);
+      const india = list.find((c) => c.dial_code === "91");
+      if (india) setPhoneCountry(india);
+    });
   }, []);
 
   // ── Email Link state ────────────────────────────────────────────────────────
@@ -110,6 +122,10 @@ export default function LoginForm() {
   const [linkName, setLinkName] = useState("");
   const [linkOrg, setLinkOrg] = useState("");
   const [linkPhone, setLinkPhone] = useState("");
+  // Country list comes from the API so the picker and the server's validator
+  // are one table; COUNTRIES is the offline fallback.
+  const [countries, setCountries] = useState<Country[]>(COUNTRIES);
+  const [phoneCountry, setPhoneCountry] = useState<Country>(COUNTRIES[0]);
   // Individual vs registered business. A business additionally verifies its
   // GSTIN — the signatory's DigiLocker proves the person, the GSTIN proves the
   // entity. Neither substitutes for the other.
@@ -181,17 +197,21 @@ export default function LoginForm() {
     e.preventDefault();
     setError("");
     if (!linkName.trim()) return setError("Full name is required.");
-    // 10 digits after stripping +91 / spaces / dashes.
-    if (linkPhone.replace(/\D/g, "").replace(/^91/, "").length !== 10) {
-      return setError("Enter a valid 10-digit Indian mobile number.");
-    }
-    // Only a business needs a company name — for an individual it is friction
-    // for no gain, so we fall back to their own name as the workspace label.
+
+    // Length rules per country, and India's mobile-prefix rule, live in
+    // lib/validation.ts alongside the server's copy — so "10 digits" is not
+    // hardcoded here and wrong the moment someone signs up from Dubai.
+    const phoneCheck = validatePhone(linkPhone, phoneCountry);
+    if (!phoneCheck.ok) return setError(phoneCheck.error);
+
+    // A business is an entity on an invoice; its registered name is not
+    // optional. For an individual the studio name stays a nicety.
     if (linkAccountType === "b2b" && !linkOrg.trim()) {
       return setError("Registered business name is required.");
     }
-    if (linkAccountType === "b2b" && linkGstin.trim().length !== 15) {
-      return setError("A GSTIN is 15 characters. You can also add it later during verification.");
+    if (linkAccountType === "b2b") {
+      const gstinCheck = validateGstin(linkGstin);
+      if (!gstinCheck.ok) return setError(gstinCheck.error);
     }
     setLinkLoading(true);
     try {
@@ -202,7 +222,8 @@ export default function LoginForm() {
           email: linkEmail.trim(),
           full_name: linkName.trim(),
           org_name: linkOrg.trim() || linkName.trim(),
-          phone: linkPhone.trim(),
+          phone: (validatePhone(linkPhone, phoneCountry) as { value: string }).value,
+          phone_country_code: phoneCountry.dial_code,
           customer_type: linkAccountType,
           gstin: linkAccountType === "b2b" ? linkGstin.trim().toUpperCase() : undefined,
         }),
@@ -420,16 +441,34 @@ export default function LoginForm() {
                     Asking here is one field; asking later means bouncing someone
                     out of verification to go and add it. */}
                 <Field label="Mobile number">
-                  <Input
-                    type="tel"
-                    inputMode="tel"
-                    value={linkPhone}
-                    onChange={(e) => { setLinkPhone(e.target.value); setError(""); }}
-                    className={inputCls}
-                    placeholder="+91 98765 43210"
-                    autoComplete="tel"
-                    required
-                  />
+                  <div className="flex gap-2">
+                    <select
+                      value={phoneCountry.dial_code}
+                      onChange={(e) => {
+                        const next = countries.find((c) => c.dial_code === e.target.value);
+                        if (next) setPhoneCountry(next);
+                        setError("");
+                      }}
+                      className={`${inputCls} w-32 shrink-0 cursor-pointer`}
+                      aria-label="Country dialling code"
+                    >
+                      {countries.map((c) => (
+                        <option key={c.dial_code} value={c.dial_code}>
+                          +{c.dial_code} {c.country.split(" ")[0]}
+                        </option>
+                      ))}
+                    </select>
+                    <Input
+                      type="tel"
+                      inputMode="numeric"
+                      value={linkPhone}
+                      onChange={(e) => { setLinkPhone(e.target.value); setError(""); }}
+                      className={inputCls}
+                      placeholder={phoneCountry.dial_code === "91" ? "98765 43210" : "national number"}
+                      autoComplete="tel-national"
+                      required
+                    />
+                  </div>
                   <p className="mt-1 text-xs text-slate-500">
                     Used for identity verification and account security. Indian regulations
                     require us to hold a verified contact number for compute rental.

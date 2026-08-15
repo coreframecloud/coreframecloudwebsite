@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 
 type PageData = {
   title: string;
@@ -107,8 +108,14 @@ export default function Page({
 }) {
   const data = pagesData[params.slug];
 
+  // notFound() rather than a "Page not found" div: rendering the message with
+  // a 200 status is a SOFT 404, and it made every made-up URL on the domain
+  // look real. Cloudflare's AI crawler report showed /private-key as the most
+  // crawled path with 18 "successful" requests — a secret-hunting probe being
+  // told the page exists. Search and AI-answer crawlers index that junk too,
+  // diluting the pages that matter. This returns a genuine 404.
   if (!data) {
-    return <div className="p-10 text-white">Page not found</div>;
+    notFound();
   }
 
   return (
