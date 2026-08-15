@@ -34,6 +34,24 @@ export const PREINSTALLED: SoftwareItem[] = [
     vendorUrl: "https://www.twinmotion.com/",
   },
   {
+    name: "D5 Render",
+    category: "3D & rendering",
+    note: "Installed and ready — sign in with your own D5 account. The free tier covers a lot of individual work.",
+    vendorUrl: "https://www.d5render.com/",
+  },
+  {
+    name: "FreeCAD",
+    category: "3D & rendering",
+    note: "Parametric CAD that opens the STEP, IGES and DXF files engineering consultants send.",
+    vendorUrl: "https://www.freecad.org/",
+  },
+  {
+    name: "ParaView",
+    category: "3D & rendering",
+    note: "Post-processing and visualisation for CFD and simulation results.",
+    vendorUrl: "https://www.paraview.org/",
+  },
+  {
     name: "Autodesk DWG TrueView",
     category: "CAD viewers",
     note: "Open, measure and plot DWG drawings without needing an AutoCAD seat.",
@@ -44,12 +62,6 @@ export const PREINSTALLED: SoftwareItem[] = [
     category: "CAD viewers",
     note: "Review NWD coordination models from consultants.",
     vendorUrl: "https://www.autodesk.com/products/navisworks/3d-viewers",
-  },
-  {
-    name: "eDrawings Viewer",
-    category: "CAD viewers",
-    note: "Open SolidWorks, DWG and DXF files sent by engineering teams.",
-    vendorUrl: "https://www.edrawingsviewer.com/",
   },
   {
     name: "GIMP",
@@ -68,6 +80,12 @@ export const PREINSTALLED: SoftwareItem[] = [
     category: "Images & textures",
     note: "Quick crops, resizes and touch-ups.",
     vendorUrl: "https://www.getpaint.net/",
+  },
+  {
+    name: "XnView MP",
+    category: "Images & textures",
+    note: "Browse, batch-convert and contact-sheet a whole folder of renders at once.",
+    vendorUrl: "https://www.xnview.com/en/xnviewmp/",
   },
   {
     name: "7-Zip",
@@ -105,6 +123,18 @@ export const PREINSTALLED: SoftwareItem[] = [
     vendorUrl: "https://www.python.org/",
   },
   {
+    name: "Visual Studio Code",
+    category: "Utilities",
+    note: "Write and debug Blender, Dynamo and Revit scripts.",
+    vendorUrl: "https://code.visualstudio.com/",
+  },
+  {
+    name: "HandBrake & FFmpeg",
+    category: "Utilities",
+    note: "Turn a rendered image sequence into a video file before you download it.",
+    vendorUrl: "https://handbrake.fr/",
+  },
+  {
     name: "NVIDIA Studio driver",
     category: "System",
     note: "The GPU driver tuned for creative applications rather than games.",
@@ -122,7 +152,6 @@ export const PREINSTALLED: SoftwareItem[] = [
  * follows you onto the workstation exactly as it would onto a new PC.
  */
 export const BRING_YOUR_OWN_LICENCE: SoftwareItem[] = [
-  { name: "D5 Render", category: "Rendering", note: "Free tier available; Pro is per user.", vendorUrl: "https://www.d5render.com/download" },
   { name: "Lumion", category: "Rendering", note: "Sign in with your Lumion account.", vendorUrl: "https://lumion.com/" },
   { name: "Enscape", category: "Rendering", note: "A plugin — install its host application (Revit, SketchUp, Rhino or Archicad) first.", vendorUrl: "https://enscape3d.com/" },
   { name: "Chaos V-Ray", category: "Rendering", note: "Chaos account or your licence server.", vendorUrl: "https://www.chaos.com/vray" },

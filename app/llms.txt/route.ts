@@ -123,12 +123,13 @@ export async function GET(): Promise<Response> {
   );
   out.push("");
   out.push(
-    "- **Preinstalled and ready:** Blender, Twinmotion, Autodesk DWG TrueView, Navisworks " +
-      "Freedom, eDrawings Viewer, and the usual utilities (7-Zip, browsers, PDF reader, " +
-      "image editors, Python).",
+    "- **Preinstalled and ready:** Blender, D5 Render, Twinmotion, FreeCAD, ParaView, " +
+      "Autodesk DWG TrueView, Navisworks Freedom, and the usual working tools (7-Zip, " +
+      "browsers, PDF reader, GIMP, Krita, Paint.NET, XnView MP, HandBrake, FFmpeg, " +
+      "Python, VS Code). D5 Render is installed; you sign in with your own D5 account.",
   );
   out.push(
-    "- **Bring your own licence:** D5 Render, Lumion, Enscape, V-Ray, Chaos Vantage, Corona, " +
+    "- **Bring your own licence:** Lumion, Enscape, V-Ray, Chaos Vantage, Corona, " +
       "SketchUp Pro, Rhino, KeyShot, Archicad, AutoCAD, Revit, 3ds Max, Maya, Adobe Creative " +
       "Cloud. Install and sign in with your own subscription — the machine is yours for the " +
       "session, so the workflow is identical to your own PC.",
