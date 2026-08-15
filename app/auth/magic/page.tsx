@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { CheckCircle, XCircle, Loader2 } from "lucide-react";
 import { Suspense } from "react";
@@ -12,6 +12,15 @@ function MagicLinkVerifier() {
   const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
   const [errorMsg, setErrorMsg] = useState("");
 
+  // Fire EXACTLY once per token. useSearchParams() returns a fresh object on
+  // some re-renders and React StrictMode invokes effects twice in development;
+  // either one sends a second POST carrying a token the first call already
+  // consumed. The server then answers "Invalid or already used sign-in link"
+  // and that second response is what the user sees - even though their account
+  // was created, they were signed in, and the welcome email is already on its
+  // way. An error screen arriving just before the welcome email is the tell.
+  const attempted = useRef<string | null>(null);
+
   useEffect(() => {
     const token = params.get("t");
     if (!token) {
@@ -19,6 +28,8 @@ function MagicLinkVerifier() {
       setStatus("error");
       return;
     }
+    if (attempted.current === token) return;
+    attempted.current = token;
 
     fetch(`${API}/auth/verify-magic-link`, {
       method: "POST",
