@@ -32,6 +32,8 @@ interface WalletData {
   storage_free_tier_gb: number;
   storage_paid_cap_gb: number;
   storage_paid_unlocked: boolean;
+  storage_retention_days: number;
+  storage_retention_active_minutes: number;
 }
 
 function formatBytes(bytes: number): string {
@@ -65,6 +67,12 @@ function UsageCards({ wallet }: { wallet: WalletData | null }) {
   // the bar must keep saying so.
   const freeTier = wallet.storage_free_tier_gb || 20;
   const capGb = wallet.storage_paid_cap_gb || 50;
+  // Retention is measured in billable minutes; customers think in hours.
+  const retentionMins = wallet.storage_retention_active_minutes || 60;
+  const retentionHours =
+    retentionMins >= 60 && retentionMins % 60 === 0
+      ? `${retentionMins / 60} hour${retentionMins === 60 ? "" : "s"}`
+      : `${retentionMins} minutes`;
   // Fraction of the CAP, not of the current quota, so the fill sits in the
   // same place on the bar whether or not the paid tier is unlocked.
   const usedFrac = capGb > 0 ? Math.min(1, (wallet.storage_used_bytes ?? 0) / (capGb * 1024 ** 3)) : 0;
@@ -215,20 +223,29 @@ function UsageCards({ wallet }: { wallet: WalletData | null }) {
               {wallet.storage_paid_unlocked ? (
                 <>
                   <b className="text-emerald-300">+{capGb - freeTier} GB unlocked</b> by your
-                  recharge — permanently, even if your balance runs down
+                  recharge — the space is yours whatever your balance does
                 </>
               ) : (
                 <>
                   <b className="text-white/70">+{capGb - freeTier} GB</b> unlocks with any wallet
-                  recharge, and stays unlocked for good
+                  recharge, and stays unlocked
                 </>
               )}
             </span>
           </div>
         </div>
 
-        <p className="mt-3 text-xs text-white/30">
-          Project files persist between sessions. The workstation itself is wiped each time.
+        <div className="mt-3 flex items-start gap-2 rounded-lg border border-white/[0.07] bg-white/[0.02] px-3 py-2.5">
+          <span className="mt-0.5 text-sm text-cyan-300/70" aria-hidden="true">↻</span>
+          <p className="text-xs leading-5 text-white/45">
+            <b className="text-white/70">Keep working, keep your files.</b> Use at least{" "}
+            {retentionHours} of GPU time every {wallet.storage_retention_days} days and your
+            project files stay put between sessions. Go quiet for longer and we clear the space —
+            we will always email you first.
+          </p>
+        </div>
+        <p className="mt-2 text-xs text-white/25">
+          The workstation itself is wiped after every session. Only this drive persists.
         </p>
       </div>
     </div>
