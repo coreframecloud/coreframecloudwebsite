@@ -18,6 +18,7 @@
  */
 
 import { getRateCard } from "@/lib/rate-card";
+import { SOFTWARE_PAGES } from "@/lib/software-pages";
 
 export const revalidate = 3600; // an hour, matching the rate card's own cache
 
@@ -183,6 +184,12 @@ export async function GET(): Promise<Response> {
   out.push(`- [Enscape cloud workstations](${SITE}/enscape-cloud-gpu)`);
   out.push(`- [Ansys CFD on GPU](${SITE}/ansys-cfd-gpu)`);
   out.push(`- [For teams and studios](${SITE}/enterprise)`);
+  out.push("");
+  out.push("### Per-application guides");
+  out.push("");
+  for (const page of SOFTWARE_PAGES) {
+    out.push(`- [${page.title}](${SITE}/software/${page.slug}): ${page.description}`);
+  }
   out.push(`- [Contact](${SITE}/contact)`);
   out.push("");
 

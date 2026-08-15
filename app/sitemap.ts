@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { SOFTWARE_PAGES } from "@/lib/software-pages";
 
 /**
  * Canonical host is www: the apex 308-redirects to it. Listing apex URLs here
@@ -28,6 +29,15 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // people ask before buying, and the ones AI assistants get asked most.
     { url: `${BASE}/how-to-use`, lastModified: now, changeFrequency: "monthly", priority: 0.9 },
     { url: `${BASE}/apps`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
+
+    // Per-application landing pages, generated from the same data the pages
+    // render from — so a new page cannot be published and left out of here.
+    ...SOFTWARE_PAGES.map((page) => ({
+      url: `${BASE}/software/${page.slug}`,
+      lastModified: now,
+      changeFrequency: "monthly" as const,
+      priority: 0.8,
+    })),
 
     { url: `${BASE}/contact`, lastModified: now, changeFrequency: "yearly", priority: 0.5 },
     { url: `${BASE}/request-demo`, lastModified: now, changeFrequency: "yearly", priority: 0.5 },
