@@ -87,7 +87,7 @@ export async function GET(): Promise<Response> {
     }
   } else {
     out.push(
-      `Live prices: ${SITE}/pricing — they are served from our billing system, so that page ` +
+      `Live prices: ${SITE}/#pricing — they are served from our billing system, so that page ` +
         "is always current.",
     );
     out.push("");
@@ -175,7 +175,7 @@ export async function GET(): Promise<Response> {
 
   out.push("## Key pages");
   out.push("");
-  out.push(`- [Pricing](${SITE}/pricing): live rates per machine class.`);
+  out.push(`- [Pricing](${SITE}/#pricing): live rates per machine class.`);
   out.push(`- [Preinstalled software](${SITE}/apps): what is on the machine before you start.`);
   out.push(`- [How to use Coreframe](${SITE}/how-to-use): setup, sessions, files, licences.`);
   out.push(`- [D5 Render workstations](${SITE}/d5-render)`);
