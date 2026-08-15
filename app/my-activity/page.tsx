@@ -454,81 +454,33 @@ export default function MyActivityPage() {
       <div className="max-w-4xl mx-auto px-6 py-16 space-y-10">
 
         {/* Header */}
-        <div>
-          <p className="cf-eyebrow text-cyan-400 text-xs font-semibold uppercase tracking-widest mb-2">
-            Account
-          </p>
-          <h1 className="cf-section-title text-3xl font-bold text-white">
-            My Activity
-            {user?.full_name && (
-              <span className="text-white/40 font-normal"> — {user.full_name}</span>
-            )}
-          </h1>
-        </div>
-
-        {/* Coreframe Connect.
-            The desktop client is not optional — a customer with credit, a
-            verified identity and no app cannot use any of it, and /download was
-            reachable from nowhere in the signed-in experience. So it sits ABOVE
-            the wallet until they have actually run a session, then shrinks to a
-            single line rather than nagging someone who clearly has it. */}
-        {sessions.length === 0 ? (
-          <div className="rounded-2xl border border-cyan-400/25 bg-gradient-to-br from-cyan-400/[0.09] to-transparent p-6">
-            <div className="flex flex-wrap items-start justify-between gap-6">
-              <div className="min-w-[16rem] flex-1">
-                <p className="text-xs font-semibold uppercase tracking-widest text-cyan-300/80">
-                  Start here
-                </p>
-                <h2 className="mt-2 text-2xl font-bold text-white">Install Coreframe Connect</h2>
-                <p className="mt-2 max-w-xl text-sm leading-6 text-white/60">
-                  The Windows app that launches your workstation and streams it to this
-                  computer. Your credit and storage live in your account — Connect is how you
-                  reach them.
-                </p>
-                <ol className="mt-4 space-y-1.5 text-sm text-white/55">
-                  <li>
-                    <span className="mr-2 font-semibold text-cyan-300">1</span>
-                    Download and install Connect
-                  </li>
-                  <li>
-                    <span className="mr-2 font-semibold text-cyan-300">2</span>
-                    Sign in with this same email
-                  </li>
-                  <li>
-                    <span className="mr-2 font-semibold text-cyan-300">3</span>
-                    Press Connect — your desktop starts in about two minutes
-                  </li>
-                </ol>
-              </div>
-              <div className="flex flex-col gap-2">
-                <Link
-                  href="/download"
-                  className="inline-flex items-center justify-center rounded-xl bg-cyan-400 px-6 py-3 text-sm font-semibold text-slate-900 transition hover:bg-cyan-300"
-                >
-                  Download for Windows →
-                </Link>
-                <Link
-                  href="/how-to-use"
-                  className="text-center text-xs text-white/45 underline underline-offset-4 hover:text-white/70"
-                >
-                  How it works
-                </Link>
-              </div>
-            </div>
-          </div>
-        ) : (
-          <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-white/10 bg-white/[0.03] px-5 py-3">
-            <p className="text-sm text-white/50">
-              Coreframe Connect — the Windows app you launch sessions from.
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <p className="cf-eyebrow text-cyan-400 text-xs font-semibold uppercase tracking-widest mb-2">
+              Account
             </p>
-            <Link
-              href="/download"
-              className="text-sm font-semibold text-cyan-300 hover:text-cyan-200"
-            >
-              Download / update →
-            </Link>
+            <h1 className="cf-section-title text-3xl font-bold text-white">
+              My Activity
+              {user?.full_name && (
+                <span className="text-white/40 font-normal"> — {user.full_name}</span>
+              )}
+            </h1>
           </div>
-        )}
+          {/* Permanent and unconditional. Connect is unlocked by verification,
+              not by payment, and someone signing in from a different machine
+              needs the installer again — so this is not onboarding that should
+              disappear once they have used it. */}
+          <Link
+            href="/download"
+            className="inline-flex shrink-0 items-center gap-2 rounded-xl border border-cyan-400/30 bg-cyan-400/10 px-4 py-2.5 text-sm font-semibold text-cyan-300 transition hover:bg-cyan-400/20 hover:text-cyan-200"
+          >
+            <svg viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4" aria-hidden="true">
+              <path d="M10 2a1 1 0 0 1 1 1v8.586l2.293-2.293a1 1 0 1 1 1.414 1.414l-4 4a1 1 0 0 1-1.414 0l-4-4a1 1 0 1 1 1.414-1.414L9 11.586V3a1 1 0 0 1 1-1Z" />
+              <path d="M3 15a1 1 0 0 1 1 1v1h12v-1a1 1 0 1 1 2 0v1a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-1a1 1 0 0 1 1-1Z" />
+            </svg>
+            Download Coreframe Connect
+          </Link>
+        </div>
 
         {/* Wallet section — layout depends on role */}
         {user?.role === "org_admin" ? (
