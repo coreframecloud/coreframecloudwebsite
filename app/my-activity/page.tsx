@@ -25,6 +25,10 @@ interface WalletData {
   trial_storage_expires_at: string | null;
   storage_used_bytes: number;
   storage_quota_bytes: number | null;
+  storage_quota_gb: number;
+  storage_free_gb: number;
+  storage_paid_cap_gb: number;
+  storage_paid_unlocked: boolean;
 }
 
 function formatBytes(bytes: number): string {
@@ -40,9 +44,13 @@ function formatBytes(bytes: number): string {
 function UsageCards({ wallet }: { wallet: WalletData | null }) {
   if (!wallet) return null;
   const mins = wallet.trial_minutes_remaining ?? 0;
+  const quotaGb =
+    wallet.storage_quota_gb ||
+    (wallet.storage_quota_bytes ? Math.round(wallet.storage_quota_bytes / 1024 ** 3) : 0);
+  const freeGb = wallet.storage_free_gb ?? 0;
   const usedPct =
-    wallet.storage_quota_bytes && wallet.storage_quota_bytes > 0
-      ? Math.min(100, (wallet.storage_used_bytes / wallet.storage_quota_bytes) * 100)
+    quotaGb > 0
+      ? Math.min(100, (wallet.storage_used_bytes / (quotaGb * 1024 ** 3)) * 100)
       : null;
 
   return (
@@ -78,14 +86,17 @@ function UsageCards({ wallet }: { wallet: WalletData | null }) {
 
       <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
         <h2 className="text-xs font-semibold text-white/40 uppercase tracking-wider mb-3">
-          Storage used
+          Storage
         </h2>
+        {/* The allowance is CAPPED, not additive: 20 GB free on trial, or the
+            50 GB cap once a payment lands — never 70. Showing only the result
+            ("0 GB / 50 GB") made the free tier invisible and read as though
+            50 GB were simply the standard allowance, so neither the gift nor
+            what a recharge buys was ever communicated. */}
         <p className="text-3xl font-bold text-white">
           {formatBytes(wallet.storage_used_bytes ?? 0)}
-          {wallet.storage_quota_bytes ? (
-            <span className="text-base font-normal text-white/40">
-              {" "}/ {formatBytes(wallet.storage_quota_bytes)}
-            </span>
+          {quotaGb ? (
+            <span className="text-base font-normal text-white/40"> / {quotaGb} GB</span>
           ) : null}
         </p>
         {usedPct != null && (
@@ -96,11 +107,29 @@ function UsageCards({ wallet }: { wallet: WalletData | null }) {
             />
           </div>
         )}
-        <p className="text-xs text-white/30 mt-2">
+        {wallet.storage_paid_unlocked ? (
+          <p className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-emerald-400/20 bg-emerald-400/10 px-2.5 py-1 text-xs font-semibold text-emerald-300">
+            {quotaGb} GB unlocked by your recharge
+          </p>
+        ) : freeGb > 0 ? (
+          <>
+            <p className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-cyan-400/20 bg-cyan-400/10 px-2.5 py-1 text-xs font-semibold text-cyan-300">
+              {freeGb} GB free on us
+              {wallet.trial_storage_expires_at
+                ? ` · until ${formatDate(wallet.trial_storage_expires_at)}`
+                : ""}
+            </p>
+            {wallet.storage_paid_cap_gb > freeGb && (
+              <p className="mt-2 text-xs text-white/50">
+                Add any amount to your wallet and this rises to{" "}
+                <b className="text-white/80">{wallet.storage_paid_cap_gb} GB</b>, permanently —
+                it stays unlocked even after your balance runs down.
+              </p>
+            )}
+          </>
+        ) : null}
+        <p className="text-xs text-white/30 mt-3">
           Project files persist between sessions. The workstation itself is wiped each time.
-          {wallet.trial_storage_gb > 0 && wallet.trial_storage_expires_at
-            ? ` Includes ${wallet.trial_storage_gb} GB free until ${formatDate(wallet.trial_storage_expires_at)}.`
-            : ""}
         </p>
       </div>
     </div>
@@ -121,7 +150,12 @@ interface Payment {
   amount_rupees: number;
   status: string;
   paid_at: string | null;
+  // Razorpay's field, permanently null since we retired Razorpay invoicing —
+  // one company must have ONE consecutive invoice series. Kept for old rows.
   invoice_short_url: string | null;
+  // Ours. This is the GST invoice, rendered on demand from the invoice row.
+  invoice_id: number | null;
+  invoice_number: string | null;
   created_at: string;
 }
 
@@ -153,12 +187,32 @@ function formatDate(dateStr: string): string {
   }
 }
 
+/** The invoice PDF endpoint requires the bearer token, so it cannot be a link.
+ *  Fetch it, open the blob. Revoked after a beat so the tab keeps working. */
+async function openInvoice(invoiceId: number) {
+  const token = localStorage.getItem("cf_customer_token");
+  if (!token) return;
+  const res = await fetch(`${API}/invoices/${invoiceId}/pdf`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) {
+    alert("That invoice could not be opened. Please contact support@coreframecloud.com.");
+    return;
+  }
+  const url = URL.createObjectURL(await res.blob());
+  window.open(url, "_blank", "noopener");
+  setTimeout(() => URL.revokeObjectURL(url), 60_000);
+}
+
 function statusBadge(status: string) {
   const s = status.toLowerCase();
   let cls = "inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ";
-  if (s === "ended" || s === "completed") {
+  // "paid" belongs here: a successful payment was rendering in the red
+  // failure style, which is an alarming way to confirm someone's money
+  // arrived. "created" is a top-up that never reached the gateway.
+  if (s === "ended" || s === "completed" || s === "paid" || s === "captured") {
     cls += "bg-emerald-400/10 text-emerald-300 border border-emerald-400/20";
-  } else if (s === "active" || s === "provisioning") {
+  } else if (s === "active" || s === "provisioning" || s === "created" || s === "pending") {
     cls += "bg-amber-400/10 text-amber-300 border border-amber-400/20";
   } else {
     cls += "bg-red-400/10 text-red-300 border border-red-400/20";
@@ -514,7 +568,22 @@ export default function MyActivityPage() {
                         {statusBadge(p.status)}
                       </td>
                       <td className="px-6 py-3.5">
-                        {p.invoice_short_url ? (
+                        {/* Our GST invoice. It cannot be a plain href: the PDF
+                            endpoint is authenticated, so it is fetched with the
+                            bearer token and opened as a blob. The old cell read
+                            `invoice_short_url`, a Razorpay field that has been
+                            null since we took invoicing in-house — so every
+                            paid row showed a dash while the invoice existed. */}
+                        {p.invoice_id ? (
+                          <button
+                            type="button"
+                            onClick={() => openInvoice(p.invoice_id!)}
+                            title={p.invoice_number ?? undefined}
+                            className="text-cyan-400 hover:text-cyan-300 transition text-xs font-medium"
+                          >
+                            {p.invoice_number ?? "Invoice"} ↗
+                          </button>
+                        ) : p.invoice_short_url ? (
                           <a
                             href={p.invoice_short_url}
                             target="_blank"
