@@ -71,7 +71,11 @@ function ErrorBox({ msg }: { msg: string }) {
 }
 
 // ── Success (sent) state ────────────────────────────────────────────────────────
-function SentCard({ email, label }: { email: string; label: string }) {
+function SentCard({
+  email,
+  label,
+  showCreateHint = false,
+}: { email: string; label: string; showCreateHint?: boolean }) {
   return (
     <div className="flex items-start gap-4">
       <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-cyan-400/10 text-cyan-300">
@@ -89,10 +93,14 @@ function SentCard({ email, label }: { email: string; label: string }) {
           If an account exists for <span className="text-white">{email}</span>, a {label} is on
           its way. It expires in 15 minutes.
         </p>
-        <p className="mt-2 text-xs text-slate-500">
-          Nothing arrived? You may not have an account yet — use{" "}
-          <b className="text-slate-300">Email link</b> above to create one.
-        </p>
+        {/* Only on the code tab. Shown on the link tab it pointed people at
+            the tab they were already using. */}
+        {showCreateHint && (
+          <p className="mt-2 text-xs text-slate-500">
+            Nothing arrived? You may not have an account yet — use{" "}
+            <b className="text-slate-300">Email me a link</b> above to create one.
+          </p>
+        )}
       </div>
     </div>
   );
@@ -328,10 +336,10 @@ export default function LoginForm() {
             keeping a password surface to attack for no benefit. */}
         <div className="mb-5 flex gap-1 rounded-xl bg-white/5 p-1">
           <TabBtn active={tab === "link"} onClick={() => switchTab("link")}>
-            Email link
+            Email me a link
           </TabBtn>
           <TabBtn active={tab === "code"} onClick={() => switchTab("code")}>
-            I already have an account
+            Email me a code
           </TabBtn>
         </div>
 
@@ -532,12 +540,16 @@ export default function LoginForm() {
                   {codeLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                   {codeLoading ? "Sending…" : "Send 6-digit code"}
                 </Button>
+                <p className="text-center text-xs text-slate-500">
+                  Codes only work for accounts that already exist. New here? Use{" "}
+                  <b className="text-slate-300">Email me a link</b>.
+                </p>
               </form>
             )}
 
             {codeStep === "code" && (
               <form onSubmit={handleCodeVerify} className="grid gap-4">
-                <SentCard email={codeEmail} label="6-digit code" />
+                <SentCard email={codeEmail} label="6-digit code" showCreateHint />
                 <Field label="Verification code">
                   <Input
                     type="text"

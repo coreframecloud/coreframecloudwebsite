@@ -20,6 +20,8 @@ interface WalletData {
   // Spendable NOW, from the server. Not `trial_credit_hours`, which keeps its
   // granted value after expiry so support can explain where credit went.
   trial_minutes_remaining: number;
+  trial_granted_minutes: number;
+  trial_granted_at: string | null;
   trial_expires_at: string | null;
   trial_storage_gb: number;
   trial_storage_expires_at: string | null;
@@ -45,6 +47,16 @@ function formatBytes(bytes: number): string {
 function UsageCards({ wallet }: { wallet: WalletData | null }) {
   if (!wallet) return null;
   const mins = wallet.trial_minutes_remaining ?? 0;
+  // What the grant WAS, so a countdown has a denominator and a finished trial
+  // can say what it gave. Falls back to the advertised 200 for accounts
+  // granted before the figure was recorded.
+  const trialGrantMins = wallet.trial_granted_minutes || 200;
+  // A trial is "spent" only once it was actually granted — an account that
+  // never had one should show nothing here rather than a hollow celebration.
+  const trialSpent = mins <= 0 && (wallet.trial_granted_at != null || trialGrantMins > 0);
+  const trialWorthRupees = Math.round(
+    (trialGrantMins / 60) * (wallet.gpu_rate_from_rupees ?? 399),
+  );
   const quotaGb =
     wallet.storage_quota_gb ||
     (wallet.storage_quota_bytes ? Math.round(wallet.storage_quota_bytes / 1024 ** 3) : 0);
@@ -53,84 +65,137 @@ function UsageCards({ wallet }: { wallet: WalletData | null }) {
   // the bar must keep saying so.
   const freeTier = wallet.storage_free_tier_gb || 20;
   const capGb = wallet.storage_paid_cap_gb || 50;
-  const usedPct =
-    quotaGb > 0
-      ? Math.min(100, (wallet.storage_used_bytes / (quotaGb * 1024 ** 3)) * 100)
-      : null;
+  // Fraction of the CAP, not of the current quota, so the fill sits in the
+  // same place on the bar whether or not the paid tier is unlocked.
+  const usedFrac = capGb > 0 ? Math.min(1, (wallet.storage_used_bytes ?? 0) / (capGb * 1024 ** 3)) : 0;
 
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 mt-4">
-      <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
-        <h2 className="text-xs font-semibold text-white/40 uppercase tracking-wider mb-3">
-          Free GPU minutes
-        </h2>
+      {/* The trial card has three lives, and the third one is the reason this
+          is not just a number. While minutes remain it is a countdown. When
+          they run out it must not become a dead "0" — that reads as the
+          product taking something away. It becomes a receipt: here is what you
+          got for free, here is what it would have cost, carry on. */}
+      <div className={`rounded-2xl border p-6 ${
+        trialSpent
+          ? "border-emerald-400/20 bg-emerald-400/[0.04]"
+          : "border-white/10 bg-white/[0.03]"
+      }`}>
+        <div className="flex items-baseline justify-between">
+          <h2 className="text-xs font-semibold uppercase tracking-wider text-white/40">
+            {trialSpent ? "Free trial" : "Free GPU minutes"}
+          </h2>
+          {mins > 0 && wallet.trial_expires_at && (
+            <span className="text-xs font-medium text-cyan-300/80">
+              expires {formatDate(wallet.trial_expires_at)}
+            </span>
+          )}
+        </div>
+
         {mins > 0 ? (
           <>
-            <p className="text-3xl font-bold text-cyan-300">{mins}</p>
-            <p className="text-xs text-white/40 mt-1">
-              remaining
-              {wallet.trial_expires_at
-                ? ` · expires ${formatDate(wallet.trial_expires_at)}`
-                : ""}
+            <div className="mt-4 flex items-end gap-2">
+              <span className="text-5xl font-bold leading-none text-cyan-300">{mins}</span>
+              <span className="pb-1 text-lg font-semibold leading-none text-cyan-300/70">min</span>
+              <span className="pb-1.5 ml-1 text-sm font-medium text-white/45">remaining</span>
+            </div>
+            {/* How much of the grant is left, so "120" means something without
+                remembering what it started at. */}
+            <div className="mt-4 h-2.5 w-full overflow-hidden rounded-full bg-white/[0.06]">
+              <div
+                className="h-full rounded-full bg-cyan-400/80"
+                style={{ width: `${Math.max(2, Math.min(100, (mins / trialGrantMins) * 100))}%` }}
+              />
+            </div>
+            <p className="mt-2 text-xs text-white/35">
+              {trialGrantMins - mins} of {trialGrantMins} minutes used
             </p>
-            <p className="text-xs text-white/30 mt-2">
-              Free minutes are spent before wallet money.
+            <p className="mt-3 text-xs text-white/45">
+              Free minutes are spent before wallet money — nothing is charged until these run out.
             </p>
           </>
         ) : (
           <>
-            <p className="text-3xl font-bold text-white/30">0</p>
-            <p className="text-xs text-white/40 mt-1">
-              {wallet.trial_expires_at
-                ? `Trial ended ${formatDate(wallet.trial_expires_at)}. Sessions now bill from your wallet.`
-                : "Sessions bill from your wallet."}
+            <div className="mt-4 flex items-center gap-3">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-emerald-400/15 text-xl text-emerald-300">
+                ✓
+              </div>
+              <div>
+                <p className="text-2xl font-bold leading-tight text-white">
+                  {trialGrantMins} free minutes used
+                </p>
+                <p className="text-xs text-white/45">
+                  worth about ₹{trialWorthRupees.toLocaleString("en-IN")} of GPU time, on us
+                </p>
+              </div>
+            </div>
+            <div className="mt-4 h-2.5 w-full overflow-hidden rounded-full bg-emerald-400/15">
+              <div className="h-full w-full rounded-full bg-emerald-400/70" />
+            </div>
+            <p className="mt-3 text-xs text-white/50">
+              Your trial is complete. Sessions now bill from your wallet, per minute of
+              streaming — provisioning and failed connections are never charged.
             </p>
           </>
         )}
       </div>
 
-      {/* The allowance is CAPPED, not additive: 20 GB free, or the 50 GB cap
-          once a payment lands — never 70. A single "0 GB / 50 GB" bar hid the
-          gift completely and read as though 50 GB only exists after paying.
-          So the bar is SEGMENTED at the free-tier boundary and both segments
-          are labelled: the free 20 GB is visibly a permanent part of the
-          total, and the paid segment is visibly the part a recharge adds. */}
+      {/* USAGE is the headline. The previous version made "20 GB free" the big
+          number and pushed actual usage into small text above the panel, so a
+          full-width allocation bar read as a full disk. Now the number answers
+          "how much have I used", and the bar is a real meter: tinted ZONES
+          behind showing the allowance split, a solid FILL in front showing
+          consumption, and a tick where the free tier ends. */}
       <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
         <div className="flex items-baseline justify-between">
-          <h2 className="text-xs font-semibold text-white/40 uppercase tracking-wider">
+          <h2 className="text-xs font-semibold uppercase tracking-wider text-white/40">
             Storage
           </h2>
-          <span className="text-xs text-white/40">
-            {formatBytes(wallet.storage_used_bytes ?? 0)} used of {quotaGb} GB
+          <span className="text-xs font-medium text-cyan-300/80">
+            {freeTier} GB free, always
           </span>
         </div>
 
-        <div className="mt-4 flex items-end gap-1.5">
-          <span className="text-4xl font-bold leading-none text-cyan-300">{freeTier}</span>
-          <span className="text-lg font-semibold leading-none text-cyan-300/80">GB</span>
-          <span className="ml-1 pb-0.5 text-sm font-medium text-white/50">free, always</span>
+        <div className="mt-4 flex items-end gap-2">
+          <span className="text-4xl font-bold leading-none text-white">
+            {formatBytes(wallet.storage_used_bytes ?? 0)}
+          </span>
+          <span className="pb-0.5 text-sm font-medium text-white/45">used of {quotaGb} GB</span>
         </div>
 
-        {/* One bar, two zones, drawn to scale against the 50 GB cap so the
-            free share is proportionally honest rather than decorative. */}
-        <div className="mt-4 flex h-3 w-full gap-0.5 overflow-hidden rounded-full">
+        <div className="relative mt-4 h-3.5 w-full overflow-hidden rounded-full bg-white/[0.04]">
+          {/* Zones: what the allowance is made of. Faint - this is the track. */}
+          <div className="absolute inset-0 flex">
+            <div className="h-full bg-cyan-400/20" style={{ width: `${(freeTier / capGb) * 100}%` }} />
+            <div
+              className={`h-full ${wallet.storage_paid_unlocked ? "bg-emerald-400/20" : "bg-white/[0.03]"}`}
+              style={{ width: `${((capGb - freeTier) / capGb) * 100}%` }}
+            />
+          </div>
+          {/* Where the free tier ends. Visible whether or not anything is used. */}
           <div
-            className="relative h-full rounded-l-full bg-cyan-400/70"
-            style={{ width: `${(freeTier / capGb) * 100}%` }}
-            title={`${freeTier} GB free`}
+            className="absolute top-0 h-full w-px bg-white/40"
+            style={{ left: `${(freeTier / capGb) * 100}%` }}
           />
-          <div
-            className={`relative h-full rounded-r-full ${
-              wallet.storage_paid_unlocked
-                ? "bg-emerald-400/70"
-                : "border border-dashed border-white/25 bg-white/[0.04]"
-            }`}
-            style={{ width: `${((capGb - freeTier) / capGb) * 100}%` }}
-            title={`${capGb - freeTier} GB unlocked by a recharge`}
-          />
+          {/* Consumption. A minimum sliver so "a little" never looks like none. */}
+          {usedFrac > 0 && (
+            <div
+              className={`absolute left-0 top-0 h-full rounded-full ${
+                usedFrac > 0.9 ? "bg-red-400" : usedFrac > 0.75 ? "bg-amber-400" : "bg-cyan-300"
+              }`}
+              style={{ width: `${Math.max(1.5, usedFrac * 100)}%` }}
+            />
+          )}
         </div>
 
-        <div className="mt-3 space-y-1.5 text-xs">
+        {/* Scale, so the tick means something without hovering. */}
+        <div className="mt-1 flex text-[10px] text-white/25">
+          <span style={{ width: `${(freeTier / capGb) * 100}%` }}>0</span>
+          <span className="flex-1">{freeTier} GB</span>
+          <span>{capGb} GB</span>
+        </div>
+
+        <div className="mt-4 space-y-1.5 text-xs">
           <div className="flex items-center gap-2">
             <span className="h-2 w-2 shrink-0 rounded-full bg-cyan-400/70" />
             <span className="text-white/70">
@@ -162,11 +227,6 @@ function UsageCards({ wallet }: { wallet: WalletData | null }) {
           </div>
         </div>
 
-        {usedPct != null && usedPct > 0 && (
-          <p className="mt-3 text-xs text-white/40">
-            You have used {usedPct.toFixed(usedPct < 1 ? 1 : 0)}% of your {quotaGb} GB.
-          </p>
-        )}
         <p className="mt-3 text-xs text-white/30">
           Project files persist between sessions. The workstation itself is wiped each time.
         </p>
@@ -405,6 +465,70 @@ export default function MyActivityPage() {
             )}
           </h1>
         </div>
+
+        {/* Coreframe Connect.
+            The desktop client is not optional — a customer with credit, a
+            verified identity and no app cannot use any of it, and /download was
+            reachable from nowhere in the signed-in experience. So it sits ABOVE
+            the wallet until they have actually run a session, then shrinks to a
+            single line rather than nagging someone who clearly has it. */}
+        {sessions.length === 0 ? (
+          <div className="rounded-2xl border border-cyan-400/25 bg-gradient-to-br from-cyan-400/[0.09] to-transparent p-6">
+            <div className="flex flex-wrap items-start justify-between gap-6">
+              <div className="min-w-[16rem] flex-1">
+                <p className="text-xs font-semibold uppercase tracking-widest text-cyan-300/80">
+                  Start here
+                </p>
+                <h2 className="mt-2 text-2xl font-bold text-white">Install Coreframe Connect</h2>
+                <p className="mt-2 max-w-xl text-sm leading-6 text-white/60">
+                  The Windows app that launches your workstation and streams it to this
+                  computer. Your credit and storage live in your account — Connect is how you
+                  reach them.
+                </p>
+                <ol className="mt-4 space-y-1.5 text-sm text-white/55">
+                  <li>
+                    <span className="mr-2 font-semibold text-cyan-300">1</span>
+                    Download and install Connect
+                  </li>
+                  <li>
+                    <span className="mr-2 font-semibold text-cyan-300">2</span>
+                    Sign in with this same email
+                  </li>
+                  <li>
+                    <span className="mr-2 font-semibold text-cyan-300">3</span>
+                    Press Connect — your desktop starts in about two minutes
+                  </li>
+                </ol>
+              </div>
+              <div className="flex flex-col gap-2">
+                <Link
+                  href="/download"
+                  className="inline-flex items-center justify-center rounded-xl bg-cyan-400 px-6 py-3 text-sm font-semibold text-slate-900 transition hover:bg-cyan-300"
+                >
+                  Download for Windows →
+                </Link>
+                <Link
+                  href="/how-to-use"
+                  className="text-center text-xs text-white/45 underline underline-offset-4 hover:text-white/70"
+                >
+                  How it works
+                </Link>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-white/10 bg-white/[0.03] px-5 py-3">
+            <p className="text-sm text-white/50">
+              Coreframe Connect — the Windows app you launch sessions from.
+            </p>
+            <Link
+              href="/download"
+              className="text-sm font-semibold text-cyan-300 hover:text-cyan-200"
+            >
+              Download / update →
+            </Link>
+          </div>
+        )}
 
         {/* Wallet section — layout depends on role */}
         {user?.role === "org_admin" ? (
