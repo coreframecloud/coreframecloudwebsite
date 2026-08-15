@@ -27,6 +27,7 @@ interface WalletData {
   storage_quota_bytes: number | null;
   storage_quota_gb: number;
   storage_free_gb: number;
+  storage_free_tier_gb: number;
   storage_paid_cap_gb: number;
   storage_paid_unlocked: boolean;
 }
@@ -47,7 +48,11 @@ function UsageCards({ wallet }: { wallet: WalletData | null }) {
   const quotaGb =
     wallet.storage_quota_gb ||
     (wallet.storage_quota_bytes ? Math.round(wallet.storage_quota_bytes / 1024 ** 3) : 0);
-  const freeGb = wallet.storage_free_gb ?? 0;
+  // The free tier's SIZE, not how much of it is currently in force: a paid
+  // account whose trial-storage clock has run out still got 20 GB free, and
+  // the bar must keep saying so.
+  const freeTier = wallet.storage_free_tier_gb || 20;
+  const capGb = wallet.storage_paid_cap_gb || 50;
   const usedPct =
     quotaGb > 0
       ? Math.min(100, (wallet.storage_used_bytes / (quotaGb * 1024 ** 3)) * 100)
@@ -84,51 +89,85 @@ function UsageCards({ wallet }: { wallet: WalletData | null }) {
         )}
       </div>
 
+      {/* The allowance is CAPPED, not additive: 20 GB free, or the 50 GB cap
+          once a payment lands — never 70. A single "0 GB / 50 GB" bar hid the
+          gift completely and read as though 50 GB only exists after paying.
+          So the bar is SEGMENTED at the free-tier boundary and both segments
+          are labelled: the free 20 GB is visibly a permanent part of the
+          total, and the paid segment is visibly the part a recharge adds. */}
       <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
-        <h2 className="text-xs font-semibold text-white/40 uppercase tracking-wider mb-3">
-          Storage
-        </h2>
-        {/* The allowance is CAPPED, not additive: 20 GB free on trial, or the
-            50 GB cap once a payment lands — never 70. Showing only the result
-            ("0 GB / 50 GB") made the free tier invisible and read as though
-            50 GB were simply the standard allowance, so neither the gift nor
-            what a recharge buys was ever communicated. */}
-        <p className="text-3xl font-bold text-white">
-          {formatBytes(wallet.storage_used_bytes ?? 0)}
-          {quotaGb ? (
-            <span className="text-base font-normal text-white/40"> / {quotaGb} GB</span>
-          ) : null}
-        </p>
-        {usedPct != null && (
-          <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-white/10">
-            <div
-              className={`h-full rounded-full ${usedPct > 90 ? "bg-red-400" : usedPct > 75 ? "bg-amber-400" : "bg-emerald-400"}`}
-              style={{ width: `${usedPct}%` }}
-            />
+        <div className="flex items-baseline justify-between">
+          <h2 className="text-xs font-semibold text-white/40 uppercase tracking-wider">
+            Storage
+          </h2>
+          <span className="text-xs text-white/40">
+            {formatBytes(wallet.storage_used_bytes ?? 0)} used of {quotaGb} GB
+          </span>
+        </div>
+
+        <div className="mt-4 flex items-end gap-1.5">
+          <span className="text-4xl font-bold leading-none text-cyan-300">{freeTier}</span>
+          <span className="text-lg font-semibold leading-none text-cyan-300/80">GB</span>
+          <span className="ml-1 pb-0.5 text-sm font-medium text-white/50">free, always</span>
+        </div>
+
+        {/* One bar, two zones, drawn to scale against the 50 GB cap so the
+            free share is proportionally honest rather than decorative. */}
+        <div className="mt-4 flex h-3 w-full gap-0.5 overflow-hidden rounded-full">
+          <div
+            className="relative h-full rounded-l-full bg-cyan-400/70"
+            style={{ width: `${(freeTier / capGb) * 100}%` }}
+            title={`${freeTier} GB free`}
+          />
+          <div
+            className={`relative h-full rounded-r-full ${
+              wallet.storage_paid_unlocked
+                ? "bg-emerald-400/70"
+                : "border border-dashed border-white/25 bg-white/[0.04]"
+            }`}
+            style={{ width: `${((capGb - freeTier) / capGb) * 100}%` }}
+            title={`${capGb - freeTier} GB unlocked by a recharge`}
+          />
+        </div>
+
+        <div className="mt-3 space-y-1.5 text-xs">
+          <div className="flex items-center gap-2">
+            <span className="h-2 w-2 shrink-0 rounded-full bg-cyan-400/70" />
+            <span className="text-white/70">
+              <b className="text-white">{freeTier} GB free on us</b>
+              {!wallet.storage_paid_unlocked && wallet.trial_storage_expires_at
+                ? ` · during your trial, until ${formatDate(wallet.trial_storage_expires_at)}`
+                : " · included, not billed"}
+            </span>
           </div>
-        )}
-        {wallet.storage_paid_unlocked ? (
-          <p className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-emerald-400/20 bg-emerald-400/10 px-2.5 py-1 text-xs font-semibold text-emerald-300">
-            {quotaGb} GB unlocked by your recharge
+          <div className="flex items-center gap-2">
+            <span
+              className={`h-2 w-2 shrink-0 rounded-full ${
+                wallet.storage_paid_unlocked ? "bg-emerald-400/70" : "bg-white/20"
+              }`}
+            />
+            <span className={wallet.storage_paid_unlocked ? "text-white/70" : "text-white/45"}>
+              {wallet.storage_paid_unlocked ? (
+                <>
+                  <b className="text-emerald-300">+{capGb - freeTier} GB unlocked</b> by your
+                  recharge — permanently, even if your balance runs down
+                </>
+              ) : (
+                <>
+                  <b className="text-white/70">+{capGb - freeTier} GB</b> unlocks with any wallet
+                  recharge, and stays unlocked for good
+                </>
+              )}
+            </span>
+          </div>
+        </div>
+
+        {usedPct != null && usedPct > 0 && (
+          <p className="mt-3 text-xs text-white/40">
+            You have used {usedPct.toFixed(usedPct < 1 ? 1 : 0)}% of your {quotaGb} GB.
           </p>
-        ) : freeGb > 0 ? (
-          <>
-            <p className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-cyan-400/20 bg-cyan-400/10 px-2.5 py-1 text-xs font-semibold text-cyan-300">
-              {freeGb} GB free on us
-              {wallet.trial_storage_expires_at
-                ? ` · until ${formatDate(wallet.trial_storage_expires_at)}`
-                : ""}
-            </p>
-            {wallet.storage_paid_cap_gb > freeGb && (
-              <p className="mt-2 text-xs text-white/50">
-                Add any amount to your wallet and this rises to{" "}
-                <b className="text-white/80">{wallet.storage_paid_cap_gb} GB</b>, permanently —
-                it stays unlocked even after your balance runs down.
-              </p>
-            )}
-          </>
-        ) : null}
-        <p className="text-xs text-white/30 mt-3">
+        )}
+        <p className="mt-3 text-xs text-white/30">
           Project files persist between sessions. The workstation itself is wiped each time.
         </p>
       </div>
