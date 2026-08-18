@@ -6,23 +6,35 @@ import Link from "next/link";
 import { STORAGE, type StorageTerms } from "@/lib/storage-terms";
 
 /**
- * `adhocRate` is the live pay-as-you-go price from the control-plane rate card,
- * passed down by the page (a server component). Set it in the admin Rate Card
- * panel; this page follows within the hour.
+ * Every price on this section now comes from the control-plane rate card, via
+ * props from the page (a server component). Nothing here is typed by hand.
  *
- * It falls back to the entry rate string only when the control plane is
- * unreachable at build time. That fallback is the last hardcoded price on this
- * page — every other GPU price now comes from the database.
+ * That was not true until 18 Aug 2026: the ad-hoc rate was live, but the tier
+ * headline (₹339), the three overage rates, the entry plan fee (₹19,000) and
+ * the storage rate (₹1,999) were all inline — so changing a plan in the admin
+ * panel updated the enterprise page's source of truth and left this block
+ * quoting the old numbers next to a live one. A price that is right in one card
+ * and stale in the card beside it is worse than either alone, because the
+ * customer cannot tell which to believe.
  *
- * `storage` is likewise live — B2C persistent storage and its retention rule
- * come from the same endpoint, because six pages once carried a "7-day
- * retention" claim that was simply untrue.
- *
- * The committed monthly plan FIGURES below are still inline. A `plans` table now
- * exists and is served on /public/rate-card, so this block should read it — the
- * remaining hardcoded numbers on this page are those tier prices.
+ * Anything null renders as nothing rather than as a fallback. See the note at
+ * the top of lib/rate-card.ts for why a stale price is worse than no price.
  */
-export function PricingSection({ adhocRate, storage = STORAGE }: { adhocRate?: string; storage?: StorageTerms }) {
+export function PricingSection({
+  adhocRate,
+  storage = STORAGE,
+  billingNote,
+  bestOverage,
+  entryPlanFee,
+  storageRate,
+}: {
+  adhocRate?: string;
+  storage?: StorageTerms;
+  billingNote: string;
+  bestOverage?: string | null;
+  entryPlanFee?: string | null;
+  storageRate?: string | null;
+}) {
   return (
     <section id="pricing" className="border-b border-white/10">
       <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
@@ -46,10 +58,8 @@ export function PricingSection({ adhocRate, storage = STORAGE }: { adhocRate?: s
               <span className="mb-1.5 text-lg text-white/50">/ GPU-hour</span>
             </div>
             <p className="mt-4 text-sm leading-6 text-white/60">
-              Spin up anytime, no contract. Billed per minute from the moment your
-              session starts streaming — provisioning, uploads and failed connects
-              are all free. Best for one-off renders or trying the platform before
-              committing.
+              Spin up anytime, no contract. {billingNote} Best for one-off renders
+              or trying the platform before committing.
             </p>
 
             <ul className="mt-6 space-y-2 text-sm text-white/70">
@@ -76,21 +86,21 @@ export function PricingSection({ adhocRate, storage = STORAGE }: { adhocRate?: s
               Committed Monthly Plans
             </div>
             <div className="mt-4 flex items-end gap-2">
-              <span className="text-5xl font-bold text-white">₹339</span>
+              <span className="text-5xl font-bold text-white">{bestOverage ?? "—"}</span>
               <span className="mb-1.5 text-lg text-white/50">/ GPU-hour</span>
             </div>
             <p className="mt-4 text-sm leading-6 text-white/60">
-              Committing is genuinely cheaper per hour — every tier costs less than the ₹399 ad-hoc
-              rate, not more. Extra hours are ₹379/hr on Studio, ₹359/hr on Medium Firm, and ₹339/hr
-              on Big Firm. Persistent storage is billed openly at ₹1,999/TB/month, a rate you can
-              compare line-for-line with AWS S3.
+              Committing is genuinely cheaper per hour
+              {adhocRate && bestOverage ? ` — every tier bills extra hours below the ${adhocRate} ad-hoc rate, not above it` : ""}.
+              Included hours, named seats and NAS storage come with the monthly fee.
+              {storageRate ? ` Extra persistent storage is billed openly at ${storageRate}/TB/month, a rate you can compare line-for-line with AWS S3.` : ""}
             </p>
 
             <ul className="mt-6 space-y-2 text-sm text-white/70">
               <li className="flex gap-2"><span className="text-cyan-400">✓</span> Persistent NAS storage (2–10 TB included)</li>
               <li className="flex gap-2"><span className="text-cyan-400">✓</span> 5–25 named render seats</li>
               <li className="flex gap-2"><span className="text-cyan-400">✓</span> Included GPU-hours each month</li>
-              <li className="flex gap-2"><span className="text-cyan-400">✓</span> Plans from ₹19,000/month</li>
+              {entryPlanFee ? <li className="flex gap-2"><span className="text-cyan-400">✓</span> Plans from {entryPlanFee}/month</li> : null}
             </ul>
 
             <div className="mt-8">
@@ -118,7 +128,7 @@ export function PricingSection({ adhocRate, storage = STORAGE }: { adhocRate?: s
             </p>
           </div>
           <div className="mt-4 shrink-0 sm:mt-0 sm:text-right">
-            <div className="text-3xl font-bold text-white">₹1,999</div>
+            <div className="text-3xl font-bold text-white">{storageRate ?? "—"}</div>
             <div className="text-sm text-white/50">/ TB / month</div>
           </div>
         </div>

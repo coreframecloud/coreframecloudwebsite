@@ -8,7 +8,15 @@ import { PricingSection } from "@/components/home/pricing-section";
 import { ExplainerFaq } from "@/components/home/explainer-faq";
 import { ContactSection } from "@/components/home/contact-section";
 import { ClosingCta } from "@/components/home/closing-cta";
-import { getRateCard, formatHourly, getTrialTerms } from "@/lib/rate-card";
+import {
+  getRateCard,
+  formatHourly,
+  getTrialTerms,
+  billingSentence,
+  bestOverageRate,
+  entryPlanFee,
+  storageRatePerTb,
+} from "@/lib/rate-card";
 import { storageTerms } from "@/lib/storage-terms";
 
 export const metadata: Metadata = {
@@ -52,7 +60,14 @@ export default async function Page() {
         <HowItWorksSection />
         <BenefitsSection storage={storage} />
         <MachineSpecSection storage={storage} />
-        <PricingSection adhocRate={adhocRate} storage={storage} />
+        <PricingSection
+          adhocRate={adhocRate}
+          storage={storage}
+          billingNote={billingSentence(rateCard)}
+          bestOverage={bestOverageRate(rateCard)}
+          entryPlanFee={entryPlanFee(rateCard)}
+          storageRate={storageRatePerTb(rateCard)}
+        />
         <ExplainerFaq storage={storage} trial={trial} adhocRate={adhocRate} />
         <ContactSection />
         <ClosingCta trial={trial} />

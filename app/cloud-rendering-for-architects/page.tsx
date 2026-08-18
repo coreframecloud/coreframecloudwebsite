@@ -1,5 +1,13 @@
 import type { Metadata } from "next";
 import { BackgroundGlow } from "@/components/home/background-glow";
+import {
+  getRateCard,
+  planTiers,
+  adhocRateHourly,
+  adhocRate,
+  storageRatePerTb,
+  billingSentence,
+} from "@/lib/rate-card";
 import Link from "next/link";
 
 export const metadata: Metadata = {
@@ -59,13 +67,20 @@ const workflow = [
   { n: "06", title: "Download & shut down", body: "Download outputs. Shut down the workstation. Billing stops. Committed-plan files stay on NAS for next time." },
 ];
 
-const plans = [
-  { name: "Ad-hoc", price: "₹399/hr", note: "Per full hour, no commitment. 20 GB persistent storage free, 50 GB with credit · 30-day retention. Session scratch cleared at session end — download outputs first.", cta: "Get started", href: "/signup", highlight: false },
-  { name: "Studio", price: "₹19,000/mo", note: "2 TB NAS · 30-day retention · 5 seats · 40 GPU-hrs · ₹379/hr extra", cta: "Get a quote", href: "https://wa.me/916366889488?text=Hi%20Coreframe%2C%20I%27d%20like%20to%20discuss%20the%20Studio%20plan%20for%20my%20architecture%20studio.", highlight: false },
-  { name: "Medium Firm", price: "₹53,000/mo", note: "5 TB NAS · 90-day retention · 12 seats · 120 GPU-hrs · ₹359/hr extra", cta: "Get a quote", href: "https://wa.me/916366889488?text=Hi%20Coreframe%2C%20I%27d%20like%20to%20discuss%20the%20Medium%20Firm%20plan.", highlight: true },
-  { name: "Big Firm", price: "₹1,21,000/mo", note: "10 TB NAS · 365-day retention · 25 seats · 300 GPU-hrs · ₹339/hr extra", cta: "Get a quote", href: "https://wa.me/916366889488?text=Hi%20Coreframe%2C%20I%27d%20like%20to%20discuss%20the%20Big%20Firm%20plan.", highlight: false },
-  { name: "Big Firm Dedicated", price: "₹1,89,000/mo", note: "A node reserved entirely for one practice. 10 TB NAS · 365-day retention · 25 seats · 500 GPU-hrs · ₹339/hr extra", cta: "Get a quote", href: "https://wa.me/916366889488?text=Hi%20Coreframe%2C%20I%27d%20like%20to%20discuss%20the%20Big%20Firm%20Dedicated%20plan.", highlight: false },
-];
+/**
+ * Presentation only — which card is highlighted, and the copy for the ad-hoc
+ * card, which is not a plan row. Every figure comes from the rate card.
+ *
+ * This table used to hold five hardcoded prices AND the sentence "Per full
+ * hour, no commitment", which was never true: the API has billed per minute
+ * since it was written.
+ */
+const PLAN_HIGHLIGHT = "Medium Firm";
+
+const planWhatsapp = (plan: string) =>
+  `https://wa.me/916366889488?text=${encodeURIComponent(
+    `Hi Coreframe, I'd like to discuss the ${plan} plan for my architecture studio.`
+  )}`;
 
 const jsonLd = {
   "@context": "https://schema.org",
@@ -98,7 +113,43 @@ const jsonLd = {
   ],
 };
 
-export default function ArchitectsPage() {
+export default async function ArchitectsPage() {
+  const card = await getRateCard();
+  const storageRate = storageRatePerTb(card);
+  const adhoc = adhocRate(card);
+
+  const plans = [
+    {
+      name: "Ad-hoc",
+      price: adhocRateHourly(card) ?? "—",
+      note:
+        `${billingSentence(card)} No commitment. 20 GB persistent storage free, ` +
+        "50 GB with credit · 30-day retention. Session scratch cleared at session end — " +
+        "download outputs first.",
+      cta: "Get started",
+      href: "/signup",
+      highlight: false,
+    },
+    ...planTiers(card).map((t) => ({
+      name: t.name,
+      price: `₹${Math.round(t.monthly_fee_rupees).toLocaleString("en-IN")}/mo`,
+      note: [
+        t.included_storage_gb >= 1024
+          ? `${Math.round(t.included_storage_gb / 1024)} TB NAS`
+          : `${t.included_storage_gb} GB NAS`,
+        t.file_retention_days ? `${t.file_retention_days}-day retention` : null,
+        `${t.named_seats} seats`,
+        `${Math.round(t.included_gpu_hours)} GPU-hrs`,
+        t.overage_hourly_rate_rupees != null
+          ? `₹${Math.round(t.overage_hourly_rate_rupees).toLocaleString("en-IN")}/hr extra`
+          : null,
+      ].filter(Boolean).join(" · "),
+      cta: "Get a quote",
+      href: planWhatsapp(t.name),
+      highlight: t.name === PLAN_HIGHLIGHT,
+    })),
+  ];
+
   return (
     <div className="relative min-h-screen text-white">
       <BackgroundGlow />
@@ -186,9 +237,10 @@ export default function ArchitectsPage() {
           </div>
           <p className="mt-3 text-[11px] leading-5 text-white/30">
             All prices include 18% GST — what you see is what you pay, and every invoice shows the
-            taxable value and GST split. Committed tiers bill extra GPU-hours below the ₹399 ad-hoc
-            rate. Persistent NAS storage beyond your plan, or on its own, is ₹1,999/TB/month and is
-            retained for as long as it is subscribed. Software is BYOL · Named-user licences work.
+            taxable value and GST split.
+            {adhoc ? ` Committed tiers bill extra GPU-hours below the ${adhoc} ad-hoc rate.` : ""}
+            {storageRate ? ` Persistent NAS storage beyond your plan, or on its own, is ${storageRate}/TB/month and is retained for as long as it is subscribed.` : ""}
+            {" "}Software is BYOL · Named-user licences work.
           </p>
         </div>
 

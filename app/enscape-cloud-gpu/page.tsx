@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import { BackgroundGlow } from "@/components/home/background-glow";
+import { PricingCards } from "@/components/pricing/pricing-cards";
+import { getRateCard } from "@/lib/rate-card";
 import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Enscape Cloud GPU Workstation — RTX 5080, India",
   description:
-    "Run Enscape on an RTX 5080 cloud workstation in India. Real-time architectural visualisation at GPU speed. Pay-as-you-go from ₹399/hr, GST included. BYOL — bring your Enscape subscription.",
+    "Run Enscape on an RTX 5080 cloud workstation in India. Real-time architectural visualisation at GPU speed, billed per minute with GST included. BYOL — bring your Enscape subscription.",
   keywords: [
     "Enscape cloud GPU India",
     "Enscape cloud rendering India",
@@ -30,7 +32,9 @@ const specs = [
   { label: "Location", value: "Bengaluru, India" },
 ];
 
-export default function EnscapePage() {
+export default async function EnscapePage() {
+  const card = await getRateCard();
+
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
@@ -121,19 +125,10 @@ export default function EnscapePage() {
         </div>
 
         {/* Pricing */}
-        <div className="mt-14 grid gap-4 md:grid-cols-2">
-          <div className="rounded-[20px] border border-white/10 bg-white/[0.03] p-6">
-            <div className="text-xs uppercase tracking-wider text-white/40 mb-3">Ad-hoc</div>
-            <div className="text-4xl font-bold text-white">₹399 <span className="text-lg font-normal text-white/40">/ GPU-hr</span></div>
-            <p className="mt-3 text-sm text-white/50">No commitment. Pay only for the hours you use. 20 GB persistent storage free, 50 GB once you add credit. Session scratch is cleared when the session ends.</p>
-          </div>
-          <div className="rounded-[20px] border border-cyan-400/20 bg-cyan-400/[0.04] p-6">
-            <div className="text-xs uppercase tracking-wider text-cyan-300/60 mb-3">Committed plans from</div>
-            <div className="text-4xl font-bold text-white">₹339 <span className="text-lg font-normal text-white/40">/ GPU-hr</span></div>
-            <p className="mt-3 text-sm text-white/50">Cheaper per hour than ad-hoc at every tier, from ₹19,000/month. Persistent storage + named seats for your whole practice. Extra NAS storage ₹1,999/TB/month.</p>
-            <Link href="/enterprise" className="mt-4 inline-block text-sm text-cyan-400 hover:underline">See plans →</Link>
-          </div>
-        </div>
+        <PricingCards
+          card={card}
+          adhocNote="20 GB persistent storage free, 50 GB once you add credit. Session scratch is cleared when the session ends."
+        />
 
         <div className="mt-8 rounded-[16px] border border-white/8 bg-white/[0.02] px-6 py-5">
           <p className="text-sm leading-6 text-white/50">

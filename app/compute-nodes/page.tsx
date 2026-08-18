@@ -2,11 +2,14 @@ import type { Metadata } from "next";
 import { BackgroundGlow } from "@/components/home/background-glow";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { getRateCard, adhocRateHourly, adhocRate, billingSentence } from "@/lib/rate-card";
 
 export const metadata: Metadata = {
-  title: "Compute Nodes — RTX 5080 GPU Workstations, ₹399/GPU-hour",
+  // No price in the title or description: both are cached by search engines
+  // and quoted by answer engines for months after a rate changes.
+  title: "Compute Nodes — RTX 5080 GPU Workstations in India",
   description:
-    "One node, one GPU: NVIDIA RTX 5080 with 16 GB GDDR7, 64 GB ECC RAM and a 6-core EPYC. ₹399 per GPU-hour, GST included, billed per minute from stream start. Hosted in Bengaluru, India.",
+    "One node, one GPU: NVIDIA RTX 5080 with 16 GB GDDR7, 64 GB ECC RAM and a 6-core EPYC. Billed per minute from stream start, with GST included. Hosted in Bengaluru, India.",
   alternates: { canonical: "/compute-nodes" },
 };
 
@@ -16,7 +19,6 @@ const whatsapp = (message: string) =>
 const node = {
   tag: "3D / WINDOWS",
   name: "NVIDIA RTX 5080",
-  price: "₹399/hr",
   specs: [
     { label: "GPU", value: "NVIDIA RTX 5080 (Blackwell)" },
     { label: "VRAM", value: "16 GB GDDR7" },
@@ -44,7 +46,11 @@ const goodFor = [
   },
 ];
 
-export default function ComputeNodesPage() {
+export default async function ComputeNodesPage() {
+  const card = await getRateCard();
+  const nodePrice = adhocRateHourly(card);
+  const rate = adhocRate(card);
+
   return (
     <div className="min-h-screen bg-slate-950 text-white">
       <BackgroundGlow />
@@ -104,7 +110,7 @@ export default function ComputeNodesPage() {
                       Pay-as-you-go, GST included
                     </div>
                     <div className="text-3xl font-semibold text-cyan-300">
-                      {node.price}
+                      {nodePrice ?? "—"}
                     </div>
                     <div className="mt-1 text-xs text-slate-400">
                       Per GPU-hour · billed per minute from stream start
@@ -131,7 +137,7 @@ export default function ComputeNodesPage() {
                 <ul className="mt-5 space-y-4 text-sm leading-6 text-slate-300">
                   <li>
                     <span className="font-medium text-white">
-                      ₹399 per GPU-hour, GST included.
+                      {rate ? `${rate} per GPU-hour, GST included.` : "GST is included in the published rate."}
                     </span>{" "}
                     What you see is what you pay — the 18% GST component is
                     inside the rate, and business customers get a full tax
@@ -141,8 +147,7 @@ export default function ComputeNodesPage() {
                     <span className="font-medium text-white">
                       Billed per minute from stream start.
                     </span>{" "}
-                    The clock starts when your session begins streaming.
-                    Provisioning time is free.
+                    {billingSentence(card)}
                   </li>
                   <li>
                     <span className="font-medium text-white">

@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import { BackgroundGlow } from "@/components/home/background-glow";
+import { PricingCards } from "@/components/pricing/pricing-cards";
+import { getRateCard, pricingFaqAnswer } from "@/lib/rate-card";
 import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Lumion Cloud GPU Workstation — RTX 5080, India",
   description:
-    "Run Lumion on an RTX 5080 cloud workstation in India. Real-time rendering at full GPU speed. Pay-as-you-go from ₹399/hr, GST included. BYOL — bring your own Lumion licence.",
+    "Run Lumion on an RTX 5080 cloud workstation in India. Real-time rendering at full GPU speed, billed per minute with GST included. BYOL — bring your own Lumion licence.",
   keywords: [
     "Lumion cloud GPU India",
     "Lumion cloud rendering India",
@@ -27,7 +29,10 @@ const specs = [
   { label: "Location", value: "Bengaluru, India" },
 ];
 
-export default function LumionPage() {
+export default async function LumionPage() {
+  const card = await getRateCard();
+  const priceAnswer = pricingFaqAnswer(card);
+
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
@@ -48,14 +53,17 @@ export default function LumionPage() {
           text: "Yes — Lumion is BYOL (Bring Your Own Licence). Install Lumion on the workstation and activate your existing named-user or floating licence. Coreframe does not charge any software fees.",
         },
       },
-      {
-        "@type": "Question",
-        name: "How much does Lumion cloud GPU cost in India?",
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: "Ad-hoc sessions are ₹399/GPU-hour, charged per full hour. Committed monthly plans start at ₹19,000/month and bill extra hours below the ad-hoc rate at every tier — ₹379/hr on Studio, ₹359/hr on Medium Firm, ₹339/hr on Big Firm. All prices include 18% GST, and a GST invoice showing the tax split is issued.",
-        },
-      },
+      // The pricing question is appended only when the rate card answered. It
+      // used to be a hardcoded "₹399/GPU-hour, charged per full hour" — wrong
+      // about the unit from the day it was written, and published as structured
+      // data, which is the one place a wrong price gets quoted back at you.
+      ...(priceAnswer
+        ? [{
+            "@type": "Question",
+            name: "How much does Lumion cloud GPU cost in India?",
+            acceptedAnswer: { "@type": "Answer", text: priceAnswer },
+          }]
+        : []),
     ],
   };
 
@@ -118,19 +126,10 @@ export default function LumionPage() {
         </div>
 
         {/* Pricing */}
-        <div className="mt-14 grid gap-4 md:grid-cols-2">
-          <div className="rounded-[20px] border border-white/10 bg-white/[0.03] p-6">
-            <div className="text-xs uppercase tracking-wider text-white/40 mb-3">Ad-hoc</div>
-            <div className="text-4xl font-bold text-white">₹399 <span className="text-lg font-normal text-white/40">/ GPU-hr</span></div>
-            <p className="mt-3 text-sm text-white/50">No commitment. Pay only for the hours you render. 20 GB persistent storage free, 50 GB once you add credit. Session scratch is cleared when the session ends.</p>
-          </div>
-          <div className="rounded-[20px] border border-cyan-400/20 bg-cyan-400/[0.04] p-6">
-            <div className="text-xs uppercase tracking-wider text-cyan-300/60 mb-3">Committed plans from</div>
-            <div className="text-4xl font-bold text-white">₹339 <span className="text-lg font-normal text-white/40">/ GPU-hr</span></div>
-            <p className="mt-3 text-sm text-white/50">Cheaper per hour than ad-hoc at every tier, from ₹19,000/month. Persistent project storage + named seats for your studio. Extra NAS storage ₹1,999/TB/month.</p>
-            <Link href="/enterprise" className="mt-4 inline-block text-sm text-cyan-400 hover:underline">See plans →</Link>
-          </div>
-        </div>
+        <PricingCards
+          card={card}
+          adhocNote="20 GB persistent storage free, 50 GB once you add credit. Session scratch is cleared when the session ends."
+        />
 
         <div className="mt-8 rounded-[16px] border border-white/8 bg-white/[0.02] px-6 py-5">
           <p className="text-sm leading-6 text-white/50">

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { getRateCard, adhocRateHourly, billingSentence } from "@/lib/rate-card";
 
 type PageData = {
   title: string;
@@ -72,12 +73,31 @@ This improves rendering speed and ensures stable performance for large models.
     content: `
 GPU rendering services allow users to access high-performance RTX GPUs without upfront investment.
 
-Start rendering from ₹399/hr (GST included) and scale based on your project needs.
+Start rendering from {{ADHOC_HOURLY}} (GST included) and scale based on your project needs.
 
 This model is ideal for architects, freelancers, and studios handling variable workloads.
 `,
   },
 };
+
+/**
+ * Substitutes the live hourly rate into a page's copy, or removes the sentence
+ * containing it when the control plane is unreachable.
+ *
+ * Dropping the whole sentence is deliberate. Leaving "Start rendering from
+ * (GST included)" reads as a bug, and substituting a hardcoded ₹399 is the
+ * failure the rate card exists to prevent — this file carried exactly that
+ * number until 18 Aug 2026. A page that says nothing about price is correct;
+ * a page that says the wrong price is a quote we might not honour.
+ */
+function renderContent(content: string, hourly: string | null): string {
+  if (!content.includes("{{ADHOC_HOURLY}}")) return content;
+  if (hourly) return content.replaceAll("{{ADHOC_HOURLY}}", hourly);
+  return content
+    .split("\n")
+    .filter((line) => !line.includes("{{ADHOC_HOURLY}}"))
+    .join("\n");
+}
 
 // Next.js 16: `params` is a Promise and MUST be awaited. Reading `.slug`
 // straight off it yields undefined, every lookup misses, and every page in
@@ -113,6 +133,7 @@ export default async function Page({
 }) {
   const { slug } = await params;
   const data = pagesData[slug];
+  const card = await getRateCard();
 
   // notFound() rather than a "Page not found" div: rendering the message with
   // a 200 status is a SOFT 404, and it made every made-up URL on the domain
@@ -129,8 +150,10 @@ export default async function Page({
       <h1 className="text-3xl font-semibold">{data.title}</h1>
 
       <p className="mt-6 text-white/70 leading-7 whitespace-pre-line">
-        {data.content}
+        {renderContent(data.content, adhocRateHourly(card))}
       </p>
+
+      <p className="mt-6 text-sm leading-6 text-white/50">{billingSentence(card)}</p>
 
       {/* Internal links */}
       <div className="mt-10 text-emerald-300 space-y-2">

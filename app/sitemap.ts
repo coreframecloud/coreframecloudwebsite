@@ -16,7 +16,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${BASE}/`, lastModified: now, changeFrequency: "weekly", priority: 1.0 },
 
     // Product pages — what people search for by name.
-    { url: `${BASE}/d5-render`, lastModified: now, changeFrequency: "monthly", priority: 0.9 },
+    // /d5-render is NOT here. next.config.ts 308-redirects it to the homepage,
+    // so listing it asked Google to crawl a URL that has no page — the D5 page
+    // that exists is /d5-render-cloud-workstation, served by app/[slug].
     { url: `${BASE}/lumion-cloud-gpu`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
     { url: `${BASE}/enscape-cloud-gpu`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
     { url: `${BASE}/ansys-cfd-gpu`, lastModified: now, changeFrequency: "monthly", priority: 0.9 },

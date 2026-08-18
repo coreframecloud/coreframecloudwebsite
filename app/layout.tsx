@@ -5,6 +5,7 @@ import "./globals.css";
 import { SiteHeader } from "@/components/home/site-header";
 import { SiteFooter } from "@/components/home/site-footer";
 import { TrialStrip } from "@/components/home/trial-strip";
+import { getRateCard, planTiers } from "@/lib/rate-card";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://coreframecloud.com"),
@@ -67,11 +68,80 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+/**
+ * Async because the Service node's offers must come from the live rate card.
+ *
+ * They used to be three hardcoded Offer nodes — ₹399/GPU-hour, ₹19,000/month
+ * and ₹1,999/TB — emitted on EVERY page of the site. Structured data is the
+ * worst place to carry a stale price: Google reads it as a machine-readable
+ * commitment, shows it in results, and answer engines quote it verbatim, so a
+ * price change in the admin panel would have left the rest of the internet
+ * repeating the old number long after the pages themselves were corrected.
+ *
+ * When the control plane is unreachable the Service node is emitted with no
+ * `offers` at all. A service without a published price is ordinary and valid;
+ * a service with the wrong published price is a quote we might not honour.
+ */
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const rateCard = await getRateCard();
+  const adhoc = rateCard?.gpus.find((g) => !g.quote_on_request && g.hourly_rate_rupees != null);
+  const tiers = planTiers(rateCard);
+  const storagePerTb = rateCard?.storage_rate_rupees_per_tb_month ?? null;
+
+  const offers = [
+    adhoc?.hourly_rate_rupees != null && {
+      "@type": "Offer",
+      name: "Ad-hoc GPU-hour",
+      price: String(Math.round(adhoc.hourly_rate_rupees)),
+      priceCurrency: "INR",
+      valueAddedTaxIncluded: true,
+      priceSpecification: {
+        "@type": "UnitPriceSpecification",
+        price: String(Math.round(adhoc.hourly_rate_rupees)),
+        priceCurrency: "INR",
+        valueAddedTaxIncluded: true,
+        unitText: "GPU-hour",
+      },
+    },
+    tiers[0] && {
+      "@type": "Offer",
+      name: `Committed Monthly — ${tiers[0].name}`,
+      price: String(Math.round(tiers[0].monthly_fee_rupees)),
+      priceCurrency: "INR",
+      valueAddedTaxIncluded: true,
+      priceSpecification: {
+        "@type": "UnitPriceSpecification",
+        price: String(Math.round(tiers[0].monthly_fee_rupees)),
+        priceCurrency: "INR",
+        valueAddedTaxIncluded: true,
+        unitText: "month",
+      },
+    },
+    storagePerTb != null && storagePerTb > 0 && {
+      "@type": "Offer",
+      name: "Persistent NAS storage",
+      price: String(Math.round(storagePerTb)),
+      priceCurrency: "INR",
+      valueAddedTaxIncluded: true,
+      priceSpecification: {
+        "@type": "UnitPriceSpecification",
+        price: String(Math.round(storagePerTb)),
+        priceCurrency: "INR",
+        valueAddedTaxIncluded: true,
+        unitText: "TB per month",
+      },
+    },
+  ].filter(Boolean);
+
+  const serviceDescription =
+    "On-demand Windows GPU workstations with NVIDIA RTX 5080 (16 GB GDDR7) for " +
+    "D5 Render, Lumion, Enscape, SolidWorks and 3ds Max, hosted in Bengaluru. " +
+    "Billed per minute of actual use, with 18% GST included in every published rate.";
+
   return (
     <html lang="en">
       <body className="bg-[#030b16] text-white antialiased">
@@ -137,53 +207,9 @@ export default function RootLayout({
                   "@id": "https://coreframecloud.com/#gpu-workstation-service",
                   name: "RTX 5080 Cloud GPU Workstation",
                   provider: { "@id": "https://coreframecloud.com/#organization" },
-                  description:
-                    "On-demand Windows GPU workstations with NVIDIA RTX 5080 (16 GB GDDR7) for D5 Render, Lumion, Enscape, SolidWorks, and 3ds Max. Pay-as-you-go from ₹399/hr or committed plans from ₹19,000/month. All prices include 18% GST.",
+                  description: serviceDescription,
                   areaServed: "IN",
-                  offers: [
-                    {
-                      "@type": "Offer",
-                      name: "Ad-hoc GPU-hour",
-                      price: "399",
-                      priceCurrency: "INR",
-                      valueAddedTaxIncluded: true,
-                      priceSpecification: {
-                        "@type": "UnitPriceSpecification",
-                        price: "399",
-                        priceCurrency: "INR",
-                        valueAddedTaxIncluded: true,
-                        unitText: "GPU-hour",
-                      },
-                    },
-                    {
-                      "@type": "Offer",
-                      name: "Committed Monthly — Studio",
-                      price: "19000",
-                      priceCurrency: "INR",
-                      valueAddedTaxIncluded: true,
-                      priceSpecification: {
-                        "@type": "UnitPriceSpecification",
-                        price: "19000",
-                        priceCurrency: "INR",
-                        valueAddedTaxIncluded: true,
-                        unitText: "month",
-                      },
-                    },
-                    {
-                      "@type": "Offer",
-                      name: "Persistent NAS storage",
-                      price: "1999",
-                      priceCurrency: "INR",
-                      valueAddedTaxIncluded: true,
-                      priceSpecification: {
-                        "@type": "UnitPriceSpecification",
-                        price: "1999",
-                        priceCurrency: "INR",
-                        valueAddedTaxIncluded: true,
-                        unitText: "TB per month",
-                      },
-                    },
-                  ],
+                  ...(offers.length ? { offers } : {}),
                 },
               ],
             }),

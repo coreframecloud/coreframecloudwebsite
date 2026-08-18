@@ -23,13 +23,19 @@ const initialState: FormState = {
   notes: "",
 };
 
+// Prices were baked into these labels — ₹399/hr, ₹19,000, ₹53,000, ₹1,21,000,
+// ₹1,89,000, ₹1,999/TB. A dropdown is the worst place for a number: it is a
+// price quoted inside a form the customer is about to submit, so it reads as
+// the offer being accepted, and nothing here could ever follow a change made in
+// the admin rate card. The option only has to identify what they want; the
+// pricing section above already shows the live figures.
 const renderingGpuOptions = [
-  "RTX 5080 16GB — ₹399/hr (ad-hoc)",
-  "Committed Studio plan — ₹19,000/month",
-  "Committed Medium Firm — ₹53,000/month",
-  "Committed Big Firm — ₹1,21,000/month",
-  "Big Firm Dedicated — ₹1,89,000/month",
-  "Persistent NAS storage add-on — ₹1,999/TB/month",
+  "RTX 5080 16GB — ad-hoc, pay as you go",
+  "Committed monthly plan — Studio",
+  "Committed monthly plan — Medium Firm",
+  "Committed monthly plan — Big Firm",
+  "Big Firm Dedicated",
+  "Persistent NAS storage add-on",
 ];
 
 const aiGpuOptions = [
