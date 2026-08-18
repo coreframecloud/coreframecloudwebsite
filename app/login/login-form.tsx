@@ -593,7 +593,7 @@ export default function LoginForm() {
       {/* Footer */}
       <p className="mt-6 text-center text-xs leading-6 text-slate-500">
         By signing in, you agree to our{" "}
-        <a href="/terms" className="text-cyan-400 hover:underline">Terms and Conditions</a>,{" "}
+        <a href="/terms-of-service" className="text-cyan-400 hover:underline">Terms and Conditions</a>,{" "}
         <a href="/privacy-policy" className="text-cyan-400 hover:underline">Privacy Policy</a>, and{" "}
         <a href="/refunds" className="text-cyan-400 hover:underline">Refunds and chargebacks</a>.
       </p>

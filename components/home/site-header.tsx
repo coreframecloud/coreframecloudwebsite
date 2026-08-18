@@ -8,7 +8,7 @@ import { CoreframeWordmarkAtlas } from "@/components/brand/coreframe-wordmark-at
 import { trackEvent } from "@/lib/analytics";
 
 const navLinks = [
-  { label: "Render 5× Faster", href: "/d5-render" },
+  { label: "Render 5× Faster", href: "/d5-render-cloud-workstation" },
   { label: "CFD in Minutes", href: "/ansys-cfd-gpu" },
   { label: "Pricing", href: "/#pricing" },
   { label: "Enterprise", href: "/enterprise" },

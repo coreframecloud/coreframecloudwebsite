@@ -308,7 +308,7 @@ export default function AnsysCfdPage() {
 
         <div className="mt-10 flex flex-wrap gap-4 text-sm">
           <Link href="/" className="text-slate-400 hover:text-white transition">← Home</Link>
-          <Link href="/d5-render" className="text-slate-400 hover:text-white transition">3D Rendering →</Link>
+          <Link href="/d5-render-cloud-workstation" className="text-slate-400 hover:text-white transition">3D Rendering →</Link>
           <Link href="/enterprise" className="text-slate-400 hover:text-white transition">Enterprise plans →</Link>
         </div>
       </main>

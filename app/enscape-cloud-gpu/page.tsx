@@ -146,7 +146,7 @@ export default function EnscapePage() {
 
         <div className="mt-10 flex flex-wrap gap-4 text-sm">
           <Link href="/" className="text-slate-400 hover:text-white transition">← Home</Link>
-          <Link href="/d5-render" className="text-slate-400 hover:text-white transition">D5 Render on cloud →</Link>
+          <Link href="/d5-render-cloud-workstation" className="text-slate-400 hover:text-white transition">D5 Render on cloud →</Link>
           <Link href="/lumion-cloud-gpu" className="text-slate-400 hover:text-white transition">Lumion on cloud →</Link>
         </div>
       </main>

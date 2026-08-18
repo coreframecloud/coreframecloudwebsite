@@ -137,7 +137,7 @@ export default async function Page({
         <Link href="/" className="block hover:underline">
           ← Back to Home
         </Link>
-        <Link href="/d5-render" className="block hover:underline">
+        <Link href="/d5-render-cloud-workstation" className="block hover:underline">
           D5 Render Workstation →
         </Link>
       </div>
