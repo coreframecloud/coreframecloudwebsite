@@ -119,7 +119,7 @@ export function PricingSection({
                 ? `Committing is genuinely cheaper per hour — every tier bills below the ${adhocRate} ad-hoc rate, on included hours and extra ones alike. `
                 : ""}
               Included hours, named seats and NAS storage come with the monthly fee.
-              {storageRate ? ` Extra persistent storage is billed openly at ${storageRate}/TB/month, a rate you can compare line-for-line with AWS S3.` : ""}
+              {storageRate ? ` Extra persistent storage is billed openly at ${storageRate}/TB/month, with no egress charge — pulling your own files back costs nothing.` : ""}
             </p>
 
             <ul className="mt-6 space-y-2 text-sm text-white/70">

@@ -131,7 +131,18 @@ export default async function EnterprisePage() {
                 render seats included
               </>
             )}.
-            {storageRate ? ` Storage is billed openly at ${storageRate}/TB/month, a rate you can compare line-for-line with AWS S3.` : ""}
+            {/* NOT "compare line-for-line with AWS S3". S3 is OBJECT storage —
+                you cannot mount a bucket as a drive inside a Windows session.
+                The equivalent to what we actually sell is managed FILE storage
+                (EFS, Azure Files, Filestore), which costs multiples of this.
+                The old line anchored us against a cheaper category we happened
+                to still beat, and threw away the better argument.
+
+                Deliberately no competitor NUMBER here. Their prices move —
+                Wasabi went up in July 2026 — and a figure we do not control is
+                a figure we cannot keep true. The claim is categorical, and it
+                stays true across a repricing. */}
+            {storageRate ? ` Storage is billed openly at ${storageRate}/TB/month — a mountable SMB share your workstation writes to live, not a bucket, and a fraction of what managed file storage costs at the hyperscalers. Pulling your own files back is free; there is no egress charge.` : ""}
             {fromFee ? ` Plans start at ${fromFee}/month.` : ""}
           </p>
           <p className="mt-3 max-w-xl text-sm leading-7 text-white/45">
@@ -295,8 +306,10 @@ export default async function EnterprisePage() {
             <p className="mt-3 max-w-2xl text-sm leading-7 text-white/55">
               Extra storage beyond the capacity included in your plan, or storage on its own without a
               committed plan — anyone can buy it, including ad-hoc customers. Files are retained
-              for as long as the storage subscription is active. Priced openly so you can compare
-              it directly against AWS S3 and the rest of the market.
+              for as long as the storage subscription is active.
+              {" "}Compare it against managed file storage rather than object storage: this is a
+              drive your session mounts and renders onto, not an archive bucket. And there is no
+              egress charge — pull a finished project back as often as you like, at no cost.
             </p>
           </div>
           <div className="mt-5 shrink-0 md:mt-0 md:text-right">
