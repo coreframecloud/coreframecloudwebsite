@@ -27,6 +27,9 @@ export function PricingSection({
   bestOverage,
   entryPlanFee,
   storageRate,
+  perMinute,
+  example,
+  commitmentCheaper = false,
 }: {
   adhocRate?: string;
   storage?: StorageTerms;
@@ -34,6 +37,12 @@ export function PricingSection({
   bestOverage?: string | null;
   entryPlanFee?: string | null;
   storageRate?: string | null;
+  perMinute?: string | null;
+  example?: { minutes: number; cost: string } | null;
+  /** Whether committing is ACTUALLY cheaper on both the overage rate and the
+   *  cost of an included hour. Never assert it without this — the claim used to
+   *  render whenever both numbers merely existed. */
+  commitmentCheaper?: boolean;
 }) {
   return (
     <section id="pricing" className="border-b border-white/10">
@@ -57,6 +66,17 @@ export function PricingSection({
               <span className="text-5xl font-bold text-white">{adhocRate ?? "—"}</span>
               <span className="mb-1.5 text-lg text-white/50">/ GPU-hour</span>
             </div>
+            {/* Per hour is the headline because that is the unit every
+                alternative quotes, and a buyer who has to convert units to
+                compare assumes the conversion is the point. Per minute goes
+                here, as the mechanism — with a worked example, because "billed
+                per minute" is abstract and "₹100" is not. */}
+            {perMinute ? (
+              <p className="mt-2 text-sm text-emerald-300">
+                {perMinute} a minute
+                {example ? ` — a ${example.minutes}-minute session costs ${example.cost}` : ""}
+              </p>
+            ) : null}
             <p className="mt-4 text-sm leading-6 text-white/60">
               Spin up anytime, no contract. {billingNote} Best for one-off renders
               or trying the platform before committing.
@@ -90,8 +110,14 @@ export function PricingSection({
               <span className="mb-1.5 text-lg text-white/50">/ GPU-hour</span>
             </div>
             <p className="mt-4 text-sm leading-6 text-white/60">
-              Committing is genuinely cheaper per hour
-              {adhocRate && bestOverage ? ` — every tier bills extra hours below the ${adhocRate} ad-hoc rate, not above it` : ""}.
+              {/* The claim is conditional on it being TRUE, not on both numbers
+                  existing. Cut the ad-hoc rate far enough and every tier inverts
+                  — the API refuses to publish those, and this refuses to assert
+                  it. When it does not hold, the plans still have a real pitch;
+                  it just is not "cheaper per hour". */}
+              {commitmentCheaper && adhocRate
+                ? `Committing is genuinely cheaper per hour — every tier bills below the ${adhocRate} ad-hoc rate, on included hours and extra ones alike. `
+                : ""}
               Included hours, named seats and NAS storage come with the monthly fee.
               {storageRate ? ` Extra persistent storage is billed openly at ${storageRate}/TB/month, a rate you can compare line-for-line with AWS S3.` : ""}
             </p>

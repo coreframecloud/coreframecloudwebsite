@@ -9,6 +9,7 @@ import {
   entryPlanFee,
   storageRatePerTb,
   billingSentence,
+  commitmentIsCheaper,
   type RateCardPlan,
 } from "@/lib/rate-card";
 
@@ -75,6 +76,7 @@ export default async function EnterprisePage() {
   const bestOverage = bestOverageRate(card);
   const fromFee = entryPlanFee(card);
   const storageRate = storageRatePerTb(card);
+  const cheaper = commitmentIsCheaper(card);
 
   return (
     <div className="relative min-h-screen text-white">
@@ -91,10 +93,23 @@ export default async function EnterprisePage() {
             Render more. Pay less.
           </h1>
           <p className="mt-5 max-w-xl text-base leading-8 text-slate-300">
-            Committing is genuinely cheaper per hour. Every committed tier bills extra GPU-hours
-            below the ad-hoc rate
-            {adhoc && bestOverage ? <> — down to <span className="font-medium text-white">{bestOverage}/hr against {adhoc}/hr</span></> : null}
-            {" "}— and you get persistent project storage and named render seats on top.
+            {/* Conditional on the comparison HOLDING, not on the numbers being
+                present. Modelling an ad-hoc cut to ₹199 against the old tiers
+                left this paragraph asserting that ₹379/hr was "cheaper" than
+                ₹199/hr — on the page whose entire job is to sell the commitment. */}
+            {cheaper && adhoc && bestOverage ? (
+              <>
+                Committing is genuinely cheaper per hour. Every committed tier bills GPU-hours
+                below the ad-hoc rate — down to{" "}
+                <span className="font-medium text-white">{bestOverage}/hr against {adhoc}/hr</span>,
+                on included hours and extra ones alike
+              </>
+            ) : (
+              <>
+                A fixed monthly fee with GPU-hours, persistent project storage and named
+                render seats included
+              </>
+            )}.
             {storageRate ? ` Storage is billed openly at ${storageRate}/TB/month, a rate you can compare line-for-line with AWS S3.` : ""}
             {fromFee ? ` Plans start at ${fromFee}/month.` : ""}
           </p>
@@ -146,6 +161,7 @@ export default async function EnterprisePage() {
               retention: raw.file_retention_days ? `${raw.file_retention_days} days` : "—",
               seats: String(raw.named_seats),
               includedHours: String(Math.round(raw.included_gpu_hours)),
+              term: raw.commitment_months ? `${raw.commitment_months} months` : "1 month",
               extraRate: raw.overage_hourly_rate_rupees != null ? inr(raw.overage_hourly_rate_rupees) : null,
               extraNote: savingVsAdhoc(raw, adhocNumber) ?? (presentation.dedicated ? "Reserved node" : null),
               dedicated: Boolean(presentation.dedicated),
@@ -205,7 +221,10 @@ export default async function EnterprisePage() {
                   { label: "Included GPU-hrs / mo", value: plan.includedHours + " hrs" },
                   { label: "Extra GPU-hours", value: plan.extraRate ? `${plan.extraRate} / hr` : "—" },
                   { label: "GPU", value: plan.dedicated ? "RTX 5080 (dedicated node)" : "RTX 5080" },
-                  { label: "Minimum term", value: "1 month" },
+                  // The term is the thing being bought with the discount. It was
+                  // hardcoded "1 month" on every card while the tiers differed by
+                  // 15/10/15 percent for no stated commitment at all.
+                  { label: "Minimum term", value: plan.term },
                 ].map(({ label, value }) => (
                   <div key={label} className="flex items-center justify-between text-sm">
                     <span className="text-white/50">{label}</span>
@@ -261,7 +280,7 @@ export default async function EnterprisePage() {
             persistent storage free — 50 GB once you add credit, kept for 30 days. {billingSentence(card)}
             {" "}Session scratch is cleared when the session ends, so download your outputs first,
             or add persistent NAS above.
-            {adhoc ? ` Every committed tier bills extra hours below ${adhoc}, so the more you render, the more the commitment pays for itself.` : ""}
+            {cheaper && adhoc ? ` Every committed tier bills extra hours below ${adhoc}, so the more you render, the more the commitment pays for itself.` : ""}
           </p>
         </div>
 

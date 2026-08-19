@@ -16,6 +16,9 @@ import {
   bestOverageRate,
   entryPlanFee,
   storageRatePerTb,
+  perMinuteRate,
+  sessionCostExample,
+  commitmentIsCheaper,
 } from "@/lib/rate-card";
 import { storageTerms } from "@/lib/storage-terms";
 
@@ -67,6 +70,9 @@ export default async function Page() {
           bestOverage={bestOverageRate(rateCard)}
           entryPlanFee={entryPlanFee(rateCard)}
           storageRate={storageRatePerTb(rateCard)}
+          perMinute={perMinuteRate(rateCard)}
+          example={sessionCostExample(rateCard)}
+          commitmentCheaper={commitmentIsCheaper(rateCard)}
         />
         <ExplainerFaq storage={storage} trial={trial} adhocRate={adhocRate} />
         <ContactSection />

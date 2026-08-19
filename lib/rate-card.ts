@@ -54,6 +54,15 @@ export type RateCardPlan = {
   code: string;
   name: string;
   tagline: string | null;
+  /** How far below the ad-hoc rate this tier bills, and what the customer
+   *  commits to for it. Both null on a legacy or negotiated plan. */
+  discount_percent: number | null;
+  commitment_months: number | null;
+  /** What an hour INSIDE the allowance actually costs — monthly fee less the
+   *  bundled storage, divided by included hours. Published because it is the
+   *  number a studio works out for itself, and the one that was quietly above
+   *  the ad-hoc rate on every tier until 19 Aug 2026. */
+  effective_included_hourly_rupees: number | null;
   monthly_fee_rupees: number;
   included_gpu_hours: number;
   included_storage_gb: number;
@@ -259,4 +268,76 @@ export function pricingFaqAnswer(card: RateCard | null): string | null {
   }
   parts.push("All prices include 18% GST, and a GST invoice showing the tax split is issued.");
   return parts.join(" ");
+}
+
+
+/**
+ * The ad-hoc rate as a number, not a formatted string.
+ *
+ * Everything above returns display strings, which is right for rendering and
+ * useless for comparing. `bestOverageRate()` returning "₹339" and `adhocRate()`
+ * returning "₹299" cannot be compared without parsing rupee symbols and commas,
+ * so the comparison simply was not made — and the site asserted "every tier
+ * bills below the ad-hoc rate" on the strength of both strings merely existing.
+ */
+export function adhocRateValue(card: RateCard | null): number | null {
+  const gpu = card?.gpus.find((g) => !g.quote_on_request && g.hourly_rate_rupees != null);
+  return gpu?.hourly_rate_rupees ?? null;
+}
+
+/**
+ * Is committing genuinely cheaper — on BOTH counts a customer checks?
+ *
+ * The overage rate is the obvious one. The other is the monthly fee divided by
+ * the included hours, which is what a studio actually computes, and which was
+ * above the ad-hoc rate on every published tier when a cut to ₹299 was modelled.
+ *
+ * The API now refuses to publish a tier that fails either test, so this should
+ * always be true. It is checked here anyway: this is the sentence the site puts
+ * in a customer's face, and it should be conditional on the claim rather than on
+ * the API having behaved.
+ */
+export function commitmentIsCheaper(card: RateCard | null): boolean {
+  const adhoc = adhocRateValue(card);
+  const tiers = planTiers(card);
+  if (adhoc == null || !tiers.length) return false;
+  return tiers.every((t) => {
+    const overageOk = t.overage_hourly_rate_rupees != null && t.overage_hourly_rate_rupees < adhoc;
+    const includedOk =
+      t.effective_included_hourly_rupees == null || t.effective_included_hourly_rupees < adhoc;
+    return overageOk && includedOk;
+  });
+}
+
+/**
+ * "₹4.98" — the per-minute rate, to two places.
+ *
+ * Per minute is the mechanism, not the headline. Every competitor quotes per
+ * hour, so quoting only per minute forces a buyer to do arithmetic to compare
+ * us, and a buyer doing arithmetic to compare a price assumes that is the point.
+ * The hourly figure stays the headline; this goes underneath it as the reason
+ * the headline is not what most sessions cost.
+ */
+export function perMinuteRate(card: RateCard | null): string | null {
+  const adhoc = adhocRateValue(card);
+  if (adhoc == null || card?.billing_granularity !== "per_minute") return null;
+  return `₹${(adhoc / 60).toFixed(2)}`;
+}
+
+/**
+ * A worked example, because "billed per minute" is abstract and "₹100" is not.
+ *
+ * Rounded to whole rupees: this is illustrative, and quoting paise would imply a
+ * precision the example does not have.
+ */
+export function sessionCostExample(
+  card: RateCard | null,
+  minutes = 20,
+): { minutes: number; cost: string } | null {
+  const adhoc = adhocRateValue(card);
+  if (adhoc == null || card?.billing_granularity !== "per_minute") return null;
+  return {
+    minutes,
+    cost: `₹${Math.round((adhoc / 60) * minutes).toLocaleString("en-IN")}`,
+  };
 }
