@@ -14,6 +14,31 @@
 
 const API = process.env.NEXT_PUBLIC_CONTROL_PLANE_API ?? "https://control.coreframecloud.com/api";
 
+/** Tag for on-demand invalidation. The control plane POSTs to
+ *  /api/revalidate-rate-card whenever a rate or plan changes. */
+export const RATE_CARD_TAG = "rate-card";
+
+/**
+ * Changes per deployment, so a build can never reuse a cached rate-card
+ * response from a previous one.
+ *
+ * This exists because of a real incident on 19 Aug 2026. The ad-hoc rate was
+ * changed to Rs 299 in the admin panel and the API served it correctly — but
+ * every page on the site went on showing Rs 399, with plan tiers derived from
+ * Rs 399, for hours. Next persists its fetch cache to .next/cache and Vercel
+ * restores that directory between deploys, so a redeploy rebaked the OLD
+ * response. The give-away was that the plan STRUCTURE was new (it only exists
+ * after that morning's deploy) while the NUMBERS were old: the code shipped and
+ * the data did not.
+ *
+ * VERCEL_GIT_COMMIT_SHA is set at build time on Vercel and absent locally,
+ * where the fetch cache is not restored anyway. FastAPI ignores the unknown
+ * query parameter. Within a single deployment the URL is constant, so ISR and
+ * the tag both behave normally.
+ */
+const BUILD_ID = process.env.VERCEL_GIT_COMMIT_SHA ?? "";
+const RATE_CARD_URL = `${API}/public/rate-card${BUILD_ID ? `?b=${BUILD_ID}` : ""}`;
+
 export type RateCardGpu = {
   slug: string;
   name: string;
@@ -110,8 +135,10 @@ export type RateCard = {
  */
 export async function getRateCard(): Promise<RateCard | null> {
   try {
-    const res = await fetch(`${API}/public/rate-card`, {
-      next: { revalidate: 3600 },
+    const res = await fetch(RATE_CARD_URL, {
+      // Tagged so a price change propagates in seconds instead of waiting out
+      // the hour. The hour remains as the backstop for a missed webhook.
+      next: { revalidate: 3600, tags: [RATE_CARD_TAG] },
     });
     if (!res.ok) {
       // Log loudly, and log WHO refused. This used to `return null` in silence,
@@ -127,7 +154,7 @@ export async function getRateCard(): Promise<RateCard | null> {
       // culprit in one build instead of one per hypothesis.
       const body = (await res.text().catch(() => "")).slice(0, 400).replace(/\s+/g, " ");
       console.error(
-        `[rate-card] ${API}/public/rate-card returned ${res.status} ${res.statusText} — ` +
+        `[rate-card] ${RATE_CARD_URL} returned ${res.status} ${res.statusText} — ` +
           `prices and trial terms will be hidden on this build\n` +
           `[rate-card]   server=${res.headers.get("server") ?? "?"} ` +
           `cf-ray=${res.headers.get("cf-ray") ?? "none"} ` +
@@ -138,7 +165,7 @@ export async function getRateCard(): Promise<RateCard | null> {
     }
     return (await res.json()) as RateCard;
   } catch (err) {
-    console.error(`[rate-card] could not reach ${API}/public/rate-card —`, err);
+    console.error(`[rate-card] could not reach ${RATE_CARD_URL} —`, err);
     return null;
   }
 }
