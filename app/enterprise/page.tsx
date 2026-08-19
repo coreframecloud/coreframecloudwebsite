@@ -45,6 +45,27 @@ export const metadata: Metadata = {
  * about to sign for them. Unknown plan names fall through to the defaults, so a
  * new tier added in the admin panel appears here on its own.
  */
+/**
+ * Column count follows the number of plans.
+ *
+ * This was a fixed `xl:grid-cols-4` while the catalogue holds three tiers, so
+ * each card got a quarter of the row and sat ~25% narrower than it needed to.
+ * That narrowness is what wrapped "Included GPU-hrs / mo" onto two lines on
+ * some cards and not others, which is what pushed every row below it out of
+ * alignment. The cards looked randomly aligned; they were just different
+ * heights for content reasons.
+ *
+ * Written as whole literal class strings, not composed at runtime: Tailwind
+ * scans source text, so a class built by concatenation is a class that does not
+ * exist in the stylesheet.
+ */
+const GRID_BY_COUNT: Record<number, string> = {
+  1: "max-w-md",
+  2: "md:grid-cols-2",
+  3: "md:grid-cols-2 lg:grid-cols-3",
+};
+const GRID_FALLBACK = "md:grid-cols-2 xl:grid-cols-4";
+
 const PLAN_PRESENTATION: Record<string, { highlight?: boolean; dedicated?: boolean }> = {
   "Medium Firm": { highlight: true },
   "Big Firm Dedicated": { dedicated: true },
@@ -148,7 +169,7 @@ export default async function EnterprisePage() {
             </a>
           </div>
         ) : (
-        <div className="mt-12 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+        <div className={`mt-12 grid items-stretch gap-6 ${GRID_BY_COUNT[plans.length] ?? GRID_FALLBACK}`}>
           {plans.map((raw) => {
             const presentation = PLAN_PRESENTATION[raw.name] ?? {};
             const plan = {
@@ -170,7 +191,7 @@ export default async function EnterprisePage() {
             return (
             <div
               key={plan.name}
-              className={`relative rounded-[28px] border p-8 ${
+              className={`relative flex flex-col rounded-[28px] border p-8 ${
                 plan.highlight
                   ? "border-cyan-400/30 bg-cyan-400/[0.05]"
                   : "border-white/10 bg-white/[0.03]"
@@ -196,24 +217,32 @@ export default async function EnterprisePage() {
               <div className={`text-xs font-semibold uppercase tracking-[0.22em] ${plan.highlight ? "text-cyan-300/70" : "text-white/40"}`}>
                 {plan.name}
               </div>
-              <div className="mt-1 text-sm text-white/50">{plan.tagline}</div>
+              {/* Two lines reserved. "Small teams · 3–5 people" is one line and
+                  "Established practices · 15–25 people" is two, so without this
+                  the price below it sits at a different height on every card. */}
+              <div className="mt-1 min-h-[2.5rem] text-sm leading-5 text-white/50">{plan.tagline}</div>
 
               <div className="mt-5 flex items-end gap-1">
                 <span className="text-4xl font-bold text-white">{plan.price}</span>
                 <span className="mb-1 text-sm text-white/40">/ month</span>
               </div>
-              <div className="mt-1 flex flex-wrap items-center gap-2">
+              {/* Caption and pill on their own lines with the block height
+                  reserved, so a tier with no saving to show does not pull its
+                  divider up while its neighbours' stay down. */}
+              <div className="mt-1 min-h-[3.25rem]">
                 {plan.extraRate ? (
-                  <span className="text-xs text-white/40">+ {plan.extraRate} / GPU-hr beyond included · incl. 18% GST</span>
+                  <p className="text-xs leading-5 text-white/40">
+                    + {plan.extraRate} / GPU-hr beyond included · incl. 18% GST
+                  </p>
                 ) : null}
                 {plan.extraNote ? (
-                  <span className={`text-[10px] font-semibold rounded-full px-2 py-0.5 ${plan.highlight ? "bg-cyan-400/15 text-cyan-300" : "bg-white/8 text-white/40"}`}>
+                  <span className={`mt-1.5 inline-block whitespace-nowrap rounded-full px-2 py-0.5 text-[10px] font-semibold ${plan.highlight ? "bg-cyan-400/15 text-cyan-300" : "bg-white/8 text-white/40"}`}>
                     {plan.extraNote}
                   </span>
                 ) : null}
               </div>
 
-              <div className="mt-7 space-y-3 border-t border-white/8 pt-6">
+              <div className="mt-7 grow space-y-3 border-t border-white/8 pt-6">
                 {[
                   { label: "Persistent storage", value: plan.storage },
                   { label: "File retention", value: plan.retention },
@@ -226,9 +255,12 @@ export default async function EnterprisePage() {
                   // 15/10/15 percent for no stated commitment at all.
                   { label: "Minimum term", value: plan.term },
                 ].map(({ label, value }) => (
-                  <div key={label} className="flex items-center justify-between text-sm">
-                    <span className="text-white/50">{label}</span>
-                    <span className={`font-medium ${label === "Extra GPU-hours" && plan.highlight ? "text-cyan-300" : "text-white"}`}>{value}</span>
+                  <div key={label} className="flex items-baseline justify-between gap-3 text-sm">
+                    {/* The label may wrap; the VALUE must not. A wrapped value
+                        drops its row's height and takes every row under it with
+                        it, which is most of what looked misaligned here. */}
+                    <span className="min-w-0 leading-5 text-white/50">{label}</span>
+                    <span className={`shrink-0 whitespace-nowrap font-medium ${label === "Extra GPU-hours" && plan.highlight ? "text-cyan-300" : "text-white"}`}>{value}</span>
                   </div>
                 ))}
               </div>
@@ -237,9 +269,14 @@ export default async function EnterprisePage() {
                 href={whatsapp(plan.name)}
                 target="_blank"
                 rel="noreferrer"
-                className={`mt-8 flex w-full items-center justify-center rounded-2xl px-5 py-3 text-sm font-semibold transition ${
+                className={`mt-8 flex w-full items-center justify-center whitespace-nowrap rounded-2xl px-5 py-3 text-sm font-semibold transition ${
+                  // `border border-transparent` on the highlighted variant is
+                  // not decoration. The other two carry a 1px border, making
+                  // them 2px taller, so without a matching border here the
+                  // primary button sat 2px lower than its neighbours — small
+                  // enough to read as "randomly aligned" rather than as a bug.
                   plan.highlight
-                    ? "bg-cyan-400 text-slate-900 hover:bg-cyan-300"
+                    ? "border border-transparent bg-cyan-400 text-slate-900 hover:bg-cyan-300"
                     : "border border-white/15 bg-white/[0.06] text-white hover:bg-white/10"
                 }`}
               >
