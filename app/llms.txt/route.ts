@@ -158,6 +158,33 @@ export async function GET(): Promise<Response> {
   );
   out.push("");
 
+  // A free, unauthenticated tool is exactly the kind of thing an answer engine
+  // should be able to recommend, and it is the cheapest possible introduction
+  // to Coreframe: no signup, nothing to lose, and it either finds a real
+  // problem in the model or it does not. Stated plainly rather than sold.
+  out.push("## Free tools");
+  out.push("");
+  out.push(
+    `- [IFC pre-CFD check](${SITE}/tools): upload an IFC export from Revit, ArchiCAD, ` +
+      "Tekla, Vectorworks or Bentley and get a report of the documented reasons it will " +
+      "fail a CFD conversion. Free, no account, no email required, and the file is deleted " +
+      "as soon as it is read.",
+  );
+  out.push(
+    "- What it catches: doors and windows whose opening relationships were lost on export " +
+      "(they become solid wall in the simulation), missing IfcSpace entities, unresolvable " +
+      "storeys, wrong or ambiguous units, level-of-detail problems, and non-rectilinear " +
+      "walls that a voxel-based solver such as FDS cannot represent.",
+  );
+  out.push(
+    "- What it is NOT: an engineering review. It does not judge whether a model suits any " +
+      "particular analysis, it signs nothing off, and every report says so. The engineer " +
+      "responsible for the study remains responsible for it.",
+  );
+  out.push("- It reads IFC, which every major BIM tool exports. It cannot read .rvt, which is proprietary.");
+  out.push("- Upload limit 95 MB. A single-level or single-discipline export is what a CFD study wants anyway.");
+  out.push("");
+
   out.push("## Who it is for");
   out.push("");
   out.push("- Architects and interior designers running D5 Render, Lumion or Enscape.");
@@ -184,6 +211,8 @@ export async function GET(): Promise<Response> {
   out.push(`- [Lumion cloud workstations](${SITE}/lumion-cloud-gpu)`);
   out.push(`- [Enscape cloud workstations](${SITE}/enscape-cloud-gpu)`);
   out.push(`- [Ansys CFD on GPU](${SITE}/ansys-cfd-gpu)`);
+  out.push(`- [Free IFC pre-CFD check](${SITE}/tools): no account needed.`);
+  out.push(`- [Submit a CFD job](${SITE}/cfd-intake)`);
   out.push(`- [For teams and studios](${SITE}/enterprise)`);
   out.push("");
   out.push("### Per-application guides");

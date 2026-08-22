@@ -40,6 +40,7 @@ export function SiteFooter() {
                 { label: "D5 Render", href: "/d5-render-cloud-workstation" },
                 { label: "Lumion", href: "/lumion-cloud-gpu" },
                 { label: "Enscape", href: "/enscape-cloud-gpu" },
+                { label: "Free IFC check", href: "/tools" },
                 { label: "Pricing", href: "/#pricing" },
                 { label: "Enterprise plans", href: "/enterprise" },
               ].map((l) => (

@@ -53,6 +53,24 @@ export default function CfdIntakePage() {
           </div>
         </div>
 
+        {/* Placed ABOVE the form on purpose. Someone about to fill in twenty
+            fields for a model that will not convert should find that out now,
+            not after we quote it. It costs us a submission occasionally and
+            saves the relationship every time it fires. */}
+        <div className="mb-8 rounded-xl border border-cyan-500/20 bg-cyan-500/[0.06] px-5 py-4">
+          <p className="text-sm leading-6 text-slate-200">
+            <span className="font-semibold text-white">Exported this from Revit or ArchiCAD?</span>{" "}
+            Run it through our{" "}
+            <a href="/tools" className="text-cyan-300 underline underline-offset-2 hover:text-cyan-200">
+              free IFC pre-CFD check
+            </a>{" "}
+            first. It takes seconds, needs no signup, and reports the documented
+            reasons a model fails conversion &mdash; doors that lost their
+            openings, missing spaces, wrong units. The file is deleted as soon as
+            it is read.
+          </p>
+        </div>
+
         <CfdIntakeForm />
 
         {/* Footnote */}

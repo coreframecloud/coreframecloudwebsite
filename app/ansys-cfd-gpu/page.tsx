@@ -155,6 +155,12 @@ export default function AnsysCfdPage() {
             Submit a CFD job →
           </a>
           <a
+            href="/tools"
+            className="rounded-full border border-white/15 px-5 py-2.5 text-sm text-white hover:bg-white/8 transition"
+          >
+            Check your IFC model free →
+          </a>
+          <a
             href={wa("Hi Coreframe, I'd like to discuss GPU CFD simulation for my Ansys project.")}
             target="_blank" rel="noreferrer"
             className="rounded-full border border-white/15 px-5 py-2.5 text-sm text-white hover:bg-white/8 transition"
@@ -162,6 +168,18 @@ export default function AnsysCfdPage() {
             WhatsApp us
           </a>
         </div>
+
+        <p className="mt-4 max-w-2xl text-xs leading-6 text-white/40">
+          Before you book anything: our{" "}
+          <a href="/tools" className="text-cyan-300/80 underline underline-offset-2 hover:text-cyan-300">
+            free IFC pre-CFD check
+          </a>{" "}
+          reads a model export and reports the things that will break the
+          conversion &mdash; doors that lost their openings, missing spaces,
+          wrong units, storeys that will not resolve. No signup, and the file is
+          deleted as soon as it is read. It is the cheapest hour you will spend
+          on a CFD project, because finding these after handover costs a week.
+        </p>
 
         {/* Why GPU */}
         <div className="mt-14">

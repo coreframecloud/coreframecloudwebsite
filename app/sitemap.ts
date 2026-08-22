@@ -41,6 +41,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.8,
     })),
 
+    // The free IFC pre-CFD checker. Served from the control plane through a
+    // rewrite in next.config.ts, so there is no page under app/ for Next to
+    // discover -- it has to be listed by hand or it is never crawled at all.
+    // /cfd-intake is the conversion step behind it and was likewise missing,
+    // while /ansys-cfd-gpu sat at priority 0.9 pointing into nothing indexed.
+    { url: `${BASE}/tools`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
+    { url: `${BASE}/cfd-intake`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
+
     { url: `${BASE}/contact`, lastModified: now, changeFrequency: "yearly", priority: 0.5 },
     { url: `${BASE}/request-demo`, lastModified: now, changeFrequency: "yearly", priority: 0.5 },
 
