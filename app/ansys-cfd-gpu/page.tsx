@@ -3,16 +3,16 @@ import { BackgroundGlow } from "@/components/home/background-glow";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Ansys CFD in Minutes Not Days — GPU CFD as a Managed Service, India",
+  title: "GPU Workstations for CFD, by the Hour — Bring Your Own Licence | India",
   description:
-    "Why wait 3 days for a CFD solve? Submit your Ansys Fluent job and we run it on GPU hardware sized to your mesh. Per-job pricing by element count. Ansys cloud partner. Bengaluru, India.",
+    "Rent an RTX-class GPU workstation by the hour and run Ansys Fluent, OpenFOAM or your own CFD solver on it. You bring the licence and the engineering; we provide the hardware. India, INR billing, GST invoice.",
   keywords: [
     "Ansys CFD cloud GPU India",
     "GPU CFD simulation India",
     "Ansys Fluent GPU cloud",
     "CFD cloud computing India",
-    "managed CFD service India",
-    "per job CFD cloud India",
+    "GPU workstation rental CFD India",
+    "bring your own licence CFD GPU",
   ],
   alternates: { canonical: "/ansys-cfd-gpu" },
 };
@@ -20,13 +20,13 @@ export const metadata: Metadata = {
 const whyGpu = [
   {
     icon: "⚡",
-    title: "5–20× faster solve times",
-    body: "Ansys Fluent's GPU solver offloads the pressure-velocity coupling and linear algebra to thousands of CUDA cores in parallel. What takes 8 hours on a CPU cluster can resolve in minutes on a suitably sized GPU.",
+    title: "GPU solvers, where they help",
+    body: "Ansys Fluent has a native GPU solver and publishes substantial speedups on the professional cards it supports. OpenFOAM is different: only the linear solver moves to the GPU, and published end-to-end gains are around 1.7–2.2× because meshing, matrix assembly and I/O stay on the CPU. We quote no multiple for your case — benchmark it and see.",
   },
   {
     icon: "🧠",
     title: "VRAM determines mesh ceiling",
-    body: "The number of elements your solver can hold in memory is bounded by GPU VRAM. We size the hardware to your mesh, so large industrial cases run without you having to decompose them by hand.",
+    body: "VRAM is the hard ceiling. Ansys's own figures are roughly 1.0–1.9 GB per million tet/hex cells and 1.8–2.8 GB per million polyhedral cells. On a 16 GB card that is about 8 million tet cells or 5 million polyhedral — and a mesh-independence study needs the same case two or three times over. Tell us your cell count and we will say plainly whether it fits.",
   },
   {
     icon: "🌊",
@@ -36,7 +36,7 @@ const whyGpu = [
   {
     icon: "💸",
     title: "No idle hardware cost",
-    body: "A dedicated CFD-class GPU workstation is a multi-lakh capital purchase that then sits idle between jobs. Per-job billing means you pay only when the simulation is actually running.",
+    body: "A CFD-class GPU workstation is a multi-lakh capital purchase that sits idle between jobs. Hourly rental means you pay for the hours you actually use, on a machine you do not have to own, house or depreciate.",
   },
 ];
 
@@ -85,7 +85,7 @@ const jsonLd = {
       name: "Does Ansys Fluent support GPU acceleration?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Yes. Ansys Fluent has a dedicated GPU solver (available since Ansys 2022 R1) that offloads pressure-based steady and transient solving to NVIDIA GPUs via CUDA. Speedups of 5–20× vs CPU are typical depending on mesh size and turbulence model.",
+        text: "Yes. Ansys Fluent has a dedicated GPU solver (available since Ansys 2022 R1) that offloads pressure-based steady and transient solving to NVIDIA GPUs via CUDA. How much faster it is depends heavily on the case: for OpenFOAM the published end-to-end figure is around 1.7-2.2x, because matrix assembly and I/O stay on the CPU even when the linear solve does not. Fluent's native GPU solver scales better than that, but Ansys tests and supports professional cards rather than the GeForce hardware we currently run. Treat any single speedup number you see quoted, including ours, as case-dependent until it has been measured on your mesh.",
       },
     },
     {
@@ -93,7 +93,7 @@ const jsonLd = {
       name: "How large a mesh can you run?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Ansys Fluent's GPU solver requires roughly 1–1.5 GB of GPU memory per million elements for a double-precision k-ω SST case. We size the hardware to the job, and routinely run cases well into the tens of millions of elements. Send us your element count and we will confirm what is feasible before you commit.",
+        text: "Ansys publishes roughly 1.0-1.9 GB of GPU memory per million tet/hex cells and 1.8-2.8 GB per million polyhedral cells. Our current card is a 16 GB RTX 5080, which works out to about 8 million tet cells or 5 million polyhedral, with less headroom again if you are running a mesh-independence study. Larger meshes need a bigger card than we currently offer - tell us your cell count and we will say so before you book rather than after.",
       },
     },
     {
@@ -101,15 +101,15 @@ const jsonLd = {
       name: "Do I need my own Ansys licence?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Coreframe is partnering with Ansys to offer per-job HPC licensing as part of the service. You can bring your own Ansys licence (BYOL) or use per-job licence access through the Coreframe–Ansys partnership. Contact us to discuss which model fits your workflow.",
+        text: "Yes. We rent hardware, not software. You bring your own Ansys, Siemens or other commercial licence, or use an open-source solver such as OpenFOAM or SU2. We are not an Ansys reseller and have no licence-supply arrangement with any CFD vendor. Check your own licence terms for remote or hosted use before you book - that is between you and your vendor, and we would rather you confirm it than assume.",
       },
     },
     {
       "@type": "Question",
-      name: "How is CFD job pricing calculated?",
+      name: "How is pricing calculated?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Pricing is per job, based on mesh element count (the primary driver of memory and compute cost), solver type, and estimated solve time. Contact Coreframe with your .cas file or element count for an accurate quote.",
+        text: "Hourly, for the workstation, billed in INR with a GST invoice. You are renting a machine and running your own solver on it, so the cost depends on how long you use it rather than on your mesh size. Contact us for the current rate.",
       },
     },
   ],
@@ -129,22 +129,22 @@ export default function AnsysCfdPage() {
         {/* Hero */}
         <div className="flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-[0.22em] text-cyan-300">
           <span>CFD · Ansys · Cloud GPU</span>
-          <span className="rounded-full bg-emerald-400/15 border border-emerald-400/20 px-2 py-0.5 text-emerald-300">
-            Ansys Cloud Partner
+          <span className="rounded-full bg-white/5 border border-white/10 px-2 py-0.5 text-slate-300">
+            Bring your own licence
           </span>
         </div>
         <h1 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">
-          GPU-accelerated CFD.<br className="hidden sm:block" />
-          Ansys Fluent, run as a managed service.
+          GPU workstations for CFD.<br className="hidden sm:block" />
+          By the hour. Bring your own licence.
         </h1>
         <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-300">
-          Solve large Ansys CFD meshes 5–20× faster than CPU clusters. Submit a job, specify
-          your element count, and we run it on GPU hardware appropriate to the case — no hardware
-          to procure, no licences to manage. Per-job pricing, hosted in Bengaluru.
+          Rent an RTX-class GPU workstation by the hour and run Ansys Fluent, OpenFOAM or
+          whichever solver you are licensed for. You keep the engineering and the licence;
+          we provide the machine, billed in INR with a GST invoice.
         </p>
         <p className="mt-3 max-w-2xl text-xs leading-6 text-white/40">
-          CFD is a per-job service, not self-serve GPU rental. There is no hourly CFD node to
-          book — you send the job, we return the results.
+          We do not run your simulation, choose your turbulence model or interpret your results.
+          This is hardware rental. The engineering, and responsibility for it, stays with you.
         </p>
 
         <div className="mt-5 flex flex-wrap gap-3">
@@ -186,15 +186,23 @@ export default function AnsysCfdPage() {
           </h2>
           <div className="rounded-[20px] border border-white/10 bg-white/[0.03] p-6">
             <p className="text-xs leading-6 text-white/60">
-              You do not pick a GPU. Send us the mesh — element count, solver, turbulence model,
-              steady or transient — and we run the job on hardware appropriate to it. Memory is
-              usually the binding constraint: Ansys Fluent&apos;s GPU solver needs roughly
-              1–1.5 GB of GPU memory per million elements for a double-precision case, so the
-              mesh size decides the machine, not the other way round.
+              VRAM is the binding constraint, and it is worth being blunt about it. Ansys
+              publishes roughly 1.0–1.9 GB per million tet/hex cells and 1.8–2.8 GB per million
+              polyhedral cells. Our current card is a <strong className="text-white/80">16 GB
+              RTX 5080</strong>, which is about <strong className="text-white/80">8 million tet
+              or 5 million polyhedral cells</strong> — less if you are running the same case at
+              two or three refinement levels, as a mesh-independence study requires.
             </p>
             <p className="mt-3 text-xs leading-6 text-white/60">
-              If a case will not run well, we will tell you before you pay rather than quote you
-              for something that will not converge.
+              Two caveats we would rather you heard from us. Ansys tests and supports
+              professional cards (A-series, L40S, A100) — GeForce is not on that list, so
+              validate your workflow on a short booking before committing to a deadline. And
+              FDS, which is what most car-park and atrium smoke work in India uses, is CPU-only
+              and gets nothing from a GPU at all.
+            </p>
+            <p className="mt-3 text-xs leading-6 text-white/60">
+              If your case will not fit, we will say so before you book. A bigger card
+              (RTX 6000-class) is on the roadmap when demand justifies it.
             </p>
             <p className="mt-3 text-xs leading-6 text-white/40">
               Note: CFD hardware is separate from our self-serve rendering fleet. The only GPU you
@@ -223,28 +231,33 @@ export default function AnsysCfdPage() {
           </div>
         </div>
 
-        {/* Ansys partnership */}
-        <div className="mt-12 rounded-[20px] border border-emerald-400/15 bg-emerald-400/[0.03] p-6">
+        {/* Licensing — what we do and do not supply */}
+        <div className="mt-12 rounded-[20px] border border-white/10 bg-white/[0.03] p-6">
           <div className="flex flex-wrap items-start gap-4">
             <div className="flex-1 min-w-[200px]">
-              <div className="text-[10px] font-semibold uppercase tracking-wider text-emerald-300/60 mb-1">Partnership</div>
-              <h3 className="text-base font-semibold text-white">Coreframe × Ansys</h3>
+              <div className="text-[10px] font-semibold uppercase tracking-wider text-white/40 mb-1">Licensing</div>
+              <h3 className="text-base font-semibold text-white">You bring the licence</h3>
               <p className="mt-2 text-xs leading-6 text-white/55">
-                Coreframe is partnering with Ansys to deliver CFD as a managed per-job service.
-                Submit your simulation job — mesh file, solver settings, boundary conditions — and
-                receive results without touching any infrastructure. Per-job Ansys HPC licence access
-                is available through the partnership, or bring your existing Ansys licence (BYOL).
+                We rent hardware, not software. Bring your own Ansys, Siemens or other commercial
+                licence, or run an open-source solver — OpenFOAM, SU2, Code_Saturne. We are not a
+                reseller for any CFD vendor and we have no licence-supply arrangement with one.
+              </p>
+              <p className="mt-2 text-xs leading-6 text-white/55">
+                Check your own licence terms for remote or hosted use before booking. Some
+                commercial licences restrict it and some are node-locked. That is between you and
+                your vendor — we would rather you confirmed it than assumed.
               </p>
               <p className="mt-2 text-xs text-white/40">
-                Partnership currently in onboarding. Contact us to join the early access programme.
+                We do not perform CFD analysis, and nothing produced on our hardware is reviewed,
+                verified or signed off by us.
               </p>
             </div>
             <a
-              href={wa("Hi Coreframe, I'm interested in the Ansys CFD partnership early access.")}
+              href={wa("Hi Coreframe, I'd like to ask about hourly GPU workstations for CFD.")}
               target="_blank" rel="noreferrer"
-              className="shrink-0 rounded-xl bg-emerald-400/15 border border-emerald-400/20 px-4 py-2.5 text-xs font-semibold text-emerald-300 hover:bg-emerald-400/25 transition"
+              className="shrink-0 rounded-xl bg-white/5 border border-white/10 px-4 py-2.5 text-xs font-semibold text-slate-200 hover:bg-white/10 transition"
             >
-              Join early access
+              Ask about availability
             </a>
           </div>
         </div>

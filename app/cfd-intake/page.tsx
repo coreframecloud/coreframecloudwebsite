@@ -5,12 +5,12 @@ import CfdIntakeForm from "./cfd-intake-form";
 export const metadata: Metadata = {
   title: "Submit a CFD Analysis Job — Coreframe Cloud",
   description:
-    "Tell us your geometry, boundary conditions, solver preferences and turbulence model. Our team provisions the GPU workstation and runs your simulation headlessly — results delivered without back-and-forth.",
+    "Tell us your geometry, boundary conditions, solver preferences and turbulence model. We provision a GPU workstation sized to your case and hand it to you ready to run. You bring your own solver licence.",
   alternates: { canonical: "/cfd-intake" },
   openGraph: {
     title: "Submit a CFD Job — Coreframe Cloud",
     description:
-      "Fill the intake form: geometry, BCs, physics, solver. We run it headlessly and send you the results.",
+      "Fill the intake form: geometry, BCs, physics, solver. We size and provision the GPU workstation. You bring your own solver licence.",
     url: "https://coreframecloud.com/cfd-intake",
   },
 };
@@ -32,21 +32,22 @@ export default function CfdIntakePage() {
           </h1>
           <p className="mt-4 max-w-2xl text-base leading-7 text-slate-300 md:text-lg">
             Fill in your geometry, boundary conditions, and solver preferences.
-            We provision the workstation and run your simulation headlessly —
-            no calls, no back-and-forth.
+            We size and provision a GPU workstation for the case and tell you,
+            before you book, whether it will actually fit. You bring your own
+            solver licence, and your engineer stays the engineer of record.
           </p>
           <div className="mt-5 flex flex-wrap gap-4 text-sm text-slate-400">
             <span className="flex items-center gap-1.5">
               <span className="text-green-400">✓</span> OpenFOAM &amp; ANSYS Fluent
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="text-green-400">✓</span> Fully headless solver runs
+              <span className="text-green-400">✓</span> Bring your own licence
             </span>
             <span className="flex items-center gap-1.5">
               <span className="text-green-400">✓</span> Results as PDF + data files
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="text-cyan-400">⚡</span> CFD in minutes
+              <span className="text-cyan-400">⚡</span> Sized before you book
               <span className="text-white/30 text-xs">*</span>
             </span>
           </div>
@@ -56,9 +57,12 @@ export default function CfdIntakePage() {
 
         {/* Footnote */}
         <p className="mt-10 text-xs text-slate-600 border-t border-white/5 pt-6">
-          * With clean CAD geometry up to 10 million cells, typical wall-clock solve time is under 1 hour.
-          Cases between 10–50 million cells typically complete within 4 hours.
-          Complex physics (combustion, multiphase, FSI) or meshing work may extend timelines — our team will confirm before starting.
+          * Our current card is a 16 GB RTX 5080. Ansys publishes roughly 1.0-1.9 GB of GPU memory per million tet/hex cells
+          and 1.8-2.8 GB per million polyhedral cells, which puts a practical ceiling around 8 million tet or 5 million polyhedral
+          cells on this hardware — less if you are running a mesh-independence study. Larger meshes need a bigger card than we
+          currently offer, and we will tell you that before you book rather than after. Solve times depend on physics, turbulence
+          model and convergence criteria, so we quote them per case instead of publishing a number. Coreframe supplies compute;
+          you supply the solver licence and the engineer of record.
         </p>
       </main>
     </div>
