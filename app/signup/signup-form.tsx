@@ -63,6 +63,12 @@ export default function SignupForm() {
     if (!form.fullName.trim()) return setError("Full name is required.");
     if (!form.orgName.trim()) return setError("Company or studio name is required.");
     if (!form.email.trim()) return setError("Email address is required.");
+    // Shape only — the server is the gate, and it normalises to E.164 and
+    // decides. This exists so the common typo is caught before the round trip,
+    // not to duplicate the rule: 10 digits starting 6-9, however it is spaced,
+    // with or without +91 / 0091 / a leading 0.
+    if (!/^(?:0091|91)?0?[6-9]\d{9}$/.test(form.phone.replace(/\D/g, "")))
+      return setError("Enter a 10-digit Indian mobile number (starting 6, 7, 8 or 9).");
     if (form.password.length < 8) return setError("Password must be at least 8 characters.");
     if (form.password !== form.confirmPassword) return setError("Passwords do not match.");
 
@@ -74,7 +80,9 @@ export default function SignupForm() {
         email: form.email.trim(),
         password: form.password,
       };
-      if (form.phone.trim()) body.phone_number = form.phone.trim();
+      // Always sent now. The API normalises whatever shape this is into E.164
+      // and stores that, so there is nothing to pre-format here.
+      body.phone_number = form.phone.trim();
 
       const res = await fetch(`${API}/auth/register`, {
         method: "POST",
@@ -178,18 +186,28 @@ export default function SignupForm() {
               />
             </div>
 
+            {/* Required, and honest about why.
+                It was optional here while the other sign-in door required it,
+                so most accounts arrived with no number and support had no way
+                to reach anyone. It is also what CERT-In asks a cloud provider
+                to hold for every subscriber. India-only because identity
+                verification runs on DigiLocker — the server refuses anything
+                else, so saying it here beats a 422 after the password. */}
             <div className="grid gap-1.5">
-              <label className="text-xs text-slate-400">
-                Phone number <span className="text-slate-600">(optional)</span>
-              </label>
+              <label className="text-xs text-slate-400">Mobile number</label>
               <Input
                 type="tel"
                 value={form.phone}
                 onChange={set("phone")}
                 className="h-12 rounded-xl border-white/10 bg-white/5 text-white placeholder:text-slate-500"
-                placeholder="+91 98765 43210"
+                placeholder="98765 43210"
                 autoComplete="tel"
+                inputMode="tel"
+                required
               />
+              <p className="text-[11px] leading-4 text-slate-500">
+                Indian mobile number. We send your one-time sign-in codes here.
+              </p>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
@@ -306,7 +324,7 @@ export default function SignupForm() {
             </Button>
 
             <p className="text-center text-sm text-slate-500">
-              Didn't receive it?{" "}
+              Didn&apos;t receive it?{" "}
               <button
                 type="button"
                 onClick={handleResend}
