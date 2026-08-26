@@ -85,6 +85,13 @@ const nextConfig: NextConfig = {
       { source: "/r/:token", destination: `${CONTROL_PLANE}/r/:token` },
       // its API. Scoped to /api/tools so nothing else on /api is proxied.
       { source: "/api/tools/:path*", destination: `${CONTROL_PLANE}/api/tools/:path*` },
+      // The AI studio. Same container, same reasoning as /tools -- it stays on
+      // coreframecloud.com rather than a subdomain because the site's access
+      // token lives in browser storage on this origin, and a subdomain would
+      // mean CORS plus a token-sharing scheme for no gain the customer can see.
+      { source: "/studio", destination: `${CONTROL_PLANE}/studio` },
+      { source: "/studio/:path*", destination: `${CONTROL_PLANE}/studio/:path*` },
+      { source: "/api/studio/:path*", destination: `${CONTROL_PLANE}/api/studio/:path*` },
     ];
   },
   async redirects() {
