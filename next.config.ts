@@ -92,6 +92,16 @@ const nextConfig: NextConfig = {
       { source: "/studio", destination: `${CONTROL_PLANE}/studio` },
       { source: "/studio/:path*", destination: `${CONTROL_PLANE}/studio/:path*` },
       { source: "/api/studio/:path*", destination: `${CONTROL_PLANE}/api/studio/:path*` },
+      // Studio sign-in. NARROW on purpose: only /api/auth/studio/*, not all of
+      // /api/auth/*. The site's own signup calls the control host directly and
+      // rewriting every auth route through Vercel would change how that
+      // traffic is routed for no reason connected to the Studio.
+      //
+      // It has to be here at all because the Studio page is PROXIED to this
+      // origin by the two rules above, so its relative fetches resolve against
+      // www. Without this rule the sign-in call 404s on a page that is
+      // otherwise working, which reads as "the code never arrived".
+      { source: "/api/auth/studio/:path*", destination: `${CONTROL_PLANE}/api/auth/studio/:path*` },
     ];
   },
   async redirects() {
