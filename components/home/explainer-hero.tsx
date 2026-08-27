@@ -84,6 +84,24 @@ export function ExplainerHero({
               start. No installer, no KYC.
             </span>
           </Link>
+          {/* THE GUIDE, WHERE SOMEBODY DECIDING CAN READ IT.
+              Five pages: open a plan, pick a room, say what it should feel
+              like, four rooms in one pass, what it costs. It is the honest
+              answer to "what do I actually get for Rs 99", and until now it
+              was only linked from inside the product -- behind the sign-in
+              that the question is meant to get them past. Served from
+              /studio/, which next.config already proxies to the control
+              plane, so there is no new rewrite and no new certificate. */}
+          <p className="mt-3 text-center text-sm text-white/45 sm:text-left">
+            <a
+              href="/studio/guide.pdf"
+              target="_blank"
+              rel="noopener"
+              className="underline decoration-white/25 underline-offset-4 transition hover:text-white/70 hover:decoration-white/50"
+            >
+              How Studio works — a five-page guide (PDF)
+            </a>
+          </p>
         </div>
 
         <ul className="mt-10 flex flex-wrap justify-center gap-2.5">
