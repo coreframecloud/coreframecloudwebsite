@@ -8,6 +8,12 @@ import { CoreframeWordmarkAtlas } from "@/components/brand/coreframe-wordmark-at
 import { trackEvent } from "@/lib/analytics";
 
 const navLinks = [
+  // Studio is a LIVE, PAID product and the site did not link to it anywhere.
+  // It sits first because it is the cheapest thing we sell and the shortest
+  // path from a stranger to a paying customer: Rs 99, no KYC, no installer,
+  // an image in about four seconds. The workstation rental is the bigger sale
+  // and the harder one; this is the door.
+  { label: "Studio", href: "/studio" },
   { label: "Render 5× Faster", href: "/d5-render-cloud-workstation" },
   { label: "CFD in Minutes", href: "/ansys-cfd-gpu" },
   { label: "Pricing", href: "/#pricing" },

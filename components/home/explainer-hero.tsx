@@ -61,6 +61,31 @@ export function ExplainerHero({
           <p className="mt-4 text-sm text-white/55">No card required. Nothing to cancel.</p>
         ) : null}
 
+        {/* THE OTHER PRODUCT, AND THE CHEAPER DOOR.
+            Studio has been live and taking money with nothing on this page
+            pointing at it. It is deliberately not a third button competing
+            with the two above -- renting a workstation is the bigger sale and
+            should keep the primary action -- but somebody who came here for
+            "a picture of my floor plan" and not "a machine by the hour" had
+            no way to discover that we sell exactly that. */}
+        <div className="mt-8 w-full sm:w-auto">
+          <Link
+            href="/studio"
+            className="group inline-flex flex-col gap-1 rounded-xl border border-white/15 bg-white/[0.04] px-5 py-4 text-left transition hover:border-white/30 hover:bg-white/[0.07]"
+          >
+            <span className="text-sm font-semibold text-white">
+              Just need a picture of a floor plan?{" "}
+              <span className="text-[#2D7FF9] group-hover:underline">
+                Try Coreframe Studio →
+              </span>
+            </span>
+            <span className="text-sm text-white/55">
+              Upload a DXF, pick a room, get an interior in seconds. ₹99 to
+              start. No installer, no KYC.
+            </span>
+          </Link>
+        </div>
+
         <ul className="mt-10 flex flex-wrap justify-center gap-2.5">
           {[
             "RTX 5080 · 16 GB GDDR7",
