@@ -11,6 +11,7 @@ type Step = "register" | "verify" | "done";
 
 interface FormState {
   fullName: string;
+  displayName: string;
   orgName: string;
   email: string;
   phone: string;
@@ -22,6 +23,7 @@ export default function SignupForm() {
   const [step, setStep] = useState<Step>("register");
   const [form, setForm] = useState<FormState>({
     fullName: "",
+    displayName: "",
     orgName: "",
     email: "",
     phone: "",
@@ -76,6 +78,7 @@ export default function SignupForm() {
     try {
       const body: Record<string, string> = {
         full_name: form.fullName.trim(),
+        display_name: form.displayName.trim(),
         organization_name: form.orgName.trim(),
         email: form.email.trim(),
         password: form.password,
@@ -151,12 +154,21 @@ export default function SignupForm() {
           <div className="grid gap-4">
             <div className="grid grid-cols-2 gap-3">
               <div className="grid gap-1.5">
-                <label className="text-xs text-slate-400">Full name</label>
+                {/* The name field asked for "Full name" and said nothing about
+                    what happens to it, so people answered with their studio
+                    name — a reasonable answer to the question as asked. Then
+                    DigiLocker returned their legal name, the two shared no
+                    word, and a real customer sat in manual review looking like
+                    an impostor. Ask the two questions separately, and say which
+                    one is checked. */}
+                <label className="text-xs text-slate-400">
+                  Full name <span className="text-slate-500">(as on Aadhaar)</span>
+                </label>
                 <Input
                   value={form.fullName}
                   onChange={set("fullName")}
                   className="h-12 rounded-xl border-white/10 bg-white/5 text-white placeholder:text-slate-500"
-                  placeholder="Rahul Sharma"
+                  placeholder="Rahul Kumar Sharma"
                   autoComplete="name"
                   required
                 />
@@ -171,6 +183,23 @@ export default function SignupForm() {
                   required
                 />
               </div>
+            </div>
+
+            <div className="grid gap-1.5">
+              <label className="text-xs text-slate-400">
+                Studio or preferred name <span className="text-slate-500">(optional)</span>
+              </label>
+              <Input
+                value={form.displayName}
+                onChange={set("displayName")}
+                className="h-12 rounded-xl border-white/10 bg-white/5 text-white placeholder:text-slate-500"
+                placeholder="Mark Design"
+              />
+              <p className="text-[11px] leading-4 text-slate-500">
+                Your full name is checked against your Aadhaar record through DigiLocker, so
+                enter it exactly as it appears there — middle or father&apos;s name included.
+                This is what we&apos;ll call you instead.
+              </p>
             </div>
 
             <div className="grid gap-1.5">
