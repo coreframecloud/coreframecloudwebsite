@@ -76,6 +76,12 @@ interface VerificationStatus {
   max_attempts: number;
   failure_reason: string | null;
   verified_name: string | null;
+  // Whether the name on the account matches the one on the document, and
+  // whether the customer is in a position to fix it. Deliberately booleans —
+  // the API never tells the client what the document says, so correcting it
+  // cannot be a copy-paste.
+  name_matches_document: boolean | null;
+  can_correct_legal_name: boolean;
 }
 
 type Phase = "loading" | "intro" | "gstin" | "bank" | "redirecting" | "polling" | "approved" | "review" | "failed" | "duplicate" | "error";
@@ -126,6 +132,9 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
   const [gstinBusy, setGstinBusy] = useState(false);
   const [business, setBusiness] = useState<BusinessState | null>(null);
   const [bank, setBank] = useState<{ upi_link?: string; qr?: string; expected?: string } | null>(null);
+  const [legalName, setLegalName] = useState("");
+  const [legalNameBusy, setLegalNameBusy] = useState(false);
+  const [legalNameError, setLegalNameError] = useState("");
   const [bankBusy, setBankBusy] = useState(false);
   const [bankHint, setBankHint] = useState("");
   const pollStarted = useRef<number>(0);
@@ -264,6 +273,33 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [phase]);
+
+  async function submitLegalName(e: React.FormEvent) {
+    e.preventDefault();
+    setLegalNameError("");
+    const value = legalName.trim();
+    if (value.length < 2) return setLegalNameError("Enter your full name as printed on your Aadhaar.");
+
+    setLegalNameBusy(true);
+    try {
+      const res = await fetch(`${API}/verification/legal-name`, {
+        method: "POST",
+        headers: authHeaders(),
+        body: JSON.stringify({ full_name: value }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.detail ?? `Error ${res.status}`);
+      setStatus(data);
+      // Matching the name clears this hold; it does not necessarily clear the
+      // others. An account held for a second reason stays on this screen, now
+      // correctly saying there is nothing further for them to do.
+      setPhase(data.account_active ? "approved" : "review");
+    } catch (err: unknown) {
+      setLegalNameError(err instanceof Error ? err.message : "Could not update the name. Try again.");
+    } finally {
+      setLegalNameBusy(false);
+    }
+  }
 
   async function submitGstin(e: React.FormEvent) {
     e.preventDefault();
@@ -453,6 +489,55 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
   }
 
   if (phase === "review") {
+    // The one hold the customer can clear themselves. Everything else here —
+    // age, a duplicate identity, a business check — is genuinely ours to
+    // decide, and telling them to wait is the honest answer. A name mismatch
+    // is not: their studio name is sitting in the field that has to hold their
+    // legal name, and only they can say what that is. Telling them to wait was
+    // how #55 sat untouched from the 4th of September.
+    if (status?.can_correct_legal_name) {
+      return (
+        <Card>
+          <Header
+            icon={<Clock className="h-5 w-5" />}
+            title="One thing does not match"
+            sub="Your Aadhaar was verified. The name on your account is not the name on the document, so we cannot activate it yet."
+          />
+          <form onSubmit={submitLegalName} className="grid gap-3">
+            <label className="text-xs text-slate-400">Your full name, exactly as on your Aadhaar</label>
+            <input
+              value={legalName}
+              onChange={(e) => { setLegalName(e.target.value); setLegalNameError(""); }}
+              className="h-12 rounded-xl border border-white/10 bg-white/5 px-4 text-white placeholder:text-slate-500"
+              placeholder="Rahul Kumar Sharma"
+              autoComplete="name"
+              autoFocus
+            />
+            <p className="text-[11px] leading-4 text-slate-500">
+              Include every part of it — a middle name or father&apos;s name if your Aadhaar has one.
+              If you signed up with a studio or brand name, that is almost certainly what happened;
+              you can still use it as your display name afterwards.
+            </p>
+            {legalNameError && (
+              <p className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+                {legalNameError}
+              </p>
+            )}
+            <button
+              type="submit"
+              disabled={legalNameBusy}
+              className="h-12 rounded-xl bg-cyan-500 text-base font-semibold text-slate-950 disabled:opacity-60"
+            >
+              {legalNameBusy ? "Checking…" : "Check and continue"}
+            </button>
+          </form>
+          <div className="mt-5 text-sm text-slate-500">
+            Not sure? <Link href="/contact" className="text-cyan-400 hover:underline">Contact us</Link>
+          </div>
+        </Card>
+      );
+    }
+
     return (
       <Card>
         <Header
