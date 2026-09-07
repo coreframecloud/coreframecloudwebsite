@@ -76,6 +76,9 @@ interface VerificationStatus {
   max_attempts: number;
   failure_reason: string | null;
   verified_name: string | null;
+  // When a spent attempt budget clears itself. null means it will not — the
+  // cooldown is off, or this is not a state that retries.
+  retry_available_at: string | null;
   // Whether the name on the account matches the one on the document, and
   // whether the customer is in a position to fix it. Deliberately booleans —
   // the API never tells the client what the document says, so correcting it
@@ -558,14 +561,43 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
 
   if (phase === "failed") {
     const outOfAttempts = !!status && status.max_attempts > 0 && status.attempts >= status.max_attempts;
+    // Rounded UP and floored at 1: "try again in 0 minutes" is worse than
+    // saying nothing, and a customer who reads "1 minute" and comes back at 61
+    // seconds should succeed rather than be refused again.
+    // Append Z when the API sends a zone-less timestamp. FastAPI serialises
+    // naive UTC datetimes without an offset, and JavaScript parses a zone-less
+    // string as LOCAL time — in IST that puts the retry 5h30m in the past, so
+    // this would always render "1 minute" and refuse the customer who believed
+    // it. Same bug that made every node heartbeat read "5h ago" in the admin
+    // panel, which is why that file has a utcDate() helper.
+    const retryRaw = status?.retry_available_at ?? null;
+    const retryAt = retryRaw
+      ? new Date(/(?:Z|[+-]\d{2}:?\d{2})$/.test(retryRaw) ? retryRaw : `${retryRaw}Z`)
+      : null;
+    const retryMinutes = retryAt && !Number.isNaN(retryAt.getTime())
+      ? Math.max(1, Math.ceil((retryAt.getTime() - Date.now()) / 60000))
+      : null;
     return (
       <Card>
         <Header icon={<XCircle className="h-5 w-5" />} title="Verification did not complete" sub={reason} />
         {outOfAttempts ? (
-          <p className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
-            You have used all available attempts. Please{" "}
-            <Link href="/contact" className="underline">contact us</Link> and we will reset it for you.
-          </p>
+          // Attempts clear themselves after a cooldown, so telling everyone to
+          // contact us spends exactly the support round trip the auto-reset was
+          // written to save. Say when instead — and only fall back to asking
+          // them to write in when the API says it will NOT clear.
+          retryMinutes !== null ? (
+            <p className="rounded-xl border border-amber-500/25 bg-amber-500/10 px-4 py-3 text-sm text-amber-200">
+              You have used all the attempts we allow in one go. You can try again in about{" "}
+              {retryMinutes} minute{retryMinutes === 1 ? "" : "s"} — nothing is wrong with your
+              account and there is no need to contact us. Most of the time this just means the
+              DigiLocker link expired before it was opened; it is only valid for 10 minutes.
+            </p>
+          ) : (
+            <p className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+              You have used all available attempts. Please{" "}
+              <Link href="/contact" className="underline">contact us</Link> and we will reset it for you.
+            </p>
+          )
         ) : (
           <Button
             onClick={() => startVerification("signin")}
