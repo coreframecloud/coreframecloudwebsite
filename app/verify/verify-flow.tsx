@@ -135,6 +135,9 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
   const [gstinBusy, setGstinBusy] = useState(false);
   const [business, setBusiness] = useState<BusinessState | null>(null);
   const [bank, setBank] = useState<{ upi_link?: string; qr?: string; expected?: string } | null>(null);
+  const [phoneInput, setPhoneInput] = useState("");
+  const [phoneBusy, setPhoneBusy] = useState(false);
+  const [phoneError, setPhoneError] = useState("");
   const [legalName, setLegalName] = useState("");
   const [legalNameBusy, setLegalNameBusy] = useState(false);
   const [legalNameError, setLegalNameError] = useState("");
@@ -276,6 +279,35 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [phase]);
+
+  // Google OAuth creates accounts with no phone number — it is the third signup
+  // door and carries most of the signups, so most people arriving here have
+  // never been asked for one. Verification cannot start without it.
+  async function submitPhone(e: React.FormEvent) {
+    e.preventDefault();
+    setPhoneError("");
+    const value = phoneInput.trim();
+    // Shape only; the server normalises to E.164 and decides. Same rule as the
+    // signup form: 10 digits starting 6-9, however it is spaced.
+    if (!/^(?:0091|91)?0?[6-9]\d{9}$/.test(value.replace(/\D/g, ""))) {
+      return setPhoneError("Enter a 10-digit Indian mobile number (starting 6, 7, 8 or 9).");
+    }
+    setPhoneBusy(true);
+    try {
+      const res = await fetch(`${API}/verification/phone`, {
+        method: "POST",
+        headers: authHeaders(),
+        body: JSON.stringify({ phone_number: value }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.detail ?? `Error ${res.status}`);
+      setStatus(data);
+    } catch (err: unknown) {
+      setPhoneError(err instanceof Error ? err.message : "Could not save that number. Try again.");
+    } finally {
+      setPhoneBusy(false);
+    }
+  }
 
   async function submitLegalName(e: React.FormEvent) {
     e.preventDefault();
@@ -859,6 +891,35 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
         </p>
       )}
 
+      {status && !status.has_phone_number ? (
+        <form onSubmit={submitPhone} className="grid gap-3">
+          <label className="text-sm text-slate-300">
+            First, your mobile number
+          </label>
+          <input
+            value={phoneInput}
+            onChange={(e) => { setPhoneInput(e.target.value); setPhoneError(""); }}
+            className="h-12 rounded-xl border border-white/10 bg-white/5 px-4 text-white placeholder:text-slate-500"
+            placeholder="98765 43210"
+            type="tel"
+            inputMode="tel"
+            autoComplete="tel"
+            autoFocus
+          />
+          <p className="text-[11px] leading-4 text-slate-500">
+            You signed in with Google, so we have not asked for one yet. Indian mobile number —
+            we send sign-in codes there, and it is how we reach you about your account.
+          </p>
+          {phoneError && (
+            <p className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+              {phoneError}
+            </p>
+          )}
+          <Button type="submit" disabled={phoneBusy} className="h-12 rounded-xl text-base font-semibold">
+            {phoneBusy ? "Saving…" : "Save and continue"}
+          </Button>
+        </form>
+      ) : (
       <div className="grid gap-3">
         <Button
           onClick={() => startVerification("signin")}
@@ -878,6 +939,7 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
           New to DigiLocker? Create an account as part of this →
         </button>
       </div>
+      )}
 
       <p className="mt-5 text-xs text-slate-500">
         Sharing is consent-based and compliant with the Digital Personal Data Protection Act, 2023.
