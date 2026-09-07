@@ -85,7 +85,7 @@ export default function AppsPage() {
         acceptedAnswer: {
           "@type": "Answer",
           text:
-            "The applications are installed for you rather than by you. D5 Render, Twinmotion, Blender and the rest of the standard set are already on the machine, and Revit, AutoCAD, 3ds Max, V-Ray, Lumion and Enscape can be added to the image on request — you sign in with your own licence. Your session runs as a standard Windows user, which is what lets us guarantee the workstation is reset to a clean image before the next customer.",
+            "The applications are installed for you rather than by you. D5 Render, Twinmotion, Blender and the rest of the standard set are already on the machine, and Revit, AutoCAD, 3ds Max, V-Ray, Lumion and Enscape are set up with you once — those vendors need your own account to download, and after that they are on every workstation, running on your own licence. Your session runs as a standard Windows user, which is what lets us guarantee the workstation is reset to a clean image before the next customer.",
         },
       },
       {
@@ -122,7 +122,7 @@ export default function AppsPage() {
       <p className="mt-5 max-w-3xl text-lg leading-8 text-white/70">
         Every Coreframe workstation is a full Windows machine with an RTX GPU. A standard set of
         tools is installed and ready the moment your desktop appears — you sign in with your own
-        licences. Anything missing, we add to the image on request, usually the same day.
+        licences. Anything free and missing, we add to the image on request. Licensed applications we set up with you once, because the vendor needs your account to download.
       </p>
 
       <Group

@@ -134,8 +134,9 @@ export async function GET(): Promise<Response> {
   out.push(
     "- **Bring your own licence:** Lumion, Enscape, V-Ray, Chaos Vantage, Corona, " +
       "SketchUp Pro, Rhino, KeyShot, Archicad, AutoCAD, Revit, 3ds Max, Maya, Adobe Creative " +
-      "Cloud. Coreframe installs these into the image on request and you sign in with your " +
-      "own subscription, so the workflow is identical to your own PC.",
+      "Cloud. These vendors require your own account to download the installer, so Coreframe " +
+      "sets them up with you once; they are then on every workstation you launch and run on " +
+      "your own subscription.",
   );
   out.push(
     "- **Anything else:** email admin@coreframecloud.com. It goes into the standard image, " +

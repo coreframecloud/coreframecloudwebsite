@@ -62,7 +62,7 @@ export const SOFTWARE_PAGES: SoftwarePage[] = [
     faqs: [
       {
         q: "Can I run Autodesk Revit on a cloud GPU workstation?",
-        a: "Yes. A Coreframe workstation is a full Windows machine with an RTX GPU, and Revit runs exactly as it would on a local PC. We install it into the standard image on request; you sign in with your own Autodesk subscription.",
+        a: "Yes. A Coreframe workstation is a full Windows machine with an RTX GPU, and Revit runs exactly as it would on a local PC. Autodesk requires your own account to download the installer, so we set it up with you once — a short session where you sign in — and Revit is then on every workstation you launch, running on your own subscription.",
       },
       {
         q: "Does Coreframe provide a Revit licence?",
@@ -99,7 +99,7 @@ export const SOFTWARE_PAGES: SoftwarePage[] = [
     faqs: [
       {
         q: "Can I run 3ds Max and V-Ray on a rented cloud GPU?",
-        a: "Yes. You get a full Windows desktop with an RTX GPU, and 3ds Max, V-Ray, Corona and Chaos Vantage all run normally. We add them to the standard image on request; you sign in with your own Autodesk and Chaos licences.",
+        a: "Yes. You get a full Windows desktop with an RTX GPU, and 3ds Max, V-Ray, Corona and Chaos Vantage all run normally. Autodesk and Chaos both need your own account to download, so we set these up with you once and they are on every workstation afterwards, running on your own licences.",
       },
       {
         q: "Is this a render farm?",
@@ -280,7 +280,7 @@ export const SOFTWARE_PAGES: SoftwarePage[] = [
     faqs: [
       {
         q: "Can I run Rhino and Grasshopper on a cloud workstation?",
-        a: "Yes. It is a standard Windows desktop, and Rhino, Grasshopper and plugins run normally with your own licence. We put them in the standard image on request rather than you installing them each session.",
+        a: "Yes. It is a standard Windows desktop, and Rhino, Grasshopper and plugins run normally with your own licence. We set them up with you once rather than you reinstalling them every session."
       },
       { q: "Do my Rhino files persist between sessions?", a: RESET_ANSWER },
     ],

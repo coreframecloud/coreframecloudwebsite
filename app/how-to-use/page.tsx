@@ -60,7 +60,7 @@ const FAQS = [
   },
   {
     q: "Can I install my own software on the workstation?",
-    a: "The applications are installed for you rather than by you. Your session runs as a standard Windows user — that is what lets us promise the machine is reset to a clean image before the next customer, because nothing you or anyone else runs can survive it. Anything portable that does not need an installer will run. If you need an application we do not carry, email admin@coreframecloud.com and we add it to the standard image, usually the same day, and it is there on every workstation from then on.",
+    a: "The applications are installed for you rather than by you. Your session runs as a standard Windows user — that is what lets us promise the machine is reset to a clean image before the next customer, because nothing you or anyone else runs can survive it. Anything portable that does not need an installer will run. If you need an application we do not carry, email admin@coreframecloud.com. Free software we add to the standard image, usually the same day. Licensed software — Autodesk, Chaos, Lumion — needs your own account even to download, so we arrange a short setup session with you; after that it is on every workstation you launch.",
   },
   {
     q: "What happens to my files when the session ends?",
