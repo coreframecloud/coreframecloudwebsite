@@ -62,7 +62,7 @@ export const SOFTWARE_PAGES: SoftwarePage[] = [
     faqs: [
       {
         q: "Can I run Autodesk Revit on a cloud GPU workstation?",
-        a: "Yes. A Coreframe workstation is a full Windows machine with an RTX GPU and administrator rights, so Revit installs and runs exactly as it would on a local PC. You sign in with your own Autodesk subscription.",
+        a: "Yes. A Coreframe workstation is a full Windows machine with an RTX GPU, and Revit runs exactly as it would on a local PC. We install it into the standard image on request; you sign in with your own Autodesk subscription.",
       },
       {
         q: "Does Coreframe provide a Revit licence?",
@@ -99,7 +99,7 @@ export const SOFTWARE_PAGES: SoftwarePage[] = [
     faqs: [
       {
         q: "Can I run 3ds Max and V-Ray on a rented cloud GPU?",
-        a: "Yes. You get a full Windows desktop with an RTX GPU and administrator rights, so 3ds Max, V-Ray, Corona and Chaos Vantage install and run normally. You sign in with your own Autodesk and Chaos licences.",
+        a: "Yes. You get a full Windows desktop with an RTX GPU, and 3ds Max, V-Ray, Corona and Chaos Vantage all run normally. We add them to the standard image on request; you sign in with your own Autodesk and Chaos licences.",
       },
       {
         q: "Is this a render farm?",
@@ -280,7 +280,7 @@ export const SOFTWARE_PAGES: SoftwarePage[] = [
     faqs: [
       {
         q: "Can I run Rhino and Grasshopper on a cloud workstation?",
-        a: "Yes. It is a standard Windows desktop with administrator rights, so Rhino, Grasshopper and any plugins install and run normally with your own licence.",
+        a: "Yes. It is a standard Windows desktop, and Rhino, Grasshopper and plugins run normally with your own licence. We put them in the standard image on request rather than you installing them each session.",
       },
       { q: "Do my Rhino files persist between sessions?", a: RESET_ANSWER },
     ],
@@ -300,7 +300,7 @@ export const SOFTWARE_PAGES: SoftwarePage[] = [
       "Machines in India: low latency for Indian users, and rupee pricing with GST invoices.",
       "Per-minute billing that starts when the stream does — provisioning is free.",
       "Persistent NAS storage for project files between sessions.",
-      "A full Windows desktop with administrator rights, not a restricted appliance.",
+      "A full Windows desktop, not a restricted appliance — every application you need, installed for you.",
       "No setup fee and no monthly minimum on pay-as-you-go.",
     ],
     licence:

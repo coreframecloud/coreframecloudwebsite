@@ -118,24 +118,28 @@ export async function GET(): Promise<Response> {
   out.push("## Software");
   out.push("");
   out.push(
-    "Every workstation is preloaded with a common set of tools, and you can install anything " +
-      "else you need for the duration of your session.",
+    "Every workstation is preloaded with a common set of tools. Sessions run as a standard " +
+      "Windows user, not an administrator, which is what lets Coreframe guarantee the machine " +
+      "is reset to a clean image before the next customer. Anything not on the list is added " +
+      "to the standard image on request, usually the same day.",
   );
   out.push("");
   out.push(
     "- **Preinstalled and ready:** Blender, D5 Render, Twinmotion, FreeCAD, ParaView, " +
       "Autodesk DWG TrueView, Navisworks Freedom, and the usual working tools (7-Zip, " +
       "browsers, PDF reader, GIMP, Krita, Paint.NET, XnView MP, HandBrake, FFmpeg, " +
-      "Python, VS Code). D5 Render is installed; you sign in with your own D5 account.",
+      "Python, VS Code, Steam). D5 Render and Steam are installed; you sign in with your own " +
+      "D5 and Steam accounts.",
   );
   out.push(
     "- **Bring your own licence:** Lumion, Enscape, V-Ray, Chaos Vantage, Corona, " +
       "SketchUp Pro, Rhino, KeyShot, Archicad, AutoCAD, Revit, 3ds Max, Maya, Adobe Creative " +
-      "Cloud. Install and sign in with your own subscription — the machine is yours for the " +
-      "session, so the workflow is identical to your own PC.",
+      "Cloud. Coreframe installs these into the image on request and you sign in with your " +
+      "own subscription, so the workflow is identical to your own PC.",
   );
   out.push(
-    "- **Anything else:** install it during your session and use it normally.",
+    "- **Anything else:** email admin@coreframecloud.com. It goes into the standard image, " +
+      "usually the same day, and is then on every workstation.",
   );
   out.push("");
   out.push(`Full list: ${SITE}/apps`);

@@ -41,7 +41,7 @@ const STEPS = [
   },
   {
     title: "6. Work, then end the session",
-    body: "You have a full Windows desktop with administrator rights. Your NAS drive is already mapped, so put project files there. When you are done, end the session from Connect. Billing stops at that moment and your files stay where you left them.",
+    body: "You have a full Windows desktop with the professional applications already installed. Your NAS drive is already mapped, so put project files there. When you are done, end the session from Connect. Billing stops at that moment and your files stay where you left them.",
   },
 ];
 
@@ -60,7 +60,7 @@ const FAQS = [
   },
   {
     q: "Can I install my own software on the workstation?",
-    a: "Yes. You have administrator rights for the length of your session and can install whatever you need. Anything you install lasts for that session only, because the machine is reset to a clean image afterwards. If you use an application every day, ask us to add it to the standard image.",
+    a: "The applications are installed for you rather than by you. Your session runs as a standard Windows user — that is what lets us promise the machine is reset to a clean image before the next customer, because nothing you or anyone else runs can survive it. Anything portable that does not need an installer will run. If you need an application we do not carry, email admin@coreframecloud.com and we add it to the standard image, usually the same day, and it is there on every workstation from then on.",
   },
   {
     q: "What happens to my files when the session ends?",

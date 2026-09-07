@@ -85,7 +85,7 @@ export default function AppsPage() {
         acceptedAnswer: {
           "@type": "Answer",
           text:
-            "Yes. You have a full Windows desktop with administrator rights for the length of your session, so you can install anything you need — D5 Render, Lumion, Enscape, Revit, AutoCAD, 3ds Max, V-Ray or any other application. Software you install lasts for that session; the workstation is reset to a clean image afterwards.",
+            "The applications are installed for you rather than by you. D5 Render, Twinmotion, Blender and the rest of the standard set are already on the machine, and Revit, AutoCAD, 3ds Max, V-Ray, Lumion and Enscape can be added to the image on request — you sign in with your own licence. Your session runs as a standard Windows user, which is what lets us guarantee the workstation is reset to a clean image before the next customer.",
         },
       },
       {
@@ -120,9 +120,9 @@ export default function AppsPage() {
         What&apos;s already installed
       </h1>
       <p className="mt-5 max-w-3xl text-lg leading-8 text-white/70">
-        Every Coreframe workstation is a full Windows machine with an RTX GPU and administrator
-        rights. A standard set of tools is installed and ready the moment your desktop appears,
-        and you can install anything else you need for the session.
+        Every Coreframe workstation is a full Windows machine with an RTX GPU. A standard set of
+        tools is installed and ready the moment your desktop appears — you sign in with your own
+        licences. Anything missing, we add to the image on request, usually the same day.
       </p>
 
       <Group

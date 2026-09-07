@@ -22,6 +22,16 @@ export type SoftwareItem = {
 /** Installed on every workstation. Ready the moment the desktop appears. */
 export const PREINSTALLED: SoftwareItem[] = [
   {
+    name: "Steam",
+    category: "Platforms & runtimes",
+    // Here because a session account is not an administrator and Steam's
+    // installer elevates, so a customer cannot put it on themselves. Free to
+    // install, and the customer signs into their own account — the same shape
+    // as D5 Render.
+    note: "Installed and ready; sign in with your own Steam account. Useful for Steam-distributed tools and benchmarks, and for anything you already own there.",
+    vendorUrl: "https://store.steampowered.com/",
+  },
+  {
     name: "Blender",
     category: "3D & rendering",
     note: "Full modelling, sculpting and rendering suite. Free and open source, so it is ready to use with no licence of your own.",
