@@ -85,12 +85,15 @@ const nextConfig: NextConfig = {
       { source: "/r/:token", destination: `${CONTROL_PLANE}/r/:token` },
       // its API. Scoped to /api/tools so nothing else on /api is proxied.
       { source: "/api/tools/:path*", destination: `${CONTROL_PLANE}/api/tools/:path*` },
-      // The AI studio. Same container, same reasoning as /tools -- it stays on
-      // coreframecloud.com rather than a subdomain because the site's access
-      // token lives in browser storage on this origin, and a subdomain would
-      // mean CORS plus a token-sharing scheme for no gain the customer can see.
-      { source: "/studio", destination: `${CONTROL_PLANE}/studio` },
-      { source: "/studio/:path*", destination: `${CONTROL_PLANE}/studio/:path*` },
+      // The AI studio MOVED to studio.coreframecloud.com. Its page rewrites are
+      // gone -- see redirects() below for where they went and why.
+      //
+      // These two API rewrites STAY, on purpose and temporarily. A browser tab
+      // that was already open on coreframecloud.com/studio when we cut over is
+      // still running the old page, and its fetches are relative, so they still
+      // arrive here. Redirecting an in-flight POST would lose its body; proxying
+      // it keeps that tab working until the person reloads. Delete both once the
+      // logs show nothing hitting them.
       { source: "/api/studio/:path*", destination: `${CONTROL_PLANE}/api/studio/:path*` },
       // Studio sign-in. NARROW on purpose: only /api/auth/studio/*, not all of
       // /api/auth/*. The site's own signup calls the control host directly and
@@ -109,6 +112,41 @@ const nextConfig: NextConfig = {
       {
         source: "/d5-render",
         destination: "/",
+        permanent: true,
+      },
+      /**
+       * The Studio now lives on its own host.
+       *
+       * WHY IT MOVED. It used to be proxied through here, which meant every DXF
+       * upload and every rendered PNG travelled Cloudflare -> Vercel -> our own
+       * box and back. That is a bandwidth bill and a set of edge limits on
+       * request body size and response time that we neither need nor control,
+       * for a hop that ends at a server we already own. studio.coreframecloud.com
+       * is Cloudflare straight to nginx.
+       *
+       * PERMANENT, so the move is recorded once in every browser cache and
+       * search index rather than re-litigated on every visit. That is also why
+       * this cannot be reverted casually: a 301 is cached hard, so unwinding
+       * this means serving a 301 back the other way, not just deleting these.
+       *
+       * BOTH PATHS ARE KEPT ON THE NEW HOST as well, so the destination here is
+       * the same path on a different name -- /studio/guide.pdf still resolves,
+       * and the link on the home page and anything already posted keeps working.
+       *
+       * ONE THING THIS DOES COST: sign-in state. The Studio token is in browser
+       * storage, which is per-origin, so anyone signed in on coreframecloud.com
+       * lands on the new host signed out and has to enter an emailed code once.
+       * Their projects are keyed to the account, not the browser, so nothing is
+       * lost -- but it will look like a logout to them the first time.
+       */
+      {
+        source: "/studio",
+        destination: "https://studio.coreframecloud.com/studio",
+        permanent: true,
+      },
+      {
+        source: "/studio/:path*",
+        destination: "https://studio.coreframecloud.com/studio/:path*",
         permanent: true,
       },
     ];
