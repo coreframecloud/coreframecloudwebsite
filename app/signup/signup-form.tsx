@@ -13,6 +13,7 @@ interface FormState {
   fullName: string;
   displayName: string;
   whatsappOptIn: boolean;
+  whatsappMarketingOptIn: boolean;
   orgName: string;
   email: string;
   phone: string;
@@ -26,6 +27,10 @@ export default function SignupForm() {
     fullName: "",
     displayName: "",
     whatsappOptIn: true,
+    // UNCHECKED, deliberately. The box above is checked because account
+    // updates are what someone signing up is asking for; a pre-ticked
+    // marketing box is not consent, and Meta would agree.
+    whatsappMarketingOptIn: false,
     orgName: "",
     email: "",
     phone: "",
@@ -86,6 +91,7 @@ export default function SignupForm() {
         // honest version of a default, not a pre-ticked box buried in
         // terms nobody reads.
         whatsapp_opt_in: form.whatsappOptIn,
+        whatsapp_marketing_opt_in: form.whatsappMarketingOptIn,
         organization_name: form.orgName.trim(),
         email: form.email.trim(),
         password: form.password,
@@ -289,6 +295,19 @@ export default function SignupForm() {
               <span>
                 Send me account updates on WhatsApp at this number — when my account is
                 approved, or if something needs fixing.
+              </span>
+            </label>
+
+            <label className="flex cursor-pointer items-start gap-3 text-xs leading-5 text-slate-400">
+              <input
+                type="checkbox"
+                checked={form.whatsappMarketingOptIn}
+                onChange={(e) => setForm((prev) => ({ ...prev, whatsappMarketingOptIn: e.target.checked }))}
+                className="mt-0.5 h-4 w-4 shrink-0 rounded border-white/20 bg-white/5"
+              />
+              <span>
+                Also message me about new Coreframe products and offers. Unsubscribe from
+                any message.
               </span>
             </label>
 
