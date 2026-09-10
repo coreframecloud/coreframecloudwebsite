@@ -125,7 +125,8 @@ export async function GET(): Promise<Response> {
   );
   out.push("");
   out.push(
-    "- **Preinstalled and ready:** Blender, D5 Render, Twinmotion, FreeCAD, ParaView, " +
+    "- **Preinstalled and ready:** Blender, D5 Render, Twinmotion 2026.1 HF2, "
+      + "Unreal Engine 5.8 with Quixel Bridge, FreeCAD, ParaView, " +
       "Autodesk DWG TrueView, Navisworks Freedom, and the usual working tools (7-Zip, " +
       "browsers, PDF reader, GIMP, Krita, Paint.NET, XnView MP, HandBrake, FFmpeg, " +
       "Python, VS Code, Steam). D5 Render and Steam are installed; you sign in with your own " +

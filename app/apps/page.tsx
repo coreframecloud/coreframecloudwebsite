@@ -9,7 +9,7 @@ import {
 export const metadata: Metadata = {
   title: "Preinstalled software on Coreframe GPU workstations",
   description:
-    "Every Coreframe workstation ships with Blender, Twinmotion, Autodesk viewers and the usual utilities ready to use. Install D5 Render, Lumion, Enscape, Revit or anything else you need with your own licence.",
+    "Every Coreframe workstation ships with Blender, Twinmotion 2026.1, Unreal Engine 5.8, D5 Render, Autodesk viewers and the usual utilities ready to use. Bring your own licence for Lumion, Enscape, Revit or anything else you need.",
   alternates: { canonical: "/apps" },
 };
 
@@ -76,7 +76,7 @@ export default function AppsPage() {
         acceptedAnswer: {
           "@type": "Answer",
           text:
-            "Every workstation ships with Blender, Twinmotion, Autodesk DWG TrueView, Navisworks Freedom, eDrawings Viewer, GIMP, Krita, Paint.NET, 7-Zip, Chrome, Firefox, Adobe Acrobat Reader, VLC, Notepad++, Python, the NVIDIA Studio driver and the Visual C++ and .NET runtimes. They are ready the moment the desktop appears.",
+            "Every workstation ships with Blender, Twinmotion 2026.1 HF2, Unreal Engine 5.8, D5 Render, Autodesk DWG TrueView, Navisworks Freedom, eDrawings Viewer, GIMP, Krita, Paint.NET, 7-Zip, Chrome, Firefox, Adobe Acrobat Reader, VLC, Notepad++, Python, the NVIDIA Studio driver and the Visual C++ and .NET runtimes. They are ready the moment the desktop appears.",
         },
       },
       {
@@ -85,7 +85,7 @@ export default function AppsPage() {
         acceptedAnswer: {
           "@type": "Answer",
           text:
-            "The applications are installed for you rather than by you. D5 Render, Twinmotion, Blender and the rest of the standard set are already on the machine, and Revit, AutoCAD, 3ds Max, V-Ray, Lumion and Enscape are set up with you once — those vendors need your own account to download, and after that they are on every workstation, running on your own licence. Your session runs as a standard Windows user, which is what lets us guarantee the workstation is reset to a clean image before the next customer.",
+            "The applications are installed for you rather than by you. D5 Render, Twinmotion, Unreal Engine, Blender and the rest of the standard set are already on the machine, and Revit, AutoCAD, 3ds Max, V-Ray, Lumion and Enscape are set up with you once — those vendors need your own account to download, and after that they are on every workstation, running on your own licence. Your session runs as a standard Windows user, which is what lets us guarantee the workstation is reset to a clean image before the next customer.",
         },
       },
       {

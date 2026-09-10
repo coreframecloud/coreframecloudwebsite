@@ -40,8 +40,17 @@ export const PREINSTALLED: SoftwareItem[] = [
   {
     name: "Twinmotion",
     category: "3D & rendering",
-    note: "Real-time architectural visualisation. The free tier covers most individual users.",
+    // Installed 10 Sep 2026 into the Reboot Restore baseline, so it is on the
+    // machine the moment the desktop appears -- no download, ever. The Epic
+    // sign-in is the customer's own and is wiped with their session.
+    note: "Twinmotion 2026.1 HF2, installed and ready. Sign in with your own Epic account when you need a commercial licence; the free tier covers most individual users.",
     vendorUrl: "https://www.twinmotion.com/",
+  },
+  {
+    name: "Unreal Engine",
+    category: "3D & rendering",
+    note: "Unreal Engine 5.8 with Quixel Bridge, installed and ready. Datasmith imports models from Revit and SketchUp.",
+    vendorUrl: "https://www.unrealengine.com/",
   },
   {
     name: "D5 Render",
@@ -175,7 +184,6 @@ export const BRING_YOUR_OWN_LICENCE: SoftwareItem[] = [
   { name: "SketchUp Pro", category: "CAD & BIM", note: "Sign in with your Trimble account.", vendorUrl: "https://www.sketchup.com/download/all" },
   { name: "Rhino", category: "CAD & BIM", note: "Evaluation available; then your own licence key.", vendorUrl: "https://www.rhino3d.com/download/" },
   { name: "Archicad", category: "CAD & BIM", note: "Graphisoft licence required.", vendorUrl: "https://graphisoft.com/downloads" },
-  { name: "Unreal Engine", category: "Real-time", note: "Free to install; Datasmith imports from Revit and SketchUp.", vendorUrl: "https://www.unrealengine.com/download" },
   { name: "Adobe Creative Cloud", category: "Images & textures", note: "Photoshop, Substance and the rest, on your own subscription.", vendorUrl: "https://creativecloud.adobe.com/apps/download/creative-cloud" },
 ];
 

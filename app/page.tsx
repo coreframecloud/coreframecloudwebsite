@@ -25,7 +25,7 @@ import { storageTerms } from "@/lib/storage-terms";
 export const metadata: Metadata = {
   title: "RTX 5080 workstations by the hour — Coreframe Cloud",
   description:
-    "A ₹5,00,000 workstation, rented by the hour. Full Windows machines with an RTX 5080 and D5 Render, Lumion, Enscape, Twinmotion, 3ds Max and Blender pre-installed. Per-minute billing, GST included. Hosted in Bengaluru, India.",
+    "A ₹5,00,000 workstation, rented by the hour. Full Windows machines with an RTX 5080 and Twinmotion, Unreal Engine, D5 Render and Blender pre-installed. Per-minute billing, GST included. Hosted in Bengaluru, India.",
   alternates: {
     canonical: "/",
   },
