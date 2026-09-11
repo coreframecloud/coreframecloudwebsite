@@ -504,6 +504,68 @@ export default function MyActivityPage() {
           </Link>
         </div>
 
+        {/* Saving your work. Above the wallet on purpose: a customer who
+            loses a project cares about nothing else on this page. Named the
+            drive explicitly after a customer ended a session unsure which
+            location survived — "your NAS drive" is not an instruction, "N:" is. */}
+        <section className="rounded-2xl border border-amber-400/25 bg-amber-400/[0.06] p-6">
+          <div className="flex items-start gap-3">
+            <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"
+                 className="mt-0.5 h-5 w-5 shrink-0 text-amber-300">
+              <path fillRule="evenodd" clipRule="evenodd" d="M10 1.5a1 1 0 0 1 .87.5l8 14A1 1 0 0 1 18 17.5H2a1 1 0 0 1-.87-1.5l8-14a1 1 0 0 1 .87-.5Zm0 5a.9.9 0 0 0-.9.98l.35 3.87a.55.55 0 0 0 1.1 0l.35-3.87A.9.9 0 0 0 10 6.5Zm0 7a1 1 0 1 0 0 2 1 1 0 0 0 0-2Z" />
+            </svg>
+            <div className="min-w-0">
+              <h2 className="text-lg font-semibold text-white">Where your work is saved</h2>
+              <p className="mt-2 leading-7 text-white/70">
+                Inside a session, save everything to{" "}
+                <span className="whitespace-nowrap rounded-md border border-amber-400/30 bg-amber-400/10 px-1.5 py-0.5 font-mono text-sm font-semibold text-amber-200">
+                  N:
+                </span>{" "}
+                — the drive labelled <span className="font-semibold text-white">Coreframe Datalake</span>.
+                It is already mapped when the desktop appears, and it is the only
+                place that survives the session.
+              </p>
+
+              <div className="mt-5 grid gap-3 sm:grid-cols-3">
+                <div className="rounded-xl border border-white/[0.08] bg-black/20 p-4">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-emerald-300/80">Kept</p>
+                  <p className="mt-2 text-sm leading-6 text-white/70">
+                    Anything under <span className="font-mono text-white/90">N:\</span>. Waiting for you
+                    next session, and downloadable from here any time.
+                  </p>
+                </div>
+                <div className="rounded-xl border border-white/[0.08] bg-black/20 p-4">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-rose-300/80">Erased</p>
+                  <p className="mt-2 text-sm leading-6 text-white/70">
+                    Desktop, Documents, Downloads, <span className="font-mono text-white/90">C:\</span>,
+                    and anything you installed. Wiped when the session ends.
+                  </p>
+                </div>
+                <div className="rounded-xl border border-white/[0.08] bg-black/20 p-4">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-cyan-300/80">Linked assets</p>
+                  <p className="mt-2 text-sm leading-6 text-white/70">
+                    Keep the <span className="font-semibold text-white/90">whole project folder</span> on
+                    N:, not just the scene file — D5, Twinmotion and 3ds Max break if textures move.
+                  </p>
+                </div>
+              </div>
+
+              <p className="mt-5 text-sm leading-6 text-white/50">
+                Working from a local copy? Save to <span className="font-mono text-white/80">N:</span> before
+                you finish, or use <span className="text-white/80">Save As</span> and point it there at the
+                start so every later save lands in the right place.
+              </p>
+
+              <div className="mt-5 flex flex-wrap gap-3">
+                <a href="/how-to-use#saving-your-work"
+                   className="inline-flex items-center gap-1.5 rounded-lg border border-white/15 bg-white/[0.04] px-3 py-2 text-sm font-medium text-white/80 transition hover:bg-white/[0.08] hover:text-white">
+                  Read the full guide
+                </a>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* Wallet section — layout depends on role */}
         {user?.role === "org_admin" ? (
           /* B2B Org admin: balance card + link to org portal */

@@ -41,7 +41,7 @@ const STEPS = [
   },
   {
     title: "6. Work, then end the session",
-    body: "You have a full Windows desktop with the professional applications already installed. Your NAS drive is already mapped, so put project files there. When you are done, end the session from Connect. Billing stops at that moment and your files stay where you left them.",
+    body: "You have a full Windows desktop with the professional applications already installed. Your storage is already mapped as drive N:, labelled Coreframe Datalake — save project files there and nowhere else. When you are done, end the session from Connect. Billing stops at that moment and everything on N: stays where you left it.",
   },
 ];
 
@@ -63,8 +63,8 @@ const FAQS = [
     a: "The applications are installed for you rather than by you. Your session runs as a standard Windows user — that is what lets us promise the machine is reset to a clean image before the next customer, because nothing you or anyone else runs can survive it. Anything portable that does not need an installer will run. If you need an application we do not carry, email admin@coreframecloud.com. Free software we add to the standard image, usually the same day. Licensed software — Autodesk, Chaos, Lumion — needs your own account even to download, so we arrange a short setup session with you; after that it is on every workstation you launch.",
   },
   {
-    q: "What happens to my files when the session ends?",
-    a: "Files on your NAS drive persist between sessions — that is what it is for. Anything left on the workstation's own desktop or C: drive is wiped when the session ends, along with any software you installed. Save your work to the NAS drive as you go.",
+    q: "Where exactly do I save my files?",
+    a: "On drive N:, labelled Coreframe Datalake. It is mapped for you before the desktop appears, and it is the only location that survives the session — the Desktop, Documents, Downloads and the whole C: drive are wiped when you finish, along with any software you installed. If your project uses linked assets, and D5 Render, Twinmotion and 3ds Max all do, keep the entire project folder on N: rather than only the scene file: the links break the moment the textures are somewhere that no longer exists. The simplest habit is Save As to N: at the very start, so every later save already lands in the right place.",
   },
   {
     q: "Why is the workstation wiped between sessions?",
@@ -137,12 +137,14 @@ export default function HowToUsePage() {
         </ol>
       </section>
 
-      <section className="mt-14 rounded-2xl border border-cyan-400/20 bg-cyan-400/[0.05] p-6">
+      <section id="saving-your-work" className="mt-14 scroll-mt-24 rounded-2xl border border-cyan-400/20 bg-cyan-400/[0.05] p-6">
         <h2 className="text-xl font-semibold text-white">The one thing to know before you start</h2>
         <p className="mt-3 leading-7 text-white/70">
-          The workstation resets between sessions. Software you install and files left on the
-          machine&apos;s own drive are wiped when you finish; your NAS drive persists. Save your
-          work there and nothing is lost.
+          The workstation resets between sessions. Software you install and anything left on
+          the Desktop, in Documents or on C: is wiped when you finish. Only drive{" "}
+          <span className="font-mono font-semibold text-white">N:</span> — labelled{" "}
+          <span className="font-semibold text-white">Coreframe Datalake</span> — survives. Save
+          your work there and nothing is lost.
         </p>
         <p className="mt-3 leading-7 text-white/60">
           It is what makes every session start from a clean, identical machine — no leftovers
