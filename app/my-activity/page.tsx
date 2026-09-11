@@ -243,10 +243,9 @@ function UsageCards({ wallet }: { wallet: WalletData | null }) {
         <div className="mt-3 flex items-start gap-2 rounded-lg border border-white/[0.07] bg-white/[0.02] px-3 py-2.5">
           <span className="mt-0.5 text-sm text-cyan-300/70" aria-hidden="true">↻</span>
           <p className="text-xs leading-5 text-white/45">
-            <b className="text-white/70">Keep working, keep your files.</b> Use at least{" "}
-            {retentionHours} of GPU time every {retentionDays} days and your project files stay
-            where you left them. If the account goes quiet for longer than that, we clear the
-            drive to free the space.
+            <b className="text-white/70">Your files stay put.</b> Everything on your drive is
+            kept between sessions while your account is active. We do not clear it on a timer,
+            and we will always tell you before anything changes.
           </p>
         </div>
         <p className="mt-2 text-xs text-white/25">

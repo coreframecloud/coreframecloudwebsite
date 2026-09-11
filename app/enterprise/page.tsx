@@ -327,7 +327,8 @@ export default async function EnterprisePage() {
               now comes from the rate card's own billing_granularity field. */}
           <p className="mt-3 max-w-3xl text-sm leading-7 text-white/55">
             Ad-hoc is {adhoc ? `${adhoc}/GPU-hour ` : ""}with no contract, and includes 20 GB
-            persistent storage free — 50 GB once you add credit, kept for 30 days. {billingSentence(card)}
+            persistent storage free — 50 GB once you add credit, kept while your account is
+            active. {billingSentence(card)}
             {" "}Session scratch is cleared when the session ends, so download your outputs first,
             or add persistent NAS above.
             {cheaper && adhoc ? ` Every committed tier bills extra hours below ${adhoc}, so the more you render, the more the commitment pays for itself.` : ""}

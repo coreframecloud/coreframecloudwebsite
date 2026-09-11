@@ -67,13 +67,22 @@ export function storageShort(t: StorageTerms): string {
   return `${t.trialGb} GB persistent storage free, ${t.paidGb} GB once you add credit`;
 }
 
-/** The retention rule, stated so a customer can predict it. */
-export function storageRetention(t: StorageTerms): string {
-  const hours = t.activeMinutes / 60;
-  const use = hours === 1 ? "1 hour" : `${t.activeMinutes} minutes`;
+/**
+ * What happens to a customer's files, stated so they can rely on it.
+ *
+ * Until 11 Sep 2026 this returned a 30-day purge rule. Nothing in the platform
+ * has ever implemented it - `nas_retention_days` is read only by
+ * public_pricing.py, which publishes it - so the site described a deletion that
+ * never happened, and a customer could reasonably have believed their projects
+ * were already gone.
+ *
+ * Now it states the true rule. It takes no arguments because it no longer
+ * depends on a window or a usage threshold; StorageTerms keeps those fields for
+ * the GB figures, which are real.
+ */
+export function storageRetention(_t?: StorageTerms): string {
   return (
-    `Files are kept as long as you use at least ${use} of GPU time in any ` +
-    `${t.retentionDays}-day window. After ${t.retentionDays} days without that, ` +
-    `they are purged.`
+    "Your project files stay on your drive between sessions. We do not delete " +
+    "them on a timer - they are kept while your account is active."
   );
 }

@@ -124,7 +124,7 @@ export default async function ArchitectsPage() {
       price: adhocRateHourly(card) ?? "—",
       note:
         `${billingSentence(card)} No commitment. 20 GB persistent storage free, ` +
-        "50 GB with credit · 30-day retention. Session scratch cleared at session end — " +
+        "50 GB with credit · kept while your account is active. Session scratch cleared at session end — " +
         "download outputs first.",
       cta: "Get started",
       href: "/signup",
