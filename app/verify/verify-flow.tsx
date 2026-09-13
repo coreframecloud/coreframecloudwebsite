@@ -70,6 +70,13 @@ interface VerificationStatus {
   account_active: boolean;
   mobile_otp_required: boolean;
   mobile_verified: boolean;
+  // Is there a mobile-code step in front of this customer right now? Computed
+  // on the server, because computing it here is what went wrong: the old
+  // `mobile_otp_required && !mobile_verified` ignored kyc_mobile_number, which
+  // satisfies the requirement on its own.
+  needs_mobile_otp?: boolean;
+  mobile_otp_channel?: string;
+  phone_masked?: string | null;
   email_verified: boolean;
   has_phone_number: boolean;
   attempts: number;
@@ -138,6 +145,10 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
   const [phoneInput, setPhoneInput] = useState("");
   const [phoneBusy, setPhoneBusy] = useState(false);
   const [phoneError, setPhoneError] = useState("");
+  const [otpCode, setOtpCode] = useState("");
+  const [otpBusy, setOtpBusy] = useState(false);
+  const [otpError, setOtpError] = useState("");
+  const [otpSent, setOtpSent] = useState(false);
   const [legalName, setLegalName] = useState("");
   const [legalNameBusy, setLegalNameBusy] = useState(false);
   const [legalNameError, setLegalNameError] = useState("");
@@ -306,6 +317,62 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
       setPhoneError(err instanceof Error ? err.message : "Could not save that number. Try again.");
     } finally {
       setPhoneBusy(false);
+    }
+  }
+
+  // ── the mobile-code step ──────────────────────────────────────────────────
+  //
+  // Both calls are authenticated with the bearer token this page already holds.
+  // The older /auth/request-mobile-otp takes a bare user_id and no token at
+  // all, which is fine for a signup that has not issued one yet and would be a
+  // needless widening of that surface here.
+
+  async function sendOtpCode() {
+    setOtpError("");
+    setOtpBusy(true);
+    try {
+      const res = await fetch(`${API}/verification/mobile-otp/send`, {
+        method: "POST",
+        headers: authHeaders(),
+      });
+      const data = await res.json();
+      // A 503 here is the server saying it could not DELIVER, which is a real
+      // answer and must be shown as one. The path this replaces returned 200
+      // and an expiry for a code that was never sent.
+      if (!res.ok) throw new Error(data.detail ?? `Error ${res.status}`);
+      setOtpSent(true);
+    } catch (err: unknown) {
+      setOtpError(err instanceof Error ? err.message : "Could not send the code. Try again.");
+    } finally {
+      setOtpBusy(false);
+    }
+  }
+
+  async function submitOtpCode(e: React.FormEvent) {
+    e.preventDefault();
+    setOtpError("");
+    const value = otpCode.replace(/\D/g, "");
+    if (value.length !== 6) return setOtpError("Enter the 6-digit code.");
+
+    setOtpBusy(true);
+    try {
+      const res = await fetch(`${API}/verification/mobile-otp/verify`, {
+        method: "POST",
+        headers: authHeaders(),
+        body: JSON.stringify({ code: value }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.detail ?? `Error ${res.status}`);
+      setStatus(data);
+      setOtpCode("");
+      setOtpSent(false);
+      // Verifying the number can be the last hold on the account, in which case
+      // reconsider_auto_approval has already activated it inside that request.
+      if (data.account_active) setPhase("approved");
+    } catch (err: unknown) {
+      setOtpError(err instanceof Error ? err.message : "That code did not work.");
+    } finally {
+      setOtpBusy(false);
     }
   }
 
@@ -530,6 +597,99 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
     // is not: their studio name is sitting in the field that has to hold their
     // legal name, and only they can say what that is. Telling them to wait was
     // how #55 sat untouched from the 4th of September.
+    // Checked BEFORE the name branch. Both are holds the customer can clear,
+    // but this one is thirty mechanical seconds, and clearing it re-renders
+    // straight into the name step if that is also outstanding.
+    if (status?.needs_mobile_otp) {
+      return (
+        <Card>
+          <Header
+            icon={<Fingerprint className="h-5 w-5" />}
+            title="One step left — confirm your mobile"
+            sub="Your identity checked out. We just need a contact number you have confirmed, which Indian regulations require us to hold."
+          />
+
+          <p className="mb-4 rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-slate-300">
+            Your Aadhaar record did not include a mobile number, so we could not
+            take one from DigiLocker. Confirming the number on your account
+            takes a few seconds.
+          </p>
+
+          {!otpSent ? (
+            <div className="grid gap-3">
+              <p className="text-sm text-slate-300">
+                We will send a 6-digit code on{" "}
+                <b className="text-white">WhatsApp</b>
+                {status.phone_masked ? (
+                  <> to <b className="text-white">{status.phone_masked}</b></>
+                ) : null}
+                .
+              </p>
+              <p className="text-[11px] leading-4 text-slate-500">
+                It arrives on WhatsApp, not as an SMS — check WhatsApp, not your
+                messages app.
+              </p>
+              {otpError && (
+                <p className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+                  {otpError}
+                </p>
+              )}
+              <Button
+                onClick={sendOtpCode}
+                disabled={otpBusy}
+                className="h-12 rounded-xl text-base font-semibold"
+              >
+                {otpBusy ? "Sending…" : "Send me the code"}
+              </Button>
+            </div>
+          ) : (
+            <form onSubmit={submitOtpCode} className="grid gap-3">
+              <label className="text-xs text-slate-400">
+                Enter the 6-digit code we sent on WhatsApp
+              </label>
+              <input
+                value={otpCode}
+                onChange={(e) => { setOtpCode(e.target.value); setOtpError(""); }}
+                className="h-12 rounded-xl border border-white/10 bg-white/5 px-4 text-center text-lg tracking-[0.4em] text-white placeholder:tracking-normal placeholder:text-slate-500"
+                placeholder="123456"
+                inputMode="numeric"
+                autoComplete="one-time-code"
+                maxLength={6}
+                autoFocus
+              />
+              {otpError && (
+                <p className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+                  {otpError}
+                </p>
+              )}
+              <button
+                type="submit"
+                disabled={otpBusy}
+                className="h-12 rounded-xl bg-cyan-500 text-base font-semibold text-slate-950 disabled:opacity-60"
+              >
+                {otpBusy ? "Checking…" : "Confirm my number"}
+              </button>
+              <button
+                type="button"
+                onClick={() => { setOtpSent(false); setOtpCode(""); setOtpError(""); }}
+                className="text-center text-sm text-slate-400 hover:text-slate-200"
+              >
+                Didn&apos;t get it? Send another code
+              </button>
+            </form>
+          )}
+
+          <div className="mt-5 text-sm text-slate-500">
+            No WhatsApp on that number?{" "}
+            <Link href="/contact" className="text-cyan-400 hover:underline">
+              Tell us
+            </Link>{" "}
+            and we will verify you by hand.
+          </div>
+        </Card>
+      );
+    }
+
     if (status?.can_correct_legal_name) {
       return (
         <Card>
