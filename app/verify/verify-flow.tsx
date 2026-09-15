@@ -579,11 +579,28 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
               Go to my account
             </a>
           </Button>
-          {/* The desktop client is not being handed out yet. Saying so here is
-              better than sending someone to a page that turns them away. */}
+          {/* Connect HAS been handed out since 0.3.0 shipped. This line still
+              said it had not, and it is the LAST thing a newly verified
+              customer reads. User 86 got to this screen, read "we will email
+              you as soon as your workstation is ready", and reported that he
+              could not proceed — which was accurate: the screen told him to
+              stop and wait for an email that was never going to be sent.
+
+              /my-activity has carried the same download permanently and
+              unconditionally the whole time. That does not help someone who
+              has just been told not to bother looking. */}
+          {/* eslint-disable-next-line @next/next/no-html-link-for-pages --
+              same reason as the button above: /download reads the bearer token
+              out of localStorage when it mounts, and a client-side transition
+              can carry the pre-swap verification token into it. */}
+          <a
+            href="/download"
+            className="text-center text-sm font-semibold text-cyan-300 hover:text-cyan-200"
+          >
+            Download Coreframe Connect →
+          </a>
           <p className="text-center text-xs text-slate-500">
-            Coreframe Connect is not open for download yet — we will email you as soon
-            as your workstation is ready.
+            Install it and sign in with the same email you used here.
           </p>
         </div>
       </Card>
