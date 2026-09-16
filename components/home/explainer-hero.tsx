@@ -70,7 +70,7 @@ export function ExplainerHero({
             no way to discover that we sell exactly that. */}
         <div className="mt-8 w-full sm:w-auto">
           <Link
-            href="/studio"
+            href="/floor-plan-to-render"
             className="group inline-flex flex-col gap-1 rounded-xl border border-white/15 bg-white/[0.04] px-5 py-4 text-left transition hover:border-white/30 hover:bg-white/[0.07]"
           >
             <span className="text-sm font-semibold text-white">

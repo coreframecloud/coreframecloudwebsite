@@ -13,7 +13,11 @@ const navLinks = [
   // path from a stranger to a paying customer: Rs 99, no KYC, no installer,
   // an image in about four seconds. The workstation rental is the bigger sale
   // and the harder one; this is the door.
-  { label: "Studio", href: "/studio" },
+  // Points at the PAGE ABOUT Studio, not at the app. /studio is a permanent
+  // 301 to studio.coreframecloud.com, so linking it from the nav sent every
+  // visitor -- and every crawler -- off this site before they had read a word
+  // about the product. The page links on to the app.
+  { label: "Studio", href: "/floor-plan-to-render" },
   { label: "Render 5× Faster", href: "/d5-render-cloud-workstation" },
   { label: "CFD in Minutes", href: "/ansys-cfd-gpu" },
   { label: "Pricing", href: "/#pricing" },

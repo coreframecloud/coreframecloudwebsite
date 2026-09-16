@@ -23,6 +23,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${BASE}/enscape-cloud-gpu`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
     { url: `${BASE}/ansys-cfd-gpu`, lastModified: now, changeFrequency: "monthly", priority: 0.9 },
     { url: `${BASE}/cloud-rendering-for-architects`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
+
+    // COREFRAME STUDIO. Missing entirely until now, which is most of why it is
+    // in no index: /studio on this host is a permanent 301 to the app
+    // subdomain, so the only Studio URL the site had was one it had given away.
+    // This is the page that can actually rank -- prose, headings, FAQ schema --
+    // and the app now carries a canonical link back to it.
+    { url: `${BASE}/floor-plan-to-render`, lastModified: now, changeFrequency: "monthly", priority: 0.9 },
     { url: `${BASE}/enterprise`, lastModified: now, changeFrequency: "monthly", priority: 0.9 },
     { url: `${BASE}/compute-nodes`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     { url: `${BASE}/solutions`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
