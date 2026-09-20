@@ -13,12 +13,39 @@
  *     rate card and retention is a real, separate clock.
  */
 
+import Link from "next/link";
 import type { StorageTerms } from "@/lib/storage-terms";
 
 export function BenefitsSection({ storage }: { storage: StorageTerms }) {
   return (
     <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       <Row
+        eyebrow="The card you can't buy"
+        title={<>16 GB of VRAM.<br /><Grad>Not 8.</Grad></>}
+        body={
+          <>
+            A workstation that renders comfortably lands at around ₹5,00,000 in
+            India, and the machines people actually work on commonly ship with 6
+            to 8 GB of video memory. VRAM is a ceiling rather than a speed: when
+            a scene does not fit on the card, it does not render slower — it
+            renders smaller, and the 4K still the client asked for quietly
+            becomes a 2K one.{" "}
+            <Link href="/d5-render-vs-local-gpu" className="text-cyan-300 underline underline-offset-4 hover:text-cyan-200">
+              We worked out the rent-versus-buy break-even both ways
+            </Link>
+            .
+          </>
+        }
+        points={[
+          "RTX 5080 with 16 GB GDDR7 — a whole card, not a shared slice of one",
+          "The render runs there, so your own computer stays free to keep working",
+          "Nothing to buy, house, insure or depreciate",
+        ]}
+        art={<VramArt />}
+      />
+
+      <Row
+        flip
         eyebrow="Everyone gets one"
         title={<>No more &ldquo;can I use<br />the GPU machine?&rdquo;</>}
         body="Most studios have one or two good workstations and a queue for them. Every person who needs GPU power opens Connect and starts their own session instead — so the deadline crunch stops being a scheduling problem."
@@ -31,18 +58,18 @@ export function BenefitsSection({ storage }: { storage: StorageTerms }) {
       />
 
       <Row
-        flip
         eyebrow="In front of the client"
         title={<>Stop saying<br />&ldquo;we&apos;ll come back tomorrow.&rdquo;</>}
         body="You're at a client's office, on a laptop, and they ask for a change. Today that means going back, rendering overnight and booking another meeting. With a workstation a click away, you make the change while you're still in the room."
         compare={{
           before: ["“Can we see it warmer?”", "“We'll render it tonight and come back Thursday.”"],
-          after: ["“Can we see it warmer?”", "“Give me a few minutes.”"],
+          after: ["“Can we see it warmer?”", "“Let me change it now — watch the screen.”"],
         }}
         art={<RenderArt />}
       />
 
       <Row
+        flip
         eyebrow="Files"
         title={<>Upload once.<br /><Grad>Pick up where you stopped.</Grad></>}
         body="Your project files live on Coreframe storage in India, not on the workstation. Close a session on Monday, open one on Friday, and everything is where you left it — no copying scenes onto a drive, no re-uploading 40 GB."
@@ -55,7 +82,6 @@ export function BenefitsSection({ storage }: { storage: StorageTerms }) {
       />
 
       <Row
-        flip
         eyebrow="Hiring"
         title={<>Hire the right person.<br /><Grad>Not the nearest one.</Grad></>}
         body="A good visualiser two states away doesn't need to relocate, and you don't need to ship them a workstation. They sign in to the same account, open the same project, and work on the same class of machine as everyone in the office."
@@ -83,7 +109,7 @@ function Row({
 }: {
   eyebrow: string;
   title: React.ReactNode;
-  body: string;
+  body: React.ReactNode;
   points?: string[];
   compare?: { before: string[]; after: string[] };
   art: React.ReactNode;
@@ -141,6 +167,24 @@ function Row({
 /* ── artwork ─────────────────────────────────────────────────────────────
    Inline SVG with real text at readable sizes. No raster images, so these
    stay crisp and cost nothing to load.                                     */
+
+function VramArt() {
+  return (
+    <svg viewBox="0 0 340 190" className="h-auto w-full max-w-[340px]" role="img" aria-label="A typical design laptop has 6 to 8 GB of video memory; a Coreframe node has 16 GB.">
+      <g fontFamily="system-ui">
+        <text x="14" y="26" fontSize="12.5" fill="#a8bccd">Typical design laptop</text>
+        <rect x="14" y="36" width="140" height="30" rx="7" fill="rgba(255,255,255,.05)" stroke="rgba(255,255,255,.18)" />
+        <text x="84" y="56" textAnchor="middle" fontSize="14" fill="#e8eef5" fontWeight="600">8 GB</text>
+
+        <text x="14" y="104" fontSize="12.5" fill="#22d3ee">Coreframe node</text>
+        <rect x="14" y="114" width="300" height="30" rx="7" fill="rgba(34,211,238,.12)" stroke="#22d3ee" strokeWidth="1.8" />
+        <text x="164" y="134" textAnchor="middle" fontSize="14" fill="#22d3ee" fontWeight="700">16 GB GDDR7</text>
+
+        <text x="14" y="172" fontSize="12" fill="#8fa3bc">Scene does not fit? It renders smaller, not slower.</text>
+      </g>
+    </svg>
+  );
+}
 
 function TeamArt() {
   return (

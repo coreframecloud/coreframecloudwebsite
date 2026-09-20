@@ -19,7 +19,7 @@ const navLinks = [
   // about the product. The page links on to the app.
   { label: "Studio", href: "/floor-plan-to-render" },
   { label: "D5 Render", href: "/d5-render-cloud-workstation" },
-  { label: "CFD in Minutes", href: "/ansys-cfd-gpu" },
+  { label: "CFD on GPU", href: "/ansys-cfd-gpu" },
   { label: "Pricing", href: "/#pricing" },
   { label: "Enterprise", href: "/enterprise" },
 ];
