@@ -43,6 +43,7 @@ export function SiteFooter() {
                 { label: "Free IFC check", href: "/tools" },
                 { label: "Pricing", href: "/#pricing" },
                 { label: "Enterprise plans", href: "/enterprise" },
+                { label: "About Coreframe", href: "/about" },
               ].map((l) => (
                 <Link key={l.href} href={l.href} className="text-xs text-white/50 hover:text-white transition">{l.label}</Link>
               ))}

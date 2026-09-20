@@ -18,7 +18,7 @@ const navLinks = [
   // visitor -- and every crawler -- off this site before they had read a word
   // about the product. The page links on to the app.
   { label: "Studio", href: "/floor-plan-to-render" },
-  { label: "Render 5× Faster", href: "/d5-render-cloud-workstation" },
+  { label: "D5 Render", href: "/d5-render-cloud-workstation" },
   { label: "CFD in Minutes", href: "/ansys-cfd-gpu" },
   { label: "Pricing", href: "/#pricing" },
   { label: "Enterprise", href: "/enterprise" },

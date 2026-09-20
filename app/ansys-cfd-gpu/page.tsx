@@ -3,7 +3,7 @@ import { BackgroundGlow } from "@/components/home/background-glow";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "GPU Workstations for CFD, by the Hour — Bring Your Own Licence | India",
+  title: "GPU Workstations for CFD, by the Hour",
   description:
     "Rent an RTX-class GPU workstation by the hour and run Ansys Fluent, OpenFOAM or your own CFD solver on it. You bring the licence and the engineering; we provide the hardware. India, INR billing, GST invoice.",
   keywords: [

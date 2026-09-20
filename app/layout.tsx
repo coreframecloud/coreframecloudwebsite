@@ -10,14 +10,13 @@ import { getRateCard, planTiers } from "@/lib/rate-card";
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.coreframecloud.com"),
   title: {
-    default: "Coreframe Cloud | 5× Faster Rendering & CFD in Minutes — GPU Cloud India",
+    default: "Coreframe Cloud — RTX 5080 GPU workstations by the hour, India",
     template: "%s | Coreframe Cloud",
   },
   description:
-    "Want renders 5× faster? CFD analysis in minutes instead of days? Coreframe gives you managed RTX 5080 GPU workstations for D5 Render, Lumion, Enscape — plus managed per-job Ansys CFD. Pay per hour. Hosted in Bengaluru, India.",
+    "Coreframe Cloud rents full Windows RTX 5080 workstations by the minute from Bengaluru, India, for D5 Render, Lumion, Enscape, 3ds Max, Blender and GPU CFD. INR billing with GST included, persistent project storage, no hardware to buy.",
   keywords: [
     "faster D5 Render cloud India",
-    "5x faster rendering India",
     "CFD simulation faster India",
     "Ansys CFD cloud GPU India",
     "cloud GPU workstation India",
@@ -181,8 +180,24 @@ export default async function RootLayout({
                 {
                   "@type": ["Organization", "LocalBusiness"],
                   "@id": "https://www.coreframecloud.com/#organization",
-                  name: "Coreframe Compute Labs Private Limited",
-                  alternateName: "Coreframe Cloud",
+                  /**
+                   * BRAND NAME FIRST, legal name beside it.
+                   *
+                   * "Coreframe Cloud" is what people type and what assistants
+                   * are asked about; the Pvt Ltd name is what the GSTIN and the
+                   * invoices carry. Schema has slots for both, and a GEO check
+                   * on 20 Sep 2026 found "what is Coreframe Cloud" returning
+                   * CloudFrame, Coreframe Technologies, Coreframesolutions,
+                   * CoreFrame Studio and a PyPI package -- five other entities
+                   * and not us. disambiguatingDescription exists for exactly
+                   * that, and the identifiers below are the part no
+                   * same-named company can copy.
+                   */
+                  name: "Coreframe Cloud",
+                  legalName: "Coreframe Compute Labs Private Limited",
+                  alternateName: ["Coreframe", "Coreframe Compute Labs"],
+                  disambiguatingDescription:
+                    "Coreframe Cloud is the cloud GPU workstation service operated by Coreframe Compute Labs Private Limited of Bengaluru, India (CIN U63119KA2026PTC220789). It is unrelated to CloudFrame, Coreframe Technologies, Coreframe Solutions, CoreFrame Studio, or the coreframe package on PyPI.",
                   url: "https://www.coreframecloud.com",
                   logo: "https://www.coreframecloud.com/icon.png",
                   description:
@@ -199,7 +214,48 @@ export default async function RootLayout({
                     addressCountry: "IN",
                   },
                   areaServed: "IN",
-                  sameAs: [],
+                  foundingDate: "2026",
+                  founder: { "@type": "Person", name: "Sowjanya Pandala" },
+                  /**
+                   * Statutory identifiers. These are the strongest
+                   * disambiguation signal available: a CIN resolves to exactly
+                   * one company in the MCA register, so anything quoting it is
+                   * unambiguously us.
+                   */
+                  identifier: [
+                    { "@type": "PropertyValue", propertyID: "CIN", value: "U63119KA2026PTC220789" },
+                    { "@type": "PropertyValue", propertyID: "GSTIN", value: "29AANCC8401D1ZO" },
+                  ],
+                  knowsAbout: [
+                    "cloud GPU workstations",
+                    "architectural visualisation",
+                    "real-time rendering",
+                    "GPU-accelerated CFD",
+                    "NVIDIA RTX 5080",
+                  ],
+                  /**
+                   * Add a profile here only once it exists and resolves. An
+                   * URL to a page that 404s is a broken identity claim, which
+                   * is worse than an empty list. LinkedIn, YouTube, Crunchbase
+                   * and the Google Business Profile go in as they are created.
+                   */
+                  sameAs: ["https://www.instagram.com/coreframecloud/"],
+                  contactPoint: [
+                    {
+                      "@type": "ContactPoint",
+                      contactType: "sales",
+                      email: "admin@coreframecloud.com",
+                      telephone: "+916366889488",
+                      areaServed: "IN",
+                      availableLanguage: ["en", "hi", "te", "kn"],
+                    },
+                    {
+                      "@type": "ContactPoint",
+                      contactType: "technical support",
+                      email: "support@coreframecloud.com",
+                      areaServed: "IN",
+                    },
+                  ],
                   priceRange: "₹₹",
                 },
                 {

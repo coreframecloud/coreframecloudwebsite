@@ -24,6 +24,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // D5 queries are the best-ranking cluster in Search Console (positions
     // 4-10) and this page was left out, so it was found only by links.
     { url: `${BASE}/d5-render-cloud-workstation`, lastModified: now, changeFrequency: "monthly", priority: 0.9 },
+    { url: `${BASE}/d5-render-vs-local-gpu`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     { url: `${BASE}/ansys-cfd-gpu`, lastModified: now, changeFrequency: "monthly", priority: 0.9 },
     { url: `${BASE}/cloud-rendering-for-architects`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
 
@@ -40,6 +41,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // The two pages that answer "how does this actually work" — the questions
     // people ask before buying, and the ones AI assistants get asked most.
     { url: `${BASE}/how-to-use`, lastModified: now, changeFrequency: "monthly", priority: 0.9 },
+
+    // The identity page. Brand queries ("what is Coreframe Cloud") returned
+    // five other companies and not us, because no page here answered the
+    // question at all.
+    { url: `${BASE}/about`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
     { url: `${BASE}/apps`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
 
     // Per-application landing pages, generated from the same data the pages

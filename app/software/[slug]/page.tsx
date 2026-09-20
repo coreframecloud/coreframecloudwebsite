@@ -100,6 +100,21 @@ export default async function SoftwareLandingPage({
         </ul>
       </section>
 
+      {page.sections?.length ? (
+        <div className="mt-12 space-y-12">
+          {page.sections.map((section) => (
+            <section key={section.h2}>
+              <h2 className="text-2xl font-semibold text-white">{section.h2}</h2>
+              {section.body.map((para) => (
+                <p key={para} className="mt-4 leading-8 text-white/70">
+                  {para}
+                </p>
+              ))}
+            </section>
+          ))}
+        </div>
+      ) : null}
+
       <section className="mt-12 rounded-2xl border border-cyan-400/20 bg-cyan-400/[0.05] p-6">
         <h2 className="text-lg font-semibold text-white">Licensing</h2>
         <p className="mt-3 leading-7 text-white/70">{page.licence}</p>

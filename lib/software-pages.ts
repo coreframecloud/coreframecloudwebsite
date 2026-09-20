@@ -32,6 +32,16 @@ export type SoftwarePage = {
   /** Whether we preinstall it, or they bring a licence. Honesty up front. */
   licence: string;
   faqs: { q: string; a: string }[];
+  /**
+   * Optional long-form body, rendered between "why" and licensing.
+   *
+   * Added because the short form was not competitive. /software/3ds-max-cloud-workstation
+   * drew 183 impressions in 90 days and zero clicks at position 24, against
+   * pages running several times its length. Four bullets and three FAQs cannot
+   * answer "3ds max cloud workstation rental" better than a page that actually
+   * works the question through, and an answer engine has nothing to quote.
+   */
+  sections?: { h2: string; body: string[] }[];
   /** Related slugs for internal linking. */
   related: string[];
 };
@@ -77,7 +87,7 @@ export const SOFTWARE_PAGES: SoftwarePage[] = [
         a: "You pay per minute of streaming time at the published GPU-hour rate — no setup fee and no monthly minimum. Provisioning time and failed connections are not billed.",
       },
     ],
-    related: ["d5-render-cloud-workstation", "3ds-max-cloud-workstation", "enscape-cloud-workstation"],
+    related: ["3ds-max-cloud-workstation", "twinmotion-cloud-workstation", "sketchup-cloud-workstation"],
   },
 
   {
@@ -90,12 +100,39 @@ export const SOFTWARE_PAGES: SoftwarePage[] = [
     problem:
       "Rendering ties up your workstation for hours, and the machine that would do it comfortably costs several lakh and sits idle most of the year.",
     why: [
-      "GPU rendering in V-Ray, Corona or Chaos Vantage on hardware built for it.",
+      "GPU rendering in V-Ray GPU or Chaos Vantage on hardware built for it. Corona is a CPU renderer — see the note below before you assume it benefits.",
       "Your own computer stays usable while the render runs on the rented machine.",
       "Scale up for a deadline and stop paying the moment it ships.",
       "Scene files stay on persistent NAS storage between sessions.",
     ],
     licence: LICENCE_BYOL + " That includes 3ds Max itself and any renderer — V-Ray, Corona or Vantage — you sign in to with your Chaos account.",
+    sections: [
+      {
+        h2: "Which renderer you use changes the answer",
+        body: [
+          "3ds Max is not one workload, and the honest recommendation depends entirely on what you render with. It is worth being specific, because the wrong assumption here costs you money.",
+          "V-Ray GPU and Chaos Vantage do their work on the graphics card. Those are the cases a rented RTX 5080 is built for: 16 GB of GDDR7 is the ceiling on how much scene fits, and it is a good deal more than the 6 to 8 GB in most laptops and entry desktops sold for design work. When a GPU render fails or forces you to cut texture resolution, VRAM is almost always why.",
+          "Corona is a CPU renderer. So is V-Ray's CPU engine, which many studios still use for final frames. A Coreframe node has a 6-core EPYC, which is a sensible CPU for driving a viewport and a GPU renderer but is not a render node for CPU work — if Corona is where your final frames come from, a rented workstation will not speed that up, and we would rather say so here than have you find out during a trial.",
+          "The mixed case is the common one: model and light interactively with the GPU in Vantage or V-Ray GPU, keep CPU final frames wherever they already live. That works well, and it is worth planning around rather than discovering.",
+        ],
+      },
+      {
+        h2: "Why studios rent for 3ds Max specifically",
+        body: [
+          "Archviz work in 3ds Max is bursty in a way that punishes buying. There is a week before a client presentation when the machine cannot keep up, and three weeks afterwards when it idles. A workstation that renders comfortably lands at roughly ₹5,00,000 in India, is bought once, and is still on the books whether or not the project that justified it goes ahead.",
+          "The second reason is that rendering takes the machine away from you. A local render ties up the computer you also model on, so the afternoon is spent waiting. Running it on a rented machine gives the afternoon back — your own computer stays free while the render runs somewhere else.",
+          "The third is hiring. A studio taking on a remote 3ds Max artist otherwise has to ship them a workstation, buy a laptop that cannot really cope, or hope they own something adequate. A rented machine they reach from their own laptop costs a few thousand rupees a month instead of five lakh of hardware, and it stops cleanly if the arrangement does not.",
+        ],
+      },
+      {
+        h2: "What the session is actually like",
+        body: [
+          "It is a full Windows 11 desktop, not a submission portal. You install 3ds Max and your renderer with your own Autodesk and Chaos accounts, open your scene from persistent storage, and work — viewport, material editor, render setup, all of it, the same as a machine under your desk.",
+          "The machine resets to a clean image when the session ends, which is how we can promise no trace of another studio's work is on it when you get it. Your scene files are not on that machine: they sit on storage that persists between sessions, so a session opened on Friday picks up where Monday's stopped without anything being copied around. On a committed monthly plan we build your applications into the baseline image on your nodes, so they are already there when you sign in.",
+          "Billing runs per minute from the moment the stream starts. Provisioning, uploads and a connection that drops are not billed.",
+        ],
+      },
+    ],
     faqs: [
       {
         q: "Can I run 3ds Max and V-Ray on a rented cloud GPU?",
@@ -106,8 +143,20 @@ export const SOFTWARE_PAGES: SoftwarePage[] = [
         a: "No. A render farm takes a submitted job and returns frames. Coreframe gives you an interactive workstation you drive yourself, so you can set up the scene, tweak materials and render in the same session — the same way you work locally.",
       },
       { q: "What happens to my scene files after the session?", a: RESET_ANSWER },
+      {
+        q: "Will Corona render faster on a Coreframe workstation?",
+        a: "Probably not, and it is better to know that now. Corona is a CPU renderer, and a Coreframe node has a 6-core EPYC — enough to drive the application and a GPU renderer, but not a CPU render node. If your final frames come out of Corona, the machine will not change that. Where it helps is V-Ray GPU and Chaos Vantage, which render on the graphics card.",
+      },
+      {
+        q: "How much VRAM do I need for 3ds Max GPU rendering?",
+        a: "VRAM is a ceiling rather than a speed: geometry, textures and lightmaps have to fit on the card, and when they do not, a GPU render fails or forces you to cut texture resolution. A Coreframe node has 16 GB of GDDR7, against the 6 to 8 GB in many laptops and entry desktops sold for design work. We will not predict how your particular scene behaves — open it in a trial session and watch the VRAM meter.",
+      },
+      {
+        q: "Do I need to reinstall 3ds Max every session?",
+        a: "On ad-hoc hourly sessions, yes, because the machine resets to a clean image each time and the setup time is billed like any other minute. On a committed monthly plan we build your applications into the baseline image on your nodes, so they are there when you sign in. If you tell us what you use before a trial, we install it beforehand so the free minutes test your real workflow instead of paying for setup.",
+      },
     ],
-    related: ["revit-cloud-workstation", "vray-cloud-rendering", "d5-render-cloud-workstation"],
+    related: ["revit-cloud-workstation", "vray-cloud-rendering", "sketchup-cloud-workstation"],
   },
 
   {
@@ -136,40 +185,16 @@ export const SOFTWARE_PAGES: SoftwarePage[] = [
       },
       { q: "Do my models persist between sessions?", a: RESET_ANSWER },
     ],
-    related: ["enscape-cloud-workstation", "d5-render-cloud-workstation", "revit-cloud-workstation"],
+    related: ["revit-cloud-workstation", "vray-cloud-rendering", "twinmotion-cloud-workstation"],
   },
 
-  {
-    slug: "enscape-cloud-workstation",
-    title: "Enscape Cloud Workstation — real-time rendering without a gaming laptop",
-    description:
-      "Run Enscape with Revit, SketchUp, Rhino or Archicad on a rented RTX GPU workstation in India. Per-minute billing, your own Enscape licence.",
-    intro:
-      "Enscape is a plugin, which means its performance is entirely your machine's problem. On a rented RTX workstation the walkthrough is smooth and your own laptop never gets warm.",
-    problem:
-      "Enscape runs, but not at a frame rate you would show a client, and the fix is a GPU your laptop cannot take.",
-    why: [
-      "Real-time walkthroughs at a frame rate you can present live on a client call.",
-      "Run it alongside its host — Revit, SketchUp, Rhino or Archicad — in the same session.",
-      "Rent the GPU for the presentation week rather than buying one for the year.",
-    ],
-    licence:
-      LICENCE_BYOL +
-      " Enscape is a plugin, so install its host application (Revit, SketchUp, Rhino or Archicad) first, then Enscape.",
-    faqs: [
-      {
-        q: "Can I run Enscape on a cloud workstation?",
-        a: "Yes. Install your host application and Enscape during the session and sign in with your own Enscape licence. The machine has an RTX GPU, which is what Enscape needs for real-time output.",
-      },
-      {
-        q: "Will the walkthrough be smooth over the internet?",
-        a: "The rendering happens on the workstation; only video is streamed to you. On a stable connection of around 10 Mbps or better it feels like a local machine. A wired connection or 5 GHz Wi-Fi helps more than extra bandwidth.",
-      },
-      { q: "Does Enscape stay installed for next time?", a: RESET_ANSWER },
-    ],
-    related: ["sketchup-cloud-workstation", "revit-cloud-workstation", "d5-render-cloud-workstation"],
-  },
-
+  /**
+   * Enscape is deliberately absent from this list. It has a fuller page of its
+   * own at /enscape-cloud-gpu, and running both split the ranking signal --
+   * the short one indexed at position 39.9 while the good one was unknown to
+   * Google. /software/enscape-cloud-workstation 301s there in next.config.ts,
+   * so the `related` links below point at pages that still exist.
+   */
   {
     slug: "blender-cloud-workstation",
     title: "Blender Cloud Workstation — Cycles rendering on a rented RTX GPU",
@@ -229,7 +254,7 @@ export const SOFTWARE_PAGES: SoftwarePage[] = [
       },
       { q: "Do my Twinmotion projects persist?", a: RESET_ANSWER },
     ],
-    related: ["blender-cloud-workstation", "revit-cloud-workstation", "enscape-cloud-workstation"],
+    related: ["blender-cloud-workstation", "revit-cloud-workstation", "vray-cloud-rendering"],
   },
 
   {
@@ -284,7 +309,7 @@ export const SOFTWARE_PAGES: SoftwarePage[] = [
       },
       { q: "Do my Rhino files persist between sessions?", a: RESET_ANSWER },
     ],
-    related: ["vray-cloud-rendering", "sketchup-cloud-workstation", "enscape-cloud-workstation"],
+    related: ["vray-cloud-rendering", "sketchup-cloud-workstation", "revit-cloud-workstation"],
   },
 
   {

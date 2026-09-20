@@ -114,6 +114,37 @@ const nextConfig: NextConfig = {
         destination: "/",
         permanent: true,
       },
+
+      /**
+       * Retired app/[slug] stubs. Each was 40-60 words of generic copy on a URL
+       * nobody linked to and Google never indexed, competing for the same
+       * intent as a real page. Consolidated rather than deleted: a 301 hands
+       * whatever little signal they had to the page that deserves it.
+       */
+      {
+        source: "/revit-d5-cloud-workflow",
+        destination: "/software/revit-cloud-workstation",
+        permanent: true,
+      },
+      {
+        source: "/gpu-rendering-service-india",
+        destination: "/software/gpu-workstation-rental-india",
+        permanent: true,
+      },
+
+      /**
+       * ENSCAPE HAD TWO PAGES. /enscape-cloud-gpu (specs, live pricing, FAQ
+       * schema) and /software/enscape-cloud-workstation (a short entry in the
+       * software list) both targeted "Enscape cloud rendering". Search Console
+       * on 20 Sep 2026 showed the outcome of splitting the signal: the thin one
+       * indexed at position 39.9, the good one unknown to Google entirely.
+       * One URL now, and it is the better page.
+       */
+      {
+        source: "/software/enscape-cloud-workstation",
+        destination: "/enscape-cloud-gpu",
+        permanent: true,
+      },
       /**
        * The Studio now lives on its own host.
        *
