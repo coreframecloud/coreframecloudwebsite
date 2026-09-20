@@ -107,7 +107,16 @@ function SentCard({
 }
 
 // ══════════════════════════════════════════════════════════════════════════════
-export default function LoginForm() {
+/**
+ * `variant` is the only difference between /login and /signup. The auth
+ * mechanics are identical — one magic link creates an account or signs one in —
+ * but the two URLs meet different people. /login is for someone who already has
+ * an account. /signup is where paid traffic lands, and telling a stranger to
+ * "Sign in" to a brand they met ten seconds ago in an ad is how 161 landing
+ * page views produced zero signups on 19 Sep 2026. Same form, honest headline.
+ */
+export default function LoginForm({ variant = "signin" }: { variant?: "signin" | "start" }) {
+  const isStart = variant === "start";
   // When opened from Coreframe Connect (?source=connect), default to "code" tab.
   // Magic-link emails open in the system browser and can't complete inside the app.
   const [tab, setTab] = useState<Tab>("link");
@@ -301,8 +310,14 @@ export default function LoginForm() {
           <span className="text-white">CORE</span>
           <span className="text-cyan-400">FRAME</span>
         </a>
-        <h1 className="mt-3 text-2xl font-semibold tracking-tight text-white">Sign in</h1>
-        <p className="mt-1 text-sm text-slate-400">New here? Just enter your email — we'll handle the rest.</p>
+        <h1 className="mt-3 text-2xl font-semibold tracking-tight text-white">
+          {isStart ? "Create your account" : "Sign in"}
+        </h1>
+        <p className="mt-1 text-sm text-slate-400">
+          {isStart
+            ? "Enter your email and we\u2019ll send you a link. No password, no card."
+            : "New here? Just enter your email \u2014 we\u2019ll handle the rest."}
+        </p>
       </div>
 
       {/* Card */}
@@ -592,7 +607,7 @@ export default function LoginForm() {
 
       {/* Footer */}
       <p className="mt-6 text-center text-xs leading-6 text-slate-500">
-        By signing in, you agree to our{" "}
+        {isStart ? "By creating an account, you agree to our" : "By signing in, you agree to our"}{" "}
         <a href="/terms-of-service" className="text-cyan-400 hover:underline">Terms and Conditions</a>,{" "}
         <a href="/privacy-policy" className="text-cyan-400 hover:underline">Privacy Policy</a>, and{" "}
         <a href="/refunds" className="text-cyan-400 hover:underline">Refunds and chargebacks</a>.
