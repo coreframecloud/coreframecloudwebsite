@@ -412,15 +412,19 @@ export default function LoginForm({
                   />
                 </Field>
                 {error && <ErrorBox msg={error} />}
-                <div className="rounded-xl border border-white/8 bg-white/4 px-4 py-3">
-                  <p className="text-sm font-medium text-slate-200">{isStart ? "No password needed" : "Sign in with a link"}</p>
-                  <p className="mt-0.5 text-xs text-slate-400">
-                    {isStart
-                      ? "We\u2019ll email you a secure link. Click it and your account is ready."
-                      : "We\u2019ll send a secure sign-in link to your email. Click it to sign in instantly."}
+                {isStart ? (
+                  <p className="-mt-1 text-xs leading-5 text-slate-400">
+                    No password. We&apos;ll email you a link &mdash; click it and your account is ready.
                   </p>
-                </div>
-                <Button type="submit" disabled={linkLoading} className="h-12 rounded-xl text-base font-semibold">
+                ) : (
+                  <div className="rounded-xl border border-white/8 bg-white/4 px-4 py-3">
+                    <p className="text-sm font-medium text-slate-200">Sign in with a link</p>
+                    <p className="mt-0.5 text-xs text-slate-400">
+                      We&apos;ll send a secure sign-in link to your email. Click it to sign in instantly.
+                    </p>
+                  </div>
+                )}
+                <Button type="submit" disabled={linkLoading} className="h-12 w-full rounded-xl bg-cyan-400 text-base font-semibold text-slate-900 shadow-[0_6px_24px_-6px_rgba(34,211,238,.55)] transition hover:bg-cyan-300 disabled:opacity-60">
                   {linkLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                   {linkLoading ? "Checking…" : isStart ? "Create my account" : "Send sign-in link"}
                 </Button>
@@ -548,7 +552,7 @@ export default function LoginForm({
                   </p>
                 </Field>
                 {error && <ErrorBox msg={error} />}
-                <Button type="submit" disabled={linkLoading} className="h-12 rounded-xl text-base font-semibold">
+                <Button type="submit" disabled={linkLoading} className="h-12 w-full rounded-xl bg-cyan-400 text-base font-semibold text-slate-900 shadow-[0_6px_24px_-6px_rgba(34,211,238,.55)] transition hover:bg-cyan-300 disabled:opacity-60">
                   {linkLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ArrowRight className="mr-2 h-4 w-4" />}
                   {linkLoading ? "Creating account…" : "Create account & send link"}
                 </Button>
@@ -591,7 +595,7 @@ export default function LoginForm({
                   />
                 </Field>
                 {error && <ErrorBox msg={error} />}
-                <Button type="submit" disabled={codeLoading} className="h-12 rounded-xl text-base font-semibold">
+                <Button type="submit" disabled={codeLoading} className="h-12 w-full rounded-xl bg-cyan-400 text-base font-semibold text-slate-900 shadow-[0_6px_24px_-6px_rgba(34,211,238,.55)] transition hover:bg-cyan-300 disabled:opacity-60">
                   {codeLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                   {codeLoading ? "Sending…" : "Send 6-digit code"}
                 </Button>
@@ -620,7 +624,7 @@ export default function LoginForm({
                   />
                 </Field>
                 {error && <ErrorBox msg={error} />}
-                <Button type="submit" disabled={codeLoading || codeValue.length < 6} className="h-12 rounded-xl text-base font-semibold">
+                <Button type="submit" disabled={codeLoading || codeValue.length < 6} className="h-12 w-full rounded-xl bg-cyan-400 text-base font-semibold text-slate-900 shadow-[0_6px_24px_-6px_rgba(34,211,238,.55)] transition hover:bg-cyan-300 disabled:opacity-60">
                   {codeLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                   {codeLoading ? "Verifying…" : "Sign in"}
                 </Button>

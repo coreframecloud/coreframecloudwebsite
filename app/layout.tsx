@@ -286,7 +286,9 @@ export default async function RootLayout({
         {children}
         <SiteFooter />
 
-        {/* Floating WhatsApp button — visible on all pages */}
+        {/* Floating WhatsApp button — every page except the paid landing
+            pages, where it covers the terms line and offers a way out. */}
+        <BareOnLanding>
         <a
           href="https://wa.me/916366889488"
           target="_blank"
@@ -321,6 +323,7 @@ export default async function RootLayout({
             <span>WhatsApp</span>
           </span>
         </a>
+        </BareOnLanding>
         <SpeedInsights />
       </body>
     </html>

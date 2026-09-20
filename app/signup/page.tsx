@@ -50,7 +50,7 @@ export default async function SignupPage() {
   return (
     <div className="relative min-h-screen text-white">
       <BackgroundGlow />
-      <main className="relative flex min-h-screen items-center justify-center px-4 py-24">
+      <main className="relative flex min-h-screen justify-center px-4 py-10 sm:items-center sm:py-16">
         <div className="w-full max-w-[440px]">
           {/* The offer used to be a box here, above the card. It read well and
               it cost us the campaign: it pushed the email input to 673px on a
