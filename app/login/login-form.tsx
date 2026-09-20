@@ -41,6 +41,25 @@ function Field({ label, children }: { label: React.ReactNode; children: React.Re
   );
 }
 
+function GoogleBlock({ api, below = false }: { api: string; below?: boolean }) {
+  return (
+    <>
+      <div className={`flex items-center gap-3 ${below ? "my-5" : "mb-5"}`}>
+        <div className="h-px flex-1 bg-white/10" />
+        <span className="text-xs text-slate-500">or</span>
+        <div className="h-px flex-1 bg-white/10" />
+      </div>
+      <a
+        href={`${api}/auth/google`}
+        className="flex w-full items-center justify-center gap-3 rounded-xl border border-white/12 bg-white/6 py-3 text-sm font-medium text-white transition hover:bg-white/10"
+      >
+        <GoogleIcon />
+        Continue with Google
+      </a>
+    </>
+  );
+}
+
 const inputCls =
   "h-12 rounded-xl border-white/10 bg-white/5 text-white placeholder:text-slate-500 focus:border-cyan-400/50 focus:ring-0";
 
@@ -115,7 +134,16 @@ function SentCard({
  * "Sign in" to a brand they met ten seconds ago in an ad is how 161 landing
  * page views produced zero signups on 19 Sep 2026. Same form, honest headline.
  */
-export default function LoginForm({ variant = "signin" }: { variant?: "signin" | "start" }) {
+export default function LoginForm({
+  variant = "signin",
+  offer,
+}: {
+  variant?: "signin" | "start";
+  /** One line under the headline, from the live rate card. It replaces the
+   *  offer box that used to sit above the card and pushed the email field
+   *  below the fold. */
+  offer?: string;
+}) {
   const isStart = variant === "start";
   // When opened from Coreframe Connect (?source=connect), default to "code" tab.
   // Magic-link emails open in the system browser and can't complete inside the app.
@@ -304,18 +332,20 @@ export default function LoginForm({ variant = "signin" }: { variant?: "signin" |
   // ══════════════════════════════════════════════════════════════════════════
   return (
     <div className="w-full max-w-[440px]">
-      {/* Logo */}
-      <div className="mb-8 text-center">
+      {/* Logo. Every pixel above the email field is a pixel someone has to
+          scroll past, so this block is deliberately tight on the signup
+          variant: the input has to be reachable without scrolling on a phone. */}
+      <div className={`text-center ${isStart ? "mb-5" : "mb-8"}`}>
         <a href="/" className="inline-block text-2xl font-extrabold tracking-tight">
           <span className="text-white">CORE</span>
           <span className="text-cyan-400">FRAME</span>
         </a>
-        <h1 className="mt-3 text-2xl font-semibold tracking-tight text-white">
-          {isStart ? "Create your account" : "Sign in"}
+        <h1 className={`text-2xl font-semibold tracking-tight text-white ${isStart ? "mt-2" : "mt-3"}`}>
+          {isStart ? "Start free" : "Sign in"}
         </h1>
         <p className="mt-1 text-sm text-slate-400">
           {isStart
-            ? "Enter your email and we\u2019ll send you a link. No password, no card."
+            ? offer ?? "Enter your email and we\u2019ll send you a link."
             : "New here? Just enter your email \u2014 we\u2019ll handle the rest."}
         </p>
       </div>
@@ -323,21 +353,27 @@ export default function LoginForm({ variant = "signin" }: { variant?: "signin" |
       {/* Card */}
       <div className="rounded-[1.6rem] border border-white/10 bg-white/5 p-6 backdrop-blur-xl">
 
-        {/* Google button */}
-        <a
-          href={`${API}/auth/google`}
-          className="flex w-full items-center justify-center gap-3 rounded-xl border border-white/12 bg-white/6 py-3 text-sm font-medium text-white transition hover:bg-white/10"
-        >
-          <GoogleIcon />
-          Continue with Google
-        </a>
-
-        {/* Divider */}
-        <div className="my-5 flex items-center gap-3">
-          <div className="h-px flex-1 bg-white/10" />
-          <span className="text-xs text-slate-500">or</span>
-          <div className="h-px flex-1 bg-white/10" />
-        </div>
+        {/* Google, and where it sits.
+            On /login it leads, because a returning customer who used Google
+            wants one tap. On /signup it follows the email field: paid traffic
+            arrives to do one thing, and the fastest path to zero signups is
+            making them scroll past an alternative to find the primary control. */}
+        {!isStart && (
+          <>
+            <a
+              href={`${API}/auth/google`}
+              className="flex w-full items-center justify-center gap-3 rounded-xl border border-white/12 bg-white/6 py-3 text-sm font-medium text-white transition hover:bg-white/10"
+            >
+              <GoogleIcon />
+              Continue with Google
+            </a>
+            <div className="my-5 flex items-center gap-3">
+              <div className="h-px flex-1 bg-white/10" />
+              <span className="text-xs text-slate-500">or</span>
+              <div className="h-px flex-1 bg-white/10" />
+            </div>
+          </>
+        )}
 
         {/* Tab switcher.
             Only the email link can CREATE an account — the 6-digit code path
@@ -349,14 +385,14 @@ export default function LoginForm({ variant = "signin" }: { variant?: "signin" |
             Password sign-in is gone entirely. Nothing issues a customer
             password, so the tab could only ever fail; keeping it also meant
             keeping a password surface to attack for no benefit. */}
-        <div className="mb-5 flex gap-1 rounded-xl bg-white/5 p-1">
+        {!isStart && <div className="mb-5 flex gap-1 rounded-xl bg-white/5 p-1">
           <TabBtn active={tab === "link"} onClick={() => switchTab("link")}>
             Email me a link
           </TabBtn>
           <TabBtn active={tab === "code"} onClick={() => switchTab("code")}>
             Email me a code
           </TabBtn>
-        </div>
+        </div>}
 
         {/* ── EMAIL LINK TAB ────────────────────────────────────────────── */}
         {tab === "link" && (
@@ -377,12 +413,16 @@ export default function LoginForm({ variant = "signin" }: { variant?: "signin" |
                 </Field>
                 {error && <ErrorBox msg={error} />}
                 <div className="rounded-xl border border-white/8 bg-white/4 px-4 py-3">
-                  <p className="text-sm font-medium text-slate-200">Sign in with a link</p>
-                  <p className="mt-0.5 text-xs text-slate-400">We'll send a secure sign-in link to your email. Click it to sign in instantly.</p>
+                  <p className="text-sm font-medium text-slate-200">{isStart ? "No password needed" : "Sign in with a link"}</p>
+                  <p className="mt-0.5 text-xs text-slate-400">
+                    {isStart
+                      ? "We\u2019ll email you a secure link. Click it and your account is ready."
+                      : "We\u2019ll send a secure sign-in link to your email. Click it to sign in instantly."}
+                  </p>
                 </div>
                 <Button type="submit" disabled={linkLoading} className="h-12 rounded-xl text-base font-semibold">
                   {linkLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                  {linkLoading ? "Checking…" : "Send sign-in link"}
+                  {linkLoading ? "Checking…" : isStart ? "Create my account" : "Send sign-in link"}
                 </Button>
               </form>
             )}
@@ -591,6 +631,8 @@ export default function LoginForm({ variant = "signin" }: { variant?: "signin" |
             )}
           </div>
         )}
+
+        {isStart && <GoogleBlock api={API} below />}
 
         {/* The password tab was removed here.
 

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { BackgroundGlow } from "@/components/home/background-glow";
 import { WhyWeVerify } from "@/components/auth/why-we-verify";
-import { adhocRateHourly, getRateCard, getTrialTerms, perMinuteRate } from "@/lib/rate-card";
+import { adhocRateHourly, getRateCard, getTrialTerms } from "@/lib/rate-card";
 import LoginForm from "../login/login-form";
 
 /**
@@ -35,31 +35,29 @@ export default async function SignupPage() {
   const card = await getRateCard();
   const trial = getTrialTerms(card);
   const hourly = adhocRateHourly(card);
-  const perMin = perMinuteRate(card);
+
+  const offer = trial
+    ? [
+        `${trial.gpu_minutes} free GPU minutes on an RTX 5080`,
+        `${trial.storage_gb} GB storage`,
+        "no card",
+        hourly ? `${hourly} after that` : null,
+      ]
+        .filter(Boolean)
+        .join(" \u00b7 ")
+    : undefined;
 
   return (
     <div className="relative min-h-screen text-white">
       <BackgroundGlow />
       <main className="relative flex min-h-screen items-center justify-center px-4 py-24">
         <div className="w-full max-w-[440px]">
-          {/* The ad's promise, restated where the ad lands. Rendered only from
-              the live rate card — never a hardcoded number, because the whole
-              reason this file can quote a price is that lib/rate-card.ts is the
-              single source both this page and billing read. */}
-          {trial ? (
-            <div className="mb-8 rounded-2xl border border-cyan-400/25 bg-cyan-400/[0.07] px-5 py-4 text-center">
-              <p className="text-sm font-semibold text-white">
-                {trial.gpu_minutes} free GPU minutes on an RTX 5080
-              </p>
-              <p className="mt-1 text-xs leading-5 text-slate-400">
-                {trial.storage_gb} GB storage included · no card needed
-                {hourly ? <> · {hourly} after that</> : null}
-                {perMin ? <>, billed by the minute</> : null}
-              </p>
-            </div>
-          ) : null}
-
-          <LoginForm variant="start" />
+          {/* The offer used to be a box here, above the card. It read well and
+              it cost us the campaign: it pushed the email input to 673px on a
+              657px viewport, so 87 people landed and none reached the field.
+              It is one line under the headline now, still rendered from the
+              live rate card and never from a hardcoded number. */}
+          <LoginForm variant="start" offer={offer} />
 
           <WhyWeVerify trialMinutes={trial?.gpu_minutes ?? null} />
         </div>

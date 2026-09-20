@@ -3,6 +3,7 @@ import Script from "next/script";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 import { SiteHeader } from "@/components/home/site-header";
+import { BareOnLanding } from "@/components/layout/bare-on-landing";
 import { SiteFooter } from "@/components/home/site-footer";
 import { TrialStrip } from "@/components/home/trial-strip";
 import { getRateCard, planTiers } from "@/lib/rate-card";
@@ -278,8 +279,10 @@ export default async function RootLayout({
           visitor arrives on without ever seeing the homepage. Those carry the
           highest intent, and until now the offer was only on the front page.
         */}
-        <TrialStrip />
-        <SiteHeader />
+        <BareOnLanding>
+          <TrialStrip />
+          <SiteHeader />
+        </BareOnLanding>
         {children}
         <SiteFooter />
 
