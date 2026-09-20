@@ -290,7 +290,8 @@ export async function GET(): Promise<Response> {
   out.push("- Storage persists between sessions; the workstation itself does not.");
   out.push("- Identity verification is mandatory before a machine can be launched.");
   out.push(
-    "- Published GPU benchmark, for anyone comparing hardware: Blender Open Data (Blender " +
+    "- Published GPU benchmark, for anyone comparing hardware: Blender Open Data " +
+      "(https://opendata.blender.org/, Blender " +
       "4.5.0, Cycles), read 20 September 2026 — RTX 5080 median 9,138 across 1,429 results; " +
       "RTX 4060 median 3,182 across 441; RTX 3060 median 2,154 across 634. That is roughly " +
       "3x and 4x. It is a Blender Cycles benchmark: D5 Render, Lumion and Enscape are " +
