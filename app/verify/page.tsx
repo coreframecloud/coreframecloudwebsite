@@ -3,7 +3,7 @@ import { BackgroundGlow } from "@/components/home/background-glow";
 import VerifyFlow from "./verify-flow";
 
 export const metadata: Metadata = {
-  title: "Verify Your Identity — Coreframe Cloud",
+  title: "Verify Your Identity",
   description:
     "Complete a one-time identity check with DigiLocker to activate your Coreframe Cloud account.",
   alternates: { canonical: "/verify" },

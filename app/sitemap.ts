@@ -21,6 +21,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // that exists is /d5-render-cloud-workstation, served by app/[slug].
     { url: `${BASE}/lumion-cloud-gpu`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
     { url: `${BASE}/enscape-cloud-gpu`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
+    // D5 queries are the best-ranking cluster in Search Console (positions
+    // 4-10) and this page was left out, so it was found only by links.
+    { url: `${BASE}/d5-render-cloud-workstation`, lastModified: now, changeFrequency: "monthly", priority: 0.9 },
     { url: `${BASE}/ansys-cfd-gpu`, lastModified: now, changeFrequency: "monthly", priority: 0.9 },
     { url: `${BASE}/cloud-rendering-for-architects`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
 
@@ -56,7 +59,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${BASE}/tools`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
     { url: `${BASE}/cfd-intake`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
 
-    { url: `${BASE}/contact`, lastModified: now, changeFrequency: "yearly", priority: 0.5 },
+    // /contact is NOT here: it is a redirect to /request-demo, and a sitemap
+    // should list destinations, not hops.
     { url: `${BASE}/request-demo`, lastModified: now, changeFrequency: "yearly", priority: 0.5 },
 
     { url: `${BASE}/privacy-policy`, lastModified: now, changeFrequency: "yearly", priority: 0.3 },

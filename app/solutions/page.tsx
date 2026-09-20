@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { BackgroundGlow } from "@/components/home/background-glow";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -11,6 +12,13 @@ import {
   ShieldCheck,
   Workflow,
 } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "GPU Workstations, Rendering and Project Storage for Studios",
+  description:
+    "How Coreframe fits a design studio: remote Windows RTX workstations, centralised rendering and shared project storage, hosted in Bengaluru and billed in INR.",
+  alternates: { canonical: "/solutions" },
+};
 
 const solutions = [
   {

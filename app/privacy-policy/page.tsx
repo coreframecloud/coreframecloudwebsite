@@ -3,7 +3,7 @@ import Link from "next/link";
 import { BackgroundGlow } from "@/components/home/background-glow";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy — Coreframe Cloud",
+  title: "Privacy Policy",
   description: "How Coreframe Cloud collects, stores, and protects your personal data.",
   alternates: { canonical: "/privacy-policy" },
 };

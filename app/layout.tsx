@@ -8,7 +8,7 @@ import { TrialStrip } from "@/components/home/trial-strip";
 import { getRateCard, planTiers } from "@/lib/rate-card";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://coreframecloud.com"),
+  metadataBase: new URL("https://www.coreframecloud.com"),
   title: {
     default: "Coreframe Cloud | 5× Faster Rendering & CFD in Minutes — GPU Cloud India",
     template: "%s | Coreframe Cloud",
@@ -29,9 +29,9 @@ export const metadata: Metadata = {
     "fast CFD analysis India",
     "GPU accelerated CFD India",
   ],
-  alternates: {
-    canonical: "/",
-  },
+  // No canonical here on purpose. A layout-level canonical of "/" is inherited
+  // by every page that does not set its own, which told Google that /solutions
+  // and /request-demo were copies of the homepage. Each page sets its own.
   icons: {
     icon: [
       { url: "/favicon.ico", rel: "icon", sizes: "48x48" },
@@ -44,7 +44,7 @@ export const metadata: Metadata = {
     title: "Coreframe Cloud — RTX GPU Workstations for Design Studios, India",
     description:
       "RTX 5080 GPU workstations on demand for D5 Render, Lumion, Enscape. Pay-as-you-go or committed plans. Hosted in Bengaluru.",
-    url: "https://coreframecloud.com",
+    url: "https://www.coreframecloud.com",
     siteName: "Coreframe Cloud",
     type: "website",
     images: [
@@ -180,11 +180,11 @@ export default async function RootLayout({
               "@graph": [
                 {
                   "@type": ["Organization", "LocalBusiness"],
-                  "@id": "https://coreframecloud.com/#organization",
+                  "@id": "https://www.coreframecloud.com/#organization",
                   name: "Coreframe Compute Labs Private Limited",
                   alternateName: "Coreframe Cloud",
-                  url: "https://coreframecloud.com",
-                  logo: "https://coreframecloud.com/icon.png",
+                  url: "https://www.coreframecloud.com",
+                  logo: "https://www.coreframecloud.com/icon.png",
                   description:
                     "RTX 5080 GPU workstations on demand for D5 Render, Lumion, Enscape, and 3D visualisation studios. Hosted in Bengaluru, India.",
                   telephone: "+916366889488",
@@ -204,9 +204,9 @@ export default async function RootLayout({
                 },
                 {
                   "@type": "Service",
-                  "@id": "https://coreframecloud.com/#gpu-workstation-service",
+                  "@id": "https://www.coreframecloud.com/#gpu-workstation-service",
                   name: "RTX 5080 Cloud GPU Workstation",
-                  provider: { "@id": "https://coreframecloud.com/#organization" },
+                  provider: { "@id": "https://www.coreframecloud.com/#organization" },
                   description: serviceDescription,
                   areaServed: "IN",
                   ...(offers.length ? { offers } : {}),

@@ -1,5 +1,13 @@
+import type { Metadata } from "next";
 import { BackgroundGlow } from "@/components/home/background-glow";
 import RequestDemoForm from "./request-demo-form";
+
+export const metadata: Metadata = {
+  title: "Contact Coreframe — Request Access or a Demo",
+  description:
+    "Tell us your workload and how to reach you. We reply on WhatsApp, usually the same day, to set up GPU workstation access or a demo.",
+  alternates: { canonical: "/request-demo" },
+};
 
 export default function RequestDemoPage() {
   return (

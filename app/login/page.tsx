@@ -3,7 +3,7 @@ import { BackgroundGlow } from "@/components/home/background-glow";
 import LoginForm from "./login-form";
 
 export const metadata: Metadata = {
-  title: "Sign In — Coreframe Cloud",
+  title: "Sign In",
   description: "Sign in to your Coreframe Cloud account or create a new one. GPU workstations on demand for architects and 3D artists.",
   alternates: { canonical: "/login" },
 };

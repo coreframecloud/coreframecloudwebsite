@@ -19,7 +19,7 @@ D5 Render Cloud Workstation is designed for architects and 3D designers who need
 
 Launch a fully configured Windows workstation with RTX GPU, WDDM enabled, and start rendering in under 2 minutes.
 
-Choose VRAM from 16GB to 48GB depending on scene complexity. Upload files, render, download output, and terminate the session.
+Every workstation has an RTX 5080 with 16 GB of VRAM. D5 Render is preinstalled: sign in with your own D5 account, open your project from persistent storage, render, and end the session when you are done.
 
 This eliminates hardware costs, improves rendering speed, and allows flexible scaling for different project sizes.
 `,

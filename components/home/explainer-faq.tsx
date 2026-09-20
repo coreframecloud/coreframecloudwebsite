@@ -102,7 +102,7 @@ export function ExplainerFaq({
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "FAQPage",
-            "@id": "https://coreframecloud.com/#faq",
+            "@id": "https://www.coreframecloud.com/#faq",
             mainEntity: faq.map((f) => ({
               "@type": "Question",
               name: f.q,

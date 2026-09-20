@@ -3,7 +3,7 @@ import { BackgroundGlow } from "@/components/home/background-glow";
 import VerifyFlow from "../verify-flow";
 
 export const metadata: Metadata = {
-  title: "Finishing Verification — Coreframe Cloud",
+  title: "Finishing Verification",
   robots: { index: false, follow: false },
 };
 
