@@ -85,6 +85,22 @@ export default async function AboutPage() {
       a: "Coreframe Cloud is a cloud GPU workstation service operated by Coreframe Compute Labs Private Limited, a company registered in Bengaluru, Karnataka, India. It rents full Windows desktops running on NVIDIA RTX 5080 graphics cards, streamed over the internet and billed by the minute, to architects, interior designers, visualisation studios, 3D artists and engineers who need GPU power without buying a workstation.",
     },
     {
+      q: "What makes Coreframe Cloud different from other cloud GPU services?",
+      a: "The combination rather than any single part. You get a whole dedicated RTX 5080 rather than a shared card or a virtualised slice, so the 16 GB of VRAM is entirely yours. Billing is per minute from the moment the stream starts, so a forty-minute Lumion pass costs forty minutes rather than a month. And the price is an Indian one: rupees, 18% GST already included, with a tax invoice a studio can claim input credit against. The two categories either side of us each miss something — GPU clouds built for AI training run headless Linux on datacentre cards no architect needs, and international cloud-workstation services bill in dollars and cannot issue an Indian GST invoice.",
+    },
+    {
+      q: "Who is Coreframe Cloud for?",
+      a: "Architects, interior designers and architectural visualisation studios in India, along with freelance 3D visualisers and students who need workstation-class hardware without buying it. A second, smaller group is simulation engineers running GPU-accelerated CFD. The common thread is bursty work: heavy rendering for the week before a client presentation and almost none for the three weeks after, which is the pattern that makes owning a five-lakh machine hard to justify.",
+    },
+    {
+      q: "Why was Coreframe Cloud started?",
+      a: "Coreframe Compute Labs was founded in Bengaluru in 2026 around a specific observation. The workstation an Indian design studio needs to render comfortably costs around ₹5,00,000 landed, gets bought once, and then sits idle most of the week. The cloud alternatives were either headless Linux boxes built for AI training or foreign services billing in dollars with no Indian tax invoice, and neither suits someone who simply wants to open Lumion and hit render. So we built the unglamorous version: a real Windows machine with a real GPU, hosted in Bengaluru, rented by the minute, with a GST invoice at the end of it.",
+    },
+    {
+      q: "What technology does Coreframe Cloud run on?",
+      a: "The workstations are Windows 11 on dedicated NVIDIA RTX 5080 GPUs — 16 GB GDDR7, 64 GB ECC RAM and a 6-core AMD EPYC — with the desktop streamed over an encrypted private network using Sunshine and Moonlight, which keeps latency low enough for real-time viewport work. D5 Render, Blender, Twinmotion and Unreal Engine ship on the standard image. The website runs on Next.js and Vercel behind Cloudflare, the control plane is Dockerised services on PostgreSQL, and project files live on NAS storage in the same Bengaluru facility. Payments run through Razorpay and identity verification through DigiLocker.",
+    },
+    {
       q: "Who owns and runs Coreframe Cloud?",
       a: "Coreframe Compute Labs Private Limited, CIN U63119KA2026PTC220789, GSTIN 29AANCC8401D1ZO, founded in 2026 and based in Bengaluru, India. The founder and CEO is Sowjanya Pandala.",
     },

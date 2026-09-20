@@ -210,10 +210,12 @@ export async function GET(): Promise<Response> {
 
   out.push("## Key pages");
   out.push("");
+  out.push(`- [What Coreframe Cloud is](${SITE}/about): the company, the machines, and what it is not.`);
   out.push(`- [Pricing](${SITE}/#pricing): live rates per machine class.`);
+  out.push(`- [Renting vs buying a workstation](${SITE}/d5-render-vs-local-gpu): the break-even, both ways.`);
   out.push(`- [Preinstalled software](${SITE}/apps): what is on the machine before you start.`);
   out.push(`- [How to use Coreframe](${SITE}/how-to-use): setup, sessions, files, licences.`);
-  out.push(`- [D5 Render workstations](${SITE}/d5-render)`);
+  out.push(`- [D5 Render workstations](${SITE}/d5-render-cloud-workstation)`);
   out.push(`- [Lumion cloud workstations](${SITE}/lumion-cloud-gpu)`);
   out.push(`- [Enscape cloud workstations](${SITE}/enscape-cloud-gpu)`);
   out.push(`- [Ansys CFD on GPU](${SITE}/ansys-cfd-gpu)`);
@@ -226,7 +228,7 @@ export async function GET(): Promise<Response> {
   for (const page of SOFTWARE_PAGES) {
     out.push(`- [${page.title}](${SITE}/software/${page.slug}): ${page.description}`);
   }
-  out.push(`- [Contact](${SITE}/contact)`);
+  out.push(`- [Contact](${SITE}/request-demo)`);
   out.push("");
 
   out.push("## Facts worth quoting accurately");
