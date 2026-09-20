@@ -7,6 +7,7 @@ import {
   adhocRateHourly,
   billingSentence,
   entryPlanFee,
+  storageRatePerTb,
 } from "@/lib/rate-card";
 
 /**
@@ -78,6 +79,7 @@ export default async function AboutPage() {
   const trial = getTrialTerms(card);
   const hourly = adhocRateHourly(card);
   const planFrom = entryPlanFee(card);
+  const perTb = storageRatePerTb(card);
 
   const faqs: { q: string; a: string }[] = [
     {
@@ -99,6 +101,14 @@ export default async function AboutPage() {
     {
       q: "What technology does Coreframe Cloud run on?",
       a: "The workstations are Windows 11 on dedicated NVIDIA RTX 5080 GPUs — 16 GB GDDR7, 64 GB ECC RAM and a 6-core AMD EPYC — with the desktop streamed over an encrypted private network using Sunshine and Moonlight, which keeps latency low enough for real-time viewport work. D5 Render, Blender, Twinmotion and Unreal Engine ship on the standard image. The website runs on Next.js and Vercel behind Cloudflare, the control plane is Dockerised services on PostgreSQL, and project files live on NAS storage in the same Bengaluru facility. Payments run through Razorpay and identity verification through DigiLocker.",
+    },
+    {
+      q: "Can I use Coreframe from a construction site or a client's office?",
+      a: "Yes. The workstation is reached over the internet from any laptop, so it is available from a site visit, a client's office or home rather than only from the desk a machine was bought for. What matters is a steady connection rather than a fast one — around 25 Mbps is a comfortable working floor. Test the connection before promising a client a live demo on it, or tether. Note that a high-resolution still is rendered on the workstation and downloaded as a file; the desktop you are viewing is a stream, and the image is not streamed at that resolution.",
+    },
+    {
+      q: "Do my project files stay available if I sign in from a different computer?",
+      a: "Yes. Your files do not live on the workstation. They live on a NAS drive in the same Bengaluru facility, mapped into every session, so signing in from a different laptop in a different city opens the same drive with the same projects. The workstation itself resets to a clean image between sessions; the drive does not. It also means nothing has to be copied between PCs for a colleague to carry on where you stopped.",
     },
     {
       q: "Who owns and runs Coreframe Cloud?",
@@ -239,6 +249,66 @@ export default async function AboutPage() {
               How a session works
             </Link>
             .
+          </p>
+        </section>
+
+        <section className="mt-14">
+          <h2 className="text-2xl font-semibold tracking-tight">
+            The four problems this solves
+          </h2>
+
+          <h3 className="mt-8 text-lg font-semibold">1. Access to the hardware</h3>
+          <p className="mt-3 leading-8 text-slate-300">
+            An RTX 5080 with 16 GB of VRAM is not a card most design studios in
+            India own. A workstation built around one lands at roughly
+            ₹5,00,000, and the machines people actually work on commonly ship
+            with 6 to 8 GB. That number is a ceiling rather than a speed:
+            geometry, textures and lightmaps all have to fit on the card, and
+            when they do not, the work does not get slower — it gets cut down.
+            A 4K or 8K still quietly becomes a smaller one.
+          </p>
+
+          <h3 className="mt-8 text-lg font-semibold">
+            2. The machine is wherever you are
+          </h3>
+          <p className="mt-3 leading-8 text-slate-300">
+            It is reached from any laptop over the internet, so it is available
+            from a site visit, a client&rsquo;s office or home, not only from the
+            desk it was bought for. The practical requirement is a steady
+            connection rather than a fast one — around 25 Mbps is a comfortable
+            floor. Test it before promising a client a live demo, or tether.
+          </p>
+
+          <h3 className="mt-8 text-lg font-semibold">
+            3. Your computer stops being held hostage by a render
+          </h3>
+          <p className="mt-3 leading-8 text-slate-300">
+            We will not tell you your scenes will render faster. That depends
+            entirely on your scene, your settings and your geometry, and anyone
+            who puts a number on it before seeing your file is guessing. What
+            changes is who is waiting, and where.
+          </p>
+          <p className="mt-4 leading-8 text-slate-300">
+            The render runs on the rented machine, so your own computer stays
+            free — you keep modelling, drafting or answering email while it
+            works. And a revision does not have to become a second meeting. When
+            a client asks for a different finish, you can make the change where
+            you are sitting and put the result on their screen before the
+            meeting ends, instead of driving back to the office, rendering
+            overnight and booking another appointment.
+          </p>
+
+          <h3 className="mt-8 text-lg font-semibold">4. The files travel with you</h3>
+          <p className="mt-3 leading-8 text-slate-300">
+            Your projects do not live on the workstation. They live on a NAS
+            drive in the same Bengaluru facility, mapped into every session, so
+            signing in from a different laptop in a different city opens the
+            same drive with the same work on it. The workstation resets to a
+            clean image between sessions; the drive does not. It also means
+            nothing has to be copied between PCs so a colleague can carry on.
+            {perTb
+              ? ` Storage beyond what your plan includes is ${perTb} per TB per month, billed on the space reserved.`
+              : ""}
           </p>
         </section>
 

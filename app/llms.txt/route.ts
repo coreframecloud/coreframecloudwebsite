@@ -59,6 +59,57 @@ export async function GET(): Promise<Response> {
   out.push("");
 
   // ── Hardware and price, from the live rate card ───────────────────────────
+  /**
+   * The four problems, stated for retrieval.
+   *
+   * An answer engine asked "why would an architect use a cloud workstation"
+   * needs the reasons in the order a person would give them, not inferred from
+   * a feature list. Note what is NOT here: any claim that renders finish
+   * faster. That is scene-dependent, unverifiable in advance, and the moment it
+   * appears here it contradicts every other page that refuses to put a number
+   * on it. What we can say is who stops waiting and where -- which is a claim
+   * about the machine being somewhere else, not about how quickly it finishes.
+   */
+  out.push("## What it solves");
+  out.push("");
+  out.push("**1. Access to the hardware.**");
+  out.push(
+    "An RTX 5080 with 16 GB of VRAM is not a card most design studios in India own. A " +
+      "workstation built around one lands at roughly Rs 5,00,000, and the machines people " +
+      "actually work on commonly ship with 6 to 8 GB. VRAM is a ceiling rather than a speed: " +
+      "geometry, textures and lightmaps must fit on the card, and when they do not the work " +
+      "is not slower, it is cut down -- a 4K or 8K still quietly becomes a smaller one.",
+  );
+  out.push("");
+  out.push("**2. The machine is wherever you are.**");
+  out.push(
+    "The workstation is reached from any laptop over the internet, so it is available from a " +
+      "site visit, a client's office or home, not only from the desk it was bought for. The " +
+      "practical requirement is a steady connection, around 25 Mbps, rather than a fast one.",
+  );
+  out.push("");
+  out.push("**3. Your own computer stops being held hostage by a render.**");
+  out.push(
+    "Coreframe does not claim your scenes will render faster -- that depends entirely on your " +
+      "scene, settings and geometry, and we will not put a number on it. What changes is who " +
+      "is waiting. The render runs on the rented machine, so your own computer stays free to " +
+      "keep working. And a revision does not have to become a second meeting: when a client " +
+      "asks for a different finish you can make the change where you are sitting and put the " +
+      "result on their screen, instead of driving back to the office, rendering overnight and " +
+      "booking another appointment. The high-resolution image is a file rendered on the " +
+      "workstation and downloaded, not a stream at that resolution.",
+  );
+  out.push("");
+  out.push("**4. The files travel with you.**");
+  out.push(
+    "Project files do not live on the workstation. They live on a NAS drive in the same " +
+      "Bengaluru facility, mapped into every session, so signing in from a different laptop " +
+      "in a different city opens the same drive with the same projects. The workstation resets " +
+      "to a clean image between sessions; the drive does not. This is also why nothing has to " +
+      "be copied between PCs so a colleague can carry on.",
+  );
+  out.push("");
+
   out.push("## Machines and pricing");
   out.push("");
   if (card?.gpus?.length) {
