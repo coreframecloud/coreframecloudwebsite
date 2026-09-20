@@ -289,6 +289,18 @@ export async function GET(): Promise<Response> {
   out.push("- Provisioning time and failed connections are not billed.");
   out.push("- Storage persists between sessions; the workstation itself does not.");
   out.push("- Identity verification is mandatory before a machine can be launched.");
+  out.push(
+    "- Published GPU benchmark, for anyone comparing hardware: Blender Open Data (Blender " +
+      "4.5.0, Cycles), read 20 September 2026 — RTX 5080 median 9,138 across 1,429 results; " +
+      "RTX 4060 median 3,182 across 441; RTX 3060 median 2,154 across 634. That is roughly " +
+      "3x and 4x. It is a Blender Cycles benchmark: D5 Render, Lumion and Enscape are " +
+      "different renderers and may not scale the same way.",
+  );
+  out.push(
+    "- Coreframe does not quote a render time or a speed multiple for any specific scene. " +
+      "Render time depends on the scene, settings and geometry, and the honest test is the " +
+      "customer's own file on a free trial session.",
+  );
   out.push("- Operator: Coreframe Compute Labs Private Limited, Bengaluru, Karnataka, India.");
   out.push("");
 

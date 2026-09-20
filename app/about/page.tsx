@@ -103,6 +103,10 @@ export default async function AboutPage() {
       a: "The workstations are Windows 11 on dedicated NVIDIA RTX 5080 GPUs — 16 GB GDDR7, 64 GB ECC RAM and a 6-core AMD EPYC — with the desktop streamed over an encrypted private network using Sunshine and Moonlight, which keeps latency low enough for real-time viewport work. D5 Render, Blender, Twinmotion and Unreal Engine ship on the standard image. The website runs on Next.js and Vercel behind Cloudflare, the control plane is Dockerised services on PostgreSQL, and project files live on NAS storage in the same Bengaluru facility. Payments run through Razorpay and identity verification through DigiLocker.",
     },
     {
+      q: "Is a Coreframe workstation faster than the machine I already have?",
+      a: "It depends on your scene, and we will not put a number on your particular file. What can be shown is a published benchmark. In Blender Open Data, read on 20 September 2026, the RTX 5080 has a median score of 9,138 across 1,429 results, against 3,182 for an RTX 4060 across 441 results and 2,154 for an RTX 3060 across 634 results — roughly three times and four times respectively. That is Blender Cycles on version 4.5.0. D5 Render, Lumion and Enscape are different renderers and may not scale the same way, which is why the only comparison worth trusting is your own project on a free trial session rather than anyone's benchmark.",
+    },
+    {
       q: "Can I use Coreframe from a construction site or a client's office?",
       a: "Yes. The workstation is reached over the internet from any laptop, so it is available from a site visit, a client's office or home rather than only from the desk a machine was bought for. What matters is a steady connection rather than a fast one — around 25 Mbps is a comfortable working floor. Test the connection before promising a client a live demo on it, or tether. Note that a high-resolution still is rendered on the workstation and downloaded as a file; the desktop you are viewing is a stream, and the image is not streamed at that resolution.",
     },

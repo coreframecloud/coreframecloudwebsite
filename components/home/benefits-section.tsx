@@ -41,6 +41,31 @@ export function BenefitsSection({ storage }: { storage: StorageTerms }) {
           "The render runs there, so your own computer stays free to keep working",
           "Nothing to buy, house, insure or depreciate",
         ]}
+        footnote={
+          <>
+            <strong className="font-semibold text-white/80">
+              Where the speed difference is published.
+            </strong>{" "}
+            In Blender&rsquo;s own public benchmark the RTX 5080&rsquo;s median
+            score is <strong className="text-white/80">9,138</strong> (1,429
+            results), against <strong className="text-white/80">3,182</strong>{" "}
+            for an RTX 4060 (441) and{" "}
+            <strong className="text-white/80">2,154</strong> for an RTX 3060
+            (634) — about 3× and 4×. That is Blender Cycles on version 4.5.0,
+            read from{" "}
+            <a
+              href="https://opendata.blender.org/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-cyan-300 underline underline-offset-4 hover:text-cyan-200"
+            >
+              Blender Open Data
+            </a>{" "}
+            on 20 September 2026. D5 Render, Lumion and Enscape are different
+            renderers and may not scale the same way, so we quote no figure for
+            your scene — open your own project on a free session and time it.
+          </>
+        }
         art={<VramArt />}
       />
 
@@ -105,13 +130,14 @@ function Grad({ children }: { children: React.ReactNode }) {
 }
 
 function Row({
-  eyebrow, title, body, points, compare, art, flip = false,
+  eyebrow, title, body, points, compare, footnote, art, flip = false,
 }: {
   eyebrow: string;
   title: React.ReactNode;
   body: React.ReactNode;
   points?: string[];
   compare?: { before: string[]; after: string[] };
+  footnote?: React.ReactNode;
   art: React.ReactNode;
   flip?: boolean;
 }) {
@@ -133,6 +159,12 @@ function Row({
               </li>
             ))}
           </ul>
+        ) : null}
+
+        {footnote ? (
+          <div className="mt-6 rounded-2xl border border-white/10 bg-white/[0.03] p-5 text-[13.5px] leading-6 text-white/55">
+            {footnote}
+          </div>
         ) : null}
 
         {compare ? (
