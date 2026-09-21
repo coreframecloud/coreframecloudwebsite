@@ -92,6 +92,12 @@ interface VerificationStatus {
   // cannot be a copy-paste.
   name_matches_document: boolean | null;
   can_correct_legal_name: boolean;
+  // What the CUSTOMER typed at signup. Safe to show — it is their own input,
+  // unlike verified_name, which the API withholds while a mismatch is open.
+  account_name: string | null;
+  // Tries left at the name form today. null means the server could not tell,
+  // and the page then shows no number rather than a wrong one.
+  legal_name_attempts_remaining: number | null;
 }
 
 type Phase = "loading" | "intro" | "gstin" | "bank" | "redirecting" | "polling" | "approved" | "review" | "failed" | "duplicate" | "error";
@@ -398,6 +404,14 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
       setPhase(data.account_active ? "approved" : "review");
     } catch (err: unknown) {
       setLegalNameError(err instanceof Error ? err.message : "Could not update the name. Try again.");
+      // Re-read the status so the tries-left line and the out-of-tries card are
+      // right without a reload. A rejected attempt still spends one, and a page
+      // that keeps saying "3 tries" while the server counts down is how #113
+      // ran out without noticing.
+      try {
+        const again = await fetch(`${API}/verification/status`, { headers: authHeaders() });
+        if (again.ok) setStatus(await again.json());
+      } catch { /* the error above is the one that matters */ }
     } finally {
       setLegalNameBusy(false);
     }
@@ -708,6 +722,40 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
     }
 
     if (status?.can_correct_legal_name) {
+      const triesLeft = status.legal_name_attempts_remaining;
+
+      // OUT OF TRIES IS ITS OWN SCREEN, not the same form with a refusal on it.
+      //
+      // Account #113 spent all three attempts here on 20 Sep, was never told
+      // there were three, and signed up again four minutes later under another
+      // name — which then failed on duplicate identity. Two accounts in the
+      // queue, one real customer, and an ad spend to get him there. A form that
+      // cannot succeed must stop pretending it can, and must hand over a route
+      // that works.
+      if (triesLeft === 0) {
+        return (
+          <Card>
+            <Header
+              icon={<Clock className="h-5 w-5" />}
+              title="Let us sort this one out for you"
+              sub="Your Aadhaar was verified. The name on the account still does not match the document, and you have used today's attempts."
+            />
+            <p className="mb-4 rounded-xl border border-amber-500/25 bg-amber-500/10 px-4 py-3 text-sm text-amber-200">
+              Email <b>support@coreframecloud.com</b> from this address and a
+              person will correct it for you, usually the same day. Please do
+              not create a second account — a second signup on the same Aadhaar
+              is refused automatically and slows this down.
+            </p>
+            <p className="text-sm text-slate-400">
+              You can also try again yourself tomorrow, when today&apos;s attempts reset.
+            </p>
+            <div className="mt-5 text-sm text-slate-500">
+              <Link href="/contact" className="text-cyan-400 hover:underline">Contact us</Link>
+            </div>
+          </Card>
+        );
+      }
+
       return (
         <Card>
           <Header
@@ -715,6 +763,19 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
             title="One thing does not match"
             sub="Your Aadhaar was verified. The name on your account is not the name on the document, so we cannot activate it yet."
           />
+          {/* THEIR OWN NAME, BACK AT THEM. "The name on your account does not
+              match" is abstract, and #113 read it three times without acting on
+              it. Seeing "Ai Upscale" in the sentence makes the mistake obvious,
+              because the customer knows perfectly well that is not their name.
+              The document name is never shown — the API withholds it while a
+              mismatch is open, so this cannot become a copy-paste. */}
+          {status.account_name ? (
+            <p className="mb-4 rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-slate-300">
+              You signed up as <b className="text-white">{status.account_name}</b>. That
+              needs to be your name as printed on your Aadhaar — you can keep{" "}
+              <b className="text-white">{status.account_name}</b> as your display name afterwards.
+            </p>
+          ) : null}
           <form onSubmit={submitLegalName} className="grid gap-3">
             <label className="text-xs text-slate-400">Your full name, exactly as on your Aadhaar</label>
             <input
@@ -742,6 +803,13 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
             >
               {legalNameBusy ? "Checking…" : "Check and continue"}
             </button>
+            {typeof triesLeft === "number" ? (
+              <p className="text-center text-[11px] text-slate-500">
+                {triesLeft === 1
+                  ? "This is your last try today — after that we will fix it for you by email."
+                  : `You have ${triesLeft} tries today.`}
+              </p>
+            ) : null}
           </form>
           <div className="mt-5 text-sm text-slate-500">
             Not sure? <Link href="/contact" className="text-cyan-400 hover:underline">Contact us</Link>
