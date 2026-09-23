@@ -337,10 +337,19 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
     setPassportError("");
     const file = passportFile.trim().toUpperCase();
     const dob = passportDob.trim();
-    // Shape only; the passport office decides. Loose on purpose - file numbers
-    // vary in length and people type them with spaces and hyphens.
-    if (file.replace(/[^A-Z0-9]/g, "").length < 6) {
-      return setPassportError("Enter the file number from your passport application.");
+    // Shape only; the passport office decides. Still loose - people type them
+    // with spaces and hyphens - but no longer so loose that an obviously wrong
+    // value is spent as one of three verifications a day. Cashfree answers 200
+    // INVALID for a well-formed number that is simply wrong, and rejects the
+    // request outright for one that is not well formed, which is what an
+    // 8-character attempt produced: a refusal that named nothing.
+    const bare = file.replace(/[^A-Z0-9]/g, "");
+    if (bare.length < 12) {
+      return setPassportError(
+        "That looks too short. The file number is 15 characters — two letters " +
+        "then digits, like PA1079341954215 — printed on your passport " +
+        "application, not the passport number on the front page."
+      );
     }
     if (!/^\d{4}-\d{2}-\d{2}$/.test(dob)) {
       return setPassportError("Enter your date of birth.");
@@ -627,7 +636,7 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
               a full one moments ago; a soft transition can carry stale auth
               state into /my-activity, which then 403s and bounces the customer
               straight back here — the loop reported after the first live run. */}
-          <Button asChild className="h-12 w-full rounded-xl bg-cyan-400 text-base font-semibold text-slate-900 shadow-[0_6px_24px_-6px_rgba(34,211,238,.55)] transition hover:bg-cyan-300 disabled:opacity-60">
+          <Button asChild className="h-auto min-h-12 w-full whitespace-normal rounded-xl bg-cyan-400 px-3 py-2 text-center text-base font-semibold leading-tight text-slate-900 shadow-[0_6px_24px_-6px_rgba(34,211,238,.55)] transition hover:bg-cyan-300 disabled:opacity-60">
             {/* eslint-disable-next-line @next/next/no-html-link-for-pages --
                 a full page load is the point. The verification-scoped token was
                 swapped for a full one moments ago; a client-side <Link/> keeps
@@ -713,7 +722,7 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
               <Button
                 onClick={sendOtpCode}
                 disabled={otpBusy}
-                className="h-12 w-full rounded-xl bg-cyan-400 text-base font-semibold text-slate-900 shadow-[0_6px_24px_-6px_rgba(34,211,238,.55)] transition hover:bg-cyan-300 disabled:opacity-60"
+                className="h-auto min-h-12 w-full whitespace-normal rounded-xl bg-cyan-400 px-3 py-2 text-center text-base font-semibold leading-tight text-slate-900 shadow-[0_6px_24px_-6px_rgba(34,211,238,.55)] transition hover:bg-cyan-300 disabled:opacity-60"
               >
                 {otpBusy ? "Sending…" : "Send me the code"}
               </Button>
@@ -741,7 +750,7 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
               <button
                 type="submit"
                 disabled={otpBusy}
-                className="h-12 w-full rounded-xl bg-cyan-400 text-base font-semibold text-slate-900 shadow-[0_6px_24px_-6px_rgba(34,211,238,.55)] transition hover:bg-cyan-300 disabled:opacity-60"
+                className="h-auto min-h-12 w-full whitespace-normal rounded-xl bg-cyan-400 px-3 py-2 text-center text-base font-semibold leading-tight text-slate-900 shadow-[0_6px_24px_-6px_rgba(34,211,238,.55)] transition hover:bg-cyan-300 disabled:opacity-60"
               >
                 {otpBusy ? "Checking…" : "Confirm my number"}
               </button>
@@ -844,7 +853,7 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
             <button
               type="submit"
               disabled={legalNameBusy}
-              className="h-12 w-full rounded-xl bg-cyan-400 text-base font-semibold text-slate-900 shadow-[0_6px_24px_-6px_rgba(34,211,238,.55)] transition hover:bg-cyan-300 disabled:opacity-60"
+              className="h-auto min-h-12 w-full whitespace-normal rounded-xl bg-cyan-400 px-3 py-2 text-center text-base font-semibold leading-tight text-slate-900 shadow-[0_6px_24px_-6px_rgba(34,211,238,.55)] transition hover:bg-cyan-300 disabled:opacity-60"
             >
               {legalNameBusy ? "Checking…" : "Check and continue"}
             </button>
@@ -923,7 +932,7 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
         ) : (
           <Button
             onClick={() => startVerification("signin")}
-            className="h-12 w-full rounded-xl bg-cyan-400 text-base font-semibold text-slate-900 shadow-[0_6px_24px_-6px_rgba(34,211,238,.55)] transition hover:bg-cyan-300 disabled:opacity-60"
+            className="h-auto min-h-12 w-full whitespace-normal rounded-xl bg-cyan-400 px-3 py-2 text-center text-base font-semibold leading-tight text-slate-900 shadow-[0_6px_24px_-6px_rgba(34,211,238,.55)] transition hover:bg-cyan-300 disabled:opacity-60"
           >
             <RefreshCw className="mr-2 h-4 w-4" />
             Try again
@@ -958,7 +967,7 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
     return (
       <Card>
         <Header icon={<XCircle className="h-5 w-5" />} title="Something went wrong" sub={error} />
-        <Button onClick={() => window.location.reload()} className="h-12 w-full rounded-xl bg-cyan-400 text-base font-semibold text-slate-900 shadow-[0_6px_24px_-6px_rgba(34,211,238,.55)] transition hover:bg-cyan-300 disabled:opacity-60">
+        <Button onClick={() => window.location.reload()} className="h-auto min-h-12 w-full whitespace-normal rounded-xl bg-cyan-400 px-3 py-2 text-center text-base font-semibold leading-tight text-slate-900 shadow-[0_6px_24px_-6px_rgba(34,211,238,.55)] transition hover:bg-cyan-300 disabled:opacity-60">
           <RefreshCw className="mr-2 h-4 w-4" />
           Reload
         </Button>
@@ -1005,7 +1014,7 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
             </p>
           )}
 
-          <Button type="submit" disabled={gstinBusy} className="h-12 w-full rounded-xl bg-cyan-400 text-base font-semibold text-slate-900 shadow-[0_6px_24px_-6px_rgba(34,211,238,.55)] transition hover:bg-cyan-300 disabled:opacity-60">
+          <Button type="submit" disabled={gstinBusy} className="h-auto min-h-12 w-full whitespace-normal rounded-xl bg-cyan-400 px-3 py-2 text-center text-base font-semibold leading-tight text-slate-900 shadow-[0_6px_24px_-6px_rgba(34,211,238,.55)] transition hover:bg-cyan-300 disabled:opacity-60">
             {gstinBusy ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ArrowRight className="mr-2 h-4 w-4" />}
             {gstinBusy ? "Checking the GST register…" : "Verify GSTIN"}
           </Button>
@@ -1040,7 +1049,7 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
           <Button
             onClick={startBankCheck}
             disabled={bankBusy}
-            className="h-12 w-full rounded-xl bg-cyan-400 text-base font-semibold text-slate-900 shadow-[0_6px_24px_-6px_rgba(34,211,238,.55)] transition hover:bg-cyan-300 disabled:opacity-60"
+            className="h-auto min-h-12 w-full whitespace-normal rounded-xl bg-cyan-400 px-3 py-2 text-center text-base font-semibold leading-tight text-slate-900 shadow-[0_6px_24px_-6px_rgba(34,211,238,.55)] transition hover:bg-cyan-300 disabled:opacity-60"
           >
             {bankBusy ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ArrowRight className="mr-2 h-4 w-4" />}
             {bankBusy ? "Preparing…" : "Start bank verification"}
@@ -1083,7 +1092,7 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
             <Button
               onClick={checkBankPayment}
               disabled={bankBusy}
-              className="h-12 w-full rounded-xl bg-cyan-400 text-base font-semibold text-slate-900 shadow-[0_6px_24px_-6px_rgba(34,211,238,.55)] transition hover:bg-cyan-300 disabled:opacity-60"
+              className="h-auto min-h-12 w-full whitespace-normal rounded-xl bg-cyan-400 px-3 py-2 text-center text-base font-semibold leading-tight text-slate-900 shadow-[0_6px_24px_-6px_rgba(34,211,238,.55)] transition hover:bg-cyan-300 disabled:opacity-60"
             >
               {bankBusy ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <RefreshCw className="mr-2 h-4 w-4" />}
               {bankBusy ? "Checking…" : "Check payment"}
@@ -1127,21 +1136,52 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
         sub="A one-time check before your account is activated. It takes about a minute."
       />
 
+      {/* THE BULLETS FOLLOW THE ROUTE THE CUSTOMER IS ON.
+          They were written when DigiLocker was the only way through, and they
+          stayed fixed at the top of the card — so somebody who had chosen the
+          passport was reading "you will be taken to DigiLocker to approve
+          sharing your Aadhaar and PAN" above a passport form. The passport
+          route touches no DigiLocker account and no Aadhaar at all; telling a
+          customer we are about to handle their Aadhaar when we are not is a
+          promise about their data that the code does not keep, and it is the
+          kind of sentence a DPDP reviewer reads literally. */}
       <ul className="mb-6 grid gap-3 text-sm text-slate-300">
-        <li className="flex gap-3">
-          <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-cyan-300" />
-          <span>
-            You will be taken to <b className="text-white">DigiLocker</b>, the Government of India&apos;s
-            official document service, to approve sharing your Aadhaar and PAN.
-          </span>
-        </li>
-        <li className="flex gap-3">
-          <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-cyan-300" />
-          <span>
-            We never see or store your full Aadhaar number. We keep only the last four digits, your
-            verified name and address.
-          </span>
-        </li>
+        {passportOpen ? (
+          <>
+            <li className="flex gap-3">
+              <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-cyan-300" />
+              <span>
+                We check the file number from your passport application and your
+                date of birth against the <b className="text-white">Indian passport record</b>.
+              </span>
+            </li>
+            <li className="flex gap-3">
+              <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-cyan-300" />
+              <span>
+                We keep your verified name and date of birth. No Aadhaar and no
+                address are involved on this route.
+              </span>
+            </li>
+          </>
+        ) : (
+          <>
+            <li className="flex gap-3">
+              <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-cyan-300" />
+              <span>
+                You confirm your identity against an official government record —
+                <b className="text-white"> DigiLocker</b> or your{" "}
+                <b className="text-white">Indian passport</b>. Either one is enough.
+              </span>
+            </li>
+            <li className="flex gap-3">
+              <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-cyan-300" />
+              <span>
+                We never see or store your full Aadhaar number. We keep only the
+                last four digits, your verified name and address.
+              </span>
+            </li>
+          </>
+        )}
         <li className="flex gap-3">
           <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-cyan-300" />
           <span>
@@ -1223,7 +1263,7 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
               {phoneError}
             </p>
           )}
-          <Button type="submit" disabled={phoneBusy} className="h-12 w-full rounded-xl bg-cyan-400 text-base font-semibold text-slate-900 shadow-[0_6px_24px_-6px_rgba(34,211,238,.55)] transition hover:bg-cyan-300 disabled:opacity-60">
+          <Button type="submit" disabled={phoneBusy} className="h-auto min-h-12 w-full whitespace-normal rounded-xl bg-cyan-400 px-3 py-2 text-center text-base font-semibold leading-tight text-slate-900 shadow-[0_6px_24px_-6px_rgba(34,211,238,.55)] transition hover:bg-cyan-300 disabled:opacity-60">
             {phoneBusy ? "Saving…" : "Save and continue"}
           </Button>
         </form>
@@ -1245,15 +1285,27 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
           <label className="text-xs text-slate-400">
             File number{" "}
             <span className="text-slate-500">
-              — from your passport application, not the passport number
+              — the 15-character number on your passport APPLICATION, not the
+              passport number on the front page
             </span>
           </label>
+          {/* UPPERCASED AS IT IS TYPED, not silently on submit.
+              autoCapitalize is a soft-keyboard hint and does nothing on a
+              desktop browser, so a file number typed in lower case sat there
+              looking wrong while the request went up in caps. Now what is on
+              screen is what is sent. */}
           <input
             value={passportFile}
-            onChange={(e) => { setPassportFile(e.target.value); setPassportError(""); }}
-            className="h-12 rounded-xl border border-white/10 bg-white/5 px-4 font-mono tracking-wider text-white placeholder:font-sans placeholder:tracking-normal placeholder:text-slate-500"
-            placeholder="BN1234567890123"
+            onChange={(e) => {
+              setPassportFile(e.target.value.toUpperCase());
+              setPassportError("");
+            }}
+            className="h-12 rounded-xl border border-white/10 bg-white/5 px-4 font-mono uppercase tracking-wider text-white placeholder:font-sans placeholder:normal-case placeholder:tracking-normal placeholder:text-slate-500"
+            placeholder="PA1079341954215"
             autoCapitalize="characters"
+            autoCorrect="off"
+            spellCheck={false}
+            maxLength={20}
             autoFocus
           />
           <label className="text-xs text-slate-400">Date of birth, as on the passport</label>
@@ -1272,9 +1324,9 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
           <Button
             type="submit"
             disabled={passportBusy}
-            className="h-12 w-full rounded-xl bg-cyan-400 text-base font-semibold text-slate-900 shadow-[0_6px_24px_-6px_rgba(34,211,238,.55)] transition hover:bg-cyan-300 disabled:opacity-60"
+            className="h-auto min-h-12 w-full whitespace-normal rounded-xl bg-cyan-400 px-3 py-2 text-center text-base font-semibold leading-tight text-slate-900 shadow-[0_6px_24px_-6px_rgba(34,211,238,.55)] transition hover:bg-cyan-300 disabled:opacity-60"
           >
-            {passportBusy ? "Checking…" : "Check my passport"}
+            {passportBusy ? "Checking…" : "Validate with my passport"}
           </Button>
           <p className="text-[11px] leading-4 text-slate-500">
             We check the name and date of birth against the passport record.
@@ -1319,7 +1371,7 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
             </p>
             <Button
               onClick={() => startVerification("signin")}
-              className="h-12 w-full rounded-xl bg-cyan-400 text-base font-semibold text-slate-900 shadow-[0_6px_24px_-6px_rgba(34,211,238,.55)] transition hover:bg-cyan-300 disabled:opacity-60"
+              className="h-auto min-h-12 w-full whitespace-normal rounded-xl bg-cyan-400 px-3 py-2 text-center text-base font-semibold leading-tight text-slate-900 shadow-[0_6px_24px_-6px_rgba(34,211,238,.55)] transition hover:bg-cyan-300 disabled:opacity-60"
             >
               <ArrowRight className="mr-2 h-4 w-4" />
               Use DigiLocker
@@ -1331,9 +1383,9 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
             <Button
               variant="outline"
               onClick={() => startVerification("signup")}
-              className="mt-2 h-11 w-full rounded-xl border-white/20 bg-transparent text-sm font-semibold text-slate-100 transition hover:border-cyan-400/50 hover:bg-white/5"
+              className="mt-2 h-auto min-h-11 w-full whitespace-normal rounded-xl border-white/20 bg-transparent px-3 py-2 text-center text-sm font-semibold leading-tight text-slate-100 transition hover:border-cyan-400/50 hover:bg-white/5"
             >
-              I don&apos;t have one — create it now
+              Create a DigiLocker account
             </Button>
             <p className="mt-2 text-[11px] leading-4 text-slate-500">
               Creating one takes about two minutes and happens as part of this
@@ -1356,10 +1408,10 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
             </p>
             <Button
               onClick={() => setPassportOpen(true)}
-              className="h-12 w-full rounded-xl bg-cyan-400 text-base font-semibold text-slate-900 shadow-[0_6px_24px_-6px_rgba(34,211,238,.55)] transition hover:bg-cyan-300 disabled:opacity-60"
+              className="h-auto min-h-12 w-full whitespace-normal rounded-xl bg-cyan-400 px-3 py-2 text-center text-base font-semibold leading-tight text-slate-900 shadow-[0_6px_24px_-6px_rgba(34,211,238,.55)] transition hover:bg-cyan-300 disabled:opacity-60"
             >
               <ArrowRight className="mr-2 h-4 w-4" />
-              Use my passport
+              Validate with my passport
             </Button>
             <p className="mt-2 text-[11px] leading-4 text-slate-500">
               Indian passports only — the check queries the Indian passport
