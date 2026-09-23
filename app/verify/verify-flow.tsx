@@ -151,6 +151,11 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
   const [phoneInput, setPhoneInput] = useState("");
   const [phoneBusy, setPhoneBusy] = useState(false);
   const [phoneError, setPhoneError] = useState("");
+  const [passportOpen, setPassportOpen] = useState(false);
+  const [passportFile, setPassportFile] = useState("");
+  const [passportDob, setPassportDob] = useState("");
+  const [passportBusy, setPassportBusy] = useState(false);
+  const [passportError, setPassportError] = useState("");
   const [otpCode, setOtpCode] = useState("");
   const [otpBusy, setOtpBusy] = useState(false);
   const [otpError, setOtpError] = useState("");
@@ -323,6 +328,45 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
       setPhoneError(err instanceof Error ? err.message : "Could not save that number. Try again.");
     } finally {
       setPhoneBusy(false);
+    }
+  }
+
+  async function submitPassport(e: React.FormEvent) {
+    e.preventDefault();
+    setPassportError("");
+    const file = passportFile.trim().toUpperCase();
+    const dob = passportDob.trim();
+    // Shape only; the passport office decides. Loose on purpose - file numbers
+    // vary in length and people type them with spaces and hyphens.
+    if (file.replace(/[^A-Z0-9]/g, "").length < 6) {
+      return setPassportError("Enter the file number from your passport application.");
+    }
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(dob)) {
+      return setPassportError("Enter your date of birth.");
+    }
+    setPassportBusy(true);
+    try {
+      const res = await fetch(`${API}/verification/passport`, {
+        method: "POST",
+        headers: authHeaders(),
+        body: JSON.stringify({ file_number: file, dob }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.detail ?? `Error ${res.status}`);
+      setStatus(data);
+      if (data.verified) {
+        setPhase(data.account_active ? "approved" : "review");
+      } else {
+        // A wrong file number is not a failed verification in the DigiLocker
+        // sense - there is no consent to redo and no link to expire. Keep them
+        // on this form with the reason, rather than throwing them to the
+        // generic failure screen which would offer "try again with DigiLocker".
+        setPassportError(data.reason ?? "Those details did not match a record.");
+      }
+    } catch (err: unknown) {
+      setPassportError(err instanceof Error ? err.message : "Could not check that. Try again.");
+    } finally {
+      setPassportBusy(false);
     }
   }
 
@@ -1201,6 +1245,82 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
           part of this step. You will need your Aadhaar number and the mobile
           linked to it.
         </p>
+
+        {/* THE THIRD ROUTE. Cashfree's Aadhaar OTP product is discontinued -
+            every candidate path answers 404 on our account - so the passport
+            is the one alternative that exists and needs no account anywhere.
+            Offered as a disclosure rather than a third loud button: most
+            people should still use DigiLocker, which proves more. */}
+        <div className="mt-2 border-t border-white/10 pt-4">
+          {!passportOpen ? (
+            <button
+              type="button"
+              onClick={() => setPassportOpen(true)}
+              className="w-full text-center text-sm text-slate-400 underline-offset-4 hover:text-slate-200 hover:underline"
+            >
+              No DigiLocker and don&apos;t want one? Use your passport instead →
+            </button>
+          ) : (
+            <form onSubmit={submitPassport} className="grid gap-3">
+              <p className="text-sm font-medium text-slate-200">
+                Verify with your passport
+              </p>
+              {/* Said plainly and first. An overseas customer cannot be served
+                  by this at all - it queries the Indian passport record - and
+                  finding that out after typing everything in is worse than
+                  being told now. */}
+              <p className="rounded-xl border border-amber-500/25 bg-amber-500/10 px-4 py-3 text-xs leading-5 text-amber-200">
+                Only <b>Indian passports</b> can be checked this way.
+              </p>
+              <label className="text-xs text-slate-400">
+                File number{" "}
+                <span className="text-slate-500">
+                  — from your passport application, not the passport number
+                </span>
+              </label>
+              <input
+                value={passportFile}
+                onChange={(e) => { setPassportFile(e.target.value); setPassportError(""); }}
+                className="h-12 rounded-xl border border-white/10 bg-white/5 px-4 font-mono tracking-wider text-white placeholder:font-sans placeholder:tracking-normal placeholder:text-slate-500"
+                placeholder="BN1234567890123"
+                autoCapitalize="characters"
+                autoFocus
+              />
+              <label className="text-xs text-slate-400">Date of birth, as on the passport</label>
+              <input
+                value={passportDob}
+                onChange={(e) => { setPassportDob(e.target.value); setPassportError(""); }}
+                className="h-12 rounded-xl border border-white/10 bg-white/5 px-4 text-white placeholder:text-slate-500"
+                type="date"
+                max={new Date().toISOString().slice(0, 10)}
+              />
+              {passportError && (
+                <p className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+                  {passportError}
+                </p>
+              )}
+              <Button
+                type="submit"
+                disabled={passportBusy}
+                className="h-12 w-full rounded-xl bg-cyan-400 text-base font-semibold text-slate-900 shadow-[0_6px_24px_-6px_rgba(34,211,238,.55)] transition hover:bg-cyan-300 disabled:opacity-60"
+              >
+                {passportBusy ? "Checking…" : "Check my passport"}
+              </Button>
+              <p className="text-[11px] leading-4 text-slate-500">
+                We check the name and date of birth against the passport record.
+                You will still confirm your mobile number afterwards, which
+                Indian regulations require us to hold.
+              </p>
+              <button
+                type="button"
+                onClick={() => setPassportOpen(false)}
+                className="text-center text-sm text-slate-400 hover:text-slate-200"
+              >
+                ← Back to DigiLocker
+              </button>
+            </form>
+          )}
+        </div>
       </div>
       )}
 
