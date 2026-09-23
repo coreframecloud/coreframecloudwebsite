@@ -582,7 +582,7 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
               a full one moments ago; a soft transition can carry stale auth
               state into /my-activity, which then 403s and bounces the customer
               straight back here — the loop reported after the first live run. */}
-          <Button asChild className="h-12 rounded-xl text-base font-semibold">
+          <Button asChild className="h-12 w-full rounded-xl bg-cyan-400 text-base font-semibold text-slate-900 shadow-[0_6px_24px_-6px_rgba(34,211,238,.55)] transition hover:bg-cyan-300 disabled:opacity-60">
             {/* eslint-disable-next-line @next/next/no-html-link-for-pages --
                 a full page load is the point. The verification-scoped token was
                 swapped for a full one moments ago; a client-side <Link/> keeps
@@ -668,7 +668,7 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
               <Button
                 onClick={sendOtpCode}
                 disabled={otpBusy}
-                className="h-12 rounded-xl text-base font-semibold"
+                className="h-12 w-full rounded-xl bg-cyan-400 text-base font-semibold text-slate-900 shadow-[0_6px_24px_-6px_rgba(34,211,238,.55)] transition hover:bg-cyan-300 disabled:opacity-60"
               >
                 {otpBusy ? "Sending…" : "Send me the code"}
               </Button>
@@ -696,7 +696,7 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
               <button
                 type="submit"
                 disabled={otpBusy}
-                className="h-12 rounded-xl bg-cyan-500 text-base font-semibold text-slate-950 disabled:opacity-60"
+                className="h-12 w-full rounded-xl bg-cyan-400 text-base font-semibold text-slate-900 shadow-[0_6px_24px_-6px_rgba(34,211,238,.55)] transition hover:bg-cyan-300 disabled:opacity-60"
               >
                 {otpBusy ? "Checking…" : "Confirm my number"}
               </button>
@@ -799,7 +799,7 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
             <button
               type="submit"
               disabled={legalNameBusy}
-              className="h-12 rounded-xl bg-cyan-500 text-base font-semibold text-slate-950 disabled:opacity-60"
+              className="h-12 w-full rounded-xl bg-cyan-400 text-base font-semibold text-slate-900 shadow-[0_6px_24px_-6px_rgba(34,211,238,.55)] transition hover:bg-cyan-300 disabled:opacity-60"
             >
               {legalNameBusy ? "Checking…" : "Check and continue"}
             </button>
@@ -878,7 +878,7 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
         ) : (
           <Button
             onClick={() => startVerification("signin")}
-            className="h-12 w-full rounded-xl text-base font-semibold"
+            className="h-12 w-full rounded-xl bg-cyan-400 text-base font-semibold text-slate-900 shadow-[0_6px_24px_-6px_rgba(34,211,238,.55)] transition hover:bg-cyan-300 disabled:opacity-60"
           >
             <RefreshCw className="mr-2 h-4 w-4" />
             Try again
@@ -902,7 +902,7 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
           <Link href="/contact" className="underline">contact us</Link> and we
           will help you recover it.
         </p>
-        <Button asChild className="mt-4 h-12 w-full rounded-xl text-base font-semibold">
+        <Button asChild className="mt-4 h-12 w-full rounded-xl bg-cyan-400 text-base font-semibold text-slate-900 shadow-[0_6px_24px_-6px_rgba(34,211,238,.55)] transition hover:bg-cyan-300 disabled:opacity-60">
           <Link href="/login">Sign in to my account</Link>
         </Button>
       </Card>
@@ -913,7 +913,7 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
     return (
       <Card>
         <Header icon={<XCircle className="h-5 w-5" />} title="Something went wrong" sub={error} />
-        <Button onClick={() => window.location.reload()} className="h-12 w-full rounded-xl">
+        <Button onClick={() => window.location.reload()} className="h-12 w-full rounded-xl bg-cyan-400 text-base font-semibold text-slate-900 shadow-[0_6px_24px_-6px_rgba(34,211,238,.55)] transition hover:bg-cyan-300 disabled:opacity-60">
           <RefreshCw className="mr-2 h-4 w-4" />
           Reload
         </Button>
@@ -960,7 +960,7 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
             </p>
           )}
 
-          <Button type="submit" disabled={gstinBusy} className="h-12 rounded-xl text-base font-semibold">
+          <Button type="submit" disabled={gstinBusy} className="h-12 w-full rounded-xl bg-cyan-400 text-base font-semibold text-slate-900 shadow-[0_6px_24px_-6px_rgba(34,211,238,.55)] transition hover:bg-cyan-300 disabled:opacity-60">
             {gstinBusy ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ArrowRight className="mr-2 h-4 w-4" />}
             {gstinBusy ? "Checking the GST register…" : "Verify GSTIN"}
           </Button>
@@ -995,7 +995,7 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
           <Button
             onClick={startBankCheck}
             disabled={bankBusy}
-            className="h-12 w-full rounded-xl text-base font-semibold"
+            className="h-12 w-full rounded-xl bg-cyan-400 text-base font-semibold text-slate-900 shadow-[0_6px_24px_-6px_rgba(34,211,238,.55)] transition hover:bg-cyan-300 disabled:opacity-60"
           >
             {bankBusy ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ArrowRight className="mr-2 h-4 w-4" />}
             {bankBusy ? "Preparing…" : "Start bank verification"}
@@ -1038,7 +1038,7 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
             <Button
               onClick={checkBankPayment}
               disabled={bankBusy}
-              className="h-12 rounded-xl text-base font-semibold"
+              className="h-12 w-full rounded-xl bg-cyan-400 text-base font-semibold text-slate-900 shadow-[0_6px_24px_-6px_rgba(34,211,238,.55)] transition hover:bg-cyan-300 disabled:opacity-60"
             >
               {bankBusy ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <RefreshCw className="mr-2 h-4 w-4" />}
               {bankBusy ? "Checking…" : "Check payment"}
@@ -1160,7 +1160,7 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
               {phoneError}
             </p>
           )}
-          <Button type="submit" disabled={phoneBusy} className="h-12 rounded-xl text-base font-semibold">
+          <Button type="submit" disabled={phoneBusy} className="h-12 w-full rounded-xl bg-cyan-400 text-base font-semibold text-slate-900 shadow-[0_6px_24px_-6px_rgba(34,211,238,.55)] transition hover:bg-cyan-300 disabled:opacity-60">
             {phoneBusy ? "Saving…" : "Save and continue"}
           </Button>
         </form>
@@ -1168,7 +1168,7 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
       <div className="grid gap-3">
         <Button
           onClick={() => startVerification("signin")}
-          className="h-12 rounded-xl text-base font-semibold"
+          className="h-12 w-full rounded-xl bg-cyan-400 text-base font-semibold text-slate-900 shadow-[0_6px_24px_-6px_rgba(34,211,238,.55)] transition hover:bg-cyan-300 disabled:opacity-60"
         >
           <ArrowRight className="mr-2 h-4 w-4" />
           Verify with DigiLocker
