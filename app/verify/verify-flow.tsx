@@ -153,6 +153,9 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
   const [phoneBusy, setPhoneBusy] = useState(false);
   const [phoneError, setPhoneError] = useState("");
   const [passportOpen, setPassportOpen] = useState(false);
+  // Stored bare and uppercase; shown grouped in fives. Keeping the raw value
+  // in state and formatting for display means the submit path never has to
+  // guess what the separators meant.
   const [passportFile, setPassportFile] = useState("");
   const [passportDob, setPassportDob] = useState("");
   const [passportBusy, setPassportBusy] = useState(false);
@@ -166,6 +169,10 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
   const [legalNameError, setLegalNameError] = useState("");
   const [bankBusy, setBankBusy] = useState(false);
   const [bankHint, setBankHint] = useState("");
+  const passportFileLength = passportFile.replace(/[^A-Z0-9]/g, "").length;
+  const passportFileGrouped =
+    passportFile.replace(/[^A-Z0-9]/g, "").match(/.{1,5}/g)?.join(" ") ?? "";
+
   const pollStarted = useRef<number>(0);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -337,25 +344,19 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
     setPassportError("");
     const file = passportFile.trim().toUpperCase();
     const dob = passportDob.trim();
-    // TWELVE, WHICH IS WHAT THE PASSPORT PRINTS.
-    //
-    // Cashfree demands exactly 15 - production refuses 8 and 14 alike with
-    // file_number_value_invalid - while a real booklet shows twelve:
-    // HYDH01247810. The vendor's own example reconciles them, PA1079341954215
-    // being "PA1" plus twelve, so the server adds the prefix. The customer is
-    // never asked for three characters that appear nowhere on their document.
-    //
-    // 15 is still accepted, for anyone who already has the prefixed form.
-    // Separators are stripped rather than rejected; people type these with
-    // spaces and hyphens.
+    // FIFTEEN, EXACTLY AS PRINTED. Proved against production with a real file
+    // number, which returned VALID with the holder's name and date of birth.
+    // Nothing is added to it - an earlier version prefixed "PA1" on a
+    // misreading of the vendor's example, which made 18 and was refused.
     const bare = file.replace(/[^A-Z0-9]/g, "");
-    if (bare.length !== 12 && bare.length !== 15) {
+    if (bare.length !== 15) {
       return setPassportError(
         bare.length === 8
           ? "That is the passport number from the front page. This check needs " +
-            "the \"File No.\" printed on the last page — 12 letters and digits."
-          : "Check that again — the \"File No.\" on the last page of your " +
-            "passport is 12 letters and digits, like HYDH01247810."
+            "the \"File No.\" printed on the last page — 15 characters."
+          : `That is ${bare.length} character${bare.length === 1 ? "" : "s"}. ` +
+            "The \"File No.\" on the last page of your passport is 15 — two " +
+            "letters then digits."
       );
     }
     setPassportBusy(true);
@@ -1156,7 +1157,7 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
               <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-cyan-300" />
               <span>
                 We check the <b className="text-white">&ldquo;File No.&rdquo;</b> from the last page of your
-                passport — 12 characters — and your date of birth, against the
+                passport — 15 characters — and your date of birth, against the
                 Indian passport record.
               </span>
             </li>
@@ -1292,8 +1293,8 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
             File number{" "}
             <span className="text-slate-500">
               — the <b className="text-slate-400">&ldquo;File No.&rdquo;</b> printed on the last page of
-              your passport, 12 letters and digits. Not the passport number on
-              the front page.
+              your passport, 15 characters: two letters then digits. Not the
+              passport number on the front page.
             </span>
           </label>
           {/* UPPERCASED AS IT IS TYPED, not silently on submit.
@@ -1301,20 +1302,36 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
               desktop browser, so a file number typed in lower case sat there
               looking wrong while the request went up in caps. Now what is on
               screen is what is sent. */}
+          {/* GROUPED IN FIVES AS IT IS TYPED, and counted.
+              Fifteen unbroken characters cannot be checked against a document
+              by eye - you lose your place, and the only feedback used to come
+              after pressing the button and spending one of three attempts a
+              day. Three groups of five read straight off the page, and the
+              counter says how far along you are before you submit. */}
           <input
-            value={passportFile}
+            value={passportFileGrouped}
             onChange={(e) => {
-              setPassportFile(e.target.value.toUpperCase());
+              const bare = e.target.value
+                .replace(/[^A-Za-z0-9]/g, "")
+                .toUpperCase()
+                .slice(0, 15);
+              setPassportFile(bare);
               setPassportError("");
             }}
-            className="h-12 rounded-xl border border-white/10 bg-white/5 px-4 font-mono uppercase tracking-wider text-white placeholder:font-sans placeholder:normal-case placeholder:tracking-normal placeholder:text-slate-500"
-            placeholder="HYDH01247810"
+            className="h-12 rounded-xl border border-white/10 bg-white/5 px-4 font-mono text-lg tracking-widest text-white placeholder:font-sans placeholder:text-base placeholder:tracking-normal placeholder:text-slate-500"
+            placeholder="XX123 45678 90123"
+            inputMode="text"
             autoCapitalize="characters"
             autoCorrect="off"
             spellCheck={false}
-            maxLength={20}
             autoFocus
           />
+          <p className="-mt-1 text-right text-[11px] tabular-nums text-slate-500">
+            <span className={passportFileLength === 15 ? "text-cyan-300" : ""}>
+              {passportFileLength}
+            </span>
+            {" / 15"}
+          </p>
           <label className="text-xs text-slate-400">Date of birth, as on the passport</label>
           <input
             value={passportDob}
@@ -1409,7 +1426,7 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
             </div>
             <p className="mb-4 flex-1 text-xs leading-5 text-slate-400">
               No DigiLocker account needed. Enter the &ldquo;File No.&rdquo; from the last
-              page of your passport — 12 characters — and your date of birth,
+              page of your passport — 15 characters — and your date of birth,
               and we check them against the passport record. We will ask you to
               confirm your mobile number with a code afterwards.
             </p>
