@@ -1195,9 +1195,18 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
             autoComplete="tel"
             autoFocus
           />
+          {/* SAY WHAT HAPPENS NEXT, because the old wording promised a code.
+              It read "we send sign-in codes there", which alongside a button
+              labelled "Save and continue" reads as "a code is on its way". It
+              is not: the code is a later step, offered only after the identity
+              check, and it only sends when the customer presses for it. One
+              account holder waited for a WhatsApp that nothing was ever going
+              to send - the OTP table shows no mobile code generated at all. */}
           <p className="text-[11px] leading-4 text-slate-500">
-            You signed in with Google, so we have not asked for one yet. Indian mobile number —
-            we send sign-in codes there, and it is how we reach you about your account.
+            You signed in with Google, so we have not asked for one yet. An
+            Indian mobile number — it is how we reach you about your account.
+            We will ask you to confirm it with a code <b>after</b> the identity
+            check, so nothing arrives just yet.
           </p>
           {phoneError && (
             <p className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
