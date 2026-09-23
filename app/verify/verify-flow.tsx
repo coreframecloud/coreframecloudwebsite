@@ -337,18 +337,22 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
     setPassportError("");
     const file = passportFile.trim().toUpperCase();
     const dob = passportDob.trim();
-    // Shape only; the passport office decides. Still loose - people type them
-    // with spaces and hyphens - but no longer so loose that an obviously wrong
-    // value is spent as one of three verifications a day. Cashfree answers 200
-    // INVALID for a well-formed number that is simply wrong, and rejects the
-    // request outright for one that is not well formed, which is what an
-    // 8-character attempt produced: a refusal that named nothing.
+    // ALPHANUMERIC, 12 TO 15. That is the whole rule, and it is deliberately
+    // the whole rule: file numbers differ by issuing office and by era -
+    // HYDH01247810 is 12, PA1079341954215 is 15 - so anything that pins the
+    // letter/digit pattern turns real customers away. Separators are stripped
+    // rather than rejected, because people type these with spaces and hyphens.
+    //
+    // It is not merely cosmetic. The passport NUMBER is one letter and seven
+    // digits, it is the number every holder knows, and it is what gets typed
+    // here. Sent on, it costs one of three verifications a day and comes back
+    // as an error that explains nothing.
     const bare = file.replace(/[^A-Z0-9]/g, "");
-    if (bare.length < 12) {
+    if (!/^[A-Z0-9]{12,15}$/.test(bare)) {
       return setPassportError(
-        "That looks too short. The file number is 15 characters — two letters " +
-        "then digits, like PA1079341954215 — printed on your passport " +
-        "application, not the passport number on the front page."
+        "That is not a file number. Look for \"File No.\" on the last page of " +
+        "your passport — 12 to 15 letters and digits. The number on the front " +
+        "page is the passport number, which is a different thing."
       );
     }
     if (!/^\d{4}-\d{2}-\d{2}$/.test(dob)) {
@@ -359,7 +363,7 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
       const res = await fetch(`${API}/verification/passport`, {
         method: "POST",
         headers: authHeaders(),
-        body: JSON.stringify({ file_number: file, dob }),
+        body: JSON.stringify({ file_number: bare, dob }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.detail ?? `Error ${res.status}`);
@@ -1151,8 +1155,9 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
             <li className="flex gap-3">
               <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-cyan-300" />
               <span>
-                We check the file number from your passport application and your
-                date of birth against the <b className="text-white">Indian passport record</b>.
+                We check the <b className="text-white">&ldquo;File No.&rdquo;</b> from the last page of your
+                passport — 12 to 15 characters — and your date of birth,
+                against the Indian passport record.
               </span>
             </li>
             <li className="flex gap-3">
@@ -1285,8 +1290,9 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
           <label className="text-xs text-slate-400">
             File number{" "}
             <span className="text-slate-500">
-              — the 15-character number on your passport APPLICATION, not the
-              passport number on the front page
+              — the <b className="text-slate-400">&ldquo;File No.&rdquo;</b> printed on the last page of
+              your passport, 12–15 letters and digits. Not the passport number
+              on the front page.
             </span>
           </label>
           {/* UPPERCASED AS IT IS TYPED, not silently on submit.
@@ -1301,7 +1307,7 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
               setPassportError("");
             }}
             className="h-12 rounded-xl border border-white/10 bg-white/5 px-4 font-mono uppercase tracking-wider text-white placeholder:font-sans placeholder:normal-case placeholder:tracking-normal placeholder:text-slate-500"
-            placeholder="PA1079341954215"
+            placeholder="DEL25 1234 5678"
             autoCapitalize="characters"
             autoCorrect="off"
             spellCheck={false}
@@ -1401,10 +1407,10 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
               <p className="text-sm font-semibold text-white">Indian passport</p>
             </div>
             <p className="mb-4 flex-1 text-xs leading-5 text-slate-400">
-              No DigiLocker account needed. Enter the file number from your
-              passport application and your date of birth, and we check them
-              against the passport record. We will ask you to confirm your
-              mobile number with a code afterwards.
+              No DigiLocker account needed. Enter the &ldquo;File No.&rdquo; from the last
+              page of your passport — 12 to 15 characters — and your date of
+              birth, and we check them against the passport record. We will ask
+              you to confirm your mobile number with a code afterwards.
             </p>
             <Button
               onClick={() => setPassportOpen(true)}
