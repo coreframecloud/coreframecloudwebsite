@@ -99,6 +99,9 @@ interface VerificationStatus {
   // Tries left at the name form today. null means the server could not tell,
   // and the page then shows no number rather than a wrong one.
   legal_name_attempts_remaining: number | null;
+  // Paid passport checks left today. Three is a low budget and the customer
+  // has to be able to watch it, not discover it by being locked out.
+  passport_attempts_remaining?: number | null;
 }
 
 type Phase = "loading" | "intro" | "gstin" | "bank" | "redirecting" | "polling" | "approved" | "review" | "failed" | "duplicate" | "error";
@@ -1357,6 +1360,21 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
             You will still confirm your mobile number afterwards, which Indian
             regulations require us to hold.
           </p>
+          {/* SAY HOW MANY ARE LEFT, BEFORE THEY RUN OUT. Each check is a paid
+              lookup so the daily budget is three, and until now the only sign
+              of it was "Too many requests. Try again later." after the third -
+              which names neither the limit nor when it clears. This is the same
+              fix the legal-name form already carries. */}
+          {typeof status?.passport_attempts_remaining === "number" &&
+            status.passport_attempts_remaining <= 2 && (
+              <p className="text-[11px] leading-4 text-amber-300/80">
+                {status.passport_attempts_remaining === 0
+                  ? "No passport checks left today — they reset 24 hours after your first attempt. DigiLocker has no such limit."
+                  : `${status.passport_attempts_remaining} passport check${
+                      status.passport_attempts_remaining === 1 ? "" : "s"
+                    } left today.`}
+              </p>
+            )}
           <button
             type="button"
             onClick={() => setPassportOpen(false)}
