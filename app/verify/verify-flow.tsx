@@ -337,33 +337,26 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
     setPassportError("");
     const file = passportFile.trim().toUpperCase();
     const dob = passportDob.trim();
-    // EXACTLY 15 ALPHANUMERIC. Asked of the provider rather than inferred from
-    // its documentation: production answers 400 file_number_value_invalid,
-    // "file_number should be 15 characters", for 8 and for 14 alike.
+    // TWELVE, WHICH IS WHAT THE PASSPORT PRINTS.
     //
-    // Real Indian passports carry File No. values of 12 to 15 characters, so
-    // this route genuinely cannot serve everyone - and the message has to say
-    // so and point at DigiLocker, rather than let somebody with a 12-character
-    // number keep retrying. An earlier version of this guard allowed 12-15,
-    // which was worse than too strict: it passed the value through to a
-    // provider that would always refuse it.
+    // Cashfree demands exactly 15 - production refuses 8 and 14 alike with
+    // file_number_value_invalid - while a real booklet shows twelve:
+    // HYDH01247810. The vendor's own example reconciles them, PA1079341954215
+    // being "PA1" plus twelve, so the server adds the prefix. The customer is
+    // never asked for three characters that appear nowhere on their document.
     //
+    // 15 is still accepted, for anyone who already has the prefixed form.
     // Separators are stripped rather than rejected; people type these with
     // spaces and hyphens.
     const bare = file.replace(/[^A-Z0-9]/g, "");
-    if (!/^[A-Z0-9]{15}$/.test(bare)) {
+    if (bare.length !== 12 && bare.length !== 15) {
       return setPassportError(
-        bare.length >= 12 && bare.length < 15
-          ? "That looks like a real File No., but the passport check only " +
-            "accepts 15-character file numbers. Yours is shorter, so this " +
-            "route cannot read it — go back and use DigiLocker instead."
-          : "That is not a file number. Look for \"File No.\" on the last page " +
-            "of your passport — 15 letters and digits. The number on the front " +
-            "page is the passport number, which is a different thing."
+        bare.length === 8
+          ? "That is the passport number from the front page. This check needs " +
+            "the \"File No.\" printed on the last page — 12 letters and digits."
+          : "Check that again — the \"File No.\" on the last page of your " +
+            "passport is 12 letters and digits, like HYDH01247810."
       );
-    }
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(dob)) {
-      return setPassportError("Enter your date of birth.");
     }
     setPassportBusy(true);
     try {
@@ -1163,7 +1156,7 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
               <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-cyan-300" />
               <span>
                 We check the <b className="text-white">&ldquo;File No.&rdquo;</b> from the last page of your
-                passport — 15 characters — and your date of birth, against the
+                passport — 12 characters — and your date of birth, against the
                 Indian passport record.
               </span>
             </li>
@@ -1292,15 +1285,14 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
               finding that out after typing everything in is worse than
               being told now. */}
           <p className="rounded-xl border border-amber-500/25 bg-amber-500/10 px-4 py-3 text-xs leading-5 text-amber-200">
-            Only <b>Indian passports</b> can be checked this way, and only where
-            the &ldquo;File No.&rdquo; is <b>15 characters</b> — some passports carry a
-            shorter one, and those have to use DigiLocker.
+            Only <b>Indian passports</b> can be checked this way — the check
+            queries the Indian passport record.
           </p>
           <label className="text-xs text-slate-400">
             File number{" "}
             <span className="text-slate-500">
               — the <b className="text-slate-400">&ldquo;File No.&rdquo;</b> printed on the last page of
-              your passport, 15 letters and digits. Not the passport number on
+              your passport, 12 letters and digits. Not the passport number on
               the front page.
             </span>
           </label>
@@ -1316,7 +1308,7 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
               setPassportError("");
             }}
             className="h-12 rounded-xl border border-white/10 bg-white/5 px-4 font-mono uppercase tracking-wider text-white placeholder:font-sans placeholder:normal-case placeholder:tracking-normal placeholder:text-slate-500"
-            placeholder="DEL25 1234 5678"
+            placeholder="HYDH01247810"
             autoCapitalize="characters"
             autoCorrect="off"
             spellCheck={false}
@@ -1417,7 +1409,7 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
             </div>
             <p className="mb-4 flex-1 text-xs leading-5 text-slate-400">
               No DigiLocker account needed. Enter the &ldquo;File No.&rdquo; from the last
-              page of your passport — 15 characters — and your date of birth,
+              page of your passport — 12 characters — and your date of birth,
               and we check them against the passport record. We will ask you to
               confirm your mobile number with a code afterwards.
             </p>
