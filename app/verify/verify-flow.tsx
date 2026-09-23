@@ -102,6 +102,10 @@ interface VerificationStatus {
   // Paid passport checks left today. Three is a low budget and the customer
   // has to be able to watch it, not discover it by being locked out.
   passport_attempts_remaining?: number | null;
+  // The number to message when the page is a dead end. Served by the API so it
+  // changes with an env var, and null means the invitation is not shown at all
+  // rather than pointing at a number that may not exist.
+  support_whatsapp?: string | null;
 }
 
 type Phase = "loading" | "intro" | "gstin" | "bank" | "redirecting" | "polling" | "approved" | "review" | "failed" | "duplicate" | "error";
@@ -172,6 +176,34 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
   const [legalNameError, setLegalNameError] = useState("");
   const [bankBusy, setBankBusy] = useState(false);
   const [bankHint, setBankHint] = useState("");
+  // THE PASSPORT PANEL IS A PLACE, SO GIVE IT A HISTORY ENTRY.
+  //
+  // It was React state with no entry of its own, so Back from inside the
+  // passport form did what Back always does with no entry: left /verify
+  // entirely. The previous page was /login, which then showed a sign-in form
+  // to somebody already signed in - a dead end reached by pressing the most
+  // ordinary button in the browser.
+  //
+  // pushState on open, popstate closes. The in-page "Back to the other
+  // options" button calls history.back() rather than setting state directly,
+  // so the entry is consumed either way and a second Back does not land on a
+  // screen the customer has already left.
+  useEffect(() => {
+    if (!passportOpen || typeof window === "undefined") return;
+    window.history.pushState({ cfPassport: true }, "");
+    const onPop = () => setPassportOpen(false);
+    window.addEventListener("popstate", onPop);
+    return () => window.removeEventListener("popstate", onPop);
+  }, [passportOpen]);
+
+  const closePassport = useCallback(() => {
+    if (typeof window !== "undefined" && window.history.state?.cfPassport) {
+      window.history.back();          // popstate closes it
+    } else {
+      setPassportOpen(false);
+    }
+  }, []);
+
   const passportFileLength = passportFile.replace(/[^A-Z0-9]/g, "").length;
   const passportFileGrouped =
     passportFile.replace(/[^A-Z0-9]/g, "").match(/.{1,5}/g)?.join(" ") ?? "";
@@ -1368,16 +1400,39 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
           {typeof status?.passport_attempts_remaining === "number" &&
             status.passport_attempts_remaining <= 2 && (
               <p className="text-[11px] leading-4 text-amber-300/80">
-                {status.passport_attempts_remaining === 0
-                  ? "No passport checks left today — they reset 24 hours after your first attempt. DigiLocker has no such limit."
-                  : `${status.passport_attempts_remaining} passport check${
-                      status.passport_attempts_remaining === 1 ? "" : "s"
-                    } left today.`}
+                {status.passport_attempts_remaining === 0 ? (
+                  <>
+                    No passport checks left today — they reset 24 hours after
+                    your first attempt, and DigiLocker has no such limit.
+                    {/* A DEAD END NEEDS A PERSON, not just a wait. Rendered as
+                        a tappable link rather than a number to copy, and only
+                        when the API actually publishes one. */}
+                    {status.support_whatsapp && (
+                      <>
+                        {" "}
+                        Need it sooner?{" "}
+                        <a
+                          href={`https://wa.me/${status.support_whatsapp.replace(/[^0-9]/g, "")}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="font-semibold text-cyan-300 underline underline-offset-2"
+                        >
+                          Message us on WhatsApp
+                        </a>{" "}
+                        and we will sort it out.
+                      </>
+                    )}
+                  </>
+                ) : (
+                  `${status.passport_attempts_remaining} passport check${
+                    status.passport_attempts_remaining === 1 ? "" : "s"
+                  } left today.`
+                )}
               </p>
             )}
           <button
             type="button"
-            onClick={() => setPassportOpen(false)}
+            onClick={closePassport}
             className="text-center text-sm text-slate-400 hover:text-slate-200"
           >
             ← Back to the other options

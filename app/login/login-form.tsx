@@ -160,9 +160,32 @@ export default function LoginForm({
   const [tab, setTab] = useState<Tab>("link");
   const [error, setError] = useState("");
 
+  // ALREADY SIGNED IN AND LOOKING AT A SIGN-IN FORM.
+  //
+  // Reported after pressing Back inside the verification flow: the page behind
+  // /verify is /login, and /login had nothing to say about an existing session.
+  // The header knew - it was showing the avatar and "Complete verification" -
+  // while the card underneath asked them to sign in again. Both true, one
+  // screen, and no way forward that was not confusing.
+  //
+  // NOT A SILENT REDIRECT. Someone may be here deliberately to use a different
+  // account, and bouncing them away would make that impossible without finding
+  // a sign-out first. A banner offers the way on AND the way to switch.
+  const [signedInAs, setSignedInAs] = useState<string | null>(null);
+
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     if (params.get("source") === "connect") setTab("code");
+    try {
+      if (localStorage.getItem("cf_customer_token")) {
+        const raw = localStorage.getItem("cf_customer_user");
+        const u = raw ? (JSON.parse(raw) as { email?: string }) : null;
+        setSignedInAs(u?.email ?? "your account");
+      }
+    } catch {
+      // A corrupt or blocked localStorage is not a reason to fail the page;
+      // the form below still works.
+    }
     fetchCountries(API).then((list) => {
       setCountries(list);
       const india = list.find((c) => c.dial_code === "91");
@@ -359,6 +382,40 @@ export default function LoginForm({
             : "New here? Just enter your email \u2014 we\u2019ll handle the rest."}
         </p>
       </div>
+
+      {/* Already signed in — say so, and offer both ways out. */}
+      {signedInAs && (
+        <div className="mb-4 rounded-[1.6rem] border border-cyan-400/25 bg-cyan-400/10 p-5">
+          <p className="text-sm text-slate-200">
+            You are already signed in as{" "}
+            <span className="font-semibold text-white">{signedInAs}</span>.
+          </p>
+          <div className="mt-3 grid gap-2 sm:grid-cols-2">
+            <a
+              href="/verify"
+              className="flex h-11 w-full items-center justify-center rounded-xl bg-cyan-400 px-3 text-center text-sm font-semibold text-slate-900 transition hover:bg-cyan-300"
+            >
+              Continue where you left off
+            </a>
+            <button
+              type="button"
+              onClick={() => {
+                try {
+                  localStorage.removeItem("cf_customer_token");
+                  localStorage.removeItem("cf_customer_user");
+                } catch {
+                  // Nothing to clear, or storage is blocked. The form below
+                  // still works and a fresh sign-in overwrites either way.
+                }
+                setSignedInAs(null);
+              }}
+              className="flex h-11 w-full items-center justify-center rounded-xl border border-white/20 bg-transparent px-3 text-center text-sm font-semibold text-slate-100 transition hover:border-cyan-400/50 hover:bg-white/5"
+            >
+              Use a different account
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Card */}
       <div className="rounded-[1.6rem] border border-white/10 bg-white/5 p-6 backdrop-blur-xl">
