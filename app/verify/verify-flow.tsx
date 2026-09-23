@@ -142,6 +142,92 @@ function Header({ icon, title, sub }: { icon: React.ReactNode; title: string; su
   );
 }
 
+/**
+ * WHERE THE "File No." IS, DRAWN RATHER THAN PHOTOGRAPHED.
+ *
+ * A scan of a real passport page would be the obvious thing to show and the
+ * wrong thing to ship: the last page carries parents' and spouse's names, a
+ * home address, a PIN code and the old passport number, and every one of those
+ * would then sit in our bundle, on our CDN, in everyone's browser cache. The
+ * sample number here is invented, the other fields are drawn as redaction
+ * bars, and nothing about any real person is in the file.
+ *
+ * It answers the only question the field actually raises - "which of these
+ * numbers is it?" - which the copy alone could not, because the page also
+ * carries a barcode number and an old passport number that look just as
+ * plausible.
+ */
+function FileNumberDiagram() {
+  const redactions = [
+    { label: "Name of Father / Legal Guardian", w: 150 },
+    { label: "Name of Mother", w: 128 },
+    { label: "Name of Spouse", w: 134 },
+    { label: "Address", w: 186 },
+  ];
+  return (
+    <figure className="mt-1">
+      <svg
+        viewBox="0 0 320 226"
+        className="w-full rounded-xl border border-white/10 bg-slate-900/60"
+        role="img"
+        aria-label="The last page of an Indian passport. Every personal field is
+          shown blanked out. The File No. at the bottom is highlighted."
+      >
+        {/* barcode, drawn as an abstract block — it is the decoy number */}
+        <g fill="currentColor" className="text-slate-500">
+          {Array.from({ length: 17 }).map((_, i) => (
+            <rect
+              key={i}
+              x={208 + i * 5}
+              y={14}
+              width={i % 3 === 0 ? 2.5 : 1.2}
+              height={20}
+              />
+          ))}
+        </g>
+        <rect x={232} y={38} width={56} height={7} rx={2}
+              className="fill-slate-600/70" />
+
+        {redactions.map((r, i) => (
+          <g key={r.label}>
+            <text x={16} y={30 + i * 34} className="fill-slate-500"
+                  style={{ fontSize: 7 }}>
+              {r.label}
+            </text>
+            <rect x={16} y={35 + i * 34} width={r.w} height={11} rx={2.5}
+                  className="fill-slate-600/70" />
+          </g>
+        ))}
+        {/* the address runs to a second line on a real page */}
+        <rect x={16} y={151} width={120} height={11} rx={2.5}
+              className="fill-slate-600/70" />
+
+        <line x1={16} y1={172} x2={304} y2={172}
+              className="stroke-white/15" strokeWidth={1} />
+
+        {/* the one that matters */}
+        <text x={16} y={184} className="fill-cyan-300" style={{ fontSize: 7.5 }}>
+          File No.
+        </text>
+        <rect x={14} y={188} width={152} height={22} rx={5}
+              className="fill-cyan-400/10 stroke-cyan-400/80" strokeWidth={1.5} />
+        <text x={23} y={203} className="fill-white"
+              style={{ fontSize: 11.5, fontFamily: "ui-monospace, monospace", letterSpacing: 0.8 }}>
+          DL1234567890123
+        </text>
+        <text x={176} y={202} className="fill-cyan-300" style={{ fontSize: 8 }}>
+          ← this one, 15 characters
+        </text>
+      </svg>
+      <figcaption className="mt-1.5 text-[11px] leading-4 text-slate-500">
+        Illustration. The number shown is made up, and the other fields are
+        blanked because they are nobody&apos;s business but yours — we never ask
+        for them.
+      </figcaption>
+    </figure>
+  );
+}
+
 export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
   const [phase, setPhase] = useState<Phase>("loading");
   // The name as verified by THIS run, taken from the completion response.
@@ -167,6 +253,7 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
   const [passportDob, setPassportDob] = useState("");
   const [passportBusy, setPassportBusy] = useState(false);
   const [passportError, setPassportError] = useState("");
+  const [showFileHint, setShowFileHint] = useState(false);
   const [otpCode, setOtpCode] = useState("");
   const [otpBusy, setOtpBusy] = useState(false);
   const [otpError, setOtpError] = useState("");
@@ -1191,16 +1278,15 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
             <li className="flex gap-3">
               <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-cyan-300" />
               <span>
-                We check the <b className="text-white">&ldquo;File No.&rdquo;</b> from the last page of your
-                passport — 15 characters — and your date of birth, against the
-                Indian passport record.
+                We check your <b className="text-white">&ldquo;File No.&rdquo;</b> and date of birth
+                against the Indian passport record.
               </span>
             </li>
             <li className="flex gap-3">
               <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-cyan-300" />
               <span>
-                We keep your verified name and date of birth. No Aadhaar and no
-                address are involved on this route.
+                We keep your verified name and date of birth. No Aadhaar, no
+                address.
               </span>
             </li>
           </>
@@ -1209,16 +1295,15 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
             <li className="flex gap-3">
               <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-cyan-300" />
               <span>
-                You confirm your identity against an official government record —
-                <b className="text-white"> DigiLocker</b> or your{" "}
-                <b className="text-white">Indian passport</b>. Either one is enough.
+                One official record — <b className="text-white">DigiLocker</b> or your{" "}
+                <b className="text-white">Indian passport</b>. Either is enough.
               </span>
             </li>
             <li className="flex gap-3">
               <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-cyan-300" />
               <span>
-                We never see or store your full Aadhaar number. We keep only the
-                last four digits, your verified name and address.
+                We never see your full Aadhaar number — only the last four
+                digits, your verified name and address.
               </span>
             </li>
           </>
@@ -1226,8 +1311,8 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
         <li className="flex gap-3">
           <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-cyan-300" />
           <span>
-            Indian law (CERT-In Direction 20(3)/2022) requires us to hold verified subscriber records
-            for anyone renting compute infrastructure.
+            Indian law (CERT-In Direction 20(3)/2022) requires verified
+            subscriber records for anyone renting compute.
           </span>
         </li>
       </ul>
@@ -1361,12 +1446,25 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
             spellCheck={false}
             autoFocus
           />
-          <p className="-mt-1 text-right text-[11px] tabular-nums text-slate-500">
-            <span className={passportFileLength === 15 ? "text-cyan-300" : ""}>
-              {passportFileLength}
-            </span>
-            {" / 15"}
-          </p>
+          <div className="-mt-1 flex items-center justify-between">
+            {/* The page carries a barcode number and an old passport number as
+                well, so "which of these is it?" is a fair question and the copy
+                alone cannot answer it. */}
+            <button
+              type="button"
+              onClick={() => setShowFileHint((v) => !v)}
+              className="text-[11px] text-cyan-300 underline underline-offset-2 hover:text-cyan-200"
+            >
+              {showFileHint ? "Hide" : "Where do I find it?"}
+            </button>
+            <p className="text-right text-[11px] tabular-nums text-slate-500">
+              <span className={passportFileLength === 15 ? "text-cyan-300" : ""}>
+                {passportFileLength}
+              </span>
+              {" / 15"}
+            </p>
+          </div>
+          {showFileHint && <FileNumberDiagram />}
           <label className="text-xs text-slate-400">Date of birth, as on the passport</label>
           <input
             value={passportDob}
@@ -1440,81 +1538,72 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
         </form>
       ) : (
       <div className="grid gap-3">
-        {/* TWO ROUTES, PRESENTED AS TWO ROUTES.
+        {/* TWO ROUTES, TWO IDENTICAL ROWS.
+            They were side-by-side panels, which read as clutter: different
+            heights, different numbers of buttons, and the longer description
+            pushing one taller than the other. Two rows of the same shape
+            compare at a glance - name, one line, one button - and the copy is
+            cut to what actually decides between them.
+
             The passport used to sit under a grey text link below the fold,
             which is the same mistake that buried "create a DigiLocker
-            account": a customer who does not have the thing we are asking for
-            reads the page as a dead end and leaves. 35 of 66 held accounts
-            opened DigiLocker and never came back. Someone with a passport and
-            no DigiLocker should see both doors at once, and neither should
-            look like the consolation prize. */}
+            account": somebody without the thing being asked for reads the page
+            as a dead end and leaves. 35 of 66 held accounts did exactly
+            that. */}
         <p className="text-sm text-slate-300">
-          Choose whichever you already have. Both prove who you are; we only
-          need one.
+          Choose whichever you already have — we only need one.
         </p>
 
-        <div className="grid gap-3 sm:grid-cols-2">
-          {/* ── DigiLocker ─────────────────────────────────────────────── */}
-          <div className="flex flex-col rounded-2xl border border-white/10 bg-white/5 p-4">
-            <div className="mb-2 flex items-center gap-2">
+        {/* ── DigiLocker ──────────────────────────────────────────────── */}
+        <div className="flex flex-col gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 sm:flex-row sm:items-center">
+          <div className="flex-1">
+            <div className="flex items-center gap-2">
               <Landmark className="h-4 w-4 shrink-0 text-cyan-300" />
               <p className="text-sm font-semibold text-white">DigiLocker</p>
             </div>
-            <p className="mb-4 flex-1 text-xs leading-5 text-slate-400">
-              The Government of India&apos;s own document service. You sign in
-              there with the mobile linked to your Aadhaar and approve sharing
-              — we never see your full Aadhaar number. Proves your name,
-              address and contact number in one step.
-            </p>
-            <Button
-              onClick={() => startVerification("signin")}
-              className="h-auto min-h-12 w-full whitespace-normal rounded-xl bg-cyan-400 px-3 py-2 text-center text-base font-semibold leading-tight text-slate-900 shadow-[0_6px_24px_-6px_rgba(34,211,238,.55)] transition hover:bg-cyan-300 disabled:opacity-60"
-            >
-              <ArrowRight className="mr-2 h-4 w-4" />
-              Use DigiLocker
-            </Button>
-            {/* A REAL BUTTON, NOT A HINT. Creating an account happens inside
-                the same flow, so this is an equal route rather than a
-                consolation prize - and for most people it is the route they
-                need. */}
-            <Button
-              variant="outline"
-              onClick={() => startVerification("signup")}
-              className="mt-2 h-auto min-h-11 w-full whitespace-normal rounded-xl border-white/20 bg-transparent px-3 py-2 text-center text-sm font-semibold leading-tight text-slate-100 transition hover:border-cyan-400/50 hover:bg-white/5"
-            >
-              Create a DigiLocker account
-            </Button>
-            <p className="mt-2 text-[11px] leading-4 text-slate-500">
-              Creating one takes about two minutes and happens as part of this
-              step. You will need your Aadhaar number and the mobile linked to
-              it.
+            <p className="mt-1 text-xs leading-5 text-slate-400">
+              The Government of India&apos;s document service. Proves your name,
+              address and contact number in one step.{" "}
+              {/* A REAL CONTROL, not a hint. Creating an account happens inside
+                  this same flow, so it is a route rather than a consolation
+                  prize - and for most people it is the route they need. */}
+              <button
+                type="button"
+                onClick={() => startVerification("signup")}
+                className="font-semibold text-cyan-300 underline underline-offset-2 hover:text-cyan-200"
+              >
+                No account? Create one →
+              </button>
             </p>
           </div>
+          <Button
+            onClick={() => startVerification("signin")}
+            className="h-11 w-full shrink-0 rounded-xl bg-cyan-400 text-sm font-semibold text-slate-900 shadow-[0_6px_24px_-6px_rgba(34,211,238,.55)] transition hover:bg-cyan-300 disabled:opacity-60 sm:w-44"
+          >
+            Use DigiLocker
+            <ArrowRight className="ml-2 h-4 w-4" />
+          </Button>
+        </div>
 
-          {/* ── Passport ───────────────────────────────────────────────── */}
-          <div className="flex flex-col rounded-2xl border border-white/10 bg-white/5 p-4">
-            <div className="mb-2 flex items-center gap-2">
+        {/* ── Passport ────────────────────────────────────────────────── */}
+        <div className="flex flex-col gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 sm:flex-row sm:items-center">
+          <div className="flex-1">
+            <div className="flex items-center gap-2">
               <BookUser className="h-4 w-4 shrink-0 text-cyan-300" />
               <p className="text-sm font-semibold text-white">Indian passport</p>
             </div>
-            <p className="mb-4 flex-1 text-xs leading-5 text-slate-400">
-              No DigiLocker account needed. Enter the &ldquo;File No.&rdquo; from the last
-              page of your passport — 15 characters — and your date of birth,
-              and we check them against the passport record. We will ask you to
-              confirm your mobile number with a code afterwards.
-            </p>
-            <Button
-              onClick={() => setPassportOpen(true)}
-              className="h-auto min-h-12 w-full whitespace-normal rounded-xl bg-cyan-400 px-3 py-2 text-center text-base font-semibold leading-tight text-slate-900 shadow-[0_6px_24px_-6px_rgba(34,211,238,.55)] transition hover:bg-cyan-300 disabled:opacity-60"
-            >
-              <ArrowRight className="mr-2 h-4 w-4" />
-              Validate with my passport
-            </Button>
-            <p className="mt-2 text-[11px] leading-4 text-slate-500">
-              Indian passports only — the check queries the Indian passport
-              record.
+            <p className="mt-1 text-xs leading-5 text-slate-400">
+              No DigiLocker account needed. Takes the 15-character
+              &ldquo;File No.&rdquo; from the last page, and your date of birth.
             </p>
           </div>
+          <Button
+            onClick={() => setPassportOpen(true)}
+            className="h-11 w-full shrink-0 rounded-xl bg-cyan-400 text-sm font-semibold text-slate-900 shadow-[0_6px_24px_-6px_rgba(34,211,238,.55)] transition hover:bg-cyan-300 disabled:opacity-60 sm:w-44"
+          >
+            Use passport
+            <ArrowRight className="ml-2 h-4 w-4" />
+          </Button>
         </div>
       </div>
       )}
