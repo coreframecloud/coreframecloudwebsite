@@ -22,6 +22,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
   ArrowRight,
+  BookUser,
   Building2,
   CheckCircle2,
   Clock,
@@ -1202,11 +1203,20 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
               check, and it only sends when the customer presses for it. One
               account holder waited for a WhatsApp that nothing was ever going
               to send - the OTP table shows no mobile code generated at all. */}
+          {/* WHAT ACTUALLY HAPPENS, IN BOTH CASES.
+              The previous wording promised a code after the identity check
+              full stop, and for most people none ever came: DigiLocker returns
+              the Aadhaar-linked mobile, which validated the number outright.
+              It was ALSO wrong the other way - it used to validate even when
+              the Aadhaar number and the typed number were different, so a
+              number nobody had proved sat on the account for good. Both halves
+              are fixed; this says which of the two will happen. */}
           <p className="text-[11px] leading-4 text-slate-500">
             You signed in with Google, so we have not asked for one yet. An
             Indian mobile number — it is how we reach you about your account.
-            We will ask you to confirm it with a code <b>after</b> the identity
-            check, so nothing arrives just yet.
+            If it is the number linked to your Aadhaar, the identity check
+            confirms it. If it is a different number, we will send a code to it
+            afterwards. Either way, nothing arrives just yet.
           </p>
           {phoneError && (
             <p className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
@@ -1217,118 +1227,145 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
             {phoneBusy ? "Saving…" : "Save and continue"}
           </Button>
         </form>
+      ) : passportOpen ? (
+        /* The passport form takes the whole card once chosen — the same room
+           DigiLocker gets, because it is the same kind of decision. */
+        <form onSubmit={submitPassport} className="grid gap-3">
+          <div className="flex items-center gap-2">
+            <BookUser className="h-4 w-4 text-cyan-300" />
+            <p className="text-sm font-semibold text-white">Verify with your passport</p>
+          </div>
+          {/* Said plainly and first. An overseas customer cannot be served
+              by this at all - it queries the Indian passport record - and
+              finding that out after typing everything in is worse than
+              being told now. */}
+          <p className="rounded-xl border border-amber-500/25 bg-amber-500/10 px-4 py-3 text-xs leading-5 text-amber-200">
+            Only <b>Indian passports</b> can be checked this way.
+          </p>
+          <label className="text-xs text-slate-400">
+            File number{" "}
+            <span className="text-slate-500">
+              — from your passport application, not the passport number
+            </span>
+          </label>
+          <input
+            value={passportFile}
+            onChange={(e) => { setPassportFile(e.target.value); setPassportError(""); }}
+            className="h-12 rounded-xl border border-white/10 bg-white/5 px-4 font-mono tracking-wider text-white placeholder:font-sans placeholder:tracking-normal placeholder:text-slate-500"
+            placeholder="BN1234567890123"
+            autoCapitalize="characters"
+            autoFocus
+          />
+          <label className="text-xs text-slate-400">Date of birth, as on the passport</label>
+          <input
+            value={passportDob}
+            onChange={(e) => { setPassportDob(e.target.value); setPassportError(""); }}
+            className="h-12 rounded-xl border border-white/10 bg-white/5 px-4 text-white placeholder:text-slate-500"
+            type="date"
+            max={new Date().toISOString().slice(0, 10)}
+          />
+          {passportError && (
+            <p className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+              {passportError}
+            </p>
+          )}
+          <Button
+            type="submit"
+            disabled={passportBusy}
+            className="h-12 w-full rounded-xl bg-cyan-400 text-base font-semibold text-slate-900 shadow-[0_6px_24px_-6px_rgba(34,211,238,.55)] transition hover:bg-cyan-300 disabled:opacity-60"
+          >
+            {passportBusy ? "Checking…" : "Check my passport"}
+          </Button>
+          <p className="text-[11px] leading-4 text-slate-500">
+            We check the name and date of birth against the passport record.
+            You will still confirm your mobile number afterwards, which Indian
+            regulations require us to hold.
+          </p>
+          <button
+            type="button"
+            onClick={() => setPassportOpen(false)}
+            className="text-center text-sm text-slate-400 hover:text-slate-200"
+          >
+            ← Back to the other options
+          </button>
+        </form>
       ) : (
       <div className="grid gap-3">
-        {/* SAY WHAT DIGILOCKER IS, BEFORE ASKING THEM TO GO THERE.
-            35 of 66 held accounts opened this and never came back, which is
-            what it looks like when somebody arrives at a government login
-            screen they did not expect and have no account for. The page never
-            mentioned that an account is needed, and the way to create one was
-            a grey text link under the button. */}
-        <p className="rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-slate-300">
-          DigiLocker is the Government of India&apos;s own document service. You
-          sign in there with the mobile number linked to your Aadhaar, and
-          approve sharing your details with us — we never see your full Aadhaar
-          number.
-        </p>
-        <Button
-          onClick={() => startVerification("signin")}
-          className="h-12 w-full rounded-xl bg-cyan-400 text-base font-semibold text-slate-900 shadow-[0_6px_24px_-6px_rgba(34,211,238,.55)] transition hover:bg-cyan-300 disabled:opacity-60"
-        >
-          <ArrowRight className="mr-2 h-4 w-4" />
-          I have DigiLocker — continue
-        </Button>
-        {/* A REAL BUTTON, NOT A HINT. Creating an account happens inside the
-            same flow, so this is an equal route rather than a consolation
-            prize - and for most people it is the route they need. Outlined
-            rather than solid so there is still one obvious primary action. */}
-        <Button
-          variant="outline"
-          onClick={() => startVerification("signup")}
-          className="h-12 w-full rounded-xl border-white/20 bg-transparent text-base font-semibold text-slate-100 transition hover:border-cyan-400/50 hover:bg-white/5"
-        >
-          I don&apos;t have one — create it now
-        </Button>
-        <p className="text-center text-xs text-slate-500">
-          Creating a DigiLocker account takes about two minutes and happens as
-          part of this step. You will need your Aadhaar number and the mobile
-          linked to it.
+        {/* TWO ROUTES, PRESENTED AS TWO ROUTES.
+            The passport used to sit under a grey text link below the fold,
+            which is the same mistake that buried "create a DigiLocker
+            account": a customer who does not have the thing we are asking for
+            reads the page as a dead end and leaves. 35 of 66 held accounts
+            opened DigiLocker and never came back. Someone with a passport and
+            no DigiLocker should see both doors at once, and neither should
+            look like the consolation prize. */}
+        <p className="text-sm text-slate-300">
+          Choose whichever you already have. Both prove who you are; we only
+          need one.
         </p>
 
-        {/* THE THIRD ROUTE. Cashfree's Aadhaar OTP product is discontinued -
-            every candidate path answers 404 on our account - so the passport
-            is the one alternative that exists and needs no account anywhere.
-            Offered as a disclosure rather than a third loud button: most
-            people should still use DigiLocker, which proves more. */}
-        <div className="mt-2 border-t border-white/10 pt-4">
-          {!passportOpen ? (
-            <button
-              type="button"
-              onClick={() => setPassportOpen(true)}
-              className="w-full text-center text-sm text-slate-400 underline-offset-4 hover:text-slate-200 hover:underline"
+        <div className="grid gap-3 sm:grid-cols-2">
+          {/* ── DigiLocker ─────────────────────────────────────────────── */}
+          <div className="flex flex-col rounded-2xl border border-white/10 bg-white/5 p-4">
+            <div className="mb-2 flex items-center gap-2">
+              <Landmark className="h-4 w-4 shrink-0 text-cyan-300" />
+              <p className="text-sm font-semibold text-white">DigiLocker</p>
+            </div>
+            <p className="mb-4 flex-1 text-xs leading-5 text-slate-400">
+              The Government of India&apos;s own document service. You sign in
+              there with the mobile linked to your Aadhaar and approve sharing
+              — we never see your full Aadhaar number. Proves your name,
+              address and contact number in one step.
+            </p>
+            <Button
+              onClick={() => startVerification("signin")}
+              className="h-12 w-full rounded-xl bg-cyan-400 text-base font-semibold text-slate-900 shadow-[0_6px_24px_-6px_rgba(34,211,238,.55)] transition hover:bg-cyan-300 disabled:opacity-60"
             >
-              No DigiLocker and don&apos;t want one? Use your passport instead →
-            </button>
-          ) : (
-            <form onSubmit={submitPassport} className="grid gap-3">
-              <p className="text-sm font-medium text-slate-200">
-                Verify with your passport
-              </p>
-              {/* Said plainly and first. An overseas customer cannot be served
-                  by this at all - it queries the Indian passport record - and
-                  finding that out after typing everything in is worse than
-                  being told now. */}
-              <p className="rounded-xl border border-amber-500/25 bg-amber-500/10 px-4 py-3 text-xs leading-5 text-amber-200">
-                Only <b>Indian passports</b> can be checked this way.
-              </p>
-              <label className="text-xs text-slate-400">
-                File number{" "}
-                <span className="text-slate-500">
-                  — from your passport application, not the passport number
-                </span>
-              </label>
-              <input
-                value={passportFile}
-                onChange={(e) => { setPassportFile(e.target.value); setPassportError(""); }}
-                className="h-12 rounded-xl border border-white/10 bg-white/5 px-4 font-mono tracking-wider text-white placeholder:font-sans placeholder:tracking-normal placeholder:text-slate-500"
-                placeholder="BN1234567890123"
-                autoCapitalize="characters"
-                autoFocus
-              />
-              <label className="text-xs text-slate-400">Date of birth, as on the passport</label>
-              <input
-                value={passportDob}
-                onChange={(e) => { setPassportDob(e.target.value); setPassportError(""); }}
-                className="h-12 rounded-xl border border-white/10 bg-white/5 px-4 text-white placeholder:text-slate-500"
-                type="date"
-                max={new Date().toISOString().slice(0, 10)}
-              />
-              {passportError && (
-                <p className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
-                  {passportError}
-                </p>
-              )}
-              <Button
-                type="submit"
-                disabled={passportBusy}
-                className="h-12 w-full rounded-xl bg-cyan-400 text-base font-semibold text-slate-900 shadow-[0_6px_24px_-6px_rgba(34,211,238,.55)] transition hover:bg-cyan-300 disabled:opacity-60"
-              >
-                {passportBusy ? "Checking…" : "Check my passport"}
-              </Button>
-              <p className="text-[11px] leading-4 text-slate-500">
-                We check the name and date of birth against the passport record.
-                You will still confirm your mobile number afterwards, which
-                Indian regulations require us to hold.
-              </p>
-              <button
-                type="button"
-                onClick={() => setPassportOpen(false)}
-                className="text-center text-sm text-slate-400 hover:text-slate-200"
-              >
-                ← Back to DigiLocker
-              </button>
-            </form>
-          )}
+              <ArrowRight className="mr-2 h-4 w-4" />
+              Use DigiLocker
+            </Button>
+            {/* A REAL BUTTON, NOT A HINT. Creating an account happens inside
+                the same flow, so this is an equal route rather than a
+                consolation prize - and for most people it is the route they
+                need. */}
+            <Button
+              variant="outline"
+              onClick={() => startVerification("signup")}
+              className="mt-2 h-11 w-full rounded-xl border-white/20 bg-transparent text-sm font-semibold text-slate-100 transition hover:border-cyan-400/50 hover:bg-white/5"
+            >
+              I don&apos;t have one — create it now
+            </Button>
+            <p className="mt-2 text-[11px] leading-4 text-slate-500">
+              Creating one takes about two minutes and happens as part of this
+              step. You will need your Aadhaar number and the mobile linked to
+              it.
+            </p>
+          </div>
+
+          {/* ── Passport ───────────────────────────────────────────────── */}
+          <div className="flex flex-col rounded-2xl border border-white/10 bg-white/5 p-4">
+            <div className="mb-2 flex items-center gap-2">
+              <BookUser className="h-4 w-4 shrink-0 text-cyan-300" />
+              <p className="text-sm font-semibold text-white">Indian passport</p>
+            </div>
+            <p className="mb-4 flex-1 text-xs leading-5 text-slate-400">
+              No DigiLocker account needed. Enter the file number from your
+              passport application and your date of birth, and we check them
+              against the passport record. We will ask you to confirm your
+              mobile number with a code afterwards.
+            </p>
+            <Button
+              onClick={() => setPassportOpen(true)}
+              className="h-12 w-full rounded-xl bg-cyan-400 text-base font-semibold text-slate-900 shadow-[0_6px_24px_-6px_rgba(34,211,238,.55)] transition hover:bg-cyan-300 disabled:opacity-60"
+            >
+              <ArrowRight className="mr-2 h-4 w-4" />
+              Use my passport
+            </Button>
+            <p className="mt-2 text-[11px] leading-4 text-slate-500">
+              Indian passports only — the check queries the Indian passport
+              record.
+            </p>
+          </div>
         </div>
       </div>
       )}

@@ -93,8 +93,9 @@ function ErrorBox({ msg }: { msg: string }) {
 function SentCard({
   email,
   label,
-  showCreateHint = false,
-}: { email: string; label: string; showCreateHint?: boolean }) {
+  certain = false,
+  expiresMinutes = 15,
+}: { email: string; label: string; certain?: boolean; expiresMinutes?: number }) {
   return (
     <div className="flex items-start gap-4">
       <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-cyan-400/10 text-cyan-300">
@@ -102,24 +103,33 @@ function SentCard({
       </div>
       <div>
         <p className="font-semibold text-white">Check your inbox</p>
-        {/* The API answers identically whether or not the account exists, so
-            that an attacker cannot use this form to discover which emails are
-            registered. The copy has to match that — claiming "we sent you a
-            code" is a lie for an address that has never signed up, and it sent
-            people hunting through spam folders for an email that was never
-            generated. */}
+        {/* THE HEDGE IS GONE FROM THE CODE TAB, AND SO IS THE FOOTNOTE.
+            Both existed because the route used to look an unknown address up,
+            find nothing and answer as though it had sent something — so the
+            page could not honestly say "we sent you a code", and an 11px grey
+            line had to tell people to go and press a different button instead.
+            One account holder sat waiting on an inbox that was never going to
+            fill, which is how this was found.
+
+            request-login-code now CREATES the account and then sends the code,
+            so after the call the account exists either way and saying so
+            plainly leaks nothing an attacker did not already get. The link tab
+            keeps the hedge, because that route still behaves the old way. */}
         <p className="mt-1 text-sm text-slate-400">
-          If an account exists for <span className="text-white">{email}</span>, a {label} is on
-          its way. It expires in 15 minutes.
+          {certain ? (
+            <>
+              A {label} is on its way to{" "}
+              <span className="text-white">{email}</span>. It expires in{" "}
+              {expiresMinutes} minutes.
+            </>
+          ) : (
+            <>
+              If an account exists for{" "}
+              <span className="text-white">{email}</span>, a {label} is on its
+              way. It expires in {expiresMinutes} minutes.
+            </>
+          )}
         </p>
-        {/* Only on the code tab. Shown on the link tab it pointed people at
-            the tab they were already using. */}
-        {showCreateHint && (
-          <p className="mt-2 text-xs text-slate-500">
-            Nothing arrived? You may not have an account yet — use{" "}
-            <b className="text-slate-300">Email me a link</b> above to create one.
-          </p>
-        )}
       </div>
     </div>
   );
@@ -608,7 +618,9 @@ export default function LoginForm({
 
             {codeStep === "code" && (
               <form onSubmit={handleCodeVerify} className="grid gap-4">
-                <SentCard email={codeEmail} label="6-digit code" showCreateHint />
+                {/* 10, not 15: OTP_EXPIRY_MINUTES is 10 on the server and this
+                    said 15, which is its own small lie to anyone who waited. */}
+                <SentCard email={codeEmail} label="6-digit code" certain expiresMinutes={10} />
                 <Field label="Verification code">
                   <Input
                     type="text"
