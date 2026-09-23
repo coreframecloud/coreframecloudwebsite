@@ -181,6 +181,17 @@ export default function LoginForm({
         const raw = localStorage.getItem("cf_customer_user");
         const u = raw ? (JSON.parse(raw) as { email?: string }) : null;
         setSignedInAs(u?.email ?? "your account");
+        // THE CODE HAS ALREADY BEEN SPENT. Coming back here after a successful
+        // sign-in - Back from /verify, or the bfcache restoring this page -
+        // used to show the code step with the consumed digits still in the
+        // box, and pressing Sign in answered "Invalid or expired code".
+        // Correct, and a terrible thing to show somebody who just signed in
+        // successfully. Wind the form back to the start; the banner above
+        // tells them what actually happened.
+        setCodeStep("email");
+        setCodeValue("");
+        setLinkStep("email");
+        setError("");
       }
     } catch {
       // A corrupt or blocked localStorage is not a reason to fail the page;
@@ -191,6 +202,22 @@ export default function LoginForm({
       const india = list.find((c) => c.dial_code === "91");
       if (india) setPhoneCountry(india);
     });
+  }, []);
+
+  // Safari and Chrome restore this page from the back/forward cache without
+  // re-running effects, so the check above never fires on the exact navigation
+  // that needed it - Back out of /verify. pageshow does.
+  useEffect(() => {
+    const onShow = (e: PageTransitionEvent) => {
+      if (!e.persisted) return;
+      try {
+        if (localStorage.getItem("cf_customer_token")) window.location.reload();
+      } catch {
+        // storage blocked; nothing to restore from
+      }
+    };
+    window.addEventListener("pageshow", onShow);
+    return () => window.removeEventListener("pageshow", onShow);
   }, []);
 
   // ── Email Link state ────────────────────────────────────────────────────────
