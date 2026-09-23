@@ -102,10 +102,6 @@ interface VerificationStatus {
   // Paid passport checks left today. Three is a low budget and the customer
   // has to be able to watch it, not discover it by being locked out.
   passport_attempts_remaining?: number | null;
-  // The number to message when the page is a dead end. Served by the API so it
-  // changes with an env var, and null means the invitation is not shown at all
-  // rather than pointing at a number that may not exist.
-  support_whatsapp?: string | null;
 }
 
 type Phase = "loading" | "intro" | "gstin" | "bank" | "redirecting" | "polling" | "approved" | "review" | "failed" | "duplicate" | "error";
@@ -1495,37 +1491,20 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
               of it was "Too many requests. Try again later." after the third -
               which names neither the limit nor when it clears. This is the same
               fix the legal-name form already carries. */}
-          {typeof status?.passport_attempts_remaining === "number" &&
+          {/* THE SAME THING WAS ON SCREEN TWICE. This line is the warning
+              before you run out; the red box above is the answer to pressing
+              the button. At zero they said the same sentence back to back, in
+              two colours, on a phone. It is hidden while an error is showing,
+              and it never repeats what the error already said. */}
+          {!passportError &&
+            typeof status?.passport_attempts_remaining === "number" &&
             status.passport_attempts_remaining <= 2 && (
               <p className="text-[11px] leading-4 text-amber-300/80">
-                {status.passport_attempts_remaining === 0 ? (
-                  <>
-                    No passport checks left today — they reset 24 hours after
-                    your first attempt, and DigiLocker has no such limit.
-                    {/* A DEAD END NEEDS A PERSON, not just a wait. Rendered as
-                        a tappable link rather than a number to copy, and only
-                        when the API actually publishes one. */}
-                    {status.support_whatsapp && (
-                      <>
-                        {" "}
-                        Need it sooner?{" "}
-                        <a
-                          href={`https://wa.me/${status.support_whatsapp.replace(/[^0-9]/g, "")}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="font-semibold text-cyan-300 underline underline-offset-2"
-                        >
-                          Message us on WhatsApp
-                        </a>{" "}
-                        and we will sort it out.
-                      </>
-                    )}
-                  </>
-                ) : (
-                  `${status.passport_attempts_remaining} passport check${
-                    status.passport_attempts_remaining === 1 ? "" : "s"
-                  } left today.`
-                )}
+                {status.passport_attempts_remaining === 0
+                  ? "Daily verification limit reached."
+                  : `${status.passport_attempts_remaining} check${
+                      status.passport_attempts_remaining === 1 ? "" : "s"
+                    } left today.`}
               </p>
             )}
           <button
