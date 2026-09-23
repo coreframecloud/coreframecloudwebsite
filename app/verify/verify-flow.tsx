@@ -1166,23 +1166,41 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
         </form>
       ) : (
       <div className="grid gap-3">
+        {/* SAY WHAT DIGILOCKER IS, BEFORE ASKING THEM TO GO THERE.
+            35 of 66 held accounts opened this and never came back, which is
+            what it looks like when somebody arrives at a government login
+            screen they did not expect and have no account for. The page never
+            mentioned that an account is needed, and the way to create one was
+            a grey text link under the button. */}
+        <p className="rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-slate-300">
+          DigiLocker is the Government of India&apos;s own document service. You
+          sign in there with the mobile number linked to your Aadhaar, and
+          approve sharing your details with us — we never see your full Aadhaar
+          number.
+        </p>
         <Button
           onClick={() => startVerification("signin")}
           className="h-12 w-full rounded-xl bg-cyan-400 text-base font-semibold text-slate-900 shadow-[0_6px_24px_-6px_rgba(34,211,238,.55)] transition hover:bg-cyan-300 disabled:opacity-60"
         >
           <ArrowRight className="mr-2 h-4 w-4" />
-          Verify with DigiLocker
+          I have DigiLocker — continue
+        </Button>
+        {/* A REAL BUTTON, NOT A HINT. Creating an account happens inside the
+            same flow, so this is an equal route rather than a consolation
+            prize - and for most people it is the route they need. Outlined
+            rather than solid so there is still one obvious primary action. */}
+        <Button
+          variant="outline"
+          onClick={() => startVerification("signup")}
+          className="h-12 w-full rounded-xl border-white/20 bg-transparent text-base font-semibold text-slate-100 transition hover:border-cyan-400/50 hover:bg-white/5"
+        >
+          I don&apos;t have one — create it now
         </Button>
         <p className="text-center text-xs text-slate-500">
-          Already have DigiLocker? Use the button above — you will sign in with an OTP.
+          Creating a DigiLocker account takes about two minutes and happens as
+          part of this step. You will need your Aadhaar number and the mobile
+          linked to it.
         </p>
-        <button
-          type="button"
-          onClick={() => startVerification("signup")}
-          className="text-center text-sm text-slate-400 hover:text-slate-200"
-        >
-          New to DigiLocker? Create an account as part of this →
-        </button>
       </div>
       )}
 
