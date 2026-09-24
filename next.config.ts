@@ -41,8 +41,20 @@ import type { NextConfig } from "next";
 const CSP = [
   "default-src 'self'",
   // Read the note above before touching 'unsafe-inline' on this line.
-  "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.clarity.ms https://*.clarity.ms https://va.vercel-scripts.com https://static.cloudflareinsights.com",
+  "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.clarity.ms https://*.clarity.ms https://va.vercel-scripts.com https://static.cloudflareinsights.com https://checkout.razorpay.com https://cdn.razorpay.com",
   // No 'unsafe-eval' anywhere on purpose: nothing here needs it.
+  // RAZORPAY IS HERE BECAUSE I LEFT IT OUT AND BROKE PAYMENTS ON THIS SITE.
+  //
+  // The checkout script was added to the control plane's policy and to the
+  // Studio's, and not to this one -- and the wallet top-up dialog lives HERE,
+  // in components/wallet/top-up-dialog.tsx. So "Add funds" silently stopped
+  // working for every customer on the website the moment this policy shipped.
+  //
+  // Second time in one day the payment path broke on a CSP, which is the
+  // lesson rather than the hostnames: scripts/csp_livecheck.js walks these
+  // pages ANONYMOUSLY, so it never signs in, never opens the dialog, and never
+  // causes checkout.js to load. A check that cannot reach the paying path
+  // cannot protect it.
   // static.cloudflareinsights.com is Cloudflare Web Analytics, and it is on
   // this list because a browser against the LIVE site refused it -- Cloudflare
   // injects that beacon at the edge, after Vercel, so it is invisible in the
@@ -58,14 +70,14 @@ const CSP = [
   // stats.g.doubleclick.net and www.google.com/g/collect - three origins that
   // are not obvious from the tag snippet and would have taken every pageview
   // with them, silently, on the first deploy.
-  "connect-src 'self' https://control.coreframecloud.com https://www.google-analytics.com https://*.google-analytics.com https://analytics.google.com https://*.analytics.google.com https://www.googletagmanager.com https://stats.g.doubleclick.net https://www.google.com https://*.clarity.ms https://c.bing.com https://va.vercel-scripts.com https://cloudflareinsights.com https://static.cloudflareinsights.com",
+  "connect-src 'self' https://control.coreframecloud.com https://www.google-analytics.com https://*.google-analytics.com https://analytics.google.com https://*.analytics.google.com https://www.googletagmanager.com https://stats.g.doubleclick.net https://www.google.com https://*.clarity.ms https://c.bing.com https://va.vercel-scripts.com https://cloudflareinsights.com https://static.cloudflareinsights.com https://api.razorpay.com https://lumberjack.razorpay.com https://lumberjack-cx.razorpay.com",
   "img-src 'self' data: blob: https:",
   // Next and Tailwind both emit inline <style>. There is no nonce-free way
   // around this one, and its blast radius is far smaller than script's.
   "style-src 'self' 'unsafe-inline'",
-  "font-src 'self' data:",
+  "font-src 'self' data: https://cdn.razorpay.com",
   // The embedded product videos.
-  "frame-src https://www.youtube.com https://www.youtube-nocookie.com",
+  "frame-src https://www.youtube.com https://www.youtube-nocookie.com https://api.razorpay.com https://checkout.razorpay.com",
   "object-src 'none'",
   "base-uri 'self'",
   "frame-ancestors 'none'",
