@@ -41,8 +41,13 @@ import type { NextConfig } from "next";
 const CSP = [
   "default-src 'self'",
   // Read the note above before touching 'unsafe-inline' on this line.
-  "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.clarity.ms https://*.clarity.ms https://va.vercel-scripts.com",
+  "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.clarity.ms https://*.clarity.ms https://va.vercel-scripts.com https://static.cloudflareinsights.com",
   // No 'unsafe-eval' anywhere on purpose: nothing here needs it.
+  // static.cloudflareinsights.com is Cloudflare Web Analytics, and it is on
+  // this list because a browser against the LIVE site refused it -- Cloudflare
+  // injects that beacon at the edge, after Vercel, so it is invisible in the
+  // repository and in any local run. Without it the analytics simply stop
+  // recording, silently.
   // va.vercel-scripts.com is @vercel/speed-insights' fallback host. On a
   // Vercel deployment it loads from /_vercel/speed-insights/script.js, which
   // is same-origin and needs nothing here; the fallback is what a preview or a
@@ -53,7 +58,7 @@ const CSP = [
   // stats.g.doubleclick.net and www.google.com/g/collect - three origins that
   // are not obvious from the tag snippet and would have taken every pageview
   // with them, silently, on the first deploy.
-  "connect-src 'self' https://control.coreframecloud.com https://www.google-analytics.com https://*.google-analytics.com https://analytics.google.com https://*.analytics.google.com https://www.googletagmanager.com https://stats.g.doubleclick.net https://www.google.com https://*.clarity.ms https://c.bing.com https://va.vercel-scripts.com",
+  "connect-src 'self' https://control.coreframecloud.com https://www.google-analytics.com https://*.google-analytics.com https://analytics.google.com https://*.analytics.google.com https://www.googletagmanager.com https://stats.g.doubleclick.net https://www.google.com https://*.clarity.ms https://c.bing.com https://va.vercel-scripts.com https://cloudflareinsights.com https://static.cloudflareinsights.com",
   "img-src 'self' data: blob: https:",
   // Next and Tailwind both emit inline <style>. There is no nonce-free way
   // around this one, and its blast radius is far smaller than script's.
