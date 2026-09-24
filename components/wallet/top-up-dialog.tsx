@@ -100,6 +100,18 @@ export default function TopUpDialog({
     loadRazorpay();
   }, [open]);
 
+  // THE LIMIT HAS TO ARRIVE WHILE THEY TYPE, NOT AFTER THEY COMMIT.
+  //
+  // It was already on screen -- "Rs 500 - Rs 50,000", 12px at 40% opacity,
+  // folded into a sentence about GST -- and it was still possible to enter 100,
+  // press Pay and feel refused by a form that had not said anything. Text that
+  // is present and unread is not a message; it is an alibi.
+  const typedRupees = Number(amount);
+  const amountTooLow = Boolean(config) && amount.trim() !== "" &&
+    Number.isFinite(typedRupees) && typedRupees < (config?.min_topup_rupees ?? 500);
+  const amountTooHigh = Boolean(config) && amount.trim() !== "" &&
+    Number.isFinite(typedRupees) && typedRupees > (config?.max_topup_rupees ?? 50000);
+
   const pay = useCallback(async () => {
     setError("");
     const token = localStorage.getItem("cf_customer_token");
@@ -273,13 +285,19 @@ export default function TopUpDialog({
                   max={config?.max_topup_rupees ?? 50000}
                   className="mt-1 h-12 w-full rounded-xl border border-white/10 bg-white/5 px-4 text-white outline-none focus:border-cyan-400/50"
                 />
-                {config && (
-                  <p className="mt-1 text-xs text-white/40">
-                    ₹{config.min_topup_rupees.toLocaleString("en-IN")} – ₹
+                {config && (amountTooLow || amountTooHigh) ? (
+                  <p className="mt-2 rounded-lg border border-amber-400/30 bg-amber-400/10 px-3 py-2 text-xs text-amber-200">
+                    {amountTooLow
+                      ? `The smallest top-up is ₹${config.min_topup_rupees.toLocaleString("en-IN")}.`
+                      : `The largest top-up is ₹${config.max_topup_rupees.toLocaleString("en-IN")}.`}
+                  </p>
+                ) : config ? (
+                  <p className="mt-1 text-xs text-white/50">
+                    Minimum ₹{config.min_topup_rupees.toLocaleString("en-IN")}, maximum ₹
                     {config.max_topup_rupees.toLocaleString("en-IN")}. GST included; a tax invoice is issued
                     automatically.
                   </p>
-                )}
+                ) : null}
 
                 <div className="mt-5 grid grid-cols-2 gap-3">
                   <div className="col-span-2">
@@ -348,7 +366,7 @@ export default function TopUpDialog({
 
                 <button
                   onClick={pay}
-                  disabled={busy || !config}
+                  disabled={busy || !config || amountTooLow || amountTooHigh}
                   className="mt-5 w-full rounded-xl bg-cyan-400 px-5 py-3 text-sm font-semibold text-slate-900 transition hover:bg-cyan-300 disabled:opacity-50"
                 >
                   {busy ? "Opening payment…" : `Pay ₹${Number(amount || 0).toLocaleString("en-IN")}`}
