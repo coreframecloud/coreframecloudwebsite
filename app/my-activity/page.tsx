@@ -30,6 +30,13 @@ interface WalletData {
   storage_quota_gb: number;
   storage_free_gb: number;
   storage_free_tier_gb: number;
+  storage_billing_active?: boolean;
+  storage_allowance_gb?: number;
+  storage_billable_gb?: number;
+  storage_daily_charge_rupees?: number;
+  storage_month_to_date_rupees?: number;
+  storage_rate_rupees_per_tb_month?: number;
+  storage_dunning_stage?: string;
   storage_paid_cap_gb: number;
   storage_paid_unlocked: boolean;
   storage_retention_days: number;
@@ -165,7 +172,7 @@ function UsageCards({ wallet }: { wallet: WalletData | null }) {
             Storage
           </h2>
           <span className="text-xs font-medium text-cyan-300/80">
-            {freeTier} GB free, always
+            {wallet.storage_allowance_gb ?? freeTier} GB free, always
           </span>
         </div>
 
@@ -175,6 +182,49 @@ function UsageCards({ wallet }: { wallet: WalletData | null }) {
           </span>
           <span className="pb-0.5 text-sm font-medium text-white/45">used of {quotaGb} GB</span>
         </div>
+
+        {/* THE STANDING DAILY CHARGE, ON SCREEN BEFORE IT HAS TAKEN ANYTHING.
+            A customer who tops up for GPU time and finds out months later that
+            storage drank it is a customer lost for the price of a line of text.
+            Shown whenever there is a charge, and not shown at all when there
+            is nothing to say. */}
+        {(wallet.storage_daily_charge_rupees ?? 0) > 0 && (
+          <div className="mt-4 rounded-xl border border-amber-400/25 bg-amber-400/[0.07] px-4 py-3">
+            <div className="flex items-baseline justify-between gap-3">
+              <span className="text-sm text-amber-100">
+                <b>₹{(wallet.storage_daily_charge_rupees ?? 0).toFixed(2)} a day</b> for the{" "}
+                {(wallet.storage_billable_gb ?? 0).toFixed(1)} GB above your{" "}
+                {wallet.storage_allowance_gb ?? 50} GB
+              </span>
+              <span className="whitespace-nowrap text-xs text-amber-200/70">
+                ₹{(wallet.storage_month_to_date_rupees ?? 0).toFixed(2)} this month
+              </span>
+            </div>
+            <p className="mt-1.5 text-xs text-amber-200/60">
+              Taken from your wallet each morning at ₹
+              {wallet.storage_rate_rupees_per_tb_month ?? 1999}/TB/month. Delete what you
+              do not need and it stops the same day — there is nothing to cancel.
+            </p>
+          </div>
+        )}
+
+        {/* An open storage bill. Says what is true and what is NOT true, because
+            the natural fear on seeing this is that files are already gone. */}
+        {wallet.storage_dunning_stage && wallet.storage_dunning_stage !== "current" && (
+          <div className="mt-3 rounded-xl border border-red-400/30 bg-red-500/10 px-4 py-3">
+            <p className="text-sm font-semibold text-red-200">
+              A storage charge could not be taken
+            </p>
+            <p className="mt-1 text-xs leading-relaxed text-red-200/75">
+              {wallet.storage_dunning_stage === "read_only"
+                ? "Your storage is read-only for now. Every file is still there and still downloadable."
+                : wallet.storage_dunning_stage === "sessions_blocked"
+                ? "New GPU sessions are paused until this clears. Your files are untouched and still downloadable."
+                : "Nothing has been deleted. Add funds and it clears on the next daily charge."}{" "}
+              Your first {wallet.storage_allowance_gb ?? 50} GB is never affected.
+            </p>
+          </div>
+        )}
 
         <div className="relative mt-4 h-3.5 w-full overflow-hidden rounded-full bg-white/[0.04]">
           {/* Zones: what the allowance is made of. Faint - this is the track. */}

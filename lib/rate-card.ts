@@ -122,6 +122,9 @@ export type RateCard = {
   // fields above — an older control plane must not break the build.
   plans?: RateCardPlan[];
   storage_rate_rupees_per_tb_month?: number;
+  /** True once the control plane has actually started charging for storage.
+   *  False means the rate above is published but nobody is billed by it. */
+  storage_billing_active?: boolean;
   gpus: RateCardGpu[];
 };
 

@@ -86,3 +86,67 @@ export function storageRetention(_t?: StorageTerms): string {
     "them on a timer - they are kept while your account is active."
   );
 }
+
+
+/**
+ * What storage costs, stated before anybody is charged for it.
+ *
+ * THE SITE SAID NEITHER HALF OF THIS. It advertised Rs 1999/TB/month on the
+ * rate card, which only ever reached plan invoices for organisations, while a
+ * prepaid customer had a hard 50 GB wall and no way to buy a fifty-first
+ * gigabyte at any price. One number that did not apply to them, and one limit
+ * that was never explained.
+ *
+ * Now: 50 GB is included, everything above it is charged daily from the wallet,
+ * and both facts live here so every page says the same thing.
+ */
+export type StorageBilling = {
+  allowanceGb: number;
+  ratePerTbMonth: number;
+  /** False until the control plane's storage_billing_start_date is reached. */
+  active: boolean;
+};
+
+export function storageBilling(card: RateCard | null): StorageBilling {
+  const rate = card?.storage_rate_rupees_per_tb_month ?? 1999;
+  const b = card?.b2c_storage;
+  return {
+    allowanceGb: b?.paid_gb || STORAGE.paidGb,
+    ratePerTbMonth: rate,
+    active: Boolean(card?.storage_billing_active),
+  };
+}
+
+/** One sentence for a pricing table or an FAQ answer. */
+export function storageBillingShort(t: StorageBilling): string {
+  return t.active
+    ? `${t.allowanceGb} GB included. Above that, Rs ${t.ratePerTbMonth}/TB/month, ` +
+      `charged daily from your wallet — delete what you do not need and it stops the same day.`
+    : `${t.allowanceGb} GB included with every account.`;
+}
+
+/**
+ * The paragraph a customer should be able to point at later.
+ *
+ * Written to answer the three questions people actually ask, in the order they
+ * ask them: what does it cost, when does it come out, and what happens if my
+ * balance runs out. The last one matters most and is the one most services
+ * leave vague.
+ */
+export function storageBillingTerms(t: StorageBilling): string[] {
+  if (!t.active) {
+    return [
+      `Every account includes ${t.allowanceGb} GB of persistent storage at no charge.`,
+    ];
+  }
+  return [
+    `Every account includes ${t.allowanceGb} GB of persistent storage at no charge. ` +
+      `That ${t.allowanceGb} GB is yours whatever else happens on the account.`,
+    `Storage above ${t.allowanceGb} GB costs Rs ${t.ratePerTbMonth} per TB per month, ` +
+      `charged once a day from your wallet for that day only. Bring your storage back ` +
+      `under ${t.allowanceGb} GB and the charge stops the same day — there is nothing to cancel.`,
+    `If your balance cannot cover a day, nothing is deleted. We email you, new GPU ` +
+      `sessions pause until it is settled, and your files stay downloadable. After 30 days ` +
+      `and a final notice we remove data above the free ${t.allowanceGb} GB — never below it.`,
+  ];
+}
