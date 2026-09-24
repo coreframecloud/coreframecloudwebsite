@@ -10,13 +10,63 @@ import type { NextConfig } from "next";
  * checkout and carries the DigiLocker verification flow — was sending no
  * security headers whatsoever.
  *
- * Deliberately NOT setting Content-Security-Policy yet. Next.js injects inline
- * scripts for hydration, so a CSP without a per-request nonce blanks the site,
- * and Razorpay's checkout pulls in further origins. Doing it properly means
- * nonces via middleware and testing the payment flow end to end — real work,
- * named here rather than half-done. Everything that does NOT need that is set
- * below, because CSP being hard is no reason to ship none of the rest.
+ * THIS SITE NOW SENDS A CSP, and it still carries 'unsafe-inline' in
+ * script-src. That is a decision, not an omission. Two things here need it:
+ *
+ *   1. Next.js writes its hydration payload into inline <script> tags.
+ *   2. GA4 and Microsoft Clarity in app/layout.tsx are inline <Script> blocks
+ *      that go on to inject script elements of their own.
+ *
+ * The fix for both is a per-request nonce from a middleware.ts — and on the
+ * App Router, reading that nonce opts the page OUT of static prerendering.
+ * Every marketing page here is prerendered today (`x-nextjs-prerender: 1` on
+ * the live response), so the real price of removing 'unsafe-inline' from this
+ * site is turning the whole marketing site dynamic. That is a trade to make
+ * deliberately, with the SEO and TTFB cost measured, not in passing — so it is
+ * named here rather than half-done.
+ *
+ * WHAT THIS STILL BUYS, given that caveat. 'unsafe-inline' means an injected
+ * inline script runs. It does not mean everything else does: script-src still
+ * refuses a script fetched from an origin not on the list, form-action refuses
+ * a form posting anywhere but here, base-uri refuses an injected <base>
+ * repointing every relative URL on the page, and object-src closes
+ * <object>/<embed>. Before this, the site sent no policy at all and every one
+ * of those was open.
+ *
+ * FOR CONTRAST: control.coreframecloud.com, which serves the customer portal
+ * and the admin app, has NO 'unsafe-inline'. nginx serves those pages from
+ * disk and stamps a real per-request nonce into each one. This file is only
+ * about the marketing site.
  */
+const CSP = [
+  "default-src 'self'",
+  // Read the note above before touching 'unsafe-inline' on this line.
+  "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.clarity.ms https://*.clarity.ms https://va.vercel-scripts.com",
+  // No 'unsafe-eval' anywhere on purpose: nothing here needs it.
+  // va.vercel-scripts.com is @vercel/speed-insights' fallback host. On a
+  // Vercel deployment it loads from /_vercel/speed-insights/script.js, which
+  // is same-origin and needs nothing here; the fallback is what a preview or a
+  // non-Vercel environment uses, and leaving it out would mean web-vitals
+  // reporting that works in production and not in preview.
+  // GA4 does NOT post its hits to google-analytics.com alone. A Chromium run
+  // against this exact policy caught it refusing analytics.google.com,
+  // stats.g.doubleclick.net and www.google.com/g/collect - three origins that
+  // are not obvious from the tag snippet and would have taken every pageview
+  // with them, silently, on the first deploy.
+  "connect-src 'self' https://control.coreframecloud.com https://www.google-analytics.com https://*.google-analytics.com https://analytics.google.com https://*.analytics.google.com https://www.googletagmanager.com https://stats.g.doubleclick.net https://www.google.com https://*.clarity.ms https://c.bing.com https://va.vercel-scripts.com",
+  "img-src 'self' data: blob: https:",
+  // Next and Tailwind both emit inline <style>. There is no nonce-free way
+  // around this one, and its blast radius is far smaller than script's.
+  "style-src 'self' 'unsafe-inline'",
+  "font-src 'self' data:",
+  // The embedded product videos.
+  "frame-src https://www.youtube.com https://www.youtube-nocookie.com",
+  "object-src 'none'",
+  "base-uri 'self'",
+  "frame-ancestors 'none'",
+  "form-action 'self'",
+].join("; ") + ";";
+
 const securityHeaders = [
   {
     // Two years, and tell browsers to use HTTPS before the first request is
@@ -46,6 +96,41 @@ const securityHeaders = [
     key: "Permissions-Policy",
     value: "camera=(), microphone=(), geolocation=(), payment=()",
   },
+  {
+    // same-origin-ALLOW-POPUPS, not same-origin: the Google sign-in flow opens
+    // a cross-origin popup and reads its result back through window.opener,
+    // which plain same-origin severs. The allow-popups variant still stops a
+    // cross-origin page from holding a handle on this one, which is the attack
+    // COOP exists for.
+    key: "Cross-Origin-Opener-Policy",
+    value: "same-origin-allow-popups",
+  },
+  {
+    // same-site, not same-origin: control.coreframecloud.com and
+    // studio.coreframecloud.com are siblings and do load from here. What this
+    // refuses is a genuinely cross-site page embedding our resources.
+    key: "Cross-Origin-Resource-Policy",
+    value: "same-site",
+  },
+  {
+    // Deprecated, and 0 is the correct value rather than the absence of the
+    // header. The "1; mode=block" this replaces was actively harmful in the
+    // browsers that honoured it: the auditor it switched on could be steered
+    // into revealing cross-origin content a page at a time (XS-Leaks). Chrome
+    // and Firefox removed it entirely; the CSP is the real defence.
+    key: "X-XSS-Protection",
+    value: "0",
+  },
+  {
+    key: "Content-Security-Policy",
+    value: CSP,
+  },
+  // CROSS-ORIGIN-EMBEDDER-POLICY IS DELIBERATELY ABSENT. Scanners list it as
+  // an "upcoming header", which is not a reason to set it: COEP: require-corp
+  // refuses every third-party subresource that does not itself send CORP, and
+  // exists to unlock SharedArrayBuffer and high-resolution timers. Nothing
+  // here uses either, while YouTube embeds, GA4 and Clarity would all have to
+  // start sending CORP for the site to keep working.
 ];
 
 
