@@ -8,6 +8,7 @@ import {
   validatePhone,
   type Country,
 } from "@/lib/validation";
+import { readAttribution } from "@/lib/attribution";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 // CheckCircle went with the password tab's "signed in" state.
@@ -345,6 +346,13 @@ export default function LoginForm({
           phone_country_code: phoneCountry.dial_code,
           customer_type: linkAccountType,
           gstin: linkAccountType === "b2b" ? linkGstin.trim().toUpperCase() : undefined,
+          // Where they came from, captured on their first landing and frozen
+          // since. Sent only on the call that CREATES the account — resending
+          // it on every sign-in would let a later visit overwrite the record
+          // of how they were introduced. undefined when there is nothing,
+          // which is different from empty: the server can then tell "we
+          // looked and found none" from "this client never looked".
+          attribution: readAttribution() ?? undefined,
         }),
       });
       const data = await res.json();

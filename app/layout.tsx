@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Script from "next/script";
+import { AttributionCapture } from "@/components/attribution-capture";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 import { SiteHeader } from "@/components/home/site-header";
@@ -283,6 +284,7 @@ export default async function RootLayout({
           <TrialStrip />
           <SiteHeader />
         </BareOnLanding>
+        <AttributionCapture />
         {children}
         <SiteFooter />
 
