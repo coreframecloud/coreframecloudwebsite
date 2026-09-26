@@ -25,7 +25,7 @@ const STEPS = [
   },
   {
     title: "2. Verify your identity",
-    body: "Indian regulations require us to hold a verified subscriber record for anyone renting compute, so this step is mandatory before a workstation can start. It uses DigiLocker and takes a couple of minutes. Business accounts additionally verify the company: the GSTIN against the GST register, and control of the company bank account. The person is proved separately from the company, because neither substitutes for the other.",
+    body: "Indian regulations require us to hold a verified subscriber record for anyone renting compute, so this step is mandatory before a workstation can start. It uses DigiLocker and takes a couple of minutes; if DigiLocker will not work for you, an Indian passport can be used instead. Business accounts additionally verify the company: the GSTIN against the GST register, and control of the company bank account. The person is proved separately from the company, because neither substitutes for the other.",
   },
   {
     title: "3. Add credit, or start your free trial",

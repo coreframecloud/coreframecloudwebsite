@@ -5,7 +5,7 @@ import VerifyFlow from "./verify-flow";
 export const metadata: Metadata = {
   title: "Verify Your Identity",
   description:
-    "Complete a one-time identity check with DigiLocker to activate your Coreframe Cloud account.",
+    "Complete a one-time identity check — DigiLocker, or an Indian passport — to activate your Coreframe Cloud account.",
   alternates: { canonical: "/verify" },
   robots: { index: false, follow: false },
 };

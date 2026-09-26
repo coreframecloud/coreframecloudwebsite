@@ -61,6 +61,11 @@ export function WhyWeVerify({ trialMinutes }: { trialMinutes: number | null }) {
           screen. We never see or ask for your Aadhaar number, and nothing is
           shared if you decline.
         </Row>
+        <Row icon={<ShieldCheck className="h-4 w-4" />} title="Or an Indian passport">
+          If DigiLocker will not work for you, the same page accepts an Indian
+          passport instead — the file number from the last page, and your date
+          of birth. It checks a different government record entirely.
+        </Row>
         <Row icon={<Clock className="h-4 w-4" />} title="About two minutes">
           On the phone linked to your Aadhaar. Once, on your first workstation —
           never again.

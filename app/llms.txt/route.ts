@@ -158,7 +158,7 @@ export async function GET(): Promise<Response> {
     out.push("- No card required to start.");
     if (card.trial.requires_identity_verification) {
       out.push(
-        "- Identity verification (DigiLocker) is required before the trial starts — Indian " +
+        "- Identity verification (DigiLocker, or an Indian passport) is required before the trial starts — Indian " +
           "regulations require a verified subscriber record for rented compute.",
       );
     }
