@@ -36,6 +36,12 @@ export type Attribution = {
   utm_content: string | null;
   utm_term: string | null;
   fbclid: string | null;
+  // Google Ads auto-tagging sends gclid and NO utm_* at all. Without it a
+  // Google Ads visitor is indistinguishable from direct traffic.
+  // gbraid / wbraid are what Google substitutes on iOS app-to-web clicks.
+  gclid: string | null;
+  gbraid: string | null;
+  wbraid: string | null;
   landing_path: string | null;
   referrer: string | null;
   first_seen_at: string | null;
@@ -48,7 +54,8 @@ const KEY = "cf_attribution";
 const MAX = 255;
 
 const CAMPAIGN_KEYS = [
-  "utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term", "fbclid",
+  "utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term",
+  "fbclid", "gclid", "gbraid", "wbraid",
 ] as const;
 
 function clean(v: string | null | undefined): string | null {
@@ -62,6 +69,7 @@ function empty(): Attribution {
   return {
     utm_source: null, utm_medium: null, utm_campaign: null,
     utm_content: null, utm_term: null, fbclid: null,
+    gclid: null, gbraid: null, wbraid: null,
     landing_path: null, referrer: null, first_seen_at: null,
   };
 }
