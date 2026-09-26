@@ -575,14 +575,19 @@ export default function LoginForm({
                       required
                     />
                     <p className="mt-1 text-xs text-slate-500">
-                      We verify this against the GST register. It also sets your place of
-                      supply for invoices.
+                      We check this against the GST register — it has to be active, and
+                      we read the registered name back from it. It also sets your place
+                      of supply on every invoice.
                     </p>
                   </Field>
                 )}
                 <div className="grid grid-cols-2 gap-3">
                   <Field label="Full name">
                     <Input value={linkName} onChange={(e) => { setLinkName(e.target.value); setError(""); }} className={inputCls} placeholder="Rahul Sharma" required />
+                    <p className="mt-1 text-xs text-slate-500">
+                      Your own legal name, as on your Aadhaar or passport — not the
+                      company&apos;s.
+                    </p>
                   </Field>
                   <Field label={linkAccountType === "b2b"
                     ? "Registered business name"
@@ -594,6 +599,12 @@ export default function LoginForm({
                       placeholder={linkAccountType === "b2b" ? "Acme Design Pvt Ltd" : "Acme Studio"}
                       required={linkAccountType === "b2b"}
                     />
+                    {linkAccountType === "b2b" && (
+                      <p className="mt-1 text-xs text-slate-500">
+                        Exactly as it appears on your GST certificate. We match it
+                        against the registered name on the GST register.
+                      </p>
+                    )}
                   </Field>
                 </div>
                 {/* Required, not optional. Indian law (CERT-In Direction
