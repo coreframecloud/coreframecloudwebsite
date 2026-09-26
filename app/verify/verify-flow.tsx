@@ -104,6 +104,13 @@ interface VerificationStatus {
   // Tries left at the name form today. null means the server could not tell,
   // and the page then shows no number rather than a wrong one.
   legal_name_attempts_remaining: number | null;
+  // Present ONLY once the account is active: the full-access token that
+  // replaces the verification-scoped one the customer is holding. Every
+  // verification response can carry it, /status included. It was returned all
+  // along and never declared here, which is part of why nothing read it.
+  access_token?: string;
+  token_type?: string;
+  user?: unknown;
   // Paid passport checks left today. Three is a low budget and the customer
   // has to be able to watch it, not discover it by being locked out.
   passport_attempts_remaining?: number | null;
@@ -157,6 +164,30 @@ function whyMobileStep(documentType?: string | null): string {
         "seconds."
       );
   }
+}
+
+/**
+ * What to call the document this customer actually verified with, for the
+ * name-mismatch screens. Those were written when DigiLocker was the only way
+ * in and say "your Aadhaar" five times; a passport customer read all five.
+ *
+ * null -> "your identity document": never a guess, and never "Aadhaar".
+ */
+function documentNoun(documentType?: string | null): string {
+  switch ((documentType || "").toLowerCase()) {
+    case "passport":
+      return "your passport";
+    case "digilocker":
+      return "your Aadhaar";
+    default:
+      return "your identity document";
+  }
+}
+
+/** "Your Aadhaar" / "Your passport" / "Your identity document". */
+function DocumentNoun(documentType?: string | null): string {
+  const n = documentNoun(documentType);
+  return n.charAt(0).toUpperCase() + n.slice(1);
 }
 
 function Card({ children }: { children: React.ReactNode }) {
@@ -346,6 +377,32 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
     return { "Content-Type": "application/json", Authorization: `Bearer ${token()}` };
   }, [token]);
 
+  /**
+   * Swap the verification-scoped token for the full one the API just handed
+   * back, if it handed one back.
+   *
+   * THIS IS THE LOOP. Every verification endpoint that can activate an
+   * account returns `access_token` once it does, because the token the
+   * customer is holding is verification-scoped and /me/wallet refuses it with
+   * a 403. Three call sites swapped it; the passport check, the mobile code,
+   * the name correction and -- worst of all -- the /status poll on page load
+   * did not. So the customer was activated, shown "You're verified", sent to
+   * /my-activity, 403'd, bounced back to /verify, shown "You're verified"
+   * again, for ever. The server was offering the way out on every single
+   * request and the page was discarding it.
+   *
+   * Called on EVERY verification response, including the initial status read,
+   * so an account already stuck in the loop heals on its next page load
+   * without anyone signing out.
+   */
+  const adoptToken = useCallback((data: { access_token?: string; user?: unknown }) => {
+    if (typeof window === "undefined" || !data?.access_token) return;
+    try {
+      localStorage.setItem("cf_customer_token", data.access_token);
+      if (data.user) localStorage.setItem("cf_customer_user", JSON.stringify(data.user));
+    } catch { /* private mode: the page still works, the next load retries */ }
+  }, []);
+
   // ── initial load ──────────────────────────────────────────────────────────
   useEffect(() => {
     if (!token()) {
@@ -361,6 +418,10 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
         }
         const data: VerificationStatus = await res.json();
         if (!res.ok) throw new Error("Could not load your verification status.");
+        // /status has ALWAYS returned a full token for an active account. It
+        // was never read, which is why the bounce from /my-activity never
+        // healed itself.
+        adoptToken(data);
         setStatus(data);
 
         const needsGstin =
@@ -529,6 +590,7 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.detail ?? `Error ${res.status}`);
+      adoptToken(data);
       setStatus(data);
       if (data.verified) {
         setPhase(data.account_active ? "approved" : "review");
@@ -589,6 +651,7 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.detail ?? `Error ${res.status}`);
+      adoptToken(data);
       setStatus(data);
       setOtpCode("");
       setOtpSent(false);
@@ -606,7 +669,10 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
     e.preventDefault();
     setLegalNameError("");
     const value = legalName.trim();
-    if (value.length < 2) return setLegalNameError("Enter your full name as printed on your Aadhaar.");
+    if (value.length < 2)
+      return setLegalNameError(
+        `Enter your full name as printed on ${documentNoun(status?.kyc_document_type)}.`,
+      );
 
     setLegalNameBusy(true);
     try {
@@ -617,6 +683,7 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.detail ?? `Error ${res.status}`);
+      adoptToken(data);
       setStatus(data);
       // Matching the name clears this hold; it does not necessarily clear the
       // others. An account held for a second reason stays on this screen, now
@@ -956,13 +1023,13 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
             <Header
               icon={<Clock className="h-5 w-5" />}
               title="Let us sort this one out for you"
-              sub="Your Aadhaar was verified. The name on the account still does not match the document, and you have used today's attempts."
+              sub={`${DocumentNoun(status.kyc_document_type)} was verified. The name on the account still does not match the document, and you have used today's attempts.`}
             />
             <p className="mb-4 rounded-xl border border-amber-500/25 bg-amber-500/10 px-4 py-3 text-sm text-amber-200">
               Email <b>support@coreframecloud.com</b> from this address and a
               person will correct it for you, usually the same day. Please do
-              not create a second account — a second signup on the same Aadhaar
-              is refused automatically and slows this down.
+              not create a second account — a second signup on the same
+              identity is refused automatically and slows this down.
             </p>
             <p className="text-sm text-slate-400">
               You can also try again yourself tomorrow, when today&apos;s attempts reset.
@@ -979,7 +1046,7 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
           <Header
             icon={<Clock className="h-5 w-5" />}
             title="One thing does not match"
-            sub="Your Aadhaar was verified. The name on your account is not the name on the document, so we cannot activate it yet."
+            sub={`${DocumentNoun(status.kyc_document_type)} was verified. The name on your account is not the name on the document, so we cannot activate it yet.`}
           />
           {/* THEIR OWN NAME, BACK AT THEM. "The name on your account does not
               match" is abstract, and #113 read it three times without acting on
@@ -990,12 +1057,14 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
           {status.account_name ? (
             <p className="mb-4 rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-slate-300">
               You signed up as <b className="text-white">{status.account_name}</b>. That
-              needs to be your name as printed on your Aadhaar — you can keep{" "}
+              needs to be your name as printed on {documentNoun(status.kyc_document_type)} — you can keep{" "}
               <b className="text-white">{status.account_name}</b> as your display name afterwards.
             </p>
           ) : null}
           <form onSubmit={submitLegalName} className="grid gap-3">
-            <label className="text-xs text-slate-400">Your full name, exactly as on your Aadhaar</label>
+            <label className="text-xs text-slate-400">
+              Your full name, exactly as on {documentNoun(status.kyc_document_type)}
+            </label>
             <input
               value={legalName}
               onChange={(e) => { setLegalName(e.target.value); setLegalNameError(""); }}
@@ -1005,7 +1074,7 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
               autoFocus
             />
             <p className="text-[11px] leading-4 text-slate-500">
-              Include every part of it — a middle name or father&apos;s name if your Aadhaar has one.
+              Include every part of it — a middle name or father&apos;s name if {documentNoun(status.kyc_document_type)} has one.
               If you signed up with a studio or brand name, that is almost certainly what happened;
               you can still use it as your display name afterwards.
             </p>
@@ -1373,8 +1442,10 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
           take. Telling them to go and add one first was busywork. */}
       {otpOutstanding && !status?.has_phone_number && (
         <p className="mb-4 rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-slate-300">
-          We will record the mobile number linked to your Aadhaar as your contact
-          number — Indian regulations require us to hold a verified one.
+          If you verify through DigiLocker we will record the mobile number
+          linked to your Aadhaar as your contact number. The passport route
+          does not carry one, so there we will ask you to confirm a number
+          afterwards — Indian regulations require us to hold a verified one.
         </p>
       )}
 
@@ -1417,9 +1488,11 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
           <p className="text-[11px] leading-4 text-slate-500">
             You signed in with Google, so we have not asked for one yet. An
             Indian mobile number — it is how we reach you about your account.
-            If it is the number linked to your Aadhaar, the identity check
-            confirms it. If it is a different number, we will send a code to it
-            afterwards. Either way, nothing arrives just yet.
+            If you verify through DigiLocker and this is the number linked to
+            your Aadhaar, the identity check confirms it. Otherwise — a
+            different number, or the passport route, which carries no number
+            at all — we will send a code to it afterwards. Either way, nothing
+            arrives just yet.
           </p>
           {phoneError && (
             <p className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
