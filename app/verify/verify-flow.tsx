@@ -77,6 +77,11 @@ interface VerificationStatus {
   // satisfies the requirement on its own.
   needs_mobile_otp?: boolean;
   mobile_otp_channel?: string;
+  // Which document route actually verified this identity: "digilocker",
+  // "passport", or null. null is a normal value — every account verified
+  // before the column was written on the DigiLocker path has it — so the
+  // wording keyed on this must be safe when it is missing.
+  kyc_document_type?: string | null;
   phone_masked?: string | null;
   email_verified: boolean;
   has_phone_number: boolean;
@@ -115,6 +120,44 @@ const FAILURE_COPY: Record<string, string> = {
   duplicate_identity:
     "This identity is already registered to another Coreframe account. We allow one account per person.",
 };
+
+/**
+ * Why this customer is being asked for a mobile code, in terms of the route
+ * they actually took.
+ *
+ * This screen used to state, unconditionally, that their Aadhaar record held
+ * no mobile number and so none could be taken from DigiLocker. For a passport
+ * customer every clause of that is false: no Aadhaar was read, DigiLocker was
+ * never opened, and the passport record does not carry a mobile number at all
+ * — not as an exception, but by design. It is the same leftover as the
+ * "Opening DigiLocker…" heading that once sat above the passport form.
+ *
+ * null is expected, not a fault: accounts verified before kyc_document_type
+ * was written on the DigiLocker path have none, and so does an account whose
+ * identity was reset. Those get wording that names no document.
+ */
+function whyMobileStep(documentType?: string | null): string {
+  switch ((documentType || "").toLowerCase()) {
+    case "passport":
+      return (
+        "A passport record does not carry a mobile number, so there was none " +
+        "for us to take from it. Confirming the number on your account takes " +
+        "a few seconds."
+      );
+    case "digilocker":
+      return (
+        "Your Aadhaar record did not include a mobile number, so we could not " +
+        "take one from DigiLocker. Confirming the number on your account " +
+        "takes a few seconds."
+      );
+    default:
+      return (
+        "We could not take a confirmed mobile number from the document you " +
+        "verified with. Confirming the number on your account takes a few " +
+        "seconds."
+      );
+  }
+}
 
 function Card({ children }: { children: React.ReactNode }) {
   return (
@@ -818,9 +861,7 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
           />
 
           <p className="mb-4 rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-slate-300">
-            Your Aadhaar record did not include a mobile number, so we could not
-            take one from DigiLocker. Confirming the number on your account
-            takes a few seconds.
+            {whyMobileStep(status.kyc_document_type)}
           </p>
 
           {!otpSent ? (
