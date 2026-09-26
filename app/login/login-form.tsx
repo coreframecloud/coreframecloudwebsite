@@ -265,6 +265,20 @@ export default function LoginForm({
   }
 
   function switchTab(t: Tab) {
+    // CARRY THE ADDRESS ACROSS. linkEmail and codeEmail are separate states
+    // because the two flows post different payloads, but that is an internal
+    // detail — to the customer this is one email box, and it was emptying
+    // itself every time they changed their mind about how to sign in. On a
+    // phone that is the whole address typed again.
+    //
+    // Only fills an EMPTY destination: somebody who has already typed
+    // something in the tab they are moving to meant to type it.
+    if (t === "code" && !codeEmail.trim() && linkEmail.trim()) {
+      setCodeEmail(linkEmail.trim());
+    }
+    if (t === "link" && !linkEmail.trim() && codeEmail.trim()) {
+      setLinkEmail(codeEmail.trim());
+    }
     setTab(t);
     setError("");
   }
@@ -724,7 +738,7 @@ export default function LoginForm({
                     maxLength={6}
                     value={codeValue}
                     onChange={(e) => { setCodeValue(e.target.value.replace(/\D/g, "")); setError(""); }}
-                    className="h-14 rounded-xl border-white/10 bg-white/5 text-center text-2xl font-bold tracking-[0.5em] text-white placeholder:text-slate-600"
+                    className="h-16 rounded-xl border-white/10 bg-white/5 text-center text-3xl font-bold tracking-[0.4em] text-white placeholder:text-slate-600"
                     placeholder="000000"
                     autoComplete="one-time-code"
                     autoFocus
