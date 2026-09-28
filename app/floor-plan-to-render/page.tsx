@@ -138,7 +138,19 @@ export default function Page() {
           </a>
         </div>
         <p className="mt-4 text-sm text-white/55">
-          Credits from ₹99. Reading your drawing is free.
+          Credits from ₹99. Reading your drawing is free.{" "}
+          {/* MOVED HERE FROM THE HOMEPAGE HERO, 28 Sep 2026. It was the only
+              link to the guide anywhere on the site, sitting as a third-level
+              line in a hero that is selling the workstation, not Studio. This
+              is the page where someone is deciding about Studio. */}
+          <a
+            href="/studio/guide.pdf"
+            target="_blank"
+            rel="noopener"
+            className="underline decoration-white/25 underline-offset-4 transition hover:text-white/80 hover:decoration-white/50"
+          >
+            Read the five-page guide (PDF)
+          </a>
         </p>
 
         {/* A REAL PLAN, not a picture of one. Built by

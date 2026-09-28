@@ -188,6 +188,28 @@ export function getTrialTerms(card: RateCard | null): TrialTerms | null {
   return card.trial;
 }
 
+export type FirstTopupBonus = { percent: number; capRupees: number };
+
+/**
+ * The first-top-up bonus, INDEPENDENT of whether free trials are running.
+ *
+ * The API nests these two fields inside `trial`, but they answer to their own
+ * kill switch (`first_topup_bonus_enabled`) and are zeroed by it. Reading them
+ * through getTrialTerms() would tie them to `trial.enabled` instead: switch
+ * off free minutes and a live promotion silently disappears from the site
+ * while billing carries on granting it. The reverse of the usual failure and
+ * just as bad -- money going out with nothing advertising it.
+ *
+ * Returns null when the bonus is off or the control plane is unreachable, so
+ * callers render nothing rather than a number nobody is honouring.
+ */
+export function firstTopupBonus(card: RateCard | null): FirstTopupBonus | null {
+  const percent = card?.trial?.first_topup_bonus_percent ?? 0;
+  const cap = card?.trial?.first_topup_bonus_cap_rupees ?? 0;
+  if (!percent || !cap) return null;
+  return { percent, capRupees: cap };
+}
+
 /** "₹399/hr", or "On request" where no public price is set. */
 export function formatHourly(gpu: RateCardGpu): string {
   if (gpu.hourly_rate_rupees == null) return "On request";

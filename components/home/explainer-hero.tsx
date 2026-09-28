@@ -15,18 +15,23 @@
  */
 
 import Link from "next/link";
-import type { TrialTerms } from "@/lib/rate-card";
+import type { TrialTerms, FirstTopupBonus } from "@/lib/rate-card";
 
 const HARDWARE_COST = "₹5,00,000";
 
 export function ExplainerHero({
   adhocRate,
   trial,
+  bonus,
 }: {
   adhocRate?: string;
   trial: TrialTerms | null;
+  bonus: FirstTopupBonus | null;
 }) {
   const trialMinutes = trial?.gpu_minutes;
+  const bonusCap = bonus
+    ? `₹${Math.round(bonus.capRupees).toLocaleString("en-IN")}`
+    : null;
 
   return (
     <section className="relative mx-auto max-w-7xl px-4 pt-16 pb-14 sm:px-6 sm:pt-24 lg:px-8">
@@ -41,11 +46,14 @@ export function ExplainerHero({
           </span>
         </h1>
 
+        {/* WAS FORTY WORDS. The old version spent three lines explaining where
+            the machine lives before saying what is on it -- and what is on it
+            is the whole difference from a bare cloud GPU, which arrives empty
+            and expects you to install Windows software over SSH. Location is a
+            chip below; the software is the sentence. */}
         <p className="mt-6 max-w-2xl text-base leading-7 text-white/75 sm:text-lg sm:leading-8">
-          Coreframe gives your team a full Windows workstation with an RTX 5080 in
-          it — running in a data centre in Bengaluru, reachable from whatever
-          laptop they already own. D5 Render, Lumion, Enscape, Twinmotion, 3ds Max
-          and Blender are already installed.
+          A full Windows workstation with an RTX 5080, on the laptop you already
+          own. D5 Render, Lumion, Enscape and Twinmotion are already installed.
         </p>
 
         <div className="mt-9 flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:gap-4">
@@ -59,6 +67,22 @@ export function ExplainerHero({
 
         {trialMinutes ? (
           <p className="mt-4 text-sm text-white/55">No card required. Nothing to cancel.</p>
+        ) : null}
+
+        {/* THE BONUS HAS BEEN LIVE AND UNMENTIONED. public_pricing.py has served
+            first_topup_bonus_percent and _cap_rupees since it shipped, and
+            lib/rate-card.ts has had them typed -- no page ever rendered them.
+            Billing has been granting a promotion nothing advertised.
+
+            Read through firstTopupBonus(), not getTrialTerms(), so switching
+            off free minutes cannot hide a promotion that is still being paid
+            out. Both numbers come from the rate card: on 28 Sep 2026 the live
+            cap was ₹1,000 while it was believed to be ₹500, which is exactly
+            why this must never be typed by hand. */}
+        {bonus && bonusCap ? (
+          <p className="mt-3 text-sm font-medium text-emerald-300">
+            {bonus.percent}% extra on your first top-up, up to {bonusCap}.
+          </p>
         ) : null}
 
         {/* THE OTHER PRODUCT, AND THE CHEAPER DOOR.
@@ -79,37 +103,22 @@ export function ExplainerHero({
                 Try Coreframe Studio →
               </span>
             </span>
-            <span className="text-sm text-white/55">
-              Upload a DXF, pick a room, get an interior in seconds. ₹99 to
-              start. No installer, no KYC.
-            </span>
           </Link>
-          {/* THE GUIDE, WHERE SOMEBODY DECIDING CAN READ IT.
-              Five pages: open a plan, pick a room, say what it should feel
-              like, four rooms in one pass, what it costs. It is the honest
-              answer to "what do I actually get for Rs 99", and until now it
-              was only linked from inside the product -- behind the sign-in
-              that the question is meant to get them past. Served from
-              /studio/, which next.config already proxies to the control
-              plane, so there is no new rewrite and no new certificate. */}
-          <p className="mt-3 text-center text-sm text-white/45 sm:text-left">
-            <a
-              href="/studio/guide.pdf"
-              target="_blank"
-              rel="noopener"
-              className="underline decoration-white/25 underline-offset-4 transition hover:text-white/70 hover:decoration-white/50"
-            >
-              How Studio works — a five-page guide (PDF)
-            </a>
-          </p>
         </div>
 
         <ul className="mt-10 flex flex-wrap justify-center gap-2.5">
           {[
+            /* THESE FOUR ARE THE COMPETITIVE POSITION, COMPRESSED.
+               The alternative most studios are actually weighing is a
+               dollar-priced foreign cloud, and every chip after the first is
+               something one of those cannot say: the machine is in India, the
+               invoice carries GST, and the meter stops at the minute rather
+               than rounding up an hour. Naming the rival outright would date
+               badly; stating what we do is durable and does the same work. */
             "RTX 5080 · 16 GB GDDR7",
-            "Dedicated 1 Gbps link",
             "Hosted in Bengaluru",
-            "Per-minute billing",
+            "Priced in ₹, GST invoice",
+            "Billed per minute",
           ].map((chip, i) => (
             <li
               key={chip}

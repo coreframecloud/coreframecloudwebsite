@@ -12,6 +12,7 @@ import {
   getRateCard,
   formatHourly,
   getTrialTerms,
+  firstTopupBonus,
   billingSentence,
   bestOverageRate,
   entryPlanFee,
@@ -46,6 +47,10 @@ export default async function Page() {
   // rather than advertising an offer the platform will refuse after someone has
   // handed over their ID.
   const trial = getTrialTerms(rateCard);
+  // Deliberately NOT read off `trial`: the bonus answers to its own kill
+  // switch, and tying it to trial.enabled would hide a promotion billing is
+  // still granting. See firstTopupBonus() in lib/rate-card.ts.
+  const bonus = firstTopupBonus(rateCard);
   // Live storage figures, falling back to constants if the fetch failed.
   const storage = storageTerms(rateCard);
 
@@ -59,7 +64,7 @@ export default async function Page() {
             "How it works" sits second because the feedback that prompted this
             rebuild was that people did not understand the concept, and no
             benefit lands before that. */}
-        <ExplainerHero adhocRate={adhocRate} trial={trial} />
+        <ExplainerHero adhocRate={adhocRate} trial={trial} bonus={bonus} />
         <HowItWorksSection />
         <BenefitsSection storage={storage} />
         <MachineSpecSection storage={storage} />
