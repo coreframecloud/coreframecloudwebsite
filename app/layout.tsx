@@ -30,7 +30,7 @@ const plexMono = IBM_Plex_Mono({
   variable: "--font-plex-mono",
   display: "swap",
 });
-import { COMPANY_MAPS_URL } from "@/lib/company";
+import { COMPANY_MAPS_URL, COMPANY_YOUTUBE_URL } from "@/lib/company";
 import Script from "next/script";
 import { AttributionCapture } from "@/components/attribution-capture";
 import { SpeedInsights } from "@vercel/speed-insights/next";
@@ -279,6 +279,7 @@ export default async function RootLayout({
                   sameAs: [
                     "https://www.instagram.com/coreframecloud/",
                     COMPANY_MAPS_URL,
+                    COMPANY_YOUTUBE_URL,
                   ],
                   contactPoint: [
                     {

@@ -5,7 +5,10 @@ import { CostOfWaitingSection } from "@/components/home/cost-of-waiting-section"
 import { DisciplineCards } from "@/components/home/landing/discipline-cards";
 import { VersusSection } from "@/components/home/landing/versus-section";
 import { BuiltForStrip } from "@/components/home/landing/built-for-strip";
-import { WalkthroughSection } from "@/components/home/landing/walkthrough-section";
+import {
+  WalkthroughSection,
+  WALKTHROUGH_YOUTUBE_ID,
+} from "@/components/home/landing/walkthrough-section";
 import { RateCardSection } from "@/components/home/landing/rate-card-section";
 import {
   getRateCard,
@@ -104,7 +107,9 @@ export default async function Page() {
       <BuiltForStrip />
       <div className="cf-rule" />
 
-      <WalkthroughSection />
+      {/* The walkthrough, published 30 Sep 2026. One id, used by both the
+          embed and the VideoObject schema in walkthrough-section.tsx. */}
+      <WalkthroughSection youtubeId={WALKTHROUGH_YOUTUBE_ID} />
       <div className="cf-rule" />
 
       <RateCardSection adhocRate={adhocRate} trialMinutes={trialMinutes} />

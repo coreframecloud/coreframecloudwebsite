@@ -11,6 +11,11 @@ import { SpecBlock, B, K } from "@/components/home/spec-block";
  * "desktop-grade" is a deliberately fair description of RDP. It is genuinely
  * fine for spreadsheets; what it is not is a 3D viewport, and that is the
  * distinction worth drawing rather than calling it bad.
+ *
+ * Cut from three paragraphs to one. The long version explained the billing
+ * model, the file shuffling and the protocol before it got to the point, and
+ * the table below already makes every one of those arguments line by line.
+ * Prose that restates a table is prose nobody reads.
  */
 export function VersusSection({ trialMinutes }: { trialMinutes?: number }) {
   return (
@@ -19,17 +24,12 @@ export function VersusSection({ trialMinutes }: { trialMinutes?: number }) {
         <div className="cf-col">
           <p className="cf-eyebrow mb-5">What makes us different</p>
           <h2 className="cf-section-title">
-            A Windows GPU box is usually sold by the month, behind RDP. This isn&rsquo;t that.
+            Even when you find a GPU to rent, what you get is RDP.
           </h2>
           <p className="cf-section-copy mt-4">
-            The usual arrangement gets you an IP address, a remote desktop session and an invoice
-            that arrives whether you opened it or not. Then you spend the first hour moving files
-            onto it and the last hour moving them off — over a protocol built for spreadsheets,
-            not for a 3D viewport.
-          </p>
-          <p className="cf-section-copy mt-4">
-            We sell the opposite of that: a machine that behaves like it&rsquo;s under your desk,
-            for exactly as long as you have it open.
+            We stream a real workstation at 4K and 60 frames a second, so the viewport moves when
+            you move it. Remote desktop was built for spreadsheets — it drops frames the moment a
+            scene starts orbiting, and you feel every one of them.
           </p>
         </div>
       </section>

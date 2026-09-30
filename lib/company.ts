@@ -88,6 +88,18 @@ export const COMPANY_VISITING_ADDRESS_LINE =
  */
 export const COMPANY_MAPS_URL = "https://maps.google.com/?cid=14817454084634607912";
 
+/**
+ * YouTube channel, created 30 Sep 2026 with the walkthrough as its first
+ * upload. Listed in the GEO notes as a missing identity profile until then —
+ * "what is Coreframe Cloud" returned five other companies, and each real
+ * profile that resolves to us is one more thing tying the name to this
+ * business rather than to a similarly-named one.
+ *
+ * Only add a profile here once it exists and resolves. A sameAs pointing at a
+ * 404 is a broken identity claim, which is worse than a short list.
+ */
+export const COMPANY_YOUTUBE_URL = "https://www.youtube.com/@CoreframeCloud";
+
 /** Full postal address, for legal pages and invoices. */
 export const COMPANY_ADDRESS_FULL = [
   COMPANY.address.building,

@@ -40,7 +40,13 @@ export function WaitingCalculator({ ratePerHour }: { ratePerHour: number | null 
 
   return (
     <div className="rounded-cf border border-rule bg-blue-soft p-[clamp(22px,3.4vw,34px)]">
-      <div className="grid gap-5 [grid-template-columns:repeat(auto-fit,minmax(190px,1fr))]">
+      {/* items-stretch + a flex-1 label is what keeps the three inputs on one
+          line. "Hours a week spent waiting on renders" wraps to two lines while
+          the others do not, and with the default grid alignment that pushed its
+          input half a row lower than its neighbours. Shortening the label would
+          have hidden it until the next longer label, or the first translation.
+          Letting the label absorb the slack fixes it for any label length. */}
+      <div className="grid items-stretch gap-5 [grid-template-columns:repeat(auto-fit,minmax(190px,1fr))]">
         <Field
           id="cf-calc-rate"
           label="Your billing rate (₹ / hour)"
@@ -106,10 +112,10 @@ function Field({
   max?: number;
 }) {
   return (
-    <div className="min-w-0">
+    <div className="flex min-w-0 flex-col">
       <label
         htmlFor={id}
-        className="mb-2.5 block font-mono text-[11px] leading-none font-medium tracking-[0.14em] text-ink-3 uppercase"
+        className="mb-2.5 flex-1 font-mono text-[11px] leading-[1.45] font-medium tracking-[0.14em] text-ink-3 uppercase"
       >
         {label}
       </label>
