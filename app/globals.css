@@ -1,7 +1,57 @@
 @import "tailwindcss";
 
+/* ─────────────────────────────────────────────────────────────────────────
+   Coreframe design tokens — approved 30 Sep 2026.
+
+   White paper, near-black ink, a serif for display, Inter for body, and a
+   monospace that carries every label and every hard fact. Hairline rules
+   instead of boxes. 3px radii, not pills. One accent blue.
+
+   THE RULE THAT MAKES IT COHERENT: specifications never hide inside a
+   paragraph. Anything a customer would write down — a price, a spec, a
+   comparison — goes in a `.cf-term` block. Prose explains; the block states.
+
+   Do not add a second accent colour, a second radius or a second heading
+   font. The site read as five different products because every page invented
+   its own; that is what this file exists to stop.
+
+   Tailwind v4 is CSS-first: these @theme entries generate the utilities
+   (bg-paper, text-ink-2, border-rule, font-display, …). There is no
+   tailwind.config.
+   ───────────────────────────────────────────────────────────────────────── */
+@theme {
+  --color-paper: #ffffff;
+  --color-paper-2: #faf9f7;
+  --color-ink: #101113;
+  --color-ink-2: #5b6068;
+  --color-ink-3: #8a9099;
+  --color-rule: #1011131a;
+  --color-rule-strong: #10111333;
+  --color-blue: #2f6be0;
+  --color-blue-ink: #24549f;
+  --color-blue-soft: #2f6be00f;
+
+  /* The dark monospace panel. Deliberately near-black rather than the page
+     inverted: it has to read as a terminal, not as a dark card. */
+  --color-term: #0b0d11;
+  --color-term-ink: #d8dee9;
+  --color-term-dim: #7c8798;
+  --color-term-key: #6fa0ff;
+  --color-term-comment: #5e6b7e;
+
+  --font-display: var(--font-source-serif), Georgia, "Times New Roman", serif;
+  --font-sans: var(--font-inter), -apple-system, "Segoe UI", sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, Menlo, monospace;
+
+  --radius-cf: 3px;
+}
+
+/* Light only, on purpose. The brief was a white site; honouring
+   prefers-color-scheme would mean designing and reviewing every page twice,
+   and half the value here is that there is exactly one answer to "what does
+   this look like". */
 :root {
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 html {
@@ -9,90 +59,139 @@ html {
 }
 
 body {
-  background:
-    radial-gradient(circle at top center, rgba(0, 153, 255, 0.14), transparent 28%),
-    linear-gradient(180deg, #020816 0%, #04101d 100%);
-  color: white;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
 }
 
 * {
   box-sizing: border-box;
 }
 
-@keyframes cfPulse {
-  0%,
-  100% {
-    transform: scale(1);
-    opacity: 0.88;
-  }
-  50% {
-    transform: scale(1.04);
-    opacity: 1;
-  }
+/* ── Layout rhythm ──────────────────────────────────────────────────────
+   Two widths and nothing else. `cf-col` is a reading measure — prose must
+   never run wider than this. `cf-wide` is for the blocks and grids that
+   need the room. */
+.cf-col {
+  @apply mx-auto w-full max-w-[680px];
 }
 
-@keyframes cfCore {
-  0%,
-  100% {
-    opacity: 0.92;
-  }
-  50% {
-    opacity: 1;
-  }
+.cf-wide {
+  @apply mx-auto w-full max-w-[960px];
 }
 
-@keyframes cfFloat {
-  0%,
-  100% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-1px);
-  }
+.cf-section {
+  @apply py-[clamp(48px,7vw,86px)];
 }
 
-.cf-logo-pulse {
-  transform-origin: center;
-  animation: cfPulse 3.6s ease-in-out infinite;
+.cf-rule {
+  @apply mx-auto w-full max-w-[960px] border-t border-rule;
 }
 
-.cf-logo-core {
-  transform-origin: center;
-  animation: cfCore 3s ease-in-out infinite;
-}
-
-.cf-logo-float {
-  transform-origin: center;
-  animation: cfFloat 4s ease-in-out infinite;
-}
-
-.cf-btn-primary {
-  @apply inline-flex items-center justify-center rounded-2xl border border-emerald-400/20 bg-emerald-400/[0.08] px-6 py-3.5 text-sm font-semibold uppercase tracking-[0.16em] text-white transition;
-}
-
-.cf-btn-primary:hover {
-  @apply border-emerald-300/35 bg-emerald-400/[0.12];
-}
-
-.cf-btn-secondary {
-  @apply inline-flex items-center justify-center rounded-2xl border border-white/12 bg-white/[0.03] px-6 py-3.5 text-sm font-semibold uppercase tracking-[0.16em] text-white/88 transition;
-}
-
-.cf-btn-secondary:hover {
-  @apply bg-white/[0.06] text-white;
-}
-
-.cf-eyebrow {
-  @apply text-xs font-semibold uppercase tracking-[0.24em] text-white/42;
+/* ── Type ───────────────────────────────────────────────────────────────
+   Display sizes are clamped rather than stepped through breakpoints, so a
+   heading is never stranded at an awkward size on a tablet. */
+.cf-display {
+  @apply font-display text-[clamp(36px,6.4vw,62px)] leading-[1.03] font-bold tracking-[-0.025em] text-ink;
+  text-wrap: balance;
 }
 
 .cf-section-title {
-  @apply text-3xl font-semibold tracking-[-0.03em] text-white sm:text-4xl lg:text-5xl;
+  @apply font-display text-[clamp(27px,3.6vw,38px)] leading-[1.12] font-semibold tracking-[-0.02em] text-ink;
+  text-wrap: balance;
 }
 
 .cf-section-copy {
-  @apply text-base leading-7 text-white/65;
+  @apply text-base leading-[1.62] text-ink-2;
 }
+
+.cf-lead {
+  @apply text-[clamp(17px,2.1vw,20px)] leading-[1.55] text-ink-2;
+}
+
+/* The mono label above a section. Every section has exactly one. */
+.cf-eyebrow {
+  @apply font-mono text-[11.5px] leading-none font-medium tracking-[0.2em] text-ink-3 uppercase;
+}
+
+/* ── Buttons ────────────────────────────────────────────────────────────
+   Solid blue for the one action that matters on a page, hairline outline
+   for everything else. Mono and letterspaced so they read as controls
+   rather than as more prose. */
+.cf-btn-primary {
+  @apply inline-flex items-center justify-center rounded-cf bg-blue px-5 py-[15px] font-mono text-[12.5px] leading-none font-semibold tracking-[0.09em] text-white uppercase transition-colors;
+}
+
+.cf-btn-primary:hover {
+  @apply bg-blue-ink;
+}
+
+.cf-btn-secondary {
+  @apply inline-flex items-center justify-center rounded-cf border border-rule bg-transparent px-5 py-[15px] font-mono text-[12.5px] leading-none font-semibold tracking-[0.09em] text-ink uppercase transition-colors;
+}
+
+.cf-btn-secondary:hover {
+  @apply border-rule-strong bg-paper-2;
+}
+
+.cf-btn-primary:focus-visible,
+.cf-btn-secondary:focus-visible {
+  @apply outline-2 outline-offset-[3px] outline-ink;
+}
+
+/* ── The fact block ─────────────────────────────────────────────────────
+   Specs, rate cards and comparisons live here and nowhere else. Scrolls on
+   a narrow screen rather than wrapping, because a wrapped spec table stops
+   being readable as a table. */
+.cf-term {
+  @apply overflow-x-auto rounded-cf bg-term px-7 py-[26px] font-mono text-sm leading-[1.85] font-medium text-term-ink;
+}
+
+.cf-term pre {
+  @apply m-0 whitespace-pre;
+}
+
+.cf-term .k { @apply text-term-dim; }
+.cf-term .v { @apply text-white; }
+.cf-term .b { @apply text-term-key; }
+.cf-term .c { @apply text-term-comment; }
+
+/* ── Cards ──────────────────────────────────────────────────────────────
+   A rule on top, not a box. Boxes stack into visual noise; a rule keeps the
+   page reading as one sheet of paper. */
+.cf-card {
+  @apply min-w-0 border-t-2 border-ink pt-5;
+}
+
+.cf-card-label {
+  @apply mb-3 font-mono text-[11px] leading-none font-medium tracking-[0.16em] text-blue uppercase;
+}
+
+/* A quiet call-out, for the one caveat a section cannot do without. */
+.cf-note {
+  @apply rounded-r-cf border-l-[3px] border-blue bg-blue-soft px-6 py-[22px];
+}
+
+/* ── Logo motion (unchanged) ───────────────────────────────────────────── */
+@keyframes cfPulse {
+  0%, 100% { transform: scale(1); opacity: 0.88; }
+  50% { transform: scale(1.04); opacity: 1; }
+}
+
+@keyframes cfCore {
+  0%, 100% { opacity: 0.92; }
+  50% { opacity: 1; }
+}
+
+@keyframes cfFloat {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-1px); }
+}
+
+.cf-logo-pulse { transform-origin: center; animation: cfPulse 3.6s ease-in-out infinite; }
+.cf-logo-core  { transform-origin: center; animation: cfCore 3s ease-in-out infinite; }
+.cf-logo-float { transform-origin: center; animation: cfFloat 4s ease-in-out infinite; }
 
 @media (prefers-reduced-motion: reduce) {
   .cf-logo-pulse,
@@ -101,4 +200,3 @@ body {
     animation: none !important;
   }
 }
-

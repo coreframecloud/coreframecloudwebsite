@@ -1,4 +1,35 @@
 import type { Metadata } from "next";
+import { Inter, Source_Serif_4, IBM_Plex_Mono } from "next/font/google";
+
+/**
+ * Three families, one job each: the serif carries display headings, Inter
+ * carries body copy, the monospace carries every label, control and hard fact.
+ *
+ * next/font self-hosts these at build time, so there is no render-blocking
+ * request to fonts.googleapis.com and no layout shift. The CSS variables are
+ * consumed by @theme in globals.css (--font-display / --font-sans / --font-mono),
+ * which is what turns them into font-display / font-sans / font-mono utilities.
+ */
+const sourceSerif = Source_Serif_4({
+  subsets: ["latin"],
+  weight: ["400", "600", "700"],
+  variable: "--font-source-serif",
+  display: "swap",
+});
+
+const inter = Inter({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-inter",
+  display: "swap",
+});
+
+const plexMono = IBM_Plex_Mono({
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+  variable: "--font-plex-mono",
+  display: "swap",
+});
 import { COMPANY_MAPS_URL } from "@/lib/company";
 import Script from "next/script";
 import { AttributionCapture } from "@/components/attribution-capture";
@@ -145,8 +176,11 @@ export default async function RootLayout({
     "Billed per minute of actual use, with 18% GST included in every published rate.";
 
   return (
-    <html lang="en">
-      <body className="bg-[#030b16] text-white antialiased">
+    <html
+      lang="en"
+      className={`${sourceSerif.variable} ${inter.variable} ${plexMono.variable}`}
+    >
+      <body className="bg-paper text-ink antialiased">
         {/* Google Analytics */}
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-BX4WY4GBSZ"
