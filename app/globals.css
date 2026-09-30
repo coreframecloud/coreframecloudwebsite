@@ -271,7 +271,7 @@ body {
 }
 
 .cf-track {
-  @apply flex w-max gap-4;
+  @apply flex w-max gap-5;
   animation: cfSlide 64s linear infinite;
 }
 
@@ -285,7 +285,15 @@ body {
 }
 
 .cf-chip {
-  @apply w-[290px] flex-none rounded-cf border border-rule bg-paper px-[22px] py-5;
+  /* WIDTH IS VIEWPORT-RELATIVE so the number of visible tiles stays the same
+     on any monitor. At a fixed 290px a 1440 window showed about 4½ tiles and
+     a 4K span showed twelve tiny ones — the wider the screen, the weaker the
+     section got, which is backwards.
+
+     max(330px, 21vw) holds roughly 4½ across 1440, 2560 and 3840, and the
+     floor keeps it readable on a laptop. */
+  width: max(330px, 21vw);
+  @apply flex-none rounded-cf border border-rule bg-paper px-7 py-6;
 }
 
 @media (prefers-reduced-motion: reduce) {

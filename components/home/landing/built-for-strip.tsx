@@ -38,10 +38,10 @@ export function BuiltForStrip() {
         <div className="cf-track">
           {doubled.map(([role, line], i) => (
             <div key={`${role}-${i}`} className="cf-chip" aria-hidden={i >= PROFILES.length}>
-              <p className="mb-2.5 font-mono text-[10.5px] leading-none font-medium tracking-[0.15em] text-blue uppercase">
+              <p className="mb-3 font-mono text-[12px] leading-none font-medium tracking-[0.15em] text-blue uppercase">
                 {role}
               </p>
-              <p className="text-[14.5px] leading-[1.55] text-ink-2">{line}</p>
+              <p className="text-[17px] leading-[1.5] text-ink-2">{line}</p>
             </div>
           ))}
         </div>

@@ -1,6 +1,12 @@
 import Link from "next/link";
 import { CoreframeWordmarkAtlas } from "@/components/brand/coreframe-wordmark-atlas";
 import {
+  MailIcon,
+  WhatsAppIcon,
+  InstagramIcon,
+  MapPinIcon,
+} from "@/components/brand/contact-icons";
+import {
   COMPANY,
   COMPANY_ADDRESS_LINE,
   COMPANY_VISITING_ADDRESS_LINE,
@@ -73,13 +79,26 @@ export function SiteFooter() {
           <div>
             <h3 className="cf-eyebrow">Contact</h3>
             <div className="mt-3 flex flex-col gap-2">
-              <Link href="mailto:admin@coreframecloud.com" className="text-xs text-ink-2 hover:text-ink transition">admin@coreframecloud.com</Link>
-              <Link href="https://wa.me/916366889488" target="_blank" rel="noreferrer" className="text-xs text-ink-2 hover:text-ink transition">+91 6366889488</Link>
+              {/* Each mark sits beside its own visible label and is aria-hidden,
+                  so a screen reader reads the contact once rather than twice.
+                  They inherit currentColor, so the hover state comes free and
+                  there is nothing to update when the palette moves. */}
+              <Link href="mailto:admin@coreframecloud.com" className="flex items-center gap-2 text-xs text-ink-2 hover:text-ink transition">
+                <MailIcon />
+                admin@coreframecloud.com
+              </Link>
+              <Link href="https://wa.me/916366889488" target="_blank" rel="noreferrer" className="flex items-center gap-2 text-xs text-ink-2 hover:text-ink transition">
+                <WhatsAppIcon />
+                +91 6366889488
+              </Link>
               {/* The handle, not the word "Instagram". People search the handle,
                   and it is the only social profile in the Organization schema
                   (layout.tsx sameAs) -- a footer link is what makes that claim
                   verifiable to a crawler instead of an assertion. */}
-              <Link href="https://www.instagram.com/coreframecloud/" target="_blank" rel="noreferrer" className="text-xs text-ink-2 hover:text-ink transition">@coreframecloud</Link>
+              <Link href="https://www.instagram.com/coreframecloud/" target="_blank" rel="noreferrer" className="flex items-center gap-2 text-xs text-ink-2 hover:text-ink transition">
+                <InstagramIcon />
+                @coreframecloud
+              </Link>
               {/* The building, linked to the Business Profile — this is the
                   address a visitor navigates to. The registered survey-number
                   address stays in the bottom bar, labelled, so the two read as
@@ -88,9 +107,10 @@ export function SiteFooter() {
                 href={COMPANY_MAPS_URL}
                 target="_blank"
                 rel="noreferrer"
-                className="max-w-[16rem] text-xs leading-5 text-ink-2 hover:text-ink transition"
+                className="flex max-w-[17rem] items-start gap-2 text-xs leading-5 text-ink-2 hover:text-ink transition"
               >
-                {COMPANY_VISITING_ADDRESS_LINE}
+                <MapPinIcon className="mt-0.5" />
+                <span>{COMPANY_VISITING_ADDRESS_LINE}</span>
               </Link>
             </div>
           </div>

@@ -237,6 +237,20 @@ export default async function RootLayout({
                     "Coreframe Cloud is the cloud GPU workstation service operated by Coreframe Compute Labs Private Limited of Bengaluru, India (CIN U63119KA2026PTC220789). It is unrelated to CloudFrame, Coreframe Technologies, Coreframe Solutions, CoreFrame Studio, or the coreframe package on PyPI.",
                   url: "https://www.coreframecloud.com",
                   logo: "https://www.coreframecloud.com/icon.png",
+                  /**
+                   * hasMap is what actually TAGS the Google Business Profile.
+                   * The same URL is in sameAs below, but sameAs only says
+                   * "this profile is also us" — it is an identity claim about
+                   * a page. hasMap says "this is the map of this place",
+                   * which is what a local result, a map pack and an assistant
+                   * answering "where are they" read.
+                   *
+                   * No `geo` block: latitude and longitude would have to be
+                   * measured, and a coordinate guessed from an address is
+                   * worse than none — it puts a pin on the wrong building
+                   * with full confidence.
+                   */
+                  hasMap: COMPANY_MAPS_URL,
                   description:
                     "RTX 5080 GPU workstations on demand for D5 Render, Lumion, Enscape, and 3D visualisation studios. Hosted in Bengaluru, India.",
                   telephone: "+916366889488",
