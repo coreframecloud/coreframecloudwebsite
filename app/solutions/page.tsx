@@ -56,7 +56,7 @@ export default function SolutionsPage() {
 
       <main className="relative mx-auto max-w-7xl px-6 pb-20 pt-20 md:pt-28">
         <div className="max-w-3xl">
-          <div className="text-sm font-medium uppercase tracking-[0.25em] text-blue">
+          <div className="cf-eyebrow">
             Solutions
           </div>
           <h1 className="cf-display mt-3">
@@ -88,7 +88,7 @@ export default function SolutionsPage() {
 
         <div className="mt-14 rounded-[2rem] border border-rule bg-paper-2 p-8 backdrop-blur-2xl">
           <div className="max-w-3xl">
-            <div className="text-sm uppercase tracking-[0.25em] text-blue">
+            <div className="cf-eyebrow">
               Infrastructure Standard
             </div>
             <h2 className="cf-section-title mt-3">
@@ -109,7 +109,7 @@ export default function SolutionsPage() {
 
         <div className="mt-14 rounded-[2rem] border border-blue/20 bg-blue/10 p-8 backdrop-blur-2xl">
           <div className="max-w-3xl">
-            <div className="text-sm uppercase tracking-[0.25em] text-blue">
+            <div className="cf-eyebrow">
               Next step
             </div>
             <h2 className="cf-section-title mt-3">

@@ -17,7 +17,7 @@ export function ClosingCta({ trial }: { trial: TrialTerms | null }) {
   return (
     <section className="mx-auto max-w-7xl px-4 pb-24 pt-6 sm:px-6 lg:px-8">
       <div className="rounded-3xl border border-blue/20 bg-[radial-gradient(ellipse_70%_120%_at_50%_0%,rgba(34,211,238,0.13),transparent_70%)] px-6 py-16 text-center sm:px-10">
-        <p className="text-xs font-bold uppercase tracking-[0.22em] text-blue">Start today</p>
+        <p className="cf-eyebrow">Start today</p>
 
         <h2 className="cf-section-title mx-auto mt-4 max-w-3xl">
           {minutes ? (

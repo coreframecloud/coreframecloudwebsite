@@ -36,7 +36,7 @@ const STEPS = [
 export function HowItWorksSection() {
   return (
     <section id="how" className="mx-auto max-w-7xl scroll-mt-24 px-4 py-20 sm:px-6 lg:px-8">
-      <p className="text-xs font-bold uppercase tracking-[0.22em] text-blue">The whole idea, in three steps</p>
+      <p className="cf-eyebrow">The whole idea, in three steps</p>
       <h2 className="cf-section-title mt-4 max-w-3xl">
         You don&apos;t buy the machine.
         <br />

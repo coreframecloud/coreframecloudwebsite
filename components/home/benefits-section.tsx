@@ -144,7 +144,7 @@ function Row({
   return (
     <div className="grid items-center gap-10 border-t border-rule py-14 lg:grid-cols-2 lg:gap-14">
       <div className={flip ? "lg:order-2" : undefined}>
-        <p className="text-xs font-bold uppercase tracking-[0.22em] text-blue">{eyebrow}</p>
+        <p className="cf-eyebrow">{eyebrow}</p>
         <h2 className="cf-section-title mt-4">
           {title}
         </h2>
@@ -178,7 +178,7 @@ function Row({
               </p>
             </div>
             <div className="rounded-cf border border-blue/35 bg-blue/[0.06] p-5">
-              <p className="text-xs font-bold uppercase tracking-[0.16em] text-blue">✓ With Coreframe</p>
+              <p className="cf-eyebrow">✓ With Coreframe</p>
               <p className="mt-3 text-[15px] leading-7 text-ink">
                 <em className="not-italic text-ink-2">{compare.after[0]}</em>
                 <br />

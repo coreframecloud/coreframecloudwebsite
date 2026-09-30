@@ -157,7 +157,7 @@ export default async function ArchitectsPage() {
 
       <main className="relative mx-auto max-w-5xl px-6 pb-20 pt-16 md:pt-20">
 
-        <div className="text-sm font-medium uppercase tracking-[0.25em] text-blue">
+        <div className="cf-eyebrow">
           Cloud Rendering · Architecture Studios · India
         </div>
         <h1 className="cf-display mt-3">

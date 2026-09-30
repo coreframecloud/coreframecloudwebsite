@@ -39,7 +39,7 @@ export function SiteFooter() {
 
           {/* Navigation */}
           <div>
-            <h3 className="text-[10px] font-semibold uppercase tracking-[0.2em] text-ink-3">Product</h3>
+            <h3 className="cf-eyebrow">Product</h3>
             <div className="mt-3 flex flex-col gap-2">
               {[
                 { label: "D5 Render", href: "/d5-render-cloud-workstation" },
@@ -57,7 +57,7 @@ export function SiteFooter() {
 
           {/* Legal */}
           <div>
-            <h3 className="text-[10px] font-semibold uppercase tracking-[0.2em] text-ink-3">Legal</h3>
+            <h3 className="cf-eyebrow">Legal</h3>
             <div className="mt-3 flex flex-col gap-2">
               {[
                 { label: "Privacy Policy", href: "/privacy-policy" },
@@ -71,7 +71,7 @@ export function SiteFooter() {
 
           {/* Contact */}
           <div>
-            <h3 className="text-[10px] font-semibold uppercase tracking-[0.2em] text-ink-3">Contact</h3>
+            <h3 className="cf-eyebrow">Contact</h3>
             <div className="mt-3 flex flex-col gap-2">
               <Link href="mailto:admin@coreframecloud.com" className="text-xs text-ink-2 hover:text-ink transition">admin@coreframecloud.com</Link>
               <Link href="https://wa.me/916366889488" target="_blank" rel="noreferrer" className="text-xs text-ink-2 hover:text-ink transition">+91 6366889488</Link>

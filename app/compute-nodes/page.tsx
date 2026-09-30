@@ -57,7 +57,7 @@ export default async function ComputeNodesPage() {
 
       <main className="relative mx-auto max-w-7xl px-6 pb-20 pt-20 md:pt-28">
         <div className="max-w-3xl">
-          <div className="text-sm font-medium uppercase tracking-[0.25em] text-blue">
+          <div className="cf-eyebrow">
             Compute Nodes
           </div>
           <h1 className="cf-display mt-3">
@@ -72,7 +72,7 @@ export default async function ComputeNodesPage() {
         </div>
 
         <section className="mt-14">
-          <div className="text-sm uppercase tracking-[0.25em] text-blue">
+          <div className="cf-eyebrow">
             3D Rendering / Hourly
           </div>
           <h2 className="cf-section-title mt-3">
@@ -170,7 +170,7 @@ export default async function ComputeNodesPage() {
         </section>
 
         <section className="mt-20">
-          <div className="text-sm uppercase tracking-[0.25em] text-blue">
+          <div className="cf-eyebrow">
             What it is for
           </div>
           <h2 className="cf-section-title mt-3">

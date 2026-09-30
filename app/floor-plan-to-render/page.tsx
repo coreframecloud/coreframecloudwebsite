@@ -113,7 +113,7 @@ export default function Page() {
       />
 
       <main className="relative mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
-        <p className="text-xs font-bold uppercase tracking-[0.22em] text-blue">
+        <p className="cf-eyebrow">
           Coreframe Studio
         </p>
         <h1 className="cf-display mt-5 max-w-3xl">

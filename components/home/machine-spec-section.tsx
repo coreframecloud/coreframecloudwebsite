@@ -45,7 +45,7 @@ export function MachineSpecSection({ storage }: { storage: StorageTerms }) {
 
   return (
     <section id="specs" className="mx-auto max-w-7xl scroll-mt-24 px-4 py-20 sm:px-6 lg:px-8">
-      <p className="text-xs font-bold uppercase tracking-[0.22em] text-blue">What you actually get</p>
+      <p className="cf-eyebrow">What you actually get</p>
       <h2 className="cf-section-title mt-4">One machine. Fully loaded.</h2>
       <p className="mt-5 max-w-2xl text-base leading-7 text-ink-2">
         Every session is a complete Windows workstation — not a render queue, not

@@ -79,7 +79,7 @@ export function PricingSection({
 }) {
   return (
     <section id="pricing" className="border-b border-rule">
-      <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
+      <div className="cf-wide px-5 py-10 lg:py-14">
         {/* NO HEADER HERE. This component used to carry its own "PRICING /
             Two ways to render." because it lived three-quarters of the way
             down the homepage and needed to announce itself. It is now the body
@@ -91,7 +91,7 @@ export function PricingSection({
 
           {/* Ad-hoc */}
           <div className="rounded-[28px] border border-rule bg-paper-2 p-8">
-            <div className="text-xs font-semibold uppercase tracking-[0.22em] text-ink-3">
+            <div className="cf-eyebrow">
               Ad-hoc · Pay-as-you-go
             </div>
             <Price value={adhocRate} unit="/ GPU-hour" />
@@ -131,7 +131,7 @@ export function PricingSection({
 
           {/* Committed */}
           <div className="rounded-[28px] border border-blue/20 bg-blue/[0.04] p-8">
-            <div className="text-xs font-semibold uppercase tracking-[0.22em] text-blue/70">
+            <div className="cf-eyebrow">
               Committed Monthly Plans
             </div>
             <Price value={bestOverage} unit="/ GPU-hour" />
@@ -170,7 +170,7 @@ export function PricingSection({
         {/* Storage add-on — available on any plan, including ad-hoc */}
         <div className="mt-6 rounded-[24px] border border-rule bg-paper-2 px-6 py-6 sm:flex sm:items-center sm:justify-between sm:gap-6">
           <div>
-            <div className="text-xs font-semibold uppercase tracking-[0.22em] text-ink-3">
+            <div className="cf-eyebrow">
               Add-on · Persistent NAS storage
             </div>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-ink-2">

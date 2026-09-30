@@ -76,7 +76,7 @@ export default async function EnscapePage() {
 
       <main className="relative mx-auto max-w-5xl px-6 pb-24 pt-20 md:pt-28">
 
-        <div className="text-sm font-medium uppercase tracking-[0.25em] text-blue">
+        <div className="cf-eyebrow">
           Enscape · Cloud GPU · India
         </div>
         <h1 className="cf-display mt-3">

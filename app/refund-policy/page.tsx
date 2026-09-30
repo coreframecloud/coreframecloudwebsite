@@ -68,13 +68,13 @@ export default function RefundPolicyPage() {
       <BackgroundGlow />
 
       <div className="relative mx-auto max-w-4xl px-4 py-20 sm:px-6 lg:px-8">
-        <div className="text-sm font-medium uppercase tracking-[0.25em] text-blue">
+        <div className="cf-eyebrow">
           Legal
         </div>
         <h1 className="cf-display mt-4">
           Refund Policy
         </h1>
-        <p className="mt-4 text-sm font-medium uppercase tracking-[0.18em] text-ink-2">
+        <p className="mt-4 cf-eyebrow">
           Last Updated: August 2026
         </p>
 

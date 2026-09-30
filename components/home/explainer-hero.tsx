@@ -36,7 +36,7 @@ export function ExplainerHero({
   return (
     <section className="relative mx-auto max-w-7xl px-4 pt-16 pb-14 sm:px-6 sm:pt-24 lg:px-8">
       <div className="flex flex-col items-center text-center">
-        <p className="text-xs font-bold uppercase tracking-[0.22em] text-blue">GPU workstations, by the hour</p>
+        <p className="cf-eyebrow">GPU workstations, by the hour</p>
 
         <h1 className="cf-display mt-5 max-w-4xl">
           A {HARDWARE_COST} workstation.

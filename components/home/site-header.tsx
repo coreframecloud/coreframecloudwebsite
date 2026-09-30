@@ -98,7 +98,7 @@ function UserAvatar({ initials, accountNumber, onSignOut }: { initials: string; 
           */}
           {accountNumber ? (
             <div className="border-b border-rule px-4 py-2.5">
-              <div className="text-[10px] uppercase tracking-[0.18em] text-ink-3">
+              <div className="cf-eyebrow">
                 Account number
               </div>
               <div className="mt-0.5 font-mono text-sm text-ink select-all">

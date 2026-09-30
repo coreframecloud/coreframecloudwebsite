@@ -107,7 +107,7 @@ export default async function EnterprisePage() {
 
         {/* Header */}
         <div className="max-w-2xl">
-          <div className="text-sm font-medium uppercase tracking-[0.25em] text-blue">
+          <div className="cf-eyebrow">
             Committed Monthly Plans
           </div>
           <h1 className="cf-display mt-3">
@@ -225,7 +225,7 @@ export default async function EnterprisePage() {
                 </div>
               )}
 
-              <div className={`text-xs font-semibold uppercase tracking-[0.22em] ${plan.highlight ? "text-blue/70" : "text-ink-3"}`}>
+              <div className={`cf-eyebrow ${plan.highlight ? "text-blue" : ""}`}>
                 {plan.name}
               </div>
               {/* Two lines reserved. "Small teams · 3–5 people" is one line and

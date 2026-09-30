@@ -177,7 +177,7 @@ export function ContactSection() {
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid gap-6 sm:grid-cols-2">
                 <div>
-                  <label htmlFor="name" className="text-[11px] font-semibold uppercase tracking-[0.22em] text-ink-2">
+                  <label htmlFor="name" className="cf-eyebrow">
                     Name
                   </label>
                   <input
@@ -193,7 +193,7 @@ export function ContactSection() {
                 </div>
 
                 <div>
-                  <label htmlFor="company" className="text-[11px] font-semibold uppercase tracking-[0.22em] text-ink-2">
+                  <label htmlFor="company" className="cf-eyebrow">
                     Company
                   </label>
                   <input
@@ -208,7 +208,7 @@ export function ContactSection() {
                 </div>
 
                 <div>
-                  <label htmlFor="email" className="text-[11px] font-semibold uppercase tracking-[0.22em] text-ink-2">
+                  <label htmlFor="email" className="cf-eyebrow">
                     Email
                   </label>
                   <input
@@ -224,7 +224,7 @@ export function ContactSection() {
                 </div>
 
                 <div>
-                  <label htmlFor="phone" className="text-[11px] font-semibold uppercase tracking-[0.22em] text-ink-2">
+                  <label htmlFor="phone" className="cf-eyebrow">
                     Phone / WhatsApp
                   </label>
                   <input
@@ -242,7 +242,7 @@ export function ContactSection() {
 
               <div className="grid gap-6 sm:grid-cols-2">
                 <div>
-                  <label htmlFor="workload" className="text-[11px] font-semibold uppercase tracking-[0.22em] text-ink-2">
+                  <label htmlFor="workload" className="cf-eyebrow">
                     Primary workload
                   </label>
                   <select
@@ -260,7 +260,7 @@ export function ContactSection() {
                 </div>
 
                 <div>
-                  <label htmlFor="gpu" className="text-[11px] font-semibold uppercase tracking-[0.22em] text-ink-2">
+                  <label htmlFor="gpu" className="cf-eyebrow">
                     Preferred GPU / Node
                   </label>
                   <select
@@ -285,7 +285,7 @@ export function ContactSection() {
               </div>
 
               <div>
-                <label htmlFor="notes" className="text-[11px] font-semibold uppercase tracking-[0.22em] text-ink-2">
+                <label htmlFor="notes" className="cf-eyebrow">
                   Notes
                 </label>
                 <textarea

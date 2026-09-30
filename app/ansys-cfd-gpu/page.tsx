@@ -127,7 +127,7 @@ export default function AnsysCfdPage() {
       <main className="relative mx-auto max-w-5xl px-6 pb-20 pt-16 md:pt-20">
 
         {/* Hero */}
-        <div className="flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-[0.22em] text-blue">
+        <div className="flex flex-wrap items-center gap-2 cf-eyebrow">
           <span>CFD · Ansys · Cloud GPU</span>
           <span className="rounded-full bg-paper-2 border border-rule px-2 py-0.5 text-ink-2">
             Bring your own licence
