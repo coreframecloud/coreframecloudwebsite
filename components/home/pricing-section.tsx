@@ -20,6 +20,39 @@ import { STORAGE, type StorageTerms } from "@/lib/storage-terms";
  * Anything null renders as nothing rather than as a fallback. See the note at
  * the top of lib/rate-card.ts for why a stale price is worse than no price.
  */
+/**
+ * What to show where a price goes when the rate card could not be reached.
+ *
+ * It used to be `{rate ?? "—"}` inside a text-5xl font-bold span, which renders
+ * an em dash at 48px as a solid black bar — it reads as a redaction, not as an
+ * absence. And it only ever appears when the control plane is unreachable,
+ * which is precisely the moment the pricing page must not look broken.
+ *
+ * Saying nothing is still right; saying it quietly is better than a black bar.
+ */
+function Price({ value, unit }: { value?: string | null; unit: string }) {
+  if (!value) {
+    return (
+      <p className="mt-4 text-sm leading-6 text-ink-2">
+        Live pricing is briefly unavailable. Email{" "}
+        <a
+          href="mailto:admin@coreframecloud.com"
+          className="text-blue underline underline-offset-4"
+        >
+          admin@coreframecloud.com
+        </a>{" "}
+        and we will send the current rate card.
+      </p>
+    );
+  }
+  return (
+    <div className="mt-4 flex items-end gap-2">
+      <span className="text-5xl font-bold text-ink">{value}</span>
+      <span className="mb-1.5 text-lg text-ink-2">{unit}</span>
+    </div>
+  );
+}
+
 export function PricingSection({
   adhocRate,
   storage = STORAGE,
@@ -61,10 +94,7 @@ export function PricingSection({
             <div className="text-xs font-semibold uppercase tracking-[0.22em] text-ink-3">
               Ad-hoc · Pay-as-you-go
             </div>
-            <div className="mt-4 flex items-end gap-2">
-              <span className="text-5xl font-bold text-ink">{adhocRate ?? "—"}</span>
-              <span className="mb-1.5 text-lg text-ink-2">/ GPU-hour</span>
-            </div>
+            <Price value={adhocRate} unit="/ GPU-hour" />
             {/* Per hour is the headline because that is the unit every
                 alternative quotes, and a buyer who has to convert units to
                 compare assumes the conversion is the point. Per minute goes
@@ -104,10 +134,7 @@ export function PricingSection({
             <div className="text-xs font-semibold uppercase tracking-[0.22em] text-blue/70">
               Committed Monthly Plans
             </div>
-            <div className="mt-4 flex items-end gap-2">
-              <span className="text-5xl font-bold text-ink">{bestOverage ?? "—"}</span>
-              <span className="mb-1.5 text-lg text-ink-2">/ GPU-hour</span>
-            </div>
+            <Price value={bestOverage} unit="/ GPU-hour" />
             <p className="mt-4 text-sm leading-6 text-ink-2">
               {/* The claim is conditional on it being TRUE, not on both numbers
                   existing. Cut the ad-hoc rate far enough and every tier inverts

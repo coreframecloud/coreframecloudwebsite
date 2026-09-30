@@ -102,7 +102,7 @@ function UsageCards({ wallet }: { wallet: WalletData | null }) {
           : "border-rule bg-paper-2"
       }`}>
         <div className="flex items-baseline justify-between">
-          <h2 className="text-xs font-semibold uppercase tracking-wider text-ink-3">
+          <h2 className="cf-section-title uppercase text-ink-3">
             {trialSpent ? "Free trial" : "Free GPU minutes"}
           </h2>
           {mins > 0 && wallet.trial_expires_at && (
@@ -168,7 +168,7 @@ function UsageCards({ wallet }: { wallet: WalletData | null }) {
           consumption, and a tick where the free tier ends. */}
       <div className="rounded-cf border border-rule bg-paper-2 p-6">
         <div className="flex items-baseline justify-between">
-          <h2 className="text-xs font-semibold uppercase tracking-wider text-ink-3">
+          <h2 className="cf-section-title uppercase text-ink-3">
             Storage
           </h2>
           <span className="text-xs font-medium text-blue/80">
@@ -530,7 +530,7 @@ export default function MyActivityPage() {
             <p className="cf-eyebrow text-blue text-xs font-semibold uppercase tracking-widest mb-2">
               Account
             </p>
-            <h1 className="cf-section-title text-3xl font-bold text-ink">
+            <h1 className="cf-section-title">
               My Activity
               {user?.full_name && (
                 <span className="text-ink-3 font-normal"> — {user.full_name}</span>
@@ -564,7 +564,7 @@ export default function MyActivityPage() {
               <path fillRule="evenodd" clipRule="evenodd" d="M10 1.5a1 1 0 0 1 .87.5l8 14A1 1 0 0 1 18 17.5H2a1 1 0 0 1-.87-1.5l8-14a1 1 0 0 1 .87-.5Zm0 5a.9.9 0 0 0-.9.98l.35 3.87a.55.55 0 0 0 1.1 0l.35-3.87A.9.9 0 0 0 10 6.5Zm0 7a1 1 0 1 0 0 2 1 1 0 0 0 0-2Z" />
             </svg>
             <div className="min-w-0">
-              <h2 className="text-lg font-semibold text-ink">Where your work is saved</h2>
+              <h2 className="cf-section-title">Where your work is saved</h2>
               <p className="mt-2 leading-7 text-ink-2">
                 Inside a session, save everything to{" "}
                 <span className="whitespace-nowrap rounded-md border border-amber-400/30 bg-amber-400/10 px-1.5 py-0.5 font-mono text-sm font-semibold text-amber-200">
@@ -620,7 +620,7 @@ export default function MyActivityPage() {
           /* B2B Org admin: balance card + link to org portal */
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div className="rounded-cf border border-blue/20 bg-blue/5 p-6">
-              <h2 className="text-xs font-semibold text-blue/60 uppercase tracking-wider mb-4">
+              <h2 className="cf-section-title text-blue/60 uppercase mb-4">
                 Org Wallet Balance
               </h2>
               <p className="text-3xl font-bold text-blue">
@@ -630,7 +630,7 @@ export default function MyActivityPage() {
             </div>
             <div className="rounded-cf border border-rule bg-paper-2 p-6 flex flex-col justify-between">
               <div>
-                <h2 className="text-xs font-semibold text-ink-3 uppercase tracking-wider mb-2">
+                <h2 className="cf-section-title text-ink-3 uppercase mb-2">
                   Manage Team &amp; Wallet
                 </h2>
                 <p className="text-sm text-ink-2">
@@ -654,7 +654,7 @@ export default function MyActivityPage() {
           /* B2C retail customer: balance + recharge coming soon */
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div className="rounded-cf border border-blue/20 bg-blue/5 p-6">
-              <h2 className="text-xs font-semibold text-blue/60 uppercase tracking-wider mb-4">
+              <h2 className="cf-section-title text-blue/60 uppercase mb-4">
                 Wallet Balance
               </h2>
               <p className="text-3xl font-bold text-blue">
@@ -688,7 +688,7 @@ export default function MyActivityPage() {
             </div>
             <div id="add-funds" className="rounded-cf border border-rule bg-paper-2 p-6 flex flex-col justify-between">
               <div>
-                <h2 className="text-xs font-semibold text-ink-3 uppercase tracking-wider mb-2">
+                <h2 className="cf-section-title text-ink-3 uppercase mb-2">
                   Add Funds
                 </h2>
                 {/* This card used to say "online recharge is coming soon" and
@@ -713,7 +713,7 @@ export default function MyActivityPage() {
         ) : (
           /* B2B engineer: balance only, managed by org admin */
           <div className="rounded-cf border border-rule bg-paper-2 p-6">
-            <h2 className="text-xs font-semibold text-ink-3 uppercase tracking-wider mb-4">
+            <h2 className="cf-section-title text-ink-3 uppercase mb-4">
               Wallet Balance
             </h2>
             <p className="text-3xl font-bold text-blue">
@@ -731,7 +731,7 @@ export default function MyActivityPage() {
         {/* Recent Sessions */}
         <div className="rounded-cf border border-rule bg-paper-2 overflow-hidden">
           <div className="px-6 py-4 border-b border-rule">
-            <h2 className="text-sm font-semibold text-ink">Recent Sessions</h2>
+            <h2 className="cf-section-title">Recent Sessions</h2>
           </div>
           {sessions.length === 0 ? (
             <p className="px-6 py-8 text-sm text-ink-3">No sessions yet.</p>
@@ -780,7 +780,7 @@ export default function MyActivityPage() {
         {/* Payment History */}
         <div className="rounded-cf border border-rule bg-paper-2 overflow-hidden">
           <div className="px-6 py-4 border-b border-rule">
-            <h2 className="text-sm font-semibold text-ink">Payment History</h2>
+            <h2 className="cf-section-title">Payment History</h2>
           </div>
           {payments.length === 0 ? (
             <p className="px-6 py-8 text-sm text-ink-3">No payments yet.</p>

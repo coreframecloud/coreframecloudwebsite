@@ -133,7 +133,7 @@ export default function AnsysCfdPage() {
             Bring your own licence
           </span>
         </div>
-        <h1 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">
+        <h1 className="cf-display mt-3">
           GPU workstations for CFD.<br className="hidden sm:block" />
           By the hour. Bring your own licence.
         </h1>
@@ -183,7 +183,7 @@ export default function AnsysCfdPage() {
 
         {/* Why GPU */}
         <div className="mt-14">
-          <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-ink-3 mb-5">
+          <h2 className="cf-section-title uppercase text-ink-3 mb-5">
             Why GPU matters for CFD
           </h2>
           <div className="grid gap-4 sm:grid-cols-2">
@@ -199,7 +199,7 @@ export default function AnsysCfdPage() {
 
         {/* How the hardware is chosen */}
         <div className="mt-12">
-          <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-ink-3 mb-5">
+          <h2 className="cf-section-title uppercase text-ink-3 mb-5">
             How we size the hardware
           </h2>
           <div className="rounded-[20px] border border-rule bg-paper-2 p-6">
@@ -235,7 +235,7 @@ export default function AnsysCfdPage() {
 
         {/* Use cases */}
         <div className="mt-12">
-          <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-ink-3 mb-5">Simulation types</h2>
+          <h2 className="cf-section-title uppercase text-ink-3 mb-5">Simulation types</h2>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {useCases.map((u) => (
               <div key={u.label} className="flex gap-3 rounded-[16px] border border-rule bg-paper-2 px-4 py-3">
@@ -282,7 +282,7 @@ export default function AnsysCfdPage() {
 
         {/* Pricing by element count */}
         <div className="mt-12">
-          <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-ink-3 mb-1">Pricing</h2>
+          <h2 className="cf-section-title uppercase text-ink-3 mb-1">Pricing</h2>
           <p className="mb-5 text-xs text-ink-3">
             Priced per simulation job based on mesh element count — the primary driver of GPU memory and compute time.
           </p>
@@ -326,7 +326,7 @@ export default function AnsysCfdPage() {
 
         {/* FAQ */}
         <div className="mt-12">
-          <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-ink-3 mb-5">FAQ</h2>
+          <h2 className="cf-section-title uppercase text-ink-3 mb-5">FAQ</h2>
           <div className="space-y-3">
             {jsonLd.mainEntity.map((q) => (
               <div key={q.name} className="rounded-[18px] border border-rule bg-paper-2 p-5">

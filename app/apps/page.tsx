@@ -25,7 +25,7 @@ function Group({ title, blurb, items }: { title: string; blurb: string; items: S
   const categories = Array.from(new Set(items.map((i) => i.category)));
   return (
     <section className="mt-16">
-      <h2 className="text-2xl font-semibold text-ink">{title}</h2>
+      <h2 className="cf-section-title">{title}</h2>
       <p className="mt-3 max-w-3xl text-ink-2 leading-7">{blurb}</p>
 
       {categories.map((category) => (
@@ -116,7 +116,7 @@ export default function AppsPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faq) }}
       />
 
-      <h1 className="text-3xl font-semibold text-ink sm:text-4xl">
+      <h1 className="cf-display">
         What&apos;s already installed
       </h1>
       <p className="mt-5 max-w-3xl text-lg leading-8 text-ink-2">
@@ -138,7 +138,7 @@ export default function AppsPage() {
       />
 
       <section className="mt-16 rounded-cf border border-amber-400/25 bg-amber-400/[0.06] p-6">
-        <h2 className="text-lg font-semibold text-amber-100">
+        <h2 className="cf-section-title text-amber-100">
           The workstation resets when your session ends
         </h2>
         <p className="mt-3 leading-7 text-amber-100/80">

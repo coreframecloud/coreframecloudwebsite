@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section>
-      <h2 className="text-xl font-semibold text-ink">{title}</h2>
+      <h2 className="cf-section-title">{title}</h2>
       <div className="mt-3 space-y-3">{children}</div>
     </section>
   );
@@ -25,7 +25,7 @@ export default function PrivacyPolicyPage() {
 
       <div className="relative mx-auto max-w-3xl px-6 py-20 sm:py-28">
         <div className="text-sm font-semibold uppercase tracking-widest text-blue">Legal</div>
-        <h1 className="mt-3 text-4xl font-bold tracking-tight">Privacy Policy</h1>
+        <h1 className="cf-display mt-3">Privacy Policy</h1>
         <p className="mt-2 text-sm text-ink-3">Effective from June 28, 2026</p>
 
         <div className="mt-10 space-y-10 text-base leading-8 text-ink-2">

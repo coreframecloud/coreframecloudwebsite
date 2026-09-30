@@ -133,7 +133,7 @@ export default async function D5Page() {
         <div className="text-sm font-medium uppercase tracking-[0.25em] text-blue">
           D5 Render
         </div>
-        <h1 className="mt-3 text-4xl font-semibold tracking-tight md:text-5xl">
+        <h1 className="cf-display mt-3">
           Run D5 Render on a rented RTX 5080.
         </h1>
 
@@ -146,7 +146,7 @@ export default async function D5Page() {
         </p>
 
         <section className="mt-14">
-          <h2 className="text-2xl font-semibold tracking-tight">
+          <h2 className="cf-section-title">
             The problem D5 users actually have
           </h2>
           <p className="mt-4 leading-8 text-ink-2">
@@ -169,7 +169,7 @@ export default async function D5Page() {
         </section>
 
         <section className="mt-14">
-          <h2 className="text-2xl font-semibold tracking-tight">The machine</h2>
+          <h2 className="cf-section-title">The machine</h2>
           <dl className="mt-6 divide-y divide-white/[0.08] rounded-cf border border-rule bg-paper-2">
             {SPECS.map(([k, v]) => (
               <div key={k} className="flex flex-col gap-1 px-5 py-4 sm:flex-row sm:gap-6">
@@ -190,7 +190,7 @@ export default async function D5Page() {
         </section>
 
         <section className="mt-14">
-          <h2 className="text-2xl font-semibold tracking-tight">
+          <h2 className="cf-section-title">
             How a session works
           </h2>
           <ol className="mt-6 space-y-5">
@@ -218,7 +218,7 @@ export default async function D5Page() {
         </section>
 
         <section className="mt-14">
-          <h2 className="text-2xl font-semibold tracking-tight">
+          <h2 className="cf-section-title">
             The revision that happens in the room
           </h2>
           <p className="mt-4 leading-8 text-ink-2">
@@ -239,7 +239,7 @@ export default async function D5Page() {
 
         {hourly ? (
           <section className="mt-14">
-            <h2 className="text-2xl font-semibold tracking-tight">What it costs</h2>
+            <h2 className="cf-section-title">What it costs</h2>
             <p className="mt-4 leading-8 text-ink-2">
               <strong className="font-semibold text-ink">{hourly}</strong>, with
               18% GST already included in that figure. {billingSentence(card)}
@@ -258,7 +258,7 @@ export default async function D5Page() {
         ) : null}
 
         <section className="mt-14">
-          <h2 className="text-2xl font-semibold tracking-tight">Questions</h2>
+          <h2 className="cf-section-title">Questions</h2>
           <div className="mt-6 space-y-7">
             {faqs.map((f) => (
               <div key={f.q}>
@@ -270,7 +270,7 @@ export default async function D5Page() {
         </section>
 
         <section className="mt-14 rounded-cf border border-blue/20 bg-blue/[0.05] p-6">
-          <h2 className="text-lg font-semibold">Test it with your own scene</h2>
+          <h2 className="cf-section-title">Test it with your own scene</h2>
           <p className="mt-3 leading-7 text-ink-2">
             Take the D5 project that ties up your machine all afternoon and run
             it on ours. That answers the question better than any number we could
@@ -285,7 +285,7 @@ export default async function D5Page() {
         </section>
 
         <nav className="mt-14 border-t border-rule pt-8">
-          <h2 className="text-sm font-semibold uppercase tracking-widest text-ink-3">
+          <h2 className="cf-section-title uppercase text-ink-3">
             Related
           </h2>
           <ul className="mt-4 space-y-2">

@@ -71,7 +71,7 @@ export default function RefundPolicyPage() {
         <div className="text-sm font-medium uppercase tracking-[0.25em] text-blue">
           Legal
         </div>
-        <h1 className="mt-4 text-4xl font-semibold tracking-tight md:text-6xl">
+        <h1 className="cf-display mt-4">
           Refund Policy
         </h1>
         <p className="mt-4 text-sm font-medium uppercase tracking-[0.18em] text-ink-2">
@@ -94,7 +94,7 @@ export default function RefundPolicyPage() {
         <div className="mt-10 space-y-10 text-base leading-8 text-ink-2">
           {policySections.map((section) => (
             <section key={section.title}>
-              <h2 className="text-xl font-semibold text-ink">
+              <h2 className="cf-section-title">
                 {section.title}
               </h2>
               <p className="mt-3">{section.body}</p>
@@ -102,7 +102,7 @@ export default function RefundPolicyPage() {
           ))}
 
           <section>
-            <h2 className="text-xl font-semibold text-ink">How to reach us</h2>
+            <h2 className="cf-section-title">How to reach us</h2>
             <p className="mt-3">
               Email us and we respond within two business days.
             </p>

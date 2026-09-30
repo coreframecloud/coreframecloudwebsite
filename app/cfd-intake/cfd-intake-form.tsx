@@ -437,7 +437,7 @@ export default function CfdIntakeForm() {
         {/* Header */}
         <div className="text-center mb-8">
           <div className="mb-4 text-5xl">🚀</div>
-          <h2 className="text-3xl font-bold tracking-tight">Job submitted!</h2>
+          <h2 className="cf-section-title">Job submitted!</h2>
           <p className="mt-3 max-w-md mx-auto text-ink-2 text-sm leading-6">
             Upload your CAD file below and we&apos;ll spin up the solver — results delivered as PDF + data files.
           </p>

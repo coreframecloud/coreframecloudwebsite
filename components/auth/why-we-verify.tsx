@@ -45,7 +45,7 @@ function Row({
 export function WhyWeVerify({ trialMinutes }: { trialMinutes: number | null }) {
   return (
     <section className="mt-8 rounded-[1.6rem] border border-rule bg-paper-2 p-6">
-      <h2 className="text-sm font-semibold tracking-tight text-ink">
+      <h2 className="cf-section-title">
         Why we ask for an ID check
       </h2>
       <p className="mt-2 text-sm leading-6 text-ink-2">

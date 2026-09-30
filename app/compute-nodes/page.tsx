@@ -60,7 +60,7 @@ export default async function ComputeNodesPage() {
           <div className="text-sm font-medium uppercase tracking-[0.25em] text-blue">
             Compute Nodes
           </div>
-          <h1 className="mt-3 text-4xl font-semibold tracking-tight md:text-6xl">
+          <h1 className="cf-display mt-3">
             One node. One GPU. No configuration to get wrong.
           </h1>
           <p className="mt-5 max-w-2xl text-base leading-8 text-ink-2 md:text-lg">
@@ -75,7 +75,7 @@ export default async function ComputeNodesPage() {
           <div className="text-sm uppercase tracking-[0.25em] text-blue">
             3D Rendering / Hourly
           </div>
-          <h2 className="mt-3 text-3xl font-semibold md:text-4xl">
+          <h2 className="cf-section-title mt-3">
             RTX 5080 for rendering and visualization.
           </h2>
 
@@ -173,7 +173,7 @@ export default async function ComputeNodesPage() {
           <div className="text-sm uppercase tracking-[0.25em] text-blue">
             What it is for
           </div>
-          <h2 className="mt-3 text-3xl font-semibold md:text-4xl">
+          <h2 className="cf-section-title mt-3">
             Built around design and rendering workflows.
           </h2>
 

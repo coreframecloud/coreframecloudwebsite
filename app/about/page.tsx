@@ -195,7 +195,7 @@ export default async function AboutPage() {
         <div className="text-sm font-medium uppercase tracking-[0.25em] text-blue">
           About
         </div>
-        <h1 className="mt-3 text-4xl font-semibold tracking-tight md:text-5xl">
+        <h1 className="cf-display mt-3">
           What is Coreframe Cloud?
         </h1>
 
@@ -221,7 +221,7 @@ export default async function AboutPage() {
         </p>
 
         <section className="mt-14">
-          <h2 className="text-2xl font-semibold tracking-tight">The company</h2>
+          <h2 className="cf-section-title">The company</h2>
           <dl className="mt-6 divide-y divide-white/[0.08] rounded-cf border border-rule bg-paper-2">
             {COMPANY.map(([k, v]) => (
               <div key={k} className="flex flex-col gap-1 px-5 py-4 sm:flex-row sm:gap-6">
@@ -233,7 +233,7 @@ export default async function AboutPage() {
         </section>
 
         <section className="mt-14">
-          <h2 className="text-2xl font-semibold tracking-tight">What the machine is</h2>
+          <h2 className="cf-section-title">What the machine is</h2>
           <p className="mt-4 leading-8 text-ink-2">
             One node, one GPU, handed to one customer at a time. There is no
             shared graphics card and no virtualised slice of one.
@@ -259,7 +259,7 @@ export default async function AboutPage() {
         </section>
 
         <section className="mt-14">
-          <h2 className="text-2xl font-semibold tracking-tight">
+          <h2 className="cf-section-title">
             The four problems this solves
           </h2>
 
@@ -319,7 +319,7 @@ export default async function AboutPage() {
         </section>
 
         <section className="mt-14">
-          <h2 className="text-2xl font-semibold tracking-tight">What it is not</h2>
+          <h2 className="cf-section-title">What it is not</h2>
           <ul className="mt-6 space-y-4">
             <li className="flex gap-3 leading-8 text-ink-2">
               <span className="mt-3.5 h-1.5 w-1.5 shrink-0 rounded-full bg-blue/70" />
@@ -349,7 +349,7 @@ export default async function AboutPage() {
         </section>
 
         <section className="mt-14">
-          <h2 className="text-2xl font-semibold tracking-tight">
+          <h2 className="cf-section-title">
             Companies we are not
           </h2>
           <p className="mt-4 leading-8 text-ink-2">
@@ -371,7 +371,7 @@ export default async function AboutPage() {
 
         {hourly ? (
           <section className="mt-14">
-            <h2 className="text-2xl font-semibold tracking-tight">What it costs</h2>
+            <h2 className="cf-section-title">What it costs</h2>
             <p className="mt-4 leading-8 text-ink-2">
               Ad-hoc sessions are{" "}
               <strong className="font-semibold text-ink">{hourly}</strong>, with
@@ -394,7 +394,7 @@ export default async function AboutPage() {
         ) : null}
 
         <section className="mt-14">
-          <h2 className="text-2xl font-semibold tracking-tight">Questions</h2>
+          <h2 className="cf-section-title">Questions</h2>
           <div className="mt-6 space-y-7">
             {faqs.map((f) => (
               <div key={f.q}>
@@ -406,7 +406,7 @@ export default async function AboutPage() {
         </section>
 
         <section className="mt-14 rounded-cf border border-blue/20 bg-blue/[0.05] p-6">
-          <h2 className="text-lg font-semibold">Try it on your own file</h2>
+          <h2 className="cf-section-title">Try it on your own file</h2>
           <p className="mt-3 leading-7 text-ink-2">
             We will not tell you how fast your scenes will render — that depends
             entirely on your scenes. Take the heaviest file you have and run it

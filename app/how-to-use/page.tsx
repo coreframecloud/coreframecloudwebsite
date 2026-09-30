@@ -118,7 +118,7 @@ export default function HowToUsePage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(howTo) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
 
-      <h1 className="text-3xl font-semibold text-ink sm:text-4xl">How to use Coreframe</h1>
+      <h1 className="cf-display">How to use Coreframe</h1>
       <p className="mt-5 text-lg leading-8 text-ink-2">
         Coreframe rents Windows GPU workstations by the minute, hosted in India. You stream a
         real RTX desktop to the computer you already own, work on it as normal, and pay only for
@@ -126,7 +126,7 @@ export default function HowToUsePage() {
       </p>
 
       <section className="mt-14">
-        <h2 className="text-2xl font-semibold text-ink">Getting started</h2>
+        <h2 className="cf-section-title">Getting started</h2>
         <ol className="mt-6 space-y-6">
           {STEPS.map((step) => (
             <li key={step.title} className="rounded-cf border border-rule bg-paper-2 p-5">
@@ -138,7 +138,7 @@ export default function HowToUsePage() {
       </section>
 
       <section id="saving-your-work" className="mt-14 scroll-mt-24 rounded-cf border border-blue/20 bg-blue/[0.05] p-6">
-        <h2 className="text-xl font-semibold text-ink">The one thing to know before you start</h2>
+        <h2 className="cf-section-title">The one thing to know before you start</h2>
         <p className="mt-3 leading-7 text-ink-2">
           The workstation resets between sessions. Software you install and anything left on
           the Desktop, in Documents or on C: is wiped when you finish. Only drive{" "}
@@ -153,7 +153,7 @@ export default function HowToUsePage() {
       </section>
 
       <section className="mt-14">
-        <h2 className="text-2xl font-semibold text-ink">Common questions</h2>
+        <h2 className="cf-section-title">Common questions</h2>
         <div className="mt-6 space-y-6">
           {FAQS.map((faq) => (
             <div key={faq.q}>

@@ -160,7 +160,7 @@ export default async function ArchitectsPage() {
         <div className="text-sm font-medium uppercase tracking-[0.25em] text-blue">
           Cloud Rendering · Architecture Studios · India
         </div>
-        <h1 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">
+        <h1 className="cf-display mt-3">
           Cloud GPU for Architecture Studios.<br className="hidden sm:block" /> RTX 5080. Hosted in India.
         </h1>
         <p className="mt-4 max-w-2xl text-sm leading-7 text-ink-2">
@@ -180,7 +180,7 @@ export default async function ArchitectsPage() {
 
         {/* Use cases */}
         <div className="mt-12">
-          <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-ink-3 mb-5">What architects use it for</h2>
+          <h2 className="cf-section-title uppercase text-ink-3 mb-5">What architects use it for</h2>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {useCases.map((u) => (
               <div key={u.title} className="rounded-[18px] border border-rule bg-paper-2 p-5">
@@ -194,7 +194,7 @@ export default async function ArchitectsPage() {
 
         {/* Workflow */}
         <div className="mt-12">
-          <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-ink-3 mb-5">How it works</h2>
+          <h2 className="cf-section-title uppercase text-ink-3 mb-5">How it works</h2>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {workflow.map((s) => (
               <div key={s.n} className="rounded-[18px] border border-rule bg-paper-2 p-5">
@@ -208,7 +208,7 @@ export default async function ArchitectsPage() {
 
         {/* Plans */}
         <div className="mt-12">
-          <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-ink-3 mb-5">Plans</h2>
+          <h2 className="cf-section-title uppercase text-ink-3 mb-5">Plans</h2>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
             {plans.map((p) => (
               <div key={p.name} className={`relative rounded-[18px] border p-5 ${p.highlight ? "border-blue/25 bg-blue/[0.04]" : "border-rule bg-paper-2"}`}>

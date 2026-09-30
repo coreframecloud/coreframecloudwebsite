@@ -79,7 +79,7 @@ export default async function EnscapePage() {
         <div className="text-sm font-medium uppercase tracking-[0.25em] text-blue">
           Enscape · Cloud GPU · India
         </div>
-        <h1 className="mt-3 text-4xl font-semibold tracking-tight md:text-5xl">
+        <h1 className="cf-display mt-3">
           Run Enscape on RTX 5080.<br className="hidden md:block" /> Ray tracing. No hardware.
         </h1>
         <p className="mt-5 max-w-2xl text-base leading-8 text-ink-2">
@@ -113,7 +113,7 @@ export default async function EnscapePage() {
 
         {/* Specs */}
         <div className="mt-14">
-          <h2 className="text-xs font-semibold uppercase tracking-[0.25em] text-ink-3">Workstation specs</h2>
+          <h2 className="cf-section-title uppercase text-ink-3">Workstation specs</h2>
           <div className="mt-4 overflow-hidden rounded-[20px] border border-rule bg-paper-2">
             {specs.map((s, i) => (
               <div key={s.label} className={`flex items-center justify-between px-6 py-4 ${i < specs.length - 1 ? "border-b border-rule" : ""}`}>

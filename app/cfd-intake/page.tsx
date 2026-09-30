@@ -27,7 +27,7 @@ export default function CfdIntakePage() {
             <span className="h-1.5 w-1.5 rounded-full bg-blue-400 animate-pulse" />
             CFD Job Intake
           </div>
-          <h1 className="text-4xl font-bold tracking-tight md:text-5xl">
+          <h1 className="cf-display">
             Submit your CFD analysis.
           </h1>
           <p className="mt-4 max-w-2xl text-base leading-7 text-ink-2 md:text-lg">

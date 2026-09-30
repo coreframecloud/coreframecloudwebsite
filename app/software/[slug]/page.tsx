@@ -78,18 +78,18 @@ export default async function SoftwareLandingPage({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema(page)) }}
       />
 
-      <h1 className="text-3xl font-semibold text-ink sm:text-4xl">{page.title}</h1>
+      <h1 className="cf-display">{page.title}</h1>
       <p className="mt-6 text-lg leading-8 text-ink-2">{page.intro}</p>
 
       <section className="mt-12 rounded-cf border border-rule bg-paper-2 p-6">
-        <h2 className="text-sm font-semibold uppercase tracking-widest text-ink-3">
+        <h2 className="cf-section-title uppercase text-ink-3">
           The problem
         </h2>
         <p className="mt-3 leading-7 text-ink-2">{page.problem}</p>
       </section>
 
       <section className="mt-12">
-        <h2 className="text-2xl font-semibold text-ink">Why rent a GPU for this</h2>
+        <h2 className="cf-section-title">Why rent a GPU for this</h2>
         <ul className="mt-5 space-y-3">
           {page.why.map((point) => (
             <li key={point} className="flex gap-3 leading-7 text-ink-2">
@@ -104,7 +104,7 @@ export default async function SoftwareLandingPage({
         <div className="mt-12 space-y-12">
           {page.sections.map((section) => (
             <section key={section.h2}>
-              <h2 className="text-2xl font-semibold text-ink">{section.h2}</h2>
+              <h2 className="cf-section-title">{section.h2}</h2>
               {section.body.map((para) => (
                 <p key={para} className="mt-4 leading-8 text-ink-2">
                   {para}
@@ -116,7 +116,7 @@ export default async function SoftwareLandingPage({
       ) : null}
 
       <section className="mt-12 rounded-cf border border-blue/20 bg-blue/[0.05] p-6">
-        <h2 className="text-lg font-semibold text-ink">Licensing</h2>
+        <h2 className="cf-section-title">Licensing</h2>
         <p className="mt-3 leading-7 text-ink-2">{page.licence}</p>
         <Link
           href="/apps"
@@ -127,7 +127,7 @@ export default async function SoftwareLandingPage({
       </section>
 
       <section className="mt-12">
-        <h2 className="text-2xl font-semibold text-ink">Questions</h2>
+        <h2 className="cf-section-title">Questions</h2>
         <div className="mt-6 space-y-6">
           {page.faqs.map((faq) => (
             <div key={faq.q}>
@@ -152,7 +152,7 @@ export default async function SoftwareLandingPage({
 
       {related.length > 0 && (
         <section className="mt-16 border-t border-rule pt-8">
-          <h2 className="text-sm font-semibold uppercase tracking-widest text-ink-3">
+          <h2 className="cf-section-title uppercase text-ink-3">
             Related
           </h2>
           <ul className="mt-4 space-y-2">

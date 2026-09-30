@@ -375,7 +375,7 @@ export default function OrgAdminPage() {
         <div className="mx-auto max-w-7xl flex items-center justify-between gap-4 flex-wrap">
           <div>
             <p className="text-[10px] text-ink-3 uppercase tracking-widest mb-0.5">Org Admin Portal</p>
-            <h1 className="text-lg font-semibold">{orgInfo?.org_name}</h1>
+            <h1 className="cf-display">{orgInfo?.org_name}</h1>
           </div>
           <div className="flex items-center gap-4 flex-wrap">
             {orgInfo?.email_domain && (
@@ -534,7 +534,7 @@ export default function OrgAdminPage() {
         {showTopup && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/50 backdrop-blur-sm px-4">
             <div className="w-full max-w-sm rounded-cf border border-rule bg-paper-2 p-6 shadow-2xl">
-              <h2 className="text-base font-semibold mb-1">Record a bank transfer</h2>
+              <h2 className="cf-section-title mb-1">Record a bank transfer</h2>
               {/* States plainly that this is a claim, not a payment. A customer
                   who thinks the money is available and then has a session
                   refused concludes the platform is broken. */}
@@ -617,7 +617,7 @@ export default function OrgAdminPage() {
         {showInvite && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/50 backdrop-blur-sm px-4">
             <div className="w-full max-w-sm rounded-cf border border-rule bg-paper-2 p-6 shadow-2xl">
-              <h2 className="text-base font-semibold mb-1">Invite Team Member</h2>
+              <h2 className="cf-section-title mb-1">Invite Team Member</h2>
               {orgInfo?.email_domain && (
                 <p className="text-xs text-ink-3 mb-5">
                   Only <span className="text-blue">@{orgInfo.email_domain}</span> addresses can be invited.
@@ -667,7 +667,7 @@ export default function OrgAdminPage() {
         {pending.length > 0 && (
           <div className="mb-6 rounded-cf border border-amber-400/25 bg-amber-400/[0.06] overflow-hidden">
             <div className="px-5 py-3 border-b border-amber-400/20">
-              <h2 className="text-sm font-semibold text-amber-200">
+              <h2 className="cf-section-title text-amber-200">
                 Waiting for your approval ({pending.length})
               </h2>
               <p className="mt-1 text-xs text-amber-200/70">
@@ -729,7 +729,7 @@ export default function OrgAdminPage() {
         {/* Team table */}
         <div className="rounded-cf border border-rule bg-paper-2 overflow-hidden">
           <div className="flex items-center justify-between gap-3 px-5 py-3 border-b border-rule flex-wrap">
-            <h2 className="text-sm font-semibold">Team Members</h2>
+            <h2 className="cf-section-title">Team Members</h2>
             <div className="flex items-center gap-2">
               <input
                 type="text"

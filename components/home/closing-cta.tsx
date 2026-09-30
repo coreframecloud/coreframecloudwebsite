@@ -19,7 +19,7 @@ export function ClosingCta({ trial }: { trial: TrialTerms | null }) {
       <div className="rounded-3xl border border-blue/20 bg-[radial-gradient(ellipse_70%_120%_at_50%_0%,rgba(34,211,238,0.13),transparent_70%)] px-6 py-16 text-center sm:px-10">
         <p className="text-xs font-bold uppercase tracking-[0.22em] text-blue">Start today</p>
 
-        <h2 className="mx-auto mt-4 max-w-3xl text-3xl font-semibold leading-[1.12] tracking-[-0.025em] text-ink sm:text-4xl lg:text-5xl">
+        <h2 className="cf-section-title mx-auto mt-4 max-w-3xl">
           {minutes ? (
             <>
               {minutes} minutes on an RTX 5080.

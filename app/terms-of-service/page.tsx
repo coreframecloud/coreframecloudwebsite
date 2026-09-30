@@ -46,7 +46,7 @@ export default function TermsOfServicePage() {
         <div className="text-sm font-medium uppercase tracking-[0.25em] text-blue">
           Legal
         </div>
-        <h1 className="mt-4 text-4xl font-semibold tracking-tight md:text-6xl">
+        <h1 className="cf-display mt-4">
           Terms of Service
         </h1>
         <p className="mt-4 text-sm font-medium uppercase tracking-[0.18em] text-ink-2">
@@ -62,7 +62,7 @@ export default function TermsOfServicePage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-ink">
+            <h2 className="cf-section-title">
               Permitted Uses
             </h2>
             <ul className="mt-4 list-disc space-y-2 pl-6">
@@ -73,7 +73,7 @@ export default function TermsOfServicePage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-ink">
+            <h2 className="cf-section-title">
               Prohibited Uses
             </h2>
             <ul className="mt-4 list-disc space-y-2 pl-6">
@@ -84,7 +84,7 @@ export default function TermsOfServicePage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-ink">
+            <h2 className="cf-section-title">
               Service Availability
             </h2>
             <p className="mt-3">
@@ -94,7 +94,7 @@ export default function TermsOfServicePage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-ink">
+            <h2 className="cf-section-title">
               Data Responsibility
             </h2>
             <p className="mt-3">
@@ -104,7 +104,7 @@ export default function TermsOfServicePage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-ink">
+            <h2 className="cf-section-title">
               Limitation of Liability
             </h2>
             <p className="mt-3">
@@ -114,7 +114,7 @@ export default function TermsOfServicePage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-ink">
+            <h2 className="cf-section-title">
               Account Suspension
             </h2>
             <p className="mt-3">
@@ -124,7 +124,7 @@ export default function TermsOfServicePage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-ink">Contact</h2>
+            <h2 className="cf-section-title">Contact</h2>
             <Link
               href="mailto:admin@coreframecloud.com"
               className="mt-3 inline-flex text-blue transition hover:text-blue"

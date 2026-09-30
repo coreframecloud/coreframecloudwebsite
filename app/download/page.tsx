@@ -73,7 +73,7 @@ export default function DownloadPage() {
             </svg>
           </div>
           <div>
-            <h1 className="text-xl font-semibold text-ink">Coreframe Cloud Connect</h1>
+            <h1 className="cf-display">Coreframe Cloud Connect</h1>
             <p className="text-sm text-ink-3">Windows desktop client</p>
           </div>
         </div>

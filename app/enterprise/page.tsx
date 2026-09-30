@@ -110,7 +110,7 @@ export default async function EnterprisePage() {
           <div className="text-sm font-medium uppercase tracking-[0.25em] text-blue">
             Committed Monthly Plans
           </div>
-          <h1 className="mt-3 text-4xl font-semibold tracking-tight md:text-5xl">
+          <h1 className="cf-display mt-3">
             Render more. Pay less.
           </h1>
           <p className="mt-5 max-w-xl text-base leading-8 text-ink-2">
@@ -164,7 +164,7 @@ export default async function EnterprisePage() {
              It says so and offers the human channel, rather than rendering an
              empty grid or falling back to numbers nobody has verified. */
           <div className="mt-12 rounded-[24px] border border-rule bg-paper-2 px-8 py-10 text-center">
-            <h2 className="text-lg font-semibold text-ink">Plan pricing is briefly unavailable</h2>
+            <h2 className="cf-section-title">Plan pricing is briefly unavailable</h2>
             <p className="mx-auto mt-3 max-w-xl text-sm leading-7 text-ink-2">
               We publish plan figures from one source so the page can never quote a
               number we do not charge, and that source is not answering right now.
@@ -302,7 +302,7 @@ export default async function EnterprisePage() {
         {/* Storage add-on — standalone, purchasable by anyone */}
         <div className="mt-8 rounded-[20px] border border-rule bg-paper-2 px-8 py-7 md:flex md:items-center md:justify-between md:gap-8">
           <div>
-            <h2 className="text-base font-semibold text-ink">Persistent NAS storage — add-on</h2>
+            <h2 className="cf-section-title">Persistent NAS storage — add-on</h2>
             <p className="mt-3 max-w-2xl text-sm leading-7 text-ink-2">
               Extra storage beyond the capacity included in your plan, or storage on its own without a
               committed plan — anyone can buy it, including ad-hoc customers. Files are retained
@@ -320,7 +320,7 @@ export default async function EnterprisePage() {
 
         {/* Ad-hoc comparison */}
         <div className="mt-6 rounded-[20px] border border-rule bg-paper-2 px-8 py-7">
-          <h2 className="text-base font-semibold text-ink">Not ready to commit?</h2>
+          <h2 className="cf-section-title">Not ready to commit?</h2>
           {/* This paragraph said "billed per full hour" until 18 Aug 2026. The
               API has always charged by the minute, so the page was quoting the
               customer a worse deal than the platform gives them. The sentence
@@ -337,7 +337,7 @@ export default async function EnterprisePage() {
 
         {/* BYOL + licensing note */}
         <div className="mt-6 rounded-[20px] border border-rule bg-paper-2 px-8 py-7">
-          <h2 className="text-base font-semibold text-ink">Software licences — BYOL</h2>
+          <h2 className="cf-section-title">Software licences — BYOL</h2>
           <p className="mt-3 text-sm leading-7 text-ink-2">
             All software is <span className="text-ink font-medium">Bring Your Own Licence (BYOL)</span>.
             You install your existing licence on the workstation and it activates against your own seat —

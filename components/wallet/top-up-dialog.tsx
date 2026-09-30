@@ -240,7 +240,7 @@ export default function TopUpDialog({
         ) : (
           <>
             <div className="flex items-start justify-between">
-              <h2 className="text-lg font-semibold text-ink">Add funds</h2>
+              <h2 className="cf-section-title">Add funds</h2>
               <button onClick={onClose} aria-label="Close" className="text-ink-3 hover:text-ink">
                 ✕
               </button>

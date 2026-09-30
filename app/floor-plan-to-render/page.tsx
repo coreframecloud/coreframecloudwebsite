@@ -116,7 +116,7 @@ export default function Page() {
         <p className="text-xs font-bold uppercase tracking-[0.22em] text-blue">
           Coreframe Studio
         </p>
-        <h1 className="mt-5 max-w-3xl text-4xl font-semibold leading-[1.06] tracking-[-0.03em] sm:text-5xl lg:text-6xl">
+        <h1 className="cf-display mt-5 max-w-3xl">
           Turn a floor plan into the room.
         </h1>
         <p className="mt-6 max-w-2xl text-base leading-7 text-ink sm:text-lg sm:leading-8">
@@ -259,7 +259,7 @@ export default function Page() {
 
         <section className="mt-20 flex flex-wrap items-center justify-between gap-6 rounded-cf border border-rule bg-paper-2 p-8">
           <div className="max-w-md">
-            <h2 className="text-2xl font-semibold tracking-[-0.025em]">Start with one room.</h2>
+            <h2 className="cf-section-title">Start with one room.</h2>
             <p className="mt-3 text-sm leading-6 text-ink-2">
               ₹99, one drawing, one image. Need a machine to drive your own
               software instead?{" "}

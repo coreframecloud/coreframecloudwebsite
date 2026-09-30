@@ -59,7 +59,7 @@ export default function SolutionsPage() {
           <div className="text-sm font-medium uppercase tracking-[0.25em] text-blue">
             Solutions
           </div>
-          <h1 className="mt-3 text-4xl font-semibold tracking-tight md:text-6xl">
+          <h1 className="cf-display mt-3">
             GPU infrastructure designed around how teams actually work.
           </h1>
           <p className="mt-5 max-w-2xl text-base leading-8 text-ink-2 md:text-lg">
@@ -79,7 +79,7 @@ export default function SolutionsPage() {
                 <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-cf bg-blue/10 ring-1 ring-blue/20">
                   <Icon className="h-5 w-5 text-blue" />
                 </div>
-                <h2 className="text-xl font-semibold">{title}</h2>
+                <h2 className="cf-section-title">{title}</h2>
                 <p className="mt-3 text-sm leading-7 text-ink-2">{text}</p>
               </CardContent>
             </Card>
@@ -91,7 +91,7 @@ export default function SolutionsPage() {
             <div className="text-sm uppercase tracking-[0.25em] text-blue">
               Infrastructure Standard
             </div>
-            <h2 className="mt-3 text-3xl font-semibold md:text-4xl">
+            <h2 className="cf-section-title mt-3">
               Built for stronger security, controlled access, and reliable operations.
             </h2>
             <div className="mt-6 grid gap-3">
@@ -112,7 +112,7 @@ export default function SolutionsPage() {
             <div className="text-sm uppercase tracking-[0.25em] text-blue">
               Next step
             </div>
-            <h2 className="mt-3 text-3xl font-semibold md:text-4xl">
+            <h2 className="cf-section-title mt-3">
               Start with a pilot, then scale based on usage.
             </h2>
             <p className="mt-4 text-base leading-8 text-ink/85">

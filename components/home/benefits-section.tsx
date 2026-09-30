@@ -145,7 +145,7 @@ function Row({
     <div className="grid items-center gap-10 border-t border-rule py-14 lg:grid-cols-2 lg:gap-14">
       <div className={flip ? "lg:order-2" : undefined}>
         <p className="text-xs font-bold uppercase tracking-[0.22em] text-blue">{eyebrow}</p>
-        <h2 className="mt-4 text-3xl font-semibold leading-[1.12] tracking-[-0.025em] text-ink sm:text-4xl">
+        <h2 className="cf-section-title mt-4">
           {title}
         </h2>
         <p className="mt-4 text-base leading-7 text-ink-2">{body}</p>

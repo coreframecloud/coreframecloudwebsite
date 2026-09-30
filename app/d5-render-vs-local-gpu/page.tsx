@@ -82,7 +82,7 @@ export default async function ComparisonPage() {
         <div className="text-sm font-medium uppercase tracking-[0.25em] text-blue">
           Comparison
         </div>
-        <h1 className="mt-3 text-4xl font-semibold tracking-tight md:text-5xl">
+        <h1 className="cf-display mt-3">
           Renting a cloud GPU vs buying a workstation
         </h1>
 
@@ -94,7 +94,7 @@ export default async function ComparisonPage() {
         </p>
 
         <section className="mt-14">
-          <h2 className="text-2xl font-semibold tracking-tight">
+          <h2 className="cf-section-title">
             What owning actually costs
           </h2>
           <p className="mt-4 leading-8 text-ink-2">
@@ -119,7 +119,7 @@ export default async function ComparisonPage() {
 
         {hourly && breakEvenHours != null ? (
           <section className="mt-14 rounded-cf border border-blue/20 bg-blue/[0.05] p-6">
-            <h2 className="text-xl font-semibold tracking-tight">
+            <h2 className="cf-section-title">
               The break-even, in hours
             </h2>
             <p className="mt-4 leading-8 text-ink-2">
@@ -151,7 +151,7 @@ export default async function ComparisonPage() {
 
         <div className="mt-14 grid gap-6 md:grid-cols-2">
           <section className="rounded-cf border border-rule bg-paper-2 p-6">
-            <h2 className="text-lg font-semibold">Renting is the better call when</h2>
+            <h2 className="cf-section-title">Renting is the better call when</h2>
             <ul className="mt-4 space-y-3">
               {rentWins.map((p) => (
                 <li key={p} className="flex gap-3 text-sm leading-7 text-ink-2">
@@ -163,7 +163,7 @@ export default async function ComparisonPage() {
           </section>
 
           <section className="rounded-cf border border-rule bg-paper-2 p-6">
-            <h2 className="text-lg font-semibold">Buying is the better call when</h2>
+            <h2 className="cf-section-title">Buying is the better call when</h2>
             <ul className="mt-4 space-y-3">
               {buyWins.map((p) => (
                 <li key={p} className="flex gap-3 text-sm leading-7 text-ink-2">
@@ -176,7 +176,7 @@ export default async function ComparisonPage() {
         </div>
 
         <section className="mt-14">
-          <h2 className="text-2xl font-semibold tracking-tight">
+          <h2 className="cf-section-title">
             The comparison that is not about money
           </h2>
           <p className="mt-4 leading-8 text-ink-2">
@@ -197,7 +197,7 @@ export default async function ComparisonPage() {
         </section>
 
         <section className="mt-14">
-          <h2 className="text-2xl font-semibold tracking-tight">
+          <h2 className="cf-section-title">
             What renting gives up
           </h2>
           <p className="mt-4 leading-8 text-ink-2">
@@ -214,7 +214,7 @@ export default async function ComparisonPage() {
         </section>
 
         <section className="mt-14 rounded-cf border border-blue/20 bg-blue/[0.05] p-6">
-          <h2 className="text-lg font-semibold">Settle it with your own file</h2>
+          <h2 className="cf-section-title">Settle it with your own file</h2>
           <p className="mt-3 leading-7 text-ink-2">
             There are free minutes on the site and no card required. Open the
             project that ties up your machine all afternoon and see how a rented
@@ -229,7 +229,7 @@ export default async function ComparisonPage() {
         </section>
 
         <nav className="mt-14 border-t border-rule pt-8">
-          <h2 className="text-sm font-semibold uppercase tracking-widest text-ink-3">
+          <h2 className="cf-section-title uppercase text-ink-3">
             Related
           </h2>
           <ul className="mt-4 space-y-2">

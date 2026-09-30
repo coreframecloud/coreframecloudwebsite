@@ -19,7 +19,7 @@ export default function RequestDemoPage() {
           <div className="text-sm font-medium uppercase tracking-[0.25em] text-blue">
             Reserve Access
           </div>
-          <h1 className="mt-3 text-4xl font-semibold tracking-tight md:text-6xl">
+          <h1 className="cf-display mt-3">
             Submit your intake request.
           </h1>
           <p className="mt-5 max-w-2xl text-base leading-8 text-ink-2 md:text-lg">
