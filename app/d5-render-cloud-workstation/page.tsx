@@ -158,7 +158,7 @@ export default async function D5Page() {
           </p>
           <p className="mt-4 leading-8 text-ink-2">
             The usual answer is to buy a workstation. A machine that renders
-            comfortably lands at roughly ₹5,00,000 in India, gets bought once,
+            comfortably lands at roughly ₹6,00,000 in India, gets bought once,
             and sits idle most of the week — because visualisation work is
             bursty. You need serious hardware for the four days before a client
             presentation and almost none for the three weeks after it.

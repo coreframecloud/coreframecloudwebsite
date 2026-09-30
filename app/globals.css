@@ -320,10 +320,14 @@ body {
 .cf-strike-old::after {
   content: "";
   position: absolute;
-  left: 0;
-  right: 0;
+  left: -2px;
+  right: -2px;
   top: 52%;
-  height: 1.5px;
+  /* 3px, not 1.5. At 1.5px against grey text the line read as a rendering
+     artefact rather than as a deletion — the one thing this block exists to
+     communicate. It has to look like someone drew through it. */
+  height: 3px;
+  border-radius: 2px;
   background: var(--color-blue);
   transform: scaleX(0);
   transform-origin: left center;
@@ -333,6 +337,19 @@ body {
   transform: scaleX(1);
   transition: transform 520ms cubic-bezier(0.22, 0.61, 0.36, 1);
   transition-delay: var(--cf-strike-delay, 0ms);
+}
+
+/* The old way starts as a real statement and RECEDES once it is cancelled.
+   Striking grey text that was already grey changes almost nothing; the drop
+   in weight is what makes the answer beneath it become the live line. */
+.cf-strike-grid .cf-strike-old {
+  opacity: 1;
+}
+
+.cf-strike-grid.is-struck .cf-strike-old {
+  opacity: 0.55;
+  transition: opacity 420ms ease;
+  transition-delay: calc(var(--cf-strike-delay, 0ms) + 260ms);
 }
 
 .cf-strike-grid.is-struck .cf-strike-now {

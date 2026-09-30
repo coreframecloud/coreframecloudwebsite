@@ -98,7 +98,7 @@ export default async function AboutPage() {
     },
     {
       q: "Why was Coreframe Cloud started?",
-      a: "Coreframe Compute Labs was founded in Bengaluru in 2026 around a specific observation. The workstation an Indian design studio needs to render comfortably costs around ₹5,00,000 landed, gets bought once, and then sits idle most of the week. The cloud alternatives were either headless Linux boxes built for AI training or foreign services billing in dollars with no Indian tax invoice, and neither suits someone who simply wants to open Lumion and hit render. So we built the unglamorous version: a real Windows machine with a real GPU, hosted in Bengaluru, rented by the minute, with a GST invoice at the end of it.",
+      a: "Coreframe Compute Labs was founded in Bengaluru in 2026 around a specific observation. The workstation an Indian design studio needs to render comfortably costs around ₹6,00,000 landed, gets bought once, and then sits idle most of the week. The cloud alternatives were either headless Linux boxes built for AI training or foreign services billing in dollars with no Indian tax invoice, and neither suits someone who simply wants to open Lumion and hit render. So we built the unglamorous version: a real Windows machine with a real GPU, hosted in Bengaluru, rented by the minute, with a GST invoice at the end of it.",
     },
     {
       q: "What technology does Coreframe Cloud run on?",
@@ -267,7 +267,7 @@ export default async function AboutPage() {
           <p className="mt-3 leading-8 text-ink-2">
             An RTX 5080 with 16 GB of VRAM is not a card most design studios in
             India own. A workstation built around one lands at roughly
-            ₹5,00,000, and the machines people actually work on commonly ship
+            ₹6,00,000, and the machines people actually work on commonly ship
             with 6 to 8 GB. That number is a ceiling rather than a speed:
             geometry, textures and lightmaps all have to fit on the card, and
             when they do not, the work does not get slower — it gets cut down.

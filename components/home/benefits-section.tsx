@@ -24,7 +24,7 @@ export function BenefitsSection({ storage }: { storage: StorageTerms }) {
         title={<>16 GB of VRAM.<br /><Grad>Not 8.</Grad></>}
         body={
           <>
-            A workstation that renders comfortably lands at around ₹5,00,000 in
+            A workstation that renders comfortably lands at around ₹6,00,000 in
             India, and the machines people actually work on commonly ship with 6
             to 8 GB of video memory. VRAM is a ceiling rather than a speed: when
             a scene does not fit on the card, it does not render slower — it

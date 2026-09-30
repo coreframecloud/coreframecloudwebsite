@@ -4,7 +4,7 @@
  * WHY THIS REPLACED THE OLD HERO. Customers told us they did not understand the
  * concept. The previous hero led with speed ("5× faster rendering"), which only
  * lands if you already know what the product IS. This one leads with the trade
- * everyone in the market already understands — a workstation costs ₹5 lakh and
+ * everyone in the market already understands — a workstation costs ₹6 lakh and
  * sits idle — and then says what you get instead.
  *
  * NOTHING HERE IS HARDCODED THAT BILLING CAN CHANGE. The hourly rate and the
@@ -17,7 +17,7 @@
 import Link from "next/link";
 import type { TrialTerms, FirstTopupBonus } from "@/lib/rate-card";
 
-const HARDWARE_COST = "₹5,00,000";
+const HARDWARE_COST = "₹6,00,000";
 
 export function ExplainerHero({
   adhocRate,

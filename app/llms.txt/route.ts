@@ -75,7 +75,7 @@ export async function GET(): Promise<Response> {
   out.push("**1. Access to the hardware.**");
   out.push(
     "An RTX 5080 with 16 GB of VRAM is not a card most design studios in India own. A " +
-      "workstation built around one lands at roughly Rs 5,00,000, and the machines people " +
+      "workstation built around one lands at roughly Rs 6,00,000, and the machines people " +
       "actually work on commonly ship with 6 to 8 GB. VRAM is a ceiling rather than a speed: " +
       "geometry, textures and lightmaps must fit on the card, and when they do not the work " +
       "is not slower, it is cut down -- a 4K or 8K still quietly becomes a smaller one.",

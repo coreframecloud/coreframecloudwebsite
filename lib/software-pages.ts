@@ -119,9 +119,9 @@ export const SOFTWARE_PAGES: SoftwarePage[] = [
       {
         h2: "Why studios rent for 3ds Max specifically",
         body: [
-          "Archviz work in 3ds Max is bursty in a way that punishes buying. There is a week before a client presentation when the machine cannot keep up, and three weeks afterwards when it idles. A workstation that renders comfortably lands at roughly ₹5,00,000 in India, is bought once, and is still on the books whether or not the project that justified it goes ahead.",
+          "Archviz work in 3ds Max is bursty in a way that punishes buying. There is a week before a client presentation when the machine cannot keep up, and three weeks afterwards when it idles. A workstation that renders comfortably lands at roughly ₹6,00,000 in India, is bought once, and is still on the books whether or not the project that justified it goes ahead.",
           "The second reason is that rendering takes the machine away from you. A local render ties up the computer you also model on, so the afternoon is spent waiting. Running it on a rented machine gives the afternoon back — your own computer stays free while the render runs somewhere else.",
-          "The third is hiring. A studio taking on a remote 3ds Max artist otherwise has to ship them a workstation, buy a laptop that cannot really cope, or hope they own something adequate. A rented machine they reach from their own laptop costs a few thousand rupees a month instead of five lakh of hardware, and it stops cleanly if the arrangement does not.",
+          "The third is hiring. A studio taking on a remote 3ds Max artist otherwise has to ship them a workstation, buy a laptop that cannot really cope, or hope they own something adequate. A rented machine they reach from their own laptop costs a few thousand rupees a month instead of six lakh of hardware, and it stops cleanly if the arrangement does not.",
         ],
       },
       {

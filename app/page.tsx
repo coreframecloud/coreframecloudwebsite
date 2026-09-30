@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { ValueHero } from "@/components/home/landing/value-hero";
 import { MachineSection } from "@/components/home/landing/machine-section";
 import { CostOfWaitingSection } from "@/components/home/cost-of-waiting-section";
+import { OldWayNewWay } from "@/components/home/landing/old-way-new-way";
 import { DisciplineCards } from "@/components/home/landing/discipline-cards";
 import { VersusSection } from "@/components/home/landing/versus-section";
 import { BuiltForStrip } from "@/components/home/landing/built-for-strip";
@@ -80,6 +81,20 @@ export default async function Page() {
   return (
     <main className="text-ink">
       <ValueHero />
+
+      {/* The four wins sit BETWEEN the promise and the spec, which is where a
+          reader actually is at this point: they have just been told we are
+          worth something and they want to know what that means before they
+          care what is in the box. The spec block answers "what am I renting";
+          this answers "why would I", and that question comes first.
+
+          It was under the calculator until now, which put four screens of
+          arithmetic between the headline and the reason to keep reading. */}
+      <section className="cf-section px-5 pt-0">
+        <div className="cf-wide">
+          <OldWayNewWay />
+        </div>
+      </section>
       <div className="cf-rule" />
 
       <MachineSection adhocRate={adhocRate} storage={storage} />

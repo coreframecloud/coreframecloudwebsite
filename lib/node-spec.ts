@@ -37,6 +37,23 @@ export const NODE = {
   location: "Bengaluru, India",
 } as const;
 
+/**
+ * What an equivalent workstation costs to buy in India, landed.
+ *
+ * This is the comparison the whole pricing argument rests on, and it was
+ * written eleven different ways across the site — "₹5,00,000", "₹5 lakh",
+ * "five lakh", and on the landing page "four lakhs", which disagreed with
+ * every other page before anyone noticed.
+ *
+ * Corrected to ₹6,00,000 on 30 Sep 2026: the machines cost that now.
+ *
+ * It is a claim about the market, not about us, so it goes stale the way
+ * hardware prices do. Re-check it before a campaign, and change it HERE —
+ * some pages still carry the literal in prose, and those are the ones that
+ * will drift next.
+ */
+export const WORKSTATION_REPLACEMENT_COST = "₹6,00,000";
+
 /** One line, for a meta description or a dense spec strip. */
 export const NODE_SUMMARY =
   `${NODE.gpu} · ${NODE.vram} · ${NODE.memoryBandwidth} · ${NODE.ram} RAM · ${NODE.cpu}`;

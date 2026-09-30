@@ -1,5 +1,4 @@
 import { WaitingCalculator } from "@/components/home/waiting-calculator";
-import { OldWayNewWay } from "@/components/home/landing/old-way-new-way";
 
 /**
  * The turn in the argument.
@@ -29,7 +28,7 @@ export function CostOfWaitingSection({ ratePerHour }: { ratePerHour: number | nu
             presenting, and not starting the next project.
           </p>
           <p className="cf-section-copy mt-4">
-            You can buy your way out of that for four lakhs. Or you can rent the machine for the
+            You can buy your way out of that for six lakhs. Or you can rent the machine for the
             afternoon you need it.
           </p>
         </div>
@@ -51,22 +50,6 @@ export function CostOfWaitingSection({ ratePerHour }: { ratePerHour: number | nu
             saving on your behalf.
           </p>
 
-          {/* The money is the easiest part to argue and the smallest part of the
-              answer, so it is followed immediately by the things a rupee figure
-              cannot hold — each written as the old way, struck out, and the
-              answer under it.
-
-              All four are STRUCTURAL claims: where the machine is, where the
-              files are, who is waiting for whom. Not performance ones, which is
-              what keeps them true for every scene and every studio.
-
-              Deliberately NOT here: anything about render times or "no more
-              overnight renders". That is scene-dependent, unverifiable before
-              seeing the file, and the first customer whose scene still takes two
-              hours has been mis-sold. */}
-          <div className="mt-14">
-            <OldWayNewWay />
-          </div>
         </div>
       </section>
     </>

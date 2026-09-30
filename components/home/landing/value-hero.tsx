@@ -1,7 +1,7 @@
 /**
  * The opening move, and the reason this page was rebuilt.
  *
- * The old hero led with the product — "A ₹5,00,000 workstation. Rented by the
+ * The old hero led with the product — "A ₹6,00,000 workstation. Rented by the
  * hour." That is a feature, stated at someone who has not yet agreed they have
  * a problem. This one starts from where the visitor actually is: they have
  * arrived, so the job is no longer to attract them, it is to be worth their

@@ -79,7 +79,7 @@ export function OldWayNewWay() {
           className="cf-strike-item border-t border-rule pt-5"
           style={{ ["--cf-strike-delay" as string]: `${i * 140}ms` }}
         >
-          <p className="cf-strike-old text-[15px] leading-[1.5] text-ink-3">{p.old}</p>
+          <p className="cf-strike-old text-[15px] leading-[1.5] text-ink-2">{p.old}</p>
           <p className="cf-strike-now mt-2.5 text-[16px] leading-[1.55] font-medium text-ink">
             {p.now}
           </p>
