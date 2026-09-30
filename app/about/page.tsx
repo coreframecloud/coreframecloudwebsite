@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { BackgroundGlow } from "@/components/home/background-glow";
+import { COMPANY_ADDRESS_FULL, COMPANY_VISITING_ADDRESS_LINE } from "@/lib/company";
 import {
   getRateCard,
   getTrialTerms,
@@ -51,7 +52,8 @@ const COMPANY = [
   ["CIN", "U63119KA2026PTC220789"],
   ["GSTIN", "29AANCC8401D1ZO"],
   ["Founder & CEO", "Sowjanya Pandala"],
-  ["Registered office", "Kadubeesanahalli, Bengaluru, Karnataka 560087, India"],
+  ["Registered office", COMPANY_ADDRESS_FULL],
+  ["Office", COMPANY_VISITING_ADDRESS_LINE],
   ["Data centre location", "Bengaluru, Karnataka, India"],
   ["Contact", "admin@coreframecloud.com · +91 63668 89488"],
 ];

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { COMPANY_MAPS_URL } from "@/lib/company";
 import Script from "next/script";
 import { AttributionCapture } from "@/components/attribution-capture";
 import { SpeedInsights } from "@vercel/speed-insights/next";
@@ -241,7 +242,10 @@ export default async function RootLayout({
                    * is worse than an empty list. LinkedIn, YouTube, Crunchbase
                    * and the Google Business Profile go in as they are created.
                    */
-                  sameAs: ["https://www.instagram.com/coreframecloud/"],
+                  sameAs: [
+                    "https://www.instagram.com/coreframecloud/",
+                    COMPANY_MAPS_URL,
+                  ],
                   contactPoint: [
                     {
                       "@type": "ContactPoint",

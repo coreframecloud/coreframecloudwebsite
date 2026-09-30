@@ -49,6 +49,38 @@ export const COMPANY_ADDRESS_LINE = [
   `${COMPANY.address.state} ${COMPANY.address.pincode}`,
 ].join(", ");
 
+/**
+ * The same office, written the way a visitor needs it.
+ *
+ * The GST registration identifies the plot by survey number (No 32/2, 34/1);
+ * the building standing on that plot is Innov8 inside Prestige Tech Platina.
+ * Same address, two vocabularies — which is how the site ended up carrying four
+ * spellings of one office (footer, privacy policy, about page and the Instagram
+ * bio all disagreed, and the bio said Marathahalli, which is a different
+ * suburb entirely).
+ *
+ * Use THIS one anywhere a human is trying to arrive: footer contact, the map
+ * link, the about page. Use COMPANY_ADDRESS_LINE / _FULL anywhere the string is
+ * matched against the GST certificate: invoices, the privacy policy's legal
+ * entity block, payment-gateway and code-signing forms.
+ *
+ * Never invent a third wording. If one of these needs to change, change it here.
+ */
+export const COMPANY_VISITING_ADDRESS_LINE =
+  "Innov8, Prestige Tech Platina, 11th Floor, No. 32/2, 34/1, Kadubeesanahalli, Bengaluru, Karnataka 560087";
+
+/**
+ * Google Business Profile for the Bengaluru office.
+ *
+ * This is a share shortlink. Swap it for the canonical
+ * `https://www.google.com/maps/place/...` (or `https://maps.google.com/?cid=...`)
+ * URL from the Business Profile manager when convenient — a canonical place URL
+ * is a stronger `sameAs` entity signal than a redirect, and shortlinks can be
+ * retired. One constant, one edit: the footer and the Organization schema both
+ * read it from here.
+ */
+export const COMPANY_MAPS_URL = "https://share.google/BGmHZp7ySfl8Ae90l";
+
 /** Full postal address, for legal pages and invoices. */
 export const COMPANY_ADDRESS_FULL = [
   COMPANY.address.building,

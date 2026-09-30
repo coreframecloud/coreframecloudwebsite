@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { BackgroundGlow } from "@/components/home/background-glow";
+import { COMPANY, COMPANY_ADDRESS_FULL } from "@/lib/company";
 
 export const metadata: Metadata = {
   title: "Privacy Policy",
@@ -109,8 +110,10 @@ export default function PrivacyPolicyPage() {
           <Section title="11. Contact">
             <p>
               <strong className="text-white">Coreframe Compute Labs Private Limited</strong><br />
-              Innov8, Prestige Tech Platina, 11th Floor, Kadubeesanahalli, Bengaluru 560087, Karnataka, India<br />
-              GSTIN: 29AANCC8401D1ZO
+              {/* The GST-registered wording, not the building name. This block
+                  is matched against the certificate; see lib/company.ts. */}
+              {COMPANY_ADDRESS_FULL}<br />
+              GSTIN: {COMPANY.gstin}
             </p>
             <p>
               <Link href="mailto:admin@coreframecloud.com" className="text-cyan-400 hover:underline">admin@coreframecloud.com</Link>

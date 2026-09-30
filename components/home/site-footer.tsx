@@ -1,6 +1,11 @@
 import Link from "next/link";
 import { CoreframeWordmarkAtlas } from "@/components/brand/coreframe-wordmark-atlas";
-import { COMPANY, COMPANY_ADDRESS_LINE } from "@/lib/company";
+import {
+  COMPANY,
+  COMPANY_ADDRESS_LINE,
+  COMPANY_VISITING_ADDRESS_LINE,
+  COMPANY_MAPS_URL,
+} from "@/lib/company";
 
 export function SiteFooter() {
   return (
@@ -70,6 +75,23 @@ export function SiteFooter() {
             <div className="mt-3 flex flex-col gap-2">
               <Link href="mailto:admin@coreframecloud.com" className="text-xs text-white/50 hover:text-white transition">admin@coreframecloud.com</Link>
               <Link href="https://wa.me/916366889488" target="_blank" rel="noreferrer" className="text-xs text-white/50 hover:text-white transition">+91 6366889488</Link>
+              {/* The handle, not the word "Instagram". People search the handle,
+                  and it is the only social profile in the Organization schema
+                  (layout.tsx sameAs) -- a footer link is what makes that claim
+                  verifiable to a crawler instead of an assertion. */}
+              <Link href="https://www.instagram.com/coreframecloud/" target="_blank" rel="noreferrer" className="text-xs text-white/50 hover:text-white transition">@coreframecloud</Link>
+              {/* The building, linked to the Business Profile — this is the
+                  address a visitor navigates to. The registered survey-number
+                  address stays in the bottom bar, labelled, so the two read as
+                  two facts about one office rather than a contradiction. */}
+              <Link
+                href={COMPANY_MAPS_URL}
+                target="_blank"
+                rel="noreferrer"
+                className="max-w-[16rem] text-xs leading-5 text-white/50 hover:text-white transition"
+              >
+                {COMPANY_VISITING_ADDRESS_LINE}
+              </Link>
             </div>
           </div>
         </div>
@@ -84,7 +106,7 @@ export function SiteFooter() {
             © {new Date().getFullYear()} {COMPANY.displayName} · CIN {COMPANY.cin}
           </p>
           <div className="text-xs leading-5 text-white/45 sm:text-right">
-            <p>{COMPANY_ADDRESS_LINE}</p>
+            <p>Registered office: {COMPANY_ADDRESS_LINE}</p>
             <p className="mt-0.5">GSTIN {COMPANY.gstin} · All prices include GST</p>
           </div>
         </div>
