@@ -1,3 +1,4 @@
+import { CostOfWaitingSection } from "@/components/home/cost-of-waiting-section";
 import type { Metadata } from "next";
 import { BackgroundGlow } from "@/components/home/background-glow";
 import { ExplainerHero } from "@/components/home/explainer-hero";
@@ -10,6 +11,7 @@ import { ContactSection } from "@/components/home/contact-section";
 import { ClosingCta } from "@/components/home/closing-cta";
 import {
   getRateCard,
+  adhocRateValue,
   formatHourly,
   getTrialTerms,
   firstTopupBonus,
@@ -40,6 +42,11 @@ export default async function Page() {
   // never advertise a number billing does not charge. Cheapest active GPU is the
   // "starting at" figure. Revalidated hourly — see lib/rate-card.ts.
   const rateCard = await getRateCard();
+  // The live rate as a NUMBER, for the calculator's arithmetic. null when the
+  // rate card fetch failed, and the calculator then drops its GPU-cost line
+  // rather than quoting a stale figure — the same rule the rest of the
+  // pricing surface follows.
+  const adhocRateNumber = adhocRateValue(rateCard);
   const entry = rateCard?.gpus.find((g) => !g.quote_on_request);
   const adhocRate = entry ? formatHourly(entry).replace("/hr", "") : undefined;
   // Same rule as the price: null means say nothing. Every trial figure on this
@@ -68,6 +75,7 @@ export default async function Page() {
         <HowItWorksSection />
         <BenefitsSection storage={storage} />
         <MachineSpecSection storage={storage} />
+        <CostOfWaitingSection ratePerHour={adhocRateNumber} />
         <PricingSection
           adhocRate={adhocRate}
           storage={storage}

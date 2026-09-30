@@ -17,8 +17,17 @@ import Image from "next/image";
  * letter-spacing could not be relied upon to reproduce.
  *
  * `variant` picks the colour of CORE. FRAME is always Coreframe blue.
- *   light  — white CORE, for dark backgrounds (the site's default)
- *   dark   — near-black CORE, for white backgrounds (print, light UI)
+ *   dark   — near-black CORE, for white backgrounds. THE DEFAULT, because the
+ *            site is white paper.
+ *   light  — white CORE, for a dark ground: the mono .cf-term blocks, an OG
+ *            image, a dark slide.
+ *
+ * The default used to be `light`, from when the site was dark. Neither the
+ * header nor the footer passes a variant, so the moment the background became
+ * white the C-O-R-E half of the wordmark went white-on-white and the brand
+ * read as "FRAME" on every page. Nothing errored; the logo was simply half
+ * absent. If you invert a surface, pass variant="light" there rather than
+ * changing this default back.
  */
 
 type Props = {
@@ -41,7 +50,7 @@ export function CoreframeWordmarkAtlas({
   iconSize = 56,
   className,
   compact = false,
-  variant = "light",
+  variant = "dark",
 }: Props) {
   // The old API took an icon box size and derived a font size from it. Keep the
   // same call sites working by mapping that to a sensible wordmark height.
