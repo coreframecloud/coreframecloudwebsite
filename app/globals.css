@@ -322,12 +322,18 @@ body {
   position: absolute;
   left: -2px;
   right: -2px;
-  top: 52%;
-  /* 3px, not 1.5. At 1.5px against grey text the line read as a rendering
-     artefact rather than as a deletion — the one thing this block exists to
-     communicate. It has to look like someone drew through it. */
-  height: 3px;
-  border-radius: 2px;
+  /* 47% of the line box, not 55%. With line-height 1.5 the baseline sits low
+     in the box, so 55% put the rule right on the baseline and clipped the
+     bottom of every lowercase letter. 47% crosses the MIDDLE of the x-height,
+     where it cuts stems rather than the shapes that carry the reading. */
+  top: 47%;
+  /* 2px. It went 1.5 -> 3 and 3 was WORSE: a 3px bar through 15px type
+     obliterates the words instead of cancelling them. The reader has to be
+     able to READ the thing being struck, or the before/after makes no sense
+     and the block says nothing. 2px is visible and still leaves the text
+     legible. */
+  height: 2px;
+  border-radius: 1px;
   background: var(--color-blue);
   transform: scaleX(0);
   transform-origin: left center;
@@ -339,18 +345,10 @@ body {
   transition-delay: var(--cf-strike-delay, 0ms);
 }
 
-/* The old way starts as a real statement and RECEDES once it is cancelled.
-   Striking grey text that was already grey changes almost nothing; the drop
-   in weight is what makes the answer beneath it become the live line. */
-.cf-strike-grid .cf-strike-old {
-  opacity: 1;
-}
-
-.cf-strike-grid.is-struck .cf-strike-old {
-  opacity: 0.55;
-  transition: opacity 420ms ease;
-  transition-delay: calc(var(--cf-strike-delay, 0ms) + 260ms);
-}
+/* THE OLD WAY STAYS FULLY READABLE. It was dropping to 55% opacity after the
+   strike, which combined with a 3px line made it genuinely unreadable — and a
+   problem the reader cannot read is not a problem they recognise. The line
+   alone does the cancelling. Nothing fades. */
 
 .cf-strike-grid.is-struck .cf-strike-now {
   opacity: 1;

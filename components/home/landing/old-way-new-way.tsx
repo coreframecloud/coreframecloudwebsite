@@ -79,8 +79,11 @@ export function OldWayNewWay() {
           className="cf-strike-item border-t border-rule pt-5"
           style={{ ["--cf-strike-delay" as string]: `${i * 140}ms` }}
         >
-          <p className="cf-strike-old text-[15px] leading-[1.5] text-ink-2">{p.old}</p>
-          <p className="cf-strike-now mt-2.5 text-[16px] leading-[1.55] font-medium text-ink">
+          <p className="cf-strike-old text-[17px] leading-[1.5] text-ink">{p.old}</p>
+          {/* The answer is the same size but carries the blue rule and the
+              weight, so the pair reads as "that, cancelled — this instead"
+              rather than as two competing statements. */}
+          <p className="cf-strike-now mt-3 border-l-2 border-blue pl-3.5 text-[17px] leading-[1.55] font-semibold text-ink">
             {p.now}
           </p>
         </div>
