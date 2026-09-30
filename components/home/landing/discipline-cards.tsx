@@ -6,9 +6,18 @@
  * rest — which is why each card names the constraint, not the feature.
  *
  * Claim discipline, because these are the sentences most likely to drift:
- *   - The 3–4x is Blender Open Data medians (RTX 5080 9,142 · 4060 3,132 ·
- *     3060 2,288), and the source is printed beside it in the rate-card block
- *     at the foot of the page. Never state a multiple without it.
+ *   - The multiple is Blender Open Data, 4.5.0, Cycles, re-read 20 Sep 2026:
+ *     RTX 5080 9,138.43 (1,429 results), 4060 3,181.54 (441), 3060 2,153.81
+ *     (634). That is 2.87x and 4.24x, published as 3x and 4x — ALWAYS ROUNDED
+ *     DOWN, never up. The earlier figures on this site (9,142 / 3,132 / 2,288)
+ *     were stale and gave 3.99x for the 3060; these numbers drift, so re-read
+ *     them before reuse rather than copying from here.
+ *
+ *     Never state the multiple without the medians, the sample counts, the
+ *     Blender version, the date read and the source beside it — the rate-card
+ *     block at the foot of the page carries all five. And it is Cycles: D5,
+ *     Lumion and Enscape are different renderers and may not scale the same
+ *     way, which the block says out loud.
  *   - The simulation card says the solver may be CPU-bound BECAUSE IT USUALLY
  *     IS. OpenFOAM, Fluent standard and Star-CCM+ are MPI jobs; claiming GPU
  *     speed-up for them would destroy our credibility with the exact reader
@@ -23,9 +32,10 @@ const CARDS = [
     body: (
       <>
         16 GB of VRAM holds a scene that an 8 GB card drops. Render stills large enough to print,
-        and put a walkthrough in front of a client instead of a still. On Blender Open Data
-        medians the 5080 does <strong className="font-semibold text-ink">3–4× the work</strong> of
-        a 4060 or 3060 in the same time.
+        and put a walkthrough in front of a client instead of a still. On Blender Open Data medians
+        the 5080 does <strong className="font-semibold text-ink">3× the work of a 4060</strong> and{" "}
+        <strong className="font-semibold text-ink">4× a 3060</strong> — both rounded down, with the
+        raw figures in the rate card below.
       </>
     ),
   },

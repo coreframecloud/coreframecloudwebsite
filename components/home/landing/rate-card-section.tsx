@@ -45,8 +45,12 @@ export function RateCardSection({
           {"                   "}as it is for every cloud provider in India{"\n"}
           {"  "}<K>the machine</K>{"      "}RTX 5080 · 16 GB GDDR7 · 64 GB RAM ·{"\n"}
           {"                   "}1 TB NVMe Gen 5 · 4K 60 fps stream{"\n"}
-          {"  "}<K>benchmarks</K>{"       "}Blender Open Data medians, Sep 2026 —{"\n"}
-          {"                   "}RTX 5080 <V>9,142</V> · RTX 4060 3,132 · RTX 3060 2,288
+          {"  "}<K>benchmarks</K>{"       "}Blender Open Data, 4.5.0, Cycles, read 20 Sep 2026{"\n"}
+          {"                   "}RTX 5080 <V>9,138</V> median · 1,429 results{"\n"}
+          {"                   "}RTX 4060 3,182 · 441   ·   RTX 3060 2,154 · 634{"\n"}
+          {"                   "}= 2.87x a 4060 and 4.24x a 3060, published as 3x/4x{"\n"}
+          {"                   "}opendata.blender.org — Cycles only; D5, Lumion and{"\n"}
+          {"                   "}Enscape are different renderers and may not scale so
         </SpecBlock>
 
         <div className="mt-7 flex flex-wrap gap-3.5">
