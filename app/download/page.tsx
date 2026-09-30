@@ -4,11 +4,16 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 
 interface DownloadInfo {
-  version: string;
-  sha256: string;
-  filename: string;
+  // Optional because the route omits them when the release feed on the control
+  // server is unreachable: it would rather say nothing than quote a version and
+  // checksum it cannot currently stand behind.
+  version?: string;
+  sha256?: string;
+  filename?: string;
   available: boolean;
   url?: string;
+  size?: number | null;
+  releaseDate?: string | null;
   // False until our code-signing certificate is issued (applied for). Drives
   // the SmartScreen/UAC walkthrough below; flips via the INSTALLER_SIGNED env.
   signed?: boolean;
@@ -51,7 +56,7 @@ export default function DownloadPage() {
     setDownloading(true);
     const a = document.createElement("a");
     a.href = info.url;
-    a.download = info.filename;
+    if (info.filename) a.download = info.filename;
     a.click();
     setTimeout(() => setDownloading(false), 3000);
   }
@@ -206,7 +211,8 @@ export default function DownloadPage() {
         {stage === "unavailable" && info && (
           <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-8 text-center">
             <p className="text-base text-white/70">
-              v{info.version} is being prepared. Check back shortly or{" "}
+              {info.version ? `v${info.version} is` : "The Windows installer is"} being
+              prepared. Check back shortly or{" "}
               <a href="mailto:support@coreframecloud.com" className="text-cyan-400 underline underline-offset-2">
                 email us
               </a>{" "}
