@@ -145,7 +145,7 @@ export default async function SoftwareLandingPage({
         <Link href="/how-to-use" className="cf-btn-secondary">
           How it works
         </Link>
-        <Link href="/#pricing" className="cf-btn-secondary">
+        <Link href="/pricing" className="cf-btn-secondary">
           Pricing
         </Link>
       </div>

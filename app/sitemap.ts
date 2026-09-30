@@ -35,6 +35,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // and the app now carries a canonical link back to it.
     { url: `${BASE}/floor-plan-to-render`, lastModified: now, changeFrequency: "monthly", priority: 0.9 },
     { url: `${BASE}/enterprise`, lastModified: now, changeFrequency: "monthly", priority: 0.9 },
+    // New route: pricing left the homepage anchor and became a page when the
+    // landing page was rebuilt. High priority — it is the second thing anyone
+    // looks for after what the product is.
+    { url: `${BASE}/pricing`, lastModified: now, changeFrequency: "weekly", priority: 0.9 },
     { url: `${BASE}/compute-nodes`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     { url: `${BASE}/solutions`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
 

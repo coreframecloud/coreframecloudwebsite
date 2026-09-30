@@ -164,7 +164,7 @@ export default function AppsPage() {
         <Link href="/how-to-use" className="cf-btn-primary">
           How to use Coreframe
         </Link>
-        <Link href="/#pricing" className="cf-btn-secondary">
+        <Link href="/pricing" className="cf-btn-secondary">
           See pricing
         </Link>
       </div>

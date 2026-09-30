@@ -7,20 +7,25 @@ import { Menu, X } from "lucide-react";
 import { CoreframeWordmarkAtlas } from "@/components/brand/coreframe-wordmark-atlas";
 import { trackEvent } from "@/lib/analytics";
 
+/**
+ * Three links. That is the whole nav, on purpose.
+ *
+ * It was five — Studio, D5 Render, CFD on GPU, Pricing, Enterprise — which is
+ * a menu that asks a first-time visitor to already know which of our products
+ * they want. It also put two SEO landing pages in the primary nav, where they
+ * competed with the thing we actually sell.
+ *
+ * Those pages all still exist and still rank; they are simply no longer the
+ * first decision a stranger has to make. /floor-plan-to-render, the software
+ * pages and /ansys-cfd-gpu are reached from the body of the landing page and
+ * from search, which is where their traffic comes from anyway.
+ *
+ * The first link says what we sell in six words rather than naming a product
+ * the visitor has never heard of.
+ */
 const navLinks = [
-  // Studio is a LIVE, PAID product and the site did not link to it anywhere.
-  // It sits first because it is the cheapest thing we sell and the shortest
-  // path from a stranger to a paying customer: Rs 99, no KYC, no installer,
-  // an image in about four seconds. The workstation rental is the bigger sale
-  // and the harder one; this is the door.
-  // Points at the PAGE ABOUT Studio, not at the app. /studio is a permanent
-  // 301 to studio.coreframecloud.com, so linking it from the nav sent every
-  // visitor -- and every crawler -- off this site before they had read a word
-  // about the product. The page links on to the app.
-  { label: "Studio", href: "/floor-plan-to-render" },
-  { label: "D5 Render", href: "/d5-render-cloud-workstation" },
-  { label: "CFD on GPU", href: "/ansys-cfd-gpu" },
-  { label: "Pricing", href: "/#pricing" },
+  { label: "Rent an RTX 5080 by the minute", href: "/" },
+  { label: "Pricing", href: "/pricing" },
   { label: "Enterprise", href: "/enterprise" },
 ];
 

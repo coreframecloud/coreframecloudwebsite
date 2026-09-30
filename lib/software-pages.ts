@@ -112,7 +112,7 @@ export const SOFTWARE_PAGES: SoftwarePage[] = [
         body: [
           "3ds Max is not one workload, and the honest recommendation depends entirely on what you render with. It is worth being specific, because the wrong assumption here costs you money.",
           "V-Ray GPU and Chaos Vantage do their work on the graphics card. Those are the cases a rented RTX 5080 is built for: 16 GB of GDDR7 is the ceiling on how much scene fits, and it is a good deal more than the 6 to 8 GB in most laptops and entry desktops sold for design work. When a GPU render fails or forces you to cut texture resolution, VRAM is almost always why.",
-          "Corona is a CPU renderer. So is V-Ray's CPU engine, which many studios still use for final frames. A Coreframe node has a 6-core EPYC, which is a sensible CPU for driving a viewport and a GPU renderer but is not a render node for CPU work — if Corona is where your final frames come from, a rented workstation will not speed that up, and we would rather say so here than have you find out during a trial.",
+          "Corona is a CPU renderer. So is V-Ray's CPU engine, which many studios still use for final frames. A Coreframe node has a 8-core AMD Ryzen 7, which is a sensible CPU for driving a viewport and a GPU renderer but is not a render node for CPU work — if Corona is where your final frames come from, a rented workstation will not speed that up, and we would rather say so here than have you find out during a trial.",
           "The mixed case is the common one: model and light interactively with the GPU in Vantage or V-Ray GPU, keep CPU final frames wherever they already live. That works well, and it is worth planning around rather than discovering.",
         ],
       },
@@ -145,7 +145,7 @@ export const SOFTWARE_PAGES: SoftwarePage[] = [
       { q: "What happens to my scene files after the session?", a: RESET_ANSWER },
       {
         q: "Will Corona render faster on a Coreframe workstation?",
-        a: "Probably not, and it is better to know that now. Corona is a CPU renderer, and a Coreframe node has a 6-core EPYC — enough to drive the application and a GPU renderer, but not a CPU render node. If your final frames come out of Corona, the machine will not change that. Where it helps is V-Ray GPU and Chaos Vantage, which render on the graphics card.",
+        a: "Probably not, and it is better to know that now. Corona is a CPU renderer, and a Coreframe node has a 8-core AMD Ryzen 7 — enough to drive the application and a GPU renderer, but not a CPU render node. If your final frames come out of Corona, the machine will not change that. Where it helps is V-Ray GPU and Chaos Vantage, which render on the graphics card.",
       },
       {
         q: "How much VRAM do I need for 3ds Max GPU rendering?",

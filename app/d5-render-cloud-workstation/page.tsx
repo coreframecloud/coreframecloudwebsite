@@ -53,8 +53,8 @@ export const metadata: Metadata = {
 const SPECS = [
   ["GPU", "NVIDIA RTX 5080"],
   ["VRAM", "16 GB GDDR7"],
-  ["System RAM", "64 GB ECC"],
-  ["CPU", "6-core AMD EPYC"],
+  ["System RAM", "64 GB"],
+  ["CPU", "8-core AMD Ryzen 7"],
   ["Display driver", "WDDM, which D5 needs for real-time viewport work"],
   ["D5 Render", "Preinstalled — sign in with your own D5 account"],
   ["Storage", "Persistent project storage, separate from the machine"],
@@ -249,7 +249,7 @@ export default async function D5Page() {
               charges from, so a figure on this page cannot drift from what you
               are actually charged. A GST tax invoice showing the split is issued
               on every recharge.{" "}
-              <Link href="/#pricing" className="text-blue underline underline-offset-4">
+              <Link href="/pricing" className="text-blue underline underline-offset-4">
                 Full pricing and monthly plans
               </Link>
               .

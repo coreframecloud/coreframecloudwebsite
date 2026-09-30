@@ -83,7 +83,7 @@ function bioLinks(rate: string | null): BioLink[] {
       // Query BEFORE the fragment. `/#pricing?utm_source=...` puts the whole
       // query string inside the fragment, where it never reaches analytics —
       // the link still works, so the tracking silently measures nothing.
-      href: "https://www.coreframecloud.com/?utm_source=instagram&utm_medium=bio&utm_content=pricing#pricing",
+      href: "https://www.coreframecloud.com/pricing?utm_source=instagram&utm_medium=bio&utm_content=pricing",
       icon: "₹",
     },
   ];

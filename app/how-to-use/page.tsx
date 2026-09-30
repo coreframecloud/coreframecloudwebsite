@@ -168,7 +168,7 @@ export default function HowToUsePage() {
         <Link href="/apps" className="cf-btn-secondary">
           See what&apos;s preinstalled
         </Link>
-        <Link href="/#pricing" className="cf-btn-secondary">
+        <Link href="/pricing" className="cf-btn-secondary">
           Pricing
         </Link>
         <Link href="/contact" className="cf-btn-secondary">

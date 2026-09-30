@@ -154,7 +154,7 @@ export default async function EnterprisePage() {
         {/* GPU badge */}
         <div className="mt-8 inline-flex flex-wrap items-center gap-3 rounded-cf border border-rule bg-paper-2 px-5 py-3">
           <span className="text-xs font-semibold uppercase tracking-wider text-ink-3">Every instance</span>
-          <span className="text-sm font-bold text-ink">RTX 5080 · 16 GB GDDR7 · 960 GB/s · 64 GB ECC RAM · 6-core EPYC</span>
+          <span className="text-sm font-bold text-ink">RTX 5080 · 16 GB GDDR7 · 960 GB/s · 64 GB RAM · 8-core AMD Ryzen 7</span>
         </div>
 
         {/* Plans */}
@@ -360,7 +360,7 @@ export default async function EnterprisePage() {
         {/* Compare with ad-hoc */}
         <div className="mt-10 flex flex-wrap items-center gap-4">
           <Link
-            href="/#pricing"
+            href="/pricing"
             className="text-sm text-ink-2 hover:text-ink transition"
           >
             ← Back to pricing

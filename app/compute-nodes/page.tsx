@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   // and quoted by answer engines for months after a rate changes.
   title: "Compute Nodes — RTX 5080 GPU Workstations in India",
   description:
-    "One node, one GPU: NVIDIA RTX 5080 with 16 GB GDDR7, 64 GB ECC RAM and a 6-core EPYC. Billed per minute from stream start, with GST included. Hosted in Bengaluru, India.",
+    "One node, one GPU: NVIDIA RTX 5080 with 16 GB GDDR7, 64 GB of RAM and an 8-core AMD Ryzen 7. Billed per minute from stream start, with GST included. Hosted in Bengaluru, India.",
   alternates: { canonical: "/compute-nodes" },
 };
 
@@ -24,8 +24,8 @@ const node = {
     { label: "VRAM", value: "16 GB GDDR7" },
     { label: "Memory bandwidth", value: "960 GB/s" },
     { label: "CUDA cores", value: "10,752" },
-    { label: "System RAM", value: "64 GB ECC" },
-    { label: "CPU", value: "6-core EPYC" },
+    { label: "System RAM", value: "64 GB" },
+    { label: "CPU", value: "8-core AMD Ryzen 7" },
     { label: "Storage", value: "500 GB NVMe" },
     { label: "Board power", value: "360 W" },
   ],
@@ -65,7 +65,7 @@ export default async function ComputeNodesPage() {
           </h1>
           <p className="mt-5 max-w-2xl text-base leading-8 text-ink-2 md:text-lg">
             Every Coreframe node is the same machine: an NVIDIA RTX 5080 with
-            16 GB GDDR7, 64 GB ECC RAM and a 6-core EPYC, hosted in Bengaluru.
+            16 GB GDDR7, 64 GB of RAM and an 8-core AMD Ryzen 7, hosted in Bengaluru.
             One SKU means the price you see is the price you are billed, and
             there is no wrong tier to pick.
           </p>

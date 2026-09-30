@@ -46,7 +46,7 @@ export function SiteFooter() {
                 { label: "Lumion", href: "/lumion-cloud-gpu" },
                 { label: "Enscape", href: "/enscape-cloud-gpu" },
                 { label: "Free IFC check", href: "/tools" },
-                { label: "Pricing", href: "/#pricing" },
+                { label: "Pricing", href: "/pricing" },
                 { label: "Enterprise plans", href: "/enterprise" },
                 { label: "About Coreframe", href: "/about" },
               ].map((l) => (

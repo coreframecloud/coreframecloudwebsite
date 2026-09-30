@@ -126,9 +126,30 @@ export default function Page() {
           browser — nothing to install, and no ID check to get started.
         </p>
 
-        <div className="mt-9 flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:gap-4">
-          <a href={STUDIO} className="cf-btn-primary w-full sm:w-auto">
-            Open Studio
+        {/* Studio is not open to the public yet. Saying so here, plainly, is
+            cheaper than letting someone click "Open Studio" and meet a sign-in
+            they cannot complete — the second costs trust, the first costs
+            nothing. The guide becomes the real action in the meantime, which is
+            why it is the primary button rather than a footnote. */}
+        <div className="mt-9 rounded-cf border-l-[3px] border-blue bg-blue-soft px-6 py-5">
+          <p className="font-mono text-[11px] leading-none font-medium tracking-[0.16em] text-blue uppercase">
+            Releasing soon
+          </p>
+          <p className="mt-3 text-base leading-[1.62] text-ink">
+            Coreframe Studio is in private testing. It is not open for sign-ups
+            yet — the five-page guide below is the clearest look at how it reads
+            a drawing and what it gives you back.
+          </p>
+        </div>
+
+        <div className="mt-7 flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:gap-4">
+          <a
+            href="/studio/guide.pdf"
+            target="_blank"
+            rel="noopener"
+            className="cf-btn-primary w-full sm:w-auto"
+          >
+            Read the five-page guide
           </a>
           <a
             href="https://studio.coreframecloud.com/studio/demo.dxf"
@@ -143,14 +164,7 @@ export default function Page() {
               link to the guide anywhere on the site, sitting as a third-level
               line in a hero that is selling the workstation, not Studio. This
               is the page where someone is deciding about Studio. */}
-          <a
-            href="/studio/guide.pdf"
-            target="_blank"
-            rel="noopener"
-            className="underline decoration-white/25 underline-offset-4 transition hover:text-ink hover:decoration-white/50"
-          >
-            Read the five-page guide (PDF)
-          </a>
+          <span className="text-ink-2">Credits apply once Studio opens.</span>
         </p>
 
         {/* A REAL PLAN, not a picture of one. Built by
@@ -159,13 +173,31 @@ export default function Page() {
             would be spotted by this audience in seconds, on the one page that
             promises we do not invent geometry. */}
         <figure className="mt-14 rounded-cf border border-rule bg-paper-2 p-4 sm:p-8">
-          <Image
+          {/* THE PLAN WAS INVISIBLE FOR WEEKS AND THE CAUSE WAS ONE CHARACTER.
+              public/brand/plan-3bhk.svg contained a room labelled
+              `LIVING & DINING` — a bare ampersand, which is not valid XML. An
+              SVG loaded as an image is parsed strictly, so the whole document
+              failed and the browser drew nothing and showed the alt text.
+              Nothing 404'd, nothing errored, and the file looked fine in an
+              editor. It is now `&amp;`.
+
+              apps/tools/scripts/make_3bhk.py in the control-plane repo
+              generates this file and does not escape room names, so it will
+              reintroduce the bug the next time a plan is regenerated. Escape
+              there too.
+
+              A plain <img> rather than next/image, separately: the optimizer
+              refuses SVG unless `dangerouslyAllowSVG` is set, and setting it
+              would push EVERY svg through the optimizer including any a user
+              could later supply. An SVG gains nothing from it anyway — there is
+              no format to negotiate and no raster to resize. */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
             src="/brand/plan-3bhk.svg"
             alt="Ground floor plan of a three-bedroom flat: living and dining, kitchen, utility, three bedrooms, two bathrooms, corridor and balcony, with door and window openings marked."
             width={1320}
             height={1100}
-            className="h-auto w-full max-w-full text-ink"
-            priority
+            className="h-auto w-full max-w-full"
           />
           <figcaption className="mt-4 text-sm text-ink-2">
             The demo plan, drawn to scale — 10 rooms, 1,147 sq ft. Download it

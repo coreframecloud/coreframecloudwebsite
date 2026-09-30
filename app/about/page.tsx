@@ -61,8 +61,8 @@ const COMPANY = [
 const SPECS = [
   ["GPU", "NVIDIA RTX 5080"],
   ["VRAM", "16 GB GDDR7"],
-  ["System RAM", "64 GB ECC"],
-  ["CPU", "6-core AMD EPYC"],
+  ["System RAM", "64 GB"],
+  ["CPU", "8-core AMD Ryzen 7"],
   ["Operating system", "Windows 11, full interactive desktop"],
   ["Network", "Dedicated 1 Gbps"],
   ["Access", "Coreframe Connect, streamed over an encrypted private network"],
@@ -102,7 +102,7 @@ export default async function AboutPage() {
     },
     {
       q: "What technology does Coreframe Cloud run on?",
-      a: "The workstations are Windows 11 on dedicated NVIDIA RTX 5080 GPUs — 16 GB GDDR7, 64 GB ECC RAM and a 6-core AMD EPYC — with the desktop streamed over an encrypted private network using Sunshine and Moonlight, which keeps latency low enough for real-time viewport work. D5 Render, Blender, Twinmotion and Unreal Engine ship on the standard image. The website runs on Next.js and Vercel behind Cloudflare, the control plane is Dockerised services on PostgreSQL, and project files live on NAS storage in the same Bengaluru facility. Payments run through Razorpay and identity verification through DigiLocker.",
+      a: "The workstations are Windows 11 on dedicated NVIDIA RTX 5080 GPUs — 16 GB GDDR7, 64 GB of RAM and an 8-core AMD Ryzen 7 — with the desktop streamed over an encrypted private network using Sunshine and Moonlight, which keeps latency low enough for real-time viewport work. D5 Render, Blender, Twinmotion and Unreal Engine ship on the standard image. The website runs on Next.js and Vercel behind Cloudflare, the control plane is Dockerised services on PostgreSQL, and project files live on NAS storage in the same Bengaluru facility. Payments run through Razorpay and identity verification through DigiLocker.",
     },
     {
       q: "Is a Coreframe workstation faster than the machine I already have?",
@@ -385,7 +385,7 @@ export default async function AboutPage() {
               Prices on this page are read from the same rate card the billing
               system charges from, so they cannot drift from what you are
               actually charged.{" "}
-              <Link href="/#pricing" className="text-blue underline underline-offset-4">
+              <Link href="/pricing" className="text-blue underline underline-offset-4">
                 Full pricing
               </Link>
               .
