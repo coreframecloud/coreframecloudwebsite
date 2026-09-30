@@ -381,3 +381,94 @@ body {
   }
   .cf-strike-grid.is-struck .cf-strike-old::after { transition: none; }
 }
+
+/* ── The trial ticker ───────────────────────────────────────────────────
+   Bright blue, full bleed, and moving. Motion is what the eye catches
+   before it has read anything, and on white paper this is the strongest
+   mark the site has.
+
+   Travel, never flash. A flash rate above three per second is a seizure
+   risk (WCAG 2.3.1) and this bar sits on every page.
+
+   Only `transform` is animated, so it runs on the compositor and costs
+   nothing on a phone. The track holds three identical passes and shifts by
+   exactly one third, which is what makes the loop seamless — change the
+   number of passes in the component and this -33.3333% must change with it. */
+.cf-ticker {
+  --cf-ticker-speed: 38s;
+  overflow: hidden;
+  /* 17px each side puts the bar at about 48px. Thick enough to register as a
+     band of colour rather than a hairline, without eating the fold on a
+     laptop — it sits above the header, so every pixel here pushes the real
+     page down on every page of the site. */
+  padding-block: 17px;
+  position: relative;
+}
+
+.cf-ticker-track {
+  display: flex;
+  width: max-content;
+  animation: cfTicker var(--cf-ticker-speed) linear infinite;
+}
+
+/* Pause on hover so the offer can be read before it is clicked. */
+.cf-ticker:hover .cf-ticker-track,
+.cf-ticker:focus-visible .cf-ticker-track {
+  animation-play-state: paused;
+}
+
+.cf-ticker-pass {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+}
+
+.cf-ticker-item {
+  /* inline-block, NOT inline-flex. A flex container discards the whitespace
+     text nodes between its children, so the space between "20 GB storage"
+     and "included" vanished and it rendered "storageincluded" — the text was
+     correct in the DOM the whole time, which is why adding {" "} in the JSX
+     changed nothing. Normal inline layout keeps the space. */
+  display: inline-block;
+  white-space: nowrap;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1;
+  letter-spacing: 0.06em;
+}
+
+.cf-ticker-dot {
+  display: inline-block;
+  vertical-align: middle;
+  width: 5px;
+  height: 5px;
+  margin-inline: 22px;
+  border-radius: 50%;
+  background: #ffffff;
+  opacity: 0.45;
+}
+
+@keyframes cfTicker {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(-33.3333%, 0, 0); }
+}
+
+.cf-ticker:focus-visible {
+  outline: 3px solid var(--color-ink);
+  outline-offset: -3px;
+}
+
+/* Reduced motion: stop travelling entirely and centre a single pass. A
+   64-second drift is exactly the kind of movement that triggers vestibular
+   discomfort, and the offer has to be readable without it. */
+@media (prefers-reduced-motion: reduce) {
+  .cf-ticker-track {
+    animation: none;
+    width: 100%;
+    justify-content: center;
+    overflow: hidden;
+  }
+  .cf-ticker-pass:not(:first-child) {
+    display: none;
+  }
+}
