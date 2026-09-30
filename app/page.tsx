@@ -86,6 +86,16 @@ export default async function Page() {
       <div className="cf-rule" />
 
       <CostOfWaitingSection ratePerHour={adhocRateNumber} />
+
+      {/* The proof goes HERE, immediately under the benefits, not eight
+          screens further down where it used to sit. The strike block is the
+          hook — it makes four claims in four lines — and the very next thing a
+          sceptical reader wants is to watch someone actually do it. Putting a
+          full uncut session between the claim and the price is the cheapest
+          way to answer "yes but does it really work like that". */}
+      <WalkthroughSection youtubeId={WALKTHROUGH_YOUTUBE_ID} />
+      <div className="cf-rule" />
+
       <DisciplineCards />
       <div className="cf-rule" />
 
@@ -109,9 +119,6 @@ export default async function Page() {
 
       {/* The walkthrough, published 30 Sep 2026. One id, used by both the
           embed and the VideoObject schema in walkthrough-section.tsx. */}
-      <WalkthroughSection youtubeId={WALKTHROUGH_YOUTUBE_ID} />
-      <div className="cf-rule" />
-
       <RateCardSection adhocRate={adhocRate} trialMinutes={trialMinutes} />
     </main>
   );
