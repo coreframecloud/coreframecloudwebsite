@@ -164,7 +164,7 @@ export default function SignupForm() {
   if (step === "register") {
     return (
       <form onSubmit={handleRegister} className="mt-10 max-w-lg">
-        <div className="rounded-[1.8rem] border border-white/12 bg-white/6 p-6 backdrop-blur-2xl md:p-8">
+        <div className="rounded-[1.8rem] border border-rule bg-paper-2 p-6 backdrop-blur-2xl md:p-8">
           <div className="grid gap-4">
             <div className="grid grid-cols-2 gap-3">
               <div className="grid gap-1.5">
@@ -175,24 +175,24 @@ export default function SignupForm() {
                     word, and a real customer sat in manual review looking like
                     an impostor. Ask the two questions separately, and say which
                     one is checked. */}
-                <label className="text-xs text-slate-400">
-                  Full name <span className="text-slate-500">(as on Aadhaar)</span>
+                <label className="text-xs text-ink-2">
+                  Full name <span className="text-ink-3">(as on Aadhaar)</span>
                 </label>
                 <Input
                   value={form.fullName}
                   onChange={set("fullName")}
-                  className="h-12 rounded-xl border-white/10 bg-white/5 text-white placeholder:text-slate-500"
+                  className="h-12 rounded-cf border-rule bg-paper-2 text-ink placeholder:text-ink-3"
                   placeholder="Rahul Kumar Sharma"
                   autoComplete="name"
                   required
                 />
               </div>
               <div className="grid gap-1.5">
-                <label className="text-xs text-slate-400">Company / Studio</label>
+                <label className="text-xs text-ink-2">Company / Studio</label>
                 <Input
                   value={form.orgName}
                   onChange={set("orgName")}
-                  className="h-12 rounded-xl border-white/10 bg-white/5 text-white placeholder:text-slate-500"
+                  className="h-12 rounded-cf border-rule bg-paper-2 text-ink placeholder:text-ink-3"
                   placeholder="Acme Studio"
                   required
                 />
@@ -200,16 +200,16 @@ export default function SignupForm() {
             </div>
 
             <div className="grid gap-1.5">
-              <label className="text-xs text-slate-400">
-                Studio or preferred name <span className="text-slate-500">(optional)</span>
+              <label className="text-xs text-ink-2">
+                Studio or preferred name <span className="text-ink-3">(optional)</span>
               </label>
               <Input
                 value={form.displayName}
                 onChange={set("displayName")}
-                className="h-12 rounded-xl border-white/10 bg-white/5 text-white placeholder:text-slate-500"
+                className="h-12 rounded-cf border-rule bg-paper-2 text-ink placeholder:text-ink-3"
                 placeholder="Mark Design"
               />
-              <p className="text-[11px] leading-4 text-slate-500">
+              <p className="text-[11px] leading-4 text-ink-3">
                 Your full name is checked against your Aadhaar record through DigiLocker, so
                 enter it exactly as it appears there — middle or father&apos;s name included.
                 This is what we&apos;ll call you instead.
@@ -217,12 +217,12 @@ export default function SignupForm() {
             </div>
 
             <div className="grid gap-1.5">
-              <label className="text-xs text-slate-400">Work email</label>
+              <label className="text-xs text-ink-2">Work email</label>
               <Input
                 type="email"
                 value={form.email}
                 onChange={set("email")}
-                className="h-12 rounded-xl border-white/10 bg-white/5 text-white placeholder:text-slate-500"
+                className="h-12 rounded-cf border-rule bg-paper-2 text-ink placeholder:text-ink-3"
                 placeholder="you@studio.com"
                 autoComplete="email"
                 required
@@ -237,42 +237,42 @@ export default function SignupForm() {
                 verification runs on DigiLocker — the server refuses anything
                 else, so saying it here beats a 422 after the password. */}
             <div className="grid gap-1.5">
-              <label className="text-xs text-slate-400">Mobile number</label>
+              <label className="text-xs text-ink-2">Mobile number</label>
               <Input
                 type="tel"
                 value={form.phone}
                 onChange={set("phone")}
-                className="h-12 rounded-xl border-white/10 bg-white/5 text-white placeholder:text-slate-500"
+                className="h-12 rounded-cf border-rule bg-paper-2 text-ink placeholder:text-ink-3"
                 placeholder="98765 43210"
                 autoComplete="tel"
                 inputMode="tel"
                 required
               />
-              <p className="text-[11px] leading-4 text-slate-500">
+              <p className="text-[11px] leading-4 text-ink-3">
                 Indian mobile number. We send your one-time sign-in codes here.
               </p>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div className="grid gap-1.5">
-                <label className="text-xs text-slate-400">Password</label>
+                <label className="text-xs text-ink-2">Password</label>
                 <Input
                   type="password"
                   value={form.password}
                   onChange={set("password")}
-                  className="h-12 rounded-xl border-white/10 bg-white/5 text-white placeholder:text-slate-500"
+                  className="h-12 rounded-cf border-rule bg-paper-2 text-ink placeholder:text-ink-3"
                   placeholder="Min. 8 characters"
                   autoComplete="new-password"
                   required
                 />
               </div>
               <div className="grid gap-1.5">
-                <label className="text-xs text-slate-400">Confirm password</label>
+                <label className="text-xs text-ink-2">Confirm password</label>
                 <Input
                   type="password"
                   value={form.confirmPassword}
                   onChange={set("confirmPassword")}
-                  className="h-12 rounded-xl border-white/10 bg-white/5 text-white placeholder:text-slate-500"
+                  className="h-12 rounded-cf border-rule bg-paper-2 text-ink placeholder:text-ink-3"
                   placeholder="Repeat password"
                   autoComplete="new-password"
                   required
@@ -281,17 +281,17 @@ export default function SignupForm() {
             </div>
 
             {error && (
-              <p className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+              <p className="rounded-cf border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
                 {error}
               </p>
             )}
 
-            <label className="flex cursor-pointer items-start gap-3 text-xs leading-5 text-slate-400">
+            <label className="flex cursor-pointer items-start gap-3 text-xs leading-5 text-ink-2">
               <input
                 type="checkbox"
                 checked={form.whatsappOptIn}
                 onChange={(e) => setForm((prev) => ({ ...prev, whatsappOptIn: e.target.checked }))}
-                className="mt-0.5 h-4 w-4 shrink-0 rounded border-white/20 bg-white/5"
+                className="mt-0.5 h-4 w-4 shrink-0 rounded border-rule-strong bg-paper-2"
               />
               <span>
                 Send me account updates on WhatsApp at this number — when my account is
@@ -299,12 +299,12 @@ export default function SignupForm() {
               </span>
             </label>
 
-            <label className="flex cursor-pointer items-start gap-3 text-xs leading-5 text-slate-400">
+            <label className="flex cursor-pointer items-start gap-3 text-xs leading-5 text-ink-2">
               <input
                 type="checkbox"
                 checked={form.whatsappMarketingOptIn}
                 onChange={(e) => setForm((prev) => ({ ...prev, whatsappMarketingOptIn: e.target.checked }))}
-                className="mt-0.5 h-4 w-4 shrink-0 rounded border-white/20 bg-white/5"
+                className="mt-0.5 h-4 w-4 shrink-0 rounded border-rule-strong bg-paper-2"
               />
               <span>
                 Also message me about new Coreframe products and offers. Unsubscribe from
@@ -315,7 +315,7 @@ export default function SignupForm() {
             <Button
               type="submit"
               disabled={loading}
-              className="h-12 rounded-xl text-base font-semibold"
+              className="h-12 rounded-cf text-base font-semibold"
             >
               {loading ? (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -327,11 +327,11 @@ export default function SignupForm() {
           </div>
         </div>
 
-        <p className="mt-5 text-sm text-slate-500">
+        <p className="mt-5 text-sm text-ink-3">
           Already have an account?{" "}
           <a
             href="https://control.coreframecloud.com/customer/"
-            className="text-cyan-400 hover:underline"
+            className="text-blue hover:underline"
           >
             Sign in to the portal →
           </a>
@@ -345,22 +345,22 @@ export default function SignupForm() {
   if (step === "verify") {
     return (
       <form onSubmit={handleVerify} className="mt-10 max-w-lg">
-        <div className="rounded-[1.8rem] border border-white/12 bg-white/6 p-6 backdrop-blur-2xl md:p-8">
+        <div className="rounded-[1.8rem] border border-rule bg-paper-2 p-6 backdrop-blur-2xl md:p-8">
           <div className="mb-6 flex items-start gap-4">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-cyan-400/10 text-cyan-300">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue/10 text-blue">
               <Mail className="h-5 w-5" />
             </div>
             <div>
-              <p className="font-medium text-white">Check your email</p>
-              <p className="mt-0.5 text-sm text-slate-400">
-                We sent a 6-digit code to <span className="text-white">{form.email}</span>. It expires in 10 minutes.
+              <p className="font-medium text-ink">Check your email</p>
+              <p className="mt-0.5 text-sm text-ink-2">
+                We sent a 6-digit code to <span className="text-ink">{form.email}</span>. It expires in 10 minutes.
               </p>
             </div>
           </div>
 
           <div className="grid gap-4">
             <div className="grid gap-1.5">
-              <label className="text-xs text-slate-400">Verification code</label>
+              <label className="text-xs text-ink-2">Verification code</label>
               <OtpInput
                 value={otp}
                 onChange={(v) => { setOtp(v); setError(""); }}
@@ -369,7 +369,7 @@ export default function SignupForm() {
             </div>
 
             {error && (
-              <p className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+              <p className="rounded-cf border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
                 {error}
               </p>
             )}
@@ -377,7 +377,7 @@ export default function SignupForm() {
             <Button
               type="submit"
               disabled={loading || otp.length < 6}
-              className="h-12 rounded-xl text-base font-semibold"
+              className="h-12 rounded-cf text-base font-semibold"
             >
               {loading ? (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -385,13 +385,13 @@ export default function SignupForm() {
               {loading ? "Verifying…" : "Verify email"}
             </Button>
 
-            <p className="text-center text-sm text-slate-500">
+            <p className="text-center text-sm text-ink-3">
               Didn&apos;t receive it?{" "}
               <button
                 type="button"
                 onClick={handleResend}
                 disabled={resendCooldown > 0}
-                className="text-cyan-400 hover:underline disabled:cursor-not-allowed disabled:opacity-50"
+                className="text-blue hover:underline disabled:cursor-not-allowed disabled:opacity-50"
               >
                 Resend code{resendCooldown > 0 ? ` (${resendCooldown}s)` : ""}
               </button>
@@ -406,25 +406,25 @@ export default function SignupForm() {
 
   return (
     <div className="mt-10 max-w-lg">
-      <div className="rounded-[1.8rem] border border-white/12 bg-white/6 p-6 backdrop-blur-2xl md:p-8">
+      <div className="rounded-[1.8rem] border border-rule bg-paper-2 p-6 backdrop-blur-2xl md:p-8">
         <div className="flex items-start gap-4">
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-green-500/15 text-green-400">
             <CheckCircle className="h-5 w-5" />
           </div>
           <div>
-            <p className="font-semibold text-white">Email verified — you&apos;re in.</p>
-            <p className="mt-1 text-sm text-slate-400">
+            <p className="font-semibold text-ink">Email verified — you&apos;re in.</p>
+            <p className="mt-1 text-sm text-ink-2">
               Your Coreframe account is active. You&apos;ll receive an onboarding email shortly with next steps for getting started.
             </p>
           </div>
         </div>
 
-        <div className="mt-6 border-t border-white/8 pt-6">
-          <p className="text-sm text-slate-400">
+        <div className="mt-6 border-t border-rule pt-6">
+          <p className="text-sm text-ink-2">
             Questions? Reach us at{" "}
             <a
               href="mailto:admin@coreframecloud.com"
-              className="text-cyan-400 hover:underline"
+              className="text-blue hover:underline"
             >
               admin@coreframecloud.com
             </a>{" "}
@@ -433,7 +433,7 @@ export default function SignupForm() {
               href="https://wa.me/916366889488"
               target="_blank"
               rel="noreferrer"
-              className="text-cyan-400 hover:underline"
+              className="text-blue hover:underline"
             >
               WhatsApp
             </a>

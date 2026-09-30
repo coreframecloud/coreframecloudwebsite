@@ -22,16 +22,16 @@ export async function TrialStrip() {
   if (!terms) return null;
 
   return (
-    <div className="border-b border-emerald-400/20 bg-emerald-500/10">
+    <div className="border-b border-blue/20 bg-blue/10">
       <Link
         href="/signup"
-        className="mx-auto flex max-w-7xl items-center justify-center gap-2 px-6 py-2 text-center text-sm text-emerald-200 transition-colors hover:text-white"
+        className="mx-auto flex max-w-7xl items-center justify-center gap-2 px-6 py-2 text-center text-sm text-blue transition-colors hover:text-ink"
       >
         <span className="font-medium">
           {terms.gpu_minutes} free minutes on an RTX 5080
         </span>
-        <span className="hidden text-emerald-300/60 sm:inline">·</span>
-        <span className="hidden text-emerald-300/80 sm:inline">
+        <span className="hidden text-blue/60 sm:inline">·</span>
+        <span className="hidden text-blue/80 sm:inline">
           {terms.storage_gb}GB storage included, no card needed
         </span>
         <span className="ml-1 underline underline-offset-4">Start free →</span>

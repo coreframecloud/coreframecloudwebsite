@@ -67,7 +67,7 @@ export default async function EnscapePage() {
   };
 
   return (
-    <div className="relative min-h-screen text-white">
+    <div className="relative min-h-screen text-ink">
       <BackgroundGlow />
       <script
         type="application/ld+json"
@@ -76,23 +76,23 @@ export default async function EnscapePage() {
 
       <main className="relative mx-auto max-w-5xl px-6 pb-24 pt-20 md:pt-28">
 
-        <div className="text-sm font-medium uppercase tracking-[0.25em] text-cyan-300">
+        <div className="text-sm font-medium uppercase tracking-[0.25em] text-blue">
           Enscape · Cloud GPU · India
         </div>
         <h1 className="mt-3 text-4xl font-semibold tracking-tight md:text-5xl">
           Run Enscape on RTX 5080.<br className="hidden md:block" /> Ray tracing. No hardware.
         </h1>
-        <p className="mt-5 max-w-2xl text-base leading-8 text-slate-300">
+        <p className="mt-5 max-w-2xl text-base leading-8 text-ink-2">
           Enscape's real-time ray tracing pushes hard on GPU VRAM and compute.
           Launch an RTX 5080 Windows workstation, install Enscape alongside
           Revit or SketchUp, and render walkthroughs and stills at speeds your local machine can't match.
         </p>
 
         <div className="mt-6 flex flex-wrap gap-4 text-sm">
-          <Link href="/signup" className="rounded-full bg-cyan-400 px-5 py-2.5 font-semibold text-slate-900 hover:bg-cyan-300 transition">
+          <Link href="/signup" className="rounded-full bg-blue px-5 py-2.5 font-semibold text-white hover:bg-blue transition">
             Get started →
           </Link>
-          <Link href="/enterprise" className="rounded-full border border-white/15 px-5 py-2.5 text-white hover:bg-white/8 transition">
+          <Link href="/enterprise" className="rounded-full border border-rule px-5 py-2.5 text-ink hover:bg-paper-2 transition">
             Studio plans
           </Link>
         </div>
@@ -104,21 +104,21 @@ export default async function EnscapePage() {
             { title: "Works with your host app", body: "Install Revit, SketchUp, Rhino, or ArchiCAD on the same workstation. Enscape plugs in exactly as it does locally." },
             { title: "Skip the CapEx entirely", body: "A high-end RTX workstation with server-grade RAM, managed OS, and a dedicated connection costs lakhs to buy and maintain. With Coreframe you get the same hardware as a fully managed service — no procurement, no IT overhead, no upgrades." },
           ].map((c) => (
-            <div key={c.title} className="rounded-[20px] border border-white/8 bg-white/[0.02] p-6">
-              <h3 className="font-semibold text-white">{c.title}</h3>
-              <p className="mt-2 text-sm leading-6 text-white/55">{c.body}</p>
+            <div key={c.title} className="rounded-[20px] border border-rule bg-paper-2 p-6">
+              <h3 className="font-semibold text-ink">{c.title}</h3>
+              <p className="mt-2 text-sm leading-6 text-ink-2">{c.body}</p>
             </div>
           ))}
         </div>
 
         {/* Specs */}
         <div className="mt-14">
-          <h2 className="text-xs font-semibold uppercase tracking-[0.25em] text-white/40">Workstation specs</h2>
-          <div className="mt-4 overflow-hidden rounded-[20px] border border-white/10 bg-white/[0.03]">
+          <h2 className="text-xs font-semibold uppercase tracking-[0.25em] text-ink-3">Workstation specs</h2>
+          <div className="mt-4 overflow-hidden rounded-[20px] border border-rule bg-paper-2">
             {specs.map((s, i) => (
-              <div key={s.label} className={`flex items-center justify-between px-6 py-4 ${i < specs.length - 1 ? "border-b border-white/8" : ""}`}>
-                <span className="text-sm text-white/50">{s.label}</span>
-                <span className="text-sm font-medium text-white">{s.value}</span>
+              <div key={s.label} className={`flex items-center justify-between px-6 py-4 ${i < specs.length - 1 ? "border-b border-rule" : ""}`}>
+                <span className="text-sm text-ink-2">{s.label}</span>
+                <span className="text-sm font-medium text-ink">{s.value}</span>
               </div>
             ))}
           </div>
@@ -130,9 +130,9 @@ export default async function EnscapePage() {
           adhocNote="20 GB persistent storage free, 50 GB once you add credit. Session scratch is cleared when the session ends."
         />
 
-        <div className="mt-8 rounded-[16px] border border-white/8 bg-white/[0.02] px-6 py-5">
-          <p className="text-sm leading-6 text-white/50">
-            <span className="font-semibold text-white/70">Enscape licence is BYOL.</span>{" "}
+        <div className="mt-8 rounded-[16px] border border-rule bg-paper-2 px-6 py-5">
+          <p className="text-sm leading-6 text-ink-2">
+            <span className="font-semibold text-ink-2">Enscape licence is BYOL.</span>{" "}
             Sign in to your Enscape account on the workstation to activate your seat.
             Named-user and floating licences both work. All prices include 18% GST — what you see is
             what you pay, and a GST invoice showing the taxable value and tax split is issued.
@@ -140,9 +140,9 @@ export default async function EnscapePage() {
         </div>
 
         <div className="mt-10 flex flex-wrap gap-4 text-sm">
-          <Link href="/" className="text-slate-400 hover:text-white transition">← Home</Link>
-          <Link href="/d5-render-cloud-workstation" className="text-slate-400 hover:text-white transition">D5 Render on cloud →</Link>
-          <Link href="/lumion-cloud-gpu" className="text-slate-400 hover:text-white transition">Lumion on cloud →</Link>
+          <Link href="/" className="text-ink-2 hover:text-ink transition">← Home</Link>
+          <Link href="/d5-render-cloud-workstation" className="text-ink-2 hover:text-ink transition">D5 Render on cloud →</Link>
+          <Link href="/lumion-cloud-gpu" className="text-ink-2 hover:text-ink transition">Lumion on cloud →</Link>
         </div>
       </main>
     </div>

@@ -151,42 +151,42 @@ export default async function ArchitectsPage() {
   ];
 
   return (
-    <div className="relative min-h-screen text-white">
+    <div className="relative min-h-screen text-ink">
       <BackgroundGlow />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
       <main className="relative mx-auto max-w-5xl px-6 pb-20 pt-16 md:pt-20">
 
-        <div className="text-sm font-medium uppercase tracking-[0.25em] text-cyan-300">
+        <div className="text-sm font-medium uppercase tracking-[0.25em] text-blue">
           Cloud Rendering · Architecture Studios · India
         </div>
         <h1 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">
           Cloud GPU for Architecture Studios.<br className="hidden sm:block" /> RTX 5080. Hosted in India.
         </h1>
-        <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-300">
+        <p className="mt-4 max-w-2xl text-sm leading-7 text-ink-2">
           Skip GPU hardware upgrades. Launch an RTX 5080 Windows workstation for D5 Render,
           Lumion, Enscape, or Revit. Persistent NAS storage keeps your team's projects accessible
           anytime. All data stays in Bengaluru.
         </p>
 
         <div className="mt-5 flex flex-wrap gap-3">
-          <Link href="/signup" className="rounded-full bg-cyan-400 px-5 py-2.5 text-sm font-semibold text-slate-900 hover:bg-cyan-300 transition">
+          <Link href="/signup" className="rounded-full bg-blue px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue transition">
             Get started →
           </Link>
-          <Link href="/enterprise" className="rounded-full border border-white/15 px-5 py-2.5 text-sm text-white hover:bg-white/8 transition">
+          <Link href="/enterprise" className="rounded-full border border-rule px-5 py-2.5 text-sm text-ink hover:bg-paper-2 transition">
             Studio plans
           </Link>
         </div>
 
         {/* Use cases */}
         <div className="mt-12">
-          <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-white/35 mb-5">What architects use it for</h2>
+          <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-ink-3 mb-5">What architects use it for</h2>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {useCases.map((u) => (
-              <div key={u.title} className="rounded-[18px] border border-white/8 bg-white/[0.02] p-5">
+              <div key={u.title} className="rounded-[18px] border border-rule bg-paper-2 p-5">
                 <div className="text-xl mb-2">{u.icon}</div>
-                <h3 className="text-sm font-semibold text-white">{u.title}</h3>
-                <p className="mt-1.5 text-xs leading-5 text-white/50">{u.body}</p>
+                <h3 className="text-sm font-semibold text-ink">{u.title}</h3>
+                <p className="mt-1.5 text-xs leading-5 text-ink-2">{u.body}</p>
               </div>
             ))}
           </div>
@@ -194,13 +194,13 @@ export default async function ArchitectsPage() {
 
         {/* Workflow */}
         <div className="mt-12">
-          <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-white/35 mb-5">How it works</h2>
+          <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-ink-3 mb-5">How it works</h2>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {workflow.map((s) => (
-              <div key={s.n} className="rounded-[18px] border border-white/8 bg-white/[0.02] p-5">
-                <div className="text-xs font-bold text-white/20 mb-1">{s.n}</div>
-                <h3 className="text-sm font-semibold text-white">{s.title}</h3>
-                <p className="mt-1.5 text-xs leading-5 text-white/50">{s.body}</p>
+              <div key={s.n} className="rounded-[18px] border border-rule bg-paper-2 p-5">
+                <div className="text-xs font-bold text-ink-3 mb-1">{s.n}</div>
+                <h3 className="text-sm font-semibold text-ink">{s.title}</h3>
+                <p className="mt-1.5 text-xs leading-5 text-ink-2">{s.body}</p>
               </div>
             ))}
           </div>
@@ -208,34 +208,34 @@ export default async function ArchitectsPage() {
 
         {/* Plans */}
         <div className="mt-12">
-          <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-white/35 mb-5">Plans</h2>
+          <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-ink-3 mb-5">Plans</h2>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
             {plans.map((p) => (
-              <div key={p.name} className={`relative rounded-[18px] border p-5 ${p.highlight ? "border-cyan-400/25 bg-cyan-400/[0.04]" : "border-white/8 bg-white/[0.02]"}`}>
+              <div key={p.name} className={`relative rounded-[18px] border p-5 ${p.highlight ? "border-blue/25 bg-blue/[0.04]" : "border-rule bg-paper-2"}`}>
                 {/* Same fix as the enterprise page: left-1/2 shrink-to-fit gives
                     the badge only half the card to lay out in. "Best value" is
                     short enough to survive that today, which is exactly why it
                     would break silently later. */}
                 {p.highlight && (
                   <div className="absolute -top-3 inset-x-0 flex justify-center">
-                    <span className="whitespace-nowrap rounded-full bg-cyan-400 px-3 py-0.5 text-[10px] font-bold uppercase tracking-wider text-slate-900">Best value</span>
+                    <span className="whitespace-nowrap rounded-full bg-blue px-3 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white">Best value</span>
                   </div>
                 )}
-                <div className={`text-[10px] font-semibold uppercase tracking-wider ${p.highlight ? "text-cyan-300/70" : "text-white/40"}`}>{p.name}</div>
-                <div className="mt-1 text-lg font-bold text-white">{p.price}</div>
-                <p className="mt-1.5 text-[11px] leading-4 text-white/45">{p.note}</p>
+                <div className={`text-[10px] font-semibold uppercase tracking-wider ${p.highlight ? "text-blue/70" : "text-ink-3"}`}>{p.name}</div>
+                <div className="mt-1 text-lg font-bold text-ink">{p.price}</div>
+                <p className="mt-1.5 text-[11px] leading-4 text-ink-2">{p.note}</p>
                 <Link
                   href={p.href}
                   target={p.href.startsWith("https://wa") ? "_blank" : undefined}
                   rel={p.href.startsWith("https://wa") ? "noreferrer" : undefined}
-                  className={`mt-4 block w-full rounded-xl px-4 py-2 text-center text-xs font-semibold transition ${p.highlight ? "bg-cyan-400 text-slate-900 hover:bg-cyan-300" : "border border-white/12 bg-white/[0.05] text-white hover:bg-white/10"}`}
+                  className={`mt-4 block w-full rounded-cf px-4 py-2 text-center text-xs font-semibold transition ${p.highlight ? "bg-blue text-white hover:bg-blue" : "border border-rule bg-paper-2 text-ink hover:bg-paper-2"}`}
                 >
                   {p.cta}
                 </Link>
               </div>
             ))}
           </div>
-          <p className="mt-3 text-[11px] leading-5 text-white/30">
+          <p className="mt-3 text-[11px] leading-5 text-ink-3">
             All prices include 18% GST — what you see is what you pay, and every invoice shows the
             taxable value and GST split.
             {adhoc ? ` Committed tiers bill extra GPU-hours below the ${adhoc} ad-hoc rate.` : ""}
@@ -245,10 +245,10 @@ export default async function ArchitectsPage() {
         </div>
 
         <div className="mt-10 flex flex-wrap gap-4 text-sm">
-          <Link href="/" className="text-slate-400 hover:text-white transition">← Home</Link>
-          <Link href="/d5-render-cloud-workstation" className="text-slate-400 hover:text-white transition">D5 Render →</Link>
-          <Link href="/lumion-cloud-gpu" className="text-slate-400 hover:text-white transition">Lumion →</Link>
-          <Link href="/enscape-cloud-gpu" className="text-slate-400 hover:text-white transition">Enscape →</Link>
+          <Link href="/" className="text-ink-2 hover:text-ink transition">← Home</Link>
+          <Link href="/d5-render-cloud-workstation" className="text-ink-2 hover:text-ink transition">D5 Render →</Link>
+          <Link href="/lumion-cloud-gpu" className="text-ink-2 hover:text-ink transition">Lumion →</Link>
+          <Link href="/enscape-cloud-gpu" className="text-ink-2 hover:text-ink transition">Enscape →</Link>
         </div>
       </main>
     </div>

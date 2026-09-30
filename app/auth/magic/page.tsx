@@ -63,41 +63,41 @@ function MagicLinkVerifier() {
     <div className="relative flex min-h-screen items-center justify-center px-4">
       {/* Subtle background glow */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute left-1/2 top-1/3 h-[400px] w-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-cyan-500/8 blur-[100px]" />
+        <div className="absolute left-1/2 top-1/3 h-[400px] w-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-blue/8 blur-[100px]" />
       </div>
 
       <div className="relative w-full max-w-sm text-center">
         {/* Logo */}
         <a href="/" className="mb-10 inline-block text-2xl font-extrabold tracking-tight">
-          <span className="text-white">CORE</span>
-          <span className="text-cyan-400">FRAME</span>
+          <span className="text-ink">CORE</span>
+          <span className="text-blue">FRAME</span>
         </a>
 
-        <div className="rounded-[1.6rem] border border-white/10 bg-white/5 p-8 backdrop-blur-xl">
+        <div className="rounded-[1.6rem] border border-rule bg-paper-2 p-8 backdrop-blur-xl">
           {status === "loading" && (
             <>
-              <Loader2 className="mx-auto mb-4 h-10 w-10 animate-spin text-cyan-400" />
-              <p className="font-semibold text-white">Signing you in…</p>
-              <p className="mt-1 text-sm text-slate-400">Verifying your sign-in link.</p>
+              <Loader2 className="mx-auto mb-4 h-10 w-10 animate-spin text-blue" />
+              <p className="font-semibold text-ink">Signing you in…</p>
+              <p className="mt-1 text-sm text-ink-2">Verifying your sign-in link.</p>
             </>
           )}
 
           {status === "success" && (
             <>
               <CheckCircle className="mx-auto mb-4 h-10 w-10 text-green-400" />
-              <p className="font-semibold text-white">You're in!</p>
-              <p className="mt-1 text-sm text-slate-400">Redirecting to your dashboard…</p>
+              <p className="font-semibold text-ink">You're in!</p>
+              <p className="mt-1 text-sm text-ink-2">Redirecting to your dashboard…</p>
             </>
           )}
 
           {status === "error" && (
             <>
               <XCircle className="mx-auto mb-4 h-10 w-10 text-red-400" />
-              <p className="font-semibold text-white">Link invalid or expired</p>
-              <p className="mt-2 text-sm text-slate-400">{errorMsg}</p>
+              <p className="font-semibold text-ink">Link invalid or expired</p>
+              <p className="mt-2 text-sm text-ink-2">{errorMsg}</p>
               <a
                 href="/login"
-                className="mt-5 inline-block rounded-xl bg-cyan-500 px-6 py-2.5 text-sm font-semibold text-slate-900 transition hover:bg-cyan-400"
+                className="mt-5 inline-block rounded-cf bg-blue px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-blue"
               >
                 Request a new link
               </a>
@@ -111,10 +111,10 @@ function MagicLinkVerifier() {
 
 export default function MagicLinkPage() {
   return (
-    <div className="min-h-screen bg-[#080e1a] text-white">
+    <div className="min-h-screen bg-paper text-ink">
       <Suspense fallback={
         <div className="flex min-h-screen items-center justify-center">
-          <Loader2 className="h-8 w-8 animate-spin text-cyan-400" />
+          <Loader2 className="h-8 w-8 animate-spin text-blue" />
         </div>
       }>
         <MagicLinkVerifier />

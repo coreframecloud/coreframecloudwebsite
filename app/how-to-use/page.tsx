@@ -118,47 +118,47 @@ export default function HowToUsePage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(howTo) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
 
-      <h1 className="text-3xl font-semibold text-white sm:text-4xl">How to use Coreframe</h1>
-      <p className="mt-5 text-lg leading-8 text-white/70">
+      <h1 className="text-3xl font-semibold text-ink sm:text-4xl">How to use Coreframe</h1>
+      <p className="mt-5 text-lg leading-8 text-ink-2">
         Coreframe rents Windows GPU workstations by the minute, hosted in India. You stream a
         real RTX desktop to the computer you already own, work on it as normal, and pay only for
         the minutes you use. Here is the whole thing, start to finish.
       </p>
 
       <section className="mt-14">
-        <h2 className="text-2xl font-semibold text-white">Getting started</h2>
+        <h2 className="text-2xl font-semibold text-ink">Getting started</h2>
         <ol className="mt-6 space-y-6">
           {STEPS.map((step) => (
-            <li key={step.title} className="rounded-xl border border-white/[0.08] bg-white/[0.02] p-5">
-              <h3 className="font-semibold text-white">{step.title}</h3>
-              <p className="mt-2 leading-7 text-white/60">{step.body}</p>
+            <li key={step.title} className="rounded-cf border border-rule bg-paper-2 p-5">
+              <h3 className="font-semibold text-ink">{step.title}</h3>
+              <p className="mt-2 leading-7 text-ink-2">{step.body}</p>
             </li>
           ))}
         </ol>
       </section>
 
-      <section id="saving-your-work" className="mt-14 scroll-mt-24 rounded-2xl border border-cyan-400/20 bg-cyan-400/[0.05] p-6">
-        <h2 className="text-xl font-semibold text-white">The one thing to know before you start</h2>
-        <p className="mt-3 leading-7 text-white/70">
+      <section id="saving-your-work" className="mt-14 scroll-mt-24 rounded-cf border border-blue/20 bg-blue/[0.05] p-6">
+        <h2 className="text-xl font-semibold text-ink">The one thing to know before you start</h2>
+        <p className="mt-3 leading-7 text-ink-2">
           The workstation resets between sessions. Software you install and anything left on
           the Desktop, in Documents or on C: is wiped when you finish. Only drive{" "}
-          <span className="font-mono font-semibold text-white">N:</span> — labelled{" "}
-          <span className="font-semibold text-white">Coreframe Datalake</span> — survives. Save
+          <span className="font-mono font-semibold text-ink">N:</span> — labelled{" "}
+          <span className="font-semibold text-ink">Coreframe Datalake</span> — survives. Save
           your work there and nothing is lost.
         </p>
-        <p className="mt-3 leading-7 text-white/60">
+        <p className="mt-3 leading-7 text-ink-2">
           It is what makes every session start from a clean, identical machine — no leftovers
           from the customer before you, and none of yours left for the customer after.
         </p>
       </section>
 
       <section className="mt-14">
-        <h2 className="text-2xl font-semibold text-white">Common questions</h2>
+        <h2 className="text-2xl font-semibold text-ink">Common questions</h2>
         <div className="mt-6 space-y-6">
           {FAQS.map((faq) => (
             <div key={faq.q}>
-              <h3 className="font-semibold text-white">{faq.q}</h3>
-              <p className="mt-2 leading-7 text-white/60">{faq.a}</p>
+              <h3 className="font-semibold text-ink">{faq.q}</h3>
+              <p className="mt-2 leading-7 text-ink-2">{faq.a}</p>
             </div>
           ))}
         </div>

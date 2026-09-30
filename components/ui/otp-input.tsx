@@ -44,11 +44,12 @@ export function OtpInput({
       value={value}
       onChange={(e) => onChange(e.target.value.replace(/\D/g, ""))}
       className={cn(
-        "h-16 w-full rounded-xl border border-white/10 bg-white/5 px-4",
-        "text-center font-bold tracking-[0.4em] text-white",
+        "h-16 w-full rounded-cf border border-rule bg-paper-2 px-4",
+        "text-center font-bold tracking-[0.4em] text-ink",
         "text-3xl md:text-3xl",
-        "placeholder:font-normal placeholder:tracking-[0.4em] placeholder:text-slate-600",
-        "outline-none transition-colors focus-visible:border-cyan-400/60 focus-visible:ring-3 focus-visible:ring-cyan-400/25",
+        "tabular-nums",
+        "placeholder:font-normal placeholder:tracking-[0.4em] placeholder:text-ink-3/50",
+        "outline-none transition-colors focus-visible:border-blue focus-visible:ring-3 focus-visible:ring-blue/25",
         className,
       )}
       placeholder="000000"

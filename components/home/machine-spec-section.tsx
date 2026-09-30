@@ -45,9 +45,9 @@ export function MachineSpecSection({ storage }: { storage: StorageTerms }) {
 
   return (
     <section id="specs" className="mx-auto max-w-7xl scroll-mt-24 px-4 py-20 sm:px-6 lg:px-8">
-      <p className="text-xs font-bold uppercase tracking-[0.22em] text-cyan-300">What you actually get</p>
+      <p className="text-xs font-bold uppercase tracking-[0.22em] text-blue">What you actually get</p>
       <h2 className="cf-section-title mt-4">One machine. Fully loaded.</h2>
-      <p className="mt-5 max-w-2xl text-base leading-7 text-white/70">
+      <p className="mt-5 max-w-2xl text-base leading-7 text-ink-2">
         Every session is a complete Windows workstation — not a render queue, not
         a web app. You see a desktop and you use it.
       </p>
@@ -56,10 +56,10 @@ export function MachineSpecSection({ storage }: { storage: StorageTerms }) {
         {specs.map(([k, v]) => (
           <div
             key={k}
-            className="flex items-baseline justify-between gap-4 rounded-xl border border-white/10 bg-white/[0.035] px-5 py-4"
+            className="flex items-baseline justify-between gap-4 rounded-cf border border-rule bg-paper-2 px-5 py-4"
           >
-            <dt className="text-sm font-bold uppercase tracking-[0.06em] text-white/50">{k}</dt>
-            <dd className="text-right text-[16px] font-semibold text-white">{v}</dd>
+            <dt className="text-sm font-bold uppercase tracking-[0.06em] text-ink-2">{k}</dt>
+            <dd className="text-right text-[16px] font-semibold text-ink">{v}</dd>
           </div>
         ))}
       </dl>
@@ -70,7 +70,7 @@ export function MachineSpecSection({ storage }: { storage: StorageTerms }) {
             <li key={a.label}>
               <Link
                 href={a.href}
-                className="inline-block rounded-xl border border-cyan-300/25 bg-cyan-400/[0.08] px-4 py-2.5 text-[15px] font-semibold text-white transition hover:border-cyan-300/60 hover:bg-cyan-400/[0.16]"
+                className="inline-block rounded-cf border border-blue/25 bg-blue/[0.08] px-4 py-2.5 text-[15px] font-semibold text-blue-ink transition hover:border-blue/60 hover:bg-blue/[0.16]"
               >
                 {a.label}
               </Link>
@@ -78,7 +78,7 @@ export function MachineSpecSection({ storage }: { storage: StorageTerms }) {
           ) : (
             <li
               key={a.label}
-              className="inline-block rounded-xl border border-cyan-300/25 bg-cyan-400/[0.08] px-4 py-2.5 text-[15px] font-semibold text-white"
+              className="inline-block rounded-cf border border-blue/25 bg-blue/[0.08] px-4 py-2.5 text-[15px] font-semibold text-blue-ink"
             >
               {a.label}
             </li>
@@ -87,14 +87,14 @@ export function MachineSpecSection({ storage }: { storage: StorageTerms }) {
         <li>
           <Link
             href="/apps"
-            className="inline-block rounded-xl border border-cyan-300/25 px-4 py-2.5 text-[15px] font-semibold text-cyan-300 transition hover:border-cyan-300/60"
+            className="inline-block rounded-cf border border-blue/25 px-4 py-2.5 text-[15px] font-semibold text-blue transition hover:border-blue/60"
           >
             See all software →
           </Link>
         </li>
       </ul>
 
-      <p className="mt-6 max-w-3xl text-sm leading-6 text-white/55">
+      <p className="mt-6 max-w-3xl text-sm leading-6 text-ink-2">
         Need something else? Install it during your session — though anything you
         add yourself lasts for that session only, which is how we keep every
         customer&apos;s work separate.

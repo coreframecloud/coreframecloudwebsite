@@ -55,7 +55,7 @@ export default async function Page() {
   const storage = storageTerms(rateCard);
 
   return (
-    <div className="min-h-screen text-white">
+    <div className="min-h-screen text-ink">
       <BackgroundGlow />
 
       <main className="relative">

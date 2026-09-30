@@ -74,7 +74,7 @@ export function ExplainerFaq({
 
   return (
     <section id="faq" className="mx-auto max-w-7xl scroll-mt-24 px-4 py-20 sm:px-6 lg:px-8">
-      <p className="text-xs font-bold uppercase tracking-[0.22em] text-cyan-300">Questions people actually ask</p>
+      <p className="text-xs font-bold uppercase tracking-[0.22em] text-blue">Questions people actually ask</p>
       <h2 className="cf-section-title mt-4">Straight answers.</h2>
 
       <div className="mt-9 flex max-w-4xl flex-col gap-3">
@@ -82,16 +82,16 @@ export function ExplainerFaq({
           <details
             key={item.q}
             open={i === 0}
-            className="group rounded-2xl border border-white/10 bg-white/[0.035] px-6 py-5 transition open:border-cyan-300/25"
+            className="group rounded-cf border border-rule bg-paper-2 px-6 py-5 transition open:border-blue/25"
           >
-            <summary className="flex cursor-pointer items-center justify-between gap-4 text-[17px] font-semibold text-white [&::-webkit-details-marker]:hidden">
+            <summary className="flex cursor-pointer items-center justify-between gap-4 text-[17px] font-semibold text-ink [&::-webkit-details-marker]:hidden">
               {item.q}
-              <span aria-hidden className="shrink-0 text-2xl font-light leading-none text-cyan-300">
+              <span aria-hidden className="shrink-0 text-2xl font-light leading-none text-blue">
                 <span className="group-open:hidden">+</span>
                 <span className="hidden group-open:inline">−</span>
               </span>
             </summary>
-            <p className="mt-3.5 text-[15px] leading-7 text-white/70">{item.a}</p>
+            <p className="mt-3.5 text-[15px] leading-7 text-ink-2">{item.a}</p>
           </details>
         ))}
       </div>

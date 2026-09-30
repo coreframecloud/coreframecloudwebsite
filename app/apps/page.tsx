@@ -25,12 +25,12 @@ function Group({ title, blurb, items }: { title: string; blurb: string; items: S
   const categories = Array.from(new Set(items.map((i) => i.category)));
   return (
     <section className="mt-16">
-      <h2 className="text-2xl font-semibold text-white">{title}</h2>
-      <p className="mt-3 max-w-3xl text-white/60 leading-7">{blurb}</p>
+      <h2 className="text-2xl font-semibold text-ink">{title}</h2>
+      <p className="mt-3 max-w-3xl text-ink-2 leading-7">{blurb}</p>
 
       {categories.map((category) => (
         <div key={category} className="mt-8">
-          <h3 className="text-xs font-semibold uppercase tracking-widest text-cyan-300/70">
+          <h3 className="text-xs font-semibold uppercase tracking-widest text-blue/70">
             {category}
           </h3>
           <ul className="mt-3 grid gap-3 sm:grid-cols-2">
@@ -39,15 +39,15 @@ function Group({ title, blurb, items }: { title: string; blurb: string; items: S
               .map((item) => (
                 <li
                   key={item.name}
-                  className="rounded-xl border border-white/[0.08] bg-white/[0.02] p-4"
+                  className="rounded-cf border border-rule bg-paper-2 p-4"
                 >
-                  <div className="font-medium text-white">
+                  <div className="font-medium text-ink">
                     {item.vendorUrl ? (
                       <a
                         href={item.vendorUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="hover:text-cyan-300"
+                        className="hover:text-blue"
                       >
                         {item.name}
                       </a>
@@ -55,7 +55,7 @@ function Group({ title, blurb, items }: { title: string; blurb: string; items: S
                       item.name
                     )}
                   </div>
-                  <p className="mt-1 text-sm leading-6 text-white/50">{item.note}</p>
+                  <p className="mt-1 text-sm leading-6 text-ink-2">{item.note}</p>
                 </li>
               ))}
           </ul>
@@ -116,10 +116,10 @@ export default function AppsPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faq) }}
       />
 
-      <h1 className="text-3xl font-semibold text-white sm:text-4xl">
+      <h1 className="text-3xl font-semibold text-ink sm:text-4xl">
         What&apos;s already installed
       </h1>
-      <p className="mt-5 max-w-3xl text-lg leading-8 text-white/70">
+      <p className="mt-5 max-w-3xl text-lg leading-8 text-ink-2">
         Every Coreframe workstation is a full Windows machine with an RTX GPU. A standard set of
         tools is installed and ready the moment your desktop appears — you sign in with your own
         licences. Anything free and missing, we add to the image on request. Licensed applications we set up with you once, because the vendor needs your account to download.
@@ -137,7 +137,7 @@ export default function AppsPage() {
         items={BRING_YOUR_OWN_LICENCE}
       />
 
-      <section className="mt-16 rounded-2xl border border-amber-400/25 bg-amber-400/[0.06] p-6">
+      <section className="mt-16 rounded-cf border border-amber-400/25 bg-amber-400/[0.06] p-6">
         <h2 className="text-lg font-semibold text-amber-100">
           The workstation resets when your session ends
         </h2>

@@ -30,11 +30,11 @@ function Row({
 }) {
   return (
     <li className="flex gap-3">
-      <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-cyan-400/10 text-cyan-300">
+      <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-cf bg-blue/10 text-blue">
         {icon}
       </span>
-      <span className="text-sm leading-6 text-slate-400">
-        <b className="font-medium text-slate-200">{title}</b>
+      <span className="text-sm leading-6 text-ink-2">
+        <b className="font-medium text-ink">{title}</b>
         <br />
         {children}
       </span>
@@ -44,11 +44,11 @@ function Row({
 
 export function WhyWeVerify({ trialMinutes }: { trialMinutes: number | null }) {
   return (
-    <section className="mt-8 rounded-[1.6rem] border border-white/10 bg-white/[0.03] p-6">
-      <h2 className="text-sm font-semibold tracking-tight text-white">
+    <section className="mt-8 rounded-[1.6rem] border border-rule bg-paper-2 p-6">
+      <h2 className="text-sm font-semibold tracking-tight text-ink">
         Why we ask for an ID check
       </h2>
-      <p className="mt-2 text-sm leading-6 text-slate-400">
+      <p className="mt-2 text-sm leading-6 text-ink-2">
         Coreframe rents real GPU hardware in India, so we are required to hold a
         verified subscriber record for anyone who runs a workstation — the same
         check you complete for a bank account or a SIM. It happens once, after
@@ -82,14 +82,14 @@ export function WhyWeVerify({ trialMinutes }: { trialMinutes: number | null }) {
         ) : null}
       </ul>
 
-      <p className="mt-5 text-xs leading-6 text-slate-500">
+      <p className="mt-5 text-xs leading-6 text-ink-3">
         Operated by Coreframe Compute Labs Private Limited, Bengaluru. What we
         collect and how long we keep it is in our{" "}
-        <Link href="/privacy-policy" className="text-cyan-400 hover:underline">
+        <Link href="/privacy-policy" className="text-blue hover:underline">
           Privacy Policy
         </Link>
         , and the full flow is described in{" "}
-        <Link href="/how-to-use" className="text-cyan-400 hover:underline">
+        <Link href="/how-to-use" className="text-blue hover:underline">
           how it works
         </Link>
         .

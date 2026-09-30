@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 
 export default function VerifyPage() {
   return (
-    <div className="relative min-h-screen text-white">
+    <div className="relative min-h-screen text-ink">
       <BackgroundGlow />
       <main className="relative flex min-h-screen items-center justify-center px-4 py-24">
         <VerifyFlow />

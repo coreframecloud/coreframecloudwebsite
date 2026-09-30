@@ -37,7 +37,7 @@ function GoogleIcon() {
 function Field({ label, children }: { label: React.ReactNode; children: React.ReactNode }) {
   return (
     <div className="grid gap-1.5">
-      <label className="text-xs text-slate-400">{label}</label>
+      <label className="text-xs text-ink-2">{label}</label>
       {children}
     </div>
   );
@@ -47,13 +47,13 @@ function GoogleBlock({ api, below = false }: { api: string; below?: boolean }) {
   return (
     <>
       <div className={`flex items-center gap-3 ${below ? "my-5" : "mb-5"}`}>
-        <div className="h-px flex-1 bg-white/10" />
-        <span className="text-xs text-slate-500">or</span>
-        <div className="h-px flex-1 bg-white/10" />
+        <div className="h-px flex-1 bg-paper-2" />
+        <span className="text-xs text-ink-3">or</span>
+        <div className="h-px flex-1 bg-paper-2" />
       </div>
       <a
         href={`${api}/auth/google`}
-        className="flex w-full items-center justify-center gap-3 rounded-xl border border-white/12 bg-white/6 py-3 text-sm font-medium text-white transition hover:bg-white/10"
+        className="flex w-full items-center justify-center gap-3 rounded-cf border border-rule bg-paper-2 py-3 text-sm font-medium text-ink transition hover:bg-paper-2"
       >
         <GoogleIcon />
         Continue with Google
@@ -63,7 +63,7 @@ function GoogleBlock({ api, below = false }: { api: string; below?: boolean }) {
 }
 
 const inputCls =
-  "h-12 rounded-xl border-white/10 bg-white/5 text-white placeholder:text-slate-500 focus:border-cyan-400/50 focus:ring-0";
+  "h-12 rounded-cf border-rule bg-paper-2 text-ink placeholder:text-ink-3 focus:border-blue/50 focus:ring-0";
 
 // ── Tab button ─────────────────────────────────────────────────────────────────
 function TabBtn({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
@@ -71,10 +71,10 @@ function TabBtn({ active, onClick, children }: { active: boolean; onClick: () =>
     <button
       type="button"
       onClick={onClick}
-      className={`flex-1 rounded-lg py-2 text-sm font-medium transition-colors ${
+      className={`flex-1 rounded-cf py-2 text-sm font-medium transition-colors ${
         active
-          ? "bg-white/10 text-white shadow-inner"
-          : "text-slate-400 hover:text-slate-200"
+          ? "bg-paper-2 text-ink shadow-inner"
+          : "text-ink-2 hover:text-ink"
       }`}
     >
       {children}
@@ -85,7 +85,7 @@ function TabBtn({ active, onClick, children }: { active: boolean; onClick: () =>
 // ── Error box ──────────────────────────────────────────────────────────────────
 function ErrorBox({ msg }: { msg: string }) {
   return (
-    <p className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+    <p className="rounded-cf border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
       {msg}
     </p>
   );
@@ -100,11 +100,11 @@ function SentCard({
 }: { email: string; label: string; certain?: boolean; expiresMinutes?: number }) {
   return (
     <div className="flex items-start gap-4">
-      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-cyan-400/10 text-cyan-300">
+      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue/10 text-blue">
         <Mail className="h-5 w-5" />
       </div>
       <div>
-        <p className="font-semibold text-white">Check your inbox</p>
+        <p className="font-semibold text-ink">Check your inbox</p>
         {/* THE HEDGE IS GONE FROM THE CODE TAB, AND SO IS THE FOOTNOTE.
             Both existed because the route used to look an unknown address up,
             find nothing and answer as though it had sent something — so the
@@ -117,17 +117,17 @@ function SentCard({
             so after the call the account exists either way and saying so
             plainly leaks nothing an attacker did not already get. The link tab
             keeps the hedge, because that route still behaves the old way. */}
-        <p className="mt-1 text-sm text-slate-400">
+        <p className="mt-1 text-sm text-ink-2">
           {certain ? (
             <>
               A {label} is on its way to{" "}
-              <span className="text-white">{email}</span>. It expires in{" "}
+              <span className="text-ink">{email}</span>. It expires in{" "}
               {expiresMinutes} minutes.
             </>
           ) : (
             <>
               If an account exists for{" "}
-              <span className="text-white">{email}</span>, a {label} is on its
+              <span className="text-ink">{email}</span>, a {label} is on its
               way. It expires in {expiresMinutes} minutes.
             </>
           )}
@@ -420,13 +420,13 @@ export default function LoginForm({
           variant: the input has to be reachable without scrolling on a phone. */}
       <div className={`text-center ${isStart ? "mb-5" : "mb-8"}`}>
         <a href="/" className="inline-block text-2xl font-extrabold tracking-tight">
-          <span className="text-white">CORE</span>
-          <span className="text-cyan-400">FRAME</span>
+          <span className="text-ink">CORE</span>
+          <span className="text-blue">FRAME</span>
         </a>
-        <h1 className={`text-2xl font-semibold tracking-tight text-white ${isStart ? "mt-2" : "mt-3"}`}>
+        <h1 className={`text-2xl font-semibold tracking-tight text-ink ${isStart ? "mt-2" : "mt-3"}`}>
           {isStart ? "Start free" : "Sign in"}
         </h1>
-        <p className="mt-1 text-sm text-slate-400">
+        <p className="mt-1 text-sm text-ink-2">
           {isStart
             ? offer ?? "Enter your email and we\u2019ll send you a link."
             : "New here? Just enter your email \u2014 we\u2019ll handle the rest."}
@@ -435,15 +435,15 @@ export default function LoginForm({
 
       {/* Already signed in — say so, and offer both ways out. */}
       {signedInAs && (
-        <div className="mb-4 rounded-[1.6rem] border border-cyan-400/25 bg-cyan-400/10 p-5">
-          <p className="text-sm text-slate-200">
+        <div className="mb-4 rounded-[1.6rem] border border-blue/25 bg-blue/10 p-5">
+          <p className="text-sm text-ink">
             You are already signed in as{" "}
-            <span className="font-semibold text-white">{signedInAs}</span>.
+            <span className="font-semibold text-ink">{signedInAs}</span>.
           </p>
           <div className="mt-3 grid gap-2 sm:grid-cols-2">
             <a
               href="/verify"
-              className="flex h-11 w-full items-center justify-center rounded-xl bg-cyan-400 px-3 text-center text-sm font-semibold text-slate-900 transition hover:bg-cyan-300"
+              className="flex h-11 w-full items-center justify-center rounded-cf bg-blue px-3 text-center text-sm font-semibold text-white transition hover:bg-blue"
             >
               Continue where you left off
             </a>
@@ -459,7 +459,7 @@ export default function LoginForm({
                 }
                 setSignedInAs(null);
               }}
-              className="flex h-11 w-full items-center justify-center rounded-xl border border-white/20 bg-transparent px-3 text-center text-sm font-semibold text-slate-100 transition hover:border-cyan-400/50 hover:bg-white/5"
+              className="flex h-11 w-full items-center justify-center rounded-cf border border-rule-strong bg-transparent px-3 text-center text-sm font-semibold text-ink transition hover:border-blue/50 hover:bg-paper-2"
             >
               Use a different account
             </button>
@@ -468,7 +468,7 @@ export default function LoginForm({
       )}
 
       {/* Card */}
-      <div className="rounded-[1.6rem] border border-white/10 bg-white/5 p-6 backdrop-blur-xl">
+      <div className="rounded-[1.6rem] border border-rule bg-paper-2 p-6 backdrop-blur-xl">
 
         {/* Google, and where it sits.
             On /login it leads, because a returning customer who used Google
@@ -479,15 +479,15 @@ export default function LoginForm({
           <>
             <a
               href={`${API}/auth/google`}
-              className="flex w-full items-center justify-center gap-3 rounded-xl border border-white/12 bg-white/6 py-3 text-sm font-medium text-white transition hover:bg-white/10"
+              className="flex w-full items-center justify-center gap-3 rounded-cf border border-rule bg-paper-2 py-3 text-sm font-medium text-ink transition hover:bg-paper-2"
             >
               <GoogleIcon />
               Continue with Google
             </a>
             <div className="my-5 flex items-center gap-3">
-              <div className="h-px flex-1 bg-white/10" />
-              <span className="text-xs text-slate-500">or</span>
-              <div className="h-px flex-1 bg-white/10" />
+              <div className="h-px flex-1 bg-paper-2" />
+              <span className="text-xs text-ink-3">or</span>
+              <div className="h-px flex-1 bg-paper-2" />
             </div>
           </>
         )}
@@ -502,7 +502,7 @@ export default function LoginForm({
             Password sign-in is gone entirely. Nothing issues a customer
             password, so the tab could only ever fail; keeping it also meant
             keeping a password surface to attack for no benefit. */}
-        {!isStart && <div className="mb-5 flex gap-1 rounded-xl bg-white/5 p-1">
+        {!isStart && <div className="mb-5 flex gap-1 rounded-cf bg-paper-2 p-1">
           <TabBtn active={tab === "link"} onClick={() => switchTab("link")}>
             Email me a link
           </TabBtn>
@@ -530,18 +530,18 @@ export default function LoginForm({
                 </Field>
                 {error && <ErrorBox msg={error} />}
                 {isStart ? (
-                  <p className="-mt-1 text-xs leading-5 text-slate-400">
+                  <p className="-mt-1 text-xs leading-5 text-ink-2">
                     No password. We&apos;ll email you a link &mdash; click it and your account is ready.
                   </p>
                 ) : (
-                  <div className="rounded-xl border border-white/8 bg-white/4 px-4 py-3">
-                    <p className="text-sm font-medium text-slate-200">Sign in with a link</p>
-                    <p className="mt-0.5 text-xs text-slate-400">
+                  <div className="rounded-cf border border-rule bg-paper-2 px-4 py-3">
+                    <p className="text-sm font-medium text-ink">Sign in with a link</p>
+                    <p className="mt-0.5 text-xs text-ink-2">
                       We&apos;ll send a secure sign-in link to your email. Click it to sign in instantly.
                     </p>
                   </div>
                 )}
-                <Button type="submit" disabled={linkLoading} className="h-12 w-full rounded-xl bg-cyan-400 text-base font-semibold text-slate-900 shadow-[0_6px_24px_-6px_rgba(34,211,238,.55)] transition hover:bg-cyan-300 disabled:opacity-60">
+                <Button type="submit" disabled={linkLoading} className="h-12 w-full rounded-cf bg-blue text-base font-semibold text-white shadow-[0_6px_24px_-6px_rgba(34,211,238,.55)] transition hover:bg-blue disabled:opacity-60">
                   {linkLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                   {linkLoading ? "Checking…" : isStart ? "Create my account" : "Send sign-in link"}
                 </Button>
@@ -550,7 +550,7 @@ export default function LoginForm({
 
             {linkStep === "details" && (
               <form onSubmit={handleLinkDetailsSubmit} className="grid gap-4">
-                <div className="rounded-xl border border-cyan-500/20 bg-cyan-500/8 px-4 py-3 text-xs text-cyan-300">
+                <div className="rounded-cf border border-blue/20 bg-blue/8 px-4 py-3 text-xs text-blue">
                   No account found for <strong>{linkEmail}</strong> — fill in your details below to create one.
                 </div>
 
@@ -559,28 +559,28 @@ export default function LoginForm({
                     <button
                       type="button"
                       onClick={() => { setLinkAccountType("b2c"); setError(""); }}
-                      className={`rounded-xl border px-4 py-3 text-left transition-colors ${
+                      className={`rounded-cf border px-4 py-3 text-left transition-colors ${
                         linkAccountType === "b2c"
-                          ? "border-cyan-400/50 bg-cyan-400/10"
-                          : "border-white/10 bg-white/5 hover:border-white/20"
+                          ? "border-blue/50 bg-blue/10"
+                          : "border-rule bg-paper-2 hover:border-rule-strong"
                       }`}
                     >
-                      <span className="block text-sm font-medium text-white">Individual</span>
-                      <span className="mt-0.5 block text-xs text-slate-400">
+                      <span className="block text-sm font-medium text-ink">Individual</span>
+                      <span className="mt-0.5 block text-xs text-ink-2">
                         Freelancer or personal use
                       </span>
                     </button>
                     <button
                       type="button"
                       onClick={() => { setLinkAccountType("b2b"); setError(""); }}
-                      className={`rounded-xl border px-4 py-3 text-left transition-colors ${
+                      className={`rounded-cf border px-4 py-3 text-left transition-colors ${
                         linkAccountType === "b2b"
-                          ? "border-cyan-400/50 bg-cyan-400/10"
-                          : "border-white/10 bg-white/5 hover:border-white/20"
+                          ? "border-blue/50 bg-blue/10"
+                          : "border-rule bg-paper-2 hover:border-rule-strong"
                       }`}
                     >
-                      <span className="block text-sm font-medium text-white">Business</span>
-                      <span className="mt-0.5 block text-xs text-slate-400">
+                      <span className="block text-sm font-medium text-ink">Business</span>
+                      <span className="mt-0.5 block text-xs text-ink-2">
                         GST-registered, needs invoices
                       </span>
                     </button>
@@ -597,7 +597,7 @@ export default function LoginForm({
                       maxLength={15}
                       required
                     />
-                    <p className="mt-1 text-xs text-slate-500">
+                    <p className="mt-1 text-xs text-ink-3">
                       We check this against the GST register — it has to be active, and
                       we read the registered name back from it. It also sets your place
                       of supply on every invoice.
@@ -607,14 +607,14 @@ export default function LoginForm({
                 <div className="grid grid-cols-2 gap-3">
                   <Field label="Full name">
                     <Input value={linkName} onChange={(e) => { setLinkName(e.target.value); setError(""); }} className={inputCls} placeholder="Rahul Sharma" required />
-                    <p className="mt-1 text-xs text-slate-500">
+                    <p className="mt-1 text-xs text-ink-3">
                       Your own legal name, as on your Aadhaar or passport — not the
                       company&apos;s.
                     </p>
                   </Field>
                   <Field label={linkAccountType === "b2b"
                     ? "Registered business name"
-                    : <>Studio name <span className="text-slate-600">(optional)</span></>}>
+                    : <>Studio name <span className="text-ink-3">(optional)</span></>}>
                     <Input
                       value={linkOrg}
                       onChange={(e) => { setLinkOrg(e.target.value); setError(""); }}
@@ -623,7 +623,7 @@ export default function LoginForm({
                       required={linkAccountType === "b2b"}
                     />
                     {linkAccountType === "b2b" && (
-                      <p className="mt-1 text-xs text-slate-500">
+                      <p className="mt-1 text-xs text-ink-3">
                         Exactly as it appears on your GST certificate. We match it
                         against the registered name on the GST register.
                       </p>
@@ -657,7 +657,7 @@ export default function LoginForm({
                         <option
                           key={c.dial_code}
                           value={c.dial_code}
-                          className="bg-slate-900 text-white"
+                          className="bg-slate-900 text-ink"
                         >
                           +{c.dial_code} {(c.country || "").split(" ")[0]}
                         </option>
@@ -674,17 +674,17 @@ export default function LoginForm({
                       required
                     />
                   </div>
-                  <p className="mt-1 text-xs text-slate-500">
+                  <p className="mt-1 text-xs text-ink-3">
                     Used for identity verification and account security. Indian regulations
                     require us to hold a verified contact number for compute rental.
                   </p>
                 </Field>
                 {error && <ErrorBox msg={error} />}
-                <Button type="submit" disabled={linkLoading} className="h-12 w-full rounded-xl bg-cyan-400 text-base font-semibold text-slate-900 shadow-[0_6px_24px_-6px_rgba(34,211,238,.55)] transition hover:bg-cyan-300 disabled:opacity-60">
+                <Button type="submit" disabled={linkLoading} className="h-12 w-full rounded-cf bg-blue text-base font-semibold text-white shadow-[0_6px_24px_-6px_rgba(34,211,238,.55)] transition hover:bg-blue disabled:opacity-60">
                   {linkLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ArrowRight className="mr-2 h-4 w-4" />}
                   {linkLoading ? "Creating account…" : "Create account & send link"}
                 </Button>
-                <button type="button" onClick={() => { setLinkStep("email"); setError(""); }} className="text-xs text-slate-500 hover:text-slate-300">
+                <button type="button" onClick={() => { setLinkStep("email"); setError(""); }} className="text-xs text-ink-3 hover:text-ink-2">
                   ← Use a different email
                 </button>
               </form>
@@ -696,7 +696,7 @@ export default function LoginForm({
                 <button
                   type="button"
                   onClick={() => { setLinkStep("email"); setLinkIsNew(false); setError(""); }}
-                  className="text-xs text-slate-500 hover:text-slate-300"
+                  className="text-xs text-ink-3 hover:text-ink-2"
                 >
                   ← Use a different email
                 </button>
@@ -723,13 +723,13 @@ export default function LoginForm({
                   />
                 </Field>
                 {error && <ErrorBox msg={error} />}
-                <Button type="submit" disabled={codeLoading} className="h-12 w-full rounded-xl bg-cyan-400 text-base font-semibold text-slate-900 shadow-[0_6px_24px_-6px_rgba(34,211,238,.55)] transition hover:bg-cyan-300 disabled:opacity-60">
+                <Button type="submit" disabled={codeLoading} className="h-12 w-full rounded-cf bg-blue text-base font-semibold text-white shadow-[0_6px_24px_-6px_rgba(34,211,238,.55)] transition hover:bg-blue disabled:opacity-60">
                   {codeLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                   {codeLoading ? "Sending…" : "Send 6-digit code"}
                 </Button>
-                <p className="text-center text-xs text-slate-500">
+                <p className="text-center text-xs text-ink-3">
                   Codes only work for accounts that already exist. New here? Use{" "}
-                  <b className="text-slate-300">Email me a link</b>.
+                  <b className="text-ink-2">Email me a link</b>.
                 </p>
               </form>
             )}
@@ -747,11 +747,11 @@ export default function LoginForm({
                   />
                 </Field>
                 {error && <ErrorBox msg={error} />}
-                <Button type="submit" disabled={codeLoading || codeValue.length < 6} className="h-12 w-full rounded-xl bg-cyan-400 text-base font-semibold text-slate-900 shadow-[0_6px_24px_-6px_rgba(34,211,238,.55)] transition hover:bg-cyan-300 disabled:opacity-60">
+                <Button type="submit" disabled={codeLoading || codeValue.length < 6} className="h-12 w-full rounded-cf bg-blue text-base font-semibold text-white shadow-[0_6px_24px_-6px_rgba(34,211,238,.55)] transition hover:bg-blue disabled:opacity-60">
                   {codeLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                   {codeLoading ? "Verifying…" : "Sign in"}
                 </Button>
-                <button type="button" onClick={() => { setCodeStep("email"); setCodeValue(""); setError(""); }} className="text-xs text-slate-500 hover:text-slate-300">
+                <button type="button" onClick={() => { setCodeStep("email"); setCodeValue(""); setError(""); }} className="text-xs text-ink-3 hover:text-ink-2">
                   ← Use a different email
                 </button>
               </form>
@@ -775,11 +775,11 @@ export default function LoginForm({
       </div>
 
       {/* Footer */}
-      <p className="mt-6 text-center text-xs leading-6 text-slate-500">
+      <p className="mt-6 text-center text-xs leading-6 text-ink-3">
         {isStart ? "By creating an account, you agree to our" : "By signing in, you agree to our"}{" "}
-        <a href="/terms-of-service" className="text-cyan-400 hover:underline">Terms and Conditions</a>,{" "}
-        <a href="/privacy-policy" className="text-cyan-400 hover:underline">Privacy Policy</a>, and{" "}
-        <a href="/refunds" className="text-cyan-400 hover:underline">Refunds and chargebacks</a>.
+        <a href="/terms-of-service" className="text-blue hover:underline">Terms and Conditions</a>,{" "}
+        <a href="/privacy-policy" className="text-blue hover:underline">Privacy Policy</a>, and{" "}
+        <a href="/refunds" className="text-blue hover:underline">Refunds and chargebacks</a>.
       </p>
     </div>
   );

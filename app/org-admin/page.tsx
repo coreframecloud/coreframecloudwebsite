@@ -308,7 +308,7 @@ export default function OrgAdminPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#03101d] flex items-center justify-center text-white/40 text-sm">
+      <div className="min-h-screen bg-paper-2 flex items-center justify-center text-ink-3 text-sm">
         Loading…
       </div>
     );
@@ -316,9 +316,9 @@ export default function OrgAdminPage() {
 
   if (!token) {
     return (
-      <div className="min-h-screen bg-[#03101d] flex items-center justify-center flex-col gap-4 text-center px-4">
-        <p className="text-white/60 text-sm">Sign in to access the org admin portal.</p>
-        <Link href="/login" className="inline-flex items-center justify-center rounded-xl bg-cyan-400 px-5 py-2.5 text-sm font-semibold text-slate-900 hover:bg-cyan-300 transition">
+      <div className="min-h-screen bg-paper-2 flex items-center justify-center flex-col gap-4 text-center px-4">
+        <p className="text-ink-2 text-sm">Sign in to access the org admin portal.</p>
+        <Link href="/login" className="inline-flex items-center justify-center rounded-cf bg-blue px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue transition">
           Sign in
         </Link>
       </div>
@@ -327,10 +327,10 @@ export default function OrgAdminPage() {
 
   if (error === "access_denied") {
     return (
-      <div className="min-h-screen bg-[#03101d] flex items-center justify-center flex-col gap-3 text-center px-4">
-        <p className="text-white/60 text-sm">This portal is only accessible to organization admins.</p>
-        <p className="text-white/30 text-xs">Ask your Coreframe admin to grant you the org_admin role.</p>
-        <Link href="/my-activity" className="text-cyan-400 text-sm hover:underline">← Back to My Activity</Link>
+      <div className="min-h-screen bg-paper-2 flex items-center justify-center flex-col gap-3 text-center px-4">
+        <p className="text-ink-2 text-sm">This portal is only accessible to organization admins.</p>
+        <p className="text-ink-3 text-xs">Ask your Coreframe admin to grant you the org_admin role.</p>
+        <Link href="/my-activity" className="text-blue text-sm hover:underline">← Back to My Activity</Link>
       </div>
     );
   }
@@ -347,19 +347,19 @@ export default function OrgAdminPage() {
 
   if (error === "not_deployed") {
     return (
-      <div className="min-h-screen bg-[#03101d] flex items-center justify-center flex-col gap-3 text-center px-4">
+      <div className="min-h-screen bg-paper-2 flex items-center justify-center flex-col gap-3 text-center px-4">
         <p className="text-amber-400 text-sm">Org portal API not yet available.</p>
-        <p className="text-white/30 text-xs">Rebuild and deploy the API container to enable this feature.</p>
-        <Link href="/my-activity" className="text-cyan-400 text-sm hover:underline">← Back</Link>
+        <p className="text-ink-3 text-xs">Rebuild and deploy the API container to enable this feature.</p>
+        <Link href="/my-activity" className="text-blue text-sm hover:underline">← Back</Link>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="min-h-screen bg-[#03101d] flex items-center justify-center flex-col gap-3 text-center px-4">
+      <div className="min-h-screen bg-paper-2 flex items-center justify-center flex-col gap-3 text-center px-4">
         <p className="text-red-400 text-sm">Failed to load ({error}). Please sign in again.</p>
-        <Link href="/login" className="text-cyan-400 text-sm hover:underline">Sign in</Link>
+        <Link href="/login" className="text-blue text-sm hover:underline">Sign in</Link>
       </div>
     );
   }
@@ -369,24 +369,24 @@ export default function OrgAdminPage() {
   const recentCount = team.filter((m) => m.last_login_at && Date.now() - new Date(m.last_login_at).getTime() < 7 * 86400000).length;
 
   return (
-    <div className="min-h-screen bg-[#03101d] text-white">
+    <div className="min-h-screen bg-paper-2 text-ink">
       {/* Top bar */}
-      <div className="border-b border-white/10 bg-[#05192e]/60 backdrop-blur px-6 py-4">
+      <div className="border-b border-rule bg-paper-2/60 backdrop-blur px-6 py-4">
         <div className="mx-auto max-w-7xl flex items-center justify-between gap-4 flex-wrap">
           <div>
-            <p className="text-[10px] text-white/30 uppercase tracking-widest mb-0.5">Org Admin Portal</p>
+            <p className="text-[10px] text-ink-3 uppercase tracking-widest mb-0.5">Org Admin Portal</p>
             <h1 className="text-lg font-semibold">{orgInfo?.org_name}</h1>
           </div>
           <div className="flex items-center gap-4 flex-wrap">
             {orgInfo?.email_domain && (
-              <span className="bg-cyan-400/10 text-cyan-300 border border-cyan-400/20 px-2.5 py-1 rounded-full text-xs font-medium">
+              <span className="bg-blue/10 text-blue border border-blue/20 px-2.5 py-1 rounded-full text-xs font-medium">
                 @{orgInfo.email_domain}
               </span>
             )}
             {orgInfo?.gstin ? (
               <button
                 onClick={() => { setBillingGstin(orgInfo.gstin || ""); setBillingState(orgInfo.billing_state || ""); setBillingMsg(null); setShowBilling(true); }}
-                className="bg-emerald-400/10 text-emerald-300 border border-emerald-400/20 px-2.5 py-1 rounded-full text-xs font-mono hover:bg-emerald-400/20 transition"
+                className="bg-blue/10 text-blue border border-blue/20 px-2.5 py-1 rounded-full text-xs font-mono hover:bg-blue/20 transition"
                 title="Edit GSTIN"
               >
                 GST: {orgInfo.gstin}
@@ -406,11 +406,11 @@ export default function OrgAdminPage() {
                 would put "monthly" back on the screen intermittently, which is
                 worse than showing nothing. */}
             {usage?.billing_mode && (
-              <span className={`text-xs px-2.5 py-1 rounded-full border font-medium ${usage.billing_mode === "postpaid" ? "bg-purple-400/10 text-purple-300 border-purple-400/20" : "bg-emerald-400/10 text-emerald-300 border-emerald-400/20"}`}>
+              <span className={`text-xs px-2.5 py-1 rounded-full border font-medium ${usage.billing_mode === "postpaid" ? "bg-purple-400/10 text-purple-300 border-purple-400/20" : "bg-blue/10 text-blue border-blue/20"}`}>
                 {usage.billing_mode}
               </span>
             )}
-            <Link href="/my-activity" className="text-cyan-400 hover:text-cyan-300 transition text-xs">
+            <Link href="/my-activity" className="text-blue hover:text-blue transition text-xs">
               ← My Activity
             </Link>
           </div>
@@ -426,34 +426,34 @@ export default function OrgAdminPage() {
             the team table rather than to a row of dashes. */}
         {usage && (
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="rounded-xl border border-cyan-400/20 bg-cyan-400/[0.05] px-5 py-4">
-              <p className="text-[11px] text-white/40 mb-1">Month to date</p>
+            <div className="rounded-cf border border-blue/20 bg-blue/[0.05] px-5 py-4">
+              <p className="text-[11px] text-ink-3 mb-1">Month to date</p>
               <p className="text-2xl font-bold">
                 ₹{usage.month_to_date.billed_rupees.toLocaleString("en-IN", { maximumFractionDigits: 0 })}
               </p>
-              <p className="text-[11px] text-white/40 mt-1">
+              <p className="text-[11px] text-ink-3 mt-1">
                 {usage.month_to_date.billable_hours.toFixed(1)} GPU-h · {usage.month_to_date.session_count} sessions
               </p>
             </div>
 
-            <div className="rounded-xl border border-white/10 bg-white/[0.03] px-5 py-4">
-              <p className="text-[11px] text-white/40 mb-1">Storage used</p>
+            <div className="rounded-cf border border-rule bg-paper-2 px-5 py-4">
+              <p className="text-[11px] text-ink-3 mb-1">Storage used</p>
               <p className="text-2xl font-bold">
                 {usage.storage.used_gb.toFixed(1)}
-                <span className="text-base font-normal text-white/40">
+                <span className="text-base font-normal text-ink-3">
                   {usage.storage.quota_gb ? ` / ${usage.storage.quota_gb} GB` : " GB"}
                 </span>
               </p>
               {usage.storage.percent_used !== null && (
-                <div className="mt-2 h-1.5 w-full rounded-full bg-white/10 overflow-hidden">
+                <div className="mt-2 h-1.5 w-full rounded-full bg-paper-2 overflow-hidden">
                   <div
-                    className={`h-full rounded-full ${usage.storage.percent_used >= 90 ? "bg-red-400" : usage.storage.percent_used >= 75 ? "bg-amber-400" : "bg-cyan-400"}`}
+                    className={`h-full rounded-full ${usage.storage.percent_used >= 90 ? "bg-red-400" : usage.storage.percent_used >= 75 ? "bg-amber-400" : "bg-blue"}`}
                     style={{ width: `${Math.max(2, usage.storage.percent_used)}%` }}
                   />
                 </div>
               )}
               {usage.storage.quota_gb === null && (
-                <p className="text-[11px] text-white/30 mt-1">No quota set</p>
+                <p className="text-[11px] text-ink-3 mt-1">No quota set</p>
               )}
               {/* An estimate must not look like a measurement. When the NAS is
                   unreachable this figure is summed from upload records and
@@ -465,37 +465,37 @@ export default function OrgAdminPage() {
               )}
             </div>
 
-            <div className="rounded-xl border border-white/10 bg-white/[0.03] px-5 py-4">
-              <p className="text-[11px] text-white/40 mb-1">Rendering now</p>
+            <div className="rounded-cf border border-rule bg-paper-2 px-5 py-4">
+              <p className="text-[11px] text-ink-3 mb-1">Rendering now</p>
               <p className="text-2xl font-bold">{usage.month_to_date.active_sessions}</p>
-              <p className="text-[11px] text-white/40 mt-1">of {usage.member_count} members</p>
+              <p className="text-[11px] text-ink-3 mt-1">of {usage.member_count} members</p>
             </div>
 
             {/* Prepaid shows the shared balance; postpaid shows credit consumed
                 against the limit. They are different questions and must not be
                 shown with the same label. */}
             {usage.billing_mode === "postpaid" ? (
-              <div className="rounded-xl border border-purple-400/20 bg-purple-400/[0.05] px-5 py-4">
-                <p className="text-[11px] text-white/40 mb-1">Credit used</p>
+              <div className="rounded-cf border border-purple-400/20 bg-purple-400/[0.05] px-5 py-4">
+                <p className="text-[11px] text-ink-3 mb-1">Credit used</p>
                 <p className="text-2xl font-bold">
                   ₹{(usage.credit_used_rupees ?? 0).toLocaleString("en-IN", { maximumFractionDigits: 0 })}
                   {usage.credit_limit_rupees != null && (
-                    <span className="text-base font-normal text-white/40">
+                    <span className="text-base font-normal text-ink-3">
                       {" / "}₹{usage.credit_limit_rupees.toLocaleString("en-IN", { maximumFractionDigits: 0 })}
                     </span>
                   )}
                 </p>
-                <p className="text-[11px] text-white/40 mt-1">
+                <p className="text-[11px] text-ink-3 mt-1">
                   {usage.credit_limit_rupees == null ? "No limit set · invoiced monthly" : "Invoiced monthly"}
                 </p>
               </div>
             ) : (
-              <div className="rounded-xl border border-emerald-400/20 bg-emerald-400/[0.05] px-5 py-4">
-                <p className="text-[11px] text-white/40 mb-1">Shared balance</p>
+              <div className="rounded-cf border border-blue/20 bg-blue/[0.05] px-5 py-4">
+                <p className="text-[11px] text-ink-3 mb-1">Shared balance</p>
                 <p className="text-2xl font-bold">
                   ₹{usage.balance_rupees.toLocaleString("en-IN", { maximumFractionDigits: 0 })}
                 </p>
-                <p className="text-[11px] text-white/40 mt-1">Funds every member&apos;s sessions</p>
+                <p className="text-[11px] text-ink-3 mt-1">Funds every member&apos;s sessions</p>
               </div>
             )}
           </div>
@@ -509,21 +509,21 @@ export default function OrgAdminPage() {
             { label: "Active (7d)", value: recentCount },
             { label: "GPU Hours", value: totalHours.toFixed(1) + " h" },
           ].map((s) => (
-            <div key={s.label} className="rounded-xl border border-white/10 bg-white/[0.03] px-5 py-4">
-              <p className="text-[11px] text-white/40 mb-1">{s.label}</p>
+            <div key={s.label} className="rounded-cf border border-rule bg-paper-2 px-5 py-4">
+              <p className="text-[11px] text-ink-3 mb-1">{s.label}</p>
               <p className="text-2xl font-bold">{s.value}</p>
             </div>
           ))}
 
           {/* Wallet card */}
-          <div className="rounded-xl border border-emerald-400/20 bg-emerald-400/5 px-5 py-4 flex flex-col justify-between">
+          <div className="rounded-cf border border-blue/20 bg-blue/5 px-5 py-4 flex flex-col justify-between">
             <div>
-              <p className="text-[11px] text-emerald-300/60 mb-1">Wallet Balance</p>
-              <p className="text-2xl font-bold text-emerald-300">₹{(orgInfo?.wallet_balance_rupees ?? 0).toFixed(2)}</p>
+              <p className="text-[11px] text-blue/60 mb-1">Wallet Balance</p>
+              <p className="text-2xl font-bold text-blue">₹{(orgInfo?.wallet_balance_rupees ?? 0).toFixed(2)}</p>
             </div>
             <button
               onClick={() => { setShowTopup(true); setTopupMsg(null); }}
-              className="mt-3 text-xs font-semibold text-emerald-300 border border-emerald-400/30 rounded-lg px-3 py-1.5 hover:bg-emerald-400/10 transition"
+              className="mt-3 text-xs font-semibold text-blue border border-blue/30 rounded-cf px-3 py-1.5 hover:bg-blue/10 transition"
             >
               + Add Funds
             </button>
@@ -532,35 +532,35 @@ export default function OrgAdminPage() {
 
         {/* Wallet topup modal */}
         {showTopup && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4">
-            <div className="w-full max-w-sm rounded-2xl border border-white/10 bg-[#0d1f35] p-6 shadow-2xl">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/50 backdrop-blur-sm px-4">
+            <div className="w-full max-w-sm rounded-cf border border-rule bg-paper-2 p-6 shadow-2xl">
               <h2 className="text-base font-semibold mb-1">Record a bank transfer</h2>
               {/* States plainly that this is a claim, not a payment. A customer
                   who thinks the money is available and then has a session
                   refused concludes the platform is broken. */}
-              <p className="text-xs text-white/40 mb-5">
+              <p className="text-xs text-ink-3 mb-5">
                 Transfer to the Coreframe account, then enter the details below.
                 Your balance is credited once we confirm the transfer — usually
                 within one business day.
               </p>
               <form onSubmit={handleTopup} className="space-y-3">
                 <div>
-                  <label className="text-xs text-white/50 mb-1 block">Amount transferred (₹)</label>
+                  <label className="text-xs text-ink-2 mb-1 block">Amount transferred (₹)</label>
                   <input
                     type="number" min="1" step="1" required
                     value={topupAmount} onChange={(e) => setTopupAmount(e.target.value)}
                     placeholder="e.g. 5000"
-                    className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-white placeholder-white/25 focus:outline-none focus:border-emerald-400/50"
+                    className="w-full rounded-cf border border-rule bg-paper-2 px-4 py-2.5 text-sm text-ink placeholder-white/25 focus:outline-none focus:border-blue/50"
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-white/50 mb-1 block">Paid by</label>
+                  <label className="text-xs text-ink-2 mb-1 block">Paid by</label>
                   <select
                     value={topupMethod} onChange={(e) => setTopupMethod(e.target.value)}
-                    className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-400/50"
+                    className="w-full rounded-cf border border-rule bg-paper-2 px-4 py-2.5 text-sm text-ink focus:outline-none focus:border-blue/50"
                   >
                     {["neft", "rtgs", "imps", "upi", "cheque", "other"].map((m) => (
-                      <option key={m} value={m} className="bg-[#0d1f35]">{m.toUpperCase()}</option>
+                      <option key={m} value={m} className="bg-paper-2">{m.toUpperCase()}</option>
                     ))}
                   </select>
                 </div>
@@ -568,43 +568,43 @@ export default function OrgAdminPage() {
                   {/* Required, not optional. This is the string an admin searches
                       for in the bank statement — without it the claim cannot be
                       confirmed and the money cannot be credited. */}
-                  <label className="text-xs text-white/50 mb-1 block">UTR / transaction reference</label>
+                  <label className="text-xs text-ink-2 mb-1 block">UTR / transaction reference</label>
                   <input
                     type="text" required minLength={4}
                     value={topupRef} onChange={(e) => setTopupRef(e.target.value)}
                     placeholder="e.g. SBIN0123456789"
-                    className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-white placeholder-white/25 focus:outline-none focus:border-emerald-400/50 font-mono"
+                    className="w-full rounded-cf border border-rule bg-paper-2 px-4 py-2.5 text-sm text-ink placeholder-white/25 focus:outline-none focus:border-blue/50 font-mono"
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-white/50 mb-1 block">Date of transfer</label>
+                  <label className="text-xs text-ink-2 mb-1 block">Date of transfer</label>
                   <input
                     type="date"
                     value={topupPaidAt} onChange={(e) => setTopupPaidAt(e.target.value)}
-                    className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-400/50"
+                    className="w-full rounded-cf border border-rule bg-paper-2 px-4 py-2.5 text-sm text-ink focus:outline-none focus:border-blue/50"
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-white/50 mb-1 block">Note (optional)</label>
+                  <label className="text-xs text-ink-2 mb-1 block">Note (optional)</label>
                   <input
                     type="text"
                     value={topupNote} onChange={(e) => setTopupNote(e.target.value)}
                     placeholder="Anything we should know"
-                    className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-white placeholder-white/25 focus:outline-none focus:border-emerald-400/50"
+                    className="w-full rounded-cf border border-rule bg-paper-2 px-4 py-2.5 text-sm text-ink placeholder-white/25 focus:outline-none focus:border-blue/50"
                   />
                 </div>
                 {topupMsg && (
-                  <p className={`text-xs rounded-lg px-3 py-2 ${topupMsg.ok ? "bg-emerald-400/10 text-emerald-300" : "bg-red-400/10 text-red-300"}`}>
+                  <p className={`text-xs rounded-cf px-3 py-2 ${topupMsg.ok ? "bg-blue/10 text-blue" : "bg-red-400/10 text-red-300"}`}>
                     {topupMsg.text}
                   </p>
                 )}
                 <div className="flex gap-3 pt-1">
                   <button type="submit" disabled={topupLoading}
-                    className="flex-1 rounded-xl bg-emerald-400 px-4 py-2.5 text-sm font-semibold text-slate-900 hover:bg-emerald-300 transition disabled:opacity-50">
+                    className="flex-1 rounded-cf bg-blue px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue transition disabled:opacity-50">
                     {topupLoading ? "Submitting…" : "Submit for confirmation"}
                   </button>
                   <button type="button" onClick={() => setShowTopup(false)}
-                    className="rounded-xl border border-white/10 px-4 py-2.5 text-sm text-white/60 hover:bg-white/5 transition">
+                    className="rounded-cf border border-rule px-4 py-2.5 text-sm text-ink-2 hover:bg-paper-2 transition">
                     Cancel
                   </button>
                 </div>
@@ -615,45 +615,45 @@ export default function OrgAdminPage() {
 
         {/* Invite modal */}
         {showInvite && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4">
-            <div className="w-full max-w-sm rounded-2xl border border-white/10 bg-[#0d1f35] p-6 shadow-2xl">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/50 backdrop-blur-sm px-4">
+            <div className="w-full max-w-sm rounded-cf border border-rule bg-paper-2 p-6 shadow-2xl">
               <h2 className="text-base font-semibold mb-1">Invite Team Member</h2>
               {orgInfo?.email_domain && (
-                <p className="text-xs text-white/40 mb-5">
-                  Only <span className="text-cyan-300">@{orgInfo.email_domain}</span> addresses can be invited.
+                <p className="text-xs text-ink-3 mb-5">
+                  Only <span className="text-blue">@{orgInfo.email_domain}</span> addresses can be invited.
                 </p>
               )}
               <form onSubmit={handleInvite} className="space-y-3">
                 <div>
-                  <label className="text-xs text-white/50 mb-1 block">Full Name</label>
+                  <label className="text-xs text-ink-2 mb-1 block">Full Name</label>
                   <input
                     type="text" required
                     value={inviteName} onChange={(e) => setInviteName(e.target.value)}
                     placeholder="Jane Smith"
-                    className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-white placeholder-white/25 focus:outline-none focus:border-cyan-400/50"
+                    className="w-full rounded-cf border border-rule bg-paper-2 px-4 py-2.5 text-sm text-ink placeholder-white/25 focus:outline-none focus:border-blue/50"
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-white/50 mb-1 block">Work Email</label>
+                  <label className="text-xs text-ink-2 mb-1 block">Work Email</label>
                   <input
                     type="email" required
                     value={inviteEmail} onChange={(e) => setInviteEmail(e.target.value)}
                     placeholder={`jane@${orgInfo?.email_domain ?? "yourcompany.com"}`}
-                    className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-white placeholder-white/25 focus:outline-none focus:border-cyan-400/50"
+                    className="w-full rounded-cf border border-rule bg-paper-2 px-4 py-2.5 text-sm text-ink placeholder-white/25 focus:outline-none focus:border-blue/50"
                   />
                 </div>
                 {inviteMsg && (
-                  <p className={`text-xs rounded-lg px-3 py-2 ${inviteMsg.ok ? "bg-emerald-400/10 text-emerald-300" : "bg-red-400/10 text-red-300"}`}>
+                  <p className={`text-xs rounded-cf px-3 py-2 ${inviteMsg.ok ? "bg-blue/10 text-blue" : "bg-red-400/10 text-red-300"}`}>
                     {inviteMsg.text}
                   </p>
                 )}
                 <div className="flex gap-3 pt-1">
                   <button type="submit" disabled={inviteLoading}
-                    className="flex-1 rounded-xl bg-cyan-400 px-4 py-2.5 text-sm font-semibold text-slate-900 hover:bg-cyan-300 transition disabled:opacity-50">
+                    className="flex-1 rounded-cf bg-blue px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue transition disabled:opacity-50">
                     {inviteLoading ? "Sending…" : "Send Invite"}
                   </button>
                   <button type="button" onClick={() => { setShowInvite(false); setInviteMsg(null); }}
-                    className="rounded-xl border border-white/10 px-4 py-2.5 text-sm text-white/60 hover:bg-white/5 transition">
+                    className="rounded-cf border border-rule px-4 py-2.5 text-sm text-ink-2 hover:bg-paper-2 transition">
                     Cancel
                   </button>
                 </div>
@@ -665,7 +665,7 @@ export default function OrgAdminPage() {
         {/* Pending membership requests — only rendered when there are any, so
             the page is unchanged for an org with nothing waiting. */}
         {pending.length > 0 && (
-          <div className="mb-6 rounded-xl border border-amber-400/25 bg-amber-400/[0.06] overflow-hidden">
+          <div className="mb-6 rounded-cf border border-amber-400/25 bg-amber-400/[0.06] overflow-hidden">
             <div className="px-5 py-3 border-b border-amber-400/20">
               <h2 className="text-sm font-semibold text-amber-200">
                 Waiting for your approval ({pending.length})
@@ -676,31 +676,31 @@ export default function OrgAdminPage() {
                 their own wallet — this decision is only about who pays.
               </p>
             </div>
-            <div className="divide-y divide-white/5">
+            <div className="divide-y divide-rule">
               {pending.map((m) => (
                 <div key={m.user_id} className="flex flex-wrap items-center gap-3 px-5 py-4">
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium text-white">
+                      <span className="text-sm font-medium text-ink">
                         {m.full_name || m.email}
                       </span>
                       {m.identity_verified ? (
-                        <span className="rounded-full border border-emerald-400/25 bg-emerald-400/10 px-2 py-0.5 text-[10px] font-medium text-emerald-300">
+                        <span className="rounded-full border border-blue/25 bg-blue/10 px-2 py-0.5 text-[10px] font-medium text-blue">
                           identity verified
                         </span>
                       ) : (
-                        <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[10px] text-white/50">
+                        <span className="rounded-full border border-rule bg-paper-2 px-2 py-0.5 text-[10px] text-ink-2">
                           identity pending
                         </span>
                       )}
                     </div>
-                    <div className="mt-0.5 text-xs text-white/50">{m.email}</div>
+                    <div className="mt-0.5 text-xs text-ink-2">{m.email}</div>
                     {m.identity_name && m.identity_name !== m.full_name && (
-                      <div className="mt-0.5 text-xs text-white/40">
+                      <div className="mt-0.5 text-xs text-ink-3">
                         Verified as {m.identity_name}
                       </div>
                     )}
-                    <div className="mt-0.5 text-[11px] text-white/35">
+                    <div className="mt-0.5 text-[11px] text-ink-3">
                       Requested {ago(m.requested_at)}
                     </div>
                   </div>
@@ -708,14 +708,14 @@ export default function OrgAdminPage() {
                     <button
                       onClick={() => decideMembership(m, true)}
                       disabled={decidingId === m.user_id}
-                      className="rounded-lg bg-emerald-500/90 px-3 py-1.5 text-xs font-medium text-white hover:bg-emerald-500 disabled:opacity-50"
+                      className="rounded-cf bg-blue/90 px-3 py-1.5 text-xs font-medium text-white hover:bg-blue disabled:opacity-50"
                     >
                       {decidingId === m.user_id ? "…" : "Approve"}
                     </button>
                     <button
                       onClick={() => decideMembership(m, false)}
                       disabled={decidingId === m.user_id}
-                      className="rounded-lg border border-white/15 px-3 py-1.5 text-xs font-medium text-white/70 hover:bg-white/5 disabled:opacity-50"
+                      className="rounded-cf border border-rule px-3 py-1.5 text-xs font-medium text-ink-2 hover:bg-paper-2 disabled:opacity-50"
                     >
                       Decline
                     </button>
@@ -727,8 +727,8 @@ export default function OrgAdminPage() {
         )}
 
         {/* Team table */}
-        <div className="rounded-xl border border-white/10 bg-white/[0.02] overflow-hidden">
-          <div className="flex items-center justify-between gap-3 px-5 py-3 border-b border-white/10 flex-wrap">
+        <div className="rounded-cf border border-rule bg-paper-2 overflow-hidden">
+          <div className="flex items-center justify-between gap-3 px-5 py-3 border-b border-rule flex-wrap">
             <h2 className="text-sm font-semibold">Team Members</h2>
             <div className="flex items-center gap-2">
               <input
@@ -736,11 +736,11 @@ export default function OrgAdminPage() {
                 placeholder="Search name / email…"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-white placeholder-white/30 focus:outline-none focus:border-cyan-400/50 w-48"
+                className="rounded-cf border border-rule bg-paper-2 px-3 py-1.5 text-sm text-ink placeholder-white/30 focus:outline-none focus:border-blue/50 w-48"
               />
               <button
                 onClick={() => { setShowInvite(true); setInviteMsg(null); }}
-                className="inline-flex items-center gap-1.5 rounded-lg bg-cyan-400 px-3 py-1.5 text-sm font-semibold text-slate-900 hover:bg-cyan-300 transition"
+                className="inline-flex items-center gap-1.5 rounded-cf bg-blue px-3 py-1.5 text-sm font-semibold text-white hover:bg-blue transition"
               >
                 + Invite
               </button>
@@ -750,7 +750,7 @@ export default function OrgAdminPage() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-white/10 text-left text-[11px] text-white/40 uppercase tracking-wide">
+                <tr className="border-b border-rule text-left text-[11px] text-ink-3 uppercase tracking-wide">
                   {/* Name and email in ONE column. Eleven columns overflowed
                       horizontally, and the two that identify the person were the
                       first to scroll out of view — leaving a table of numbers
@@ -760,48 +760,48 @@ export default function OrgAdminPage() {
                   ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/5">
+              <tbody className="divide-y divide-rule">
                 {filtered.length === 0 ? (
                   <tr>
-                    <td colSpan={10} className="px-4 py-8 text-center text-white/30 text-sm">
+                    <td colSpan={10} className="px-4 py-8 text-center text-ink-3 text-sm">
                       {search ? "No members match your search." : "No team members yet. Use '+ Invite' to add someone."}
                     </td>
                   </tr>
                 ) : (
                   filtered.map((m) => (
-                    <tr key={m.id} className={`hover:bg-white/[0.02] transition ${m.status !== "active" ? "opacity-50" : ""}`}>
+                    <tr key={m.id} className={`hover:bg-paper-2 transition ${m.status !== "active" ? "opacity-50" : ""}`}>
                       <td className="px-4 py-3 whitespace-nowrap">
                         <div className="font-medium">{m.full_name || "—"}</div>
-                        <div className="text-xs text-white/50">{m.email}</div>
+                        <div className="text-xs text-ink-2">{m.email}</div>
                       </td>
                       <td className="px-4 py-3">
-                        <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[11px] font-medium ${m.role === "org_admin" ? "bg-cyan-400/15 text-cyan-300 border-cyan-400/25" : "bg-white/10 text-white/60 border-white/10"}`}>
+                        <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[11px] font-medium ${m.role === "org_admin" ? "bg-blue/15 text-blue border-blue/25" : "bg-paper-2 text-ink-2 border-rule"}`}>
                           {m.role}
                         </span>
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap">
-                        <span className={`inline-block h-2 w-2 rounded-full mr-1.5 ${m.status === "active" ? "bg-emerald-400" : "bg-red-400"}`} />
-                        <span className="text-white/60 text-xs">{m.status}</span>
+                        <span className={`inline-block h-2 w-2 rounded-full mr-1.5 ${m.status === "active" ? "bg-blue" : "bg-red-400"}`} />
+                        <span className="text-ink-2 text-xs">{m.status}</span>
                       </td>
-                      <td className="px-4 py-3 text-white/40 text-xs capitalize">
+                      <td className="px-4 py-3 text-ink-3 text-xs capitalize">
                         {m.identity_provider === "google" ? "🔵 Google" : m.identity_provider === "local" || m.identity_provider === "invited" ? "📧 Email" : m.identity_provider ?? "—"}
                       </td>
-                      <td className="px-4 py-3 text-white/40 text-xs whitespace-nowrap">
+                      <td className="px-4 py-3 text-ink-3 text-xs whitespace-nowrap">
                         {new Date(m.enrolled_at).toLocaleDateString()}
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap">
                         {m.last_login_at
-                          ? <span className="text-white/60 text-xs">{ago(m.last_login_at)}</span>
-                          : <span className="text-white/25 text-xs">Never</span>}
+                          ? <span className="text-ink-2 text-xs">{ago(m.last_login_at)}</span>
+                          : <span className="text-ink-3 text-xs">Never</span>}
                       </td>
-                      <td className="px-4 py-3 text-center text-white/60 text-xs">{m.session_count}</td>
-                      <td className="px-4 py-3 text-center text-white/60 text-xs">{m.billable_hours.toFixed(1)}</td>
-                      <td className="px-4 py-3 text-white/40 text-xs">{formatBytes(m.storage_bytes)}</td>
+                      <td className="px-4 py-3 text-center text-ink-2 text-xs">{m.session_count}</td>
+                      <td className="px-4 py-3 text-center text-ink-2 text-xs">{m.billable_hours.toFixed(1)}</td>
+                      <td className="px-4 py-3 text-ink-3 text-xs">{formatBytes(m.storage_bytes)}</td>
                       <td className="px-4 py-3">
                         {m.role !== "org_admin" && (
                           <button
                             onClick={() => toggleMemberStatus(m)}
-                            className={`text-xs px-2.5 py-1 rounded-lg border transition ${m.status === "active" ? "border-red-400/30 text-red-400 hover:bg-red-400/10" : "border-emerald-400/30 text-emerald-400 hover:bg-emerald-400/10"}`}
+                            className={`text-xs px-2.5 py-1 rounded-cf border transition ${m.status === "active" ? "border-red-400/30 text-red-400 hover:bg-red-400/10" : "border-blue/30 text-blue hover:bg-blue/10"}`}
                           >
                             {m.status === "active" ? "Deactivate" : "Activate"}
                           </button>
@@ -815,39 +815,39 @@ export default function OrgAdminPage() {
           </div>
         </div>
 
-        <p className="text-xs text-white/25 text-center">
-          New users with <strong className="text-white/40">@{orgInfo?.email_domain}</strong> emails are auto-enrolled on signup.
+        <p className="text-xs text-ink-3 text-center">
+          New users with <strong className="text-ink-3">@{orgInfo?.email_domain}</strong> emails are auto-enrolled on signup.
           For billing or domain changes contact{" "}
-          <a href="mailto:support@coreframecloud.com" className="text-cyan-400/60 hover:text-cyan-400">support@coreframecloud.com</a>.
+          <a href="mailto:support@coreframecloud.com" className="text-blue/60 hover:text-blue">support@coreframecloud.com</a>.
         </p>
       </div>
 
       {/* ── Billing Profile Modal ─────────────────────────────────────────── */}
       {showBilling && (
-        <div className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4">
-          <div className="bg-[#0a1628] border border-white/10 rounded-2xl p-6 w-full max-w-md">
+        <div className="fixed inset-0 bg-term/70 z-50 flex items-center justify-center p-4">
+          <div className="bg-paper-2 border border-rule rounded-cf p-6 w-full max-w-md">
             <h3 className="text-base font-semibold mb-1">GST Billing Profile</h3>
-            <p className="text-white/40 text-xs mb-5">
+            <p className="text-ink-3 text-xs mb-5">
               Your GSTIN appears on all invoices as the buyer. Required to claim GST input tax credit.
             </p>
             <form onSubmit={handleBillingUpdate} className="space-y-4">
               <div>
-                <label className="block text-xs text-white/50 mb-1.5">GSTIN <span className="text-white/30">(optional)</span></label>
+                <label className="block text-xs text-ink-2 mb-1.5">GSTIN <span className="text-ink-3">(optional)</span></label>
                 <input
                   type="text"
                   value={billingGstin}
                   onChange={(e) => setBillingGstin(e.target.value.toUpperCase())}
                   placeholder="e.g. 29ABCDE1234F1Z5"
                   maxLength={15}
-                  className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder-white/25 focus:outline-none focus:border-cyan-400/50 font-mono tracking-wider"
+                  className="w-full rounded-cf border border-rule bg-paper-2 px-3 py-2 text-sm text-ink placeholder-white/25 focus:outline-none focus:border-blue/50 font-mono tracking-wider"
                 />
               </div>
               <div>
-                <label className="block text-xs text-white/50 mb-1.5">Billing State <span className="text-white/30">(for CGST/SGST vs IGST routing)</span></label>
+                <label className="block text-xs text-ink-2 mb-1.5">Billing State <span className="text-ink-3">(for CGST/SGST vs IGST routing)</span></label>
                 <select
                   value={billingState}
                   onChange={(e) => setBillingState(e.target.value)}
-                  className="w-full rounded-lg border border-white/10 bg-[#0a1628] px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-400/50"
+                  className="w-full rounded-cf border border-rule bg-paper-2 px-3 py-2 text-sm text-ink focus:outline-none focus:border-blue/50"
                 >
                   <option value="">— Select state —</option>
                   {["Andhra Pradesh","Arunachal Pradesh","Assam","Bihar","Chhattisgarh","Goa","Gujarat","Haryana","Himachal Pradesh","Jharkhand","Karnataka","Kerala","Madhya Pradesh","Maharashtra","Manipur","Meghalaya","Mizoram","Nagaland","Odisha","Punjab","Rajasthan","Sikkim","Tamil Nadu","Telangana","Tripura","Uttar Pradesh","Uttarakhand","West Bengal","Delhi","Jammu and Kashmir","Ladakh","Chandigarh","Puducherry"].map((s) => (
@@ -856,17 +856,17 @@ export default function OrgAdminPage() {
                 </select>
               </div>
               {billingMsg && (
-                <p className={`text-xs px-3 py-2 rounded-lg ${billingMsg.ok ? "bg-emerald-400/10 text-emerald-300" : "bg-red-400/10 text-red-300"}`}>
+                <p className={`text-xs px-3 py-2 rounded-cf ${billingMsg.ok ? "bg-blue/10 text-blue" : "bg-red-400/10 text-red-300"}`}>
                   {billingMsg.text}
                 </p>
               )}
               <div className="flex gap-2 pt-1">
                 <button type="submit" disabled={billingLoading}
-                  className="flex-1 rounded-xl bg-cyan-400 px-4 py-2.5 text-sm font-semibold text-slate-900 hover:bg-cyan-300 transition disabled:opacity-50">
+                  className="flex-1 rounded-cf bg-blue px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue transition disabled:opacity-50">
                   {billingLoading ? "Saving…" : "Save"}
                 </button>
                 <button type="button" onClick={() => { setShowBilling(false); setBillingMsg(null); }}
-                  className="rounded-xl border border-white/10 px-4 py-2.5 text-sm text-white/60 hover:bg-white/5 transition">
+                  className="rounded-cf border border-rule px-4 py-2.5 text-sm text-ink-2 hover:bg-paper-2 transition">
                   Cancel
                 </button>
               </div>

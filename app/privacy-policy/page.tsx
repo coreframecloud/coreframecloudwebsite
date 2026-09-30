@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section>
-      <h2 className="text-xl font-semibold text-white">{title}</h2>
+      <h2 className="text-xl font-semibold text-ink">{title}</h2>
       <div className="mt-3 space-y-3">{children}</div>
     </section>
   );
@@ -20,15 +20,15 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 
 export default function PrivacyPolicyPage() {
   return (
-    <main className="relative min-h-screen border-b border-white/10 text-white">
+    <main className="relative min-h-screen border-b border-rule text-ink">
       <BackgroundGlow />
 
       <div className="relative mx-auto max-w-3xl px-6 py-20 sm:py-28">
-        <div className="text-sm font-semibold uppercase tracking-widest text-cyan-300">Legal</div>
+        <div className="text-sm font-semibold uppercase tracking-widest text-blue">Legal</div>
         <h1 className="mt-3 text-4xl font-bold tracking-tight">Privacy Policy</h1>
-        <p className="mt-2 text-sm text-white/40">Effective from June 28, 2026</p>
+        <p className="mt-2 text-sm text-ink-3">Effective from June 28, 2026</p>
 
-        <div className="mt-10 space-y-10 text-base leading-8 text-white/70">
+        <div className="mt-10 space-y-10 text-base leading-8 text-ink-2">
 
           <Section title="Our commitment">
             <p>Coreframe Compute Labs Private Limited (&ldquo;Coreframe&rdquo;) follows these principles to protect your privacy:</p>
@@ -69,15 +69,15 @@ export default function PrivacyPolicyPage() {
           <Section title="4. Data sharing">
             <p>We do not sell your data. We share it only with service providers strictly necessary to operate the platform:</p>
             <ul className="list-disc space-y-1.5 pl-6">
-              <li><strong className="text-white">Razorpay</strong> — payment processing (<Link href="https://razorpay.com/privacy/" target="_blank" rel="noreferrer" className="text-cyan-400 hover:underline">Privacy Policy</Link>)</li>
-              <li><strong className="text-white">Resend</strong> — transactional email delivery</li>
-              <li><strong className="text-white">Google</strong> — if you use &ldquo;Sign in with Google&rdquo;, your Google profile email and name are shared with us via OAuth</li>
+              <li><strong className="text-ink">Razorpay</strong> — payment processing (<Link href="https://razorpay.com/privacy/" target="_blank" rel="noreferrer" className="text-blue hover:underline">Privacy Policy</Link>)</li>
+              <li><strong className="text-ink">Resend</strong> — transactional email delivery</li>
+              <li><strong className="text-ink">Google</strong> — if you use &ldquo;Sign in with Google&rdquo;, your Google profile email and name are shared with us via OAuth</li>
               <li>Government or regulatory authorities, if legally required</li>
             </ul>
           </Section>
 
           <Section title="5. Payment data">
-            <p>All payment processing is handled by <strong className="text-white">Razorpay</strong>, a PCI-DSS compliant payment gateway. Coreframe stores only the last 4 digits of a card and a payment token reference — never full card numbers or CVV codes.</p>
+            <p>All payment processing is handled by <strong className="text-ink">Razorpay</strong>, a PCI-DSS compliant payment gateway. Coreframe stores only the last 4 digits of a card and a payment token reference — never full card numbers or CVV codes.</p>
           </Section>
 
           <Section title="6. Data security">
@@ -96,7 +96,7 @@ export default function PrivacyPolicyPage() {
               <li>Request deletion of your data</li>
               <li>Withdraw consent for optional communications</li>
             </ul>
-            <p>To exercise any of these rights, email us at <Link href="mailto:admin@coreframecloud.com" className="text-cyan-400 hover:underline">admin@coreframecloud.com</Link>.</p>
+            <p>To exercise any of these rights, email us at <Link href="mailto:admin@coreframecloud.com" className="text-blue hover:underline">admin@coreframecloud.com</Link>.</p>
           </Section>
 
           <Section title="9. Customer data responsibility">
@@ -109,25 +109,25 @@ export default function PrivacyPolicyPage() {
 
           <Section title="11. Contact">
             <p>
-              <strong className="text-white">Coreframe Compute Labs Private Limited</strong><br />
+              <strong className="text-ink">Coreframe Compute Labs Private Limited</strong><br />
               {/* The GST-registered wording, not the building name. This block
                   is matched against the certificate; see lib/company.ts. */}
               {COMPANY_ADDRESS_FULL}<br />
               GSTIN: {COMPANY.gstin}
             </p>
             <p>
-              <Link href="mailto:admin@coreframecloud.com" className="text-cyan-400 hover:underline">admin@coreframecloud.com</Link>
+              <Link href="mailto:admin@coreframecloud.com" className="text-blue hover:underline">admin@coreframecloud.com</Link>
               {" · "}
-              <Link href="https://wa.me/916366889488" target="_blank" rel="noreferrer" className="text-cyan-400 hover:underline">WhatsApp +91 63668 89488</Link>
+              <Link href="https://wa.me/916366889488" target="_blank" rel="noreferrer" className="text-blue hover:underline">WhatsApp +91 63668 89488</Link>
             </p>
           </Section>
 
         </div>
 
-        <div className="mt-12 border-t border-white/8 pt-8 text-sm text-white/40">
-          <Link href="/refunds" className="text-cyan-400 hover:underline">Refunds and chargebacks</Link>
+        <div className="mt-12 border-t border-rule pt-8 text-sm text-ink-3">
+          <Link href="/refunds" className="text-blue hover:underline">Refunds and chargebacks</Link>
           <span className="mx-3">·</span>
-          <Link href="/login" className="text-cyan-400 hover:underline">Sign in</Link>
+          <Link href="/login" className="text-blue hover:underline">Sign in</Link>
           <span className="mx-3">·</span>
           <span>© {new Date().getFullYear()} Coreframe Compute Labs Private Limited</span>
         </div>

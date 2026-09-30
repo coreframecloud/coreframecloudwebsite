@@ -75,18 +75,18 @@ export default async function ComparisonPage() {
   ];
 
   return (
-    <div className="relative min-h-screen text-white">
+    <div className="relative min-h-screen text-ink">
       <BackgroundGlow />
 
       <main className="relative mx-auto max-w-3xl px-6 pb-24 pt-20 md:pt-28">
-        <div className="text-sm font-medium uppercase tracking-[0.25em] text-cyan-300">
+        <div className="text-sm font-medium uppercase tracking-[0.25em] text-blue">
           Comparison
         </div>
         <h1 className="mt-3 text-4xl font-semibold tracking-tight md:text-5xl">
           Renting a cloud GPU vs buying a workstation
         </h1>
 
-        <p className="mt-8 text-lg leading-8 text-slate-200">
+        <p className="mt-8 text-lg leading-8 text-ink">
           The honest answer is that it depends on how many hours a year you
           actually render, and the number where it flips is calculable. This page
           shows the arithmetic rather than asserting a conclusion, and it says
@@ -97,10 +97,10 @@ export default async function ComparisonPage() {
           <h2 className="text-2xl font-semibold tracking-tight">
             What owning actually costs
           </h2>
-          <p className="mt-4 leading-8 text-slate-300">
+          <p className="mt-4 leading-8 text-ink-2">
             A workstation that renders comfortably — an RTX-class card with 16 GB
             of VRAM, 64 GB of system memory and a CPU to match — lands at roughly{" "}
-            <strong className="font-semibold text-white">
+            <strong className="font-semibold text-ink">
               {inr(WORKSTATION_RUPEES)}
             </strong>{" "}
             in India once GST and import costs are in. That is the number to
@@ -108,7 +108,7 @@ export default async function ComparisonPage() {
             depreciates, occupies desk space and power, and is still on the books
             if a hire does not work out or a project is cancelled.
           </p>
-          <p className="mt-4 leading-8 text-slate-300">
+          <p className="mt-4 leading-8 text-ink-2">
             The part people underestimate is utilisation. Visualisation work is
             bursty by nature. A studio that renders hard for four days before a
             client presentation and barely at all for the following three weeks
@@ -118,30 +118,30 @@ export default async function ComparisonPage() {
         </section>
 
         {hourly && breakEvenHours != null ? (
-          <section className="mt-14 rounded-2xl border border-cyan-400/20 bg-cyan-400/[0.05] p-6">
+          <section className="mt-14 rounded-cf border border-blue/20 bg-blue/[0.05] p-6">
             <h2 className="text-xl font-semibold tracking-tight">
               The break-even, in hours
             </h2>
-            <p className="mt-4 leading-8 text-slate-300">
+            <p className="mt-4 leading-8 text-ink-2">
               At {hourly} including GST, {inr(WORKSTATION_RUPEES)} of hardware buys{" "}
-              <strong className="font-semibold text-white">
+              <strong className="font-semibold text-ink">
                 about {breakEvenHours.toLocaleString("en-IN")} hours
               </strong>{" "}
               of rented workstation time. At {hoursPerWeek} hours of rendering a
               week — a fair figure for a small studio — that is roughly{" "}
-              <strong className="font-semibold text-white">
+              <strong className="font-semibold text-ink">
                 {breakEvenYears} years
               </strong>{" "}
               before the purchase would have been the cheaper choice, by which
               point the card is two generations old.
             </p>
-            <p className="mt-4 leading-8 text-slate-300">
+            <p className="mt-4 leading-8 text-ink-2">
               Render more than that and owning starts to win on cost. Render
               less, and you are buying idle time. Both figures are computed on
               this page from the live rate card, so you are checking the
               arithmetic against the price we actually charge.
             </p>
-            <p className="mt-4 text-sm leading-7 text-slate-400">
+            <p className="mt-4 text-sm leading-7 text-ink-2">
               This is a hardware cost comparison, not financial advice, and it
               ignores tax treatment, financing and resale value — all of which
               differ by business and are worth asking your accountant about.
@@ -150,24 +150,24 @@ export default async function ComparisonPage() {
         ) : null}
 
         <div className="mt-14 grid gap-6 md:grid-cols-2">
-          <section className="rounded-2xl border border-white/[0.08] bg-white/[0.02] p-6">
+          <section className="rounded-cf border border-rule bg-paper-2 p-6">
             <h2 className="text-lg font-semibold">Renting is the better call when</h2>
             <ul className="mt-4 space-y-3">
               {rentWins.map((p) => (
-                <li key={p} className="flex gap-3 text-sm leading-7 text-slate-300">
-                  <span className="mt-3 h-1.5 w-1.5 shrink-0 rounded-full bg-cyan-400/70" />
+                <li key={p} className="flex gap-3 text-sm leading-7 text-ink-2">
+                  <span className="mt-3 h-1.5 w-1.5 shrink-0 rounded-full bg-blue/70" />
                   <span>{p}</span>
                 </li>
               ))}
             </ul>
           </section>
 
-          <section className="rounded-2xl border border-white/[0.08] bg-white/[0.02] p-6">
+          <section className="rounded-cf border border-rule bg-paper-2 p-6">
             <h2 className="text-lg font-semibold">Buying is the better call when</h2>
             <ul className="mt-4 space-y-3">
               {buyWins.map((p) => (
-                <li key={p} className="flex gap-3 text-sm leading-7 text-slate-300">
-                  <span className="mt-3 h-1.5 w-1.5 shrink-0 rounded-full bg-white/25" />
+                <li key={p} className="flex gap-3 text-sm leading-7 text-ink-2">
+                  <span className="mt-3 h-1.5 w-1.5 shrink-0 rounded-full bg-paper-2" />
                   <span>{p}</span>
                 </li>
               ))}
@@ -179,7 +179,7 @@ export default async function ComparisonPage() {
           <h2 className="text-2xl font-semibold tracking-tight">
             The comparison that is not about money
           </h2>
-          <p className="mt-4 leading-8 text-slate-300">
+          <p className="mt-4 leading-8 text-ink-2">
             VRAM is the one specification worth checking before anything else,
             because it is a hard ceiling rather than a speed. Geometry, textures
             and lightmaps all have to fit on the card, and when they do not, the
@@ -187,7 +187,7 @@ export default async function ComparisonPage() {
             desktops sold for design work ship with 6 to 8 GB. A Coreframe node
             has 16 GB of GDDR7.
           </p>
-          <p className="mt-4 leading-8 text-slate-300">
+          <p className="mt-4 leading-8 text-ink-2">
             That is the difference between quietly rendering at a lower
             resolution and delivering the 4K or 8K still the client asked for.
             We do not publish render times for either option, because they depend
@@ -200,7 +200,7 @@ export default async function ComparisonPage() {
           <h2 className="text-2xl font-semibold tracking-tight">
             What renting gives up
           </h2>
-          <p className="mt-4 leading-8 text-slate-300">
+          <p className="mt-4 leading-8 text-ink-2">
             Three things, stated before you sign up rather than discovered in
             week two. The machine resets to a clean image between sessions, so
             anything you install does not persist — your files do, on separate
@@ -213,23 +213,23 @@ export default async function ComparisonPage() {
           </p>
         </section>
 
-        <section className="mt-14 rounded-2xl border border-cyan-400/20 bg-cyan-400/[0.05] p-6">
+        <section className="mt-14 rounded-cf border border-blue/20 bg-blue/[0.05] p-6">
           <h2 className="text-lg font-semibold">Settle it with your own file</h2>
-          <p className="mt-3 leading-7 text-slate-300">
+          <p className="mt-3 leading-7 text-ink-2">
             There are free minutes on the site and no card required. Open the
             project that ties up your machine all afternoon and see how a rented
             one handles it before you decide either way.
           </p>
           <Link
             href="/signup"
-            className="mt-5 inline-block rounded-lg bg-cyan-400 px-5 py-2.5 text-sm font-semibold text-slate-950 hover:bg-cyan-300"
+            className="mt-5 inline-block rounded-cf bg-blue px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue"
           >
             Start free
           </Link>
         </section>
 
-        <nav className="mt-14 border-t border-white/[0.08] pt-8">
-          <h2 className="text-sm font-semibold uppercase tracking-widest text-white/40">
+        <nav className="mt-14 border-t border-rule pt-8">
+          <h2 className="text-sm font-semibold uppercase tracking-widest text-ink-3">
             Related
           </h2>
           <ul className="mt-4 space-y-2">
@@ -240,7 +240,7 @@ export default async function ComparisonPage() {
               ["/about", "What Coreframe Cloud is"],
             ].map(([href, label]) => (
               <li key={href}>
-                <Link href={href} className="text-cyan-300 hover:underline">
+                <Link href={href} className="text-blue hover:underline">
                   {label} →
                 </Link>
               </li>

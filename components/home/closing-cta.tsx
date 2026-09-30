@@ -16,15 +16,15 @@ export function ClosingCta({ trial }: { trial: TrialTerms | null }) {
 
   return (
     <section className="mx-auto max-w-7xl px-4 pb-24 pt-6 sm:px-6 lg:px-8">
-      <div className="rounded-3xl border border-cyan-300/20 bg-[radial-gradient(ellipse_70%_120%_at_50%_0%,rgba(34,211,238,0.13),transparent_70%)] px-6 py-16 text-center sm:px-10">
-        <p className="text-xs font-bold uppercase tracking-[0.22em] text-cyan-300">Start today</p>
+      <div className="rounded-3xl border border-blue/20 bg-[radial-gradient(ellipse_70%_120%_at_50%_0%,rgba(34,211,238,0.13),transparent_70%)] px-6 py-16 text-center sm:px-10">
+        <p className="text-xs font-bold uppercase tracking-[0.22em] text-blue">Start today</p>
 
-        <h2 className="mx-auto mt-4 max-w-3xl text-3xl font-semibold leading-[1.12] tracking-[-0.025em] text-white sm:text-4xl lg:text-5xl">
+        <h2 className="mx-auto mt-4 max-w-3xl text-3xl font-semibold leading-[1.12] tracking-[-0.025em] text-ink sm:text-4xl lg:text-5xl">
           {minutes ? (
             <>
               {minutes} minutes on an RTX 5080.
               <br />
-              <span className="bg-gradient-to-r from-cyan-300 to-emerald-300 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-blue to-blue bg-clip-text text-transparent">
                 Free, and no card.
               </span>
             </>
@@ -32,14 +32,14 @@ export function ClosingCta({ trial }: { trial: TrialTerms | null }) {
             <>
               An RTX 5080, by the minute.
               <br />
-              <span className="bg-gradient-to-r from-cyan-300 to-emerald-300 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-blue to-blue bg-clip-text text-transparent">
                 Nothing to commit to.
               </span>
             </>
           )}
         </h2>
 
-        <p className="mx-auto mt-5 max-w-xl text-base leading-7 text-white/70">
+        <p className="mx-auto mt-5 max-w-xl text-base leading-7 text-ink-2">
           Open your own project on it and decide for yourself. That&apos;s a more
           honest test than anything we could put on this page.
         </p>

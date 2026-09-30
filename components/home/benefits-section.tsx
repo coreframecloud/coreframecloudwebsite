@@ -30,7 +30,7 @@ export function BenefitsSection({ storage }: { storage: StorageTerms }) {
             a scene does not fit on the card, it does not render slower — it
             renders smaller, and the 4K still the client asked for quietly
             becomes a 2K one.{" "}
-            <Link href="/d5-render-vs-local-gpu" className="text-cyan-300 underline underline-offset-4 hover:text-cyan-200">
+            <Link href="/d5-render-vs-local-gpu" className="text-blue underline underline-offset-4 hover:text-blue">
               We worked out the rent-versus-buy break-even both ways
             </Link>
             .
@@ -43,21 +43,21 @@ export function BenefitsSection({ storage }: { storage: StorageTerms }) {
         ]}
         footnote={
           <>
-            <strong className="font-semibold text-white/80">
+            <strong className="font-semibold text-ink">
               Where the speed difference is published.
             </strong>{" "}
             In Blender&rsquo;s own public benchmark the RTX 5080&rsquo;s median
-            score is <strong className="text-white/80">9,138</strong> (1,429
-            results), against <strong className="text-white/80">3,182</strong>{" "}
+            score is <strong className="text-ink">9,138</strong> (1,429
+            results), against <strong className="text-ink">3,182</strong>{" "}
             for an RTX 4060 (441) and{" "}
-            <strong className="text-white/80">2,154</strong> for an RTX 3060
+            <strong className="text-ink">2,154</strong> for an RTX 3060
             (634) — about 3× and 4×. That is Blender Cycles on version 4.5.0,
             read from{" "}
             <a
               href="https://opendata.blender.org/"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-cyan-300 underline underline-offset-4 hover:text-cyan-200"
+              className="text-blue underline underline-offset-4 hover:text-blue"
             >
               Blender Open Data
             </a>{" "}
@@ -123,7 +123,7 @@ export function BenefitsSection({ storage }: { storage: StorageTerms }) {
 
 function Grad({ children }: { children: React.ReactNode }) {
   return (
-    <span className="bg-gradient-to-r from-cyan-300 to-emerald-300 bg-clip-text text-transparent">
+    <span className="bg-gradient-to-r from-blue to-blue bg-clip-text text-transparent">
       {children}
     </span>
   );
@@ -142,19 +142,19 @@ function Row({
   flip?: boolean;
 }) {
   return (
-    <div className="grid items-center gap-10 border-t border-white/10 py-14 lg:grid-cols-2 lg:gap-14">
+    <div className="grid items-center gap-10 border-t border-rule py-14 lg:grid-cols-2 lg:gap-14">
       <div className={flip ? "lg:order-2" : undefined}>
-        <p className="text-xs font-bold uppercase tracking-[0.22em] text-cyan-300">{eyebrow}</p>
-        <h2 className="mt-4 text-3xl font-semibold leading-[1.12] tracking-[-0.025em] text-white sm:text-4xl">
+        <p className="text-xs font-bold uppercase tracking-[0.22em] text-blue">{eyebrow}</p>
+        <h2 className="mt-4 text-3xl font-semibold leading-[1.12] tracking-[-0.025em] text-ink sm:text-4xl">
           {title}
         </h2>
-        <p className="mt-4 text-base leading-7 text-white/70">{body}</p>
+        <p className="mt-4 text-base leading-7 text-ink-2">{body}</p>
 
         {points ? (
           <ul className="mt-6 flex flex-col gap-3">
             {points.map((p) => (
-              <li key={p} className="flex gap-3 text-[15px] leading-6 text-white/70">
-                <span aria-hidden className="mt-0.5 shrink-0 font-bold text-emerald-400">✓</span>
+              <li key={p} className="flex gap-3 text-[15px] leading-6 text-ink-2">
+                <span aria-hidden className="mt-0.5 shrink-0 font-bold text-blue">✓</span>
                 <span>{p}</span>
               </li>
             ))}
@@ -162,25 +162,25 @@ function Row({
         ) : null}
 
         {footnote ? (
-          <div className="mt-6 rounded-2xl border border-white/10 bg-white/[0.03] p-5 text-[13.5px] leading-6 text-white/55">
+          <div className="mt-6 rounded-cf border border-rule bg-paper-2 p-5 text-[13.5px] leading-6 text-ink-2">
             {footnote}
           </div>
         ) : null}
 
         {compare ? (
           <div className="mt-6 grid gap-4 sm:grid-cols-2">
-            <div className="rounded-2xl border border-red-400/25 bg-red-400/[0.05] p-5">
+            <div className="rounded-cf border border-red-400/25 bg-red-400/[0.05] p-5">
               <p className="text-xs font-bold uppercase tracking-[0.16em] text-red-300">✕ Today</p>
-              <p className="mt-3 text-[15px] leading-7 text-white/80">
-                <em className="not-italic text-white/60">{compare.before[0]}</em>
+              <p className="mt-3 text-[15px] leading-7 text-ink">
+                <em className="not-italic text-ink-2">{compare.before[0]}</em>
                 <br />
                 {compare.before[1]}
               </p>
             </div>
-            <div className="rounded-2xl border border-emerald-400/35 bg-emerald-400/[0.06] p-5">
-              <p className="text-xs font-bold uppercase tracking-[0.16em] text-emerald-300">✓ With Coreframe</p>
-              <p className="mt-3 text-[15px] leading-7 text-white/80">
-                <em className="not-italic text-white/60">{compare.after[0]}</em>
+            <div className="rounded-cf border border-blue/35 bg-blue/[0.06] p-5">
+              <p className="text-xs font-bold uppercase tracking-[0.16em] text-blue">✓ With Coreframe</p>
+              <p className="mt-3 text-[15px] leading-7 text-ink">
+                <em className="not-italic text-ink-2">{compare.after[0]}</em>
                 <br />
                 {compare.after[1]}
               </p>
@@ -189,7 +189,7 @@ function Row({
         ) : null}
       </div>
 
-      <div className={`flex min-h-[220px] items-center justify-center rounded-3xl border border-white/10 bg-white/[0.035] p-6 ${flip ? "lg:order-1" : ""}`}>
+      <div className={`flex min-h-[220px] items-center justify-center rounded-3xl border border-rule bg-paper-2 p-6 ${flip ? "lg:order-1" : ""}`}>
         {art}
       </div>
     </div>

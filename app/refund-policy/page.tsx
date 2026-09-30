@@ -64,23 +64,23 @@ const policySections = [
 
 export default function RefundPolicyPage() {
   return (
-    <main className="relative min-h-screen border-b border-white/10 text-white">
+    <main className="relative min-h-screen border-b border-rule text-ink">
       <BackgroundGlow />
 
       <div className="relative mx-auto max-w-4xl px-4 py-20 sm:px-6 lg:px-8">
-        <div className="text-sm font-medium uppercase tracking-[0.25em] text-cyan-300">
+        <div className="text-sm font-medium uppercase tracking-[0.25em] text-blue">
           Legal
         </div>
         <h1 className="mt-4 text-4xl font-semibold tracking-tight md:text-6xl">
           Refund Policy
         </h1>
-        <p className="mt-4 text-sm font-medium uppercase tracking-[0.18em] text-white/45">
+        <p className="mt-4 text-sm font-medium uppercase tracking-[0.18em] text-ink-2">
           Last Updated: August 2026
         </p>
 
         {/* Stated plainly and up front. A non-refundable term buried three
             sections down is the kind of thing that gets a charge disputed. */}
-        <div className="mt-8 rounded-2xl border border-amber-400/20 bg-amber-400/[0.06] px-6 py-5">
+        <div className="mt-8 rounded-cf border border-amber-400/20 bg-amber-400/[0.06] px-6 py-5">
           <p className="text-base leading-7 text-amber-100/90">
             <span className="font-semibold">In short:</span> money you add to your
             wallet is not refundable, because we issue a GST tax invoice and pay the
@@ -91,10 +91,10 @@ export default function RefundPolicyPage() {
           </p>
         </div>
 
-        <div className="mt-10 space-y-10 text-base leading-8 text-white/70">
+        <div className="mt-10 space-y-10 text-base leading-8 text-ink-2">
           {policySections.map((section) => (
             <section key={section.title}>
-              <h2 className="text-xl font-semibold text-white">
+              <h2 className="text-xl font-semibold text-ink">
                 {section.title}
               </h2>
               <p className="mt-3">{section.body}</p>
@@ -102,17 +102,17 @@ export default function RefundPolicyPage() {
           ))}
 
           <section>
-            <h2 className="text-xl font-semibold text-white">How to reach us</h2>
+            <h2 className="text-xl font-semibold text-ink">How to reach us</h2>
             <p className="mt-3">
               Email us and we respond within two business days.
             </p>
             <Link
               href={`mailto:${COMPANY.email}`}
-              className="mt-3 inline-flex text-cyan-300 transition hover:text-cyan-200"
+              className="mt-3 inline-flex text-blue transition hover:text-blue"
             >
               {COMPANY.email}
             </Link>
-            <p className="mt-6 text-sm leading-6 text-white/45">
+            <p className="mt-6 text-sm leading-6 text-ink-2">
               {COMPANY.legalName}
               <br />
               {COMPANY_ADDRESS_FULL}

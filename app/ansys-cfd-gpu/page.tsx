@@ -120,16 +120,16 @@ export default function AnsysCfdPage() {
     `https://wa.me/916366889488?text=${encodeURIComponent(msg)}`;
 
   return (
-    <div className="relative min-h-screen text-white">
+    <div className="relative min-h-screen text-ink">
       <BackgroundGlow />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
       <main className="relative mx-auto max-w-5xl px-6 pb-20 pt-16 md:pt-20">
 
         {/* Hero */}
-        <div className="flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-[0.22em] text-cyan-300">
+        <div className="flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-[0.22em] text-blue">
           <span>CFD · Ansys · Cloud GPU</span>
-          <span className="rounded-full bg-white/5 border border-white/10 px-2 py-0.5 text-slate-300">
+          <span className="rounded-full bg-paper-2 border border-rule px-2 py-0.5 text-ink-2">
             Bring your own licence
           </span>
         </div>
@@ -137,12 +137,12 @@ export default function AnsysCfdPage() {
           GPU workstations for CFD.<br className="hidden sm:block" />
           By the hour. Bring your own licence.
         </h1>
-        <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-300">
+        <p className="mt-4 max-w-2xl text-sm leading-7 text-ink-2">
           Rent an RTX-class GPU workstation by the hour and run Ansys Fluent, OpenFOAM or
           whichever solver you are licensed for. You keep the engineering and the licence;
           we provide the machine, billed in INR with a GST invoice.
         </p>
-        <p className="mt-3 max-w-2xl text-xs leading-6 text-white/40">
+        <p className="mt-3 max-w-2xl text-xs leading-6 text-ink-3">
           We do not run your simulation, choose your turbulence model or interpret your results.
           This is hardware rental. The engineering, and responsibility for it, stays with you.
         </p>
@@ -150,28 +150,28 @@ export default function AnsysCfdPage() {
         <div className="mt-5 flex flex-wrap gap-3">
           <a
             href="/cfd-intake"
-            className="rounded-full bg-cyan-400 px-5 py-2.5 text-sm font-semibold text-slate-900 hover:bg-cyan-300 transition"
+            className="rounded-full bg-blue px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue transition"
           >
             Submit a CFD job →
           </a>
           <a
             href="/tools"
-            className="rounded-full border border-white/15 px-5 py-2.5 text-sm text-white hover:bg-white/8 transition"
+            className="rounded-full border border-rule px-5 py-2.5 text-sm text-ink hover:bg-paper-2 transition"
           >
             Check your IFC model free →
           </a>
           <a
             href={wa("Hi Coreframe, I'd like to discuss GPU CFD simulation for my Ansys project.")}
             target="_blank" rel="noreferrer"
-            className="rounded-full border border-white/15 px-5 py-2.5 text-sm text-white hover:bg-white/8 transition"
+            className="rounded-full border border-rule px-5 py-2.5 text-sm text-ink hover:bg-paper-2 transition"
           >
             WhatsApp us
           </a>
         </div>
 
-        <p className="mt-4 max-w-2xl text-xs leading-6 text-white/40">
+        <p className="mt-4 max-w-2xl text-xs leading-6 text-ink-3">
           Before you book anything: our{" "}
-          <a href="/tools" className="text-cyan-300/80 underline underline-offset-2 hover:text-cyan-300">
+          <a href="/tools" className="text-blue/80 underline underline-offset-2 hover:text-blue">
             free IFC pre-CFD check
           </a>{" "}
           reads a model export and reports the things that will break the
@@ -183,15 +183,15 @@ export default function AnsysCfdPage() {
 
         {/* Why GPU */}
         <div className="mt-14">
-          <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-white/35 mb-5">
+          <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-ink-3 mb-5">
             Why GPU matters for CFD
           </h2>
           <div className="grid gap-4 sm:grid-cols-2">
             {whyGpu.map((w) => (
-              <div key={w.title} className="rounded-[18px] border border-white/8 bg-white/[0.02] p-5">
+              <div key={w.title} className="rounded-[18px] border border-rule bg-paper-2 p-5">
                 <div className="text-xl mb-2">{w.icon}</div>
-                <h3 className="text-sm font-semibold text-white">{w.title}</h3>
-                <p className="mt-1.5 text-xs leading-5 text-white/50">{w.body}</p>
+                <h3 className="text-sm font-semibold text-ink">{w.title}</h3>
+                <p className="mt-1.5 text-xs leading-5 text-ink-2">{w.body}</p>
               </div>
             ))}
           </div>
@@ -199,33 +199,33 @@ export default function AnsysCfdPage() {
 
         {/* How the hardware is chosen */}
         <div className="mt-12">
-          <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-white/35 mb-5">
+          <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-ink-3 mb-5">
             How we size the hardware
           </h2>
-          <div className="rounded-[20px] border border-white/10 bg-white/[0.03] p-6">
-            <p className="text-xs leading-6 text-white/60">
+          <div className="rounded-[20px] border border-rule bg-paper-2 p-6">
+            <p className="text-xs leading-6 text-ink-2">
               VRAM is the binding constraint, and it is worth being blunt about it. Ansys
               publishes roughly 1.0–1.9 GB per million tet/hex cells and 1.8–2.8 GB per million
-              polyhedral cells. Our current card is a <strong className="text-white/80">16 GB
-              RTX 5080</strong>, which is about <strong className="text-white/80">8 million tet
+              polyhedral cells. Our current card is a <strong className="text-ink">16 GB
+              RTX 5080</strong>, which is about <strong className="text-ink">8 million tet
               or 5 million polyhedral cells</strong> — less if you are running the same case at
               two or three refinement levels, as a mesh-independence study requires.
             </p>
-            <p className="mt-3 text-xs leading-6 text-white/60">
+            <p className="mt-3 text-xs leading-6 text-ink-2">
               Two caveats we would rather you heard from us. Ansys tests and supports
               professional cards (A-series, L40S, A100) — GeForce is not on that list, so
               validate your workflow on a short booking before committing to a deadline. And
               FDS, which is what most car-park and atrium smoke work in India uses, is CPU-only
               and gets nothing from a GPU at all.
             </p>
-            <p className="mt-3 text-xs leading-6 text-white/60">
+            <p className="mt-3 text-xs leading-6 text-ink-2">
               If your case will not fit, we will say so before you book. A bigger card
               (RTX 6000-class) is on the roadmap when demand justifies it.
             </p>
-            <p className="mt-3 text-xs leading-6 text-white/40">
+            <p className="mt-3 text-xs leading-6 text-ink-3">
               Note: CFD hardware is separate from our self-serve rendering fleet. The only GPU you
               can rent by the hour on Coreframe is the RTX 5080 — see{" "}
-              <Link href="/compute-nodes" className="text-cyan-300 hover:text-cyan-200 transition">
+              <Link href="/compute-nodes" className="text-blue hover:text-blue transition">
                 compute nodes
               </Link>
               .
@@ -235,14 +235,14 @@ export default function AnsysCfdPage() {
 
         {/* Use cases */}
         <div className="mt-12">
-          <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-white/35 mb-5">Simulation types</h2>
+          <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-ink-3 mb-5">Simulation types</h2>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {useCases.map((u) => (
-              <div key={u.label} className="flex gap-3 rounded-[16px] border border-white/8 bg-white/[0.02] px-4 py-3">
+              <div key={u.label} className="flex gap-3 rounded-[16px] border border-rule bg-paper-2 px-4 py-3">
                 <span className="text-lg mt-0.5">{u.icon}</span>
                 <div>
-                  <div className="text-sm font-semibold text-white">{u.label}</div>
-                  <div className="mt-0.5 text-xs leading-5 text-white/45">{u.desc}</div>
+                  <div className="text-sm font-semibold text-ink">{u.label}</div>
+                  <div className="mt-0.5 text-xs leading-5 text-ink-2">{u.desc}</div>
                 </div>
               </div>
             ))}
@@ -250,22 +250,22 @@ export default function AnsysCfdPage() {
         </div>
 
         {/* Licensing — what we do and do not supply */}
-        <div className="mt-12 rounded-[20px] border border-white/10 bg-white/[0.03] p-6">
+        <div className="mt-12 rounded-[20px] border border-rule bg-paper-2 p-6">
           <div className="flex flex-wrap items-start gap-4">
             <div className="flex-1 min-w-[200px]">
-              <div className="text-[10px] font-semibold uppercase tracking-wider text-white/40 mb-1">Licensing</div>
-              <h3 className="text-base font-semibold text-white">You bring the licence</h3>
-              <p className="mt-2 text-xs leading-6 text-white/55">
+              <div className="text-[10px] font-semibold uppercase tracking-wider text-ink-3 mb-1">Licensing</div>
+              <h3 className="text-base font-semibold text-ink">You bring the licence</h3>
+              <p className="mt-2 text-xs leading-6 text-ink-2">
                 We rent hardware, not software. Bring your own Ansys, Siemens or other commercial
                 licence, or run an open-source solver — OpenFOAM, SU2, Code_Saturne. We are not a
                 reseller for any CFD vendor and we have no licence-supply arrangement with one.
               </p>
-              <p className="mt-2 text-xs leading-6 text-white/55">
+              <p className="mt-2 text-xs leading-6 text-ink-2">
                 Check your own licence terms for remote or hosted use before booking. Some
                 commercial licences restrict it and some are node-locked. That is between you and
                 your vendor — we would rather you confirmed it than assumed.
               </p>
-              <p className="mt-2 text-xs text-white/40">
+              <p className="mt-2 text-xs text-ink-3">
                 We do not perform CFD analysis, and nothing produced on our hardware is reviewed,
                 verified or signed off by us.
               </p>
@@ -273,7 +273,7 @@ export default function AnsysCfdPage() {
             <a
               href={wa("Hi Coreframe, I'd like to ask about hourly GPU workstations for CFD.")}
               target="_blank" rel="noreferrer"
-              className="shrink-0 rounded-xl bg-white/5 border border-white/10 px-4 py-2.5 text-xs font-semibold text-slate-200 hover:bg-white/10 transition"
+              className="shrink-0 rounded-cf bg-paper-2 border border-rule px-4 py-2.5 text-xs font-semibold text-ink hover:bg-paper-2 transition"
             >
               Ask about availability
             </a>
@@ -282,12 +282,12 @@ export default function AnsysCfdPage() {
 
         {/* Pricing by element count */}
         <div className="mt-12">
-          <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-white/35 mb-1">Pricing</h2>
-          <p className="mb-5 text-xs text-white/40">
+          <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-ink-3 mb-1">Pricing</h2>
+          <p className="mb-5 text-xs text-ink-3">
             Priced per simulation job based on mesh element count — the primary driver of GPU memory and compute time.
           </p>
-          <div className="overflow-hidden rounded-[20px] border border-white/10">
-            <div className="grid grid-cols-3 gap-0 border-b border-white/8 bg-white/[0.02] px-5 py-2.5 text-[10px] font-semibold uppercase tracking-wider text-white/35">
+          <div className="overflow-hidden rounded-[20px] border border-rule">
+            <div className="grid grid-cols-3 gap-0 border-b border-rule bg-paper-2 px-5 py-2.5 text-[10px] font-semibold uppercase tracking-wider text-ink-3">
               <span>Tier</span>
               <span>Element count</span>
               <span>Use for</span>
@@ -295,29 +295,29 @@ export default function AnsysCfdPage() {
             {pricingTiers.map((t, i) => (
               <div
                 key={t.label}
-                className={`grid grid-cols-3 gap-0 px-5 py-4 text-xs ${i < pricingTiers.length - 1 ? "border-b border-white/6" : ""} ${i === pricingTiers.length - 1 ? "bg-cyan-400/[0.03]" : ""}`}
+                className={`grid grid-cols-3 gap-0 px-5 py-4 text-xs ${i < pricingTiers.length - 1 ? "border-b border-rule" : ""} ${i === pricingTiers.length - 1 ? "bg-blue/[0.03]" : ""}`}
               >
-                <span className="font-semibold text-white">{t.label}</span>
-                <span className="text-white/60">{t.elements}</span>
-                <span className="text-white/45">{t.useFor}</span>
+                <span className="font-semibold text-ink">{t.label}</span>
+                <span className="text-ink-2">{t.elements}</span>
+                <span className="text-ink-2">{t.useFor}</span>
               </div>
             ))}
           </div>
-          <p className="mt-3 text-xs text-white/30">
+          <p className="mt-3 text-xs text-ink-3">
             Final pricing depends on element count, solver type, and estimated wall-clock time.
             Contact us with your .cas file or element count for an exact quote.
           </p>
           <div className="mt-4 flex flex-wrap gap-3">
             <a
               href="/cfd-intake"
-              className="rounded-xl bg-cyan-400 px-5 py-2.5 text-xs font-semibold text-slate-900 hover:bg-cyan-300 transition"
+              className="rounded-cf bg-blue px-5 py-2.5 text-xs font-semibold text-white hover:bg-blue transition"
             >
               Submit a CFD job →
             </a>
             <a
               href={wa("Hi Coreframe, I'd like a quote for an Ansys CFD job. My mesh has approximately [X] million elements.")}
               target="_blank" rel="noreferrer"
-              className="rounded-xl border border-white/12 bg-white/[0.04] px-5 py-2.5 text-xs font-medium text-white hover:bg-white/8 transition"
+              className="rounded-cf border border-rule bg-paper-2 px-5 py-2.5 text-xs font-medium text-ink hover:bg-paper-2 transition"
             >
               WhatsApp for quick quote
             </a>
@@ -326,21 +326,21 @@ export default function AnsysCfdPage() {
 
         {/* FAQ */}
         <div className="mt-12">
-          <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-white/35 mb-5">FAQ</h2>
+          <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-ink-3 mb-5">FAQ</h2>
           <div className="space-y-3">
             {jsonLd.mainEntity.map((q) => (
-              <div key={q.name} className="rounded-[18px] border border-white/8 bg-white/[0.02] p-5">
-                <h3 className="text-sm font-semibold text-white">{q.name}</h3>
-                <p className="mt-2 text-xs leading-6 text-white/50">{q.acceptedAnswer.text}</p>
+              <div key={q.name} className="rounded-[18px] border border-rule bg-paper-2 p-5">
+                <h3 className="text-sm font-semibold text-ink">{q.name}</h3>
+                <p className="mt-2 text-xs leading-6 text-ink-2">{q.acceptedAnswer.text}</p>
               </div>
             ))}
           </div>
         </div>
 
         <div className="mt-10 flex flex-wrap gap-4 text-sm">
-          <Link href="/" className="text-slate-400 hover:text-white transition">← Home</Link>
-          <Link href="/d5-render-cloud-workstation" className="text-slate-400 hover:text-white transition">3D Rendering →</Link>
-          <Link href="/enterprise" className="text-slate-400 hover:text-white transition">Enterprise plans →</Link>
+          <Link href="/" className="text-ink-2 hover:text-ink transition">← Home</Link>
+          <Link href="/d5-render-cloud-workstation" className="text-ink-2 hover:text-ink transition">3D Rendering →</Link>
+          <Link href="/enterprise" className="text-ink-2 hover:text-ink transition">Enterprise plans →</Link>
         </div>
       </main>
     </div>

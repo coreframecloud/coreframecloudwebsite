@@ -52,18 +52,18 @@ export default async function ComputeNodesPage() {
   const rate = adhocRate(card);
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white">
+    <div className="min-h-screen bg-slate-950 text-ink">
       <BackgroundGlow />
 
       <main className="relative mx-auto max-w-7xl px-6 pb-20 pt-20 md:pt-28">
         <div className="max-w-3xl">
-          <div className="text-sm font-medium uppercase tracking-[0.25em] text-cyan-300">
+          <div className="text-sm font-medium uppercase tracking-[0.25em] text-blue">
             Compute Nodes
           </div>
           <h1 className="mt-3 text-4xl font-semibold tracking-tight md:text-6xl">
             One node. One GPU. No configuration to get wrong.
           </h1>
-          <p className="mt-5 max-w-2xl text-base leading-8 text-slate-300 md:text-lg">
+          <p className="mt-5 max-w-2xl text-base leading-8 text-ink-2 md:text-lg">
             Every Coreframe node is the same machine: an NVIDIA RTX 5080 with
             16 GB GDDR7, 64 GB ECC RAM and a 6-core EPYC, hosted in Bengaluru.
             One SKU means the price you see is the price you are billed, and
@@ -72,7 +72,7 @@ export default async function ComputeNodesPage() {
         </div>
 
         <section className="mt-14">
-          <div className="text-sm uppercase tracking-[0.25em] text-cyan-300">
+          <div className="text-sm uppercase tracking-[0.25em] text-blue">
             3D Rendering / Hourly
           </div>
           <h2 className="mt-3 text-3xl font-semibold md:text-4xl">
@@ -80,9 +80,9 @@ export default async function ComputeNodesPage() {
           </h2>
 
           <div className="mt-8 grid gap-6 lg:grid-cols-3">
-            <Card className="rounded-[1.6rem] border-white/10 bg-white/5 lg:col-span-2">
+            <Card className="rounded-[1.6rem] border-rule bg-paper-2 lg:col-span-2">
               <CardContent className="p-6 md:p-8">
-                <div className="inline-flex rounded-md border border-cyan-400/25 bg-cyan-400/10 px-3 py-1 text-xs font-medium text-cyan-200">
+                <div className="inline-flex rounded-md border border-blue/25 bg-blue/10 px-3 py-1 text-xs font-medium text-blue">
                   {node.tag}
                 </div>
 
@@ -94,25 +94,25 @@ export default async function ComputeNodesPage() {
                   {node.specs.map((spec) => (
                     <div
                       key={spec.label}
-                      className="flex items-baseline justify-between gap-4 border-b border-white/8 pb-2 text-sm"
+                      className="flex items-baseline justify-between gap-4 border-b border-rule pb-2 text-sm"
                     >
-                      <span className="text-slate-400">{spec.label}</span>
-                      <span className="font-medium text-white">
+                      <span className="text-ink-2">{spec.label}</span>
+                      <span className="font-medium text-ink">
                         {spec.value}
                       </span>
                     </div>
                   ))}
                 </div>
 
-                <div className="mt-8 flex flex-wrap items-center justify-between gap-4 border-t border-white/10 pt-6">
+                <div className="mt-8 flex flex-wrap items-center justify-between gap-4 border-t border-rule pt-6">
                   <div>
-                    <div className="text-sm text-slate-400">
+                    <div className="text-sm text-ink-2">
                       Pay-as-you-go, GST included
                     </div>
-                    <div className="text-3xl font-semibold text-cyan-300">
+                    <div className="text-3xl font-semibold text-blue">
                       {nodePrice ?? "—"}
                     </div>
-                    <div className="mt-1 text-xs text-slate-400">
+                    <div className="mt-1 text-xs text-ink-2">
                       Per GPU-hour · billed per minute from stream start
                     </div>
                   </div>
@@ -123,20 +123,20 @@ export default async function ComputeNodesPage() {
                     target="_blank"
                     rel="noreferrer"
                   >
-                    <Button className="rounded-xl">Reserve</Button>
+                    <Button className="rounded-cf">Reserve</Button>
                   </a>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="rounded-[1.6rem] border-white/10 bg-white/5">
+            <Card className="rounded-[1.6rem] border-rule bg-paper-2">
               <CardContent className="p-6 md:p-8">
-                <div className="text-sm uppercase tracking-[0.2em] text-cyan-300">
+                <div className="text-sm uppercase tracking-[0.2em] text-blue">
                   How billing works
                 </div>
-                <ul className="mt-5 space-y-4 text-sm leading-6 text-slate-300">
+                <ul className="mt-5 space-y-4 text-sm leading-6 text-ink-2">
                   <li>
-                    <span className="font-medium text-white">
+                    <span className="font-medium text-ink">
                       {rate ? `${rate} per GPU-hour, GST included.` : "GST is included in the published rate."}
                     </span>{" "}
                     What you see is what you pay — the 18% GST component is
@@ -144,20 +144,20 @@ export default async function ComputeNodesPage() {
                     invoice showing the split.
                   </li>
                   <li>
-                    <span className="font-medium text-white">
+                    <span className="font-medium text-ink">
                       Billed per minute from stream start.
                     </span>{" "}
                     {billingSentence(card)}
                   </li>
                   <li>
-                    <span className="font-medium text-white">
+                    <span className="font-medium text-ink">
                       No commitment.
                     </span>{" "}
                     Spin up anytime and shut down when you are done. Committed
                     monthly plans are cheaper per hour if you run regularly.
                   </li>
                   <li>
-                    <span className="font-medium text-white">
+                    <span className="font-medium text-ink">
                       20 GB persistent storage free, 50 GB with credit. Session scratch cleared at session end.
                     </span>{" "}
                     Download your outputs before shutting down, or add
@@ -170,7 +170,7 @@ export default async function ComputeNodesPage() {
         </section>
 
         <section className="mt-20">
-          <div className="text-sm uppercase tracking-[0.25em] text-cyan-300">
+          <div className="text-sm uppercase tracking-[0.25em] text-blue">
             What it is for
           </div>
           <h2 className="mt-3 text-3xl font-semibold md:text-4xl">
@@ -181,13 +181,13 @@ export default async function ComputeNodesPage() {
             {goodFor.map((item) => (
               <Card
                 key={item.title}
-                className="rounded-[1.6rem] border-white/10 bg-white/5"
+                className="rounded-[1.6rem] border-rule bg-paper-2"
               >
                 <CardContent className="p-6">
-                  <div className="text-lg font-semibold text-white">
+                  <div className="text-lg font-semibold text-ink">
                     {item.title}
                   </div>
-                  <p className="mt-3 text-sm leading-7 text-slate-300">
+                  <p className="mt-3 text-sm leading-7 text-ink-2">
                     {item.text}
                   </p>
                 </CardContent>
@@ -204,15 +204,15 @@ export default async function ComputeNodesPage() {
             target="_blank"
             rel="noreferrer"
           >
-            <Button className="rounded-xl">Talk to us on WhatsApp</Button>
+            <Button className="rounded-cf">Talk to us on WhatsApp</Button>
           </a>
-          <span className="text-sm text-slate-400">
+          <span className="text-sm text-ink-2">
             Software licences are BYOL — bring your own D5 Render, Lumion,
             Enscape or SolidWorks seat.
           </span>
         </div>
 
-        <p className="mt-10 text-sm text-slate-400">
+        <p className="mt-10 text-sm text-ink-2">
           Need something outside this configuration — more storage, a different
           OS image, or a longer-running reserved node? Talk to us and we will
           tell you honestly whether we can run it.

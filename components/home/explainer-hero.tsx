@@ -36,12 +36,12 @@ export function ExplainerHero({
   return (
     <section className="relative mx-auto max-w-7xl px-4 pt-16 pb-14 sm:px-6 sm:pt-24 lg:px-8">
       <div className="flex flex-col items-center text-center">
-        <p className="text-xs font-bold uppercase tracking-[0.22em] text-emerald-300">GPU workstations, by the hour</p>
+        <p className="text-xs font-bold uppercase tracking-[0.22em] text-blue">GPU workstations, by the hour</p>
 
-        <h1 className="mt-5 max-w-4xl text-4xl font-semibold leading-[1.05] tracking-[-0.03em] text-white sm:text-6xl lg:text-7xl">
+        <h1 className="mt-5 max-w-4xl text-4xl font-semibold leading-[1.05] tracking-[-0.03em] text-ink sm:text-6xl lg:text-7xl">
           A {HARDWARE_COST} workstation.
           <br />
-          <span className="bg-gradient-to-r from-cyan-300 to-emerald-300 bg-clip-text text-transparent">
+          <span className="bg-gradient-to-r from-blue to-blue bg-clip-text text-transparent">
             {adhocRate ? `${adhocRate} an hour.` : "Rented by the hour."}
           </span>
         </h1>
@@ -51,7 +51,7 @@ export function ExplainerHero({
             is the whole difference from a bare cloud GPU, which arrives empty
             and expects you to install Windows software over SSH. Location is a
             chip below; the software is the sentence. */}
-        <p className="mt-6 max-w-2xl text-base leading-7 text-white/75 sm:text-lg sm:leading-8">
+        <p className="mt-6 max-w-2xl text-base leading-7 text-ink sm:text-lg sm:leading-8">
           A full Windows workstation with an RTX 5080, on the laptop you already
           own. D5 Render, Lumion, Enscape and Twinmotion are already installed.
         </p>
@@ -66,7 +66,7 @@ export function ExplainerHero({
         </div>
 
         {trialMinutes ? (
-          <p className="mt-4 text-sm text-white/55">No card required. Nothing to cancel.</p>
+          <p className="mt-4 text-sm text-ink-2">No card required. Nothing to cancel.</p>
         ) : null}
 
         {/* THE BONUS HAS BEEN LIVE AND UNMENTIONED. public_pricing.py has served
@@ -80,7 +80,7 @@ export function ExplainerHero({
             cap was ₹1,000 while it was believed to be ₹500, which is exactly
             why this must never be typed by hand. */}
         {bonus && bonusCap ? (
-          <p className="mt-3 text-sm font-medium text-emerald-300">
+          <p className="mt-3 text-sm font-medium text-blue">
             {bonus.percent}% extra on your first top-up, up to {bonusCap}.
           </p>
         ) : null}
@@ -95,9 +95,9 @@ export function ExplainerHero({
         <div className="mt-8 w-full sm:w-auto">
           <Link
             href="/floor-plan-to-render"
-            className="group inline-flex flex-col gap-1 rounded-xl border border-white/15 bg-white/[0.04] px-5 py-4 text-left transition hover:border-white/30 hover:bg-white/[0.07]"
+            className="group inline-flex flex-col gap-1 rounded-cf border border-rule bg-paper-2 px-5 py-4 text-left transition hover:border-rule-strong hover:bg-paper-2"
           >
-            <span className="text-sm font-semibold text-white">
+            <span className="text-sm font-semibold text-ink">
               Just need a picture of a floor plan?{" "}
               <span className="text-[#2D7FF9] group-hover:underline">
                 Try Coreframe Studio →
@@ -122,12 +122,12 @@ export function ExplainerHero({
           ].map((chip, i) => (
             <li
               key={chip}
-              className="inline-flex items-center gap-2.5 rounded-full border border-cyan-300/25 bg-white/[0.04] px-4 py-2 text-sm text-white/85"
+              className="inline-flex items-center gap-2.5 rounded-full border border-blue/25 bg-paper-2 px-4 py-2 text-sm text-ink"
             >
               {i === 0 ? (
                 <span className="relative flex h-2 w-2 shrink-0">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
-                  <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-blue opacity-60" />
+                  <span className="relative inline-flex h-2 w-2 rounded-full bg-blue" />
                 </span>
               ) : null}
               {chip}
@@ -152,7 +152,7 @@ export function ExplainerHero({
  */
 function FlowDiagram() {
   return (
-    <div className="mt-14 w-full max-w-4xl rounded-3xl border border-white/10 bg-white/[0.035] p-5 sm:p-8">
+    <div className="mt-14 w-full max-w-4xl rounded-3xl border border-rule bg-paper-2 p-5 sm:p-8">
       <svg
         viewBox="0 0 900 200"
         className="h-auto w-full"

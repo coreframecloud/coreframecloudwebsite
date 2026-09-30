@@ -193,12 +193,12 @@ function Panel({ icon, title, subtitle, children }: {
   icon: string; title: string; subtitle?: string; children: React.ReactNode;
 }) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-6 backdrop-blur-sm">
-      <div className="mb-5 flex items-start gap-3 border-b border-white/8 pb-4">
+    <div className="rounded-cf border border-rule bg-paper-2 p-6 backdrop-blur-sm">
+      <div className="mb-5 flex items-start gap-3 border-b border-rule pb-4">
         <span className="text-2xl">{icon}</span>
         <div>
-          <div className="font-semibold text-white">{title}</div>
-          {subtitle && <div className="mt-0.5 text-xs text-slate-400">{subtitle}</div>}
+          <div className="font-semibold text-ink">{title}</div>
+          {subtitle && <div className="mt-0.5 text-xs text-ink-2">{subtitle}</div>}
         </div>
       </div>
       {children}
@@ -211,7 +211,7 @@ function Field({ label, required, children }: {
 }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <label className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+      <label className="text-xs font-semibold uppercase tracking-wider text-ink-2">
         {label}{required && <span className="ml-1 text-amber-400">✱</span>}
       </label>
       {children}
@@ -220,9 +220,9 @@ function Field({ label, required, children }: {
 }
 
 const inputCls =
-  "w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2.5 text-sm text-white outline-none placeholder:text-slate-600 focus:border-blue-500/60 focus:ring-2 focus:ring-blue-500/20 transition";
+  "w-full rounded-cf border border-rule bg-paper-2 px-3 py-2.5 text-sm text-ink outline-none placeholder:text-ink-3 focus:border-blue/60 focus:ring-2 focus:ring-blue/20 transition";
 const selectCls =
-  "w-full rounded-xl border border-white/10 bg-[#0d1626] px-3 py-2.5 text-sm text-white outline-none focus:border-blue-500/60 focus:ring-2 focus:ring-blue-500/20 transition";
+  "w-full rounded-cf border border-rule bg-paper-2 px-3 py-2.5 text-sm text-ink outline-none focus:border-blue/60 focus:ring-2 focus:ring-blue/20 transition";
 
 function RadioGroup({ name, value, onChange, options }: {
   name: string; value: string;
@@ -234,10 +234,10 @@ function RadioGroup({ name, value, onChange, options }: {
       {options.map((o) => (
         <label
           key={o.value}
-          className={`flex cursor-pointer items-center gap-2 rounded-xl border px-3 py-2 text-sm transition ${
+          className={`flex cursor-pointer items-center gap-2 rounded-cf border px-3 py-2 text-sm transition ${
             value === o.value
               ? "border-blue-500/60 bg-blue-500/10 text-blue-200"
-              : "border-white/10 bg-white/4 text-slate-300 hover:border-white/20"
+              : "border-rule bg-paper-2 text-ink-2 hover:border-rule-strong"
           }`}
         >
           <input
@@ -260,10 +260,10 @@ function CheckChip({ checked, onChange, label }: {
 }) {
   return (
     <label
-      className={`flex cursor-pointer items-center gap-2 rounded-xl border px-3 py-2 text-sm transition ${
+      className={`flex cursor-pointer items-center gap-2 rounded-cf border px-3 py-2 text-sm transition ${
         checked
           ? "border-blue-500/60 bg-blue-500/10 text-blue-200"
-          : "border-white/10 bg-white/4 text-slate-300 hover:border-white/20"
+          : "border-rule bg-paper-2 text-ink-2 hover:border-rule-strong"
       }`}
     >
       <input
@@ -273,7 +273,7 @@ function CheckChip({ checked, onChange, label }: {
         className="sr-only"
       />
       <span className={`h-3.5 w-3.5 rounded border ${checked ? "border-blue-400 bg-blue-500" : "border-slate-600"} flex items-center justify-center`}>
-        {checked && <span className="text-[9px] text-white">✓</span>}
+        {checked && <span className="text-[9px] text-ink">✓</span>}
       </span>
       {label}
     </label>
@@ -438,22 +438,22 @@ export default function CfdIntakeForm() {
         <div className="text-center mb-8">
           <div className="mb-4 text-5xl">🚀</div>
           <h2 className="text-3xl font-bold tracking-tight">Job submitted!</h2>
-          <p className="mt-3 max-w-md mx-auto text-slate-300 text-sm leading-6">
+          <p className="mt-3 max-w-md mx-auto text-ink-2 text-sm leading-6">
             Upload your CAD file below and we&apos;ll spin up the solver — results delivered as PDF + data files.
           </p>
-          <div className="my-6 inline-block rounded-2xl border border-blue-500/30 bg-blue-500/10 px-8 py-4 font-mono text-2xl font-bold tracking-widest text-blue-300">
+          <div className="my-6 inline-block rounded-cf border border-blue-500/30 bg-blue-500/10 px-8 py-4 font-mono text-2xl font-bold tracking-widest text-blue-300">
             {refId}
           </div>
-          <p className="text-xs text-slate-500">Save this ID — use it for all correspondence about this job.</p>
+          <p className="text-xs text-ink-3">Save this ID — use it for all correspondence about this job.</p>
         </div>
 
         {/* CAD file upload */}
-        <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-6 mb-6">
-          <div className="mb-4 flex items-start gap-3 border-b border-white/8 pb-4">
+        <div className="rounded-cf border border-rule bg-paper-2 p-6 mb-6">
+          <div className="mb-4 flex items-start gap-3 border-b border-rule pb-4">
             <span className="text-2xl">📁</span>
             <div>
-              <div className="font-semibold text-white">Upload your CAD file</div>
-              <div className="mt-0.5 text-xs text-slate-400">
+              <div className="font-semibold text-ink">Upload your CAD file</div>
+              <div className="mt-0.5 text-xs text-ink-2">
                 STL files are validated automatically. STEP / IGES reviewed by our engineer. Max 80 MB.
               </div>
             </div>
@@ -462,7 +462,7 @@ export default function CfdIntakeForm() {
           {!uploadDone ? (
             <div className="space-y-4">
               <div className="flex flex-col sm:flex-row gap-3 items-start">
-                <label className="flex-1 cursor-pointer rounded-xl border-2 border-dashed border-white/15 p-4 text-center hover:border-blue-500/40 transition">
+                <label className="flex-1 cursor-pointer rounded-cf border-2 border-dashed border-rule p-4 text-center hover:border-blue-500/40 transition">
                   <input
                     type="file"
                     accept=".stl,.step,.stp,.iges,.igs,.x_t,.x_b"
@@ -474,7 +474,7 @@ export default function CfdIntakeForm() {
                       {uploadFile.name} ({(uploadFile.size / 1024 / 1024).toFixed(1)} MB)
                     </span>
                   ) : (
-                    <span className="text-sm text-slate-500">
+                    <span className="text-sm text-ink-3">
                       Click to select CAD file (.stl, .step, .iges, .stp, .x_t)
                     </span>
                   )}
@@ -483,28 +483,28 @@ export default function CfdIntakeForm() {
                   type="button"
                   disabled={!uploadFile || uploading}
                   onClick={handleFileUpload}
-                  className="rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue-500 transition disabled:opacity-40"
+                  className="rounded-cf bg-blue px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue-ink transition disabled:opacity-40"
                 >
                   {uploading ? "Uploading…" : "Upload"}
                 </button>
               </div>
               {uploadError && (
-                <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-300">
+                <div className="rounded-cf border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-300">
                   {uploadError}
                 </div>
               )}
-              <p className="text-xs text-slate-600">
+              <p className="text-xs text-ink-3">
                 Or email files to{" "}
                 <a href="mailto:cfd@coreframecloud.com" className="text-blue-400/70">
                   cfd@coreframecloud.com
                 </a>{" "}
-                with <span className="text-slate-500 font-mono">{refId}</span> in the subject line.
+                with <span className="text-ink-3 font-mono">{refId}</span> in the subject line.
               </p>
             </div>
           ) : (
             <div className="space-y-3">
               {validationResult === null ? (
-                <div className="flex items-center gap-3 text-sm text-slate-400">
+                <div className="flex items-center gap-3 text-sm text-ink-2">
                   <span className="animate-spin text-base leading-none">⟳</span>
                   Validating geometry…
                 </div>
@@ -514,17 +514,17 @@ export default function CfdIntakeForm() {
                     {validationResult.ready_for_meshing ? "✓ Geometry looks good — ready for meshing" : "⚠ Issues found — please review before your job starts"}
                   </div>
                   {(validationResult.issues as Array<{ severity: string; message: string; fix: string }>).map((issue, i) => (
-                    <div key={i} className={`rounded-xl border p-3 text-sm ${issue.severity === "error" ? "border-red-500/30 bg-red-500/8 text-red-300" : "border-amber-500/30 bg-amber-500/8 text-amber-300"}`}>
+                    <div key={i} className={`rounded-cf border p-3 text-sm ${issue.severity === "error" ? "border-red-500/30 bg-red-500/8 text-red-300" : "border-amber-500/30 bg-amber-500/8 text-amber-300"}`}>
                       <div className="font-medium">{issue.severity === "error" ? "🔴" : "🟡"} {issue.message}</div>
                       <div className="mt-1 text-xs opacity-75">Fix: {issue.fix}</div>
                     </div>
                   ))}
                   {!(validationResult.issues as unknown[]).length && (
-                    <p className="text-sm text-slate-400">No issues detected. Your geometry is mesh-ready.</p>
+                    <p className="text-sm text-ink-2">No issues detected. Your geometry is mesh-ready.</p>
                   )}
                 </>
               ) : (
-                <p className="text-sm text-slate-400">
+                <p className="text-sm text-ink-2">
                   {(validationResult.message as string) || "File received — our engineer will review the geometry."}
                 </p>
               )}
@@ -538,7 +538,7 @@ export default function CfdIntakeForm() {
               setSubmitted(false); setForm(INITIAL); setBcRows(DEFAULT_BC_ROWS); setPage(0);
               setUploadFile(null); setUploadDone(false); setValidationResult(null); setUploadError("");
             }}
-            className="rounded-xl border border-white/10 bg-white/5 px-6 py-2.5 text-sm font-semibold text-slate-300 hover:bg-white/10 transition"
+            className="rounded-cf border border-rule bg-paper-2 px-6 py-2.5 text-sm font-semibold text-ink-2 hover:bg-paper-2 transition"
           >
             Submit another job
           </button>
@@ -554,12 +554,12 @@ export default function CfdIntakeForm() {
         <button
           key={s}
           onClick={() => { setErrors([]); setPage(i); }}
-          className={`flex min-w-0 flex-1 flex-col items-center gap-1 rounded-xl px-2 py-2.5 text-xs font-semibold transition ${
+          className={`flex min-w-0 flex-1 flex-col items-center gap-1 rounded-cf px-2 py-2.5 text-xs font-semibold transition ${
             i === page
-              ? "bg-blue-600 text-white"
+              ? "bg-blue text-white"
               : i < page
               ? "bg-green-500/15 text-green-300"
-              : "bg-white/5 text-slate-500"
+              : "bg-paper-2 text-ink-3"
           }`}
         >
           <span className={`text-base font-bold ${i < page ? "text-green-400" : ""}`}>
@@ -575,12 +575,12 @@ export default function CfdIntakeForm() {
   const ErrorBanner = () => (
     <>
       {errors.length > 0 && (
-        <div className="mb-5 rounded-xl border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-300">
+        <div className="mb-5 rounded-cf border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-300">
           <strong>Please fill in:</strong> {errors.join(", ")}
         </div>
       )}
       {submitError && (
-        <div className="mb-5 rounded-xl border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-300">
+        <div className="mb-5 rounded-cf border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-300">
           <strong>Submission error:</strong> {submitError}
         </div>
       )}
@@ -595,7 +595,7 @@ export default function CfdIntakeForm() {
       <button
         type="button"
         onClick={prevPage}
-        className={`rounded-xl border border-white/10 bg-white/5 px-5 py-2.5 text-sm font-semibold text-slate-300 transition hover:bg-white/10 ${page === 0 ? "invisible" : ""}`}
+        className={`rounded-cf border border-rule bg-paper-2 px-5 py-2.5 text-sm font-semibold text-ink-2 transition hover:bg-paper-2 ${page === 0 ? "invisible" : ""}`}
       >
         ← Back
       </button>
@@ -603,10 +603,10 @@ export default function CfdIntakeForm() {
         type="button"
         onClick={onNext}
         disabled={isLast && submitting}
-        className={`rounded-xl px-6 py-2.5 text-sm font-semibold text-white transition disabled:opacity-60 ${
+        className={`rounded-cf px-6 py-2.5 text-sm font-semibold text-white transition disabled:opacity-60 ${
           isLast
             ? "bg-green-600 hover:bg-green-500"
-            : "bg-blue-600 hover:bg-blue-500"
+            : "bg-blue hover:bg-blue-ink"
         }`}
       >
         {isLast && submitting ? "Submitting…" : nextLabel}
@@ -682,7 +682,7 @@ export default function CfdIntakeForm() {
       {page === 1 && (
         <div className="space-y-5">
           <Panel icon="📐" title="CAD Geometry" subtitle="Attach files via email after submission using your reference ID">
-            <div className="mb-4 flex items-start gap-3 rounded-xl border border-blue-500/20 bg-blue-500/8 p-3.5 text-sm text-blue-200">
+            <div className="mb-4 flex items-start gap-3 rounded-cf border border-blue-500/20 bg-blue-500/8 p-3.5 text-sm text-blue-200">
               <span className="mt-0.5 text-base">ℹ️</span>
               <span>After submitting you'll receive a reference ID. Send your CAD files (STEP, IGES, STL) to <strong>cfd@coreframecloud.com</strong> with the ID in the subject line.</span>
             </div>
@@ -725,12 +725,12 @@ export default function CfdIntakeForm() {
 
           {form.applicationType && (
             <Panel icon="✅" title="CAD Pre-submission Checklist" subtitle={`Requirements for ${form.applicationType}`}>
-              <div className="mb-4 rounded-xl border border-amber-500/20 bg-amber-500/8 px-4 py-3 text-xs text-amber-300/90">
+              <div className="mb-4 rounded-cf border border-amber-500/20 bg-amber-500/8 px-4 py-3 text-xs text-amber-300/90">
                 ⚠️ Violations delay your quote. Please fix these in your CAD tool before uploading.
               </div>
               <ul className="space-y-2">
                 {getChecklistItems(form.applicationType).map((item, i) => (
-                  <li key={i} className="flex items-start gap-2.5 text-sm text-slate-300">
+                  <li key={i} className="flex items-start gap-2.5 text-sm text-ink-2">
                     <span className="mt-0.5 text-xs text-blue-400/70 flex-shrink-0 font-bold">{i + 1}.</span>
                     {item}
                   </li>
@@ -775,7 +775,7 @@ export default function CfdIntakeForm() {
             <div className="overflow-x-auto">
               <table className="w-full min-w-[640px] border-collapse text-sm">
                 <thead>
-                  <tr className="border-b border-white/10 text-xs uppercase tracking-wider text-slate-500">
+                  <tr className="border-b border-rule text-xs uppercase tracking-wider text-ink-3">
                     <th className="pb-2 text-left">Boundary Name</th>
                     <th className="pb-2 pl-2 text-left">Type</th>
                     <th className="pb-2 pl-2 text-left">Value</th>
@@ -784,7 +784,7 @@ export default function CfdIntakeForm() {
                     <th className="pb-2 pl-2" />
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-white/5">
+                <tbody className="divide-y divide-rule">
                   {bcRows.map((row) => (
                     <tr key={row.id}>
                       <td className="py-1.5">
@@ -805,18 +805,18 @@ export default function CfdIntakeForm() {
                         <input className={inputCls} value={row.turb} onChange={(e) => updateBCRow(row.id, "turb", e.target.value)} placeholder="5% / length scale" />
                       </td>
                       <td className="py-1.5 pl-2">
-                        <button type="button" onClick={() => removeBCRow(row.id)} className="text-slate-600 hover:text-red-400 transition text-base">✕</button>
+                        <button type="button" onClick={() => removeBCRow(row.id)} className="text-ink-3 hover:text-red-400 transition text-base">✕</button>
                       </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
-            <button type="button" onClick={addBCRow} className="mt-3 rounded-xl border border-dashed border-white/15 px-4 py-2 text-xs font-semibold text-slate-500 hover:border-blue-500/40 hover:text-blue-400 transition">
+            <button type="button" onClick={addBCRow} className="mt-3 rounded-cf border border-dashed border-rule px-4 py-2 text-xs font-semibold text-ink-3 hover:border-blue-500/40 hover:text-blue-400 transition">
               ＋ Add boundary
             </button>
 
-            <div className="mt-5 grid gap-4 border-t border-white/8 pt-5 sm:grid-cols-2">
+            <div className="mt-5 grid gap-4 border-t border-rule pt-5 sm:grid-cols-2">
               <Field label="Reference Pressure">
                 <input className={inputCls} placeholder="e.g. 101325 Pa (atmospheric)" value={form.refPressure} onChange={(e) => set("refPressure", e.target.value)} />
               </Field>
@@ -858,7 +858,7 @@ export default function CfdIntakeForm() {
               </Field>
             </div>
 
-            <div className="mt-4 grid gap-4 border-t border-white/8 pt-5 sm:grid-cols-2">
+            <div className="mt-4 grid gap-4 border-t border-rule pt-5 sm:grid-cols-2">
               <Field label="Turbulence Modelling" required>
                 <select className={selectCls} value={form.turbulenceModel} onChange={(e) => set("turbulenceModel", e.target.value)}>
                   <option value="">— Select —</option>
@@ -870,8 +870,8 @@ export default function CfdIntakeForm() {
               </Field>
             </div>
 
-            <div className="mt-5 border-t border-white/8 pt-5">
-              <div className="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-400">Additional Physics — select all that apply</div>
+            <div className="mt-5 border-t border-rule pt-5">
+              <div className="mb-2 text-xs font-semibold uppercase tracking-wider text-ink-2">Additional Physics — select all that apply</div>
               <div className="flex flex-wrap gap-2">
                 <CheckChip checked={form.physicsHeat} onChange={(v) => set("physicsHeat", v)} label="Heat Transfer" />
                 <CheckChip checked={form.physicsBuoyancy} onChange={(v) => set("physicsBuoyancy", v)} label="Buoyancy / Natural Convection" />
@@ -885,7 +885,7 @@ export default function CfdIntakeForm() {
               </div>
             </div>
 
-            <div className="mt-5 grid gap-4 border-t border-white/8 pt-5 sm:grid-cols-2">
+            <div className="mt-5 grid gap-4 border-t border-rule pt-5 sm:grid-cols-2">
               <Field label="Fluid Temperature (°C)">
                 <input type="number" className={inputCls} placeholder="e.g. 25" value={form.fluidTemp} onChange={(e) => set("fluidTemp", e.target.value)} />
               </Field>
@@ -918,7 +918,7 @@ export default function CfdIntakeForm() {
                 <input className={inputCls} placeholder="e.g. 0.01 s" value={form.timestep} onChange={(e) => set("timestep", e.target.value)} />
               </Field>
             </div>
-            <div className="mt-5 border-t border-white/8 pt-5">
+            <div className="mt-5 border-t border-rule pt-5">
               <Field label="Pressure–Velocity Coupling">
                 <RadioGroup name="coupling" value={form.coupling} onChange={(v) => set("coupling", v)}
                   options={[{value:"simple",label:"SIMPLE"},{value:"simplec",label:"SIMPLEC"},{value:"piso",label:"PISO (transient)"},{value:"coupled",label:"Coupled"},{value:"auto",label:"Auto-select"}]} />
@@ -933,7 +933,7 @@ export default function CfdIntakeForm() {
 
           <Panel icon="📊" title="Post-processing & Deliverables" subtitle="What results do you need from us?">
             <div className="mb-4">
-              <div className="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-400">Required Output — select all that apply</div>
+              <div className="mb-2 text-xs font-semibold uppercase tracking-wider text-ink-2">Required Output — select all that apply</div>
               <div className="flex flex-wrap gap-2">
                 <CheckChip checked={form.outVelocity} onChange={(v) => set("outVelocity", v)} label="Velocity contours / vectors" />
                 <CheckChip checked={form.outPressure} onChange={(v) => set("outPressure", v)} label="Pressure distribution" />
@@ -949,7 +949,7 @@ export default function CfdIntakeForm() {
                 <CheckChip checked={form.outReport} onChange={(v) => set("outReport", v)} label="Engineering report (PDF)" />
               </div>
             </div>
-            <div className="grid gap-4 border-t border-white/8 pt-4 sm:grid-cols-2">
+            <div className="grid gap-4 border-t border-rule pt-4 sm:grid-cols-2">
               <Field label="Report Format">
                 <select className={selectCls} value={form.reportFormat} onChange={(e) => set("reportFormat", e.target.value)}>
                   {["PDF report with figures","Raw data files (.csv) only","ParaView / CFD-Post project files","ANSYS Fluent case + data files","All of the above"].map((o) => <option key={o}>{o}</option>)}
@@ -983,10 +983,10 @@ export default function CfdIntakeForm() {
               </Field>
             </div>
 
-            <div className="mt-5 space-y-3 border-t border-white/8 pt-5">
-              <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-white/8 bg-white/3 p-3.5 text-sm text-slate-300 hover:border-white/15 transition">
+            <div className="mt-5 space-y-3 border-t border-rule pt-5">
+              <label className="flex cursor-pointer items-start gap-3 rounded-cf border border-rule bg-paper-2 p-3.5 text-sm text-ink-2 hover:border-rule transition">
                 <div className={`mt-0.5 h-5 w-5 flex-shrink-0 rounded border ${form.confirmAccuracy ? "border-blue-400 bg-blue-500" : "border-slate-600"} flex items-center justify-center`}>
-                  {form.confirmAccuracy && <span className="text-[11px] text-white font-bold">✓</span>}
+                  {form.confirmAccuracy && <span className="text-[11px] text-ink font-bold">✓</span>}
                 </div>
                 <input type="checkbox" className="sr-only" checked={form.confirmAccuracy} onChange={(e) => set("confirmAccuracy", e.target.checked)} />
                 <span>
@@ -995,9 +995,9 @@ export default function CfdIntakeForm() {
                 </span>
               </label>
 
-              <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-white/8 bg-white/3 p-3.5 text-sm text-slate-300 hover:border-white/15 transition">
+              <label className="flex cursor-pointer items-start gap-3 rounded-cf border border-rule bg-paper-2 p-3.5 text-sm text-ink-2 hover:border-rule transition">
                 <div className={`mt-0.5 h-5 w-5 flex-shrink-0 rounded border ${form.confirmData ? "border-blue-400 bg-blue-500" : "border-slate-600"} flex items-center justify-center`}>
-                  {form.confirmData && <span className="text-[11px] text-white font-bold">✓</span>}
+                  {form.confirmData && <span className="text-[11px] text-ink font-bold">✓</span>}
                 </div>
                 <input type="checkbox" className="sr-only" checked={form.confirmData} onChange={(e) => set("confirmData", e.target.checked)} />
                 <span>I consent to Coreframe Cloud storing this project data for job execution and account management.</span>

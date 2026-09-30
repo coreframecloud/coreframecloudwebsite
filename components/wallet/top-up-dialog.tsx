@@ -210,29 +210,29 @@ export default function TopUpDialog({
 
   return (
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm"
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-term/70 p-4 backdrop-blur-sm"
       onClick={onClose}
       role="dialog"
       aria-modal="true"
       aria-label="Add funds"
     >
       <div
-        className="w-full max-w-md rounded-2xl border border-white/10 bg-[#0a1524] p-6 shadow-2xl"
+        className="w-full max-w-md rounded-cf border border-rule bg-paper p-6 shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         {done ? (
           <div className="text-center">
-            <p className="text-lg font-semibold text-white">Wallet topped up</p>
-            <p className="mt-2 text-3xl font-bold text-emerald-300">
+            <p className="text-lg font-semibold text-ink">Wallet topped up</p>
+            <p className="mt-2 text-3xl font-bold text-blue">
               ₹{done.credited.toLocaleString("en-IN")}
             </p>
-            <p className="mt-2 text-sm text-white/50">
+            <p className="mt-2 text-sm text-ink-2">
               New balance ₹{done.balance.toLocaleString("en-IN")}. Your GST invoice is in Payments below.
             </p>
 
             <button
               onClick={onClose}
-              className="mt-6 w-full rounded-xl bg-cyan-400 px-5 py-3 text-sm font-semibold text-slate-900 hover:bg-cyan-300"
+              className="mt-6 w-full rounded-cf bg-blue px-5 py-3 text-sm font-semibold text-white hover:bg-blue"
             >
               Done
             </button>
@@ -240,8 +240,8 @@ export default function TopUpDialog({
         ) : (
           <>
             <div className="flex items-start justify-between">
-              <h2 className="text-lg font-semibold text-white">Add funds</h2>
-              <button onClick={onClose} aria-label="Close" className="text-white/40 hover:text-white">
+              <h2 className="text-lg font-semibold text-ink">Add funds</h2>
+              <button onClick={onClose} aria-label="Close" className="text-ink-3 hover:text-ink">
                 ✕
               </button>
             </div>
@@ -262,10 +262,10 @@ export default function TopUpDialog({
                       key={p}
                       type="button"
                       onClick={() => setAmount(String(p))}
-                      className={`rounded-xl border px-4 py-2 text-sm font-semibold transition ${
+                      className={`rounded-cf border px-4 py-2 text-sm font-semibold transition ${
                         amount === String(p)
-                          ? "border-cyan-400/60 bg-cyan-400/10 text-cyan-200"
-                          : "border-white/10 bg-white/5 text-white/70 hover:text-white"
+                          ? "border-blue/60 bg-blue/10 text-blue"
+                          : "border-rule bg-paper-2 text-ink-2 hover:text-ink"
                       }`}
                     >
                       ₹{p.toLocaleString("en-IN")}
@@ -273,7 +273,7 @@ export default function TopUpDialog({
                   ))}
                 </div>
 
-                <label className="mt-4 block text-xs font-semibold uppercase tracking-wider text-white/40">
+                <label className="mt-4 block text-xs font-semibold uppercase tracking-wider text-ink-3">
                   Amount (₹)
                 </label>
                 <input
@@ -283,16 +283,16 @@ export default function TopUpDialog({
                   onChange={(e) => { setAmount(e.target.value); setError(""); }}
                   min={config?.min_topup_rupees ?? 500}
                   max={config?.max_topup_rupees ?? 50000}
-                  className="mt-1 h-12 w-full rounded-xl border border-white/10 bg-white/5 px-4 text-white outline-none focus:border-cyan-400/50"
+                  className="mt-1 h-12 w-full rounded-cf border border-rule bg-paper-2 px-4 text-ink outline-none focus:border-blue/50"
                 />
                 {config && (amountTooLow || amountTooHigh) ? (
-                  <p className="mt-2 rounded-lg border border-amber-400/30 bg-amber-400/10 px-3 py-2 text-xs text-amber-200">
+                  <p className="mt-2 rounded-cf border border-amber-400/30 bg-amber-400/10 px-3 py-2 text-xs text-amber-200">
                     {amountTooLow
                       ? `The smallest top-up is ₹${config.min_topup_rupees.toLocaleString("en-IN")}.`
                       : `The largest top-up is ₹${config.max_topup_rupees.toLocaleString("en-IN")}.`}
                   </p>
                 ) : config ? (
-                  <p className="mt-1 text-xs text-white/50">
+                  <p className="mt-1 text-xs text-ink-2">
                     Minimum ₹{config.min_topup_rupees.toLocaleString("en-IN")}, maximum ₹
                     {config.max_topup_rupees.toLocaleString("en-IN")}. GST included; a tax invoice is issued
                     automatically.
@@ -301,65 +301,65 @@ export default function TopUpDialog({
 
                 <div className="mt-5 grid grid-cols-2 gap-3">
                   <div className="col-span-2">
-                    <label className="block text-xs font-semibold uppercase tracking-wider text-white/40">
+                    <label className="block text-xs font-semibold uppercase tracking-wider text-ink-3">
                       Name on the invoice
                     </label>
                     <input
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      className="mt-1 h-11 w-full rounded-xl border border-white/10 bg-white/5 px-3 text-white outline-none focus:border-cyan-400/50"
+                      className="mt-1 h-11 w-full rounded-cf border border-rule bg-paper-2 px-3 text-ink outline-none focus:border-blue/50"
                     />
                   </div>
                   <div className="col-span-2">
-                    <label className="block text-xs font-semibold uppercase tracking-wider text-white/40">
-                      State <span className="text-cyan-300/70">(required)</span>
+                    <label className="block text-xs font-semibold uppercase tracking-wider text-ink-3">
+                      State <span className="text-blue/70">(required)</span>
                     </label>
                     <select
                       value={stateCode}
                       onChange={(e) => { setStateCode(e.target.value); setError(""); }}
-                      className="mt-1 h-11 w-full cursor-pointer rounded-xl border border-white/10 bg-white/5 px-3 text-white outline-none focus:border-cyan-400/50"
+                      className="mt-1 h-11 w-full cursor-pointer rounded-cf border border-rule bg-paper-2 px-3 text-ink outline-none focus:border-blue/50"
                     >
                       {/* Options carry their own colours: Chrome paints the
                           native dropdown white and would otherwise inherit
                           text-white onto it. */}
-                      <option value="" className="bg-slate-900 text-white">
+                      <option value="" className="bg-slate-900 text-ink">
                         Select your state
                       </option>
                       {states.map((s) => (
-                        <option key={s.code} value={s.code} className="bg-slate-900 text-white">
+                        <option key={s.code} value={s.code} className="bg-slate-900 text-ink">
                           {s.name}
                         </option>
                       ))}
                     </select>
-                    <p className="mt-1 text-xs text-white/40">
+                    <p className="mt-1 text-xs text-ink-3">
                       Your state decides the GST split on the invoice, so it cannot be guessed.
                     </p>
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold uppercase tracking-wider text-white/40">
+                    <label className="block text-xs font-semibold uppercase tracking-wider text-ink-3">
                       City
                     </label>
                     <input
                       value={city}
                       onChange={(e) => setCity(e.target.value)}
-                      className="mt-1 h-11 w-full rounded-xl border border-white/10 bg-white/5 px-3 text-white outline-none focus:border-cyan-400/50"
+                      className="mt-1 h-11 w-full rounded-cf border border-rule bg-paper-2 px-3 text-ink outline-none focus:border-blue/50"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold uppercase tracking-wider text-white/40">
+                    <label className="block text-xs font-semibold uppercase tracking-wider text-ink-3">
                       PIN code
                     </label>
                     <input
                       value={pincode}
                       onChange={(e) => setPincode(e.target.value)}
                       inputMode="numeric"
-                      className="mt-1 h-11 w-full rounded-xl border border-white/10 bg-white/5 px-3 text-white outline-none focus:border-cyan-400/50"
+                      className="mt-1 h-11 w-full rounded-cf border border-rule bg-paper-2 px-3 text-ink outline-none focus:border-blue/50"
                     />
                   </div>
                 </div>
 
                 {error && (
-                  <p className="mt-4 rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+                  <p className="mt-4 rounded-cf border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
                     {error}
                   </p>
                 )}
@@ -367,11 +367,11 @@ export default function TopUpDialog({
                 <button
                   onClick={pay}
                   disabled={busy || !config || amountTooLow || amountTooHigh}
-                  className="mt-5 w-full rounded-xl bg-cyan-400 px-5 py-3 text-sm font-semibold text-slate-900 transition hover:bg-cyan-300 disabled:opacity-50"
+                  className="mt-5 w-full rounded-cf bg-blue px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue disabled:opacity-50"
                 >
                   {busy ? "Opening payment…" : `Pay ₹${Number(amount || 0).toLocaleString("en-IN")}`}
                 </button>
-                <p className="mt-3 text-center text-xs text-white/30">
+                <p className="mt-3 text-center text-xs text-ink-3">
                   Payments are processed by Razorpay. We never see your card details.
                 </p>
               </>

@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 
 export default function CfdIntakePage() {
   return (
-    <div className="relative min-h-screen text-white">
+    <div className="relative min-h-screen text-ink">
       <BackgroundGlow />
 
       <main className="relative mx-auto max-w-4xl px-4 pb-24 pt-20 md:pt-28">
@@ -30,13 +30,13 @@ export default function CfdIntakePage() {
           <h1 className="text-4xl font-bold tracking-tight md:text-5xl">
             Submit your CFD analysis.
           </h1>
-          <p className="mt-4 max-w-2xl text-base leading-7 text-slate-300 md:text-lg">
+          <p className="mt-4 max-w-2xl text-base leading-7 text-ink-2 md:text-lg">
             Fill in your geometry, boundary conditions, and solver preferences.
             We size and provision a GPU workstation for the case and tell you,
             before you book, whether it will actually fit. You bring your own
             solver licence, and your engineer stays the engineer of record.
           </p>
-          <div className="mt-5 flex flex-wrap gap-4 text-sm text-slate-400">
+          <div className="mt-5 flex flex-wrap gap-4 text-sm text-ink-2">
             <span className="flex items-center gap-1.5">
               <span className="text-green-400">✓</span> OpenFOAM &amp; ANSYS Fluent
             </span>
@@ -47,8 +47,8 @@ export default function CfdIntakePage() {
               <span className="text-green-400">✓</span> Results as PDF + data files
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="text-cyan-400">⚡</span> Sized before you book
-              <span className="text-white/30 text-xs">*</span>
+              <span className="text-blue">⚡</span> Sized before you book
+              <span className="text-ink-3 text-xs">*</span>
             </span>
           </div>
         </div>
@@ -57,11 +57,11 @@ export default function CfdIntakePage() {
             fields for a model that will not convert should find that out now,
             not after we quote it. It costs us a submission occasionally and
             saves the relationship every time it fires. */}
-        <div className="mb-8 rounded-xl border border-cyan-500/20 bg-cyan-500/[0.06] px-5 py-4">
-          <p className="text-sm leading-6 text-slate-200">
-            <span className="font-semibold text-white">Exported this from Revit or ArchiCAD?</span>{" "}
+        <div className="mb-8 rounded-cf border border-blue/20 bg-blue/[0.06] px-5 py-4">
+          <p className="text-sm leading-6 text-ink">
+            <span className="font-semibold text-ink">Exported this from Revit or ArchiCAD?</span>{" "}
             Run it through our{" "}
-            <a href="/tools" className="text-cyan-300 underline underline-offset-2 hover:text-cyan-200">
+            <a href="/tools" className="text-blue underline underline-offset-2 hover:text-blue">
               free IFC pre-CFD check
             </a>{" "}
             first. It takes seconds, needs no signup, and reports the documented
@@ -74,7 +74,7 @@ export default function CfdIntakePage() {
         <CfdIntakeForm />
 
         {/* Footnote */}
-        <p className="mt-10 text-xs text-slate-600 border-t border-white/5 pt-6">
+        <p className="mt-10 text-xs text-ink-3 border-t border-rule pt-6">
           * Our current card is a 16 GB RTX 5080. Ansys publishes roughly 1.0-1.9 GB of GPU memory per million tet/hex cells
           and 1.8-2.8 GB per million polyhedral cells, which puts a practical ceiling around 8 million tet or 5 million polyhedral
           cells on this hardware — less if you are running a mesh-independence study. Larger meshes need a bigger card than we

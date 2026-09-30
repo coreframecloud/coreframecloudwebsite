@@ -158,7 +158,7 @@ export function ContactSection() {
   }
 
   return (
-    <section id="reserve-access" className="border-b border-white/10">
+    <section id="reserve-access" className="border-b border-rule">
       <div className="mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:px-6 lg:grid-cols-[0.9fr_1.1fr] lg:px-8 lg:py-14">
         <div className="max-w-xl">
           <div className="cf-eyebrow">RESERVE ACCESS</div>
@@ -173,11 +173,11 @@ export function ContactSection() {
         </div>
 
         <div>
-          <div className="rounded-[28px] border border-white/10 bg-white/[0.03] p-6 sm:p-8">
+          <div className="rounded-[28px] border border-rule bg-paper-2 p-6 sm:p-8">
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid gap-6 sm:grid-cols-2">
                 <div>
-                  <label htmlFor="name" className="text-[11px] font-semibold uppercase tracking-[0.22em] text-white/45">
+                  <label htmlFor="name" className="text-[11px] font-semibold uppercase tracking-[0.22em] text-ink-2">
                     Name
                   </label>
                   <input
@@ -187,13 +187,13 @@ export function ContactSection() {
                     value={form.name}
                     onFocus={handleFormStart}
                     onChange={(e) => update("name", e.target.value)}
-                    className="mt-2 w-full rounded-2xl border border-white/10 bg-[#07121e] px-4 py-3 text-white outline-none transition placeholder:text-white/28 focus:border-emerald-300/35"
+                    className="mt-2 w-full rounded-cf border border-rule bg-paper-2 px-4 py-3 text-ink outline-none transition placeholder:text-ink/28 focus:border-blue/35"
                     placeholder="Your name"
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="company" className="text-[11px] font-semibold uppercase tracking-[0.22em] text-white/45">
+                  <label htmlFor="company" className="text-[11px] font-semibold uppercase tracking-[0.22em] text-ink-2">
                     Company
                   </label>
                   <input
@@ -202,13 +202,13 @@ export function ContactSection() {
                     value={form.company}
                     onFocus={handleFormStart}
                     onChange={(e) => update("company", e.target.value)}
-                    className="mt-2 w-full rounded-2xl border border-white/10 bg-[#07121e] px-4 py-3 text-white outline-none transition placeholder:text-white/28 focus:border-emerald-300/35"
+                    className="mt-2 w-full rounded-cf border border-rule bg-paper-2 px-4 py-3 text-ink outline-none transition placeholder:text-ink/28 focus:border-blue/35"
                     placeholder="Studio or company"
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="email" className="text-[11px] font-semibold uppercase tracking-[0.22em] text-white/45">
+                  <label htmlFor="email" className="text-[11px] font-semibold uppercase tracking-[0.22em] text-ink-2">
                     Email
                   </label>
                   <input
@@ -218,13 +218,13 @@ export function ContactSection() {
                     value={form.email}
                     onFocus={handleFormStart}
                     onChange={(e) => update("email", e.target.value)}
-                    className="mt-2 w-full rounded-2xl border border-white/10 bg-[#07121e] px-4 py-3 text-white outline-none transition placeholder:text-white/28 focus:border-emerald-300/35"
+                    className="mt-2 w-full rounded-cf border border-rule bg-paper-2 px-4 py-3 text-ink outline-none transition placeholder:text-ink/28 focus:border-blue/35"
                     placeholder="you@company.com"
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="phone" className="text-[11px] font-semibold uppercase tracking-[0.22em] text-white/45">
+                  <label htmlFor="phone" className="text-[11px] font-semibold uppercase tracking-[0.22em] text-ink-2">
                     Phone / WhatsApp
                   </label>
                   <input
@@ -234,7 +234,7 @@ export function ContactSection() {
                     value={form.phone}
                     onFocus={handleFormStart}
                     onChange={(e) => update("phone", e.target.value)}
-                    className="mt-2 w-full rounded-2xl border border-white/10 bg-[#07121e] px-4 py-3 text-white outline-none transition placeholder:text-white/28 focus:border-emerald-300/35"
+                    className="mt-2 w-full rounded-cf border border-rule bg-paper-2 px-4 py-3 text-ink outline-none transition placeholder:text-ink/28 focus:border-blue/35"
                     placeholder="+91 ..."
                   />
                 </div>
@@ -242,7 +242,7 @@ export function ContactSection() {
 
               <div className="grid gap-6 sm:grid-cols-2">
                 <div>
-                  <label htmlFor="workload" className="text-[11px] font-semibold uppercase tracking-[0.22em] text-white/45">
+                  <label htmlFor="workload" className="text-[11px] font-semibold uppercase tracking-[0.22em] text-ink-2">
                     Primary workload
                   </label>
                   <select
@@ -251,7 +251,7 @@ export function ContactSection() {
                     value={form.workload}
                     onFocus={handleFormStart}
                     onChange={(e) => update("workload", e.target.value)}
-                    className="mt-2 w-full rounded-2xl border border-white/10 bg-[#07121e] px-4 py-3 text-white outline-none transition focus:border-emerald-300/35"
+                    className="mt-2 w-full rounded-cf border border-rule bg-paper-2 px-4 py-3 text-ink outline-none transition focus:border-blue/35"
                   >
                     <option value="">Select workload</option>
                     <option value="3D Rendering">3D Rendering</option>
@@ -260,7 +260,7 @@ export function ContactSection() {
                 </div>
 
                 <div>
-                  <label htmlFor="gpu" className="text-[11px] font-semibold uppercase tracking-[0.22em] text-white/45">
+                  <label htmlFor="gpu" className="text-[11px] font-semibold uppercase tracking-[0.22em] text-ink-2">
                     Preferred GPU / Node
                   </label>
                   <select
@@ -270,7 +270,7 @@ export function ContactSection() {
                     onFocus={handleFormStart}
                     onChange={(e) => update("gpu", e.target.value)}
                     disabled={!form.workload}
-                    className="mt-2 w-full rounded-2xl border border-white/10 bg-[#07121e] px-4 py-3 text-white outline-none transition focus:border-emerald-300/35 disabled:cursor-not-allowed disabled:opacity-50"
+                    className="mt-2 w-full rounded-cf border border-rule bg-paper-2 px-4 py-3 text-ink outline-none transition focus:border-blue/35 disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     <option value="">
                       {form.workload ? "Select option" : "Choose workload first"}
@@ -285,7 +285,7 @@ export function ContactSection() {
               </div>
 
               <div>
-                <label htmlFor="notes" className="text-[11px] font-semibold uppercase tracking-[0.22em] text-white/45">
+                <label htmlFor="notes" className="text-[11px] font-semibold uppercase tracking-[0.22em] text-ink-2">
                   Notes
                 </label>
                 <textarea
@@ -294,13 +294,13 @@ export function ContactSection() {
                   value={form.notes}
                   onFocus={handleFormStart}
                   onChange={(e) => update("notes", e.target.value)}
-                  className="mt-2 w-full rounded-2xl border border-white/10 bg-[#07121e] px-4 py-3 text-white outline-none transition placeholder:text-white/28 focus:border-emerald-300/35"
+                  className="mt-2 w-full rounded-cf border border-rule bg-paper-2 px-4 py-3 text-ink outline-none transition placeholder:text-ink/28 focus:border-blue/35"
                   placeholder="Tell us about your project, scene size, AI use case, timing, or questions."
                 />
               </div>
 
               <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                <div className="text-sm text-white/50">
+                <div className="text-sm text-ink-2">
                   Submit the form and continue on WhatsApp.
                 </div>
 
@@ -314,13 +314,13 @@ export function ContactSection() {
               </div>
 
               {submitted && (
-                <div className="rounded-2xl border border-emerald-400/15 bg-emerald-400/[0.05] px-4 py-3 text-sm text-emerald-300">
+                <div className="rounded-cf border border-blue/15 bg-blue/[0.05] px-4 py-3 text-sm text-blue">
                   Lead recorded successfully. Opening WhatsApp.
                 </div>
               )}
 
               {errorMessage && (
-                <div className="rounded-2xl border border-red-400/15 bg-red-400/[0.05] px-4 py-3 text-sm text-red-300">
+                <div className="rounded-cf border border-red-400/15 bg-red-400/[0.05] px-4 py-3 text-sm text-red-300">
                   {errorMessage}
                 </div>
               )}

@@ -39,21 +39,21 @@ const prohibitedUses = [
 
 export default function TermsOfServicePage() {
   return (
-    <main className="relative min-h-screen border-b border-white/10 text-white">
+    <main className="relative min-h-screen border-b border-rule text-ink">
       <BackgroundGlow />
 
       <div className="relative mx-auto max-w-4xl px-4 py-20 sm:px-6 lg:px-8">
-        <div className="text-sm font-medium uppercase tracking-[0.25em] text-cyan-300">
+        <div className="text-sm font-medium uppercase tracking-[0.25em] text-blue">
           Legal
         </div>
         <h1 className="mt-4 text-4xl font-semibold tracking-tight md:text-6xl">
           Terms of Service
         </h1>
-        <p className="mt-4 text-sm font-medium uppercase tracking-[0.18em] text-white/45">
+        <p className="mt-4 text-sm font-medium uppercase tracking-[0.18em] text-ink-2">
           Last Updated: June 2026
         </p>
 
-        <div className="mt-10 space-y-10 text-base leading-8 text-white/70">
+        <div className="mt-10 space-y-10 text-base leading-8 text-ink-2">
           <section>
             <p>
               Coreframe Cloud provides cloud-hosted GPU workstations and compute
@@ -62,7 +62,7 @@ export default function TermsOfServicePage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-white">
+            <h2 className="text-xl font-semibold text-ink">
               Permitted Uses
             </h2>
             <ul className="mt-4 list-disc space-y-2 pl-6">
@@ -73,7 +73,7 @@ export default function TermsOfServicePage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-white">
+            <h2 className="text-xl font-semibold text-ink">
               Prohibited Uses
             </h2>
             <ul className="mt-4 list-disc space-y-2 pl-6">
@@ -84,7 +84,7 @@ export default function TermsOfServicePage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-white">
+            <h2 className="text-xl font-semibold text-ink">
               Service Availability
             </h2>
             <p className="mt-3">
@@ -94,7 +94,7 @@ export default function TermsOfServicePage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-white">
+            <h2 className="text-xl font-semibold text-ink">
               Data Responsibility
             </h2>
             <p className="mt-3">
@@ -104,7 +104,7 @@ export default function TermsOfServicePage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-white">
+            <h2 className="text-xl font-semibold text-ink">
               Limitation of Liability
             </h2>
             <p className="mt-3">
@@ -114,7 +114,7 @@ export default function TermsOfServicePage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-white">
+            <h2 className="text-xl font-semibold text-ink">
               Account Suspension
             </h2>
             <p className="mt-3">
@@ -124,10 +124,10 @@ export default function TermsOfServicePage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-white">Contact</h2>
+            <h2 className="text-xl font-semibold text-ink">Contact</h2>
             <Link
               href="mailto:admin@coreframecloud.com"
-              className="mt-3 inline-flex text-cyan-300 transition hover:text-cyan-200"
+              className="mt-3 inline-flex text-blue transition hover:text-blue"
             >
               admin@coreframecloud.com
             </Link>

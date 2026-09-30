@@ -36,15 +36,15 @@ const STEPS = [
 export function HowItWorksSection() {
   return (
     <section id="how" className="mx-auto max-w-7xl scroll-mt-24 px-4 py-20 sm:px-6 lg:px-8">
-      <p className="text-xs font-bold uppercase tracking-[0.22em] text-cyan-300">The whole idea, in three steps</p>
+      <p className="text-xs font-bold uppercase tracking-[0.22em] text-blue">The whole idea, in three steps</p>
       <h2 className="cf-section-title mt-4 max-w-3xl">
         You don&apos;t buy the machine.
         <br />
-        <span className="bg-gradient-to-r from-cyan-300 to-emerald-300 bg-clip-text text-transparent">
+        <span className="bg-gradient-to-r from-blue to-blue bg-clip-text text-transparent">
           You borrow it, by the minute.
         </span>
       </h2>
-      <p className="mt-5 max-w-2xl text-base leading-7 text-white/70">
+      <p className="mt-5 max-w-2xl text-base leading-7 text-ink-2">
         That&apos;s it. There&apos;s no complicated part. The workstation is real
         hardware in a data centre; you see its screen on your laptop and use it
         exactly as if it were under your desk.
@@ -54,20 +54,20 @@ export function HowItWorksSection() {
         {STEPS.map((s) => (
           <li
             key={s.n}
-            className="rounded-2xl border border-white/10 bg-white/[0.035] p-7 transition hover:border-cyan-300/25"
+            className="rounded-cf border border-rule bg-paper-2 p-7 transition hover:border-blue/25"
           >
             <span
               aria-hidden
-              className="flex h-10 w-10 items-center justify-center rounded-xl border border-cyan-300/25 bg-cyan-400/10 text-base font-bold text-cyan-300"
+              className="flex h-10 w-10 items-center justify-center rounded-cf border border-blue/25 bg-blue/10 text-base font-bold text-blue"
             >
               {s.n}
             </span>
-            <h3 className="mt-5 text-xl font-semibold text-white">{s.title}</h3>
-            <p className="mt-2.5 text-[15px] leading-7 text-white/70">{s.body}</p>
+            <h3 className="mt-5 text-xl font-semibold text-ink">{s.title}</h3>
+            <p className="mt-2.5 text-[15px] leading-7 text-ink-2">{s.body}</p>
             {s.link ? (
               <Link
                 href={s.link.href}
-                className="mt-4 inline-block text-[15px] font-semibold text-cyan-300 transition hover:text-cyan-200"
+                className="mt-4 inline-block text-[15px] font-semibold text-blue transition hover:text-blue"
               >
                 {s.link.label} →
               </Link>

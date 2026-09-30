@@ -77,13 +77,13 @@ function UserAvatar({ initials, accountNumber, onSignOut }: { initials: string; 
       <button
         type="button"
         onClick={() => setDropdownOpen((p) => !p)}
-        className="flex h-8 w-8 items-center justify-center rounded-full border border-white/20 bg-white/10 text-xs font-semibold text-white transition hover:border-white/40 hover:bg-white/20"
+        className="flex h-8 w-8 items-center justify-center rounded-full border border-rule-strong bg-paper-2 text-xs font-semibold text-ink transition hover:border-rule-strong hover:bg-paper-2"
         aria-label="User menu"
       >
         {initials}
       </button>
       {dropdownOpen && (
-        <div className="absolute right-0 top-10 z-50 min-w-[220px] rounded-xl border border-white/10 bg-[#03101d] py-1 shadow-xl">
+        <div className="absolute right-0 top-10 z-50 min-w-[220px] rounded-cf border border-rule bg-paper-2 py-1 shadow-xl">
           {/*
             Account number, front and centre. It is the first thing support asks
             for and the reference on every invoice, so it belongs where someone
@@ -92,11 +92,11 @@ function UserAvatar({ initials, accountNumber, onSignOut }: { initials: string; 
             join code, never this number.
           */}
           {accountNumber ? (
-            <div className="border-b border-white/10 px-4 py-2.5">
-              <div className="text-[10px] uppercase tracking-[0.18em] text-white/35">
+            <div className="border-b border-rule px-4 py-2.5">
+              <div className="text-[10px] uppercase tracking-[0.18em] text-ink-3">
                 Account number
               </div>
-              <div className="mt-0.5 font-mono text-sm text-white/90 select-all">
+              <div className="mt-0.5 font-mono text-sm text-ink select-all">
                 {accountNumber}
               </div>
             </div>
@@ -104,7 +104,7 @@ function UserAvatar({ initials, accountNumber, onSignOut }: { initials: string; 
           <button
             type="button"
             onClick={onSignOut}
-            className="flex w-full items-center px-4 py-2.5 text-sm text-white/60 transition hover:bg-white/5 hover:text-white"
+            className="flex w-full items-center px-4 py-2.5 text-sm text-ink-2 transition hover:bg-paper-2 hover:text-ink"
           >
             Sign out
           </button>
@@ -211,7 +211,7 @@ export function SiteHeader() {
       : null;
 
   return (
-    <header className="sticky top-0 z-50 border-b border-white/10 bg-[#03101d]/90 backdrop-blur-xl">
+    <header className="sticky top-0 z-50 border-b border-rule bg-paper-2/90 backdrop-blur-xl">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
 
         {/* Logo */}
@@ -225,8 +225,8 @@ export function SiteHeader() {
             <Link
               key={item.href}
               href={item.href}
-              className={`text-sm font-medium transition hover:text-white ${
-                pathname === item.href ? "text-white" : "text-white/70"
+              className={`text-sm font-medium transition hover:text-ink ${
+                pathname === item.href ? "text-ink" : "text-ink-2"
               }`}
               onClick={() => trackEvent("nav_click", { label: item.label, location: "header_nav" })}
             >
@@ -247,7 +247,7 @@ export function SiteHeader() {
                 <Link
                   href="/my-activity#add-funds"
                   title="Add funds"
-                  className="inline-flex items-center gap-1.5 text-xs font-semibold bg-emerald-400/10 text-emerald-300 border border-emerald-400/20 px-2.5 py-1 rounded-full transition hover:bg-emerald-400/20 hover:text-emerald-200"
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold bg-blue/10 text-blue border border-blue/20 px-2.5 py-1 rounded-full transition hover:bg-blue/20 hover:text-blue"
                   onClick={() => trackEvent("wallet_chip_click", { location: "header" })}
                 >
                   <WalletIcon />
@@ -271,7 +271,7 @@ export function SiteHeader() {
               ) : (
                 <Link
                   href="/my-activity"
-                  className="text-sm font-medium text-white/70 transition hover:text-white"
+                  className="text-sm font-medium text-ink-2 transition hover:text-ink"
                   onClick={() => trackEvent("my_activity_click", { location: "header_cta" })}
                 >
                   My Activity
@@ -281,7 +281,7 @@ export function SiteHeader() {
               {auth.user?.role === "org_admin" && (
                 <Link
                   href="/org-admin"
-                  className="text-sm font-medium text-cyan-400/80 transition hover:text-cyan-300"
+                  className="text-sm font-medium text-blue/80 transition hover:text-blue"
                   onClick={() => trackEvent("org_admin_click", { location: "header_cta" })}
                 >
                   Org Portal
@@ -294,14 +294,14 @@ export function SiteHeader() {
             <>
               <Link
                 href="/login"
-                className="text-sm font-medium text-white/55 transition hover:text-white"
+                className="text-sm font-medium text-ink-2 transition hover:text-ink"
                 onClick={() => trackEvent("signin_click", { location: "header_cta" })}
               >
                 Sign in
               </Link>
               <Link
                 href="/login"
-                className="inline-flex items-center justify-center rounded-xl bg-cyan-400 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:bg-cyan-300"
+                className="inline-flex items-center justify-center rounded-cf bg-blue px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue"
                 onClick={() => trackEvent("signup_click", { location: "header_cta" })}
               >
                 Get started
@@ -318,7 +318,7 @@ export function SiteHeader() {
             setOpen((p) => !p);
             trackEvent("mobile_menu_toggle", { open: !open });
           }}
-          className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-white xl:hidden"
+          className="inline-flex h-10 w-10 items-center justify-center rounded-cf border border-rule bg-paper-2 text-ink xl:hidden"
         >
           {open ? <X size={18} /> : <Menu size={18} />}
         </button>
@@ -326,7 +326,7 @@ export function SiteHeader() {
 
       {/* Mobile menu */}
       {open && (
-        <div className="border-t border-white/10 bg-[#03101d] xl:hidden">
+        <div className="border-t border-rule bg-paper-2 xl:hidden">
           <div className="mx-auto flex max-w-7xl flex-col gap-1 px-4 py-4 sm:px-6">
             {navLinks.map((item) => (
               <Link
@@ -336,7 +336,7 @@ export function SiteHeader() {
                   setOpen(false);
                   trackEvent("nav_click", { label: item.label, location: "mobile_menu" });
                 }}
-                className="rounded-xl px-3 py-2.5 text-sm font-medium text-white/80 transition hover:bg-white/5 hover:text-white"
+                className="rounded-cf px-3 py-2.5 text-sm font-medium text-ink transition hover:bg-paper-2 hover:text-ink"
               >
                 {item.label}
               </Link>
@@ -348,12 +348,12 @@ export function SiteHeader() {
                     <Link
                       href="/my-activity#add-funds"
                       onClick={() => { setOpen(false); trackEvent("wallet_chip_click", { location: "mobile_menu" }); }}
-                      className="inline-flex items-center gap-1.5 text-xs font-semibold bg-emerald-400/10 text-emerald-300 border border-emerald-400/20 px-2.5 py-1 rounded-full"
+                      className="inline-flex items-center gap-1.5 text-xs font-semibold bg-blue/10 text-blue border border-blue/20 px-2.5 py-1 rounded-full"
                     >
                       <WalletIcon />
                       {balance}
                     </Link>
-                    <span className="text-sm text-white/60">{auth.user.full_name}</span>
+                    <span className="text-sm text-ink-2">{auth.user.full_name}</span>
                   </div>
                 )}
                 {/* An unverified account cannot load My Activity — the API
@@ -362,7 +362,7 @@ export function SiteHeader() {
                 <Link
                   href={auth.user?.status === "pending_approval" ? "/verify" : "/my-activity"}
                   onClick={() => { setOpen(false); trackEvent("my_activity_click", { location: "mobile_menu" }); }}
-                  className="rounded-xl px-3 py-2.5 text-sm font-medium text-white/80 transition hover:bg-white/5 hover:text-white"
+                  className="rounded-cf px-3 py-2.5 text-sm font-medium text-ink transition hover:bg-paper-2 hover:text-ink"
                 >
                   {auth.user?.status === "pending_approval" ? "Complete verification" : "My Activity"}
                 </Link>
@@ -370,7 +370,7 @@ export function SiteHeader() {
                   <Link
                     href="/org-admin"
                     onClick={() => { setOpen(false); trackEvent("org_admin_click", { location: "mobile_menu" }); }}
-                    className="rounded-xl px-3 py-2.5 text-sm font-medium text-cyan-400/80 transition hover:bg-white/5 hover:text-cyan-300"
+                    className="rounded-cf px-3 py-2.5 text-sm font-medium text-blue/80 transition hover:bg-paper-2 hover:text-blue"
                   >
                     Org Portal
                   </Link>
@@ -378,7 +378,7 @@ export function SiteHeader() {
                 <button
                   type="button"
                   onClick={() => { setOpen(false); handleSignOut(); }}
-                  className="rounded-xl px-3 py-2.5 text-left text-sm font-medium text-white/60 transition hover:bg-white/5 hover:text-white"
+                  className="rounded-cf px-3 py-2.5 text-left text-sm font-medium text-ink-2 transition hover:bg-paper-2 hover:text-ink"
                 >
                   Sign out
                 </button>
@@ -388,14 +388,14 @@ export function SiteHeader() {
                 <Link
                   href="/login"
                   onClick={() => { setOpen(false); trackEvent("signin_click", { location: "mobile_menu" }); }}
-                  className="flex-1 inline-flex items-center justify-center rounded-xl border border-white/10 px-5 py-2.5 text-sm font-medium text-white/70"
+                  className="flex-1 inline-flex items-center justify-center rounded-cf border border-rule px-5 py-2.5 text-sm font-medium text-ink-2"
                 >
                   Sign in
                 </Link>
                 <Link
                   href="/login"
                   onClick={() => { setOpen(false); trackEvent("signup_click", { location: "mobile_menu" }); }}
-                  className="flex-1 inline-flex items-center justify-center rounded-xl bg-cyan-400 px-5 py-2.5 text-sm font-semibold text-slate-900"
+                  className="flex-1 inline-flex items-center justify-center rounded-cf bg-blue px-5 py-2.5 text-sm font-semibold text-white"
                 >
                   Get started
                 </Link>

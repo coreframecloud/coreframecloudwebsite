@@ -45,7 +45,7 @@ export function PricingSection({
   commitmentCheaper?: boolean;
 }) {
   return (
-    <section id="pricing" className="border-b border-white/10">
+    <section id="pricing" className="border-b border-rule">
       <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
         <div className="max-w-3xl">
           <div className="cf-eyebrow">PRICING</div>
@@ -58,13 +58,13 @@ export function PricingSection({
         <div className="mt-12 grid gap-6 lg:grid-cols-2">
 
           {/* Ad-hoc */}
-          <div className="rounded-[28px] border border-white/10 bg-white/[0.03] p-8">
-            <div className="text-xs font-semibold uppercase tracking-[0.22em] text-white/40">
+          <div className="rounded-[28px] border border-rule bg-paper-2 p-8">
+            <div className="text-xs font-semibold uppercase tracking-[0.22em] text-ink-3">
               Ad-hoc · Pay-as-you-go
             </div>
             <div className="mt-4 flex items-end gap-2">
-              <span className="text-5xl font-bold text-white">{adhocRate ?? "—"}</span>
-              <span className="mb-1.5 text-lg text-white/50">/ GPU-hour</span>
+              <span className="text-5xl font-bold text-ink">{adhocRate ?? "—"}</span>
+              <span className="mb-1.5 text-lg text-ink-2">/ GPU-hour</span>
             </div>
             {/* Per hour is the headline because that is the unit every
                 alternative quotes, and a buyer who has to convert units to
@@ -72,21 +72,21 @@ export function PricingSection({
                 here, as the mechanism — with a worked example, because "billed
                 per minute" is abstract and "₹100" is not. */}
             {perMinute ? (
-              <p className="mt-2 text-sm text-emerald-300">
+              <p className="mt-2 text-sm text-blue">
                 {perMinute} a minute
                 {example ? ` — a ${example.minutes}-minute session costs ${example.cost}` : ""}
               </p>
             ) : null}
-            <p className="mt-4 text-sm leading-6 text-white/60">
+            <p className="mt-4 text-sm leading-6 text-ink-2">
               Spin up anytime, no contract. {billingNote} Best for one-off renders
               or trying the platform before committing.
             </p>
 
-            <ul className="mt-6 space-y-2 text-sm text-white/70">
-              <li className="flex gap-2"><span className="text-emerald-400">✓</span> No commitment, cancel anytime</li>
-              <li className="flex gap-2"><span className="text-emerald-400">✓</span> Full Windows desktop via RDP</li>
-              <li className="flex gap-2"><span className="text-emerald-400">✓</span> RTX 5080 · 16 GB GDDR7</li>
-              <li className="flex gap-2"><span className="text-emerald-400">✓</span> <span className="text-white/40">{storage.trialGb} GB persistent storage free, {storage.paidGb} GB with credit · kept {storage.retentionDays} days · session scratch cleared at session end</span></li>
+            <ul className="mt-6 space-y-2 text-sm text-ink-2">
+              <li className="flex gap-2"><span className="text-blue">✓</span> No commitment, cancel anytime</li>
+              <li className="flex gap-2"><span className="text-blue">✓</span> Full Windows desktop via RDP</li>
+              <li className="flex gap-2"><span className="text-blue">✓</span> RTX 5080 · 16 GB GDDR7</li>
+              <li className="flex gap-2"><span className="text-blue">✓</span> <span className="text-ink-3">{storage.trialGb} GB persistent storage free, {storage.paidGb} GB with credit · kept {storage.retentionDays} days · session scratch cleared at session end</span></li>
             </ul>
 
             <div className="mt-8">
@@ -101,15 +101,15 @@ export function PricingSection({
           </div>
 
           {/* Committed */}
-          <div className="rounded-[28px] border border-cyan-400/20 bg-cyan-400/[0.04] p-8">
-            <div className="text-xs font-semibold uppercase tracking-[0.22em] text-cyan-300/70">
+          <div className="rounded-[28px] border border-blue/20 bg-blue/[0.04] p-8">
+            <div className="text-xs font-semibold uppercase tracking-[0.22em] text-blue/70">
               Committed Monthly Plans
             </div>
             <div className="mt-4 flex items-end gap-2">
-              <span className="text-5xl font-bold text-white">{bestOverage ?? "—"}</span>
-              <span className="mb-1.5 text-lg text-white/50">/ GPU-hour</span>
+              <span className="text-5xl font-bold text-ink">{bestOverage ?? "—"}</span>
+              <span className="mb-1.5 text-lg text-ink-2">/ GPU-hour</span>
             </div>
-            <p className="mt-4 text-sm leading-6 text-white/60">
+            <p className="mt-4 text-sm leading-6 text-ink-2">
               {/* The claim is conditional on it being TRUE, not on both numbers
                   existing. Cut the ad-hoc rate far enough and every tier inverts
                   — the API refuses to publish those, and this refuses to assert
@@ -122,11 +122,11 @@ export function PricingSection({
               {storageRate ? ` Extra persistent storage is billed openly at ${storageRate}/TB/month, with no egress charge — pulling your own files back costs nothing.` : ""}
             </p>
 
-            <ul className="mt-6 space-y-2 text-sm text-white/70">
-              <li className="flex gap-2"><span className="text-cyan-400">✓</span> Persistent NAS storage (2–10 TB included)</li>
-              <li className="flex gap-2"><span className="text-cyan-400">✓</span> 5–25 named render seats</li>
-              <li className="flex gap-2"><span className="text-cyan-400">✓</span> Included GPU-hours each month</li>
-              {entryPlanFee ? <li className="flex gap-2"><span className="text-cyan-400">✓</span> Plans from {entryPlanFee}/month</li> : null}
+            <ul className="mt-6 space-y-2 text-sm text-ink-2">
+              <li className="flex gap-2"><span className="text-blue">✓</span> Persistent NAS storage (2–10 TB included)</li>
+              <li className="flex gap-2"><span className="text-blue">✓</span> 5–25 named render seats</li>
+              <li className="flex gap-2"><span className="text-blue">✓</span> Included GPU-hours each month</li>
+              {entryPlanFee ? <li className="flex gap-2"><span className="text-blue">✓</span> Plans from {entryPlanFee}/month</li> : null}
             </ul>
 
             <div className="mt-8">
@@ -142,30 +142,30 @@ export function PricingSection({
         </div>
 
         {/* Storage add-on — available on any plan, including ad-hoc */}
-        <div className="mt-6 rounded-[24px] border border-white/10 bg-white/[0.03] px-6 py-6 sm:flex sm:items-center sm:justify-between sm:gap-6">
+        <div className="mt-6 rounded-[24px] border border-rule bg-paper-2 px-6 py-6 sm:flex sm:items-center sm:justify-between sm:gap-6">
           <div>
-            <div className="text-xs font-semibold uppercase tracking-[0.22em] text-white/40">
+            <div className="text-xs font-semibold uppercase tracking-[0.22em] text-ink-3">
               Add-on · Persistent NAS storage
             </div>
-            <p className="mt-2 max-w-2xl text-sm leading-6 text-white/60">
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-ink-2">
               Need your project files to outlive the session? Add persistent NAS storage to any
               account — ad-hoc or committed. Your data is retained for as long as the storage
               subscription is active.
             </p>
           </div>
           <div className="mt-4 shrink-0 sm:mt-0 sm:text-right">
-            <div className="text-3xl font-bold text-white">{storageRate ?? "—"}</div>
-            <div className="text-sm text-white/50">/ TB / month</div>
+            <div className="text-3xl font-bold text-ink">{storageRate ?? "—"}</div>
+            <div className="text-sm text-ink-2">/ TB / month</div>
           </div>
         </div>
 
         {/* BYOL note */}
-        <div className="mt-6 rounded-[20px] border border-white/8 bg-white/[0.02] px-6 py-5">
-          <p className="text-sm leading-6 text-white/50">
-            <span className="font-semibold text-white/70">Software licences are BYOL</span> — Bring Your Own Licence.
+        <div className="mt-6 rounded-[20px] border border-rule bg-paper-2 px-6 py-5">
+          <p className="text-sm leading-6 text-ink-2">
+            <span className="font-semibold text-ink-2">Software licences are BYOL</span> — Bring Your Own Licence.
             D5 Render, Lumion, Enscape, SolidWorks, 3ds Max, and similar apps all work on our instances.
             Named-user licences are fully supported — install your licence on the workstation and it activates against your existing seat.
-            <span className="font-semibold text-white/70"> All prices include GST.</span> What you see is what you pay —
+            <span className="font-semibold text-ink-2"> All prices include GST.</span> What you see is what you pay —
             an 18% GST component is inside every rate, and business customers get a full tax invoice showing the split.
           </p>
         </div>

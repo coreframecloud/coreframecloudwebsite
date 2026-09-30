@@ -14,7 +14,7 @@ export function WhatsAppButton() {
       <div className="relative">
         <span className="absolute inset-0 animate-ping rounded-full bg-green-400 opacity-30" />
         <span className="absolute -inset-1 rounded-full bg-green-400/20 blur-md" />
-        <div className="relative flex items-center gap-3 rounded-full border border-green-300/30 bg-green-500 px-5 py-3 text-white shadow-2xl shadow-green-500/30 transition duration-200 hover:scale-105 hover:bg-green-400">
+        <div className="relative flex items-center gap-3 rounded-full border border-green-300/30 bg-green-500 px-5 py-3 text-ink shadow-2xl shadow-green-500/30 transition duration-200 hover:scale-105 hover:bg-green-400">
           <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-green-500">
             <MessageCircle className="h-5 w-5" />
           </div>

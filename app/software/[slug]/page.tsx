@@ -78,22 +78,22 @@ export default async function SoftwareLandingPage({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema(page)) }}
       />
 
-      <h1 className="text-3xl font-semibold text-white sm:text-4xl">{page.title}</h1>
-      <p className="mt-6 text-lg leading-8 text-white/70">{page.intro}</p>
+      <h1 className="text-3xl font-semibold text-ink sm:text-4xl">{page.title}</h1>
+      <p className="mt-6 text-lg leading-8 text-ink-2">{page.intro}</p>
 
-      <section className="mt-12 rounded-2xl border border-white/[0.08] bg-white/[0.02] p-6">
-        <h2 className="text-sm font-semibold uppercase tracking-widest text-white/40">
+      <section className="mt-12 rounded-cf border border-rule bg-paper-2 p-6">
+        <h2 className="text-sm font-semibold uppercase tracking-widest text-ink-3">
           The problem
         </h2>
-        <p className="mt-3 leading-7 text-white/70">{page.problem}</p>
+        <p className="mt-3 leading-7 text-ink-2">{page.problem}</p>
       </section>
 
       <section className="mt-12">
-        <h2 className="text-2xl font-semibold text-white">Why rent a GPU for this</h2>
+        <h2 className="text-2xl font-semibold text-ink">Why rent a GPU for this</h2>
         <ul className="mt-5 space-y-3">
           {page.why.map((point) => (
-            <li key={point} className="flex gap-3 leading-7 text-white/70">
-              <span className="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-cyan-400/70" />
+            <li key={point} className="flex gap-3 leading-7 text-ink-2">
+              <span className="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-blue/70" />
               <span>{point}</span>
             </li>
           ))}
@@ -104,9 +104,9 @@ export default async function SoftwareLandingPage({
         <div className="mt-12 space-y-12">
           {page.sections.map((section) => (
             <section key={section.h2}>
-              <h2 className="text-2xl font-semibold text-white">{section.h2}</h2>
+              <h2 className="text-2xl font-semibold text-ink">{section.h2}</h2>
               {section.body.map((para) => (
-                <p key={para} className="mt-4 leading-8 text-white/70">
+                <p key={para} className="mt-4 leading-8 text-ink-2">
                   {para}
                 </p>
               ))}
@@ -115,24 +115,24 @@ export default async function SoftwareLandingPage({
         </div>
       ) : null}
 
-      <section className="mt-12 rounded-2xl border border-cyan-400/20 bg-cyan-400/[0.05] p-6">
-        <h2 className="text-lg font-semibold text-white">Licensing</h2>
-        <p className="mt-3 leading-7 text-white/70">{page.licence}</p>
+      <section className="mt-12 rounded-cf border border-blue/20 bg-blue/[0.05] p-6">
+        <h2 className="text-lg font-semibold text-ink">Licensing</h2>
+        <p className="mt-3 leading-7 text-ink-2">{page.licence}</p>
         <Link
           href="/apps"
-          className="mt-4 inline-block text-sm text-cyan-300 underline underline-offset-4 hover:text-cyan-200"
+          className="mt-4 inline-block text-sm text-blue underline underline-offset-4 hover:text-blue"
         >
           See everything that is preinstalled →
         </Link>
       </section>
 
       <section className="mt-12">
-        <h2 className="text-2xl font-semibold text-white">Questions</h2>
+        <h2 className="text-2xl font-semibold text-ink">Questions</h2>
         <div className="mt-6 space-y-6">
           {page.faqs.map((faq) => (
             <div key={faq.q}>
-              <h3 className="font-semibold text-white">{faq.q}</h3>
-              <p className="mt-2 leading-7 text-white/60">{faq.a}</p>
+              <h3 className="font-semibold text-ink">{faq.q}</h3>
+              <p className="mt-2 leading-7 text-ink-2">{faq.a}</p>
             </div>
           ))}
         </div>
@@ -151,8 +151,8 @@ export default async function SoftwareLandingPage({
       </div>
 
       {related.length > 0 && (
-        <section className="mt-16 border-t border-white/[0.08] pt-8">
-          <h2 className="text-sm font-semibold uppercase tracking-widest text-white/40">
+        <section className="mt-16 border-t border-rule pt-8">
+          <h2 className="text-sm font-semibold uppercase tracking-widest text-ink-3">
             Related
           </h2>
           <ul className="mt-4 space-y-2">
@@ -160,7 +160,7 @@ export default async function SoftwareLandingPage({
               <li key={r.slug}>
                 <Link
                   href={`/software/${r.slug}`}
-                  className="text-cyan-300 hover:text-cyan-200 hover:underline underline-offset-4"
+                  className="text-blue hover:text-blue hover:underline underline-offset-4"
                 >
                   {r.title}
                 </Link>

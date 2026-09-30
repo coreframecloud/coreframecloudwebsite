@@ -48,7 +48,7 @@ export default async function SignupPage() {
     : undefined;
 
   return (
-    <div className="relative min-h-screen text-white">
+    <div className="relative min-h-screen text-ink">
       <BackgroundGlow />
       <main className="relative flex min-h-screen justify-center px-4 py-10 sm:items-center sm:py-16">
         <div className="w-full max-w-[440px]">

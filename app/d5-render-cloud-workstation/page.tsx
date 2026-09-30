@@ -122,7 +122,7 @@ export default async function D5Page() {
   };
 
   return (
-    <div className="relative min-h-screen text-white">
+    <div className="relative min-h-screen text-ink">
       <BackgroundGlow />
       <script
         type="application/ld+json"
@@ -130,14 +130,14 @@ export default async function D5Page() {
       />
 
       <main className="relative mx-auto max-w-3xl px-6 pb-24 pt-20 md:pt-28">
-        <div className="text-sm font-medium uppercase tracking-[0.25em] text-cyan-300">
+        <div className="text-sm font-medium uppercase tracking-[0.25em] text-blue">
           D5 Render
         </div>
         <h1 className="mt-3 text-4xl font-semibold tracking-tight md:text-5xl">
           Run D5 Render on a rented RTX 5080.
         </h1>
 
-        <p className="mt-8 text-lg leading-8 text-slate-200">
+        <p className="mt-8 text-lg leading-8 text-ink">
           Coreframe gives you a full Windows desktop with an NVIDIA RTX 5080, D5
           Render already installed, streamed to whatever laptop you own and
           billed by the minute. You sign in with your own D5 account, open your
@@ -149,36 +149,36 @@ export default async function D5Page() {
           <h2 className="text-2xl font-semibold tracking-tight">
             The problem D5 users actually have
           </h2>
-          <p className="mt-4 leading-8 text-slate-300">
+          <p className="mt-4 leading-8 text-ink-2">
             D5 is a real-time renderer, which is exactly why weak hardware hurts
             so much. The whole reason to use it is that you move the camera and
             the image resolves while you watch. On an underpowered card that loop
             breaks: the viewport stutters, you stop exploring options, and a 4K
             still becomes something you set running and walk away from.
           </p>
-          <p className="mt-4 leading-8 text-slate-300">
+          <p className="mt-4 leading-8 text-ink-2">
             The usual answer is to buy a workstation. A machine that renders
             comfortably lands at roughly ₹5,00,000 in India, gets bought once,
             and sits idle most of the week — because visualisation work is
             bursty. You need serious hardware for the four days before a client
             presentation and almost none for the three weeks after it.
           </p>
-          <p className="mt-4 leading-8 text-slate-300">
+          <p className="mt-4 leading-8 text-ink-2">
             Renting inverts that. The machine exists when the deadline does.
           </p>
         </section>
 
         <section className="mt-14">
           <h2 className="text-2xl font-semibold tracking-tight">The machine</h2>
-          <dl className="mt-6 divide-y divide-white/[0.08] rounded-2xl border border-white/[0.08] bg-white/[0.02]">
+          <dl className="mt-6 divide-y divide-white/[0.08] rounded-cf border border-rule bg-paper-2">
             {SPECS.map(([k, v]) => (
               <div key={k} className="flex flex-col gap-1 px-5 py-4 sm:flex-row sm:gap-6">
-                <dt className="w-52 shrink-0 text-sm text-slate-400">{k}</dt>
-                <dd className="text-sm text-slate-100">{v}</dd>
+                <dt className="w-52 shrink-0 text-sm text-ink-2">{k}</dt>
+                <dd className="text-sm text-ink">{v}</dd>
               </div>
             ))}
           </dl>
-          <p className="mt-5 leading-8 text-slate-300">
+          <p className="mt-5 leading-8 text-ink-2">
             One node, one GPU, one customer at a time — no shared card and no
             virtualised slice of one. The comparison worth making is VRAM, not
             speed: many laptops and entry desktops sold for design work carry 6
@@ -201,16 +201,16 @@ export default async function D5Page() {
               "Render at full resolution on the workstation. The finished image is a file you download, not something streamed pixel by pixel.",
               "Close the session. Billing stops, the machine is wiped back to a clean image, and your files stay where they were.",
             ].map((step, i) => (
-              <li key={i} className="flex gap-4 leading-8 text-slate-300">
-                <span className="mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-cyan-400/30 text-sm text-cyan-300">
+              <li key={i} className="flex gap-4 leading-8 text-ink-2">
+                <span className="mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-blue/30 text-sm text-blue">
                   {i + 1}
                 </span>
                 <span>{step}</span>
               </li>
             ))}
           </ol>
-          <p className="mt-5 leading-8 text-slate-300">
-            <Link href="/how-to-use" className="text-cyan-300 underline underline-offset-4">
+          <p className="mt-5 leading-8 text-ink-2">
+            <Link href="/how-to-use" className="text-blue underline underline-offset-4">
               The full setup walkthrough
             </Link>{" "}
             covers installing Coreframe Connect and the identity check.
@@ -221,7 +221,7 @@ export default async function D5Page() {
           <h2 className="text-2xl font-semibold tracking-tight">
             The revision that happens in the room
           </h2>
-          <p className="mt-4 leading-8 text-slate-300">
+          <p className="mt-4 leading-8 text-ink-2">
             The version of this that studios feel most is the client meeting. A
             client asks for the kitchen in a different finish, and the normal
             answer is to go back to the office, re-render overnight and book a
@@ -229,7 +229,7 @@ export default async function D5Page() {
             change can be made where you are sitting and the result put on the
             client&rsquo;s own screen before the meeting ends.
           </p>
-          <p className="mt-4 leading-8 text-slate-300">
+          <p className="mt-4 leading-8 text-ink-2">
             Two honest caveats. Test the connection at the client&rsquo;s office
             first, or tether — a demo that stalls in front of their client is
             worse than not offering it. And the high-resolution still is a file
@@ -240,16 +240,16 @@ export default async function D5Page() {
         {hourly ? (
           <section className="mt-14">
             <h2 className="text-2xl font-semibold tracking-tight">What it costs</h2>
-            <p className="mt-4 leading-8 text-slate-300">
-              <strong className="font-semibold text-white">{hourly}</strong>, with
+            <p className="mt-4 leading-8 text-ink-2">
+              <strong className="font-semibold text-ink">{hourly}</strong>, with
               18% GST already included in that figure. {billingSentence(card)}
             </p>
-            <p className="mt-4 leading-8 text-slate-300">
+            <p className="mt-4 leading-8 text-ink-2">
               That price is read from the same rate card the billing system
               charges from, so a figure on this page cannot drift from what you
               are actually charged. A GST tax invoice showing the split is issued
               on every recharge.{" "}
-              <Link href="/#pricing" className="text-cyan-300 underline underline-offset-4">
+              <Link href="/#pricing" className="text-blue underline underline-offset-4">
                 Full pricing and monthly plans
               </Link>
               .
@@ -262,30 +262,30 @@ export default async function D5Page() {
           <div className="mt-6 space-y-7">
             {faqs.map((f) => (
               <div key={f.q}>
-                <h3 className="font-semibold text-white">{f.q}</h3>
-                <p className="mt-2 leading-7 text-slate-400">{f.a}</p>
+                <h3 className="font-semibold text-ink">{f.q}</h3>
+                <p className="mt-2 leading-7 text-ink-2">{f.a}</p>
               </div>
             ))}
           </div>
         </section>
 
-        <section className="mt-14 rounded-2xl border border-cyan-400/20 bg-cyan-400/[0.05] p-6">
+        <section className="mt-14 rounded-cf border border-blue/20 bg-blue/[0.05] p-6">
           <h2 className="text-lg font-semibold">Test it with your own scene</h2>
-          <p className="mt-3 leading-7 text-slate-300">
+          <p className="mt-3 leading-7 text-ink-2">
             Take the D5 project that ties up your machine all afternoon and run
             it on ours. That answers the question better than any number we could
             put on this page.
           </p>
           <Link
             href="/signup"
-            className="mt-5 inline-block rounded-lg bg-cyan-400 px-5 py-2.5 text-sm font-semibold text-slate-950 hover:bg-cyan-300"
+            className="mt-5 inline-block rounded-cf bg-blue px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue"
           >
             Start free
           </Link>
         </section>
 
-        <nav className="mt-14 border-t border-white/[0.08] pt-8">
-          <h2 className="text-sm font-semibold uppercase tracking-widest text-white/40">
+        <nav className="mt-14 border-t border-rule pt-8">
+          <h2 className="text-sm font-semibold uppercase tracking-widest text-ink-3">
             Related
           </h2>
           <ul className="mt-4 space-y-2">
@@ -297,7 +297,7 @@ export default async function D5Page() {
               ["/apps", "Everything preinstalled on a workstation"],
             ].map(([href, label]) => (
               <li key={href}>
-                <Link href={href} className="text-cyan-300 hover:underline">
+                <Link href={href} className="text-blue hover:underline">
                   {label} →
                 </Link>
               </li>

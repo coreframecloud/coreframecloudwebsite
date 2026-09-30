@@ -51,18 +51,18 @@ const trustItems = [
 
 export default function SolutionsPage() {
   return (
-    <div className="min-h-screen text-white">
+    <div className="min-h-screen text-ink">
       <BackgroundGlow />
 
       <main className="relative mx-auto max-w-7xl px-6 pb-20 pt-20 md:pt-28">
         <div className="max-w-3xl">
-          <div className="text-sm font-medium uppercase tracking-[0.25em] text-cyan-300">
+          <div className="text-sm font-medium uppercase tracking-[0.25em] text-blue">
             Solutions
           </div>
           <h1 className="mt-3 text-4xl font-semibold tracking-tight md:text-6xl">
             GPU infrastructure designed around how teams actually work.
           </h1>
-          <p className="mt-5 max-w-2xl text-base leading-8 text-slate-300 md:text-lg">
+          <p className="mt-5 max-w-2xl text-base leading-8 text-ink-2 md:text-lg">
             Not every customer needs full-time VDI for every user. Coreframe Cloud
             is structured around practical delivery: remote workstations, render
             capacity, storage, and managed rollout.
@@ -73,22 +73,22 @@ export default function SolutionsPage() {
           {solutions.map(({ icon: Icon, title, text }) => (
             <Card
               key={title}
-              className="rounded-[1.6rem] border border-white/12 bg-white/6 shadow-[0_20px_50px_rgba(0,0,0,0.22)] backdrop-blur-2xl"
+              className="rounded-[1.6rem] border border-rule bg-paper-2 shadow-[0_20px_50px_rgba(0,0,0,0.22)] backdrop-blur-2xl"
             >
               <CardContent className="p-6">
-                <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-cyan-400/10 ring-1 ring-cyan-400/20">
-                  <Icon className="h-5 w-5 text-cyan-200" />
+                <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-cf bg-blue/10 ring-1 ring-blue/20">
+                  <Icon className="h-5 w-5 text-blue" />
                 </div>
                 <h2 className="text-xl font-semibold">{title}</h2>
-                <p className="mt-3 text-sm leading-7 text-slate-300">{text}</p>
+                <p className="mt-3 text-sm leading-7 text-ink-2">{text}</p>
               </CardContent>
             </Card>
           ))}
         </div>
 
-        <div className="mt-14 rounded-[2rem] border border-white/12 bg-white/6 p-8 backdrop-blur-2xl">
+        <div className="mt-14 rounded-[2rem] border border-rule bg-paper-2 p-8 backdrop-blur-2xl">
           <div className="max-w-3xl">
-            <div className="text-sm uppercase tracking-[0.25em] text-cyan-200">
+            <div className="text-sm uppercase tracking-[0.25em] text-blue">
               Infrastructure Standard
             </div>
             <h2 className="mt-3 text-3xl font-semibold md:text-4xl">
@@ -98,7 +98,7 @@ export default function SolutionsPage() {
               {trustItems.map((item) => (
                 <div
                   key={item}
-                  className="rounded-xl border border-white/10 bg-white/6 px-4 py-3 text-sm text-slate-200"
+                  className="rounded-cf border border-rule bg-paper-2 px-4 py-3 text-sm text-ink"
                 >
                   {item}
                 </div>
@@ -107,22 +107,22 @@ export default function SolutionsPage() {
           </div>
         </div>
 
-        <div className="mt-14 rounded-[2rem] border border-cyan-400/20 bg-cyan-500/10 p-8 backdrop-blur-2xl">
+        <div className="mt-14 rounded-[2rem] border border-blue/20 bg-blue/10 p-8 backdrop-blur-2xl">
           <div className="max-w-3xl">
-            <div className="text-sm uppercase tracking-[0.25em] text-cyan-200">
+            <div className="text-sm uppercase tracking-[0.25em] text-blue">
               Next step
             </div>
             <h2 className="mt-3 text-3xl font-semibold md:text-4xl">
               Start with a pilot, then scale based on usage.
             </h2>
-            <p className="mt-4 text-base leading-8 text-slate-100/85">
+            <p className="mt-4 text-base leading-8 text-ink/85">
               We can align GPU, CPU, RAM, storage, operating system, and access
               model to your exact workload.
             </p>
 
             <div className="mt-6 flex flex-wrap gap-4">
               <Link href="/request-demo">
-                <Button className="rounded-2xl px-6">
+                <Button className="rounded-cf px-6">
                   Talk to Us
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
@@ -135,7 +135,7 @@ export default function SolutionsPage() {
               >
                 <Button
                   variant="outline"
-                  className="rounded-2xl border-green-400/30 bg-green-500/10 text-green-200 hover:bg-green-500/20"
+                  className="rounded-cf border-green-400/30 bg-green-500/10 text-green-200 hover:bg-green-500/20"
                 >
                   <MessageCircle className="mr-2 h-4 w-4" />
                   Connect on WhatsApp
@@ -145,7 +145,7 @@ export default function SolutionsPage() {
               <a href="mailto:admin@coreframecloud.com">
                 <Button
                   variant="outline"
-                  className="rounded-2xl border-white/15 bg-white/5 text-white hover:bg-white/10"
+                  className="rounded-cf border-rule bg-paper-2 text-ink hover:bg-paper-2"
                 >
                   <Mail className="mr-2 h-4 w-4" />
                   Email Us

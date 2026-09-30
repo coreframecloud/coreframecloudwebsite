@@ -94,7 +94,7 @@ const faqs = [
 
 export default function Page() {
   return (
-    <div className="min-h-screen text-white">
+    <div className="min-h-screen text-ink">
       <BackgroundGlow />
 
       <script
@@ -113,13 +113,13 @@ export default function Page() {
       />
 
       <main className="relative mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
-        <p className="text-xs font-bold uppercase tracking-[0.22em] text-emerald-300">
+        <p className="text-xs font-bold uppercase tracking-[0.22em] text-blue">
           Coreframe Studio
         </p>
         <h1 className="mt-5 max-w-3xl text-4xl font-semibold leading-[1.06] tracking-[-0.03em] sm:text-5xl lg:text-6xl">
           Turn a floor plan into the room.
         </h1>
-        <p className="mt-6 max-w-2xl text-base leading-7 text-white/75 sm:text-lg sm:leading-8">
+        <p className="mt-6 max-w-2xl text-base leading-7 text-ink sm:text-lg sm:leading-8">
           Upload a DXF. Coreframe Studio reads the walls, doors and windows out
           of the drawing, works out where a photographer would stand, and gives
           you an interior image you can export at 2K or 4K. It runs in the
@@ -137,7 +137,7 @@ export default function Page() {
             Download a demo plan
           </a>
         </div>
-        <p className="mt-4 text-sm text-white/55">
+        <p className="mt-4 text-sm text-ink-2">
           Credits from ₹99. Reading your drawing is free.{" "}
           {/* MOVED HERE FROM THE HOMEPAGE HERO, 28 Sep 2026. It was the only
               link to the guide anywhere on the site, sitting as a third-level
@@ -147,7 +147,7 @@ export default function Page() {
             href="/studio/guide.pdf"
             target="_blank"
             rel="noopener"
-            className="underline decoration-white/25 underline-offset-4 transition hover:text-white/80 hover:decoration-white/50"
+            className="underline decoration-white/25 underline-offset-4 transition hover:text-ink hover:decoration-white/50"
           >
             Read the five-page guide (PDF)
           </a>
@@ -158,16 +158,16 @@ export default function Page() {
             rooms, 1,147 sq ft, and it opens in CAD. An AI-generated floor plan
             would be spotted by this audience in seconds, on the one page that
             promises we do not invent geometry. */}
-        <figure className="mt-14 rounded-xl border border-white/12 bg-white/[0.03] p-4 sm:p-8">
+        <figure className="mt-14 rounded-cf border border-rule bg-paper-2 p-4 sm:p-8">
           <Image
             src="/brand/plan-3bhk.svg"
             alt="Ground floor plan of a three-bedroom flat: living and dining, kitchen, utility, three bedrooms, two bathrooms, corridor and balcony, with door and window openings marked."
             width={1320}
             height={1100}
-            className="h-auto w-full max-w-full text-white/80"
+            className="h-auto w-full max-w-full text-ink"
             priority
           />
-          <figcaption className="mt-4 text-sm text-white/50">
+          <figcaption className="mt-4 text-sm text-ink-2">
             The demo plan, drawn to scale — 10 rooms, 1,147 sq ft. Download it
             above and run it through Studio yourself.
           </figcaption>
@@ -175,14 +175,14 @@ export default function Page() {
 
         <section className="mt-20">
           <h2 className="cf-section-title">Four steps, and you only pay on the last one</h2>
-          <ol className="mt-10 grid gap-px overflow-hidden rounded-xl border border-white/12 bg-white/10 sm:grid-cols-2">
+          <ol className="mt-10 grid gap-px overflow-hidden rounded-cf border border-rule bg-paper-2 sm:grid-cols-2">
             {steps.map((s) => (
-              <li key={s.n} className="bg-[#04101d] p-6">
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-300">
+              <li key={s.n} className="bg-paper p-6">
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-blue">
                   {s.n}
                 </p>
                 <h3 className="mt-3 text-lg font-semibold tracking-[-0.02em]">{s.title}</h3>
-                <p className="mt-2 text-sm leading-6 text-white/65">{s.body}</p>
+                <p className="mt-2 text-sm leading-6 text-ink-2">{s.body}</p>
               </li>
             ))}
           </ol>
@@ -200,7 +200,7 @@ export default function Page() {
             The furniture and the camera position are ours. They are suggested
             from the room&rsquo;s shape and from the room type you pick, and
             Studio says so on screen every time it places anything:{" "}
-            <em className="text-white/85">
+            <em className="text-ink">
               &ldquo;We placed a bed, 2 nightstands, a wardrobe. None of it is in
               your drawing.&rdquo;
             </em>
@@ -215,20 +215,20 @@ export default function Page() {
 
         <section className="mt-20">
           <h2 className="cf-section-title">Questions</h2>
-          <dl className="mt-10 divide-y divide-white/10 border-y border-white/10">
+          <dl className="mt-10 divide-y divide-rule border-y border-rule">
             {faqs.map((f) => (
               <div key={f.q} className="py-6">
                 <dt className="text-lg font-semibold tracking-[-0.02em]">{f.q}</dt>
-                <dd className="mt-2 max-w-3xl text-base leading-7 text-white/65">{f.a}</dd>
+                <dd className="mt-2 max-w-3xl text-base leading-7 text-ink-2">{f.a}</dd>
               </div>
             ))}
           </dl>
         </section>
 
-        <section className="mt-20 flex flex-wrap items-center justify-between gap-6 rounded-xl border border-white/12 bg-white/[0.03] p-8">
+        <section className="mt-20 flex flex-wrap items-center justify-between gap-6 rounded-cf border border-rule bg-paper-2 p-8">
           <div className="max-w-md">
             <h2 className="text-2xl font-semibold tracking-[-0.025em]">Start with one room.</h2>
-            <p className="mt-3 text-sm leading-6 text-white/65">
+            <p className="mt-3 text-sm leading-6 text-ink-2">
               ₹99, one drawing, one image. Need a machine to drive your own
               software instead?{" "}
               <Link href="/" className="underline decoration-white/30 underline-offset-4">

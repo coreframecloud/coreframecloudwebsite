@@ -100,20 +100,20 @@ export default async function EnterprisePage() {
   const cheaper = commitmentIsCheaper(card);
 
   return (
-    <div className="relative min-h-screen text-white">
+    <div className="relative min-h-screen text-ink">
       <BackgroundGlow />
 
       <main className="relative mx-auto max-w-6xl px-6 pb-28 pt-20 md:pt-28">
 
         {/* Header */}
         <div className="max-w-2xl">
-          <div className="text-sm font-medium uppercase tracking-[0.25em] text-cyan-300">
+          <div className="text-sm font-medium uppercase tracking-[0.25em] text-blue">
             Committed Monthly Plans
           </div>
           <h1 className="mt-3 text-4xl font-semibold tracking-tight md:text-5xl">
             Render more. Pay less.
           </h1>
-          <p className="mt-5 max-w-xl text-base leading-8 text-slate-300">
+          <p className="mt-5 max-w-xl text-base leading-8 text-ink-2">
             {/* Conditional on the comparison HOLDING, not on the numbers being
                 present. Modelling an ad-hoc cut to ₹199 against the old tiers
                 left this paragraph asserting that ₹379/hr was "cheaper" than
@@ -122,7 +122,7 @@ export default async function EnterprisePage() {
               <>
                 Committing is genuinely cheaper per hour. Every committed tier bills GPU-hours
                 below the ad-hoc rate — down to{" "}
-                <span className="font-medium text-white">{bestOverage}/hr against {adhoc}/hr</span>,
+                <span className="font-medium text-ink">{bestOverage}/hr against {adhoc}/hr</span>,
                 on included hours and extra ones alike
               </>
             ) : (
@@ -145,16 +145,16 @@ export default async function EnterprisePage() {
             {storageRate ? ` Storage is billed openly at ${storageRate}/TB/month — a mountable SMB share your workstation writes to live, not a bucket, and a fraction of what managed file storage costs at the hyperscalers. Pulling your own files back is free; there is no egress charge.` : ""}
             {fromFee ? ` Plans start at ${fromFee}/month.` : ""}
           </p>
-          <p className="mt-3 max-w-xl text-sm leading-7 text-white/45">
+          <p className="mt-3 max-w-xl text-sm leading-7 text-ink-2">
             All prices include 18% GST. What you see is what you pay, and every invoice shows the
             taxable value and GST split so you can claim input tax credit.
           </p>
         </div>
 
         {/* GPU badge */}
-        <div className="mt-8 inline-flex flex-wrap items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.04] px-5 py-3">
-          <span className="text-xs font-semibold uppercase tracking-wider text-white/40">Every instance</span>
-          <span className="text-sm font-bold text-white">RTX 5080 · 16 GB GDDR7 · 960 GB/s · 64 GB ECC RAM · 6-core EPYC</span>
+        <div className="mt-8 inline-flex flex-wrap items-center gap-3 rounded-cf border border-rule bg-paper-2 px-5 py-3">
+          <span className="text-xs font-semibold uppercase tracking-wider text-ink-3">Every instance</span>
+          <span className="text-sm font-bold text-ink">RTX 5080 · 16 GB GDDR7 · 960 GB/s · 64 GB ECC RAM · 6-core EPYC</span>
         </div>
 
         {/* Plans */}
@@ -163,9 +163,9 @@ export default async function EnterprisePage() {
              control plane is unreachable this page has nothing true to print.
              It says so and offers the human channel, rather than rendering an
              empty grid or falling back to numbers nobody has verified. */
-          <div className="mt-12 rounded-[24px] border border-white/10 bg-white/[0.03] px-8 py-10 text-center">
-            <h2 className="text-lg font-semibold text-white">Plan pricing is briefly unavailable</h2>
-            <p className="mx-auto mt-3 max-w-xl text-sm leading-7 text-white/55">
+          <div className="mt-12 rounded-[24px] border border-rule bg-paper-2 px-8 py-10 text-center">
+            <h2 className="text-lg font-semibold text-ink">Plan pricing is briefly unavailable</h2>
+            <p className="mx-auto mt-3 max-w-xl text-sm leading-7 text-ink-2">
               We publish plan figures from one source so the page can never quote a
               number we do not charge, and that source is not answering right now.
               Message us and we will send the current tiers straight away.
@@ -174,7 +174,7 @@ export default async function EnterprisePage() {
               href={whatsapp("committed")}
               target="_blank"
               rel="noreferrer"
-              className="mt-6 inline-flex items-center justify-center rounded-2xl bg-cyan-400 px-6 py-3 text-sm font-semibold text-slate-900 transition hover:bg-cyan-300"
+              className="mt-6 inline-flex items-center justify-center rounded-cf bg-blue px-6 py-3 text-sm font-semibold text-white transition hover:bg-blue"
             >
               Ask on WhatsApp
             </a>
@@ -204,8 +204,8 @@ export default async function EnterprisePage() {
               key={plan.name}
               className={`relative flex flex-col rounded-[28px] border p-8 ${
                 plan.highlight
-                  ? "border-cyan-400/30 bg-cyan-400/[0.05]"
-                  : "border-white/10 bg-white/[0.03]"
+                  ? "border-blue/30 bg-blue/[0.05]"
+                  : "border-rule bg-paper-2"
               }`}
             >
               {/*
@@ -219,41 +219,41 @@ export default async function EnterprisePage() {
               */}
               {plan.highlight && (
                 <div className="absolute -top-3.5 inset-x-0 flex justify-center">
-                  <span className="whitespace-nowrap rounded-full bg-cyan-400 px-4 py-1 text-xs font-bold uppercase tracking-wider text-slate-900">
+                  <span className="whitespace-nowrap rounded-full bg-blue px-4 py-1 text-xs font-bold uppercase tracking-wider text-white">
                     Most Popular
                   </span>
                 </div>
               )}
 
-              <div className={`text-xs font-semibold uppercase tracking-[0.22em] ${plan.highlight ? "text-cyan-300/70" : "text-white/40"}`}>
+              <div className={`text-xs font-semibold uppercase tracking-[0.22em] ${plan.highlight ? "text-blue/70" : "text-ink-3"}`}>
                 {plan.name}
               </div>
               {/* Two lines reserved. "Small teams · 3–5 people" is one line and
                   "Established practices · 15–25 people" is two, so without this
                   the price below it sits at a different height on every card. */}
-              <div className="mt-1 min-h-[2.5rem] text-sm leading-5 text-white/50">{plan.tagline}</div>
+              <div className="mt-1 min-h-[2.5rem] text-sm leading-5 text-ink-2">{plan.tagline}</div>
 
               <div className="mt-5 flex items-end gap-1">
-                <span className="text-4xl font-bold text-white">{plan.price}</span>
-                <span className="mb-1 text-sm text-white/40">/ month</span>
+                <span className="text-4xl font-bold text-ink">{plan.price}</span>
+                <span className="mb-1 text-sm text-ink-3">/ month</span>
               </div>
               {/* Caption and pill on their own lines with the block height
                   reserved, so a tier with no saving to show does not pull its
                   divider up while its neighbours' stay down. */}
               <div className="mt-1 min-h-[3.25rem]">
                 {plan.extraRate ? (
-                  <p className="text-xs leading-5 text-white/40">
+                  <p className="text-xs leading-5 text-ink-3">
                     + {plan.extraRate} / GPU-hr beyond included · incl. 18% GST
                   </p>
                 ) : null}
                 {plan.extraNote ? (
-                  <span className={`mt-1.5 inline-block whitespace-nowrap rounded-full px-2 py-0.5 text-[10px] font-semibold ${plan.highlight ? "bg-cyan-400/15 text-cyan-300" : "bg-white/8 text-white/40"}`}>
+                  <span className={`mt-1.5 inline-block whitespace-nowrap rounded-full px-2 py-0.5 text-[10px] font-semibold ${plan.highlight ? "bg-blue/15 text-blue" : "bg-paper-2 text-ink-3"}`}>
                     {plan.extraNote}
                   </span>
                 ) : null}
               </div>
 
-              <div className="mt-7 grow space-y-3 border-t border-white/8 pt-6">
+              <div className="mt-7 grow space-y-3 border-t border-rule pt-6">
                 {[
                   { label: "Persistent storage", value: plan.storage },
                   { label: "File retention", value: plan.retention },
@@ -270,8 +270,8 @@ export default async function EnterprisePage() {
                     {/* The label may wrap; the VALUE must not. A wrapped value
                         drops its row's height and takes every row under it with
                         it, which is most of what looked misaligned here. */}
-                    <span className="min-w-0 leading-5 text-white/50">{label}</span>
-                    <span className={`shrink-0 whitespace-nowrap font-medium ${label === "Extra GPU-hours" && plan.highlight ? "text-cyan-300" : "text-white"}`}>{value}</span>
+                    <span className="min-w-0 leading-5 text-ink-2">{label}</span>
+                    <span className={`shrink-0 whitespace-nowrap font-medium ${label === "Extra GPU-hours" && plan.highlight ? "text-blue" : "text-ink"}`}>{value}</span>
                   </div>
                 ))}
               </div>
@@ -280,15 +280,15 @@ export default async function EnterprisePage() {
                 href={whatsapp(plan.name)}
                 target="_blank"
                 rel="noreferrer"
-                className={`mt-8 flex w-full items-center justify-center whitespace-nowrap rounded-2xl px-5 py-3 text-sm font-semibold transition ${
+                className={`mt-8 flex w-full items-center justify-center whitespace-nowrap rounded-cf px-5 py-3 text-sm font-semibold transition ${
                   // `border border-transparent` on the highlighted variant is
                   // not decoration. The other two carry a 1px border, making
                   // them 2px taller, so without a matching border here the
                   // primary button sat 2px lower than its neighbours — small
                   // enough to read as "randomly aligned" rather than as a bug.
                   plan.highlight
-                    ? "border border-transparent bg-cyan-400 text-slate-900 hover:bg-cyan-300"
-                    : "border border-white/15 bg-white/[0.06] text-white hover:bg-white/10"
+                    ? "border border-transparent bg-blue text-white hover:bg-blue"
+                    : "border border-rule bg-paper-2 text-ink hover:bg-paper-2"
                 }`}
               >
                 Get a quote on WhatsApp
@@ -300,10 +300,10 @@ export default async function EnterprisePage() {
         )}
 
         {/* Storage add-on — standalone, purchasable by anyone */}
-        <div className="mt-8 rounded-[20px] border border-white/10 bg-white/[0.03] px-8 py-7 md:flex md:items-center md:justify-between md:gap-8">
+        <div className="mt-8 rounded-[20px] border border-rule bg-paper-2 px-8 py-7 md:flex md:items-center md:justify-between md:gap-8">
           <div>
-            <h2 className="text-base font-semibold text-white">Persistent NAS storage — add-on</h2>
-            <p className="mt-3 max-w-2xl text-sm leading-7 text-white/55">
+            <h2 className="text-base font-semibold text-ink">Persistent NAS storage — add-on</h2>
+            <p className="mt-3 max-w-2xl text-sm leading-7 text-ink-2">
               Extra storage beyond the capacity included in your plan, or storage on its own without a
               committed plan — anyone can buy it, including ad-hoc customers. Files are retained
               for as long as the storage subscription is active.
@@ -313,19 +313,19 @@ export default async function EnterprisePage() {
             </p>
           </div>
           <div className="mt-5 shrink-0 md:mt-0 md:text-right">
-            <div className="text-4xl font-bold text-white">{storageRate ?? "—"}</div>
-            <div className="text-sm text-white/50">/ TB / month · incl. 18% GST</div>
+            <div className="text-4xl font-bold text-ink">{storageRate ?? "—"}</div>
+            <div className="text-sm text-ink-2">/ TB / month · incl. 18% GST</div>
           </div>
         </div>
 
         {/* Ad-hoc comparison */}
-        <div className="mt-6 rounded-[20px] border border-white/8 bg-white/[0.02] px-8 py-7">
-          <h2 className="text-base font-semibold text-white">Not ready to commit?</h2>
+        <div className="mt-6 rounded-[20px] border border-rule bg-paper-2 px-8 py-7">
+          <h2 className="text-base font-semibold text-ink">Not ready to commit?</h2>
           {/* This paragraph said "billed per full hour" until 18 Aug 2026. The
               API has always charged by the minute, so the page was quoting the
               customer a worse deal than the platform gives them. The sentence
               now comes from the rate card's own billing_granularity field. */}
-          <p className="mt-3 max-w-3xl text-sm leading-7 text-white/55">
+          <p className="mt-3 max-w-3xl text-sm leading-7 text-ink-2">
             Ad-hoc is {adhoc ? `${adhoc}/GPU-hour ` : ""}with no contract, and includes 20 GB
             persistent storage free — 50 GB once you add credit, kept while your account is
             active. {billingSentence(card)}
@@ -336,22 +336,22 @@ export default async function EnterprisePage() {
         </div>
 
         {/* BYOL + licensing note */}
-        <div className="mt-6 rounded-[20px] border border-white/8 bg-white/[0.02] px-8 py-7">
-          <h2 className="text-base font-semibold text-white">Software licences — BYOL</h2>
-          <p className="mt-3 text-sm leading-7 text-white/55">
-            All software is <span className="text-white/80 font-medium">Bring Your Own Licence (BYOL)</span>.
+        <div className="mt-6 rounded-[20px] border border-rule bg-paper-2 px-8 py-7">
+          <h2 className="text-base font-semibold text-ink">Software licences — BYOL</h2>
+          <p className="mt-3 text-sm leading-7 text-ink-2">
+            All software is <span className="text-ink font-medium">Bring Your Own Licence (BYOL)</span>.
             You install your existing licence on the workstation and it activates against your own seat —
             no bundled software fees, no surprises.
           </p>
-          <p className="mt-3 text-sm leading-7 text-white/55">
-            <span className="text-white/80 font-medium">Named-user licences work.</span>{" "}
+          <p className="mt-3 text-sm leading-7 text-ink-2">
+            <span className="text-ink font-medium">Named-user licences work.</span>{" "}
             D5 Render, Lumion, Enscape, SolidWorks, 3ds Max, Rhino, SketchUp, and similar apps are all
             fully supported. If your licence is tied to a named user rather than a machine, you log in
             to the workstation as that user and activate normally.
           </p>
-          <p className="mt-3 text-sm text-white/40">
+          <p className="mt-3 text-sm text-ink-3">
             Questions about a specific application or licence type?{" "}
-            <a href="mailto:admin@coreframecloud.com" className="text-cyan-400 hover:underline">
+            <a href="mailto:admin@coreframecloud.com" className="text-blue hover:underline">
               Ask us →
             </a>
           </p>
@@ -361,7 +361,7 @@ export default async function EnterprisePage() {
         <div className="mt-10 flex flex-wrap items-center gap-4">
           <Link
             href="/#pricing"
-            className="text-sm text-slate-400 hover:text-white transition"
+            className="text-sm text-ink-2 hover:text-ink transition"
           >
             ← Back to pricing
           </Link>
@@ -369,13 +369,13 @@ export default async function EnterprisePage() {
             href={whatsapp("committed")}
             target="_blank"
             rel="noreferrer"
-            className="rounded-2xl bg-white/[0.07] border border-white/10 px-5 py-2.5 text-sm font-semibold text-white hover:bg-white/10 transition"
+            className="rounded-cf bg-paper-2 border border-rule px-5 py-2.5 text-sm font-semibold text-ink hover:bg-paper-2 transition"
           >
             Talk to us on WhatsApp
           </a>
           <a
             href="mailto:admin@coreframecloud.com"
-            className="text-sm text-slate-400 hover:text-white transition"
+            className="text-sm text-ink-2 hover:text-ink transition"
           >
             admin@coreframecloud.com
           </a>

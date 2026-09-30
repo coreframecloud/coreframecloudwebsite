@@ -184,7 +184,7 @@ export default async function AboutPage() {
   };
 
   return (
-    <div className="relative min-h-screen text-white">
+    <div className="relative min-h-screen text-ink">
       <BackgroundGlow />
       <script
         type="application/ld+json"
@@ -192,16 +192,16 @@ export default async function AboutPage() {
       />
 
       <main className="relative mx-auto max-w-3xl px-6 pb-24 pt-20 md:pt-28">
-        <div className="text-sm font-medium uppercase tracking-[0.25em] text-cyan-300">
+        <div className="text-sm font-medium uppercase tracking-[0.25em] text-blue">
           About
         </div>
         <h1 className="mt-3 text-4xl font-semibold tracking-tight md:text-5xl">
           What is Coreframe Cloud?
         </h1>
 
-        <p className="mt-8 text-lg leading-8 text-slate-200">
+        <p className="mt-8 text-lg leading-8 text-ink">
           Coreframe Cloud is a cloud GPU workstation service operated by{" "}
-          <strong className="font-semibold text-white">
+          <strong className="font-semibold text-ink">
             Coreframe Compute Labs Private Limited
           </strong>
           , a company registered in Bengaluru, Karnataka, India. It rents full
@@ -213,7 +213,7 @@ export default async function AboutPage() {
           the month.
         </p>
 
-        <p className="mt-5 leading-8 text-slate-300">
+        <p className="mt-5 leading-8 text-ink-2">
           You sign in, a Windows machine starts in about two minutes, and you
           work on it as you would on a computer under your desk — open your CAD
           file, set up the scene, render, save. Project files stay on storage in
@@ -222,11 +222,11 @@ export default async function AboutPage() {
 
         <section className="mt-14">
           <h2 className="text-2xl font-semibold tracking-tight">The company</h2>
-          <dl className="mt-6 divide-y divide-white/[0.08] rounded-2xl border border-white/[0.08] bg-white/[0.02]">
+          <dl className="mt-6 divide-y divide-white/[0.08] rounded-cf border border-rule bg-paper-2">
             {COMPANY.map(([k, v]) => (
               <div key={k} className="flex flex-col gap-1 px-5 py-4 sm:flex-row sm:gap-6">
-                <dt className="w-56 shrink-0 text-sm text-slate-400">{k}</dt>
-                <dd className="text-sm text-slate-100">{v}</dd>
+                <dt className="w-56 shrink-0 text-sm text-ink-2">{k}</dt>
+                <dd className="text-sm text-ink">{v}</dd>
               </div>
             ))}
           </dl>
@@ -234,24 +234,24 @@ export default async function AboutPage() {
 
         <section className="mt-14">
           <h2 className="text-2xl font-semibold tracking-tight">What the machine is</h2>
-          <p className="mt-4 leading-8 text-slate-300">
+          <p className="mt-4 leading-8 text-ink-2">
             One node, one GPU, handed to one customer at a time. There is no
             shared graphics card and no virtualised slice of one.
           </p>
-          <dl className="mt-6 divide-y divide-white/[0.08] rounded-2xl border border-white/[0.08] bg-white/[0.02]">
+          <dl className="mt-6 divide-y divide-white/[0.08] rounded-cf border border-rule bg-paper-2">
             {SPECS.map(([k, v]) => (
               <div key={k} className="flex flex-col gap-1 px-5 py-4 sm:flex-row sm:gap-6">
-                <dt className="w-56 shrink-0 text-sm text-slate-400">{k}</dt>
-                <dd className="text-sm text-slate-100">{v}</dd>
+                <dt className="w-56 shrink-0 text-sm text-ink-2">{k}</dt>
+                <dd className="text-sm text-ink">{v}</dd>
               </div>
             ))}
           </dl>
-          <p className="mt-5 leading-8 text-slate-300">
+          <p className="mt-5 leading-8 text-ink-2">
             Each session starts from an identical clean image, so nothing you
             install during a session survives it and no trace of another
             customer&rsquo;s work is on the machine when you get it. Your files
             live on separate storage that does persist.{" "}
-            <Link href="/how-to-use" className="text-cyan-300 underline underline-offset-4">
+            <Link href="/how-to-use" className="text-blue underline underline-offset-4">
               How a session works
             </Link>
             .
@@ -264,7 +264,7 @@ export default async function AboutPage() {
           </h2>
 
           <h3 className="mt-8 text-lg font-semibold">1. Access to the hardware</h3>
-          <p className="mt-3 leading-8 text-slate-300">
+          <p className="mt-3 leading-8 text-ink-2">
             An RTX 5080 with 16 GB of VRAM is not a card most design studios in
             India own. A workstation built around one lands at roughly
             ₹5,00,000, and the machines people actually work on commonly ship
@@ -277,7 +277,7 @@ export default async function AboutPage() {
           <h3 className="mt-8 text-lg font-semibold">
             2. The machine is wherever you are
           </h3>
-          <p className="mt-3 leading-8 text-slate-300">
+          <p className="mt-3 leading-8 text-ink-2">
             It is reached from any laptop over the internet, so it is available
             from a site visit, a client&rsquo;s office or home, not only from the
             desk it was bought for. The practical requirement is a steady
@@ -288,13 +288,13 @@ export default async function AboutPage() {
           <h3 className="mt-8 text-lg font-semibold">
             3. Your computer stops being held hostage by a render
           </h3>
-          <p className="mt-3 leading-8 text-slate-300">
+          <p className="mt-3 leading-8 text-ink-2">
             We will not tell you your scenes will render faster. That depends
             entirely on your scene, your settings and your geometry, and anyone
             who puts a number on it before seeing your file is guessing. What
             changes is who is waiting, and where.
           </p>
-          <p className="mt-4 leading-8 text-slate-300">
+          <p className="mt-4 leading-8 text-ink-2">
             The render runs on the rented machine, so your own computer stays
             free — you keep modelling, drafting or answering email while it
             works. And a revision does not have to become a second meeting. When
@@ -305,7 +305,7 @@ export default async function AboutPage() {
           </p>
 
           <h3 className="mt-8 text-lg font-semibold">4. The files travel with you</h3>
-          <p className="mt-3 leading-8 text-slate-300">
+          <p className="mt-3 leading-8 text-ink-2">
             Your projects do not live on the workstation. They live on a NAS
             drive in the same Bengaluru facility, mapped into every session, so
             signing in from a different laptop in a different city opens the
@@ -321,26 +321,26 @@ export default async function AboutPage() {
         <section className="mt-14">
           <h2 className="text-2xl font-semibold tracking-tight">What it is not</h2>
           <ul className="mt-6 space-y-4">
-            <li className="flex gap-3 leading-8 text-slate-300">
-              <span className="mt-3.5 h-1.5 w-1.5 shrink-0 rounded-full bg-cyan-400/70" />
+            <li className="flex gap-3 leading-8 text-ink-2">
+              <span className="mt-3.5 h-1.5 w-1.5 shrink-0 rounded-full bg-blue/70" />
               <span>
-                <strong className="text-white">Not a render farm.</strong> A farm
+                <strong className="text-ink">Not a render farm.</strong> A farm
                 takes a submitted job and returns frames. This is an interactive
                 machine you drive yourself.
               </span>
             </li>
-            <li className="flex gap-3 leading-8 text-slate-300">
-              <span className="mt-3.5 h-1.5 w-1.5 shrink-0 rounded-full bg-cyan-400/70" />
+            <li className="flex gap-3 leading-8 text-ink-2">
+              <span className="mt-3.5 h-1.5 w-1.5 shrink-0 rounded-full bg-blue/70" />
               <span>
-                <strong className="text-white">Not a software licence.</strong>{" "}
+                <strong className="text-ink">Not a software licence.</strong>{" "}
                 Licensed applications run on the machine, but you bring your own
                 seat. We provide hardware and the install, never the licence.
               </span>
             </li>
-            <li className="flex gap-3 leading-8 text-slate-300">
-              <span className="mt-3.5 h-1.5 w-1.5 shrink-0 rounded-full bg-cyan-400/70" />
+            <li className="flex gap-3 leading-8 text-ink-2">
+              <span className="mt-3.5 h-1.5 w-1.5 shrink-0 rounded-full bg-blue/70" />
               <span>
-                <strong className="text-white">Not a machine-learning GPU cloud.</strong>{" "}
+                <strong className="text-ink">Not a machine-learning GPU cloud.</strong>{" "}
                 It is a Windows desktop for graphics and simulation work, not a
                 Linux container for training models.
               </span>
@@ -352,17 +352,17 @@ export default async function AboutPage() {
           <h2 className="text-2xl font-semibold tracking-tight">
             Companies we are not
           </h2>
-          <p className="mt-4 leading-8 text-slate-300">
+          <p className="mt-4 leading-8 text-ink-2">
             Several unrelated businesses use a similar name. For the avoidance of
             doubt, Coreframe Cloud is Coreframe Compute Labs Private Limited, CIN
             U63119KA2026PTC220789, Bengaluru. It has no connection to:
           </p>
           <ul className="mt-6 space-y-3">
             {CONFUSED_WITH.map(([name, what]) => (
-              <li key={name} className="flex gap-3 leading-7 text-slate-400">
-                <span className="mt-3 h-1.5 w-1.5 shrink-0 rounded-full bg-white/20" />
+              <li key={name} className="flex gap-3 leading-7 text-ink-2">
+                <span className="mt-3 h-1.5 w-1.5 shrink-0 rounded-full bg-paper-2" />
                 <span>
-                  <strong className="font-medium text-slate-200">{name}</strong> — {what}
+                  <strong className="font-medium text-ink">{name}</strong> — {what}
                 </span>
               </li>
             ))}
@@ -372,20 +372,20 @@ export default async function AboutPage() {
         {hourly ? (
           <section className="mt-14">
             <h2 className="text-2xl font-semibold tracking-tight">What it costs</h2>
-            <p className="mt-4 leading-8 text-slate-300">
+            <p className="mt-4 leading-8 text-ink-2">
               Ad-hoc sessions are{" "}
-              <strong className="font-semibold text-white">{hourly}</strong>, with
+              <strong className="font-semibold text-ink">{hourly}</strong>, with
               18% GST already included in that figure.{" "}
               {billingSentence(card)}
               {planFrom
                 ? ` Studios that render every week take a committed monthly plan instead, from ${planFrom} a month, which bills extra hours below the ad-hoc rate.`
                 : ""}
             </p>
-            <p className="mt-4 leading-8 text-slate-300">
+            <p className="mt-4 leading-8 text-ink-2">
               Prices on this page are read from the same rate card the billing
               system charges from, so they cannot drift from what you are
               actually charged.{" "}
-              <Link href="/#pricing" className="text-cyan-300 underline underline-offset-4">
+              <Link href="/#pricing" className="text-blue underline underline-offset-4">
                 Full pricing
               </Link>
               .
@@ -398,23 +398,23 @@ export default async function AboutPage() {
           <div className="mt-6 space-y-7">
             {faqs.map((f) => (
               <div key={f.q}>
-                <h3 className="font-semibold text-white">{f.q}</h3>
-                <p className="mt-2 leading-7 text-slate-400">{f.a}</p>
+                <h3 className="font-semibold text-ink">{f.q}</h3>
+                <p className="mt-2 leading-7 text-ink-2">{f.a}</p>
               </div>
             ))}
           </div>
         </section>
 
-        <section className="mt-14 rounded-2xl border border-cyan-400/20 bg-cyan-400/[0.05] p-6">
+        <section className="mt-14 rounded-cf border border-blue/20 bg-blue/[0.05] p-6">
           <h2 className="text-lg font-semibold">Try it on your own file</h2>
-          <p className="mt-3 leading-7 text-slate-300">
+          <p className="mt-3 leading-7 text-ink-2">
             We will not tell you how fast your scenes will render — that depends
             entirely on your scenes. Take the heaviest file you have and run it
             on one of our machines instead.
           </p>
           <Link
             href="/signup"
-            className="mt-5 inline-block rounded-lg bg-cyan-400 px-5 py-2.5 text-sm font-semibold text-slate-950 hover:bg-cyan-300"
+            className="mt-5 inline-block rounded-cf bg-blue px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue"
           >
             Start free
           </Link>

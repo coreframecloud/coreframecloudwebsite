@@ -38,31 +38,31 @@ export function PricingCards({
 
   return (
     <div className="mt-14 grid gap-4 md:grid-cols-2">
-      <div className="rounded-[20px] border border-white/10 bg-white/[0.03] p-6">
-        <div className="mb-3 text-xs uppercase tracking-wider text-white/40">Ad-hoc</div>
-        <div className="text-4xl font-bold text-white">
-          {adhoc ?? "—"} <span className="text-lg font-normal text-white/40">/ GPU-hr</span>
+      <div className="rounded-[20px] border border-rule bg-paper-2 p-6">
+        <div className="mb-3 text-xs uppercase tracking-wider text-ink-3">Ad-hoc</div>
+        <div className="text-4xl font-bold text-ink">
+          {adhoc ?? "—"} <span className="text-lg font-normal text-ink-3">/ GPU-hr</span>
         </div>
-        <p className="mt-3 text-sm leading-6 text-white/50">
+        <p className="mt-3 text-sm leading-6 text-ink-2">
           No commitment. {billingSentence(card)}
           {adhocNote ? ` ${adhocNote}` : ""}
         </p>
       </div>
 
-      <div className="rounded-[20px] border border-cyan-400/20 bg-cyan-400/[0.04] p-6">
-        <div className="mb-3 text-xs uppercase tracking-wider text-cyan-300/60">
+      <div className="rounded-[20px] border border-blue/20 bg-blue/[0.04] p-6">
+        <div className="mb-3 text-xs uppercase tracking-wider text-blue/60">
           Committed plans from
         </div>
-        <div className="text-4xl font-bold text-white">
-          {overage ?? "—"} <span className="text-lg font-normal text-white/40">/ GPU-hr</span>
+        <div className="text-4xl font-bold text-ink">
+          {overage ?? "—"} <span className="text-lg font-normal text-ink-3">/ GPU-hr</span>
         </div>
-        <p className="mt-3 text-sm leading-6 text-white/50">
+        <p className="mt-3 text-sm leading-6 text-ink-2">
           Cheaper per hour than ad-hoc at every tier
           {fromFee ? `, from ${fromFee}/month` : ""}. Persistent project storage and
           named seats for your studio.
           {storage ? ` Extra NAS storage ${storage}/TB/month.` : ""}
         </p>
-        <Link href="/enterprise" className="mt-4 inline-block text-sm text-cyan-400 hover:underline">
+        <Link href="/enterprise" className="mt-4 inline-block text-sm text-blue hover:underline">
           See plans →
         </Link>
       </div>

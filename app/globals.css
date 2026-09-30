@@ -44,6 +44,49 @@
   --font-mono: var(--font-plex-mono), ui-monospace, Menlo, monospace;
 
   --radius-cf: 3px;
+
+  /* ── shadcn's semantic names, mapped onto the palette above ───────────
+     components/ui/* (button, input, card) are stock shadcn and address
+     colour through these names. NONE of them had ever been defined: there
+     is no tailwind.config, the old globals.css declared no @theme, and
+     Tailwind v4 silently emits nothing for an unknown token. So every
+     shadcn primitive on this site rendered with no background, no border
+     and no ring -- which is why each of the six call sites smothers it in
+     a full className override.
+
+     Defining them here makes the primitives correct by default, and lets
+     those overrides be deleted as each page is converted rather than
+     copied forward.
+
+     These are aliases, not new colours. Change the palette above; never
+     hard-code a hex here. */
+  --color-background: var(--color-paper);
+  --color-foreground: var(--color-ink);
+  --color-card: var(--color-paper);
+  --color-card-foreground: var(--color-ink);
+  --color-popover: var(--color-paper);
+  --color-popover-foreground: var(--color-ink);
+  --color-primary: var(--color-blue);
+  --color-primary-foreground: #ffffff;
+  --color-secondary: var(--color-paper-2);
+  --color-secondary-foreground: var(--color-ink);
+  --color-muted: var(--color-paper-2);
+  --color-muted-foreground: var(--color-ink-2);
+  --color-accent: var(--color-blue-soft);
+  --color-accent-foreground: var(--color-blue-ink);
+  --color-destructive: #b3261e;
+  --color-destructive-foreground: #ffffff;
+  --color-border: var(--color-rule);
+  --color-input: var(--color-rule);
+  --color-ring: var(--color-blue);
+
+  /* One radius. shadcn reaches for --radius-md and --radius-lg; both point
+     at the same 3px so a primitive cannot quietly introduce a rounder
+     corner than the design has. */
+  --radius-sm: 3px;
+  --radius-md: 3px;
+  --radius-lg: 3px;
+  --radius-xl: 3px;
 }
 
 /* Light only, on purpose. The brief was a white site; honouring
