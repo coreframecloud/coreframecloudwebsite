@@ -20,6 +20,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { OtpInput } from "@/components/ui/otp-input";
 import {
   ArrowRight,
   BookUser,
@@ -963,14 +964,9 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
               <label className="text-xs text-slate-400">
                 Enter the 6-digit code we sent on WhatsApp
               </label>
-              <input
+              <OtpInput
                 value={otpCode}
-                onChange={(e) => { setOtpCode(e.target.value); setOtpError(""); }}
-                className="h-12 rounded-xl border border-white/10 bg-white/5 px-4 text-center text-lg tracking-[0.4em] text-white placeholder:tracking-normal placeholder:text-slate-500"
-                placeholder="123456"
-                inputMode="numeric"
-                autoComplete="one-time-code"
-                maxLength={6}
+                onChange={(v) => { setOtpCode(v); setOtpError(""); }}
                 autoFocus
               />
               {otpError && (

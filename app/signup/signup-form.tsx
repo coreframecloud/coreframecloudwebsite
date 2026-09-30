@@ -3,6 +3,7 @@
 import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { OtpInput } from "@/components/ui/otp-input";
 import { CheckCircle, Loader2, Mail, ArrowRight } from "lucide-react";
 
 const API = "https://control.coreframecloud.com/api";
@@ -360,16 +361,9 @@ export default function SignupForm() {
           <div className="grid gap-4">
             <div className="grid gap-1.5">
               <label className="text-xs text-slate-400">Verification code</label>
-              <Input
-                type="text"
-                inputMode="numeric"
-                pattern="\d{6}"
-                maxLength={6}
+              <OtpInput
                 value={otp}
-                onChange={(e) => { setOtp(e.target.value.replace(/\D/g, "")); setError(""); }}
-                className="h-14 rounded-xl border-white/10 bg-white/5 text-center text-2xl font-bold tracking-[0.5em] text-white placeholder:text-slate-600"
-                placeholder="000000"
-                autoComplete="one-time-code"
+                onChange={(v) => { setOtp(v); setError(""); }}
                 autoFocus
               />
             </div>

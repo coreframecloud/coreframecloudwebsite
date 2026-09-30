@@ -11,6 +11,7 @@ import {
 import { readAttribution } from "@/lib/attribution";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { OtpInput } from "@/components/ui/otp-input";
 // CheckCircle went with the password tab's "signed in" state.
 import { Loader2, Mail, ArrowRight } from "lucide-react";
 
@@ -739,16 +740,9 @@ export default function LoginForm({
                     said 15, which is its own small lie to anyone who waited. */}
                 <SentCard email={codeEmail} label="6-digit code" certain expiresMinutes={10} />
                 <Field label="Verification code">
-                  <Input
-                    type="text"
-                    inputMode="numeric"
-                    pattern="\d{6}"
-                    maxLength={6}
+                  <OtpInput
                     value={codeValue}
-                    onChange={(e) => { setCodeValue(e.target.value.replace(/\D/g, "")); setError(""); }}
-                    className="h-16 rounded-xl border-white/10 bg-white/5 text-center text-3xl font-bold tracking-[0.4em] text-white placeholder:text-slate-600"
-                    placeholder="000000"
-                    autoComplete="one-time-code"
+                    onChange={(v) => { setCodeValue(v); setError(""); }}
                     autoFocus
                   />
                 </Field>
