@@ -47,13 +47,12 @@ export function PricingSection({
   return (
     <section id="pricing" className="border-b border-rule">
       <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
-        <div className="max-w-3xl">
-          <div className="cf-eyebrow">PRICING</div>
-          <h2 className="mt-4 cf-section-title">Two ways to render.</h2>
-          <p className="mt-5 cf-section-copy">
-            Commit and save, or spin up on-demand. Every instance is the same hardware — RTX 5080, 16 GB GDDR7, hosted in Bengaluru.
-          </p>
-        </div>
+        {/* NO HEADER HERE. This component used to carry its own "PRICING /
+            Two ways to render." because it lived three-quarters of the way
+            down the homepage and needed to announce itself. It is now the body
+            of /pricing, which has its own h1 — so the header rendered twice,
+            two eyebrows and two headings stacked. The page owns the heading;
+            this owns the cards. */}
 
         <div className="mt-12 grid gap-6 lg:grid-cols-2">
 

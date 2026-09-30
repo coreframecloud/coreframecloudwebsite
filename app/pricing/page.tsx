@@ -50,11 +50,15 @@ export default async function PricingPage() {
       <section className="cf-section px-5 pb-0">
         <div className="cf-col">
           <p className="cf-eyebrow mb-5">Pricing</p>
-          <h1 className="cf-display">You pay for the minutes you use.</h1>
+          <h1 className="cf-display">Two ways to pay for it.</h1>
+          {/* cf-col caps this at 680px. The old version ran the full width of
+              a max-w-7xl container, which is why it broke "16 GB" from "GDDR7"
+              mid-line — a measure that long has no good break points. */}
           <p className="cf-lead mt-[22px]">
-            No seat, no month, nothing to cancel. Billing starts when the stream
-            starts and stops when you close the window. Every price below
-            includes 18% GST and comes with a tax invoice.
+            Pay by the minute when you need a machine for an afternoon, or
+            commit monthly if you are on it every week. Same hardware either
+            way, same Bengaluru rack. Every price here includes GST and comes
+            with a tax invoice.
           </p>
         </div>
       </section>
