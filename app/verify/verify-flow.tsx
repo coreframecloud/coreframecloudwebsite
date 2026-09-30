@@ -39,6 +39,39 @@ const API = "https://control.coreframecloud.com/api";
 const POLL_MS = 3000;
 const POLL_TIMEOUT_MS = 3 * 60 * 1000;
 
+/* ── Shared control classes ───────────────────────────────────────────────
+   44px and a 16px font on a phone, 40px and 14px from md up. The 16px is not
+   a taste call: any smaller and iOS Safari zooms the page the moment the
+   field takes focus, and it does not zoom back — on this flow that means
+   somebody fighting the viewport while typing a 15-character file number.
+   Same shape as app/cfd-intake and app/login so the three forms on this site
+   behave identically. */
+const fieldBase =
+  "w-full min-w-0 rounded-cf border border-rule bg-paper px-3 text-base text-ink outline-none transition placeholder:text-ink-3 focus:border-blue focus:ring-2 focus:ring-blue/20 md:text-sm";
+const inputCls = `${fieldBase} h-11 md:h-10`;
+
+/* `min-h-11` rather than a height: components/ui/button ships `h-9`, and a
+   36px primary button on the screen that gates the account is not acceptable.
+   min-height wins over height without having to fight tailwind-merge. */
+const btnPrimary = "cf-btn-primary min-h-11 w-full disabled:opacity-60";
+const btnSecondary = "cf-btn-secondary min-h-11 w-full disabled:opacity-60";
+
+/* Errors are the one place a colour carries meaning on its own, and
+   `destructive` is the only one the palette has. */
+const errorBox =
+  "rounded-cf border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm leading-6 break-words text-destructive";
+
+/* Warning, pending and success all share ONE construction: an inset panel
+   with a blue left edge, and the state said in a WORD above it. The old
+   screens carried the state in amber or green alone — #fde68a and #bbf7d0 on
+   white paper, which is to say in nothing at all for anybody reading this on
+   a phone in daylight. */
+const stateBox = "cf-glass-inset border-l-2 border-l-blue px-4 py-3";
+const stateWord =
+  "mb-2 font-mono text-[11.5px] leading-none font-semibold tracking-[0.18em] text-ink-2 uppercase";
+const stateLead = "text-sm font-semibold text-ink";
+const stateBody = "mt-1 text-sm leading-6 text-ink-2";
+
 interface BankState {
   required: boolean;
   verified: boolean;
@@ -193,22 +226,95 @@ function DocumentNoun(documentType?: string | null): string {
 
 function Card({ children }: { children: React.ReactNode }) {
   return (
-    <div className="w-full max-w-lg rounded-[1.8rem] border border-rule bg-paper-2 p-6 backdrop-blur-2xl md:p-8">
+    <div className="cf-glass w-full max-w-lg p-5 sm:p-7 md:p-8">
       {children}
     </div>
   );
 }
 
+/**
+ * THE ICON SITS ABOVE THE HEADING, NOT BESIDE IT.
+ *
+ * Beside it, a 40px badge and a 16px gap took 56px off a 390px screen before
+ * the first word, and headings on this flow are sentences — "Verification
+ * received. We are looking at it." wrapped to four lines in a column barely
+ * wider than the badge. Stacked, the serif gets the whole measure.
+ */
 function Header({ icon, title, sub }: { icon: React.ReactNode; title: string; sub?: string }) {
   return (
-    <div className="mb-6 flex items-start gap-4">
-      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue/10 text-blue">
+    <div className="mb-6">
+      <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-full bg-blue/10 text-blue">
         {icon}
       </div>
-      <div>
-        <p className="font-semibold text-ink">{title}</p>
-        {sub && <p className="mt-1 text-sm text-ink-2">{sub}</p>}
-      </div>
+      <h1 className="font-display text-[27px] leading-[1.14] tracking-[-0.01em] text-ink sm:text-[32px]">
+        {title}
+      </h1>
+      {sub && (
+        <p className="mt-2 text-[15px] leading-6 break-words text-ink-2">{sub}</p>
+      )}
+    </div>
+  );
+}
+
+/**
+ * WHICH STEPS THIS ACCOUNT ACTUALLY FACES, read off the status the server
+ * already sent. Nothing here decides anything and nothing here is clickable —
+ * it is a label on the state the flow is in.
+ *
+ * It has to be derived rather than hardcoded because the sequence genuinely
+ * differs: a business proves the entity and then its bank account before
+ * anybody looks at the person, and the mobile code only exists for a customer
+ * whose document carried no number. A fixed "Step 2 of 4" would be wrong for
+ * most of the people reading it.
+ */
+function stepsFor(status: VerificationStatus | null): string[] {
+  const steps: string[] = [];
+  if (status?.customer_type === "b2b") {
+    steps.push("Business");
+    if (status?.business?.bank?.required) steps.push("Bank");
+  }
+  steps.push("Identity");
+  if (status?.needs_mobile_otp) steps.push("Mobile");
+  return steps;
+}
+
+/**
+ * At 390px there is no room for four words across, so the bar carries numbers
+ * only and a full "Step 2 of 3 — Identity" line sits under it. Labels come
+ * back from sm up. Same approach as app/cfd-intake/cfd-intake-form.tsx.
+ *
+ * Renders nothing when there is only one step: a one-item progress bar tells
+ * the customer nothing and costs them 60px of screen.
+ */
+function StepBar({ status, current }: { status: VerificationStatus | null; current: string }) {
+  const steps = stepsFor(status);
+  const index = steps.indexOf(current);
+  if (steps.length < 2 || index < 0) return null;
+  return (
+    <div className="mb-6">
+      <ol className="flex gap-1">
+        {steps.map((s, i) => (
+          <li
+            key={s}
+            aria-current={i === index ? "step" : undefined}
+            className={`flex min-h-11 min-w-0 flex-1 flex-col items-center justify-center gap-0.5 rounded-cf border px-1 py-2 text-[11px] font-medium sm:px-2 sm:text-xs ${
+              i === index
+                ? "border-blue bg-blue text-white"
+                : i < index
+                  ? "border-rule bg-paper-2 text-ink"
+                  : "border-rule bg-paper/50 text-ink-3"
+            }`}
+          >
+            <span className="text-sm leading-none font-semibold sm:text-base">
+              {i < index ? "\u2713" : i + 1}
+            </span>
+            <span className="hidden truncate sm:block">{s}</span>
+          </li>
+        ))}
+      </ol>
+      <p className="mt-2 text-center text-[13px] text-ink-2 sm:hidden">
+        Step {index + 1} of {steps.length} — {steps[index]}
+      </p>
     </div>
   );
 }
@@ -239,7 +345,7 @@ function FileNumberDiagram() {
     <figure className="mt-1">
       <svg
         viewBox="0 0 320 226"
-        className="w-full rounded-cf border border-rule bg-slate-900/60"
+        className="w-full rounded-cf border border-rule bg-term"
         role="img"
         aria-label="The last page of an Indian passport. Every personal field is
           shown blanked out. The File No. at the bottom is highlighted."
@@ -257,24 +363,24 @@ function FileNumberDiagram() {
           ))}
         </g>
         <rect x={232} y={38} width={56} height={7} rx={2}
-              className="fill-slate-600/70" />
+              className="fill-term-dim/35" />
 
         {redactions.map((r, i) => (
           <g key={r.label}>
-            <text x={16} y={30 + i * 34} className="fill-slate-500"
+            <text x={16} y={30 + i * 34} className="fill-term-dim"
                   style={{ fontSize: 7 }}>
               {r.label}
             </text>
             <rect x={16} y={35 + i * 34} width={r.w} height={11} rx={2.5}
-                  className="fill-slate-600/70" />
+                  className="fill-term-dim/35" />
           </g>
         ))}
         {/* the address runs to a second line on a real page */}
         <rect x={16} y={151} width={120} height={11} rx={2.5}
-              className="fill-slate-600/70" />
+              className="fill-term-dim/35" />
 
         <line x1={16} y1={172} x2={304} y2={172}
-              className="stroke-white/15" strokeWidth={1} />
+              className="stroke-term-ink/15" strokeWidth={1} />
 
         {/* the one that matters */}
         <text x={16} y={184} className="fill-blue" style={{ fontSize: 7.5 }}>
@@ -282,7 +388,7 @@ function FileNumberDiagram() {
         </text>
         <rect x={14} y={188} width={152} height={22} rx={5}
               className="fill-blue/10 stroke-blue/80" strokeWidth={1.5} />
-        <text x={23} y={203} className="fill-white"
+        <text x={23} y={203} className="fill-term-ink"
               style={{ fontSize: 11.5, fontFamily: "ui-monospace, monospace", letterSpacing: 0.8 }}>
           DL1234567890123
         </text>
@@ -290,7 +396,7 @@ function FileNumberDiagram() {
           ← this one, 15 characters
         </text>
       </svg>
-      <figcaption className="mt-1.5 text-[11px] leading-4 text-ink-3">
+      <figcaption className="mt-1.5 text-[13px] leading-5 text-ink-2">
         Illustration. The number shown is made up, and the other fields are
         blanked because they are nobody&apos;s business but yours — we never ask
         for them.
@@ -847,7 +953,7 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
       <Card>
         <div className="flex items-center gap-3 text-ink-2">
           <Loader2 className="h-4 w-4 animate-spin" />
-          <span className="text-sm">Loading your account…</span>
+          <span className="text-[15px]">Loading your account…</span>
         </div>
       </Card>
     );
@@ -858,19 +964,19 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
       <Card>
         <Header
           icon={<CheckCircle2 className="h-5 w-5" />}
-          title="You're verified"
+          title="You’re verified."
           sub={
             (verifiedName ?? status?.verified_name)
               ? `Identity confirmed as ${verifiedName ?? status?.verified_name}. Your account is active.`
               : "Your identity has been confirmed and your account is active."
           }
         />
-        <div className="grid gap-3">
+        <div className="grid grid-cols-1 gap-3">
           {/* Hard navigation, not a client-side Link. The token was swapped for
               a full one moments ago; a soft transition can carry stale auth
               state into /my-activity, which then 403s and bounces the customer
               straight back here — the loop reported after the first live run. */}
-          <Button asChild className="h-auto min-h-12 w-full whitespace-normal rounded-cf bg-blue px-3 py-2 text-center text-base font-semibold leading-tight text-white shadow-[0_6px_24px_-6px_rgba(34,211,238,.55)] transition hover:bg-blue disabled:opacity-60">
+          <Button asChild className={btnPrimary}>
             {/* eslint-disable-next-line @next/next/no-html-link-for-pages --
                 a full page load is the point. The verification-scoped token was
                 swapped for a full one moments ago; a client-side <Link/> keeps
@@ -897,11 +1003,11 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
               can carry the pre-swap verification token into it. */}
           <a
             href="/download"
-            className="text-center text-sm font-semibold text-blue hover:text-blue"
+            className="inline-flex min-h-11 w-full items-center justify-center text-center text-sm font-semibold text-blue"
           >
             Download Coreframe Connect →
           </a>
-          <p className="text-center text-xs text-ink-3">
+          <p className="text-center text-[13px] leading-5 text-ink-2">
             Install it and sign in with the same email you used here.
           </p>
         </div>
@@ -922,18 +1028,19 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
     if (status?.needs_mobile_otp) {
       return (
         <Card>
+          <StepBar status={status} current="Mobile" />
           <Header
             icon={<Fingerprint className="h-5 w-5" />}
-            title="One step left — confirm your mobile"
+            title="Confirm your mobile number."
             sub="Your identity checked out. We just need a contact number you have confirmed, which Indian regulations require us to hold."
           />
 
-          <p className="mb-4 rounded-cf border border-rule bg-paper-2 px-4 py-3 text-sm text-ink-2">
+          <p className="cf-glass-inset mb-4 px-4 py-3 text-sm leading-6 text-ink-2">
             {whyMobileStep(status.kyc_document_type)}
           </p>
 
           {!otpSent ? (
-            <div className="grid gap-3">
+            <div className="grid grid-cols-1 gap-3">
               <p className="text-sm text-ink-2">
                 We will send a 6-digit code on{" "}
                 <b className="text-ink">WhatsApp</b>
@@ -942,56 +1049,57 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
                 ) : null}
                 .
               </p>
-              <p className="text-[11px] leading-4 text-ink-3">
+              <p className="text-[13px] leading-5 text-ink-2">
                 It arrives on WhatsApp, not as an SMS — check WhatsApp, not your
                 messages app.
               </p>
               {otpError && (
-                <p className="rounded-cf border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+                <p className={errorBox}>
                   {otpError}
                 </p>
               )}
               <Button
                 onClick={sendOtpCode}
                 disabled={otpBusy}
-                className="h-auto min-h-12 w-full whitespace-normal rounded-cf bg-blue px-3 py-2 text-center text-base font-semibold leading-tight text-white shadow-[0_6px_24px_-6px_rgba(34,211,238,.55)] transition hover:bg-blue disabled:opacity-60"
+                className={btnPrimary}
               >
                 {otpBusy ? "Sending…" : "Send me the code"}
               </Button>
             </div>
           ) : (
-            <form onSubmit={submitOtpCode} className="grid gap-3">
-              <label className="text-xs text-ink-2">
+            <form onSubmit={submitOtpCode} className="grid grid-cols-1 gap-3">
+              <label htmlFor="cf-mobile-otp" className="text-[13px] font-medium text-ink">
                 Enter the 6-digit code we sent on WhatsApp
               </label>
               <OtpInput
+                id="cf-mobile-otp"
                 value={otpCode}
                 onChange={(v) => { setOtpCode(v); setOtpError(""); }}
                 autoFocus
               />
               {otpError && (
-                <p className="rounded-cf border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+                <p className={errorBox}>
                   {otpError}
                 </p>
               )}
               <button
                 type="submit"
                 disabled={otpBusy}
-                className="h-auto min-h-12 w-full whitespace-normal rounded-cf bg-blue px-3 py-2 text-center text-base font-semibold leading-tight text-white shadow-[0_6px_24px_-6px_rgba(34,211,238,.55)] transition hover:bg-blue disabled:opacity-60"
+                className={btnPrimary}
               >
                 {otpBusy ? "Checking…" : "Confirm my number"}
               </button>
               <button
                 type="button"
                 onClick={() => { setOtpSent(false); setOtpCode(""); setOtpError(""); }}
-                className="text-center text-sm text-ink-2 hover:text-ink"
+                className="inline-flex min-h-11 w-full items-center justify-center text-center text-sm text-ink-2 hover:text-ink"
               >
                 Didn&apos;t get it? Send another code
               </button>
             </form>
           )}
 
-          <div className="mt-5 text-sm text-ink-3">
+          <div className="mt-5 text-sm leading-6 text-ink-2">
             No WhatsApp on that number?{" "}
             <Link href="/contact" className="text-blue hover:underline">
               Tell us
@@ -1018,19 +1126,24 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
           <Card>
             <Header
               icon={<Clock className="h-5 w-5" />}
-              title="Let us sort this one out for you"
+              title="We will sort this one out."
               sub={`${DocumentNoun(status.kyc_document_type)} was verified. The name on the account still does not match the document, and you have used today's attempts.`}
             />
-            <p className="mb-4 rounded-cf border border-amber-500/25 bg-amber-500/10 px-4 py-3 text-sm text-amber-200">
-              Email <b>support@coreframecloud.com</b> from this address and a
-              person will correct it for you, usually the same day. Please do
-              not create a second account — a second signup on the same
-              identity is refused automatically and slows this down.
-            </p>
+            <div className={`${stateBox} mb-4`}>
+              <p className={stateWord}>Action needed</p>
+              <p className={stateLead}>Email us and we will fix the name.</p>
+              <p className={stateBody}>
+                Write to{" "}
+                <b className="break-all text-ink">support@coreframecloud.com</b> from this
+                address and a person will correct it for you, usually the same day. Do not
+                create a second account — a second signup on the same identity is refused
+                automatically and slows this down.
+              </p>
+            </div>
             <p className="text-sm text-ink-2">
               You can also try again yourself tomorrow, when today&apos;s attempts reset.
             </p>
-            <div className="mt-5 text-sm text-ink-3">
+            <div className="mt-5 text-sm text-ink-2">
               <Link href="/contact" className="text-blue hover:underline">Contact us</Link>
             </div>
           </Card>
@@ -1041,7 +1154,7 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
         <Card>
           <Header
             icon={<Clock className="h-5 w-5" />}
-            title="One thing does not match"
+            title="One thing does not match."
             sub={`${DocumentNoun(status.kyc_document_type)} was verified. The name on your account is not the name on the document, so we cannot activate it yet.`}
           />
           {/* THEIR OWN NAME, BACK AT THEM. "The name on your account does not
@@ -1051,50 +1164,51 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
               The document name is never shown — the API withholds it while a
               mismatch is open, so this cannot become a copy-paste. */}
           {status.account_name ? (
-            <p className="mb-4 rounded-cf border border-rule bg-paper-2 px-4 py-3 text-sm text-ink-2">
+            <p className="cf-glass-inset mb-4 px-4 py-3 text-sm leading-6 break-words text-ink-2">
               You signed up as <b className="text-ink">{status.account_name}</b>. That
               needs to be your name as printed on {documentNoun(status.kyc_document_type)} — you can keep{" "}
               <b className="text-ink">{status.account_name}</b> as your display name afterwards.
             </p>
           ) : null}
-          <form onSubmit={submitLegalName} className="grid gap-3">
-            <label className="text-xs text-ink-2">
+          <form onSubmit={submitLegalName} className="grid grid-cols-1 gap-3">
+            <label htmlFor="cf-legal-name" className="text-[13px] font-medium text-ink">
               Your full name, exactly as on {documentNoun(status.kyc_document_type)}
             </label>
             <input
+              id="cf-legal-name"
               value={legalName}
               onChange={(e) => { setLegalName(e.target.value); setLegalNameError(""); }}
-              className="h-12 rounded-cf border border-rule bg-paper-2 px-4 text-ink placeholder:text-ink-3"
+              className={inputCls}
               placeholder="Rahul Kumar Sharma"
               autoComplete="name"
               autoFocus
             />
-            <p className="text-[11px] leading-4 text-ink-3">
+            <p className="text-[13px] leading-5 text-ink-2">
               Include every part of it — a middle name or father&apos;s name if {documentNoun(status.kyc_document_type)} has one.
               If you signed up with a studio or brand name, that is almost certainly what happened;
               you can still use it as your display name afterwards.
             </p>
             {legalNameError && (
-              <p className="rounded-cf border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+              <p className={errorBox}>
                 {legalNameError}
               </p>
             )}
             <button
               type="submit"
               disabled={legalNameBusy}
-              className="h-auto min-h-12 w-full whitespace-normal rounded-cf bg-blue px-3 py-2 text-center text-base font-semibold leading-tight text-white shadow-[0_6px_24px_-6px_rgba(34,211,238,.55)] transition hover:bg-blue disabled:opacity-60"
+              className={btnPrimary}
             >
               {legalNameBusy ? "Checking…" : "Check and continue"}
             </button>
             {typeof triesLeft === "number" ? (
-              <p className="text-center text-[11px] text-ink-3">
+              <p className="text-center text-[13px] leading-5 text-ink-2">
                 {triesLeft === 1
                   ? "This is your last try today — after that we will fix it for you by email."
                   : `You have ${triesLeft} tries today.`}
               </p>
             ) : null}
           </form>
-          <div className="mt-5 text-sm text-ink-3">
+          <div className="mt-5 text-sm text-ink-2">
             Not sure? <Link href="/contact" className="text-blue hover:underline">Contact us</Link>
           </div>
         </Card>
@@ -1105,14 +1219,18 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
       <Card>
         <Header
           icon={<Clock className="h-5 w-5" />}
-          title="Verification received — under review"
+          title="Your verification is under review."
           sub="Your documents came through. Something on the account needs a quick look from our team, so activation is not automatic in this case."
         />
-        <p className="rounded-cf border border-amber-500/25 bg-amber-500/10 px-4 py-3 text-sm text-amber-200">
-          We usually complete this within one business day. You will get an email as soon as your
-          account is active — there is nothing else for you to do.
-        </p>
-        <div className="mt-5 text-sm text-ink-3">
+        <div className={stateBox}>
+          <p className={stateWord}>Pending</p>
+          <p className={stateLead}>There is nothing else for you to do.</p>
+          <p className={stateBody}>
+            We usually complete this within one business day. You will get an email as
+            soon as your account is active.
+          </p>
+        </div>
+        <div className="mt-5 text-sm text-ink-2">
           Questions? <Link href="/contact" className="text-blue hover:underline">Contact us</Link>
         </div>
       </Card>
@@ -1139,29 +1257,36 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
       : null;
     return (
       <Card>
-        <Header icon={<XCircle className="h-5 w-5" />} title="Verification did not complete" sub={reason} />
+        <Header icon={<XCircle className="h-5 w-5" />} title="Verification did not complete." sub={reason} />
         {outOfAttempts ? (
           // Attempts clear themselves after a cooldown, so telling everyone to
           // contact us spends exactly the support round trip the auto-reset was
           // written to save. Say when instead — and only fall back to asking
           // them to write in when the API says it will NOT clear.
           retryMinutes !== null ? (
-            <p className="rounded-cf border border-amber-500/25 bg-amber-500/10 px-4 py-3 text-sm text-amber-200">
-              You have used all the attempts we allow in one go. You can try again in about{" "}
-              {retryMinutes} minute{retryMinutes === 1 ? "" : "s"} — nothing is wrong with your
-              account and there is no need to contact us. Most of the time this just means the
-              DigiLocker link expired before it was opened; it is only valid for 10 minutes.
-            </p>
+            <div className={stateBox}>
+              <p className={stateWord}>Pending</p>
+              <p className={stateLead}>
+                Try again in about {retryMinutes} minute{retryMinutes === 1 ? "" : "s"}.
+              </p>
+              <p className={stateBody}>
+                You have used all the attempts we allow in one go. Nothing is wrong with
+                your account and there is no need to contact us. Most of the time this just
+                means the DigiLocker link expired before it was opened; it is only valid
+                for 10 minutes.
+              </p>
+            </div>
           ) : (
-            <p className="rounded-cf border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
-              You have used all available attempts. Please{" "}
-              <Link href="/contact" className="underline">contact us</Link> and we will reset it for you.
+            <p className={errorBox}>
+              You have used all available attempts.{" "}
+              <Link href="/contact" className="underline underline-offset-2">Contact us</Link>{" "}
+              and we will reset it for you.
             </p>
           )
         ) : (
           <Button
             onClick={() => startVerification("signin")}
-            className="h-auto min-h-12 w-full whitespace-normal rounded-cf bg-blue px-3 py-2 text-center text-base font-semibold leading-tight text-white shadow-[0_6px_24px_-6px_rgba(34,211,238,.55)] transition hover:bg-blue disabled:opacity-60"
+            className={btnPrimary}
           >
             <RefreshCw className="mr-2 h-4 w-4" />
             Try again
@@ -1176,16 +1301,21 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
       <Card>
         <Header
           icon={<XCircle className="h-5 w-5" />}
-          title="This identity is already registered"
+          title="This identity is already registered."
           sub={reason}
         />
-        <p className="rounded-cf border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-200">
-          Coreframe allows one account per person. Sign in to your existing
-          account instead — or if you have lost access to it,{" "}
-          <Link href="/contact" className="underline">contact us</Link> and we
-          will help you recover it.
-        </p>
-        <Button asChild className="mt-4 h-12 w-full rounded-cf bg-blue text-base font-semibold text-white shadow-[0_6px_24px_-6px_rgba(34,211,238,.55)] transition hover:bg-blue disabled:opacity-60">
+        <div className={stateBox}>
+          <p className={stateWord}>Action needed</p>
+          <p className={stateLead}>Sign in to the account you already have.</p>
+          <p className={stateBody}>
+            Coreframe allows one account per person. If you have lost access to it,{" "}
+            <Link href="/contact" className="text-blue underline underline-offset-2">
+              contact us
+            </Link>{" "}
+            and we will help you recover it.
+          </p>
+        </div>
+        <Button asChild className={`${btnPrimary} mt-4`}>
           <Link href="/login">Sign in to my account</Link>
         </Button>
       </Card>
@@ -1195,8 +1325,8 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
   if (phase === "error") {
     return (
       <Card>
-        <Header icon={<XCircle className="h-5 w-5" />} title="Something went wrong" sub={error} />
-        <Button onClick={() => window.location.reload()} className="h-auto min-h-12 w-full whitespace-normal rounded-cf bg-blue px-3 py-2 text-center text-base font-semibold leading-tight text-white shadow-[0_6px_24px_-6px_rgba(34,211,238,.55)] transition hover:bg-blue disabled:opacity-60">
+        <Header icon={<XCircle className="h-5 w-5" />} title="Something went wrong." sub={error} />
+        <Button onClick={() => window.location.reload()} className={btnPrimary}>
           <RefreshCw className="mr-2 h-4 w-4" />
           Reload
         </Button>
@@ -1207,49 +1337,61 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
   if (phase === "gstin") {
     return (
       <Card>
+        <StepBar status={status} current="Business" />
         <Header
           icon={<Building2 className="h-5 w-5" />}
-          title="Verify your business"
+          title="Verify your business."
           sub="We check your GSTIN against the GST register. Instant, and it sets your place of supply for invoices."
         />
 
         {business?.business_verified && (
-          <div className="mb-5 rounded-cf border border-green-500/25 bg-green-500/10 px-4 py-3 text-sm text-green-200">
-            <b>{business.legal_name || business.trade_name}</b> confirmed
-            {business.constitution ? ` · ${business.constitution}` : ""}
-            {business.registered_state ? ` · ${business.registered_state}` : ""}
+          <div className={`${stateBox} mb-5`}>
+            <p className={stateWord}>Verified</p>
+            <p className={`${stateLead} break-words`}>
+              {business.legal_name || business.trade_name}
+            </p>
+            {(business.constitution || business.registered_state) && (
+              <p className={`${stateBody} break-words`}>
+                {[business.constitution, business.registered_state]
+                  .filter(Boolean)
+                  .join(" · ")}
+              </p>
+            )}
           </div>
         )}
 
-        <form onSubmit={submitGstin} className="grid gap-4">
-          <div className="grid gap-1.5">
-            <label className="text-xs text-ink-2">GSTIN</label>
+        <form onSubmit={submitGstin} className="grid grid-cols-1 gap-4">
+          <div className="grid grid-cols-1 gap-1.5">
+            <label htmlFor="cf-gstin" className="text-[13px] font-medium text-ink">
+              GSTIN
+            </label>
             <input
+              id="cf-gstin"
               value={gstin}
               onChange={(e) => { setGstin(e.target.value.toUpperCase()); setError(""); }}
               maxLength={15}
               placeholder="29AAICP2912R1ZR"
-              className="h-12 rounded-cf border border-rule bg-paper-2 px-4 font-mono tracking-widest text-ink placeholder:text-ink-3 focus:border-blue/50 focus:outline-none"
+              className={`${inputCls} font-mono tracking-[0.18em] uppercase`}
               required
             />
-            <p className="text-xs text-ink-3">
+            <p className="text-[13px] leading-5 text-ink-2">
               15 characters, exactly as printed on your GST certificate.
             </p>
           </div>
 
           {error && (
-            <p className="rounded-cf border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+            <p className={errorBox}>
               {error}
             </p>
           )}
 
-          <Button type="submit" disabled={gstinBusy} className="h-auto min-h-12 w-full whitespace-normal rounded-cf bg-blue px-3 py-2 text-center text-base font-semibold leading-tight text-white shadow-[0_6px_24px_-6px_rgba(34,211,238,.55)] transition hover:bg-blue disabled:opacity-60">
+          <Button type="submit" disabled={gstinBusy} className={btnPrimary}>
             {gstinBusy ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ArrowRight className="mr-2 h-4 w-4" />}
             {gstinBusy ? "Checking the GST register…" : "Verify GSTIN"}
           </Button>
         </form>
 
-        <p className="mt-5 text-xs text-ink-3">
+        <p className="mt-5 text-[13px] leading-5 text-ink-2">
           A business account needs two things: this, which proves the company is
           real and GST-active, and a DigiLocker check on you as the signatory,
           which proves a real person is accountable for the account. You will do
@@ -1262,66 +1404,71 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
   if (phase === "bank") {
     return (
       <Card>
+        <StepBar status={status} current="Bank" />
         <Header
           icon={<Landmark className="h-5 w-5" />}
-          title="Confirm your company bank account"
+          title="Confirm your company bank account."
           sub="Send ₹1 by UPI from the company's account. We refund it within 48 hours."
         />
 
-        <p className="mb-5 text-sm text-ink-2">
-          A GSTIN is printed on every invoice your company issues, so quoting one
-          proves very little. Sending money from the account proves you actually
-          control it — which is the point of this step.
+        <p className="mb-5 text-[15px] leading-6 text-ink-2">
+          A GSTIN is printed on every invoice your company issues, so quoting one proves
+          very little. Sending money from the account proves you control it, which is the
+          point of this step.
         </p>
 
         {!bank ? (
           <Button
             onClick={startBankCheck}
             disabled={bankBusy}
-            className="h-auto min-h-12 w-full whitespace-normal rounded-cf bg-blue px-3 py-2 text-center text-base font-semibold leading-tight text-white shadow-[0_6px_24px_-6px_rgba(34,211,238,.55)] transition hover:bg-blue disabled:opacity-60"
+            className={btnPrimary}
           >
             {bankBusy ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ArrowRight className="mr-2 h-4 w-4" />}
             {bankBusy ? "Preparing…" : "Start bank verification"}
           </Button>
         ) : (
-          <div className="grid gap-4">
+          <div className="grid grid-cols-1 gap-4">
+            {/* THE QR HAS TO SURVIVE A 390px SCREEN.
+                Inside the card there are about 318 usable pixels at that width,
+                so the code is sized in viewport-safe steps rather than pinned at
+                192px, and the panel around it is `max-w-full` with the image set
+                to shrink rather than crop. A cropped QR is an unscannable QR,
+                and this is the step that moves money. */}
             {bank.qr && (
-              <div className="flex justify-center rounded-cf border border-rule bg-white p-4">
+              <div className="flex max-w-full justify-center rounded-cf border border-rule bg-paper p-3 sm:p-4">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={`data:image/png;base64,${bank.qr}`}
                   alt="UPI QR code for the ₹1 verification payment"
-                  className="h-48 w-48"
+                  className="h-auto w-full max-w-[220px] min-w-0"
                 />
               </div>
             )}
 
             {bank.upi_link && (
-              <a
-                href={bank.upi_link}
-                className="rounded-cf border border-blue/30 bg-blue/10 px-4 py-3 text-center text-sm font-medium text-blue hover:bg-blue/15"
-              >
-                Open a UPI app on this device →
+              <a href={bank.upi_link} className={btnSecondary}>
+                Open a UPI app on this device
               </a>
             )}
 
-            <p className="text-xs text-ink-3">
+            <p className="text-[13px] leading-5 break-words text-ink-2">
               Pay from the account held by{" "}
-              <b className="text-ink-2">{bank.expected || "your company"}</b>.
-              A personal account will not match and the check will be held for review.
-              The link expires in 10 minutes.
+              <b className="break-words text-ink">{bank.expected || "your company"}</b>. A
+              personal account will not match and the check will be held for review. The
+              link expires in 10 minutes.
             </p>
 
             {bankHint && (
-              <p className="rounded-cf border border-amber-500/25 bg-amber-500/10 px-4 py-3 text-sm text-amber-200">
-                {bankHint}
-              </p>
+              <div className={stateBox}>
+                <p className={stateWord}>Action needed</p>
+                <p className={`${stateLead} break-words`}>{bankHint}</p>
+              </div>
             )}
 
             <Button
               onClick={checkBankPayment}
               disabled={bankBusy}
-              className="h-auto min-h-12 w-full whitespace-normal rounded-cf bg-blue px-3 py-2 text-center text-base font-semibold leading-tight text-white shadow-[0_6px_24px_-6px_rgba(34,211,238,.55)] transition hover:bg-blue disabled:opacity-60"
+              className={btnPrimary}
             >
               {bankBusy ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <RefreshCw className="mr-2 h-4 w-4" />}
               {bankBusy ? "Checking…" : "Check payment"}
@@ -1330,7 +1477,7 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
         )}
 
         {error && (
-          <p className="mt-4 rounded-cf border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+          <p className={`${errorBox} mt-4`}>
             {error}
           </p>
         )}
@@ -1359,9 +1506,10 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
 
   return (
     <Card>
+      <StepBar status={status} current="Identity" />
       <Header
         icon={<Fingerprint className="h-5 w-5" />}
-        title="Verify your identity"
+        title="Verify your identity."
         sub="A one-time check before your account is activated. It takes about a minute."
       />
 
@@ -1374,7 +1522,7 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
           customer we are about to handle their Aadhaar when we are not is a
           promise about their data that the code does not keep, and it is the
           kind of sentence a DPDP reviewer reads literally. */}
-      <ul className="mb-6 grid gap-3 text-sm text-ink-2">
+      <ul className="mb-6 grid grid-cols-1 gap-3 text-sm leading-6 text-ink-2">
         {passportOpen ? (
           <>
             <li className="flex gap-3">
@@ -1420,16 +1568,25 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
       </ul>
 
       {business?.business_verified && (
-        <p className="mb-4 rounded-cf border border-green-500/25 bg-green-500/10 px-4 py-3 text-sm text-green-200">
-          Business verified: <b>{business.legal_name || business.trade_name}</b>. One step left —
-          confirm your own identity as the signatory.
-        </p>
+        <div className={`${stateBox} mb-4`}>
+          <p className={stateWord}>Verified</p>
+          <p className={`${stateLead} break-words`}>
+            {business.legal_name || business.trade_name}
+          </p>
+          <p className={stateBody}>
+            One step left — confirm your own identity as the signatory.
+          </p>
+        </div>
       )}
 
       {status?.failure_reason && (
-        <p className="mb-4 rounded-cf border border-amber-500/25 bg-amber-500/10 px-4 py-3 text-sm text-amber-200">
-          Your last attempt did not complete ({status.failure_reason}). You can try again below.
-        </p>
+        <div className={`${stateBox} mb-4`}>
+          <p className={stateWord}>Action needed</p>
+          <p className={stateLead}>Your last attempt did not complete.</p>
+          <p className={`${stateBody} break-words`}>
+            Reason: {status.failure_reason}. You can try again below.
+          </p>
+        </div>
       )}
 
       {/* No longer a demand for action. DigiLocker returns the Aadhaar-linked
@@ -1437,7 +1594,7 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
           number requirement is satisfied by the step the customer is about to
           take. Telling them to go and add one first was busywork. */}
       {otpOutstanding && !status?.has_phone_number && (
-        <p className="mb-4 rounded-cf border border-rule bg-paper-2 px-4 py-3 text-sm text-ink-2">
+        <p className="cf-glass-inset mb-4 px-4 py-3 text-sm leading-6 text-ink-2">
           If you verify through DigiLocker we will record the mobile number
           linked to your Aadhaar as your contact number. The passport route
           does not carry one, so there we will ask you to confirm a number
@@ -1446,20 +1603,21 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
       )}
 
       {error && (
-        <p className="mb-4 rounded-cf border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+        <p className={`${errorBox} mb-4`}>
           {error}
         </p>
       )}
 
       {status && !status.has_phone_number ? (
-        <form onSubmit={submitPhone} className="grid gap-3">
-          <label className="text-sm text-ink-2">
+        <form onSubmit={submitPhone} className="grid grid-cols-1 gap-3">
+          <label htmlFor="cf-phone" className="text-[13px] font-medium text-ink">
             First, your mobile number
           </label>
           <input
+            id="cf-phone"
             value={phoneInput}
             onChange={(e) => { setPhoneInput(e.target.value); setPhoneError(""); }}
-            className="h-12 rounded-cf border border-rule bg-paper-2 px-4 text-ink placeholder:text-ink-3"
+            className={inputCls}
             placeholder="98765 43210"
             type="tel"
             inputMode="tel"
@@ -1481,7 +1639,7 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
               the Aadhaar number and the typed number were different, so a
               number nobody had proved sat on the account for good. Both halves
               are fixed; this says which of the two will happen. */}
-          <p className="text-[11px] leading-4 text-ink-3">
+          <p className="text-[13px] leading-5 text-ink-2">
             You signed in with Google, so we have not asked for one yet. An
             Indian mobile number — it is how we reach you about your account.
             If you verify through DigiLocker and this is the number linked to
@@ -1491,36 +1649,39 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
             arrives just yet.
           </p>
           {phoneError && (
-            <p className="rounded-cf border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+            <p className={errorBox}>
               {phoneError}
             </p>
           )}
-          <Button type="submit" disabled={phoneBusy} className="h-auto min-h-12 w-full whitespace-normal rounded-cf bg-blue px-3 py-2 text-center text-base font-semibold leading-tight text-white shadow-[0_6px_24px_-6px_rgba(34,211,238,.55)] transition hover:bg-blue disabled:opacity-60">
+          <Button type="submit" disabled={phoneBusy} className={btnPrimary}>
             {phoneBusy ? "Saving…" : "Save and continue"}
           </Button>
         </form>
       ) : passportOpen ? (
         /* The passport form takes the whole card once chosen — the same room
            DigiLocker gets, because it is the same kind of decision. */
-        <form onSubmit={submitPassport} className="grid gap-3">
+        <form onSubmit={submitPassport} className="grid grid-cols-1 gap-3">
           <div className="flex items-center gap-2">
             <BookUser className="h-4 w-4 text-blue" />
-            <p className="text-sm font-semibold text-ink">Verify with your passport</p>
+            <p className="text-base font-semibold text-ink">Verify with your passport.</p>
           </div>
           {/* Said plainly and first. An overseas customer cannot be served
               by this at all - it queries the Indian passport record - and
               finding that out after typing everything in is worse than
               being told now. */}
-          <p className="rounded-cf border border-amber-500/25 bg-amber-500/10 px-4 py-3 text-xs leading-5 text-amber-200">
-            Only <b>Indian passports</b> can be checked this way — the check
-            queries the Indian passport record.
-          </p>
-          <label className="text-xs text-ink-2">
-            File number{" "}
-            <span className="text-ink-3">
-              — the <b className="text-ink-2">&ldquo;File No.&rdquo;</b> printed on the last page of
-              your passport, 15 characters: two letters then digits. Not the
-              passport number on the front page.
+          <div className={stateBox}>
+            <p className={stateWord}>Indian passports only</p>
+            <p className={stateBody}>
+              This check queries the Indian passport record, so a passport issued by any
+              other country cannot be checked here. Use DigiLocker instead.
+            </p>
+          </div>
+          <label htmlFor="cf-passport-file" className="mt-1 text-[13px] font-medium text-ink">
+            File number
+            <span className="mt-0.5 block text-[13px] leading-5 font-normal text-ink-2">
+              The <b className="text-ink">&ldquo;File No.&rdquo;</b> printed on the last page of
+              your passport — 15 characters, two letters then digits. Not the passport
+              number on the front page.
             </span>
           </label>
           {/* UPPERCASED AS IT IS TYPED, not silently on submit.
@@ -1535,6 +1696,7 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
               day. Three groups of five read straight off the page, and the
               counter says how far along you are before you submit. */}
           <input
+            id="cf-passport-file"
             value={passportFileGrouped}
             onChange={(e) => {
               const bare = e.target.value
@@ -1544,7 +1706,7 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
               setPassportFile(bare);
               setPassportError("");
             }}
-            className="h-12 rounded-cf border border-rule bg-paper-2 px-4 font-mono text-lg tracking-widest text-ink placeholder:font-sans placeholder:text-base placeholder:tracking-normal placeholder:text-ink-3"
+            className={`${inputCls} font-mono text-[17px] tracking-[0.16em] md:text-[17px] placeholder:font-sans placeholder:text-base placeholder:tracking-normal`}
             placeholder="XX123 45678 90123"
             inputMode="text"
             autoCapitalize="characters"
@@ -1559,11 +1721,11 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
             <button
               type="button"
               onClick={() => setShowFileHint((v) => !v)}
-              className="text-[11px] text-blue underline underline-offset-2 hover:text-blue"
+              className="inline-flex min-h-11 items-center text-[13px] text-blue underline underline-offset-2"
             >
               {showFileHint ? "Hide" : "Where do I find it?"}
             </button>
-            <p className="text-right text-[11px] tabular-nums text-ink-3">
+            <p className="text-right text-[13px] tabular-nums text-ink-2">
               <span className={passportFileLength === 15 ? "text-blue" : ""}>
                 {passportFileLength}
               </span>
@@ -1571,27 +1733,30 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
             </p>
           </div>
           {showFileHint && <FileNumberDiagram />}
-          <label className="text-xs text-ink-2">Date of birth, as on the passport</label>
+          <label htmlFor="cf-passport-dob" className="mt-1 text-[13px] font-medium text-ink">
+            Date of birth, as on the passport
+          </label>
           <input
+            id="cf-passport-dob"
             value={passportDob}
             onChange={(e) => { setPassportDob(e.target.value); setPassportError(""); }}
-            className="h-12 rounded-cf border border-rule bg-paper-2 px-4 text-ink placeholder:text-ink-3"
+            className={inputCls}
             type="date"
             max={new Date().toISOString().slice(0, 10)}
           />
           {passportError && (
-            <p className="rounded-cf border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+            <p className={errorBox}>
               {passportError}
             </p>
           )}
           <Button
             type="submit"
             disabled={passportBusy}
-            className="h-auto min-h-12 w-full whitespace-normal rounded-cf bg-blue px-3 py-2 text-center text-base font-semibold leading-tight text-white shadow-[0_6px_24px_-6px_rgba(34,211,238,.55)] transition hover:bg-blue disabled:opacity-60"
+            className={btnPrimary}
           >
             {passportBusy ? "Checking…" : "Validate with my passport"}
           </Button>
-          <p className="text-[11px] leading-4 text-ink-3">
+          <p className="text-[13px] leading-5 text-ink-2">
             We check the name and date of birth against the passport record.
             You will still confirm your mobile number afterwards, which Indian
             regulations require us to hold.
@@ -1609,7 +1774,7 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
           {!passportError &&
             typeof status?.passport_attempts_remaining === "number" &&
             status.passport_attempts_remaining <= 2 && (
-              <p className="text-[11px] leading-4 text-amber-300/80">
+              <p className="text-[13px] leading-5 font-medium text-ink">
                 {status.passport_attempts_remaining === 0
                   ? "Daily verification limit reached."
                   : `${status.passport_attempts_remaining} check${
@@ -1620,13 +1785,13 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
           <button
             type="button"
             onClick={closePassport}
-            className="text-center text-sm text-ink-2 hover:text-ink"
+            className="inline-flex min-h-11 w-full items-center justify-center text-center text-sm text-ink-2 hover:text-ink"
           >
             ← Back to the other options
           </button>
         </form>
       ) : (
-      <div className="grid gap-3">
+      <div className="grid grid-cols-1 gap-3">
         {/* TWO ROUTES, TWO IDENTICAL ROWS.
             They were side-by-side panels, which read as clutter: different
             heights, different numbers of buttons, and the longer description
@@ -1639,18 +1804,18 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
             account": somebody without the thing being asked for reads the page
             as a dead end and leaves. 35 of 66 held accounts did exactly
             that. */}
-        <p className="text-sm text-ink-2">
-          Choose whichever you already have — we only need one.
+        <p className="text-[15px] leading-6 text-ink-2">
+          Choose whichever you already have. We only need one.
         </p>
 
         {/* ── DigiLocker ──────────────────────────────────────────────── */}
-        <div className="flex flex-col gap-3 rounded-cf border border-rule bg-paper-2 p-4 sm:flex-row sm:items-center">
+        <div className="cf-glass-inset flex flex-col gap-3 p-4 sm:flex-row sm:items-center">
           <div className="flex-1">
             <div className="flex items-center gap-2">
               <Landmark className="h-4 w-4 shrink-0 text-blue" />
               <p className="text-sm font-semibold text-ink">DigiLocker</p>
             </div>
-            <p className="mt-1 text-xs leading-5 text-ink-2">
+            <p className="mt-1 text-[13px] leading-5 text-ink-2">
               The Government of India&apos;s document service. Proves your name,
               address and contact number in one step.{" "}
               {/* A REAL CONTROL, not a hint. Creating an account happens inside
@@ -1667,7 +1832,7 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
           </div>
           <Button
             onClick={() => startVerification("signin")}
-            className="h-11 w-full shrink-0 rounded-cf bg-blue text-sm font-semibold text-white shadow-[0_6px_24px_-6px_rgba(34,211,238,.55)] transition hover:bg-blue disabled:opacity-60 sm:w-44"
+            className={`${btnPrimary} shrink-0 sm:w-44`}
           >
             Use DigiLocker
             <ArrowRight className="ml-2 h-4 w-4" />
@@ -1675,20 +1840,20 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
         </div>
 
         {/* ── Passport ────────────────────────────────────────────────── */}
-        <div className="flex flex-col gap-3 rounded-cf border border-rule bg-paper-2 p-4 sm:flex-row sm:items-center">
+        <div className="cf-glass-inset flex flex-col gap-3 p-4 sm:flex-row sm:items-center">
           <div className="flex-1">
             <div className="flex items-center gap-2">
               <BookUser className="h-4 w-4 shrink-0 text-blue" />
               <p className="text-sm font-semibold text-ink">Indian passport</p>
             </div>
-            <p className="mt-1 text-xs leading-5 text-ink-2">
+            <p className="mt-1 text-[13px] leading-5 text-ink-2">
               No DigiLocker account needed. Takes the 15-character
               &ldquo;File No.&rdquo; from the last page, and your date of birth.
             </p>
           </div>
           <Button
             onClick={() => setPassportOpen(true)}
-            className="h-11 w-full shrink-0 rounded-cf bg-blue text-sm font-semibold text-white shadow-[0_6px_24px_-6px_rgba(34,211,238,.55)] transition hover:bg-blue disabled:opacity-60 sm:w-44"
+            className={`${btnPrimary} shrink-0 sm:w-44`}
           >
             Use passport
             <ArrowRight className="ml-2 h-4 w-4" />
@@ -1697,7 +1862,7 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
       </div>
       )}
 
-      <p className="mt-5 text-xs text-ink-3">
+      <p className="mt-5 text-[13px] leading-5 text-ink-2">
         Sharing is consent-based and compliant with the Digital Personal Data Protection Act, 2023.
         See our <Link href="/privacy-policy" className="text-blue hover:underline">privacy policy</Link>.
       </p>

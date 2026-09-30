@@ -80,8 +80,8 @@ export default function RefundPolicyPage() {
 
         {/* Stated plainly and up front. A non-refundable term buried three
             sections down is the kind of thing that gets a charge disputed. */}
-        <div className="mt-8 rounded-cf border border-amber-400/20 bg-amber-400/[0.06] px-6 py-5">
-          <p className="text-base leading-7 text-amber-100/90">
+        <div className="mt-8 rounded-cf border border-rule bg-paper-2 border-l-2 border-l-blue px-6 py-5">
+          <p className="text-base leading-7 text-ink-2">
             <span className="font-semibold">In short:</span> money you add to your
             wallet is not refundable, because we issue a GST tax invoice and pay the
             tax the moment you recharge, and it is valid for one year from purchase.

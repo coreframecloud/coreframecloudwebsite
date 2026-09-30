@@ -88,7 +88,7 @@ function UserAvatar({ initials, accountNumber, onSignOut }: { initials: string; 
         {initials}
       </button>
       {dropdownOpen && (
-        <div className="absolute right-0 top-10 z-50 min-w-[220px] rounded-cf border border-rule bg-paper-2 py-1 shadow-xl">
+        <div className="absolute top-10 right-0 z-50 w-[220px] max-w-[calc(100vw-2rem)] rounded-cf border border-rule bg-paper py-1 shadow-xl">
           {/*
             Account number, front and centre. It is the first thing support asks
             for and the reference on every invoice, so it belongs where someone
@@ -101,7 +101,7 @@ function UserAvatar({ initials, accountNumber, onSignOut }: { initials: string; 
               <div className="cf-eyebrow">
                 Account number
               </div>
-              <div className="mt-0.5 font-mono text-sm text-ink select-all">
+              <div className="mt-0.5 font-mono text-sm break-all text-ink select-all">
                 {accountNumber}
               </div>
             </div>
@@ -268,7 +268,7 @@ export function SiteHeader() {
               {auth.user?.status === "pending_approval" ? (
                 <Link
                   href="/verify"
-                  className="text-sm font-semibold text-amber-300 transition hover:text-amber-200"
+                  className="text-sm font-semibold text-blue transition hover:text-blue-ink"
                   onClick={() => trackEvent("finish_verification_click", { location: "header_cta" })}
                 >
                   Complete verification

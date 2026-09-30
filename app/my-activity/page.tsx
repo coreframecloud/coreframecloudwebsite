@@ -96,18 +96,14 @@ function UsageCards({ wallet }: { wallet: WalletData | null }) {
           they run out it must not become a dead "0" — that reads as the
           product taking something away. It becomes a receipt: here is what you
           got for free, here is what it would have cost, carry on. */}
-      <div className={`rounded-cf border p-6 ${
-        trialSpent
-          ? "border-blue/20 bg-blue/[0.04]"
-          : "border-rule bg-paper-2"
-      }`}>
+      <div className={`cf-glass p-5 sm:p-6 ${trialSpent ? "border-l-2! border-l-blue!" : ""}`}>
         <div className="flex items-baseline justify-between">
-          <h2 className="cf-section-title uppercase text-ink-3">
+          <h2 className="cf-eyebrow">
             {trialSpent ? "Free trial" : "Free GPU minutes"}
           </h2>
           {mins > 0 && wallet.trial_expires_at && (
-            <span className="text-xs font-medium text-blue/80">
-              expires {formatDate(wallet.trial_expires_at)}
+            <span className="font-mono text-[11px] whitespace-nowrap text-ink-2">
+              Expires {formatDate(wallet.trial_expires_at)}
             </span>
           )}
         </div>
@@ -115,15 +111,15 @@ function UsageCards({ wallet }: { wallet: WalletData | null }) {
         {mins > 0 ? (
           <>
             <div className="mt-4 flex items-end gap-2">
-              <span className="text-5xl font-bold leading-none text-blue">{mins}</span>
-              <span className="pb-1 text-lg font-semibold leading-none text-blue/70">min</span>
+              <span className="font-display text-5xl leading-none font-bold tabular-nums text-blue">{mins}</span>
+              <span className="pb-1 text-lg leading-none font-semibold text-blue">min</span>
               <span className="pb-1.5 ml-1 text-sm font-medium text-ink-2">remaining</span>
             </div>
             {/* How much of the grant is left, so "120" means something without
                 remembering what it started at. */}
-            <div className="mt-4 h-2.5 w-full overflow-hidden rounded-full bg-paper-2">
+            <div className="mt-4 h-2.5 w-full overflow-hidden rounded-full bg-ink/10">
               <div
-                className="h-full rounded-full bg-blue/80"
+                className="h-full rounded-full bg-blue"
                 style={{ width: `${Math.max(2, Math.min(100, (mins / trialGrantMins) * 100))}%` }}
               />
             </div>
@@ -166,21 +162,21 @@ function UsageCards({ wallet }: { wallet: WalletData | null }) {
           "how much have I used", and the bar is a real meter: tinted ZONES
           behind showing the allowance split, a solid FILL in front showing
           consumption, and a tick where the free tier ends. */}
-      <div className="rounded-cf border border-rule bg-paper-2 p-6">
-        <div className="flex items-baseline justify-between">
-          <h2 className="cf-section-title uppercase text-ink-3">
+      <div className="cf-glass p-5 sm:p-6">
+        <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
+          <h2 className="cf-eyebrow">
             Storage
           </h2>
-          <span className="text-xs font-medium text-blue/80">
+          <span className="font-mono text-[11px] whitespace-nowrap text-ink-2">
             {wallet.storage_allowance_gb ?? freeTier} GB free, always
           </span>
         </div>
 
         <div className="mt-4 flex items-end gap-2">
-          <span className="text-4xl font-bold leading-none text-ink">
+          <span className="font-display text-4xl leading-none font-bold tabular-nums text-ink">
             {formatBytes(wallet.storage_used_bytes ?? 0)}
           </span>
-          <span className="pb-0.5 text-sm font-medium text-ink-2">used of {quotaGb} GB</span>
+          <span className="pb-0.5 text-sm font-medium whitespace-nowrap text-ink-2">used of {quotaGb} GB</span>
         </div>
 
         {/* THE STANDING DAILY CHARGE, ON SCREEN BEFORE IT HAS TAKEN ANYTHING.
@@ -189,18 +185,19 @@ function UsageCards({ wallet }: { wallet: WalletData | null }) {
             Shown whenever there is a charge, and not shown at all when there
             is nothing to say. */}
         {(wallet.storage_daily_charge_rupees ?? 0) > 0 && (
-          <div className="mt-4 rounded-cf border border-amber-400/25 bg-amber-400/[0.07] px-4 py-3">
-            <div className="flex items-baseline justify-between gap-3">
-              <span className="text-sm text-amber-100">
+          <div className="cf-glass-inset mt-4 border-l-2! border-l-blue! px-4 py-3">
+            <p className="mb-2 font-mono text-[11.5px] leading-none font-medium tracking-[0.2em] uppercase text-ink-2">Storage billing</p>
+            <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
+              <span className="text-sm text-ink">
                 <b>₹{(wallet.storage_daily_charge_rupees ?? 0).toFixed(2)} a day</b> for the{" "}
                 {(wallet.storage_billable_gb ?? 0).toFixed(1)} GB above your{" "}
                 {wallet.storage_allowance_gb ?? 50} GB
               </span>
-              <span className="whitespace-nowrap text-xs text-amber-200/70">
+              <span className="font-mono text-xs whitespace-nowrap tabular-nums text-ink-2">
                 ₹{(wallet.storage_month_to_date_rupees ?? 0).toFixed(2)} this month
               </span>
             </div>
-            <p className="mt-1.5 text-xs text-amber-200/60">
+            <p className="mt-2 text-xs leading-5 text-ink-2">
               Taken from your wallet each morning at ₹
               {wallet.storage_rate_rupees_per_tb_month ?? 1999}/TB/month. Delete what you
               do not need and it stops the same day — there is nothing to cancel.
@@ -211,11 +208,12 @@ function UsageCards({ wallet }: { wallet: WalletData | null }) {
         {/* An open storage bill. Says what is true and what is NOT true, because
             the natural fear on seeing this is that files are already gone. */}
         {wallet.storage_dunning_stage && wallet.storage_dunning_stage !== "current" && (
-          <div className="mt-3 rounded-cf border border-red-400/30 bg-red-500/10 px-4 py-3">
-            <p className="text-sm font-semibold text-red-200">
-              A storage charge could not be taken
+          <div className="cf-glass-inset mt-3 border-l-2! border-l-blue! px-4 py-3">
+            <p className="mb-2 font-mono text-[11.5px] leading-none font-medium tracking-[0.2em] uppercase text-ink-2">Payment failed</p>
+            <p className="text-sm font-semibold text-ink">
+              A storage charge could not be taken.
             </p>
-            <p className="mt-1 text-xs leading-relaxed text-red-200/75">
+            <p className="mt-1 text-xs leading-5 text-ink-2">
               {wallet.storage_dunning_stage === "read_only"
                 ? "Your storage is read-only for now. Every file is still there and still downloadable."
                 : wallet.storage_dunning_stage === "sessions_blocked"
@@ -226,25 +224,25 @@ function UsageCards({ wallet }: { wallet: WalletData | null }) {
           </div>
         )}
 
-        <div className="relative mt-4 h-3.5 w-full overflow-hidden rounded-full bg-paper-2">
+        <div className="relative mt-4 h-3.5 w-full overflow-hidden rounded-full bg-ink/10">
           {/* Zones: what the allowance is made of. Faint - this is the track. */}
           <div className="absolute inset-0 flex">
             <div className="h-full bg-blue/20" style={{ width: `${(freeTier / capGb) * 100}%` }} />
             <div
-              className={`h-full ${wallet.storage_paid_unlocked ? "bg-blue/20" : "bg-paper-2"}`}
+              className={`h-full ${wallet.storage_paid_unlocked ? "bg-blue/20" : "bg-transparent"}`}
               style={{ width: `${((capGb - freeTier) / capGb) * 100}%` }}
             />
           </div>
           {/* Where the free tier ends. Visible whether or not anything is used. */}
           <div
-            className="absolute top-0 h-full w-px bg-paper-2"
+            className="absolute top-0 h-full w-px bg-ink/25"
             style={{ left: `${(freeTier / capGb) * 100}%` }}
           />
           {/* Consumption. A minimum sliver so "a little" never looks like none. */}
           {usedFrac > 0 && (
             <div
               className={`absolute left-0 top-0 h-full rounded-full ${
-                usedFrac > 0.9 ? "bg-red-400" : usedFrac > 0.75 ? "bg-amber-400" : "bg-blue"
+                usedFrac > 0.9 ? "bg-destructive" : usedFrac > 0.75 ? "bg-blue-ink" : "bg-blue"
               }`}
               style={{ width: `${Math.max(1.5, usedFrac * 100)}%` }}
             />
@@ -252,7 +250,7 @@ function UsageCards({ wallet }: { wallet: WalletData | null }) {
         </div>
 
         {/* Scale, so the tick means something without hovering. */}
-        <div className="mt-1 flex text-[10px] text-ink-3">
+        <div className="mt-1 flex font-mono text-[10px] tabular-nums text-ink-3">
           <span style={{ width: `${(freeTier / capGb) * 100}%` }}>0</span>
           <span className="flex-1">{freeTier} GB</span>
           <span>{capGb} GB</span>
@@ -260,7 +258,7 @@ function UsageCards({ wallet }: { wallet: WalletData | null }) {
 
         <div className="mt-4 space-y-1.5 text-xs">
           <div className="flex items-center gap-2">
-            <span className="h-2 w-2 shrink-0 rounded-full bg-blue/70" />
+            <span className="h-2 w-2 shrink-0 rounded-full bg-blue" />
             <span className="text-ink-2">
               <b className="text-ink">{freeTier} GB free on us</b>
               {!wallet.storage_paid_unlocked && wallet.trial_storage_expires_at
@@ -271,7 +269,7 @@ function UsageCards({ wallet }: { wallet: WalletData | null }) {
           <div className="flex items-center gap-2">
             <span
               className={`h-2 w-2 shrink-0 rounded-full ${
-                wallet.storage_paid_unlocked ? "bg-blue/70" : "bg-paper-2"
+                wallet.storage_paid_unlocked ? "bg-blue" : "bg-ink/15"
               }`}
             />
             <span className={wallet.storage_paid_unlocked ? "text-ink-2" : "text-ink-2"}>
@@ -290,10 +288,10 @@ function UsageCards({ wallet }: { wallet: WalletData | null }) {
           </div>
         </div>
 
-        <div className="mt-3 flex items-start gap-2 rounded-cf border border-rule bg-paper-2 px-3 py-2.5">
-          <span className="mt-0.5 text-sm text-blue/70" aria-hidden="true">↻</span>
+        <div className="cf-glass-inset mt-3 flex items-start gap-2 px-3 py-2.5">
+          <span className="mt-0.5 text-sm text-blue" aria-hidden="true">↻</span>
           <p className="text-xs leading-5 text-ink-2">
-            <b className="text-ink-2">Your files stay put.</b> Everything on your drive is
+            <b className="text-ink">Your files stay put.</b> Everything on your drive is
             kept between sessions while your account is active. We do not clear it on a timer,
             and we will always tell you before anything changes.
           </p>
@@ -376,16 +374,16 @@ async function openInvoice(invoiceId: number) {
 
 function statusBadge(status: string) {
   const s = status.toLowerCase();
-  let cls = "inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ";
+  let cls = "inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium whitespace-nowrap capitalize ";
   // "paid" belongs here: a successful payment was rendering in the red
   // failure style, which is an alarming way to confirm someone's money
   // arrived. "created" is a top-up that never reached the gateway.
   if (s === "ended" || s === "completed" || s === "paid" || s === "captured") {
     cls += "bg-blue/10 text-blue border border-blue/20";
   } else if (s === "active" || s === "provisioning" || s === "created" || s === "pending") {
-    cls += "bg-amber-400/10 text-amber-300 border border-amber-400/20";
+    cls += "bg-paper-2 text-ink-2 border border-rule-strong";
   } else {
-    cls += "bg-red-400/10 text-red-300 border border-red-400/20";
+    cls += "bg-destructive/5 text-destructive border border-destructive/30";
   }
   return <span className={cls}>{status}</span>;
 }
@@ -479,17 +477,20 @@ export default function MyActivityPage() {
 
   if (!token) {
     return (
-      <main className="min-h-screen bg-paper-2 text-ink">
-        <div className="max-w-4xl mx-auto px-6 py-16 text-center">
-          <p className="cf-section-copy text-ink-2 mb-6">
-            Please sign in to view your activity.
-          </p>
-          <a
-            href="/login"
-            className="inline-flex items-center justify-center rounded-cf bg-blue px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-blue"
-          >
-            Sign in
-          </a>
+      <main className="relative min-h-screen text-ink">
+        <div className="cf-aurora" />
+        <div className="mx-auto max-w-lg px-4 py-16 sm:px-6">
+          <div className="cf-glass p-6 text-center sm:p-8">
+            <h1 className="font-display text-2xl leading-tight font-semibold text-ink">
+              Sign in to see your activity.
+            </h1>
+            <p className="mt-2 text-[15px] leading-6 text-ink-2">
+              Your wallet, sessions and invoices live behind your account.
+            </p>
+            <a href="/login" className="cf-btn-primary mt-6 w-full sm:w-auto">
+              Sign in
+            </a>
+          </div>
         </div>
       </main>
     );
@@ -497,13 +498,14 @@ export default function MyActivityPage() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-paper-2 text-ink">
-        <div className="max-w-4xl mx-auto px-6 py-16">
+      <main className="relative min-h-screen text-ink">
+        <div className="cf-aurora" />
+        <div className="mx-auto max-w-4xl px-4 py-16 sm:px-6">
           <div className="animate-pulse space-y-4">
-            <div className="h-8 w-48 rounded-cf bg-paper-2" />
-            <div className="h-4 w-64 rounded bg-paper-2" />
-            <div className="mt-8 h-32 rounded-cf bg-paper-2" />
-            <div className="h-48 rounded-cf bg-paper-2" />
+            <div className="h-8 w-48 rounded-cf bg-ink/10" />
+            <div className="h-4 w-64 rounded bg-ink/10" />
+            <div className="mt-8 h-32 rounded-glass bg-ink/5" />
+            <div className="h-48 rounded-glass bg-ink/5" />
           </div>
         </div>
       </main>
@@ -512,28 +514,32 @@ export default function MyActivityPage() {
 
   if (error) {
     return (
-      <main className="min-h-screen bg-paper-2 text-ink">
-        <div className="max-w-4xl mx-auto px-6 py-16 text-center">
-          <p className="text-red-300">{error}</p>
+      <main className="relative min-h-screen text-ink">
+        <div className="cf-aurora" />
+        <div className="mx-auto max-w-lg px-4 py-16 sm:px-6">
+          <p className="rounded-cf border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm break-words text-destructive">
+            {error}
+          </p>
         </div>
       </main>
     );
   }
 
   return (
-    <main className="min-h-screen bg-paper-2 text-ink">
-      <div className="max-w-4xl mx-auto px-6 py-16 space-y-10">
+    <main className="relative min-h-screen text-ink">
+      <div className="cf-aurora" />
+      <div className="mx-auto max-w-4xl space-y-10 px-4 py-12 sm:px-6 sm:py-16">
 
         {/* Header */}
         <div className="flex flex-wrap items-start justify-between gap-4">
-          <div>
-            <p className="cf-eyebrow text-blue text-xs font-semibold uppercase tracking-widest mb-2">
+          <div className="min-w-0">
+            <p className="cf-eyebrow mb-2">
               Account
             </p>
             <h1 className="cf-section-title">
-              My Activity
+              My activity.
               {user?.full_name && (
-                <span className="text-ink-3 font-normal"> — {user.full_name}</span>
+                <span className="font-normal break-words text-ink-3"> — {user.full_name}</span>
               )}
             </h1>
           </div>
@@ -543,7 +549,7 @@ export default function MyActivityPage() {
               disappear once they have used it. */}
           <Link
             href="/download"
-            className="inline-flex shrink-0 items-center gap-2 rounded-cf border border-blue/30 bg-blue/10 px-4 py-2.5 text-sm font-semibold text-blue transition hover:bg-blue/20 hover:text-blue"
+            className="cf-btn-secondary w-full gap-2 sm:w-auto"
           >
             <svg viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4" aria-hidden="true">
               <path d="M10 2a1 1 0 0 1 1 1v8.586l2.293-2.293a1 1 0 1 1 1.414 1.414l-4 4a1 1 0 0 1-1.414 0l-4-4a1 1 0 1 1 1.414-1.414L9 11.586V3a1 1 0 0 1 1-1Z" />
@@ -557,17 +563,17 @@ export default function MyActivityPage() {
             loses a project cares about nothing else on this page. Named the
             drive explicitly after a customer ended a session unsure which
             location survived — "your NAS drive" is not an instruction, "N:" is. */}
-        <section className="rounded-cf border border-amber-400/25 bg-amber-400/[0.06] p-6">
+        <section className="cf-glass border-l-2! border-l-blue! p-5 sm:p-6">
           <div className="flex items-start gap-3">
             <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"
-                 className="mt-0.5 h-5 w-5 shrink-0 text-amber-300">
+                 className="mt-0.5 h-5 w-5 shrink-0 text-blue">
               <path fillRule="evenodd" clipRule="evenodd" d="M10 1.5a1 1 0 0 1 .87.5l8 14A1 1 0 0 1 18 17.5H2a1 1 0 0 1-.87-1.5l8-14a1 1 0 0 1 .87-.5Zm0 5a.9.9 0 0 0-.9.98l.35 3.87a.55.55 0 0 0 1.1 0l.35-3.87A.9.9 0 0 0 10 6.5Zm0 7a1 1 0 1 0 0 2 1 1 0 0 0 0-2Z" />
             </svg>
             <div className="min-w-0">
-              <h2 className="cf-section-title">Where your work is saved</h2>
-              <p className="mt-2 leading-7 text-ink-2">
+              <h2 className="cf-section-title">Where your work is saved.</h2>
+              <p className="mt-2 text-[15px] leading-7 text-ink-2">
                 Inside a session, save everything to{" "}
-                <span className="whitespace-nowrap rounded-md border border-amber-400/30 bg-amber-400/10 px-1.5 py-0.5 font-mono text-sm font-semibold text-amber-200">
+                <span className="rounded-cf border border-rule-strong bg-paper-2 px-1.5 py-0.5 font-mono text-sm font-semibold whitespace-nowrap text-ink">
                   N:
                 </span>{" "}
                 — the drive labelled <span className="font-semibold text-ink">Coreframe Datalake</span>.
@@ -575,23 +581,23 @@ export default function MyActivityPage() {
                 place that survives the session.
               </p>
 
-              <div className="mt-5 grid gap-3 sm:grid-cols-3">
-                <div className="rounded-cf border border-rule bg-paper-2 p-4">
-                  <p className="text-xs font-semibold uppercase tracking-wider text-blue/80">Kept</p>
+              <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-3">
+                <div className="cf-glass-inset p-4">
+                  <p className="font-mono text-[11.5px] leading-none font-medium tracking-[0.2em] uppercase text-blue">Kept</p>
                   <p className="mt-2 text-sm leading-6 text-ink-2">
                     Anything under <span className="font-mono text-ink">N:\</span>. Waiting for you
                     next session, and downloadable from here any time.
                   </p>
                 </div>
-                <div className="rounded-cf border border-rule bg-paper-2 p-4">
-                  <p className="text-xs font-semibold uppercase tracking-wider text-rose-300/80">Erased</p>
+                <div className="cf-glass-inset p-4">
+                  <p className="font-mono text-[11.5px] leading-none font-medium tracking-[0.2em] uppercase text-destructive">Erased</p>
                   <p className="mt-2 text-sm leading-6 text-ink-2">
                     Desktop, Documents, Downloads, <span className="font-mono text-ink">C:\</span>,
                     and anything you installed. Wiped when the session ends.
                   </p>
                 </div>
-                <div className="rounded-cf border border-rule bg-paper-2 p-4">
-                  <p className="text-xs font-semibold uppercase tracking-wider text-blue/80">Linked assets</p>
+                <div className="cf-glass-inset p-4">
+                  <p className="font-mono text-[11.5px] leading-none font-medium tracking-[0.2em] uppercase text-blue">Linked assets</p>
                   <p className="mt-2 text-sm leading-6 text-ink-2">
                     Keep the <span className="font-semibold text-ink">whole project folder</span> on
                     N:, not just the scene file — D5, Twinmotion and 3ds Max break if textures move.
@@ -606,8 +612,7 @@ export default function MyActivityPage() {
               </p>
 
               <div className="mt-5 flex flex-wrap gap-3">
-                <a href="/how-to-use#saving-your-work"
-                   className="inline-flex items-center gap-1.5 rounded-cf border border-rule bg-paper-2 px-3 py-2 text-sm font-medium text-ink transition hover:bg-paper-2 hover:text-ink">
+                <a href="/how-to-use#saving-your-work" className="cf-btn-secondary w-full sm:w-auto">
                   Read the full guide
                 </a>
               </div>
@@ -619,29 +624,26 @@ export default function MyActivityPage() {
         {user?.role === "org_admin" ? (
           /* B2B Org admin: balance card + link to org portal */
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <div className="rounded-cf border border-blue/20 bg-blue/5 p-6">
-              <h2 className="cf-section-title text-blue/60 uppercase mb-4">
-                Org Wallet Balance
+            <div className="cf-glass border-l-2! border-l-blue! p-5 sm:p-6">
+              <h2 className="cf-eyebrow mb-4">
+                Org wallet balance
               </h2>
-              <p className="text-3xl font-bold text-blue">
+              <p className="font-display text-3xl font-bold tabular-nums text-blue">
                 ₹{wallet ? wallet.wallet_balance_rupees.toFixed(2) : "0.00"}
               </p>
-              <p className="text-xs text-ink-3 mt-1">Shared across your organization</p>
+              <p className="mt-1 text-xs text-ink-2">Shared across your organisation</p>
             </div>
-            <div className="rounded-cf border border-rule bg-paper-2 p-6 flex flex-col justify-between">
+            <div className="cf-glass flex flex-col justify-between p-5 sm:p-6">
               <div>
-                <h2 className="cf-section-title text-ink-3 uppercase mb-2">
-                  Manage Team &amp; Wallet
+                <h2 className="cf-eyebrow mb-2">
+                  Team and wallet
                 </h2>
-                <p className="text-sm text-ink-2">
-                  Top up your org wallet, invite team members, and view usage from the Org Portal.
+                <p className="text-sm leading-6 text-ink-2">
+                  Top up the org wallet, invite people and read usage in the org portal.
                 </p>
               </div>
-              <a
-                href="/org-admin"
-                className="mt-6 inline-flex items-center justify-center rounded-cf bg-blue text-white px-5 py-2.5 text-sm font-semibold hover:bg-blue transition"
-              >
-                Go to Org Portal →
+              <a href="/org-admin" className="cf-btn-primary mt-6 w-full sm:w-auto">
+                Go to org portal
               </a>
             </div>
           </div>
@@ -653,11 +655,11 @@ export default function MyActivityPage() {
              capability, which is the whole reason the role was removed. */
           /* B2C retail customer: balance + recharge coming soon */
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <div className="rounded-cf border border-blue/20 bg-blue/5 p-6">
-              <h2 className="cf-section-title text-blue/60 uppercase mb-4">
-                Wallet Balance
+            <div className="cf-glass border-l-2! border-l-blue! p-5 sm:p-6">
+              <h2 className="cf-eyebrow mb-4">
+                Wallet balance
               </h2>
-              <p className="text-3xl font-bold text-blue">
+              <p className="font-display text-3xl font-bold tabular-nums text-blue">
                 ₹{wallet ? wallet.wallet_balance_rupees.toFixed(2) : "0.00"}
               </p>
               {/*
@@ -672,13 +674,13 @@ export default function MyActivityPage() {
 
                 No hardcoded fallback: an em-dash beats a wrong price.
               */}
-              <p className="text-xs text-ink-3 mt-1">
+              <p className="mt-1 text-xs text-ink-2">
                 {wallet?.gpu_rate_from_rupees != null
                   ? `GPU time from ₹${Math.round(wallet.gpu_rate_from_rupees)}/hr · GST included`
                   : "— rates unavailable"}
               </p>
               {wallet?.next_expiry && (
-                <p className="text-xs text-amber-300/80 mt-2">
+                <p className="mt-2 text-xs tabular-nums text-ink-2">
                   ₹{Math.round(wallet.next_expiry.amount_rupees).toLocaleString("en-IN")} expires on{" "}
                   {new Date(wallet.next_expiry.expires_at).toLocaleDateString("en-IN", {
                     day: "numeric", month: "short", year: "numeric",
@@ -686,10 +688,10 @@ export default function MyActivityPage() {
                 </p>
               )}
             </div>
-            <div id="add-funds" className="rounded-cf border border-rule bg-paper-2 p-6 flex flex-col justify-between">
+            <div id="add-funds" className="cf-glass flex flex-col justify-between p-5 sm:p-6">
               <div>
-                <h2 className="cf-section-title text-ink-3 uppercase mb-2">
-                  Add Funds
+                <h2 className="cf-eyebrow mb-2">
+                  Add funds
                 </h2>
                 {/* This card used to say "online recharge is coming soon" and
                     offer a mailto link. Nothing was gating it — the web wallet
@@ -697,29 +699,29 @@ export default function MyActivityPage() {
                     and the Connect client already had. The dialog asks the
                     server whether recharge is configured and falls back to the
                     contact route only if it says no. */}
-                <p className="text-sm text-ink-2">
-                  Top up instantly by card, UPI or netbanking. A GST invoice is issued automatically.
+                <p className="text-sm leading-6 text-ink-2">
+                  Top up by card, UPI or netbanking. A GST invoice is issued automatically.
                 </p>
               </div>
               <button
                 type="button"
                 onClick={() => setTopUpOpen(true)}
-                className="mt-6 inline-flex items-center justify-center rounded-cf bg-blue text-white px-5 py-2.5 text-sm font-semibold hover:bg-blue transition"
+                className="cf-btn-primary mt-6 w-full sm:w-auto"
               >
-                Add Funds →
+                Add funds
               </button>
             </div>
           </div>
         ) : (
           /* B2B engineer: balance only, managed by org admin */
-          <div className="rounded-cf border border-rule bg-paper-2 p-6">
-            <h2 className="cf-section-title text-ink-3 uppercase mb-4">
-              Wallet Balance
+          <div className="cf-glass p-5 sm:p-6">
+            <h2 className="cf-eyebrow mb-4">
+              Wallet balance
             </h2>
-            <p className="text-3xl font-bold text-blue">
+            <p className="font-display text-3xl font-bold tabular-nums text-blue">
               ₹{wallet ? wallet.wallet_balance_rupees.toFixed(2) : "0.00"}
             </p>
-            <p className="text-xs text-ink-2 mt-1">Managed by your organization admin</p>
+            <p className="mt-1 text-xs text-ink-2">Managed by your org admin</p>
           </div>
         )}
 
@@ -729,44 +731,44 @@ export default function MyActivityPage() {
         <UsageCards wallet={wallet} />
 
         {/* Recent Sessions */}
-        <div className="rounded-cf border border-rule bg-paper-2 overflow-hidden">
-          <div className="px-6 py-4 border-b border-rule">
-            <h2 className="cf-section-title">Recent Sessions</h2>
+        <div className="cf-glass overflow-hidden">
+          <div className="border-b border-rule px-4 py-4 sm:px-6">
+            <h2 className="cf-section-title">Recent sessions.</h2>
           </div>
           {sessions.length === 0 ? (
-            <p className="px-6 py-8 text-sm text-ink-3">No sessions yet.</p>
+            <p className="px-4 py-8 text-sm text-ink-3 sm:px-6">No sessions yet.</p>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full text-sm">
+              <table className="w-full min-w-[360px] text-sm">
                 <thead>
                   <tr className="border-b border-rule">
-                    <th className="px-6 py-3 text-left text-xs font-medium text-ink-3 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-left font-mono text-[11px] leading-none font-medium tracking-[0.14em] whitespace-nowrap text-ink-3 uppercase sm:px-6">
                       Date
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-ink-3 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-left font-mono text-[11px] leading-none font-medium tracking-[0.14em] whitespace-nowrap text-ink-3 uppercase sm:px-6">
                       Duration
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-ink-3 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-left font-mono text-[11px] leading-none font-medium tracking-[0.14em] whitespace-nowrap text-ink-3 uppercase sm:px-6">
                       Cost
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-ink-3 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-left font-mono text-[11px] leading-none font-medium tracking-[0.14em] whitespace-nowrap text-ink-3 uppercase sm:px-6">
                       Status
                     </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-rule">
                   {sessions.map((s) => (
-                    <tr key={s.id} className="hover:bg-paper-2 transition">
-                      <td className="px-6 py-3.5 text-ink">
+                    <tr key={s.id} className="transition hover:bg-paper-2">
+                      <td className="px-4 py-3.5 whitespace-nowrap text-ink sm:px-6">
                         {formatDate(s.login_time)}
                       </td>
-                      <td className="px-6 py-3.5 text-ink">
+                      <td className="px-4 py-3.5 whitespace-nowrap tabular-nums text-ink sm:px-6">
                         {formatDuration(s.billable_minutes)}
                       </td>
-                      <td className="px-6 py-3.5 text-ink">
+                      <td className="px-4 py-3.5 whitespace-nowrap tabular-nums text-ink sm:px-6">
                         ₹{s.billed_amount_rupees.toFixed(2)}
                       </td>
-                      <td className="px-6 py-3.5">
+                      <td className="px-4 py-3.5 sm:px-6">
                         {statusBadge(s.status)}
                       </td>
                     </tr>
@@ -778,44 +780,44 @@ export default function MyActivityPage() {
         </div>
 
         {/* Payment History */}
-        <div className="rounded-cf border border-rule bg-paper-2 overflow-hidden">
-          <div className="px-6 py-4 border-b border-rule">
-            <h2 className="cf-section-title">Payment History</h2>
+        <div className="cf-glass overflow-hidden">
+          <div className="border-b border-rule px-4 py-4 sm:px-6">
+            <h2 className="cf-section-title">Payment history.</h2>
           </div>
           {payments.length === 0 ? (
-            <p className="px-6 py-8 text-sm text-ink-3">No payments yet.</p>
+            <p className="px-4 py-8 text-sm text-ink-3 sm:px-6">No payments yet.</p>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full text-sm">
+              <table className="w-full min-w-[380px] text-sm">
                 <thead>
                   <tr className="border-b border-rule">
-                    <th className="px-6 py-3 text-left text-xs font-medium text-ink-3 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-left font-mono text-[11px] leading-none font-medium tracking-[0.14em] whitespace-nowrap text-ink-3 uppercase sm:px-6">
                       Date
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-ink-3 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-left font-mono text-[11px] leading-none font-medium tracking-[0.14em] whitespace-nowrap text-ink-3 uppercase sm:px-6">
                       Amount
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-ink-3 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-left font-mono text-[11px] leading-none font-medium tracking-[0.14em] whitespace-nowrap text-ink-3 uppercase sm:px-6">
                       Status
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-ink-3 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-left font-mono text-[11px] leading-none font-medium tracking-[0.14em] whitespace-nowrap text-ink-3 uppercase sm:px-6">
                       Invoice
                     </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-rule">
                   {payments.map((p) => (
-                    <tr key={p.id} className="hover:bg-paper-2 transition">
-                      <td className="px-6 py-3.5 text-ink">
+                    <tr key={p.id} className="transition hover:bg-paper-2">
+                      <td className="px-4 py-3.5 whitespace-nowrap text-ink sm:px-6">
                         {formatDate(p.paid_at ?? p.created_at)}
                       </td>
-                      <td className="px-6 py-3.5 text-ink">
+                      <td className="px-4 py-3.5 whitespace-nowrap tabular-nums text-ink sm:px-6">
                         ₹{p.amount_rupees.toFixed(2)}
                       </td>
-                      <td className="px-6 py-3.5">
+                      <td className="px-4 py-3.5 sm:px-6">
                         {statusBadge(p.status)}
                       </td>
-                      <td className="px-6 py-3.5">
+                      <td className="px-4 py-3.5 sm:px-6">
                         {/* Our GST invoice. It cannot be a plain href: the PDF
                             endpoint is authenticated, so it is fetched with the
                             bearer token and opened as a blob. The old cell read
@@ -827,7 +829,7 @@ export default function MyActivityPage() {
                             type="button"
                             onClick={() => openInvoice(p.invoice_id!)}
                             title={p.invoice_number ?? undefined}
-                            className="text-blue hover:text-blue transition text-xs font-medium"
+                            className="text-xs font-medium break-all text-blue transition hover:text-blue-ink"
                           >
                             {p.invoice_number ?? "Invoice"} ↗
                           </button>
@@ -836,12 +838,12 @@ export default function MyActivityPage() {
                             href={p.invoice_short_url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-blue hover:text-blue transition text-xs font-medium"
+                            className="text-xs font-medium text-blue transition hover:text-blue-ink"
                           >
                             Download ↗
                           </a>
                         ) : (
-                          <span className="text-ink-3 text-xs">—</span>
+                          <span className="text-xs text-ink-3">—</span>
                         )}
                       </td>
                     </tr>

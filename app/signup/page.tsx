@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { BackgroundGlow } from "@/components/home/background-glow";
 import { WhyWeVerify } from "@/components/auth/why-we-verify";
 import { NODE } from "@/lib/node-spec";
 import { adhocRateHourly, getRateCard, getTrialTerms } from "@/lib/rate-card";
@@ -67,7 +66,7 @@ export default async function SignupPage() {
 
   return (
     <div className="relative min-h-screen text-ink">
-      <BackgroundGlow />
+      <div className="cf-aurora" />
       <main className="relative flex min-h-screen justify-center px-5 py-10 sm:items-center sm:py-16">
         <div className="w-full max-w-[440px]">
           {/* The offer used to be a box here, above the card. It read well and

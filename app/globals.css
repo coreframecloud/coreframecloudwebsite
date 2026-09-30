@@ -24,7 +24,10 @@
   --color-paper-2: #faf9f7;
   --color-ink: #101113;
   --color-ink-2: #5b6068;
-  --color-ink-3: #8a9099;
+  --color-ink-3: #6b7079; /* 4.98:1 on paper, 4.73:1 on the off-white card. Was #8a9099 = 3.22:1, which is
+     under the 4.5 floor for small text -- and this is the colour of every
+     eyebrow (11.5px, uppercase, letterspaced) and every footer column
+     heading on the site, i.e. exactly the sizes that need the contrast most. */
   --color-rule: #1011131a;
   --color-rule-strong: #10111333;
   --color-blue: #2f6be0;
@@ -37,13 +40,18 @@
   --color-term-ink: #d8dee9;
   --color-term-dim: #7c8798;
   --color-term-key: #6fa0ff;
-  --color-term-comment: #5e6b7e;
+  --color-term-comment: #7a8799; /* 5.33:1 on the terminal ground. Was #5e6b7e
+     = 3.59:1 -- a comment is still text, and these carry the labels that
+     explain what the spec block is showing. */
 
   --font-display: var(--font-source-serif), Georgia, "Times New Roman", serif;
   --font-sans: var(--font-inter), -apple-system, "Segoe UI", sans-serif;
   --font-mono: var(--font-plex-mono), ui-monospace, Menlo, monospace;
 
   --radius-cf: 3px;
+  /* Large glass surfaces only. Controls stay at 3px: a 14px input inside a
+     14px card reads as a toy, and the editorial type needs the crisp edge. */
+  --radius-glass: 14px;
 
   /* ── shadcn's semantic names, mapped onto the palette above ───────────
      components/ui/* (button, input, card) are stock shadcn and address
@@ -116,361 +124,477 @@ body {
    Two widths and nothing else. `cf-col` is a reading measure — prose must
    never run wider than this. `cf-wide` is for the blocks and grids that
    need the room. */
-.cf-col {
-  @apply mx-auto w-full max-w-[680px];
-}
+/* ─────────────────────────────────────────────────────────────────────────
+   EVERYTHING BELOW IS IN @layer components, AND THAT IS LOAD-BEARING.
 
-.cf-wide {
-  @apply mx-auto w-full max-w-[960px];
-}
+   It used to be unlayered. Tailwind v4 puts its utilities in
+   `@layer utilities`, and an UNLAYERED rule beats a layered one whatever the
+   specificity -- so every one of these classes silently won against any
+   utility written beside it:
 
-.cf-section {
-  @apply py-[clamp(48px,7vw,86px)];
-}
+     className="cf-eyebrow text-ink-2"   rendered at text-ink-3
+     className="cf-glass-inset border-l-2 border-l-blue"   drew no blue edge
+     className="cf-btn-secondary hidden"  would not hide
 
-.cf-rule {
-  @apply mx-auto w-full max-w-[960px] border-t border-rule;
-}
+   That is not a style preference, it is a trap: the class you write last and
+   most specifically is the one that does nothing, with no warning. Three
+   separate passes over this codebase hit it independently and each worked
+   around it -- one with `!` suffixes, one by spelling the eyebrow out in
+   utilities, one by conditionally rendering instead of hiding. Those
+   workarounds are the cost of leaving this unlayered.
 
-/* ── Type ───────────────────────────────────────────────────────────────
-   Display sizes are clamped rather than stepped through breakpoints, so a
-   heading is never stranded at an awkward size on a tablet. */
-.cf-display {
-  @apply font-display text-[clamp(36px,6.4vw,62px)] leading-[1.03] font-bold tracking-[-0.025em] text-ink;
-  text-wrap: balance;
-}
+   Layered, the cascade behaves the way anyone reading the JSX expects:
+   a utility beside a cf- class wins.
+   ───────────────────────────────────────────────────────────────────────── */
+@layer components {
 
-.cf-section-title {
-  @apply font-display text-[clamp(27px,3.6vw,38px)] leading-[1.12] font-semibold tracking-[-0.02em] text-ink;
-  text-wrap: balance;
-}
-
-.cf-section-copy {
-  @apply text-base leading-[1.62] text-ink-2;
-}
-
-.cf-lead {
-  @apply text-[clamp(17px,2.1vw,20px)] leading-[1.55] text-ink-2;
-}
-
-/* The mono label above a section. Every section has exactly one. */
-.cf-eyebrow {
-  @apply font-mono text-[11.5px] leading-none font-medium tracking-[0.2em] text-ink-3 uppercase;
-}
-
-/* ── Buttons ────────────────────────────────────────────────────────────
-   Solid blue for the one action that matters on a page, hairline outline
-   for everything else. Mono and letterspaced so they read as controls
-   rather than as more prose. */
-.cf-btn-primary {
-  @apply inline-flex min-h-11 items-center justify-center rounded-cf bg-blue px-5 py-[15px] font-mono text-[12.5px] leading-none font-semibold tracking-[0.09em] text-white uppercase transition-colors;
-}
-
-.cf-btn-primary:hover {
-  @apply bg-blue-ink;
-}
-
-.cf-btn-secondary {
-  @apply inline-flex min-h-11 items-center justify-center rounded-cf border border-rule bg-transparent px-5 py-[15px] font-mono text-[12.5px] leading-none font-semibold tracking-[0.09em] text-ink uppercase transition-colors;
-}
-
-.cf-btn-secondary:hover {
-  @apply border-rule-strong bg-paper-2;
-}
-
-.cf-btn-primary:focus-visible,
-.cf-btn-secondary:focus-visible {
-  @apply outline-2 outline-offset-[3px] outline-ink;
-}
-
-/* ── The fact block ─────────────────────────────────────────────────────
-   Specs, rate cards and comparisons live here and nowhere else. Scrolls on
-   a narrow screen rather than wrapping, because a wrapped spec table stops
-   being readable as a table. */
-.cf-term {
-  @apply overflow-x-auto rounded-cf bg-term px-7 py-[26px] font-mono text-sm leading-[1.85] font-medium text-term-ink;
-}
-
-.cf-term pre {
-  @apply m-0 whitespace-pre;
-}
-
-.cf-term .k { @apply text-term-dim; }
-.cf-term .v { @apply text-white; }
-.cf-term .b { @apply text-term-key; }
-.cf-term .c { @apply text-term-comment; }
-
-/* ── Cards ──────────────────────────────────────────────────────────────
-   A rule on top, not a box. Boxes stack into visual noise; a rule keeps the
-   page reading as one sheet of paper. */
-.cf-card {
-  @apply min-w-0 border-t-2 border-ink pt-5;
-}
-
-.cf-card-label {
-  @apply mb-3 font-mono text-[11px] leading-none font-medium tracking-[0.16em] text-blue uppercase;
-}
-
-/* A quiet call-out, for the one caveat a section cannot do without. */
-.cf-note {
-  @apply rounded-r-cf border-l-[3px] border-blue bg-blue-soft px-6 py-[22px];
-}
-
-/* ── Logo motion (unchanged) ───────────────────────────────────────────── */
-@keyframes cfPulse {
-  0%, 100% { transform: scale(1); opacity: 0.88; }
-  50% { transform: scale(1.04); opacity: 1; }
-}
-
-@keyframes cfCore {
-  0%, 100% { opacity: 0.92; }
-  50% { opacity: 1; }
-}
-
-@keyframes cfFloat {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-1px); }
-}
-
-.cf-logo-pulse { transform-origin: center; animation: cfPulse 3.6s ease-in-out infinite; }
-.cf-logo-core  { transform-origin: center; animation: cfCore 3s ease-in-out infinite; }
-.cf-logo-float { transform-origin: center; animation: cfFloat 4s ease-in-out infinite; }
-
-@media (prefers-reduced-motion: reduce) {
-  .cf-logo-pulse,
-  .cf-logo-core,
-  .cf-logo-float {
-    animation: none !important;
+  .cf-col {
+    @apply mx-auto w-full max-w-[680px];
   }
-}
 
-/* ── "Who this is built for" marquee ────────────────────────────────────
-   A slow horizontal drift rather than a static grid, because ten postures
-   in a grid reads as a wall of text nobody finishes. Paused on hover so a
-   line can actually be read, and reduced to a wrapped static list under
-   prefers-reduced-motion — a 64s loop is exactly the kind of movement that
-   triggers vestibular discomfort. */
-.cf-strip {
-  @apply relative overflow-hidden py-1.5;
-}
-
-.cf-strip::before,
-.cf-strip::after {
-  content: "";
-  @apply pointer-events-none absolute inset-y-0 z-2 w-[70px];
-}
-
-.cf-strip::before {
-  left: 0;
-  background: linear-gradient(90deg, var(--color-paper), transparent);
-}
-
-.cf-strip::after {
-  right: 0;
-  background: linear-gradient(270deg, var(--color-paper), transparent);
-}
-
-.cf-track {
-  @apply flex w-max gap-5;
-  animation: cfSlide 64s linear infinite;
-}
-
-.cf-strip:hover .cf-track {
-  animation-play-state: paused;
-}
-
-@keyframes cfSlide {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
-}
-
-.cf-chip {
-  /* WIDTH IS VIEWPORT-RELATIVE so the number of visible tiles stays the same
-     on any monitor. At a fixed 290px a 1440 window showed about 4½ tiles and
-     a 4K span showed twelve tiny ones — the wider the screen, the weaker the
-     section got, which is backwards.
-
-     max(330px, 21vw) holds roughly 4½ across 1440, 2560 and 3840, and the
-     floor keeps it readable on a laptop. */
-  width: max(330px, 21vw);
-  @apply flex-none rounded-cf border border-rule bg-paper px-7 py-6;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .cf-track {
-    animation: none;
-    @apply w-auto flex-wrap justify-center;
+  .cf-wide {
+    @apply mx-auto w-full max-w-[960px];
   }
+
+  .cf-section {
+    @apply py-[clamp(48px,7vw,86px)];
+  }
+
+  .cf-rule {
+    @apply mx-auto w-full max-w-[960px] border-t border-rule;
+  }
+
+  /* ── Type ───────────────────────────────────────────────────────────────
+     Display sizes are clamped rather than stepped through breakpoints, so a
+     heading is never stranded at an awkward size on a tablet. */
+  .cf-display {
+    @apply font-display text-[clamp(36px,6.4vw,62px)] leading-[1.03] font-bold tracking-[-0.025em] text-ink;
+    text-wrap: balance;
+  }
+
+  .cf-section-title {
+    @apply font-display text-[clamp(27px,3.6vw,38px)] leading-[1.12] font-semibold tracking-[-0.02em] text-ink;
+    text-wrap: balance;
+  }
+
+  .cf-section-copy {
+    @apply text-base leading-[1.62] text-ink-2;
+  }
+
+  .cf-lead {
+    @apply text-[clamp(17px,2.1vw,20px)] leading-[1.55] text-ink-2;
+  }
+
+  /* The mono label above a section. Every section has exactly one. */
+  .cf-eyebrow {
+    @apply font-mono text-[11.5px] leading-none font-medium tracking-[0.2em] text-ink-3 uppercase;
+  }
+
+  /* ── Buttons ────────────────────────────────────────────────────────────
+     Solid blue for the one action that matters on a page, hairline outline
+     for everything else. Mono and letterspaced so they read as controls
+     rather than as more prose. */
+  .cf-btn-primary {
+    @apply inline-flex min-h-11 items-center justify-center rounded-cf bg-blue px-5 py-[15px] font-mono text-[12.5px] leading-none font-semibold tracking-[0.09em] text-white uppercase transition-colors;
+  }
+
+  .cf-btn-primary:hover {
+    @apply bg-blue-ink;
+  }
+
+  .cf-btn-secondary {
+    @apply inline-flex min-h-11 items-center justify-center rounded-cf border border-rule bg-transparent px-5 py-[15px] font-mono text-[12.5px] leading-none font-semibold tracking-[0.09em] text-ink uppercase transition-colors;
+  }
+
+  .cf-btn-secondary:hover {
+    @apply border-rule-strong bg-paper-2;
+  }
+
+  .cf-btn-primary:focus-visible,
+  .cf-btn-secondary:focus-visible {
+    @apply outline-2 outline-offset-[3px] outline-ink;
+  }
+
+  /* ── The fact block ─────────────────────────────────────────────────────
+     Specs, rate cards and comparisons live here and nowhere else. Scrolls on
+     a narrow screen rather than wrapping, because a wrapped spec table stops
+     being readable as a table. */
+  .cf-term {
+    @apply overflow-x-auto rounded-cf bg-term px-7 py-[26px] font-mono text-sm leading-[1.85] font-medium text-term-ink;
+  }
+
+  .cf-term pre {
+    @apply m-0 whitespace-pre;
+  }
+
+  .cf-term .k { @apply text-term-dim; }
+  .cf-term .v { @apply text-white; }
+  .cf-term .b { @apply text-term-key; }
+  .cf-term .c { @apply text-term-comment; }
+
+  /* ── Cards ──────────────────────────────────────────────────────────────
+     A rule on top, not a box. Boxes stack into visual noise; a rule keeps the
+     page reading as one sheet of paper. */
+  .cf-card {
+    @apply min-w-0 border-t-2 border-ink pt-5;
+  }
+
+  .cf-card-label {
+    @apply mb-3 font-mono text-[11px] leading-none font-medium tracking-[0.16em] text-blue uppercase;
+  }
+
+  /* A quiet call-out, for the one caveat a section cannot do without. */
+  .cf-note {
+    @apply rounded-r-cf border-l-[3px] border-blue bg-blue-soft px-6 py-[22px];
+  }
+
+  /* ── Logo motion (unchanged) ───────────────────────────────────────────── */
+  @keyframes cfPulse {
+    0%, 100% { transform: scale(1); opacity: 0.88; }
+    50% { transform: scale(1.04); opacity: 1; }
+  }
+
+  @keyframes cfCore {
+    0%, 100% { opacity: 0.92; }
+    50% { opacity: 1; }
+  }
+
+  @keyframes cfFloat {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-1px); }
+  }
+
+  .cf-logo-pulse { transform-origin: center; animation: cfPulse 3.6s ease-in-out infinite; }
+  .cf-logo-core  { transform-origin: center; animation: cfCore 3s ease-in-out infinite; }
+  .cf-logo-float { transform-origin: center; animation: cfFloat 4s ease-in-out infinite; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cf-logo-pulse,
+    .cf-logo-core,
+    .cf-logo-float {
+      animation: none !important;
+    }
+  }
+
+  /* ── "Who this is built for" marquee ────────────────────────────────────
+     A slow horizontal drift rather than a static grid, because ten postures
+     in a grid reads as a wall of text nobody finishes. Paused on hover so a
+     line can actually be read, and reduced to a wrapped static list under
+     prefers-reduced-motion — a 64s loop is exactly the kind of movement that
+     triggers vestibular discomfort. */
+  .cf-strip {
+    @apply relative overflow-hidden py-1.5;
+  }
+
   .cf-strip::before,
   .cf-strip::after {
-    display: none;
+    content: "";
+    @apply pointer-events-none absolute inset-y-0 z-2 w-[70px];
   }
-}
 
-/* ── "Old way / new way" strike ─────────────────────────────────────────
-   The line through the old way is drawn rather than declared, so it reads
-   as something being cancelled rather than as struck-out text that was
-   always struck out.
+  .cf-strip::before {
+    left: 0;
+    background: linear-gradient(90deg, var(--color-paper), transparent);
+  }
 
-   It is a pseudo-element scaled on the X axis, not text-decoration, because
-   text-decoration cannot be animated. transform and opacity are the only
-   two properties animated here — both composited, so this costs nothing on
-   a phone.
+  .cf-strip::after {
+    right: 0;
+    background: linear-gradient(270deg, var(--color-paper), transparent);
+  }
 
-   THE CONTENT NEVER DEPENDS ON THE ANIMATION. Without JS the .is-struck
-   class never lands, so the fallback below applies a real line-through and
-   the answer stays at full opacity. Nothing is hidden waiting for motion. */
-.cf-strike-old {
-  /* A REAL line-through, not an absolutely positioned bar.
-     The bar version (::after, top:47%, one element-wide rule) was correct on a
-     desktop, where every one of these lines fits on one line -- and silently
-     wrong on a phone, where they wrap. An absolute bar draws ONCE across the
-     element, so a two-line question got a rule floating between its two lines
-     and nothing struck through. text-decoration follows every line box, which
-     is the whole reason the property exists.
+  .cf-track {
+    @apply flex w-max gap-5;
+    animation: cfSlide 64s linear infinite;
+  }
 
-     It still animates: the line is drawn in transparent and the COLOUR is what
-     transitions, which is cheap and needs no pseudo-element. We lose the
-     left-to-right wipe; we gain a strike that is right at every width. */
-  text-decoration-line: line-through;
-  text-decoration-color: transparent;
-  /* 2px. It went 1.5 -> 3 once and 3 was WORSE: a 3px rule through 15px type
-     obliterates the words instead of cancelling them, and the reader has to be
-     able to READ what is being struck or the before/after says nothing. */
-  text-decoration-thickness: 2px;
-  text-underline-offset: 0;
-  transition: text-decoration-color 420ms cubic-bezier(0.22, 0.61, 0.36, 1);
-}
+  .cf-strip:hover .cf-track {
+    animation-play-state: paused;
+  }
 
-.cf-strike-grid.is-struck .cf-strike-old {
-  text-decoration-color: var(--color-blue);
-  transition-delay: var(--cf-strike-delay, 0ms);
-}
+  @keyframes cfSlide {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
 
-/* THE OLD WAY STAYS FULLY READABLE. It once dropped to 55% opacity after the
-   strike, which together with a 3px line made it genuinely unreadable -- and a
-   problem the reader cannot read is not a problem they recognise. The line
-   alone does the cancelling. Nothing fades. */
+  .cf-chip {
+    /* WIDTH IS VIEWPORT-RELATIVE so the number of visible tiles stays the same
+       on any monitor. At a fixed 290px a 1440 window showed about 4½ tiles and
+       a 4K span showed twelve tiny ones — the wider the screen, the weaker the
+       section got, which is backwards.
 
-.cf-strike-grid.is-struck .cf-strike-now {
-  opacity: 1;
-  transform: none;
-  transition:
-    opacity 420ms ease,
-    transform 420ms cubic-bezier(0.22, 0.61, 0.36, 1);
-  /* lands after its own strike finishes */
-  transition-delay: calc(var(--cf-strike-delay, 0ms) + 300ms);
-}
+       max(330px, 21vw) holds roughly 4½ across 1440, 2560 and 3840, and the
+       floor keeps it readable on a laptop. */
+    width: max(330px, 21vw);
+    @apply flex-none rounded-cf border border-rule bg-paper px-7 py-6;
+  }
 
-.cf-strike-grid .cf-strike-now {
-  opacity: 0;
-  transform: translateY(6px);
-}
+  @media (prefers-reduced-motion: reduce) {
+    .cf-track {
+      animation: none;
+      @apply w-auto flex-wrap justify-center;
+    }
+    .cf-strip::before,
+    .cf-strip::after {
+      display: none;
+    }
+  }
 
-/* No JS, no observer: the class never arrives, so show the resolved state. */
-@media (scripting: none) {
-  .cf-strike-old { text-decoration-color: var(--color-blue); transition: none; }
-  .cf-strike-now { opacity: 1 !important; transform: none !important; }
-}
+  /* ── "Old way / new way" strike ─────────────────────────────────────────
+     The line through the old way is drawn rather than declared, so it reads
+     as something being cancelled rather than as struck-out text that was
+     always struck out.
 
-@media (prefers-reduced-motion: reduce) {
-  .cf-strike-old::after { transform: scaleX(1); }
-  .cf-strike-grid .cf-strike-now,
+     It is a pseudo-element scaled on the X axis, not text-decoration, because
+     text-decoration cannot be animated. transform and opacity are the only
+     two properties animated here — both composited, so this costs nothing on
+     a phone.
+
+     THE CONTENT NEVER DEPENDS ON THE ANIMATION. Without JS the .is-struck
+     class never lands, so the fallback below applies a real line-through and
+     the answer stays at full opacity. Nothing is hidden waiting for motion. */
+  .cf-strike-old {
+    /* A REAL line-through, not an absolutely positioned bar.
+       The bar version (::after, top:47%, one element-wide rule) was correct on a
+       desktop, where every one of these lines fits on one line -- and silently
+       wrong on a phone, where they wrap. An absolute bar draws ONCE across the
+       element, so a two-line question got a rule floating between its two lines
+       and nothing struck through. text-decoration follows every line box, which
+       is the whole reason the property exists.
+
+       It still animates: the line is drawn in transparent and the COLOUR is what
+       transitions, which is cheap and needs no pseudo-element. We lose the
+       left-to-right wipe; we gain a strike that is right at every width. */
+    text-decoration-line: line-through;
+    text-decoration-color: transparent;
+    /* 2px. It went 1.5 -> 3 once and 3 was WORSE: a 3px rule through 15px type
+       obliterates the words instead of cancelling them, and the reader has to be
+       able to READ what is being struck or the before/after says nothing. */
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0;
+    transition: text-decoration-color 420ms cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+
+  .cf-strike-grid.is-struck .cf-strike-old {
+    text-decoration-color: var(--color-blue);
+    transition-delay: var(--cf-strike-delay, 0ms);
+  }
+
+  /* THE OLD WAY STAYS FULLY READABLE. It once dropped to 55% opacity after the
+     strike, which together with a 3px line made it genuinely unreadable -- and a
+     problem the reader cannot read is not a problem they recognise. The line
+     alone does the cancelling. Nothing fades. */
+
   .cf-strike-grid.is-struck .cf-strike-now {
     opacity: 1;
     transform: none;
-    transition: none;
+    transition:
+      opacity 420ms ease,
+      transform 420ms cubic-bezier(0.22, 0.61, 0.36, 1);
+    /* lands after its own strike finishes */
+    transition-delay: calc(var(--cf-strike-delay, 0ms) + 300ms);
   }
-  .cf-strike-grid.is-struck .cf-strike-old::after { transition: none; }
-}
 
-/* ── The trial ticker ───────────────────────────────────────────────────
-   Bright blue, full bleed, and moving. Motion is what the eye catches
-   before it has read anything, and on white paper this is the strongest
-   mark the site has.
+  .cf-strike-grid .cf-strike-now {
+    opacity: 0;
+    transform: translateY(6px);
+  }
 
-   Travel, never flash. A flash rate above three per second is a seizure
-   risk (WCAG 2.3.1) and this bar sits on every page.
+  /* No JS, no observer: the class never arrives, so show the resolved state. */
+  @media (scripting: none) {
+    .cf-strike-old { text-decoration-color: var(--color-blue); transition: none; }
+    .cf-strike-now { opacity: 1 !important; transform: none !important; }
+  }
 
-   Only `transform` is animated, so it runs on the compositor and costs
-   nothing on a phone. The track holds three identical passes and shifts by
-   exactly one third, which is what makes the loop seamless — change the
-   number of passes in the component and this -33.3333% must change with it. */
-.cf-ticker {
-  --cf-ticker-speed: 38s;
-  overflow: hidden;
-  /* 17px each side puts the bar at about 48px. Thick enough to register as a
-     band of colour rather than a hairline, without eating the fold on a
-     laptop — it sits above the header, so every pixel here pushes the real
-     page down on every page of the site. */
-  padding-block: 17px;
-  position: relative;
-}
+  @media (prefers-reduced-motion: reduce) {
+    .cf-strike-old::after { transform: scaleX(1); }
+    .cf-strike-grid .cf-strike-now,
+    .cf-strike-grid.is-struck .cf-strike-now {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+    .cf-strike-grid.is-struck .cf-strike-old::after { transition: none; }
+  }
 
-.cf-ticker-track {
-  display: flex;
-  width: max-content;
-  animation: cfTicker var(--cf-ticker-speed) linear infinite;
-}
+  /* ── The trial ticker ───────────────────────────────────────────────────
+     Bright blue, full bleed, and moving. Motion is what the eye catches
+     before it has read anything, and on white paper this is the strongest
+     mark the site has.
 
-/* Pause on hover so the offer can be read before it is clicked. */
-.cf-ticker:hover .cf-ticker-track,
-.cf-ticker:focus-visible .cf-ticker-track {
-  animation-play-state: paused;
-}
+     Travel, never flash. A flash rate above three per second is a seizure
+     risk (WCAG 2.3.1) and this bar sits on every page.
 
-.cf-ticker-pass {
-  display: flex;
-  flex: 0 0 auto;
-  align-items: center;
-}
-
-.cf-ticker-item {
-  /* inline-block, NOT inline-flex. A flex container discards the whitespace
-     text nodes between its children, so the space between "20 GB storage"
-     and "included" vanished and it rendered "storageincluded" — the text was
-     correct in the DOM the whole time, which is why adding {" "} in the JSX
-     changed nothing. Normal inline layout keeps the space. */
-  display: inline-block;
-  white-space: nowrap;
-  font-family: var(--font-mono);
-  font-size: 13px;
-  line-height: 1;
-  letter-spacing: 0.06em;
-}
-
-.cf-ticker-dot {
-  display: inline-block;
-  vertical-align: middle;
-  width: 5px;
-  height: 5px;
-  margin-inline: 22px;
-  border-radius: 50%;
-  background: #ffffff;
-  opacity: 0.45;
-}
-
-@keyframes cfTicker {
-  from { transform: translate3d(0, 0, 0); }
-  to { transform: translate3d(-33.3333%, 0, 0); }
-}
-
-.cf-ticker:focus-visible {
-  outline: 3px solid var(--color-ink);
-  outline-offset: -3px;
-}
-
-/* Reduced motion: stop travelling entirely and centre a single pass. A
-   64-second drift is exactly the kind of movement that triggers vestibular
-   discomfort, and the offer has to be readable without it. */
-@media (prefers-reduced-motion: reduce) {
-  .cf-ticker-track {
-    animation: none;
-    width: 100%;
-    justify-content: center;
+     Only `transform` is animated, so it runs on the compositor and costs
+     nothing on a phone. The track holds three identical passes and shifts by
+     exactly one third, which is what makes the loop seamless — change the
+     number of passes in the component and this -33.3333% must change with it. */
+  .cf-ticker {
+    --cf-ticker-speed: 38s;
     overflow: hidden;
+    /* 17px each side puts the bar at about 48px. Thick enough to register as a
+       band of colour rather than a hairline, without eating the fold on a
+       laptop — it sits above the header, so every pixel here pushes the real
+       page down on every page of the site. */
+    padding-block: 17px;
+    position: relative;
   }
-  .cf-ticker-pass:not(:first-child) {
-    display: none;
+
+  .cf-ticker-track {
+    display: flex;
+    width: max-content;
+    animation: cfTicker var(--cf-ticker-speed) linear infinite;
+  }
+
+  /* Pause on hover so the offer can be read before it is clicked. */
+  .cf-ticker:hover .cf-ticker-track,
+  .cf-ticker:focus-visible .cf-ticker-track {
+    animation-play-state: paused;
+  }
+
+  .cf-ticker-pass {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+  }
+
+  .cf-ticker-item {
+    /* inline-block, NOT inline-flex. A flex container discards the whitespace
+       text nodes between its children, so the space between "20 GB storage"
+       and "included" vanished and it rendered "storageincluded" — the text was
+       correct in the DOM the whole time, which is why adding {" "} in the JSX
+       changed nothing. Normal inline layout keeps the space. */
+    display: inline-block;
+    white-space: nowrap;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    line-height: 1;
+    letter-spacing: 0.06em;
+  }
+
+  .cf-ticker-dot {
+    display: inline-block;
+    vertical-align: middle;
+    width: 5px;
+    height: 5px;
+    margin-inline: 22px;
+    border-radius: 50%;
+    background: #ffffff;
+    opacity: 0.45;
+  }
+
+  @keyframes cfTicker {
+    from { transform: translate3d(0, 0, 0); }
+    to { transform: translate3d(-33.3333%, 0, 0); }
+  }
+
+  .cf-ticker:focus-visible {
+    outline: 3px solid var(--color-ink);
+    outline-offset: -3px;
+  }
+
+  /* Reduced motion: stop travelling entirely and centre a single pass. A
+     64-second drift is exactly the kind of movement that triggers vestibular
+     discomfort, and the offer has to be readable without it. */
+  @media (prefers-reduced-motion: reduce) {
+    .cf-ticker-track {
+      animation: none;
+      width: 100%;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .cf-ticker-pass:not(:first-child) {
+      display: none;
+    }
+  }
+
+  /* ── Glass ────────────────────────────────────────────────────────────────
+     For the signed-in journey: sign in, KYC, the dashboard. Those screens were
+     flat grey fills with hairline borders on white, which is why the sign-in
+     page read as a desktop dialog from twenty years ago rather than as part of
+     this site.
+
+     Glass here means DEPTH, not decoration. Three things do the work:
+
+       1. A translucent fill, so the ambient wash behind shows through and the
+          panel sits ON something instead of being pasted onto flat white.
+       2. backdrop-filter, which is what makes it read as a surface with
+          thickness rather than a semi-transparent rectangle. The saturate()
+          matters as much as the blur -- it keeps the colour behind alive
+          instead of washing it to grey.
+       3. An inset top highlight plus a layered shadow. A single hard border is
+          the thing that makes a panel look like a Win98 groupbox; a bright top
+          edge and a soft falloff read as a lit surface.
+
+     NO DARK GLASS. The site is white and the content is long-form serif; a
+     smoked panel would fight every paragraph on it.
+
+     backdrop-filter is unsupported in a few older browsers, and `bg` is a real
+     colour rather than fully transparent, so the panel degrades to a solid card
+     rather than to unreadable text over a gradient. */
+
+  .cf-glass {
+    border-radius: var(--radius-glass);
+    background: color-mix(in srgb, var(--color-paper) 72%, transparent);
+    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    backdrop-filter: blur(20px) saturate(160%);
+    border: 1px solid color-mix(in srgb, var(--color-paper) 70%, transparent);
+    box-shadow:
+      inset 0 1px 0 color-mix(in srgb, white 80%, transparent),
+      0 1px 2px color-mix(in srgb, var(--color-ink) 4%, transparent),
+      0 12px 32px -12px color-mix(in srgb, var(--color-ink) 14%, transparent),
+      0 0 0 1px color-mix(in srgb, var(--color-ink) 6%, transparent);
+  }
+
+  /* A panel INSIDE a glass panel. No shadow -- stacking two shadows is what
+     makes a card look like it is peeling off the page. */
+  .cf-glass-inset {
+    border-radius: calc(var(--radius-glass) - 6px);
+    background: color-mix(in srgb, var(--color-paper) 55%, transparent);
+    border: 1px solid color-mix(in srgb, var(--color-ink) 7%, transparent);
+  }
+
+  /* The ambient wash the glass refracts. Fixed, so it does not slide away as a
+     long KYC form scrolls and leave the panel floating over flat white.
+     Deliberately low-saturation: it has to survive being behind body text. */
+  .cf-aurora {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background:
+      radial-gradient(45rem 32rem at 8% -6%, color-mix(in srgb, var(--color-blue) 30%, transparent), transparent 64%),
+      radial-gradient(40rem 30rem at 94% 2%, color-mix(in srgb, #7c6cf0 26%, transparent), transparent 66%),
+      radial-gradient(44rem 30rem at 52% 104%, color-mix(in srgb, var(--color-blue) 20%, transparent), transparent 62%),
+      radial-gradient(30rem 24rem at 78% 52%, color-mix(in srgb, #f0a2c0 12%, transparent), transparent 70%),
+      var(--color-paper);
+  }
+
+  /* The segmented control. A row of grey buttons is the single most dated
+     element on the sign-in screen; the selected item should look lifted, not
+     merely a different grey. */
+  .cf-segment {
+    border-radius: calc(var(--radius-glass) - 6px);
+    background: color-mix(in srgb, var(--color-ink) 5%, transparent);
+    border: 1px solid color-mix(in srgb, var(--color-ink) 6%, transparent);
+  }
+
+  .cf-segment-item {
+    @apply min-h-11 flex-1 rounded-[7px] px-3 text-sm font-medium text-ink-2 transition;
+  }
+
+  .cf-segment-item[data-active="true"] {
+    background: var(--color-paper);
+    color: var(--color-ink);
+    box-shadow:
+      0 1px 2px color-mix(in srgb, var(--color-ink) 10%, transparent),
+      inset 0 1px 0 white;
+  }
+
+  @media (prefers-reduced-transparency: reduce) {
+    .cf-glass, .cf-glass-inset {
+      background: var(--color-paper);
+      -webkit-backdrop-filter: none;
+      backdrop-filter: none;
+    }
   }
 }

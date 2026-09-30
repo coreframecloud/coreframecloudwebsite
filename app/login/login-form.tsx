@@ -53,7 +53,7 @@ function GoogleBlock({ api, below = false }: { api: string; below?: boolean }) {
       </div>
       <a
         href={`${api}/auth/google`}
-        className="flex min-h-11 w-full items-center justify-center gap-3 rounded-cf border border-rule bg-paper py-3 text-sm font-medium text-ink transition hover:bg-paper-2"
+        className="flex min-h-11 w-full items-center justify-center gap-3 rounded-cf border border-rule-strong bg-paper py-3 text-sm font-medium text-ink shadow-[0_1px_2px_rgba(16,17,19,0.06)] transition hover:bg-paper-2"
       >
         <GoogleIcon />
         Continue with Google
@@ -71,11 +71,9 @@ function TabBtn({ active, onClick, children }: { active: boolean; onClick: () =>
     <button
       type="button"
       onClick={onClick}
-      className={`min-h-11 flex-1 rounded-cf px-2 text-sm font-medium transition-colors ${
-        active
-          ? "border border-rule bg-paper text-ink"
-          : "text-ink-2 hover:text-ink"
-      }`}
+      data-active={active}
+      aria-pressed={active}
+      className="cf-segment-item"
     >
       {children}
     </button>
@@ -117,7 +115,7 @@ function SentCard({
             so after the call the account exists either way and saying so
             plainly leaks nothing an attacker did not already get. The link tab
             keeps the hedge, because that route still behaves the old way. */}
-        <p className="mt-1 text-sm text-ink-2">
+        <p className="mt-2 text-[15px] leading-6 text-ink-2">
           {certain ? (
             <>
               A {label} is on its way to{" "}
@@ -419,11 +417,10 @@ export default function LoginForm({
           scroll past, so this block is deliberately tight on the signup
           variant: the input has to be reachable without scrolling on a phone. */}
       <div className={`text-center ${isStart ? "mb-5" : "mb-8"}`}>
-        <a href="/" className="inline-block text-2xl font-extrabold tracking-tight">
-          <span className="text-ink">CORE</span>
-          <span className="text-blue">FRAME</span>
-        </a>
-        <h1 className={`text-2xl font-semibold tracking-tight text-ink ${isStart ? "mt-2" : "mt-3"}`}>
+        {/* No wordmark here. The site header renders one 40px above this, and
+            two stacked COREFRAME marks read as a template someone forgot to
+            finish. The serif heading is what carries the brand on this screen. */}
+        <h1 className={`font-display text-[34px] leading-[1.1] tracking-[-0.01em] text-ink ${isStart ? "mt-3" : "mt-4"}`}>
           {isStart ? "Start free" : "Sign in"}
         </h1>
         <p className="mt-1 text-sm text-ink-2">
@@ -468,7 +465,7 @@ export default function LoginForm({
       )}
 
       {/* Card */}
-      <div className="rounded-cf border border-rule bg-paper-2 p-5 sm:p-6">
+      <div className="cf-glass p-5 sm:p-7">
 
         {/* Google, and where it sits.
             On /login it leads, because a returning customer who used Google
@@ -502,7 +499,7 @@ export default function LoginForm({
             Password sign-in is gone entirely. Nothing issues a customer
             password, so the tab could only ever fail; keeping it also meant
             keeping a password surface to attack for no benefit. */}
-        {!isStart && <div className="mb-5 flex gap-1 rounded-cf bg-paper-2 p-1">
+        {!isStart && <div className="cf-segment mb-5 flex gap-1 p-1">
           <TabBtn active={tab === "link"} onClick={() => switchTab("link")}>
             Email me a link
           </TabBtn>
@@ -534,7 +531,7 @@ export default function LoginForm({
                     No password. We&apos;ll email you a link &mdash; click it and your account is ready.
                   </p>
                 ) : (
-                  <div className="rounded-cf border border-rule bg-paper-2 px-4 py-3">
+                  <div className="cf-glass-inset px-4 py-3">
                     <p className="text-sm font-medium text-ink">Sign in with a link.</p>
                     <p className="mt-0.5 text-xs text-ink-2">
                       We&apos;ll send a sign-in link to your email. Click it and you are in.

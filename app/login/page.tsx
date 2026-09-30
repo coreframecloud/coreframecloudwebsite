@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { BackgroundGlow } from "@/components/home/background-glow";
 import LoginForm from "./login-form";
 
 export const metadata: Metadata = {
@@ -11,7 +10,7 @@ export const metadata: Metadata = {
 export default function LoginPage() {
   return (
     <div className="relative min-h-screen text-ink">
-      <BackgroundGlow />
+      <div className="cf-aurora" />
       <main className="relative flex min-h-screen items-center justify-center px-4 py-24">
         <LoginForm />
       </main>

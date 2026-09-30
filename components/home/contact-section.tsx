@@ -320,7 +320,7 @@ export function ContactSection() {
               )}
 
               {errorMessage && (
-                <div className="rounded-cf border border-red-400/15 bg-red-400/[0.05] px-4 py-3 text-sm text-red-300">
+                <div className="rounded-cf border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm break-words text-destructive">
                   {errorMessage}
                 </div>
               )}

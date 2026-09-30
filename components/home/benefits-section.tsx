@@ -170,8 +170,8 @@ function Row({
 
         {compare ? (
           <div className="mt-6 grid gap-4 sm:grid-cols-2">
-            <div className="rounded-cf border border-red-400/25 bg-red-400/[0.05] p-5">
-              <p className="text-xs font-bold uppercase tracking-[0.16em] text-red-300">✕ Today</p>
+            <div className="rounded-cf border border-rule bg-paper-2 p-5">
+              <p className="text-xs font-bold tracking-[0.16em] text-ink-2 uppercase">Today</p>
               <p className="mt-3 text-[15px] leading-7 text-ink">
                 <em className="not-italic text-ink-2">{compare.before[0]}</em>
                 <br />
