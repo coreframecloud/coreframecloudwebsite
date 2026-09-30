@@ -243,3 +243,58 @@ body {
     animation: none !important;
   }
 }
+
+/* ── "Who this is built for" marquee ────────────────────────────────────
+   A slow horizontal drift rather than a static grid, because ten postures
+   in a grid reads as a wall of text nobody finishes. Paused on hover so a
+   line can actually be read, and reduced to a wrapped static list under
+   prefers-reduced-motion — a 64s loop is exactly the kind of movement that
+   triggers vestibular discomfort. */
+.cf-strip {
+  @apply relative overflow-hidden py-1.5;
+}
+
+.cf-strip::before,
+.cf-strip::after {
+  content: "";
+  @apply pointer-events-none absolute inset-y-0 z-2 w-[70px];
+}
+
+.cf-strip::before {
+  left: 0;
+  background: linear-gradient(90deg, var(--color-paper), transparent);
+}
+
+.cf-strip::after {
+  right: 0;
+  background: linear-gradient(270deg, var(--color-paper), transparent);
+}
+
+.cf-track {
+  @apply flex w-max gap-4;
+  animation: cfSlide 64s linear infinite;
+}
+
+.cf-strip:hover .cf-track {
+  animation-play-state: paused;
+}
+
+@keyframes cfSlide {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+.cf-chip {
+  @apply w-[290px] flex-none rounded-cf border border-rule bg-paper px-[22px] py-5;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cf-track {
+    animation: none;
+    @apply w-auto flex-wrap justify-center;
+  }
+  .cf-strip::before,
+  .cf-strip::after {
+    display: none;
+  }
+}
