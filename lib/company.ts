@@ -72,14 +72,21 @@ export const COMPANY_VISITING_ADDRESS_LINE =
 /**
  * Google Business Profile for the Bengaluru office.
  *
- * This is a share shortlink. Swap it for the canonical
- * `https://www.google.com/maps/place/...` (or `https://maps.google.com/?cid=...`)
- * URL from the Business Profile manager when convenient — a canonical place URL
- * is a stronger `sameAs` entity signal than a redirect, and shortlinks can be
- * retired. One constant, one edit: the footer and the Organization schema both
- * read it from here.
+ * The listing's durable identity is its CID: 0xcda22bfbd64e8128, decimal
+ * 14817454084634607912. Everything else about a Maps URL is presentation — the
+ * slug is regenerated from the business name, and the `?sa=X&ved=...&ictx=...`
+ * parameters Google appends are search-result click tracking, which do not
+ * belong in a page's markup or in an `sameAs` entity claim.
+ *
+ * The `?cid=` form is what Google Business Profile itself hands out and is the
+ * shortest thing that cannot rot. If it ever stops resolving, the long form is:
+ *
+ *   https://www.google.com/maps/place/Coreframe+Compute+Labs+Private+Limited/data=!4m2!3m1!1s0x0:0xcda22bfbd64e8128
+ *
+ * One constant, one edit: the footer and the Organization schema both read it
+ * from here.
  */
-export const COMPANY_MAPS_URL = "https://share.google/BGmHZp7ySfl8Ae90l";
+export const COMPANY_MAPS_URL = "https://maps.google.com/?cid=14817454084634607912";
 
 /** Full postal address, for legal pages and invoices. */
 export const COMPANY_ADDRESS_FULL = [
