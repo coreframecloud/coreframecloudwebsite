@@ -1,4 +1,5 @@
 import { SpecBlock, K, V, C } from "@/components/home/spec-block";
+import { NODE } from "@/lib/node-spec";
 import type { StorageTerms } from "@/lib/storage-terms";
 
 /**
@@ -31,10 +32,10 @@ export function MachineSection({
           <span className="b">$</span> coreframe connect &rarr; <V>Launch workstation</V>
           {"\n\n"}
           {"  "}<K>node</K>{"            "}gpu-node-01 · Bengaluru{"\n"}
-          {"  "}<K>gpu</K>{"             "}RTX 5080 · <V>16 GB GDDR7</V> · current generation{"\n"}
-          {"  "}<K>memory</K>{"          "}<V>64 GB</V> system RAM — big scenes, many apps open{"\n"}
-          {"  "}<K>bandwidth</K>{"       "}<V>960 GB/s</V> memory bandwidth on the card{"\n"}
-          {"  "}<K>working disk</K>{"    "}<V>1 TB NVMe Gen 5</V> on the workstation — your scratch,{"\n"}
+          {"  "}<K>gpu</K>{"             "}{NODE.gpu} · <V>{NODE.vram}</V> · current generation{"\n"}
+          {"  "}<K>memory</K>{"          "}<V>{NODE.ram}</V> system RAM — big scenes, many apps open{"\n"}
+          {"  "}<K>bandwidth</K>{"       "}<V>{NODE.memoryBandwidth}</V> memory bandwidth on the card{"\n"}
+          {"  "}<K>working disk</K>{"    "}<V>{NODE.disk}</V> on the workstation — your scratch,{"\n"}
           {"                  "}your cache, your project files while you work{"\n"}
           {"  "}<K>transfer</K>{"        "}<V>{storage.trialGb} GB</V> kept between sessions, for moving{"\n"}
           {"                  "}files in and out{"\n"}

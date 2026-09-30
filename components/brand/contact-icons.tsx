@@ -10,7 +10,15 @@
  * so announcing it again would make a screen reader read each contact twice.
  */
 
-const BASE = "h-[15px] w-[15px] shrink-0";
+/**
+ * NO SIZE HERE. It used to be `h-[15px] w-[15px] shrink-0`, and the footer
+ * relied on that default while the floating WhatsApp button passed `h-7 w-7`.
+ * Class order in a JSX string does not decide CSS precedence -- the order the
+ * utilities land in the generated stylesheet does -- so that override was a
+ * coin flip that happened to be landing the wrong way. Each call site states
+ * its own size now, and nothing silently wins.
+ */
+const BASE = "shrink-0";
 
 export function MailIcon({ className = "" }: { className?: string }) {
   return (

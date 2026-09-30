@@ -163,7 +163,7 @@ body {
    for everything else. Mono and letterspaced so they read as controls
    rather than as more prose. */
 .cf-btn-primary {
-  @apply inline-flex items-center justify-center rounded-cf bg-blue px-5 py-[15px] font-mono text-[12.5px] leading-none font-semibold tracking-[0.09em] text-white uppercase transition-colors;
+  @apply inline-flex min-h-11 items-center justify-center rounded-cf bg-blue px-5 py-[15px] font-mono text-[12.5px] leading-none font-semibold tracking-[0.09em] text-white uppercase transition-colors;
 }
 
 .cf-btn-primary:hover {
@@ -171,7 +171,7 @@ body {
 }
 
 .cf-btn-secondary {
-  @apply inline-flex items-center justify-center rounded-cf border border-rule bg-transparent px-5 py-[15px] font-mono text-[12.5px] leading-none font-semibold tracking-[0.09em] text-ink uppercase transition-colors;
+  @apply inline-flex min-h-11 items-center justify-center rounded-cf border border-rule bg-transparent px-5 py-[15px] font-mono text-[12.5px] leading-none font-semibold tracking-[0.09em] text-ink uppercase transition-colors;
 }
 
 .cf-btn-secondary:hover {
@@ -321,40 +321,34 @@ body {
    class never lands, so the fallback below applies a real line-through and
    the answer stays at full opacity. Nothing is hidden waiting for motion. */
 .cf-strike-old {
-  position: relative;
-  display: inline-block;
+  /* A REAL line-through, not an absolutely positioned bar.
+     The bar version (::after, top:47%, one element-wide rule) was correct on a
+     desktop, where every one of these lines fits on one line -- and silently
+     wrong on a phone, where they wrap. An absolute bar draws ONCE across the
+     element, so a two-line question got a rule floating between its two lines
+     and nothing struck through. text-decoration follows every line box, which
+     is the whole reason the property exists.
+
+     It still animates: the line is drawn in transparent and the COLOUR is what
+     transitions, which is cheap and needs no pseudo-element. We lose the
+     left-to-right wipe; we gain a strike that is right at every width. */
+  text-decoration-line: line-through;
+  text-decoration-color: transparent;
+  /* 2px. It went 1.5 -> 3 once and 3 was WORSE: a 3px rule through 15px type
+     obliterates the words instead of cancelling them, and the reader has to be
+     able to READ what is being struck or the before/after says nothing. */
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0;
+  transition: text-decoration-color 420ms cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
-.cf-strike-old::after {
-  content: "";
-  position: absolute;
-  left: -2px;
-  right: -2px;
-  /* 47% of the line box, not 55%. With line-height 1.5 the baseline sits low
-     in the box, so 55% put the rule right on the baseline and clipped the
-     bottom of every lowercase letter. 47% crosses the MIDDLE of the x-height,
-     where it cuts stems rather than the shapes that carry the reading. */
-  top: 47%;
-  /* 2px. It went 1.5 -> 3 and 3 was WORSE: a 3px bar through 15px type
-     obliterates the words instead of cancelling them. The reader has to be
-     able to READ the thing being struck, or the before/after makes no sense
-     and the block says nothing. 2px is visible and still leaves the text
-     legible. */
-  height: 2px;
-  border-radius: 1px;
-  background: var(--color-blue);
-  transform: scaleX(0);
-  transform-origin: left center;
-}
-
-.cf-strike-grid.is-struck .cf-strike-old::after {
-  transform: scaleX(1);
-  transition: transform 520ms cubic-bezier(0.22, 0.61, 0.36, 1);
+.cf-strike-grid.is-struck .cf-strike-old {
+  text-decoration-color: var(--color-blue);
   transition-delay: var(--cf-strike-delay, 0ms);
 }
 
-/* THE OLD WAY STAYS FULLY READABLE. It was dropping to 55% opacity after the
-   strike, which combined with a 3px line made it genuinely unreadable — and a
+/* THE OLD WAY STAYS FULLY READABLE. It once dropped to 55% opacity after the
+   strike, which together with a 3px line made it genuinely unreadable -- and a
    problem the reader cannot read is not a problem they recognise. The line
    alone does the cancelling. Nothing fades. */
 
@@ -375,7 +369,7 @@ body {
 
 /* No JS, no observer: the class never arrives, so show the resolved state. */
 @media (scripting: none) {
-  .cf-strike-old { text-decoration: line-through; text-decoration-color: var(--color-blue); }
+  .cf-strike-old { text-decoration-color: var(--color-blue); transition: none; }
   .cf-strike-now { opacity: 1 !important; transform: none !important; }
 }
 

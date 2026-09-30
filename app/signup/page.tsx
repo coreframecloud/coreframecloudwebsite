@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { BackgroundGlow } from "@/components/home/background-glow";
 import { WhyWeVerify } from "@/components/auth/why-we-verify";
+import { NODE } from "@/lib/node-spec";
 import { adhocRateHourly, getRateCard, getTrialTerms } from "@/lib/rate-card";
 import LoginForm from "../login/login-form";
 
@@ -21,15 +22,32 @@ import LoginForm from "../login/login-form";
  *
  * So this is a real page now: the same form, the promise the ad made repeated
  * where it lands, and the ID check explained before it is asked for.
+ *
+ * THE TITLE AND DESCRIPTION ARE GENERATED, NOT TYPED. They carried "200 GPU
+ * minutes" and "20 GB of storage" as literals, which is the one number on this
+ * page nobody may hardcode: the day the control plane changes the trial, or
+ * switches it off, a static string goes on promising it in the search result
+ * that brought the person here. `generateMetadata` reads the same rate card the
+ * body does, and says nothing about a trial when there is no trial to honour.
  */
 
-export const metadata: Metadata = {
+export async function generateMetadata(): Promise<Metadata> {
+  const card = await getRateCard();
+  const trial = getTrialTerms(card);
+  const hourly = adhocRateHourly(card);
+  const after = hourly ? ` Billed by the minute after that, from ${hourly}.` : " Billed by the minute after that.";
+
   // The root layout appends " | Coreframe Cloud" via its title template.
-  title: "Start free — 200 GPU minutes on an RTX 5080",
-  description:
-    "Create a Coreframe account and get 200 free GPU minutes on an RTX 5080 with 20 GB of storage. No card needed. Billed by the minute after that.",
-  alternates: { canonical: "/signup" },
-};
+  return {
+    title: trial
+      ? `Start free — ${trial.gpu_minutes} GPU minutes on an ${NODE.gpu}`
+      : `Create your Coreframe account`,
+    description: trial
+      ? `Create a Coreframe account and get ${trial.gpu_minutes} free GPU minutes on an ${NODE.gpu} with ${trial.storage_gb} GB of storage. No card needed.${after}`
+      : `Create a Coreframe account and run an ${NODE.gpu} workstation from the laptop you already own.${hourly ? ` Billed by the minute, from ${hourly}.` : " Billed by the minute."}`,
+    alternates: { canonical: "/signup" },
+  };
+}
 
 export default async function SignupPage() {
   const card = await getRateCard();
@@ -38,28 +56,29 @@ export default async function SignupPage() {
 
   const offer = trial
     ? [
-        `${trial.gpu_minutes} free GPU minutes on an RTX 5080`,
+        `${trial.gpu_minutes} free GPU minutes on an ${NODE.gpu}`,
         `${trial.storage_gb} GB storage`,
         "no card",
         hourly ? `${hourly} after that` : null,
       ]
         .filter(Boolean)
-        .join(" \u00b7 ")
+        .join(" · ")
     : undefined;
 
   return (
     <div className="relative min-h-screen text-ink">
       <BackgroundGlow />
-      <main className="relative flex min-h-screen justify-center px-4 py-10 sm:items-center sm:py-16">
+      <main className="relative flex min-h-screen justify-center px-5 py-10 sm:items-center sm:py-16">
         <div className="w-full max-w-[440px]">
           {/* The offer used to be a box here, above the card. It read well and
               it cost us the campaign: it pushed the email input to 673px on a
               657px viewport, so 87 people landed and none reached the field.
               It is one line under the headline now, still rendered from the
-              live rate card and never from a hardcoded number. */}
+              live rate card and never from a hardcoded number. Nothing else
+              goes above the form on this page. */}
           <LoginForm variant="start" offer={offer} />
 
-          <WhyWeVerify trialMinutes={trial?.gpu_minutes ?? null} />
+          <WhyWeVerify trialMinutes={trial?.gpu_minutes ?? null} trialStorageGb={trial?.storage_gb} />
         </div>
       </main>
     </div>

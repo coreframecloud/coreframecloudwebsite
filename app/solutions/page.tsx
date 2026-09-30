@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import { BackgroundGlow } from "@/components/home/background-glow";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
+import { BackgroundGlow } from "@/components/home/background-glow";
+import { SpecBlock, K, V, C } from "@/components/home/spec-block";
+import { NODE } from "@/lib/node-spec";
 import {
   ArrowRight,
   HardDrive,
@@ -20,33 +20,53 @@ export const metadata: Metadata = {
   alternates: { canonical: "/solutions" },
 };
 
+/**
+ * THREE CLAIMS CAME OFF THIS PAGE ON 30 SEP 2026, and none of them should
+ * have shipped:
+ *
+ *   "Hosted in Tier III / Tier IV data center environments"
+ *   "Enterprise-grade physical security and controlled access"
+ *   "High-availability infrastructure designed for operational continuity"
+ *
+ * Nobody here has an Uptime Institute certificate to point at, "enterprise-
+ * grade" means nothing a customer can check, and we publish no uptime figure,
+ * so the third sentence promised something we do not measure. They are replaced
+ * below by facts a customer can verify in their first session: where the
+ * hardware is, what reaches it, and what happens to the disk when they log off.
+ *
+ * The spec comes from lib/node-spec. It is not typed here, and it never should
+ * be -- eight pages once claimed server-grade memory and a server-grade CPU
+ * this fleet has never had.
+ */
+
 const solutions = [
   {
     icon: MonitorSmartphone,
-    title: "GPU Workstations",
-    text: "Remote Windows GPU environments for Revit, CAD, D5 Render, and visualization workflows.",
+    title: "GPU workstations.",
+    text: `A full ${NODE.os} desktop with a ${NODE.gpu} in it, streamed to the laptop you already have. Revit, AutoCAD, D5 Render, Lumion, Enscape — your licences, our machine.`,
   },
   {
     icon: Workflow,
-    title: "Render Farm",
-    text: "Centralized rendering for image and video output while teams keep working on their local systems.",
+    title: "Rendering off your own machine.",
+    text: "The render runs on the node, not on the laptop in front of you. Your machine stays free while it works, and several people can render at the same time, each on their own workstation, instead of queueing for the one desk that can.",
   },
   {
     icon: HardDrive,
-    title: "Project Storage",
-    text: "Shared storage with more sensible capacity for active projects, assets, and output delivery.",
+    title: "Shared project storage.",
+    text: "Project files sit on NAS and persist between sessions. A designer uploads the model and whoever renders it opens the same file. The latest version is not on a pen drive or on somebody's desktop.",
   },
   {
     icon: ShieldCheck,
-    title: "Managed Deployment",
-    text: "Provisioning, monitoring, access control, and environment customization based on workload needs.",
+    title: "Set up once, with you.",
+    text: "We build your licensed software, your access list and your named seats into the image once. After that every workstation your team launches is already the right machine.",
   },
 ];
 
+/** Checkable in the first session. Nothing here needs a certificate to verify. */
 const trustItems = [
-  "Hosted in Tier III / Tier IV data center environments",
-  "Enterprise-grade physical security and controlled access",
-  "High-availability infrastructure designed for operational continuity",
+  "Every node and every byte of storage sits in Bengaluru. Your client's drawings do not leave India.",
+  `You reach the machine through the Coreframe Connect app, streamed at ${NODE.stream}. Not RDP.`,
+  "The workstation resets to a clean image between customers, so no trace of one studio's project reaches the next.",
 ];
 
 export default function SolutionsPage() {
@@ -54,106 +74,115 @@ export default function SolutionsPage() {
     <div className="min-h-screen text-ink">
       <BackgroundGlow />
 
-      <main className="relative mx-auto max-w-7xl px-6 pb-20 pt-20 md:pt-28">
-        <div className="max-w-3xl">
-          <div className="cf-eyebrow">
-            Solutions
+      <main className="relative">
+        <section className="cf-section px-5">
+          <div className="cf-col">
+            <p className="cf-eyebrow mb-5">Solutions</p>
+            <h1 className="cf-display">
+              One machine can render. Everything queues behind it.
+            </h1>
+            <p className="cf-lead mt-6">
+              That is the arrangement most studios are actually working around.
+              Coreframe replaces it with machines you rent by the minute: a
+              workstation per person when the deadline needs it, and none of
+              them on your books the week after.
+            </p>
           </div>
-          <h1 className="cf-display mt-3">
-            GPU infrastructure designed around how teams actually work.
-          </h1>
-          <p className="mt-5 max-w-2xl text-base leading-8 text-ink-2 md:text-lg">
-            Not every customer needs full-time VDI for every user. Coreframe Cloud
-            is structured around practical delivery: remote workstations, render
-            capacity, storage, and managed rollout.
-          </p>
-        </div>
+        </section>
 
-        <div className="mt-12 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
-          {solutions.map(({ icon: Icon, title, text }) => (
-            <Card
-              key={title}
-              className="rounded-[1.6rem] border border-rule bg-paper-2 shadow-[0_20px_50px_rgba(0,0,0,0.22)] backdrop-blur-2xl"
-            >
-              <CardContent className="p-6">
-                <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-cf bg-blue/10 ring-1 ring-blue/20">
-                  <Icon className="h-5 w-5 text-blue" />
-                </div>
-                <h2 className="cf-section-title">{title}</h2>
-                <p className="mt-3 text-sm leading-7 text-ink-2">{text}</p>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+        <div className="cf-rule" />
 
-        <div className="mt-14 rounded-[2rem] border border-rule bg-paper-2 p-8 backdrop-blur-2xl">
-          <div className="max-w-3xl">
-            <div className="cf-eyebrow">
-              Infrastructure Standard
-            </div>
-            <h2 className="cf-section-title mt-3">
-              Built for stronger security, controlled access, and reliable operations.
-            </h2>
-            <div className="mt-6 grid gap-3">
-              {trustItems.map((item) => (
-                <div
-                  key={item}
-                  className="rounded-cf border border-rule bg-paper-2 px-4 py-3 text-sm text-ink"
-                >
-                  {item}
+        <section className="cf-section px-5">
+          <div className="cf-wide">
+            <p className="cf-eyebrow mb-5">What we run</p>
+            <h2 className="cf-section-title">Four things, and no long-term contract for any of them.</h2>
+            <div className="mt-10 grid grid-cols-1 gap-9 sm:grid-cols-2">
+              {solutions.map(({ icon: Icon, title, text }) => (
+                <div key={title} className="cf-card">
+                  <Icon className="mb-4 h-5 w-5 text-blue" aria-hidden />
+                  <h3 className="text-base font-semibold tracking-[-0.01em] text-ink">{title}</h3>
+                  <p className="mt-2.5 text-sm leading-[1.62] break-words text-ink-2">{text}</p>
                 </div>
               ))}
             </div>
           </div>
-        </div>
+        </section>
 
-        <div className="mt-14 rounded-[2rem] border border-blue/20 bg-blue/10 p-8 backdrop-blur-2xl">
-          <div className="max-w-3xl">
-            <div className="cf-eyebrow">
-              Next step
-            </div>
-            <h2 className="cf-section-title mt-3">
-              Start with a pilot, then scale based on usage.
-            </h2>
-            <p className="mt-4 text-base leading-8 text-ink/85">
-              We can align GPU, CPU, RAM, storage, operating system, and access
-              model to your exact workload.
-            </p>
+        <div className="cf-rule" />
 
-            <div className="mt-6 flex flex-wrap gap-4">
-              <Link href="/request-demo">
-                <Button className="rounded-cf px-6">
-                  Talk to Us
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              </Link>
+        <section className="cf-section px-5">
+          <div className="cf-wide">
+            <SpecBlock label="One node">
+              <C># what a seat is, read off the machine</C>
+              {"\n\n"}
+              {"  "}<K>gpu</K>{"          "}<V>{NODE.gpu}</V> · <V>{NODE.vram}</V>{"\n"}
+              {"  "}<K>bandwidth</K>{"    "}<V>{NODE.memoryBandwidth}</V> memory bandwidth on the card{"\n"}
+              {"  "}<K>memory</K>{"       "}<V>{NODE.ram}</V> system RAM{"\n"}
+              {"  "}<K>cpu</K>{"          "}<V>{NODE.cpu}</V>{"\n"}
+              {"  "}<K>working disk</K>{" "}<V>{NODE.disk}</V>{"\n"}
+              {"  "}<K>os</K>{"           "}<V>{NODE.os}</V>{"\n"}
+              {"  "}<K>access</K>{"       "}Coreframe Connect app, streamed at <V>{NODE.stream}</V>{"\n"}
+              {"  "}<K>location</K>{"     "}<V>{NODE.location}</V>
+            </SpecBlock>
+          </div>
+        </section>
 
-              <a
-                href="https://wa.me/916366889488?text=Hi%20Coreframe%20Cloud%2C%20I%20want%20to%20discuss%20a%20GPU%20requirement."
-                target="_blank"
-                rel="noreferrer"
-              >
-                <Button
-                  variant="outline"
-                  className="rounded-cf border-green-400/30 bg-green-500/10 text-green-200 hover:bg-green-500/20"
+        <div className="cf-rule" />
+
+        <section className="cf-section px-5">
+          <div className="cf-col">
+            <p className="cf-eyebrow mb-5">What you can check</p>
+            <h2 className="cf-section-title">Three facts you can verify in your first session.</h2>
+            <ul className="mt-8 space-y-4">
+              {trustItems.map((item) => (
+                <li key={item} className="border-t border-rule pt-4 text-base leading-[1.62] break-words text-ink">
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+
+        <div className="cf-rule" />
+
+        <section className="cf-section px-5">
+          <div className="cf-col">
+            <div className="cf-note">
+              <p className="cf-eyebrow mb-4 text-blue">Next step</p>
+              <h2 className="cf-section-title">Start with one seat, not with a rollout.</h2>
+              <p className="cf-section-copy mt-4">
+                Put one person on it for a week and see what happens to the
+                queue. GPU, memory, storage, operating system and who gets
+                access are all set with you before the second seat goes live.
+              </p>
+
+              <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:gap-4">
+                <Link href="/request-demo" className="cf-btn-primary w-full sm:w-auto min-h-[44px]">
+                  Talk to us
+                  <ArrowRight className="ml-2 h-4 w-4" aria-hidden />
+                </Link>
+
+                <a
+                  href="https://wa.me/916366889488?text=Hi%20Coreframe%20Cloud%2C%20I%20want%20to%20discuss%20a%20GPU%20requirement."
+                  target="_blank"
+                  rel="noreferrer"
+                  className="cf-btn-secondary w-full sm:w-auto min-h-[44px]"
                 >
-                  <MessageCircle className="mr-2 h-4 w-4" />
-                  Connect on WhatsApp
-                </Button>
-              </a>
+                  <MessageCircle className="mr-2 h-4 w-4" aria-hidden />
+                  WhatsApp
+                </a>
 
-              <a href="mailto:admin@coreframecloud.com">
-                <Button
-                  variant="outline"
-                  className="rounded-cf border-rule bg-paper-2 text-ink hover:bg-paper-2"
+                <a
+                  href="mailto:admin@coreframecloud.com"
+                  className="cf-btn-secondary w-full sm:w-auto min-h-[44px]"
                 >
-                  <Mail className="mr-2 h-4 w-4" />
-                  Email Us
-                </Button>
-              </a>
+                  <Mail className="mr-2 h-4 w-4" aria-hidden />
+                  Email
+                </a>
+              </div>
             </div>
           </div>
-        </div>
+        </section>
       </main>
     </div>
   );

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { NODE } from "@/lib/node-spec";
 
 export const metadata: Metadata = {
   title: "How to use Coreframe — GPU workstations for 3D rendering",
@@ -16,75 +17,79 @@ export const metadata: Metadata = {
  * assistant retrieving this file finds an answer already shaped like an answer.
  * Everything it claims must stay true of the product — this is the page people
  * will hold us to.
+ *
+ * STEPS and FAQS feed both the visible page and the HowTo / FAQPage JSON-LD, so
+ * the structured data cannot drift from the copy. Edit the array, not the
+ * markup.
  */
 
 const STEPS = [
   {
-    title: "1. Create an account",
-    body: "Sign up with your email address. Choose Individual if you are a freelancer or working on personal projects, or Business if you are GST-registered and need invoices in your company's name. A business account also asks for your registered name and GSTIN, which appear on every tax invoice.",
+    title: "1. Create an account.",
+    body: "Sign up with your email address. Choose Individual if you are a freelancer or working on your own projects, or Business if you are GST-registered and need invoices in the company's name. A business account also asks for your registered name and GSTIN, which then appear on every tax invoice.",
   },
   {
-    title: "2. Verify your identity",
-    body: "Indian regulations require us to hold a verified subscriber record for anyone renting compute, so this step is mandatory before a workstation can start. It uses DigiLocker and takes a couple of minutes; if DigiLocker will not work for you, an Indian passport can be used instead. Business accounts additionally verify the company: the GSTIN against the GST register, and control of the company bank account. The person is proved separately from the company, because neither substitutes for the other.",
+    title: "2. Verify your identity.",
+    body: "Indian regulations require a verified subscriber record for anyone renting compute, so this step comes before a workstation can start. It runs through DigiLocker and takes a couple of minutes. If DigiLocker will not work for you, an Indian passport can be used instead. Business accounts verify the company as well: the GSTIN against the GST register, and control of the company bank account. The person is proved separately from the company, because neither stands in for the other.",
   },
   {
-    title: "3. Add credit, or start your free trial",
-    body: "New accounts get free GPU minutes and storage to try the service — no card needed. Beyond that, top up your wallet from the app or the website. There is no setup fee and no monthly minimum on pay-as-you-go. Business accounts can be invoiced monthly instead of prepaying.",
+    title: "3. Add credit, or start the free trial.",
+    body: "New accounts get free GPU minutes and storage to try the service, with no card. After that, top up your wallet from the app or the website. There is no setup fee and no monthly minimum on pay-as-you-go. Business accounts can be invoiced monthly instead of prepaying.",
   },
   {
-    title: "4. Install Coreframe Connect",
-    body: "Connect is our Windows client. It handles the secure network link and the streaming, so there is nothing else to configure. Download it from your account, run the installer, and sign in. Windows may show a warning during install while our code-signing certificate is being issued — the download page walks you through it.",
+    title: "4. Install Coreframe Connect.",
+    body: "Connect is the Windows client. It handles the private network link and the stream, so there is nothing else to set up. Download it from your account, run the installer, sign in. Windows may warn you during the install while our code-signing certificate is being issued — the download page walks you through each prompt.",
   },
   {
-    title: "5. Press Connect",
-    body: "Pick your machine and press Connect. A workstation is prepared for you and the desktop appears in about two minutes. Billing does not begin until the stream actually starts — provisioning time and failed connections are never charged.",
+    title: "5. Press Connect.",
+    body: `Pick your machine and press Connect. A workstation is prepared for you and the desktop appears in about two minutes, streamed at ${NODE.stream}. Billing does not start until the stream does. Provisioning time and failed connections are never charged.`,
   },
   {
-    title: "6. Work, then end the session",
-    body: "You have a full Windows desktop with the professional applications already installed. Your storage is already mapped as drive N:, labelled Coreframe Datalake — save project files there and nowhere else. When you are done, end the session from Connect. Billing stops at that moment and everything on N: stays where you left it.",
+    title: "6. Work, then end the session.",
+    body: "You get a full Windows desktop with the professional applications already installed. Your storage is mapped as drive N:, labelled Coreframe Datalake. Save project files there and nowhere else. When you are done, end the session from Connect. Billing stops at that moment and everything on N: stays where you left it.",
   },
 ];
 
 const FAQS = [
   {
     q: "What is Coreframe?",
-    a: "Coreframe rents Windows GPU workstations by the minute, hosted in India. You stream a real RTX desktop to your own laptop or PC and use it exactly as you would a workstation under your desk — for D5 Render, Lumion, Enscape, Revit, 3ds Max, Blender, CFD work or anything else that needs a GPU. It is not a render farm: you drive the machine interactively rather than submitting jobs to a queue.",
+    a: `Coreframe rents Windows GPU workstations by the minute, hosted in India. You stream a real ${NODE.gpu} desktop to the laptop you already own and use it as you would a workstation under your desk — D5 Render, Lumion, Enscape, Revit, 3ds Max, Blender, CFD work, anything that needs a GPU. It is not a render farm. You drive the machine yourself rather than submitting jobs to a queue.`,
   },
   {
     q: "How is Coreframe billed?",
-    a: "Per minute, and only while the stream is running. Billing starts when the remote desktop appears and stops when you end the session. Provisioning time, failed connections and uploads are not charged. Prices include GST and a tax invoice is issued automatically for every payment.",
+    a: "Per minute, and only while the stream is running. Billing starts when the remote desktop appears and stops when you end the session. Provisioning time, failed connections and uploads are not charged. Prices include GST and a tax invoice is issued for every payment.",
   },
   {
     q: "Do I need my own software licences?",
-    a: "For commercial applications, yes. D5 Render, Lumion, Enscape, V-Ray, Revit, AutoCAD, 3ds Max and similar are licensed to you rather than to the machine, so you install them and sign in with your own subscription. Free software — Blender, Twinmotion, Unreal Engine, the Autodesk viewers and the usual utilities — is already installed and ready to use.",
+    a: "For commercial applications, yes. D5 Render, Lumion, Enscape, V-Ray, Revit, AutoCAD, 3ds Max and the like are licensed to you rather than to the machine, so you install them and sign in with your own subscription. Free software — Blender, Twinmotion, Unreal Engine, the Autodesk viewers and the usual utilities — is already installed.",
   },
   {
     q: "Can I install my own software on the workstation?",
-    a: "The applications are installed for you rather than by you. Your session runs as a standard Windows user — that is what lets us promise the machine is reset to a clean image before the next customer, because nothing you or anyone else runs can survive it. Anything portable that does not need an installer will run. If you need an application we do not carry, email admin@coreframecloud.com. Free software we add to the standard image, usually the same day. Licensed software — Autodesk, Chaos, Lumion — needs your own account even to download, so we arrange a short setup session with you; after that it is on every workstation you launch.",
+    a: "The applications are installed for you rather than by you. Your session runs as a standard Windows user, which is what lets us promise the machine is reset to a clean image before the next customer: nothing you or anyone else runs can survive it. Anything portable that does not need an installer will run. If you need an application we do not carry, email admin@coreframecloud.com. Free software we add to the standard image, usually the same day. Licensed software — Autodesk, Chaos, Lumion — needs your own account even to download, so we arrange a short setup session with you, and after that it is on every workstation you launch.",
   },
   {
     q: "Where exactly do I save my files?",
-    a: "On drive N:, labelled Coreframe Datalake. It is mapped for you before the desktop appears, and it is the only location that survives the session — the Desktop, Documents, Downloads and the whole C: drive are wiped when you finish, along with any software you installed. If your project uses linked assets, and D5 Render, Twinmotion and 3ds Max all do, keep the entire project folder on N: rather than only the scene file: the links break the moment the textures are somewhere that no longer exists. The simplest habit is Save As to N: at the very start, so every later save already lands in the right place.",
+    a: "On drive N:, labelled Coreframe Datalake. It is mapped for you before the desktop appears, and it is the only place that survives the session. The Desktop, Documents, Downloads and the whole C: drive are wiped when you finish, along with anything you installed. If your project uses linked assets — D5 Render, Twinmotion and 3ds Max all do — keep the entire project folder on N: rather than only the scene file, because the links break the moment the textures sit somewhere that no longer exists. The simplest habit is Save As to N: at the very start, so every later save already lands in the right place.",
   },
   {
     q: "Why is the workstation wiped between sessions?",
-    a: "So that every customer starts from an identical, clean machine and no trace of anyone else's work can reach them. If your projects are under NDA, this is the property you want: the previous session cannot leave files, credentials or browser history behind for you to find, and neither can yours for the next person.",
+    a: "So every customer starts from an identical, clean machine and no trace of anyone else's work can reach them. If your projects are under NDA, this is the property you want: the previous session cannot leave files, credentials or browser history behind for you to find, and yours cannot for the next person.",
   },
   {
     q: "What internet speed do I need?",
-    a: "Around 10 Mbps is enough for a smooth session, and 25 Mbps or more is comfortable. A wired connection or 5 GHz Wi-Fi makes a bigger difference than raw bandwidth, because streaming is far more sensitive to latency and jitter than to throughput.",
+    a: "About 20 Mbps is comfortable at 1080p, and around 50 Mbps shows the 4K stream at its best. Steadiness matters more than raw bandwidth — a wired connection or 5 GHz Wi-Fi beats a quicker link that drops packets, because streaming is more sensitive to latency and jitter than to throughput.",
   },
   {
     q: "Can my whole studio use one account?",
-    a: "No — each person needs their own account, because the identity record is per person. A business account can hold the whole team under one organisation, with a shared wallet and a shared drive, so you get one bill and one place to manage seats while everyone signs in as themselves.",
+    a: "No. Each person needs their own account, because the identity record is per person. A business account holds the whole team under one organisation, with a shared wallet and a shared drive, so you get one bill and one place to manage seats while everyone signs in as themselves.",
   },
   {
     q: "Where are the machines located?",
-    a: "In India. That keeps latency low for Indian users and means your data and your invoices stay within Indian jurisdiction.",
+    a: `In ${NODE.location}. That keeps latency low for Indian users, and it means your data and your invoices stay within Indian jurisdiction.`,
   },
   {
     q: "How do I get my files onto the workstation?",
-    a: "Upload them to your Coreframe storage from the app or the website before the session, and they are on the mapped drive when the desktop appears. You can also download directly inside the session from cloud storage you already use.",
+    a: "Upload them to your Coreframe storage from the app or the website before the session, and they are on the mapped drive when the desktop appears. You can also download straight into the session from cloud storage you already use.",
   },
 ];
 
@@ -98,7 +103,7 @@ export default function HowToUsePage() {
     step: STEPS.map((s, i) => ({
       "@type": "HowToStep",
       position: i + 1,
-      name: s.title.replace(/^\d+\.\s*/, ""),
+      name: s.title.replace(/^\d+\.\s*/, "").replace(/\.$/, ""),
       text: s.body,
     })),
   };
@@ -114,66 +119,68 @@ export default function HowToUsePage() {
   };
 
   return (
-    <main className="mx-auto max-w-4xl px-6 py-20">
+    <main className="cf-section px-5">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(howTo) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
 
-      <h1 className="cf-display">How to use Coreframe</h1>
-      <p className="mt-5 text-lg leading-8 text-ink-2">
-        Coreframe rents Windows GPU workstations by the minute, hosted in India. You stream a
-        real RTX desktop to the computer you already own, work on it as normal, and pay only for
-        the minutes you use. Here is the whole thing, start to finish.
-      </p>
-
-      <section className="mt-14">
-        <h2 className="cf-section-title">Getting started</h2>
-        <ol className="mt-6 space-y-6">
-          {STEPS.map((step) => (
-            <li key={step.title} className="rounded-cf border border-rule bg-paper-2 p-5">
-              <h3 className="font-semibold text-ink">{step.title}</h3>
-              <p className="mt-2 leading-7 text-ink-2">{step.body}</p>
-            </li>
-          ))}
-        </ol>
-      </section>
-
-      <section id="saving-your-work" className="mt-14 scroll-mt-24 rounded-cf border border-blue/20 bg-blue/[0.05] p-6">
-        <h2 className="cf-section-title">The one thing to know before you start</h2>
-        <p className="mt-3 leading-7 text-ink-2">
-          The workstation resets between sessions. Software you install and anything left on
-          the Desktop, in Documents or on C: is wiped when you finish. Only drive{" "}
-          <span className="font-mono font-semibold text-ink">N:</span> — labelled{" "}
-          <span className="font-semibold text-ink">Coreframe Datalake</span> — survives. Save
-          your work there and nothing is lost.
+      <div className="cf-col">
+        <div className="cf-eyebrow">How to use Coreframe</div>
+        <h1 className="cf-display mt-3">From sign-up to your first render.</h1>
+        <p className="cf-lead mt-5">
+          Coreframe rents Windows GPU workstations by the minute, hosted in India. You stream a real{" "}
+          {NODE.gpu} desktop to the computer you already own, work on it as normal, and pay for the
+          minutes you use. Here is the whole thing, start to finish.
         </p>
-        <p className="mt-3 leading-7 text-ink-2">
-          It is what makes every session start from a clean, identical machine — no leftovers
-          from the customer before you, and none of yours left for the customer after.
-        </p>
-      </section>
 
-      <section className="mt-14">
-        <h2 className="cf-section-title">Common questions</h2>
-        <div className="mt-6 space-y-6">
-          {FAQS.map((faq) => (
-            <div key={faq.q}>
-              <h3 className="font-semibold text-ink">{faq.q}</h3>
-              <p className="mt-2 leading-7 text-ink-2">{faq.a}</p>
-            </div>
-          ))}
+        <section className="mt-14">
+          <h2 className="cf-section-title">Six steps.</h2>
+          <ol className="mt-8 space-y-8">
+            {STEPS.map((step) => (
+              <li key={step.title} className="cf-card">
+                <h3 className="text-[17px] leading-6 font-semibold text-ink">{step.title}</h3>
+                <p className="cf-section-copy mt-3">{step.body}</p>
+              </li>
+            ))}
+          </ol>
+        </section>
+
+        <section id="saving-your-work" className="cf-note mt-14 scroll-mt-24">
+          <h2 className="cf-section-title">Read this before your first session.</h2>
+          <p className="cf-section-copy mt-3">
+            The workstation resets between sessions. Software you install, and anything left on the
+            Desktop, in Documents or on C:, is wiped when you finish. Only drive{" "}
+            <span className="font-mono font-semibold text-ink">N:</span> — labelled Coreframe
+            Datalake — survives. Save your work there and nothing is lost.
+          </p>
+          <p className="cf-section-copy mt-3">
+            That reset is what makes every session start from a clean, identical machine. No
+            leftovers from the customer before you, and none of yours for the customer after.
+          </p>
+        </section>
+
+        <section className="mt-14">
+          <h2 className="cf-section-title">Common questions.</h2>
+          <div className="mt-8 space-y-7">
+            {FAQS.map((faq) => (
+              <div key={faq.q}>
+                <h3 className="font-semibold break-words text-ink">{faq.q}</h3>
+                <p className="mt-2 leading-7 break-words text-ink-2">{faq.a}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <div className="mt-14 flex flex-wrap gap-4">
+          <Link href="/apps" className="cf-btn-secondary min-h-[44px]">
+            What is preinstalled
+          </Link>
+          <Link href="/pricing" className="cf-btn-secondary min-h-[44px]">
+            Pricing
+          </Link>
+          <Link href="/contact" className="cf-btn-secondary min-h-[44px]">
+            Talk to us
+          </Link>
         </div>
-      </section>
-
-      <div className="mt-14 flex flex-wrap gap-4">
-        <Link href="/apps" className="cf-btn-secondary">
-          See what&apos;s preinstalled
-        </Link>
-        <Link href="/pricing" className="cf-btn-secondary">
-          Pricing
-        </Link>
-        <Link href="/contact" className="cf-btn-secondary">
-          Talk to us
-        </Link>
       </div>
     </main>
   );

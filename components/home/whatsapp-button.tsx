@@ -1,33 +1,39 @@
 "use client";
 
-import { MessageCircle } from "lucide-react";
+import { WhatsAppIcon } from "@/components/brand/contact-icons";
+import { COMPANY } from "@/lib/company";
 
+/**
+ * The floating WhatsApp button.
+ *
+ * It used to be a ~230px pill with a label, pinned bottom-right at every
+ * width. On a 390px screen that is well over half the column, and a screenshot
+ * of the landing page showed it parked squarely on top of the old-way/new-way
+ * copy -- the one block on the page whose entire job is to be read.
+ *
+ * So: a circle on a phone, the pill only from `sm:` up where there is room for
+ * it beside the content rather than on top of it.
+ *
+ * The infinite `animate-ping` is gone too. A permanently pulsing element next
+ * to body copy competes with reading, and it repaints forever on a device that
+ * is paying for the battery.
+ *
+ * `bottom-[max(1.5rem,env(safe-area-inset-bottom))]` keeps it clear of the iOS
+ * home indicator, which otherwise overlaps a bottom-pinned control.
+ */
 export function WhatsAppButton() {
   return (
     <a
-      href="https://wa.me/916366889488?text=Hi%20Coreframe%20Cloud%2C%20I%20want%20to%20discuss%20a%20GPU%20workstation%20or%20compute%20requirement."
+      href={`${COMPANY.whatsapp}?text=${encodeURIComponent(
+        "Hi Coreframe, I want to ask about a GPU workstation.",
+      )}`}
       target="_blank"
       rel="noreferrer"
-      aria-label="Chat on WhatsApp"
-      className="fixed bottom-6 right-6 z-50"
+      aria-label="Chat with Coreframe on WhatsApp"
+      className="fixed right-4 bottom-[max(1rem,env(safe-area-inset-bottom))] z-50 flex h-14 w-14 items-center justify-center rounded-full bg-[#25D366] text-white shadow-lg transition hover:brightness-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink sm:right-6 sm:bottom-6 sm:h-auto sm:w-auto sm:gap-2.5 sm:rounded-full sm:px-5 sm:py-3.5"
     >
-      <div className="relative">
-        <span className="absolute inset-0 animate-ping rounded-full bg-green-400 opacity-30" />
-        <span className="absolute -inset-1 rounded-full bg-green-400/20 blur-md" />
-        <div className="relative flex items-center gap-3 rounded-full border border-green-300/30 bg-green-500 px-5 py-3 text-ink shadow-2xl shadow-green-500/30 transition duration-200 hover:scale-105 hover:bg-green-400">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-green-500">
-            <MessageCircle className="h-5 w-5" />
-          </div>
-          <div className="pr-1">
-            <div className="text-xs font-medium leading-none text-green-50/90">
-              Chat with us
-            </div>
-            <div className="mt-1 text-sm font-semibold leading-none">
-              WhatsApp
-            </div>
-          </div>
-        </div>
-      </div>
+      <WhatsAppIcon className="h-7 w-7 sm:h-5 sm:w-5" />
+      <span className="hidden text-sm font-semibold sm:inline">WhatsApp us</span>
     </a>
   );
 }

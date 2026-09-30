@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { BackgroundGlow } from "@/components/home/background-glow";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { getRateCard, adhocRateHourly, adhocRate, billingSentence } from "@/lib/rate-card";
+import { NODE, WORKSTATION_REPLACEMENT_COST } from "@/lib/node-spec";
 
 export const metadata: Metadata = {
   // No price in the title or description: both are cached by search engines
@@ -16,33 +16,47 @@ export const metadata: Metadata = {
 const whatsapp = (message: string) =>
   `https://wa.me/916366889488?text=${encodeURIComponent(message)}`;
 
-const node = {
-  tag: "3D / WINDOWS",
-  name: "NVIDIA RTX 5080",
-  specs: [
-    { label: "GPU", value: "NVIDIA RTX 5080 (Blackwell)" },
-    { label: "VRAM", value: "16 GB GDDR7" },
-    { label: "Memory bandwidth", value: "960 GB/s" },
-    { label: "CUDA cores", value: "10,752" },
-    { label: "System RAM", value: "64 GB" },
-    { label: "CPU", value: "8-core AMD Ryzen 7" },
-    { label: "Storage", value: "500 GB NVMe" },
-    { label: "Board power", value: "360 W" },
-  ],
-};
+/**
+ * The spec list is BUILT FROM `lib/node-spec`, not typed here.
+ *
+ * This page used to carry its own copy — including "500 GB NVMe", which
+ * disagreed with the 1 TB Gen 5 drive that is actually in the machine, and a
+ * CUDA-core and board-power figure nobody had read off the node. Sixteen pages
+ * each kept their own list and they had already drifted apart. One import now,
+ * and a fleet change edits one file.
+ */
+const SPECS: { label: string; value: string }[] = [
+  { label: "GPU", value: NODE.gpu },
+  { label: "VRAM", value: NODE.vram },
+  { label: "Memory bandwidth", value: NODE.memoryBandwidth },
+  { label: "System RAM", value: NODE.ram },
+  { label: "CPU", value: NODE.cpu },
+  { label: "Working disk", value: NODE.disk },
+  { label: "Operating system", value: NODE.os },
+  { label: "Stream", value: NODE.stream },
+  { label: "Location", value: NODE.location },
+];
 
-const goodFor = [
+/**
+ * NOT "a full Windows desktop over RDP".
+ *
+ * RDP is the thing the rest of the site positions against — it is what you get
+ * from a GPU you rent somewhere else, and it is not a viewport you can model
+ * in. The machine is reached through the Coreframe Connect app and streamed at
+ * 4K/60. Saying RDP here sold the competitor's product on our own page.
+ */
+const GOOD_FOR = [
   {
-    title: "Design and visualisation",
-    text: "D5 Render, Lumion, Enscape, Revit, AutoCAD, 3ds Max and SolidWorks on a full Windows desktop over RDP.",
+    title: "Design and visualisation.",
+    text: `D5 Render, Lumion, Enscape, Revit, AutoCAD, 3ds Max and SolidWorks on a real ${NODE.os} desktop. You open it in the Coreframe Connect app and it streams at ${NODE.stream}, so the viewport moves when you move it.`,
   },
   {
-    title: "Final-frame and animation output",
-    text: "Run long renders on the node instead of your workstation, and keep working locally while frames finish.",
+    title: "Long renders and animation output.",
+    text: "The render runs on the node. Your own laptop stays free — keep modelling, keep drafting, keep answering email while the frames finish.",
   },
   {
-    title: "Client review sessions",
-    text: "Spin a node up for a walkthrough or a review call, then shut it down — you only pay for the minutes it streamed.",
+    title: "Client review sessions.",
+    text: "Start a node for a walkthrough, close it when the call ends. You pay for the minutes it streamed and nothing after that.",
   },
 ];
 
@@ -52,171 +66,150 @@ export default async function ComputeNodesPage() {
   const rate = adhocRate(card);
 
   return (
-    <div className="min-h-screen bg-slate-950 text-ink">
+    <div className="relative min-h-screen bg-paper text-ink">
       <BackgroundGlow />
 
-      <main className="relative mx-auto max-w-7xl px-6 pb-20 pt-20 md:pt-28">
-        <div className="max-w-3xl">
-          <div className="cf-eyebrow">
-            Compute Nodes
+      <main className="relative">
+        <section className="cf-section px-5">
+          <div className="cf-wide">
+            <div className="cf-eyebrow">Compute nodes</div>
+            <h1 className="cf-display mt-3">One node. One GPU. Nothing to configure.</h1>
+            <p className="cf-lead mt-5 max-w-[680px]">
+              Every Coreframe node is the same machine — {NODE.gpu}, {NODE.vram}, {NODE.ram} of RAM,
+              an {NODE.cpu}, in {NODE.location}. One machine means one price, and no tier you can
+              pick wrong. A workstation like it costs about {WORKSTATION_REPLACEMENT_COST} to buy,
+              and then sits under a desk waiting for the weeks you need it.
+            </p>
           </div>
-          <h1 className="cf-display mt-3">
-            One node. One GPU. No configuration to get wrong.
-          </h1>
-          <p className="mt-5 max-w-2xl text-base leading-8 text-ink-2 md:text-lg">
-            Every Coreframe node is the same machine: an NVIDIA RTX 5080 with
-            16 GB GDDR7, 64 GB of RAM and an 8-core AMD Ryzen 7, hosted in Bengaluru.
-            One SKU means the price you see is the price you are billed, and
-            there is no wrong tier to pick.
-          </p>
-        </div>
+        </section>
 
-        <section className="mt-14">
-          <div className="cf-eyebrow">
-            3D Rendering / Hourly
-          </div>
-          <h2 className="cf-section-title mt-3">
-            RTX 5080 for rendering and visualization.
-          </h2>
+        <div className="cf-rule" />
 
-          <div className="mt-8 grid gap-6 lg:grid-cols-3">
-            <Card className="rounded-[1.6rem] border-rule bg-paper-2 lg:col-span-2">
-              <CardContent className="p-6 md:p-8">
-                <div className="inline-flex rounded-md border border-blue/25 bg-blue/10 px-3 py-1 text-xs font-medium text-blue">
-                  {node.tag}
-                </div>
+        <section className="cf-section px-5">
+          <div className="cf-wide">
+            <div className="cf-eyebrow">The machine</div>
+            <h2 className="cf-section-title mt-3">What you get when you press connect.</h2>
 
-                <div className="mt-5 text-3xl font-semibold tracking-tight md:text-4xl">
-                  {node.name}
-                </div>
-
-                <div className="mt-6 grid gap-x-8 gap-y-3 sm:grid-cols-2">
-                  {node.specs.map((spec) => (
-                    <div
-                      key={spec.label}
-                      className="flex items-baseline justify-between gap-4 border-b border-rule pb-2 text-sm"
-                    >
-                      <span className="text-ink-2">{spec.label}</span>
-                      <span className="font-medium text-ink">
+            <div className="mt-10 grid grid-cols-1 gap-8 lg:grid-cols-3">
+              <div className="min-w-0 lg:col-span-2">
+                {/* Label above value, never beside it. A two-column row put
+                    "8-core AMD Ryzen 7" opposite its label and ran off a
+                    390px screen; stacked, nothing can overflow. */}
+                <dl className="grid grid-cols-1 gap-x-8 gap-y-5 sm:grid-cols-2">
+                  {SPECS.map((spec) => (
+                    <div key={spec.label} className="min-w-0 border-t border-rule pt-3">
+                      <dt className="cf-card-label">{spec.label}</dt>
+                      <dd className="text-[15px] leading-6 font-medium break-words text-ink">
                         {spec.value}
-                      </span>
+                      </dd>
                     </div>
                   ))}
-                </div>
+                </dl>
 
-                <div className="mt-8 flex flex-wrap items-center justify-between gap-4 border-t border-rule pt-6">
-                  <div>
-                    <div className="text-sm text-ink-2">
-                      Pay-as-you-go, GST included
-                    </div>
-                    <div className="text-3xl font-semibold text-blue">
-                      {nodePrice ?? "—"}
-                    </div>
-                    <div className="mt-1 text-xs text-ink-2">
-                      Per GPU-hour · billed per minute from stream start
-                    </div>
+                <div className="mt-10 border-t border-rule pt-6">
+                  <div className="cf-card-label">Pay as you go</div>
+                  <div className="mt-2 text-[34px] leading-none font-semibold text-ink">
+                    {nodePrice ?? "On request"}
                   </div>
+                  <p className="mt-3 text-sm leading-6 text-ink-2">
+                    Per GPU-hour, GST already inside the number. Billed per minute from the moment
+                    the stream starts.
+                  </p>
                   <a
                     href={whatsapp(
                       "Hi Coreframe Cloud, I want to reserve an RTX 5080 node for a 3D rendering / visualization workload."
                     )}
                     target="_blank"
                     rel="noreferrer"
+                    className="cf-btn-primary mt-6 min-h-[44px]"
                   >
-                    <Button className="rounded-cf">Reserve</Button>
+                    Reserve a node
                   </a>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
 
-            <Card className="rounded-[1.6rem] border-rule bg-paper-2">
-              <CardContent className="p-6 md:p-8">
-                <div className="text-sm uppercase tracking-[0.2em] text-blue">
-                  How billing works
-                </div>
-                <ul className="mt-5 space-y-4 text-sm leading-6 text-ink-2">
+              <div className="min-w-0 border-t-2 border-ink pt-5">
+                <div className="cf-card-label">How billing works</div>
+                <ul className="space-y-5 text-sm leading-6 text-ink-2">
                   <li>
                     <span className="font-medium text-ink">
-                      {rate ? `${rate} per GPU-hour, GST included.` : "GST is included in the published rate."}
+                      {rate ? `${rate} per GPU-hour, GST included.` : "GST is inside the published rate."}
                     </span>{" "}
-                    What you see is what you pay — the 18% GST component is
-                    inside the rate, and business customers get a full tax
-                    invoice showing the split.
+                    What you see is what you pay. Every invoice shows the taxable value and the 18%
+                    GST split, so you can claim input credit.
                   </li>
                   <li>
-                    <span className="font-medium text-ink">
-                      Billed per minute from stream start.
-                    </span>{" "}
+                    <span className="font-medium text-ink">Billed per minute.</span>{" "}
                     {billingSentence(card)}
                   </li>
                   <li>
-                    <span className="font-medium text-ink">
-                      No commitment.
-                    </span>{" "}
-                    Spin up anytime and shut down when you are done. Committed
-                    monthly plans are cheaper per hour if you run regularly.
+                    <span className="font-medium text-ink">Nothing to commit to.</span> Start a node
+                    when you need it, close it when you are done. If you render every week, a
+                    monthly plan bills the hours lower.
                   </li>
                   <li>
                     <span className="font-medium text-ink">
-                      20 GB persistent storage free, 50 GB with credit. Session scratch cleared at session end.
+                      20 GB of storage free, 50 GB once you add credit.
                     </span>{" "}
-                    Download your outputs before shutting down, or add
-                    persistent NAS storage to the account.
+                    Session scratch is wiped when the session ends. Pull your outputs down first, or
+                    put the project on persistent NAS storage.
                   </li>
                 </ul>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           </div>
         </section>
 
-        <section className="mt-20">
-          <div className="cf-eyebrow">
-            What it is for
-          </div>
-          <h2 className="cf-section-title mt-3">
-            Built around design and rendering workflows.
-          </h2>
+        <div className="cf-rule" />
 
-          <div className="mt-8 grid gap-6 md:grid-cols-3">
-            {goodFor.map((item) => (
-              <Card
-                key={item.title}
-                className="rounded-[1.6rem] border-rule bg-paper-2"
+        <section className="cf-section px-5">
+          <div className="cf-wide">
+            <div className="cf-eyebrow">What it is for</div>
+            <h2 className="cf-section-title mt-3">Three ways studios use one.</h2>
+
+            <div className="mt-10 grid grid-cols-1 gap-8 md:grid-cols-3">
+              {GOOD_FOR.map((item) => (
+                <div key={item.title} className="cf-card">
+                  <div className="text-[17px] leading-6 font-semibold text-ink">{item.title}</div>
+                  <p className="mt-3 text-sm leading-6 text-ink-2">{item.text}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <div className="cf-rule" />
+
+        <section className="cf-section px-5">
+          <div className="cf-col">
+            <h2 className="cf-section-title">Licences are yours.</h2>
+            <p className="cf-section-copy mt-4">
+              Bring your own D5 Render, Lumion, Enscape or SolidWorks seat. You install it on the
+              workstation and sign in as yourself. We rent you the hardware and the install, never
+              the licence.
+            </p>
+            <p className="cf-section-copy mt-4">
+              Need something this configuration does not cover — more storage, a different image, a
+              node that stays up for a month? Ask, and we will tell you straight whether we can run
+              it.
+            </p>
+            <div className="mt-8 flex flex-wrap items-center gap-4">
+              <a
+                href={whatsapp(
+                  "Hi Coreframe Cloud, I'd like to talk about RTX 5080 compute nodes for my team."
+                )}
+                target="_blank"
+                rel="noreferrer"
+                className="cf-btn-primary min-h-[44px]"
               >
-                <CardContent className="p-6">
-                  <div className="text-lg font-semibold text-ink">
-                    {item.title}
-                  </div>
-                  <p className="mt-3 text-sm leading-7 text-ink-2">
-                    {item.text}
-                  </p>
-                </CardContent>
-              </Card>
-            ))}
+                Talk to us on WhatsApp
+              </a>
+              <Link href="/pricing" className="cf-btn-secondary min-h-[44px]">
+                See pricing
+              </Link>
+            </div>
           </div>
         </section>
-
-        <div className="mt-14 flex flex-wrap items-center gap-4">
-          <a
-            href={whatsapp(
-              "Hi Coreframe Cloud, I'd like to talk about RTX 5080 compute nodes for my team."
-            )}
-            target="_blank"
-            rel="noreferrer"
-          >
-            <Button className="rounded-cf">Talk to us on WhatsApp</Button>
-          </a>
-          <span className="text-sm text-ink-2">
-            Software licences are BYOL — bring your own D5 Render, Lumion,
-            Enscape or SolidWorks seat.
-          </span>
-        </div>
-
-        <p className="mt-10 text-sm text-ink-2">
-          Need something outside this configuration — more storage, a different
-          OS image, or a longer-running reserved node? Talk to us and we will
-          tell you honestly whether we can run it.
-        </p>
       </main>
     </div>
   );

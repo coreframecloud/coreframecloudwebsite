@@ -98,6 +98,16 @@ export const COMPANY_MAPS_URL = "https://maps.google.com/?cid=148174540846346079
  * Only add a profile here once it exists and resolves. A sameAs pointing at a
  * 404 is a broken identity claim, which is worse than a short list.
  */
+/**
+ * The Instagram profile. It was typed in the footer and again in the
+ * layout's sameAs array, and the bio link hub dropped it entirely during the
+ * rewrite because there was no constant to reach for. One name now.
+ */
+export const COMPANY_INSTAGRAM_URL = "https://www.instagram.com/coreframecloud/";
+
+/** The handle on its own. People search the handle, not the word "Instagram". */
+export const COMPANY_INSTAGRAM_HANDLE = "@coreframecloud";
+
 export const COMPANY_YOUTUBE_URL = "https://www.youtube.com/@CoreframeCloud";
 
 /** Full postal address, for legal pages and invoices. */

@@ -82,7 +82,7 @@ function UserAvatar({ initials, accountNumber, onSignOut }: { initials: string; 
       <button
         type="button"
         onClick={() => setDropdownOpen((p) => !p)}
-        className="flex h-8 w-8 items-center justify-center rounded-full border border-rule-strong bg-paper-2 text-xs font-semibold text-ink transition hover:border-rule-strong hover:bg-paper-2"
+        className="flex h-11 w-11 items-center justify-center rounded-full border border-rule-strong bg-paper-2 text-xs font-semibold text-ink transition hover:border-rule-strong hover:bg-paper-2"
         aria-label="User menu"
       >
         {initials}
@@ -220,7 +220,7 @@ export function SiteHeader() {
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
 
         {/* Logo */}
-        <Link href="/" aria-label="COREFRAME Home" className="shrink-0" onClick={handleLogoClick}>
+        <Link href="/" aria-label="COREFRAME Home" className="flex min-h-11 shrink-0 items-center" onClick={handleLogoClick}>
           <CoreframeWordmarkAtlas iconSize={44} compact />
         </Link>
 

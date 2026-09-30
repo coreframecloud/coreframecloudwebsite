@@ -189,40 +189,41 @@ const BC_TYPES = [
 
 // ─── Sub-components ──────────────────────────────────────────────────────────
 
-function Panel({ icon, title, subtitle, children }: {
-  icon: string; title: string; subtitle?: string; children: React.ReactNode;
+function Panel({ title, subtitle, children }: {
+  title: string; subtitle?: string; children: React.ReactNode;
 }) {
   return (
-    <div className="rounded-cf border border-rule bg-paper-2 p-6 backdrop-blur-sm">
-      <div className="mb-5 flex items-start gap-3 border-b border-rule pb-4">
-        <span className="text-2xl">{icon}</span>
-        <div>
-          <div className="font-semibold text-ink">{title}</div>
-          {subtitle && <div className="mt-0.5 text-xs text-ink-2">{subtitle}</div>}
-        </div>
+    <div className="rounded-cf border border-rule bg-paper-2 p-4 sm:p-6">
+      <div className="mb-5 border-b border-rule pb-4">
+        <h2 className="text-base font-semibold text-ink">{title}</h2>
+        {subtitle && <p className="mt-1 text-[13px] leading-5 text-ink-2">{subtitle}</p>}
       </div>
       {children}
     </div>
   );
 }
 
-function Field({ label, required, children }: {
-  label: string; required?: boolean; children: React.ReactNode;
+function Field({ label, required, full, children }: {
+  label: string; required?: boolean; full?: boolean; children: React.ReactNode;
 }) {
   return (
-    <div className="flex flex-col gap-1.5">
-      <label className="text-xs font-semibold uppercase tracking-wider text-ink-2">
-        {label}{required && <span className="ml-1 text-amber-400">✱</span>}
+    <div className={`flex min-w-0 flex-col gap-1.5 ${full ? "sm:col-span-full" : ""}`}>
+      <label className="text-[13px] leading-5 font-medium text-ink">
+        {label}
+        {required && (
+          <span className="ml-1 text-destructive" aria-hidden="true">*</span>
+        )}
       </label>
       {children}
     </div>
   );
 }
 
-const inputCls =
-  "w-full rounded-cf border border-rule bg-paper-2 px-3 py-2.5 text-sm text-ink outline-none placeholder:text-ink-3 focus:border-blue/60 focus:ring-2 focus:ring-blue/20 transition";
-const selectCls =
-  "w-full rounded-cf border border-rule bg-paper-2 px-3 py-2.5 text-sm text-ink outline-none focus:border-blue/60 focus:ring-2 focus:ring-blue/20 transition";
+const fieldBase =
+  "w-full min-w-0 rounded-cf border border-rule bg-paper px-3 text-base text-ink outline-none transition placeholder:text-ink-3 focus:border-blue focus:ring-2 focus:ring-blue/20 md:text-sm";
+const inputCls = `${fieldBase} h-11 md:h-10`;
+const selectCls = `${fieldBase} h-11 md:h-10`;
+const textareaCls = `${fieldBase} min-h-[88px] resize-y py-2.5 leading-6`;
 
 function RadioGroup({ name, value, onChange, options }: {
   name: string; value: string;
@@ -234,10 +235,10 @@ function RadioGroup({ name, value, onChange, options }: {
       {options.map((o) => (
         <label
           key={o.value}
-          className={`flex cursor-pointer items-center gap-2 rounded-cf border px-3 py-2 text-sm transition ${
+          className={`flex min-h-11 cursor-pointer items-center gap-2 rounded-cf border px-4 py-2 text-sm transition ${
             value === o.value
-              ? "border-blue-500/60 bg-blue-500/10 text-blue-200"
-              : "border-rule bg-paper-2 text-ink-2 hover:border-rule-strong"
+              ? "border-blue bg-paper font-medium text-blue"
+              : "border-rule bg-paper text-ink-2 hover:border-rule-strong"
           }`}
         >
           <input
@@ -260,10 +261,10 @@ function CheckChip({ checked, onChange, label }: {
 }) {
   return (
     <label
-      className={`flex cursor-pointer items-center gap-2 rounded-cf border px-3 py-2 text-sm transition ${
+      className={`flex min-h-11 cursor-pointer items-center gap-2 rounded-cf border px-4 py-2 text-sm transition ${
         checked
-          ? "border-blue-500/60 bg-blue-500/10 text-blue-200"
-          : "border-rule bg-paper-2 text-ink-2 hover:border-rule-strong"
+          ? "border-blue bg-paper font-medium text-blue"
+          : "border-rule bg-paper text-ink-2 hover:border-rule-strong"
       }`}
     >
       <input
@@ -272,8 +273,8 @@ function CheckChip({ checked, onChange, label }: {
         onChange={(e) => onChange(e.target.checked)}
         className="sr-only"
       />
-      <span className={`h-3.5 w-3.5 rounded border ${checked ? "border-blue-400 bg-blue-500" : "border-slate-600"} flex items-center justify-center`}>
-        {checked && <span className="text-[9px] text-ink">✓</span>}
+      <span className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-cf border ${checked ? "border-blue bg-blue" : "border-rule-strong"}`}>
+        {checked && <span className="text-[10px] leading-none text-white">✓</span>}
       </span>
       {label}
     </label>
@@ -317,25 +318,25 @@ export default function CfdIntakeForm() {
   const validatePage = (p: number): string[] => {
     const errs: string[] = [];
     if (p === 0) {
-      if (!form.company)        errs.push("Company / Organisation");
-      if (!form.projectName)    errs.push("Project Name");
-      if (!form.contactName)    errs.push("Your Name");
+      if (!form.company)        errs.push("Company or organisation");
+      if (!form.projectName)    errs.push("Project name");
+      if (!form.contactName)    errs.push("Your name");
       if (!form.email)          errs.push("Email");
-      if (!form.applicationType) errs.push("CFD Application Type");
-      if (!form.solverSoftware) errs.push("Preferred Solver");
-      if (!form.deadline)       errs.push("Results Needed By");
-      if (!form.description)    errs.push("Project Description");
+      if (!form.applicationType) errs.push("CFD application type");
+      if (!form.solverSoftware) errs.push("Preferred solver software");
+      if (!form.deadline)       errs.push("Results needed by");
+      if (!form.description)    errs.push("Brief project description");
     }
     if (p === 1) {
-      if (!form.domainType) errs.push("Domain Type");
+      if (!form.domainType) errs.push("Domain type");
     }
     if (p === 3) {
-      if (!form.flowRegime)      errs.push("Flow Regime");
-      if (!form.fluidType)       errs.push("Fluid Type");
-      if (!form.turbulenceModel) errs.push("Turbulence Modelling");
+      if (!form.flowRegime)      errs.push("Flow regime");
+      if (!form.fluidType)       errs.push("Fluid type");
+      if (!form.turbulenceModel) errs.push("Turbulence modelling");
     }
     if (p === 5) {
-      if (!form.authName) errs.push("Authorising Name");
+      if (!form.authName) errs.push("Authorising name");
       if (!form.authDate) errs.push("Date");
       if (!form.confirmAccuracy) errs.push("Accuracy declaration (must tick)");
     }
@@ -381,7 +382,7 @@ export default function CfdIntakeForm() {
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (err: unknown) {
       setSubmitError(
-        err instanceof Error ? err.message : "Submission failed — please try again or WhatsApp us."
+        err instanceof Error ? err.message : "That did not send. Try again, or WhatsApp us."
       );
     } finally {
       setSubmitting(false);
@@ -424,7 +425,7 @@ export default function CfdIntakeForm() {
       };
       setTimeout(poll, 1500);
     } catch (err: unknown) {
-      setUploadError(err instanceof Error ? err.message : "Upload failed — please try again.");
+      setUploadError(err instanceof Error ? err.message : "Upload failed. Try again.");
     } finally {
       setUploading(false);
     }
@@ -433,36 +434,36 @@ export default function CfdIntakeForm() {
   // ── Success screen ──────────────────────────────────────────────────────────
   if (submitted) {
     return (
-      <div className="mx-auto max-w-2xl py-10">
+      <div className="mx-auto max-w-2xl px-1 py-10">
         {/* Header */}
-        <div className="text-center mb-8">
-          <div className="mb-4 text-5xl">🚀</div>
-          <h2 className="cf-section-title">Job submitted!</h2>
-          <p className="mt-3 max-w-md mx-auto text-ink-2 text-sm leading-6">
-            Upload your CAD file below and we&apos;ll spin up the solver — results delivered as PDF + data files.
+        <div className="mb-8 text-center">
+          <h2 className="cf-section-title">Job submitted.</h2>
+          <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-ink-2">
+            Upload your CAD file below and we start the solver. You get a PDF
+            report and the data files back.
           </p>
-          <div className="my-6 inline-block rounded-cf border border-blue-500/30 bg-blue-500/10 px-8 py-4 font-mono text-2xl font-bold tracking-widest text-blue-300">
+          <div className="my-6 inline-block max-w-full rounded-cf border border-rule bg-paper-2 px-5 py-4 font-mono text-xl font-bold tracking-widest break-words text-blue sm:px-8 sm:text-2xl">
             {refId}
           </div>
-          <p className="text-xs text-ink-3">Save this ID — use it for all correspondence about this job.</p>
+          <p className="text-xs text-ink-3">
+            Save this ID. Quote it in anything you send us about this job.
+          </p>
         </div>
 
         {/* CAD file upload */}
-        <div className="rounded-cf border border-rule bg-paper-2 p-6 mb-6">
-          <div className="mb-4 flex items-start gap-3 border-b border-rule pb-4">
-            <span className="text-2xl">📁</span>
-            <div>
-              <div className="font-semibold text-ink">Upload your CAD file</div>
-              <div className="mt-0.5 text-xs text-ink-2">
-                STL files are validated automatically. STEP / IGES reviewed by our engineer. Max 80 MB.
-              </div>
-            </div>
+        <div className="mb-6 rounded-cf border border-rule bg-paper-2 p-4 sm:p-6">
+          <div className="mb-4 border-b border-rule pb-4">
+            <h3 className="text-base font-semibold text-ink">Upload your CAD file.</h3>
+            <p className="mt-1 text-[13px] leading-5 text-ink-2">
+              STL files are checked automatically. STEP and IGES go to an
+              engineer. Max 80 MB.
+            </p>
           </div>
 
           {!uploadDone ? (
             <div className="space-y-4">
-              <div className="flex flex-col sm:flex-row gap-3 items-start">
-                <label className="flex-1 cursor-pointer rounded-cf border-2 border-dashed border-rule p-4 text-center hover:border-blue-500/40 transition">
+              <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-start">
+                <label className="flex min-h-11 flex-1 cursor-pointer items-center justify-center rounded-cf border-2 border-dashed border-rule p-4 text-center transition hover:border-blue">
                   <input
                     type="file"
                     accept=".stl,.step,.stp,.iges,.igs,.x_t,.x_b"
@@ -470,12 +471,12 @@ export default function CfdIntakeForm() {
                     onChange={(e) => setUploadFile(e.target.files?.[0] ?? null)}
                   />
                   {uploadFile ? (
-                    <span className="text-sm text-blue-300 font-medium">
+                    <span className="text-sm font-medium break-words text-blue">
                       {uploadFile.name} ({(uploadFile.size / 1024 / 1024).toFixed(1)} MB)
                     </span>
                   ) : (
-                    <span className="text-sm text-ink-3">
-                      Click to select CAD file (.stl, .step, .iges, .stp, .x_t)
+                    <span className="text-sm break-words text-ink-3">
+                      Tap to choose a CAD file (.stl, .step, .iges, .stp, .x_t)
                     </span>
                   )}
                 </label>
@@ -483,22 +484,23 @@ export default function CfdIntakeForm() {
                   type="button"
                   disabled={!uploadFile || uploading}
                   onClick={handleFileUpload}
-                  className="rounded-cf bg-blue px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue-ink transition disabled:opacity-40"
+                  className="cf-btn-primary min-h-11 w-full disabled:opacity-40 sm:w-auto"
                 >
                   {uploading ? "Uploading…" : "Upload"}
                 </button>
               </div>
               {uploadError && (
-                <div className="rounded-cf border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-300">
+                <div className="rounded-cf border border-destructive/30 bg-destructive/5 p-3 text-sm break-words text-destructive">
                   {uploadError}
                 </div>
               )}
-              <p className="text-xs text-ink-3">
-                Or email files to{" "}
-                <a href="mailto:cfd@coreframecloud.com" className="text-blue-400/70">
+              <p className="text-xs leading-5 break-words text-ink-3">
+                Or email the files to{" "}
+                <a href="mailto:cfd@coreframecloud.com" className="break-all text-blue underline underline-offset-2">
                   cfd@coreframecloud.com
                 </a>{" "}
-                with <span className="text-ink-3 font-mono">{refId}</span> in the subject line.
+                with <span className="font-mono break-all text-ink-2">{refId}</span> in
+                the subject line.
               </p>
             </div>
           ) : (
@@ -510,22 +512,43 @@ export default function CfdIntakeForm() {
                 </div>
               ) : validationResult.status === "complete" ? (
                 <>
-                  <div className={`flex items-center gap-2 font-semibold text-sm ${validationResult.ready_for_meshing ? "text-green-400" : "text-amber-400"}`}>
-                    {validationResult.ready_for_meshing ? "✓ Geometry looks good — ready for meshing" : "⚠ Issues found — please review before your job starts"}
+                  <div className={`text-sm font-semibold ${validationResult.ready_for_meshing ? "text-ink" : "text-destructive"}`}>
+                    {validationResult.ready_for_meshing
+                      ? "Geometry looks good. It is ready for meshing."
+                      : "Issues found. Fix these before your job starts."}
                   </div>
                   {(validationResult.issues as Array<{ severity: string; message: string; fix: string }>).map((issue, i) => (
-                    <div key={i} className={`rounded-cf border p-3 text-sm ${issue.severity === "error" ? "border-red-500/30 bg-red-500/8 text-red-300" : "border-amber-500/30 bg-amber-500/8 text-amber-300"}`}>
-                      <div className="font-medium">{issue.severity === "error" ? "🔴" : "🟡"} {issue.message}</div>
-                      <div className="mt-1 text-xs opacity-75">Fix: {issue.fix}</div>
+                    <div
+                      key={i}
+                      className={`flex gap-2.5 rounded-cf border p-3 text-sm ${
+                        issue.severity === "error"
+                          ? "border-destructive/30 bg-destructive/5"
+                          : "border-rule bg-paper"
+                      }`}
+                    >
+                      <span
+                        aria-hidden="true"
+                        className={`mt-[7px] h-2 w-2 shrink-0 rounded-full ${issue.severity === "error" ? "bg-destructive" : "bg-blue"}`}
+                      />
+                      <div className="min-w-0">
+                        <div className="font-medium break-words text-ink">
+                          <span className={issue.severity === "error" ? "text-destructive" : "text-blue"}>
+                            {issue.severity === "error" ? "Error" : "Warning"}
+                          </span>
+                          {" — "}
+                          {issue.message}
+                        </div>
+                        <div className="mt-1 text-xs break-words text-ink-2">Fix: {issue.fix}</div>
+                      </div>
                     </div>
                   ))}
                   {!(validationResult.issues as unknown[]).length && (
-                    <p className="text-sm text-ink-2">No issues detected. Your geometry is mesh-ready.</p>
+                    <p className="text-sm text-ink-2">No issues found. Your geometry is mesh-ready.</p>
                   )}
                 </>
               ) : (
                 <p className="text-sm text-ink-2">
-                  {(validationResult.message as string) || "File received — our engineer will review the geometry."}
+                  {(validationResult.message as string) || "File received. An engineer will look at the geometry."}
                 </p>
               )}
             </div>
@@ -538,7 +561,7 @@ export default function CfdIntakeForm() {
               setSubmitted(false); setForm(INITIAL); setBcRows(DEFAULT_BC_ROWS); setPage(0);
               setUploadFile(null); setUploadDone(false); setValidationResult(null); setUploadError("");
             }}
-            className="rounded-cf border border-rule bg-paper-2 px-6 py-2.5 text-sm font-semibold text-ink-2 hover:bg-paper-2 transition"
+            className="cf-btn-secondary min-h-11 w-full sm:w-auto"
           >
             Submit another job
           </button>
@@ -549,25 +572,33 @@ export default function CfdIntakeForm() {
 
   // ── Step indicator ──────────────────────────────────────────────────────────
   const StepBar = () => (
-    <div className="mb-8 flex gap-1 overflow-x-auto pb-1">
-      {STEPS.map((s, i) => (
-        <button
-          key={s}
-          onClick={() => { setErrors([]); setPage(i); }}
-          className={`flex min-w-0 flex-1 flex-col items-center gap-1 rounded-cf px-2 py-2.5 text-xs font-semibold transition ${
-            i === page
-              ? "bg-blue text-white"
-              : i < page
-              ? "bg-green-500/15 text-green-300"
-              : "bg-paper-2 text-ink-3"
-          }`}
-        >
-          <span className={`text-base font-bold ${i < page ? "text-green-400" : ""}`}>
-            {i < page ? "✓" : i + 1}
-          </span>
-          {s}
-        </button>
-      ))}
+    <div className="mb-8">
+      <div className="flex gap-1">
+        {STEPS.map((s, i) => (
+          <button
+            key={s}
+            type="button"
+            onClick={() => { setErrors([]); setPage(i); }}
+            aria-current={i === page ? "step" : undefined}
+            aria-label={`Step ${i + 1}: ${s}`}
+            className={`flex min-h-11 min-w-0 flex-1 flex-col items-center justify-center gap-0.5 rounded-cf border px-1 py-2 text-[11px] font-medium transition sm:px-2 sm:text-xs ${
+              i === page
+                ? "border-blue bg-blue text-white"
+                : i < page
+                ? "border-rule bg-paper-2 text-ink"
+                : "border-rule bg-paper text-ink-3"
+            }`}
+          >
+            <span className="text-sm leading-none font-semibold sm:text-base">
+              {i < page ? "✓" : i + 1}
+            </span>
+            <span className="hidden truncate sm:block">{s}</span>
+          </button>
+        ))}
+      </div>
+      <p className="mt-2 text-center text-[13px] text-ink-2 sm:hidden">
+        Step {page + 1} of {STEPS.length} — {STEPS[page]}
+      </p>
     </div>
   );
 
@@ -575,39 +606,39 @@ export default function CfdIntakeForm() {
   const ErrorBanner = () => (
     <>
       {errors.length > 0 && (
-        <div className="mb-5 rounded-cf border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-300">
-          <strong>Please fill in:</strong> {errors.join(", ")}
+        <div className="mb-5 rounded-cf border border-destructive/30 bg-destructive/5 p-4 text-sm break-words text-destructive">
+          <strong>Fill these in first:</strong> {errors.join(", ")}
         </div>
       )}
       {submitError && (
-        <div className="mb-5 rounded-cf border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-300">
-          <strong>Submission error:</strong> {submitError}
+        <div className="mb-5 rounded-cf border border-destructive/30 bg-destructive/5 p-4 text-sm break-words text-destructive">
+          <strong>That did not send:</strong> {submitError}
         </div>
       )}
     </>
   );
 
   // ── Nav buttons ─────────────────────────────────────────────────────────────
-  const NavRow = ({ onNext, nextLabel = "Next →", isLast = false }: {
+  const NavRow = ({ onNext, nextLabel = "Next", isLast = false }: {
     onNext: () => void; nextLabel?: string; isLast?: boolean;
   }) => (
-    <div className="mt-6 flex justify-between">
-      <button
-        type="button"
-        onClick={prevPage}
-        className={`rounded-cf border border-rule bg-paper-2 px-5 py-2.5 text-sm font-semibold text-ink-2 transition hover:bg-paper-2 ${page === 0 ? "invisible" : ""}`}
-      >
-        ← Back
-      </button>
+    <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-between">
+      {page > 0 ? (
+        <button
+          type="button"
+          onClick={prevPage}
+          className="cf-btn-secondary min-h-11 w-full sm:w-auto"
+        >
+          ← Back
+        </button>
+      ) : (
+        <span aria-hidden="true" className="hidden sm:block" />
+      )}
       <button
         type="button"
         onClick={onNext}
         disabled={isLast && submitting}
-        className={`rounded-cf px-6 py-2.5 text-sm font-semibold text-white transition disabled:opacity-60 ${
-          isLast
-            ? "bg-green-600 hover:bg-green-500"
-            : "bg-blue hover:bg-blue-ink"
-        }`}
+        className="cf-btn-primary min-h-11 w-full disabled:opacity-60 sm:w-auto"
       >
         {isLast && submitting ? "Submitting…" : nextLabel}
       </button>
@@ -623,15 +654,15 @@ export default function CfdIntakeForm() {
       {/* PAGE 0 — Project */}
       {page === 0 && (
         <div className="space-y-5">
-          <Panel icon="🏢" title="Client & Project Details" subtitle="Used on your final report and invoice">
+          <Panel title="Client and project details." subtitle="Used on your final report and invoice.">
             <div className="grid gap-4 sm:grid-cols-2">
-              <Field label="Company / Organisation" required>
+              <Field label="Company or organisation" required>
                 <input className={inputCls} placeholder="e.g. Acme HVAC Pvt. Ltd." value={form.company} onChange={(e) => set("company", e.target.value)} />
               </Field>
-              <Field label="Project Name" required>
+              <Field label="Project name" required>
                 <input className={inputCls} placeholder="e.g. Office Building HVAC Study" value={form.projectName} onChange={(e) => set("projectName", e.target.value)} />
               </Field>
-              <Field label="Your Name" required>
+              <Field label="Your name" required>
                 <input className={inputCls} placeholder="Full name" value={form.contactName} onChange={(e) => set("contactName", e.target.value)} />
               </Field>
               <Field label="Designation">
@@ -640,68 +671,72 @@ export default function CfdIntakeForm() {
               <Field label="Email" required>
                 <input type="email" className={inputCls} placeholder="you@company.com" value={form.email} onChange={(e) => set("email", e.target.value)} />
               </Field>
-              <Field label="Phone / WhatsApp">
+              <Field label="Phone or WhatsApp">
                 <input className={inputCls} placeholder="+91 98765 43210" value={form.phone} onChange={(e) => set("phone", e.target.value)} />
               </Field>
             </div>
           </Panel>
 
-          <Panel icon="📋" title="Project Scope & Timeline">
+          <Panel title="Project scope and timeline.">
             <div className="grid gap-4 sm:grid-cols-2">
-              <Field label="CFD Application Type" required>
+              <Field label="CFD application type" required>
                 <select className={selectCls} value={form.applicationType} onChange={(e) => set("applicationType", e.target.value)}>
                   <option value="">— Select —</option>
                   {["HVAC / Indoor Thermal Comfort","External Aerodynamics","Electronics Cooling","Process / Industrial Fluid Flow","Automotive / Vehicle Aerodynamics","Combustion / Reacting Flow","Hydraulics / Pipe Network","Wind Engineering / Building Facade","Biomedical / Hemodynamics","Other"].map((o) => <option key={o}>{o}</option>)}
                 </select>
               </Field>
-              <Field label="Preferred Solver Software" required>
+              <Field label="Preferred solver software" required>
                 <select className={selectCls} value={form.solverSoftware} onChange={(e) => set("solverSoftware", e.target.value)}>
                   <option value="">— Select —</option>
                   {["ANSYS Fluent","OpenFOAM","STAR-CCM+","ANSYS CFX","Simcenter FLOEFD","Autodesk CFD","No preference — recommend one"].map((o) => <option key={o}>{o}</option>)}
                 </select>
               </Field>
-              <Field label="Results Needed By" required>
+              <Field label="Results needed by" required>
                 <input type="date" className={inputCls} value={form.deadline} onChange={(e) => set("deadline", e.target.value)} />
               </Field>
-              <Field label="Budget Range (₹)">
+              <Field label="Budget range (₹)">
                 <select className={selectCls} value={form.budget} onChange={(e) => set("budget", e.target.value)}>
                   <option value="">— Optional —</option>
                   {["Under ₹10,000","₹10,000 – ₹25,000","₹25,000 – ₹50,000","₹50,000 – ₹1,00,000","Above ₹1,00,000"].map((o) => <option key={o}>{o}</option>)}
                 </select>
               </Field>
-              <Field label="Brief Project Description" required>
-                <textarea className={`${inputCls} min-h-[80px] resize-y sm:col-span-2`} placeholder="What is the objective of this simulation? What decisions will the results drive?" value={form.description} onChange={(e) => set("description", e.target.value)} />
+              <Field label="Brief project description" required full>
+                <textarea className={textareaCls} placeholder="What is the objective of this simulation? What decisions will the results drive?" value={form.description} onChange={(e) => set("description", e.target.value)} />
               </Field>
             </div>
           </Panel>
-          <NavRow onNext={nextPage} nextLabel="Next: Geometry →" />
+          <NavRow onNext={nextPage} nextLabel="Next: geometry" />
         </div>
       )}
 
       {/* PAGE 1 — Geometry */}
       {page === 1 && (
         <div className="space-y-5">
-          <Panel icon="📐" title="CAD Geometry" subtitle="Attach files via email after submission using your reference ID">
-            <div className="mb-4 flex items-start gap-3 rounded-cf border border-blue-500/20 bg-blue-500/8 p-3.5 text-sm text-blue-200">
-              <span className="mt-0.5 text-base">ℹ️</span>
-              <span>After submitting you'll receive a reference ID. Send your CAD files (STEP, IGES, STL) to <strong>cfd@coreframecloud.com</strong> with the ID in the subject line.</span>
+          <Panel title="CAD geometry." subtitle="Send the files by email after you submit, quoting your reference ID.">
+            <div className="cf-note mb-5">
+              <p className="text-sm leading-6 break-words text-ink">
+                When you submit, you get a reference ID. Send your CAD files
+                (STEP, IGES, STL) to{" "}
+                <strong className="break-all">cfd@coreframecloud.com</strong> with
+                that ID in the subject line.
+              </p>
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
-              <Field label="CAD File Format">
+              <Field label="CAD file format">
                 <select className={selectCls} value={form.cadFormat} onChange={(e) => set("cadFormat", e.target.value)}>
                   <option value="">— Select —</option>
                   {["STEP (.step / .stp)","IGES (.igs / .iges)","STL (.stl)","Parasolid (.x_t / .x_b)","SolidWorks (.sldprt / .sldasm)","CATIA (.CATProduct / .CATPart)","SpaceClaim / ANSYS Discovery","No CAD — I need geometry creation"].map((o) => <option key={o}>{o}</option>)}
                 </select>
               </Field>
-              <Field label="Model Units">
+              <Field label="Model units">
                 <select className={selectCls} value={form.modelUnits} onChange={(e) => set("modelUnits", e.target.value)}>
                   {["Millimetres (mm)","Metres (m)","Inches (in)","Centimetres (cm)","Unknown — please verify"].map((o) => <option key={o}>{o}</option>)}
                 </select>
               </Field>
-              <Field label="Overall Dimensions (L × W × H)">
+              <Field label="Overall dimensions (L × W × H)">
                 <input className={inputCls} placeholder="e.g. 50m × 30m × 10m" value={form.dimensions} onChange={(e) => set("dimensions", e.target.value)} />
               </Field>
-              <Field label="Approx. No. of Components">
+              <Field label="Approximate number of components">
                 <select className={selectCls} value={form.componentCount} onChange={(e) => set("componentCount", e.target.value)}>
                   <option value="">— Select —</option>
                   {["1 – 5","6 – 20","21 – 100","100+"].map((o) => <option key={o}>{o}</option>)}
@@ -709,29 +744,30 @@ export default function CfdIntakeForm() {
               </Field>
             </div>
             <div className="mt-4 grid gap-4 sm:grid-cols-2">
-              <Field label="Symmetry / Periodicity">
+              <Field label="Symmetry or periodicity">
                 <RadioGroup name="symmetry" value={form.symmetry} onChange={(v) => set("symmetry", v)}
                   options={[{value:"none",label:"None"},{value:"1-plane",label:"1-plane"},{value:"periodic",label:"Periodic"},{value:"axisymmetric",label:"Axisymmetric"}]} />
               </Field>
-              <Field label="CAD Simplification Needed?">
+              <Field label="Does the CAD need simplifying?">
                 <RadioGroup name="simplification" value={form.simplification} onChange={(v) => set("simplification", v)}
                   options={[{value:"no",label:"CFD-ready"},{value:"yes",label:"Needs defeaturing"},{value:"unsure",label:"Unsure"}]} />
               </Field>
-              <Field label="Features to Retain / Suppress">
-                <textarea className={`${inputCls} min-h-[64px] resize-y sm:col-span-2`} placeholder="e.g. Retain diffuser louvres; suppress bolts and fillets < 2mm" value={form.geometryNotes} onChange={(e) => set("geometryNotes", e.target.value)} />
+              <Field label="Features to retain or suppress" full>
+                <textarea className={textareaCls} placeholder="e.g. Retain diffuser louvres; suppress bolts and fillets < 2mm" value={form.geometryNotes} onChange={(e) => set("geometryNotes", e.target.value)} />
               </Field>
             </div>
           </Panel>
 
           {form.applicationType && (
-            <Panel icon="✅" title="CAD Pre-submission Checklist" subtitle={`Requirements for ${form.applicationType}`}>
-              <div className="mb-4 rounded-cf border border-amber-500/20 bg-amber-500/8 px-4 py-3 text-xs text-amber-300/90">
-                ⚠️ Violations delay your quote. Please fix these in your CAD tool before uploading.
+            <Panel title="CAD pre-submission checklist." subtitle={`What we need for ${form.applicationType}.`}>
+              <div className="mb-4 rounded-cf border border-rule bg-paper px-4 py-3 text-[13px] leading-5 text-ink-2">
+                Anything on this list that is wrong delays your quote. Fix it in
+                your CAD tool before you upload.
               </div>
               <ul className="space-y-2">
                 {getChecklistItems(form.applicationType).map((item, i) => (
-                  <li key={i} className="flex items-start gap-2.5 text-sm text-ink-2">
-                    <span className="mt-0.5 text-xs text-blue-400/70 flex-shrink-0 font-bold">{i + 1}.</span>
+                  <li key={i} className="flex items-start gap-2.5 text-sm break-words text-ink-2">
+                    <span className="mt-0.5 shrink-0 font-mono text-xs font-bold text-blue">{i + 1}.</span>
                     {item}
                   </li>
                 ))}
@@ -739,113 +775,113 @@ export default function CfdIntakeForm() {
             </Panel>
           )}
 
-          <Panel icon="🔲" title="Computational Domain">
+          <Panel title="Computational domain.">
             <div className="grid gap-4 sm:grid-cols-3">
-              <Field label="Domain Type" required>
+              <Field label="Domain type" required>
                 <select className={selectCls} value={form.domainType} onChange={(e) => set("domainType", e.target.value)}>
                   <option value="">— Select —</option>
                   {["Internal flow (inside geometry)","External flow (around geometry)","Both internal + external"].map((o) => <option key={o}>{o}</option>)}
                 </select>
               </Field>
-              <Field label="Target Mesh Size">
+              <Field label="Target mesh size">
                 <select className={selectCls} value={form.meshSize} onChange={(e) => set("meshSize", e.target.value)}>
                   <option value="">— Estimate / unsure —</option>
                   {["< 1 Million","1 – 5 Million","5 – 20 Million","20 – 50 Million","50 – 100 Million","100 Million+"].map((o) => <option key={o}>{o}</option>)}
                 </select>
               </Field>
-              <Field label="Wall y⁺ Requirement">
+              <Field label="Wall y⁺ requirement">
                 <select className={selectCls} value={form.yplus} onChange={(e) => set("yplus", e.target.value)}>
                   <option value="">— Not sure —</option>
                   {["y⁺ ≈ 1 (wall-resolved)","y⁺ 30–300 (wall functions)","Solver default"].map((o) => <option key={o}>{o}</option>)}
                 </select>
               </Field>
-              <Field label="External Domain Extents">
-                <input className={`${inputCls} sm:col-span-3`} placeholder="e.g. 10D upstream, 20D downstream, 5D lateral" value={form.domainExtents} onChange={(e) => set("domainExtents", e.target.value)} />
+              <Field label="External domain extents" full>
+                <input className={inputCls} placeholder="e.g. 10D upstream, 20D downstream, 5D lateral" value={form.domainExtents} onChange={(e) => set("domainExtents", e.target.value)} />
               </Field>
             </div>
           </Panel>
-          <NavRow onNext={nextPage} nextLabel="Next: Boundary Conditions →" />
+          <NavRow onNext={nextPage} nextLabel="Next: boundary conditions" />
         </div>
       )}
 
       {/* PAGE 2 — Boundary Conditions */}
       {page === 2 && (
         <div className="space-y-5">
-          <Panel icon="🌀" title="Boundary Conditions" subtitle="Define each inlet, outlet, and wall — add rows as needed">
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[640px] border-collapse text-sm">
-                <thead>
-                  <tr className="border-b border-rule text-xs uppercase tracking-wider text-ink-3">
-                    <th className="pb-2 text-left">Boundary Name</th>
-                    <th className="pb-2 pl-2 text-left">Type</th>
-                    <th className="pb-2 pl-2 text-left">Value</th>
-                    <th className="pb-2 pl-2 text-left">Temp (°C)</th>
-                    <th className="pb-2 pl-2 text-left">Turbulence</th>
-                    <th className="pb-2 pl-2" />
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-rule">
-                  {bcRows.map((row) => (
-                    <tr key={row.id}>
-                      <td className="py-1.5">
-                        <input className={inputCls} value={row.name} onChange={(e) => updateBCRow(row.id, "name", e.target.value)} placeholder="e.g. Inlet 1" />
-                      </td>
-                      <td className="py-1.5 pl-2">
-                        <select className={selectCls} value={row.type} onChange={(e) => updateBCRow(row.id, "type", e.target.value)}>
-                          {BC_TYPES.map((t) => <option key={t}>{t}</option>)}
-                        </select>
-                      </td>
-                      <td className="py-1.5 pl-2">
-                        <input className={inputCls} value={row.value} onChange={(e) => updateBCRow(row.id, "value", e.target.value)} placeholder="velocity / pressure" />
-                      </td>
-                      <td className="py-1.5 pl-2" style={{ width: 80 }}>
-                        <input className={inputCls} value={row.temp} onChange={(e) => updateBCRow(row.id, "temp", e.target.value)} placeholder="—" />
-                      </td>
-                      <td className="py-1.5 pl-2">
-                        <input className={inputCls} value={row.turb} onChange={(e) => updateBCRow(row.id, "turb", e.target.value)} placeholder="5% / length scale" />
-                      </td>
-                      <td className="py-1.5 pl-2">
-                        <button type="button" onClick={() => removeBCRow(row.id)} className="text-ink-3 hover:text-red-400 transition text-base">✕</button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+          <Panel title="Boundary conditions." subtitle="Define each inlet, outlet and wall. Add as many as you need.">
+            <div className="space-y-4">
+              {bcRows.map((row, idx) => (
+                <div key={row.id} className="rounded-cf border border-rule bg-paper p-4">
+                  <div className="mb-3 flex items-center justify-between gap-2 border-b border-rule pb-2">
+                    <span className="cf-eyebrow">Boundary {idx + 1}</span>
+                    <button
+                      type="button"
+                      onClick={() => removeBCRow(row.id)}
+                      aria-label={`Remove boundary ${idx + 1}`}
+                      className="-mr-2 flex h-11 w-11 shrink-0 items-center justify-center rounded-cf text-ink-3 transition hover:text-destructive"
+                    >
+                      <span aria-hidden="true" className="text-base leading-none">✕</span>
+                    </button>
+                  </div>
+                  <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+                    <Field label="Name">
+                      <input className={inputCls} value={row.name} onChange={(e) => updateBCRow(row.id, "name", e.target.value)} placeholder="e.g. Inlet 1" />
+                    </Field>
+                    <Field label="Type">
+                      <select className={selectCls} value={row.type} onChange={(e) => updateBCRow(row.id, "type", e.target.value)}>
+                        {BC_TYPES.map((t) => <option key={t}>{t}</option>)}
+                      </select>
+                    </Field>
+                    <Field label="Value">
+                      <input className={inputCls} value={row.value} onChange={(e) => updateBCRow(row.id, "value", e.target.value)} placeholder="velocity or pressure" />
+                    </Field>
+                    <Field label="Temp (°C)">
+                      <input className={inputCls} value={row.temp} onChange={(e) => updateBCRow(row.id, "temp", e.target.value)} placeholder="—" />
+                    </Field>
+                    <Field label="Turbulence">
+                      <input className={inputCls} value={row.turb} onChange={(e) => updateBCRow(row.id, "turb", e.target.value)} placeholder="5% / length scale" />
+                    </Field>
+                  </div>
+                </div>
+              ))}
             </div>
-            <button type="button" onClick={addBCRow} className="mt-3 rounded-cf border border-dashed border-rule px-4 py-2 text-xs font-semibold text-ink-3 hover:border-blue-500/40 hover:text-blue-400 transition">
-              ＋ Add boundary
+            <button
+              type="button"
+              onClick={addBCRow}
+              className="mt-3 flex min-h-11 w-full items-center justify-center rounded-cf border border-dashed border-rule px-4 text-sm font-semibold text-ink-2 transition hover:border-blue hover:text-blue sm:w-auto"
+            >
+              Add a boundary
             </button>
 
             <div className="mt-5 grid gap-4 border-t border-rule pt-5 sm:grid-cols-2">
-              <Field label="Reference Pressure">
+              <Field label="Reference pressure">
                 <input className={inputCls} placeholder="e.g. 101325 Pa (atmospheric)" value={form.refPressure} onChange={(e) => set("refPressure", e.target.value)} />
               </Field>
-              <Field label="Gravity Direction">
+              <Field label="Gravity direction">
                 <select className={selectCls} value={form.gravity} onChange={(e) => set("gravity", e.target.value)}>
                   {["−Y (standard)","−Z","No gravity / microgravity","Custom — I'll specify"].map((o) => <option key={o}>{o}</option>)}
                 </select>
               </Field>
-              <Field label="Additional BC Notes">
-                <textarea className={`${inputCls} min-h-[64px] resize-y sm:col-span-2`} placeholder="Heat fluxes, rotating walls, porous regions, custom profiles, etc." value={form.bcNotes} onChange={(e) => set("bcNotes", e.target.value)} />
+              <Field label="Additional boundary notes" full>
+                <textarea className={textareaCls} placeholder="Heat fluxes, rotating walls, porous regions, custom profiles, etc." value={form.bcNotes} onChange={(e) => set("bcNotes", e.target.value)} />
               </Field>
             </div>
           </Panel>
-          <NavRow onNext={nextPage} nextLabel="Next: Flow Physics →" />
+          <NavRow onNext={nextPage} nextLabel="Next: flow physics" />
         </div>
       )}
 
       {/* PAGE 3 — Flow Physics */}
       {page === 3 && (
         <div className="space-y-5">
-          <Panel icon="⚛️" title="Flow Physics & Fluid Properties">
+          <Panel title="Flow physics and fluid properties.">
             <div className="grid gap-4 sm:grid-cols-3">
-              <Field label="Flow Regime" required>
+              <Field label="Flow regime" required>
                 <select className={selectCls} value={form.flowRegime} onChange={(e) => set("flowRegime", e.target.value)}>
                   <option value="">— Select —</option>
                   {["Steady-state","Transient (time-varying)","Quasi-steady (time-averaged)"].map((o) => <option key={o}>{o}</option>)}
                 </select>
               </Field>
-              <Field label="Fluid Type" required>
+              <Field label="Fluid type" required>
                 <select className={selectCls} value={form.fluidType} onChange={(e) => set("fluidType", e.target.value)}>
                   <option value="">— Select —</option>
                   {["Air (incompressible)","Air (compressible)","Water (liquid)","Oil / Lubricant","Multi-phase (air + water)","Non-Newtonian","Custom / mixed"].map((o) => <option key={o}>{o}</option>)}
@@ -859,19 +895,19 @@ export default function CfdIntakeForm() {
             </div>
 
             <div className="mt-4 grid gap-4 border-t border-rule pt-5 sm:grid-cols-2">
-              <Field label="Turbulence Modelling" required>
+              <Field label="Turbulence modelling" required>
                 <select className={selectCls} value={form.turbulenceModel} onChange={(e) => set("turbulenceModel", e.target.value)}>
                   <option value="">— Select —</option>
                   {["k-ε Realizable","k-ε Standard","k-ω SST","Spalart-Allmaras","LES (Large Eddy Simulation)","DES / DDES","Laminar (no turbulence)","Recommend for my case"].map((o) => <option key={o}>{o}</option>)}
                 </select>
               </Field>
-              <Field label="Reynolds Number (approx.)">
+              <Field label="Reynolds number (approximate)">
                 <input className={inputCls} placeholder="e.g. ~5×10⁵ or 'unknown'" value={form.reynolds} onChange={(e) => set("reynolds", e.target.value)} />
               </Field>
             </div>
 
             <div className="mt-5 border-t border-rule pt-5">
-              <div className="mb-2 text-xs font-semibold uppercase tracking-wider text-ink-2">Additional Physics — select all that apply</div>
+              <div className="mb-2 text-[13px] font-medium text-ink">Additional physics. Select all that apply.</div>
               <div className="flex flex-wrap gap-2">
                 <CheckChip checked={form.physicsHeat} onChange={(v) => set("physicsHeat", v)} label="Heat Transfer" />
                 <CheckChip checked={form.physicsBuoyancy} onChange={(v) => set("physicsBuoyancy", v)} label="Buoyancy / Natural Convection" />
@@ -886,54 +922,54 @@ export default function CfdIntakeForm() {
             </div>
 
             <div className="mt-5 grid gap-4 border-t border-rule pt-5 sm:grid-cols-2">
-              <Field label="Fluid Temperature (°C)">
+              <Field label="Fluid temperature (°C)">
                 <input type="number" className={inputCls} placeholder="e.g. 25" value={form.fluidTemp} onChange={(e) => set("fluidTemp", e.target.value)} />
               </Field>
-              <Field label="Operating Pressure (Pa)">
+              <Field label="Operating pressure (Pa)">
                 <input type="number" className={inputCls} placeholder="e.g. 101325" value={form.operatingPressure} onChange={(e) => set("operatingPressure", e.target.value)} />
               </Field>
-              <Field label="Custom Fluid Properties">
-                <textarea className={`${inputCls} min-h-[60px] resize-y sm:col-span-2`} placeholder="Density, viscosity, thermal conductivity, Cp — or paste material data sheet reference" value={form.fluidProps} onChange={(e) => set("fluidProps", e.target.value)} />
+              <Field label="Custom fluid properties" full>
+                <textarea className={textareaCls} placeholder="Density, viscosity, thermal conductivity, Cp — or paste material data sheet reference" value={form.fluidProps} onChange={(e) => set("fluidProps", e.target.value)} />
               </Field>
             </div>
           </Panel>
-          <NavRow onNext={nextPage} nextLabel="Next: Solver & Outputs →" />
+          <NavRow onNext={nextPage} nextLabel="Next: solver and outputs" />
         </div>
       )}
 
       {/* PAGE 4 — Solver */}
       {page === 4 && (
         <div className="space-y-5">
-          <Panel icon="⚙️" title="Solver Settings">
+          <Panel title="Solver settings.">
             <div className="grid gap-4 sm:grid-cols-3">
-              <Field label="Convergence Target">
+              <Field label="Convergence target">
                 <select className={selectCls} value={form.convergence} onChange={(e) => set("convergence", e.target.value)}>
                   {["10⁻³ (standard)","10⁻⁴","10⁻⁵","10⁻⁶ (high accuracy)","Monitor-based (mass flux / force)"].map((o) => <option key={o}>{o}</option>)}
                 </select>
               </Field>
-              <Field label="Max Iterations / Time Steps">
+              <Field label="Max iterations or time steps">
                 <input className={inputCls} placeholder="e.g. 2000 or 5000 × 0.01s" value={form.iterations} onChange={(e) => set("iterations", e.target.value)} />
               </Field>
-              <Field label="Time Step (transient only)">
+              <Field label="Time step (transient only)">
                 <input className={inputCls} placeholder="e.g. 0.01 s" value={form.timestep} onChange={(e) => set("timestep", e.target.value)} />
               </Field>
             </div>
             <div className="mt-5 border-t border-rule pt-5">
-              <Field label="Pressure–Velocity Coupling">
+              <Field label="Pressure–velocity coupling">
                 <RadioGroup name="coupling" value={form.coupling} onChange={(v) => set("coupling", v)}
                   options={[{value:"simple",label:"SIMPLE"},{value:"simplec",label:"SIMPLEC"},{value:"piso",label:"PISO (transient)"},{value:"coupled",label:"Coupled"},{value:"auto",label:"Auto-select"}]} />
               </Field>
             </div>
             <div className="mt-4">
-              <Field label="Additional solver / HPC notes">
-                <textarea className={`${inputCls} min-h-[64px] resize-y`} placeholder="MPI core count target, memory limit, UDF files, etc." value={form.solverNotes} onChange={(e) => set("solverNotes", e.target.value)} />
+              <Field label="Additional solver or HPC notes" full>
+                <textarea className={textareaCls} placeholder="MPI core count target, memory limit, UDF files, etc." value={form.solverNotes} onChange={(e) => set("solverNotes", e.target.value)} />
               </Field>
             </div>
           </Panel>
 
-          <Panel icon="📊" title="Post-processing & Deliverables" subtitle="What results do you need from us?">
+          <Panel title="Post-processing and deliverables." subtitle="What results do you need back?">
             <div className="mb-4">
-              <div className="mb-2 text-xs font-semibold uppercase tracking-wider text-ink-2">Required Output — select all that apply</div>
+              <div className="mb-2 text-[13px] font-medium text-ink">Required output. Select all that apply.</div>
               <div className="flex flex-wrap gap-2">
                 <CheckChip checked={form.outVelocity} onChange={(v) => set("outVelocity", v)} label="Velocity contours / vectors" />
                 <CheckChip checked={form.outPressure} onChange={(v) => set("outPressure", v)} label="Pressure distribution" />
@@ -950,54 +986,57 @@ export default function CfdIntakeForm() {
               </div>
             </div>
             <div className="grid gap-4 border-t border-rule pt-4 sm:grid-cols-2">
-              <Field label="Report Format">
+              <Field label="Report format">
                 <select className={selectCls} value={form.reportFormat} onChange={(e) => set("reportFormat", e.target.value)}>
                   {["PDF report with figures","Raw data files (.csv) only","ParaView / CFD-Post project files","ANSYS Fluent case + data files","All of the above"].map((o) => <option key={o}>{o}</option>)}
                 </select>
               </Field>
-              <Field label="Key Performance Metric (KPI)">
+              <Field label="Key performance metric">
                 <input className={inputCls} placeholder="e.g. Minimise pressure drop across heat exchanger" value={form.kpi} onChange={(e) => set("kpi", e.target.value)} />
               </Field>
-              <Field label="Specific quantities / planes / probe points">
-                <textarea className={`${inputCls} min-h-[60px] resize-y sm:col-span-2`} placeholder="e.g. Velocity profile at x=5m; pressure at outlet faces; temp map at 1.2m height" value={form.postprocNotes} onChange={(e) => set("postprocNotes", e.target.value)} />
+              <Field label="Specific quantities, planes or probe points" full>
+                <textarea className={textareaCls} placeholder="e.g. Velocity profile at x=5m; pressure at outlet faces; temp map at 1.2m height" value={form.postprocNotes} onChange={(e) => set("postprocNotes", e.target.value)} />
               </Field>
             </div>
           </Panel>
-          <NavRow onNext={nextPage} nextLabel="Next: Sign-off →" />
+          <NavRow onNext={nextPage} nextLabel="Next: sign-off" />
         </div>
       )}
 
       {/* PAGE 5 — Sign-off */}
       {page === 5 && (
         <div className="space-y-5">
-          <Panel icon="✅" title="Client Declaration & Sign-off">
+          <Panel title="Client declaration and sign-off.">
             <div className="grid gap-4 sm:grid-cols-2">
-              <Field label="Authorising Name" required>
+              <Field label="Authorising name" required>
                 <input className={inputCls} placeholder="Name of person authorising this job" value={form.authName} onChange={(e) => set("authName", e.target.value)} />
               </Field>
               <Field label="Date" required>
                 <input type="date" className={inputCls} value={form.authDate} onChange={(e) => set("authDate", e.target.value)} />
               </Field>
-              <Field label="Final Notes / Special Requests">
-                <textarea className={`${inputCls} min-h-[80px] resize-y sm:col-span-2`} placeholder="NDA requirements, confidentiality, invoicing preferences, etc." value={form.finalNotes} onChange={(e) => set("finalNotes", e.target.value)} />
+              <Field label="Final notes or special requests" full>
+                <textarea className={textareaCls} placeholder="NDA requirements, confidentiality, invoicing preferences, etc." value={form.finalNotes} onChange={(e) => set("finalNotes", e.target.value)} />
               </Field>
             </div>
 
             <div className="mt-5 space-y-3 border-t border-rule pt-5">
-              <label className="flex cursor-pointer items-start gap-3 rounded-cf border border-rule bg-paper-2 p-3.5 text-sm text-ink-2 hover:border-rule transition">
-                <div className={`mt-0.5 h-5 w-5 flex-shrink-0 rounded border ${form.confirmAccuracy ? "border-blue-400 bg-blue-500" : "border-slate-600"} flex items-center justify-center`}>
-                  {form.confirmAccuracy && <span className="text-[11px] text-ink font-bold">✓</span>}
+              <label className="flex cursor-pointer items-start gap-3 rounded-cf border border-rule bg-paper p-4 text-sm leading-6 text-ink-2 transition hover:border-rule-strong">
+                <div className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-cf border ${form.confirmAccuracy ? "border-blue bg-blue" : "border-rule-strong"}`}>
+                  {form.confirmAccuracy && <span className="text-[11px] leading-none font-bold text-white">✓</span>}
                 </div>
                 <input type="checkbox" className="sr-only" checked={form.confirmAccuracy} onChange={(e) => set("confirmAccuracy", e.target.checked)} />
                 <span>
-                  I confirm the information in this form is accurate and complete. I understand Coreframe Cloud will prepare a quote based on these inputs, and that significant changes post-quote may affect cost and schedule.{" "}
-                  <span className="text-amber-400">✱</span>
+                  I confirm what I have put in this form is accurate and
+                  complete. Coreframe Cloud quotes from these inputs, and a
+                  big change after the quote can move the price and the
+                  schedule.{" "}
+                  <span className="text-destructive" aria-hidden="true">*</span>
                 </span>
               </label>
 
-              <label className="flex cursor-pointer items-start gap-3 rounded-cf border border-rule bg-paper-2 p-3.5 text-sm text-ink-2 hover:border-rule transition">
-                <div className={`mt-0.5 h-5 w-5 flex-shrink-0 rounded border ${form.confirmData ? "border-blue-400 bg-blue-500" : "border-slate-600"} flex items-center justify-center`}>
-                  {form.confirmData && <span className="text-[11px] text-ink font-bold">✓</span>}
+              <label className="flex cursor-pointer items-start gap-3 rounded-cf border border-rule bg-paper p-4 text-sm leading-6 text-ink-2 transition hover:border-rule-strong">
+                <div className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-cf border ${form.confirmData ? "border-blue bg-blue" : "border-rule-strong"}`}>
+                  {form.confirmData && <span className="text-[11px] leading-none font-bold text-white">✓</span>}
                 </div>
                 <input type="checkbox" className="sr-only" checked={form.confirmData} onChange={(e) => set("confirmData", e.target.checked)} />
                 <span>I consent to Coreframe Cloud storing this project data for job execution and account management.</span>
@@ -1005,12 +1044,12 @@ export default function CfdIntakeForm() {
             </div>
 
             <div className="mt-4">
-              <Field label="Digital Signature (type full name)">
+              <Field label="Digital signature (type your full name)">
                 <input className={inputCls} placeholder="Type your full name as digital signature" value={form.signature} onChange={(e) => set("signature", e.target.value)} />
               </Field>
             </div>
           </Panel>
-          <NavRow onNext={handleSubmit} nextLabel="Submit CFD Job Request ✓" isLast />
+          <NavRow onNext={handleSubmit} nextLabel="Submit CFD job request" isLast />
         </div>
       )}
     </div>

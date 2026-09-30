@@ -8,6 +8,7 @@ import {
   billingSentence,
   pricingFaqAnswer,
 } from "@/lib/rate-card";
+import { NODE, WORKSTATION_REPLACEMENT_COST } from "@/lib/node-spec";
 
 /**
  * The D5 Render page, promoted out of the app/[slug] stub renderer.
@@ -50,15 +51,18 @@ export const metadata: Metadata = {
   },
 };
 
-const SPECS = [
-  ["GPU", "NVIDIA RTX 5080"],
-  ["VRAM", "16 GB GDDR7"],
-  ["System RAM", "64 GB"],
-  ["CPU", "8-core AMD Ryzen 7"],
+const SPECS: [string, string][] = [
+  ["GPU", NODE.gpu],
+  ["VRAM", `${NODE.vram} · ${NODE.memoryBandwidth}`],
+  ["System RAM", NODE.ram],
+  ["CPU", NODE.cpu],
+  ["Disk", NODE.disk],
+  ["OS", NODE.os],
+  ["Access", `Coreframe Connect app, streamed at ${NODE.stream}`],
   ["Display driver", "WDDM, which D5 needs for real-time viewport work"],
   ["D5 Render", "Preinstalled — sign in with your own D5 account"],
-  ["Storage", "Persistent project storage, separate from the machine"],
-  ["Location", "Bengaluru, Karnataka, India"],
+  ["Project storage", "Persistent, separate from the machine"],
+  ["Location", NODE.location],
 ];
 
 export default async function D5Page() {
@@ -70,7 +74,7 @@ export default async function D5Page() {
   const faqs: { q: string; a: string }[] = [
     {
       q: "Can I run D5 Render on a cloud workstation?",
-      a: "Yes. Coreframe gives you a full Windows desktop with an NVIDIA RTX 5080, and D5 Render is already installed on it. You sign in with your own D5 account, open your project and work in the live viewport exactly as you would on a local machine. It is the real application, not a web version of it.",
+      a: `Yes. Coreframe gives you a full ${NODE.os} desktop with an NVIDIA ${NODE.gpu}, and D5 Render is already installed on it. You sign in with your own D5 account, open your project and work in the live viewport exactly as you would on a local machine. It is the real application, not a web version of it, and you reach it through the Coreframe Connect app rather than a remote desktop — the stream runs at ${NODE.stream}.`,
     },
     {
       q: "Is D5 Render included, or do I need my own licence?",
@@ -82,7 +86,7 @@ export default async function D5Page() {
     },
     {
       q: "How much VRAM does D5 Render need?",
-      a: "VRAM is the ceiling on scene size in any GPU renderer: geometry, textures and lightmaps all have to fit on the card. The RTX 5080 in a Coreframe workstation has 16 GB of GDDR7. Many laptops and entry desktops sold for design work ship with 6 to 8 GB, which is what forces people to cut texture resolution or split a scene. We will not predict how your particular scene behaves — run it on a trial session and watch the VRAM meter yourself.",
+      a: `VRAM is the ceiling on scene size in any GPU renderer: geometry, textures and lightmaps all have to fit on the card. The ${NODE.gpu} in a Coreframe workstation has ${NODE.vram}. Many laptops and entry desktops sold for design work ship with 6 to 8 GB, which is what forces people to cut texture resolution or split a scene. We will not predict how your particular scene behaves — run it on a trial session and watch the VRAM meter yourself.`,
     },
     {
       q: "What happens to my D5 project files when the session ends?",
@@ -129,15 +133,14 @@ export default async function D5Page() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <main className="relative mx-auto max-w-3xl px-6 pb-24 pt-20 md:pt-28">
-        <div className="cf-eyebrow">
-          D5 Render
-        </div>
-        <h1 className="cf-display mt-3">
+      <main className="relative cf-section px-5">
+        <div className="cf-col">
+        <p className="cf-eyebrow mb-5">D5 Render · Cloud GPU · Bengaluru</p>
+        <h1 className="cf-display">
           Run D5 Render on a rented RTX 5080.
         </h1>
 
-        <p className="mt-8 text-lg leading-8 text-ink">
+        <p className="cf-lead mt-[22px]">
           Coreframe gives you a full Windows desktop with an NVIDIA RTX 5080, D5
           Render already installed, streamed to whatever laptop you own and
           billed by the minute. You sign in with your own D5 account, open your
@@ -147,7 +150,7 @@ export default async function D5Page() {
 
         <section className="mt-14">
           <h2 className="cf-section-title">
-            The problem D5 users actually have
+            The problem D5 users actually have.
           </h2>
           <p className="mt-4 leading-8 text-ink-2">
             D5 is a real-time renderer, which is exactly why weak hardware hurts
@@ -158,9 +161,9 @@ export default async function D5Page() {
           </p>
           <p className="mt-4 leading-8 text-ink-2">
             The usual answer is to buy a workstation. A machine that renders
-            comfortably lands at roughly ₹6,00,000 in India, gets bought once,
-            and sits idle most of the week — because visualisation work is
-            bursty. You need serious hardware for the four days before a client
+            comfortably lands at roughly {WORKSTATION_REPLACEMENT_COST} in
+            India, gets bought once, and sits idle most of the week — because
+            visualisation work is bursty. You need serious hardware for the four days before a client
             presentation and almost none for the three weeks after it.
           </p>
           <p className="mt-4 leading-8 text-ink-2">
@@ -169,29 +172,29 @@ export default async function D5Page() {
         </section>
 
         <section className="mt-14">
-          <h2 className="cf-section-title">The machine</h2>
-          <dl className="mt-6 divide-y divide-white/[0.08] rounded-cf border border-rule bg-paper-2">
+          <h2 className="cf-section-title">The machine.</h2>
+          <dl className="mt-6 divide-y divide-rule overflow-hidden rounded-cf border border-rule bg-paper-2">
             {SPECS.map(([k, v]) => (
               <div key={k} className="flex flex-col gap-1 px-5 py-4 sm:flex-row sm:gap-6">
-                <dt className="w-52 shrink-0 text-sm text-ink-2">{k}</dt>
-                <dd className="text-sm text-ink">{v}</dd>
+                <dt className="text-sm text-ink-2 sm:w-52 sm:shrink-0">{k}</dt>
+                <dd className="text-sm break-words text-ink">{v}</dd>
               </div>
             ))}
           </dl>
           <p className="mt-5 leading-8 text-ink-2">
             One node, one GPU, one customer at a time — no shared card and no
             virtualised slice of one. The comparison worth making is VRAM, not
-            speed: many laptops and entry desktops sold for design work carry 6
-            to 8 GB, and that is the number that decides whether a scene loads at
-            full texture resolution or has to be cut down. We do not publish
-            render times, because they depend entirely on your scene, your
-            settings and your geometry.
+            speed: this card carries {NODE.vram}, while many laptops and entry
+            desktops sold for design work carry 6 to 8 GB. That is the number
+            that decides whether a scene loads at full texture resolution or has
+            to be cut down. We do not publish render times, because they depend
+            entirely on your scene, your settings and your geometry.
           </p>
         </section>
 
         <section className="mt-14">
           <h2 className="cf-section-title">
-            How a session works
+            How a session works.
           </h2>
           <ol className="mt-6 space-y-5">
             {[
@@ -219,7 +222,7 @@ export default async function D5Page() {
 
         <section className="mt-14">
           <h2 className="cf-section-title">
-            The revision that happens in the room
+            The revision that happens in the room.
           </h2>
           <p className="mt-4 leading-8 text-ink-2">
             The version of this that studios feel most is the client meeting. A
@@ -239,7 +242,7 @@ export default async function D5Page() {
 
         {hourly ? (
           <section className="mt-14">
-            <h2 className="cf-section-title">What it costs</h2>
+            <h2 className="cf-section-title">What it costs.</h2>
             <p className="mt-4 leading-8 text-ink-2">
               <strong className="font-semibold text-ink">{hourly}</strong>, with
               18% GST already included in that figure. {billingSentence(card)}
@@ -258,7 +261,7 @@ export default async function D5Page() {
         ) : null}
 
         <section className="mt-14">
-          <h2 className="cf-section-title">Questions</h2>
+          <h2 className="cf-section-title">Questions.</h2>
           <div className="mt-6 space-y-7">
             {faqs.map((f) => (
               <div key={f.q}>
@@ -270,25 +273,20 @@ export default async function D5Page() {
         </section>
 
         <section className="mt-14 rounded-cf border border-blue/20 bg-blue/[0.05] p-6">
-          <h2 className="cf-section-title">Test it with your own scene</h2>
+          <h2 className="cf-section-title">Test it with your own scene.</h2>
           <p className="mt-3 leading-7 text-ink-2">
             Take the D5 project that ties up your machine all afternoon and run
             it on ours. That answers the question better than any number we could
             put on this page.
           </p>
-          <Link
-            href="/signup"
-            className="mt-5 inline-block rounded-cf bg-blue px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue"
-          >
+          <Link href="/signup" className="cf-btn-primary mt-6">
             Start free
           </Link>
         </section>
 
         <nav className="mt-14 border-t border-rule pt-8">
-          <h2 className="cf-section-title uppercase text-ink-3">
-            Related
-          </h2>
-          <ul className="mt-4 space-y-2">
+          <p className="cf-eyebrow mb-4">Related</p>
+          <ul className="space-y-1">
             {[
               ["/d5-render-vs-local-gpu", "Renting a workstation vs buying an RTX 5080"],
               ["/cloud-rendering-for-architects", "Cloud rendering for architecture studios"],
@@ -297,13 +295,17 @@ export default async function D5Page() {
               ["/apps", "Everything preinstalled on a workstation"],
             ].map(([href, label]) => (
               <li key={href}>
-                <Link href={href} className="text-blue hover:underline">
+                <Link
+                  href={href}
+                  className="inline-flex min-h-[44px] items-center text-blue hover:underline"
+                >
                   {label} →
                 </Link>
               </li>
             ))}
           </ul>
         </nav>
+        </div>
       </main>
     </div>
   );

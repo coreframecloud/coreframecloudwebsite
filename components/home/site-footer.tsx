@@ -11,6 +11,8 @@ import {
   COMPANY_ADDRESS_LINE,
   COMPANY_VISITING_ADDRESS_LINE,
   COMPANY_MAPS_URL,
+  COMPANY_INSTAGRAM_URL,
+  COMPANY_INSTAGRAM_HANDLE,
 } from "@/lib/company";
 
 export function SiteFooter() {
@@ -27,19 +29,19 @@ export function SiteFooter() {
 
           {/* Brand + tagline */}
           <div>
-            <Link href="/" aria-label="COREFRAME Home" className="inline-flex">
+            <Link href="/" aria-label="COREFRAME Home" className="inline-flex min-h-11 items-center">
               <CoreframeWordmarkAtlas iconSize={40} animated={false} />
             </Link>
             <p className="mt-3 max-w-xs text-xs leading-5 text-ink-2">
               3D rendering managed workstations and ultra-fast CFD analysis. Hosted in Bengaluru, India.
             </p>
             <Link
-              href="https://wa.me/916366889488"
+              href={COMPANY.whatsapp}
               target="_blank"
               rel="noreferrer"
-              className="mt-3 inline-block text-xs font-medium text-blue hover:text-blue transition"
+              className="mt-3 inline-flex min-h-11 items-center text-xs font-medium text-blue transition hover:text-blue"
             >
-              WhatsApp: +91 6366889488
+              WhatsApp: {COMPANY.phone}
             </Link>
           </div>
 
@@ -56,7 +58,7 @@ export function SiteFooter() {
                 { label: "Enterprise plans", href: "/enterprise" },
                 { label: "About Coreframe", href: "/about" },
               ].map((l) => (
-                <Link key={l.href} href={l.href} className="text-xs text-ink-2 hover:text-ink transition">{l.label}</Link>
+                <Link key={l.href} href={l.href} className="flex min-h-11 items-center text-xs text-ink-2 transition hover:text-ink">{l.label}</Link>
               ))}
             </div>
           </div>
@@ -70,7 +72,7 @@ export function SiteFooter() {
                 { label: "Terms of Service", href: "/terms-of-service" },
                 { label: "Refund Policy", href: "/refund-policy" },
               ].map((l) => (
-                <Link key={l.href} href={l.href} className="text-xs text-ink-2 hover:text-ink transition">{l.label}</Link>
+                <Link key={l.href} href={l.href} className="flex min-h-11 items-center text-xs text-ink-2 transition hover:text-ink">{l.label}</Link>
               ))}
             </div>
           </div>
@@ -83,21 +85,21 @@ export function SiteFooter() {
                   so a screen reader reads the contact once rather than twice.
                   They inherit currentColor, so the hover state comes free and
                   there is nothing to update when the palette moves. */}
-              <Link href="mailto:admin@coreframecloud.com" className="flex items-center gap-2 text-xs text-ink-2 hover:text-ink transition">
-                <MailIcon />
-                admin@coreframecloud.com
+              <Link href={`mailto:${COMPANY.email}`} className="flex min-h-11 items-center gap-2 text-xs text-ink-2 transition hover:text-ink">
+                <MailIcon className="h-[15px] w-[15px]" />
+                {COMPANY.email}
               </Link>
-              <Link href="https://wa.me/916366889488" target="_blank" rel="noreferrer" className="flex items-center gap-2 text-xs text-ink-2 hover:text-ink transition">
-                <WhatsAppIcon />
-                +91 6366889488
+              <Link href={COMPANY.whatsapp} target="_blank" rel="noreferrer" className="flex min-h-11 items-center gap-2 text-xs text-ink-2 transition hover:text-ink">
+                <WhatsAppIcon className="h-[15px] w-[15px]" />
+                {COMPANY.phone}
               </Link>
               {/* The handle, not the word "Instagram". People search the handle,
                   and it is the only social profile in the Organization schema
                   (layout.tsx sameAs) -- a footer link is what makes that claim
                   verifiable to a crawler instead of an assertion. */}
-              <Link href="https://www.instagram.com/coreframecloud/" target="_blank" rel="noreferrer" className="flex items-center gap-2 text-xs text-ink-2 hover:text-ink transition">
-                <InstagramIcon />
-                @coreframecloud
+              <Link href={COMPANY_INSTAGRAM_URL} target="_blank" rel="noreferrer" className="flex min-h-11 items-center gap-2 text-xs text-ink-2 transition hover:text-ink">
+                <InstagramIcon className="h-[15px] w-[15px]" />
+                {COMPANY_INSTAGRAM_HANDLE}
               </Link>
               {/* The building, linked to the Business Profile — this is the
                   address a visitor navigates to. The registered survey-number
@@ -107,9 +109,9 @@ export function SiteFooter() {
                 href={COMPANY_MAPS_URL}
                 target="_blank"
                 rel="noreferrer"
-                className="flex max-w-[17rem] items-start gap-2 text-xs leading-5 text-ink-2 hover:text-ink transition"
+                className="flex min-h-11 max-w-[17rem] items-start gap-2 py-1.5 text-xs leading-5 text-ink-2 transition hover:text-ink"
               >
-                <MapPinIcon className="mt-0.5" />
+                <MapPinIcon className="mt-0.5 h-[15px] w-[15px]" />
                 <span>{COMPANY_VISITING_ADDRESS_LINE}</span>
               </Link>
             </div>

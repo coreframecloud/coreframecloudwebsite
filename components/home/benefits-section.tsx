@@ -14,6 +14,7 @@
  */
 
 import Link from "next/link";
+import { WORKSTATION_REPLACEMENT_COST } from "@/lib/node-spec";
 import type { StorageTerms } from "@/lib/storage-terms";
 
 export function BenefitsSection({ storage }: { storage: StorageTerms }) {
@@ -24,7 +25,7 @@ export function BenefitsSection({ storage }: { storage: StorageTerms }) {
         title={<>16 GB of VRAM.<br /><Grad>Not 8.</Grad></>}
         body={
           <>
-            A workstation that renders comfortably lands at around ₹6,00,000 in
+            A workstation that renders comfortably lands at around {WORKSTATION_REPLACEMENT_COST} in
             India, and the machines people actually work on commonly ship with 6
             to 8 GB of video memory. VRAM is a ceiling rather than a speed: when
             a scene does not fit on the card, it does not render slower — it
@@ -75,7 +76,7 @@ export function BenefitsSection({ storage }: { storage: StorageTerms }) {
         title={<>No more &ldquo;can I use<br />the GPU machine?&rdquo;</>}
         body="Most studios have one or two good workstations and a queue for them. Every person who needs GPU power opens Connect and starts their own session instead — so the deadline crunch stops being a scheduling problem."
         points={[
-          "Each person works in their own session, at full speed",
+          "Each person gets their own session on their own node — nobody waits",
           "Billed per minute, per person — you pay for hours actually worked",
           "Add capacity for a busy week, drop it when the project ships",
         ]}

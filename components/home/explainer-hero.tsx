@@ -15,9 +15,10 @@
  */
 
 import Link from "next/link";
+import { WORKSTATION_REPLACEMENT_COST } from "@/lib/node-spec";
 import type { TrialTerms, FirstTopupBonus } from "@/lib/rate-card";
 
-const HARDWARE_COST = "₹6,00,000";
+const HARDWARE_COST = WORKSTATION_REPLACEMENT_COST;
 
 export function ExplainerHero({
   adhocRate,

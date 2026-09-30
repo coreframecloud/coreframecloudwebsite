@@ -14,21 +14,24 @@ export default function RequestDemoPage() {
     <div className="min-h-screen text-ink">
       <BackgroundGlow />
 
-      <main className="relative mx-auto max-w-5xl px-6 pb-20 pt-20 md:pt-28">
-        <div className="max-w-3xl">
-          <div className="cf-eyebrow">
-            Reserve Access
-          </div>
-          <h1 className="cf-display mt-3">
-            Submit your intake request.
-          </h1>
-          <p className="mt-5 max-w-2xl text-base leading-8 text-ink-2 md:text-lg">
-            Share your contact details and workload category. We’ll continue the
-            discussion directly on WhatsApp.
-          </p>
-        </div>
+      <main className="relative">
+        <section className="cf-section px-5">
+          <div className="cf-col">
+            <p className="cf-eyebrow">Request access</p>
 
-        <RequestDemoForm />
+            <h1 className="cf-display mt-3">Tell us what you need a machine for.</h1>
+
+            <p className="cf-lead mt-5">
+              Your email, your number and the kind of work you run. That is the whole form. It
+              hands the details to WhatsApp, where you can send the scene, the deadline and the
+              file that will not open, and the conversation carries on there.
+            </p>
+          </div>
+
+          <div className="cf-wide">
+            <RequestDemoForm />
+          </div>
+        </section>
       </main>
     </div>
   );

@@ -37,7 +37,7 @@ function GoogleIcon() {
 function Field({ label, children }: { label: React.ReactNode; children: React.ReactNode }) {
   return (
     <div className="grid gap-1.5">
-      <label className="text-xs text-ink-2">{label}</label>
+      <label className="text-[13px] font-medium text-ink">{label}</label>
       {children}
     </div>
   );
@@ -47,13 +47,13 @@ function GoogleBlock({ api, below = false }: { api: string; below?: boolean }) {
   return (
     <>
       <div className={`flex items-center gap-3 ${below ? "my-5" : "mb-5"}`}>
-        <div className="h-px flex-1 bg-paper-2" />
+        <div className="h-px flex-1 bg-rule" />
         <span className="text-xs text-ink-3">or</span>
-        <div className="h-px flex-1 bg-paper-2" />
+        <div className="h-px flex-1 bg-rule" />
       </div>
       <a
         href={`${api}/auth/google`}
-        className="flex w-full items-center justify-center gap-3 rounded-cf border border-rule bg-paper-2 py-3 text-sm font-medium text-ink transition hover:bg-paper-2"
+        className="flex min-h-11 w-full items-center justify-center gap-3 rounded-cf border border-rule bg-paper py-3 text-sm font-medium text-ink transition hover:bg-paper-2"
       >
         <GoogleIcon />
         Continue with Google
@@ -63,7 +63,7 @@ function GoogleBlock({ api, below = false }: { api: string; below?: boolean }) {
 }
 
 const inputCls =
-  "h-12 rounded-cf border-rule bg-paper-2 text-ink placeholder:text-ink-3 focus:border-blue/50 focus:ring-0";
+  "h-11 w-full rounded-cf border-rule bg-paper text-base text-ink placeholder:text-ink-3 focus:border-blue focus:ring-0 md:text-sm";
 
 // ── Tab button ─────────────────────────────────────────────────────────────────
 function TabBtn({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
@@ -71,9 +71,9 @@ function TabBtn({ active, onClick, children }: { active: boolean; onClick: () =>
     <button
       type="button"
       onClick={onClick}
-      className={`flex-1 rounded-cf py-2 text-sm font-medium transition-colors ${
+      className={`min-h-11 flex-1 rounded-cf px-2 text-sm font-medium transition-colors ${
         active
-          ? "bg-paper-2 text-ink shadow-inner"
+          ? "border border-rule bg-paper text-ink"
           : "text-ink-2 hover:text-ink"
       }`}
     >
@@ -85,7 +85,7 @@ function TabBtn({ active, onClick, children }: { active: boolean; onClick: () =>
 // ── Error box ──────────────────────────────────────────────────────────────────
 function ErrorBox({ msg }: { msg: string }) {
   return (
-    <p className="rounded-cf border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+    <p className="rounded-cf border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm break-words text-destructive">
       {msg}
     </p>
   );
@@ -104,7 +104,7 @@ function SentCard({
         <Mail className="h-5 w-5" />
       </div>
       <div>
-        <p className="font-semibold text-ink">Check your inbox</p>
+        <p className="font-semibold text-ink">Check your inbox.</p>
         {/* THE HEDGE IS GONE FROM THE CODE TAB, AND SO IS THE FOOTNOTE.
             Both existed because the route used to look an unknown address up,
             find nothing and answer as though it had sent something — so the
@@ -121,13 +121,13 @@ function SentCard({
           {certain ? (
             <>
               A {label} is on its way to{" "}
-              <span className="text-ink">{email}</span>. It expires in{" "}
+              <span className="break-all text-ink">{email}</span>. It expires in{" "}
               {expiresMinutes} minutes.
             </>
           ) : (
             <>
               If an account exists for{" "}
-              <span className="text-ink">{email}</span>, a {label} is on its
+              <span className="break-all text-ink">{email}</span>, a {label} is on its
               way. It expires in {expiresMinutes} minutes.
             </>
           )}
@@ -435,7 +435,7 @@ export default function LoginForm({
 
       {/* Already signed in — say so, and offer both ways out. */}
       {signedInAs && (
-        <div className="mb-4 rounded-[1.6rem] border border-blue/25 bg-blue/10 p-5">
+        <div className="mb-4 rounded-cf border border-blue/25 bg-blue/10 p-5">
           <p className="text-sm text-ink">
             You are already signed in as{" "}
             <span className="font-semibold text-ink">{signedInAs}</span>.
@@ -468,7 +468,7 @@ export default function LoginForm({
       )}
 
       {/* Card */}
-      <div className="rounded-[1.6rem] border border-rule bg-paper-2 p-6 backdrop-blur-xl">
+      <div className="rounded-cf border border-rule bg-paper-2 p-5 sm:p-6">
 
         {/* Google, and where it sits.
             On /login it leads, because a returning customer who used Google
@@ -479,15 +479,15 @@ export default function LoginForm({
           <>
             <a
               href={`${API}/auth/google`}
-              className="flex w-full items-center justify-center gap-3 rounded-cf border border-rule bg-paper-2 py-3 text-sm font-medium text-ink transition hover:bg-paper-2"
+              className="flex min-h-11 w-full items-center justify-center gap-3 rounded-cf border border-rule bg-paper py-3 text-sm font-medium text-ink transition hover:bg-paper-2"
             >
               <GoogleIcon />
               Continue with Google
             </a>
             <div className="my-5 flex items-center gap-3">
-              <div className="h-px flex-1 bg-paper-2" />
+              <div className="h-px flex-1 bg-rule" />
               <span className="text-xs text-ink-3">or</span>
-              <div className="h-px flex-1 bg-paper-2" />
+              <div className="h-px flex-1 bg-rule" />
             </div>
           </>
         )}
@@ -535,13 +535,13 @@ export default function LoginForm({
                   </p>
                 ) : (
                   <div className="rounded-cf border border-rule bg-paper-2 px-4 py-3">
-                    <p className="text-sm font-medium text-ink">Sign in with a link</p>
+                    <p className="text-sm font-medium text-ink">Sign in with a link.</p>
                     <p className="mt-0.5 text-xs text-ink-2">
-                      We&apos;ll send a secure sign-in link to your email. Click it to sign in instantly.
+                      We&apos;ll send a sign-in link to your email. Click it and you are in.
                     </p>
                   </div>
                 )}
-                <Button type="submit" disabled={linkLoading} className="h-12 w-full rounded-cf bg-blue text-base font-semibold text-white shadow-[0_6px_24px_-6px_rgba(34,211,238,.55)] transition hover:bg-blue disabled:opacity-60">
+                <Button type="submit" disabled={linkLoading} className="cf-btn-primary min-h-11 w-full disabled:opacity-60">
                   {linkLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                   {linkLoading ? "Checking…" : isStart ? "Create my account" : "Send sign-in link"}
                 </Button>
@@ -551,11 +551,11 @@ export default function LoginForm({
             {linkStep === "details" && (
               <form onSubmit={handleLinkDetailsSubmit} className="grid gap-4">
                 <div className="rounded-cf border border-blue/20 bg-blue/8 px-4 py-3 text-xs text-blue">
-                  No account found for <strong>{linkEmail}</strong> — fill in your details below to create one.
+                  No account found for <strong className="break-all">{linkEmail}</strong>. Fill in your details below and we&apos;ll create one.
                 </div>
 
                 <Field label="What kind of account is this?">
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid gap-4 sm:grid-cols-2 sm:gap-3">
                     <button
                       type="button"
                       onClick={() => { setLinkAccountType("b2c"); setError(""); }}
@@ -604,7 +604,7 @@ export default function LoginForm({
                     </p>
                   </Field>
                 )}
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid gap-4 sm:grid-cols-2 sm:gap-3">
                   <Field label="Full name">
                     <Input value={linkName} onChange={(e) => { setLinkName(e.target.value); setError(""); }} className={inputCls} placeholder="Rahul Sharma" required />
                     <p className="mt-1 text-xs text-ink-3">
@@ -644,20 +644,19 @@ export default function LoginForm({
                         if (next) setPhoneCountry(next);
                         setError("");
                       }}
-                      className={`${inputCls} w-32 shrink-0 cursor-pointer`}
+                      className={`${inputCls} w-[104px] shrink-0 cursor-pointer sm:w-32`}
                       aria-label="Country dialling code"
                     >
                       {countries.map((c) => (
-                        // The option needs its OWN colours. Chrome on Windows
-                        // paints the native dropdown with a white system
-                        // background while <option> inherits text-white from
-                        // the select above - white on white, so every row read
-                        // as blank except the highlighted one, which got the
-                        // system blue behind it.
+                        // The option still carries its own colours. Chrome on
+                        // Windows paints the native dropdown with the system
+                        // background, so an <option> that inherits whatever the
+                        // select was given can end up invisible - it used to be
+                        // white on white. Paper and ink, stated explicitly.
                         <option
                           key={c.dial_code}
                           value={c.dial_code}
-                          className="bg-slate-900 text-ink"
+                          className="bg-paper text-ink"
                         >
                           +{c.dial_code} {(c.country || "").split(" ")[0]}
                         </option>
@@ -680,11 +679,11 @@ export default function LoginForm({
                   </p>
                 </Field>
                 {error && <ErrorBox msg={error} />}
-                <Button type="submit" disabled={linkLoading} className="h-12 w-full rounded-cf bg-blue text-base font-semibold text-white shadow-[0_6px_24px_-6px_rgba(34,211,238,.55)] transition hover:bg-blue disabled:opacity-60">
+                <Button type="submit" disabled={linkLoading} className="cf-btn-primary min-h-11 w-full disabled:opacity-60">
                   {linkLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ArrowRight className="mr-2 h-4 w-4" />}
                   {linkLoading ? "Creating account…" : "Create account & send link"}
                 </Button>
-                <button type="button" onClick={() => { setLinkStep("email"); setError(""); }} className="text-xs text-ink-3 hover:text-ink-2">
+                <button type="button" onClick={() => { setLinkStep("email"); setError(""); }} className="inline-flex min-h-11 items-center self-start text-[13px] text-ink-3 hover:text-ink-2">
                   ← Use a different email
                 </button>
               </form>
@@ -696,7 +695,7 @@ export default function LoginForm({
                 <button
                   type="button"
                   onClick={() => { setLinkStep("email"); setLinkIsNew(false); setError(""); }}
-                  className="text-xs text-ink-3 hover:text-ink-2"
+                  className="inline-flex min-h-11 items-center self-start text-[13px] text-ink-3 hover:text-ink-2"
                 >
                   ← Use a different email
                 </button>
@@ -723,7 +722,7 @@ export default function LoginForm({
                   />
                 </Field>
                 {error && <ErrorBox msg={error} />}
-                <Button type="submit" disabled={codeLoading} className="h-12 w-full rounded-cf bg-blue text-base font-semibold text-white shadow-[0_6px_24px_-6px_rgba(34,211,238,.55)] transition hover:bg-blue disabled:opacity-60">
+                <Button type="submit" disabled={codeLoading} className="cf-btn-primary min-h-11 w-full disabled:opacity-60">
                   {codeLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                   {codeLoading ? "Sending…" : "Send 6-digit code"}
                 </Button>
@@ -747,11 +746,11 @@ export default function LoginForm({
                   />
                 </Field>
                 {error && <ErrorBox msg={error} />}
-                <Button type="submit" disabled={codeLoading || codeValue.length < 6} className="h-12 w-full rounded-cf bg-blue text-base font-semibold text-white shadow-[0_6px_24px_-6px_rgba(34,211,238,.55)] transition hover:bg-blue disabled:opacity-60">
+                <Button type="submit" disabled={codeLoading || codeValue.length < 6} className="cf-btn-primary min-h-11 w-full disabled:opacity-60">
                   {codeLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                   {codeLoading ? "Verifying…" : "Sign in"}
                 </Button>
-                <button type="button" onClick={() => { setCodeStep("email"); setCodeValue(""); setError(""); }} className="text-xs text-ink-3 hover:text-ink-2">
+                <button type="button" onClick={() => { setCodeStep("email"); setCodeValue(""); setError(""); }} className="inline-flex min-h-11 items-center self-start text-[13px] text-ink-3 hover:text-ink-2">
                   ← Use a different email
                 </button>
               </form>

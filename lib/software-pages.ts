@@ -18,6 +18,8 @@
  * here; hardware and behaviour claims must match what the machines do.
  */
 
+import { NODE, WORKSTATION_REPLACEMENT_COST } from "./node-spec";
+
 export type SoftwarePage = {
   /** URL slug under / */
   slug: string;
@@ -59,7 +61,7 @@ export const SOFTWARE_PAGES: SoftwarePage[] = [
     description:
       "Run Autodesk Revit on a Windows GPU workstation in India, billed per minute. Bring your Autodesk licence, open large models, and render without buying hardware.",
     intro:
-      "Revit punishes underpowered machines: large federated models crawl, views take seconds to regenerate, and rendering ties up the only computer you have. A Coreframe workstation gives you an RTX GPU and 64 GB of RAM for as long as you need it, billed by the minute.",
+      `Revit punishes underpowered machines: large federated models crawl, views take seconds to regenerate, and rendering ties up the only computer you have. A Coreframe workstation gives you an ${NODE.gpu} and ${NODE.ram} of system memory for as long as you need it, billed by the minute.`,
     problem:
       "Your laptop handles small models but stalls on the coordinated one the whole team works in, and buying a workstation for the two weeks a year you need it makes no sense.",
     why: [
@@ -98,7 +100,7 @@ export const SOFTWARE_PAGES: SoftwarePage[] = [
     intro:
       "3ds Max with V-Ray or Corona is the classic case for renting a GPU: the work is bursty. You need serious hardware for a few days near a deadline and almost none for the rest of the month.",
     problem:
-      "Rendering ties up your workstation for hours, and the machine that would do it comfortably costs several lakh and sits idle most of the year.",
+      `Rendering ties up your workstation for hours, and the machine that would do it comfortably lands at about ${WORKSTATION_REPLACEMENT_COST} and sits idle most of the year.`,
     why: [
       "GPU rendering in V-Ray GPU or Chaos Vantage on hardware built for it. Corona is a CPU renderer — see the note below before you assume it benefits.",
       "Your own computer stays usable while the render runs on the rented machine.",
@@ -108,26 +110,26 @@ export const SOFTWARE_PAGES: SoftwarePage[] = [
     licence: LICENCE_BYOL + " That includes 3ds Max itself and any renderer — V-Ray, Corona or Vantage — you sign in to with your Chaos account.",
     sections: [
       {
-        h2: "Which renderer you use changes the answer",
+        h2: "Which renderer you use changes the answer.",
         body: [
           "3ds Max is not one workload, and the honest recommendation depends entirely on what you render with. It is worth being specific, because the wrong assumption here costs you money.",
-          "V-Ray GPU and Chaos Vantage do their work on the graphics card. Those are the cases a rented RTX 5080 is built for: 16 GB of GDDR7 is the ceiling on how much scene fits, and it is a good deal more than the 6 to 8 GB in most laptops and entry desktops sold for design work. When a GPU render fails or forces you to cut texture resolution, VRAM is almost always why.",
-          "Corona is a CPU renderer. So is V-Ray's CPU engine, which many studios still use for final frames. A Coreframe node has a 8-core AMD Ryzen 7, which is a sensible CPU for driving a viewport and a GPU renderer but is not a render node for CPU work — if Corona is where your final frames come from, a rented workstation will not speed that up, and we would rather say so here than have you find out during a trial.",
+          `V-Ray GPU and Chaos Vantage do their work on the graphics card. Those are the cases a rented ${NODE.gpu} is built for: ${NODE.vram} is the ceiling on how much scene fits, against the 6 to 8 GB in most laptops and entry desktops sold for design work. When a GPU render fails or forces you to cut texture resolution, VRAM is almost always why.`,
+          `Corona is a CPU renderer. So is V-Ray's CPU engine, which many studios still use for final frames. A Coreframe node has ${NODE.cpu}, which is a sensible CPU for driving a viewport and a GPU renderer but is not a render node for CPU work — if Corona is where your final frames come from, a rented workstation does not change that, and we would rather say so here than have you find out during a trial.`,
           "The mixed case is the common one: model and light interactively with the GPU in Vantage or V-Ray GPU, keep CPU final frames wherever they already live. That works well, and it is worth planning around rather than discovering.",
         ],
       },
       {
-        h2: "Why studios rent for 3ds Max specifically",
+        h2: "Why studios rent for 3ds Max specifically.",
         body: [
-          "Archviz work in 3ds Max is bursty in a way that punishes buying. There is a week before a client presentation when the machine cannot keep up, and three weeks afterwards when it idles. A workstation that renders comfortably lands at roughly ₹6,00,000 in India, is bought once, and is still on the books whether or not the project that justified it goes ahead.",
+          `Archviz work in 3ds Max is bursty in a way that punishes buying. There is a week before a client presentation when the machine cannot keep up, and three weeks afterwards when it idles. A workstation that renders comfortably lands at roughly ${WORKSTATION_REPLACEMENT_COST} in India, is bought once, and is still on the books whether or not the project that justified it goes ahead.`,
           "The second reason is that rendering takes the machine away from you. A local render ties up the computer you also model on, so the afternoon is spent waiting. Running it on a rented machine gives the afternoon back — your own computer stays free while the render runs somewhere else.",
-          "The third is hiring. A studio taking on a remote 3ds Max artist otherwise has to ship them a workstation, buy a laptop that cannot really cope, or hope they own something adequate. A rented machine they reach from their own laptop costs a few thousand rupees a month instead of six lakh of hardware, and it stops cleanly if the arrangement does not.",
+          `The third is hiring. A studio taking on a remote 3ds Max artist otherwise has to ship them a workstation, buy a laptop that cannot really cope, or hope they own something adequate. A rented machine they reach from their own laptop is a monthly line item instead of ${WORKSTATION_REPLACEMENT_COST} of hardware, and it stops cleanly if the arrangement does not.`,
         ],
       },
       {
-        h2: "What the session is actually like",
+        h2: "What the session is actually like.",
         body: [
-          "It is a full Windows 11 desktop, not a submission portal. You install 3ds Max and your renderer with your own Autodesk and Chaos accounts, open your scene from persistent storage, and work — viewport, material editor, render setup, all of it, the same as a machine under your desk.",
+          `It is a full ${NODE.os} desktop, not a submission portal. You install 3ds Max and your renderer with your own Autodesk and Chaos accounts, open your scene from persistent storage, and work — viewport, material editor, render setup, all of it, the same as a machine under your desk.`,
           "The machine resets to a clean image when the session ends, which is how we can promise no trace of another studio's work is on it when you get it. Your scene files are not on that machine: they sit on storage that persists between sessions, so a session opened on Friday picks up where Monday's stopped without anything being copied around. On a committed monthly plan we build your applications into the baseline image on your nodes, so they are already there when you sign in.",
           "Billing runs per minute from the moment the stream starts. Provisioning, uploads and a connection that drops are not billed.",
         ],
@@ -145,11 +147,11 @@ export const SOFTWARE_PAGES: SoftwarePage[] = [
       { q: "What happens to my scene files after the session?", a: RESET_ANSWER },
       {
         q: "Will Corona render faster on a Coreframe workstation?",
-        a: "Probably not, and it is better to know that now. Corona is a CPU renderer, and a Coreframe node has a 8-core AMD Ryzen 7 — enough to drive the application and a GPU renderer, but not a CPU render node. If your final frames come out of Corona, the machine will not change that. Where it helps is V-Ray GPU and Chaos Vantage, which render on the graphics card.",
+        a: `Probably not, and it is better to know that now. Corona is a CPU renderer, and a Coreframe node has ${NODE.cpu} — enough to drive the application and a GPU renderer, but not a CPU render node. If your final frames come out of Corona, the machine does not change that. Where it helps is V-Ray GPU and Chaos Vantage, which render on the graphics card.`,
       },
       {
         q: "How much VRAM do I need for 3ds Max GPU rendering?",
-        a: "VRAM is a ceiling rather than a speed: geometry, textures and lightmaps have to fit on the card, and when they do not, a GPU render fails or forces you to cut texture resolution. A Coreframe node has 16 GB of GDDR7, against the 6 to 8 GB in many laptops and entry desktops sold for design work. We will not predict how your particular scene behaves — open it in a trial session and watch the VRAM meter.",
+        a: `VRAM is a ceiling rather than a speed: geometry, textures and lightmaps have to fit on the card, and when they do not, a GPU render fails or forces you to cut texture resolution. A Coreframe node has ${NODE.vram}, against the 6 to 8 GB in many laptops and entry desktops sold for design work. We will not predict how your particular scene behaves — open it in a trial session and watch the VRAM meter.`,
       },
       {
         q: "Do I need to reinstall 3ds Max every session?",
@@ -181,7 +183,7 @@ export const SOFTWARE_PAGES: SoftwarePage[] = [
       },
       {
         q: "Is a cloud workstation fast enough for real-time rendering?",
-        a: "Yes — the rendering happens on the RTX GPU in the workstation and only the resulting video is streamed to you, so what your own laptop can do makes almost no difference. A stable 10 Mbps connection is enough; latency matters more than bandwidth.",
+        a: `Yes. The rendering happens on the ${NODE.gpu} in the workstation and only the resulting video comes back to you, streamed at ${NODE.stream} through the Coreframe Connect app — so what your own laptop can do makes almost no difference to the image. A steady connection matters more than a fast one, and latency more than bandwidth.`,
       },
       { q: "Do my models persist between sessions?", a: RESET_ANSWER },
     ],
@@ -263,7 +265,7 @@ export const SOFTWARE_PAGES: SoftwarePage[] = [
     description:
       "Run Chaos V-Ray GPU rendering on a rented RTX workstation in India, billed per minute. Works with 3ds Max, SketchUp, Rhino and Revit. Bring your Chaos licence.",
     intro:
-      "V-Ray GPU wants VRAM and CUDA cores. Renting them by the hour is considerably cheaper than owning them for a workload that is busy a few weeks a year.",
+      `V-Ray GPU wants VRAM and CUDA cores. Owning them means a machine at about ${WORKSTATION_REPLACEMENT_COST} sitting on the books all year for a workload that is busy a few weeks of it. Renting is the same card for the weeks you use it.`,
     problem:
       "V-Ray GPU renders that outlast your working day, on a card that was never specified for production rendering.",
     why: [
@@ -320,7 +322,7 @@ export const SOFTWARE_PAGES: SoftwarePage[] = [
     intro:
       "Coreframe rents Windows GPU workstations by the minute from infrastructure in India. You stream a real RTX desktop to the computer you already own and pay only for the time the stream is running.",
     problem:
-      "A workstation that would handle your rendering costs several lakh, depreciates immediately, and sits idle most of the week — and international cloud GPUs bill in dollars with latency to match.",
+      `A workstation that would handle your rendering lands at about ${WORKSTATION_REPLACEMENT_COST}, depreciates the day it arrives, and sits idle most of the week — and an international cloud GPU bills in dollars with the latency to match.`,
     why: [
       "Machines in India: low latency for Indian users, and rupee pricing with GST invoices.",
       "Per-minute billing that starts when the stream does — provisioning is free.",

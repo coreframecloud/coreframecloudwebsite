@@ -62,41 +62,45 @@ export default function DownloadPage() {
   }
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center px-6 py-24">
-      <div className="w-full max-w-lg">
+    <main className="cf-section px-5">
+      <div className="mx-auto w-full max-w-[520px]">
 
-        {/* Header — always shown */}
-        <div className="mb-8 flex items-center gap-4">
-          <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-cf border border-blue/20 bg-blue/[0.06]">
+        {/* Header — always shown. Stacks on a phone: the icon and a 36px
+            display heading will not sit side by side at 390px. */}
+        <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center">
+          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-cf border border-rule bg-paper-2">
             <svg viewBox="0 0 24 24" fill="none" className="h-7 w-7 text-blue" stroke="currentColor" strokeWidth="1.5">
               <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
             </svg>
           </div>
-          <div>
+          <div className="min-w-0">
             <h1 className="cf-display">Coreframe Cloud Connect</h1>
-            <p className="text-sm text-ink-3">Windows desktop client</p>
+            <p className="mt-2 text-sm text-ink-2">
+              The Windows client. It opens the private link to your workstation and streams the
+              desktop back.
+            </p>
           </div>
         </div>
 
         {/* Loading */}
         {stage === "loading" && (
-          <div className="rounded-cf border border-rule bg-paper-2 p-8 text-center">
-            <div className="mx-auto h-6 w-6 animate-spin rounded-full border-2 border-blue/30 border-t-blue" />
-            <p className="mt-4 text-sm text-ink-3">Verifying your account…</p>
+          <div className="rounded-cf border border-rule bg-paper-2 p-6 text-center sm:p-8">
+            <div className="mx-auto h-6 w-6 animate-spin rounded-full border-2 border-rule border-t-blue" />
+            <p className="mt-4 text-sm text-ink-2">Checking your account.</p>
           </div>
         )}
 
         {/* Downloads paused — deliberate, not a fault */}
         {stage === "paused" && (
-          <div className="rounded-cf border border-amber-400/25 bg-amber-400/[0.06] p-8 text-center">
-            <p className="text-base text-amber-100">
-              Coreframe Connect downloads are paused while we finish onboarding.
+          <div className="cf-note">
+            <p className="text-base leading-6 text-ink">
+              Downloads are paused while we finish onboarding.
             </p>
-            <p className="mt-3 text-sm text-amber-200/70">
-              Your account is unaffected. We will email you the moment the client is
-              available — there is nothing you need to do.
+            <p className="mt-3 text-sm leading-6 text-ink-2">
+              Your account is unaffected. We will email you the moment the client is available.
+              There is nothing for you to do.
             </p>
-            <Link href="/contact" className="cf-btn-primary mt-6 inline-block">
+            <Link href="/contact" className="cf-btn-primary mt-6 min-h-[44px]">
               Talk to us
             </Link>
           </div>
@@ -104,13 +108,13 @@ export default function DownloadPage() {
 
         {/* Not logged in */}
         {stage === "unauthenticated" && (
-          <div className="rounded-cf border border-rule bg-paper-2 p-8 text-center">
-            <p className="text-base text-ink-2">
-              Sign in to your Coreframe account to access the download.
+          <div className="rounded-cf border border-rule bg-paper-2 p-6 text-center sm:p-8">
+            <p className="text-base leading-6 text-ink-2">
+              Sign in to your Coreframe account to get the download.
             </p>
             <Link
               href={`/login?next=/download`}
-              className="cf-btn-primary mt-6 inline-block"
+              className="cf-btn-primary mt-6 min-h-[44px]"
             >
               Sign in to download
             </Link>
@@ -119,32 +123,32 @@ export default function DownloadPage() {
 
         {/* Download ready */}
         {stage === "ready" && info && (
-          <div className="rounded-cf border border-rule bg-paper-2 p-8">
-            {/* Version block */}
-            <div className="mb-6 grid grid-cols-2 gap-3">
-              <div className="rounded-cf border border-rule bg-paper-2 p-4">
-                <p className="text-xs font-semibold uppercase tracking-widest text-ink-3">Version</p>
-                <p className="mt-1 text-lg font-bold text-ink">{info.version}</p>
+          <div className="rounded-cf border border-rule bg-paper-2 p-6 sm:p-8">
+            {/* Version block — one column on a phone, two from 640px. */}
+            <div className="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <div className="min-w-0 rounded-cf border border-rule bg-paper p-4">
+                <p className="cf-card-label">Version</p>
+                <p className="text-lg leading-6 font-semibold break-words text-ink">{info.version}</p>
               </div>
-              <div className="rounded-cf border border-rule bg-paper-2 p-4">
-                <p className="text-xs font-semibold uppercase tracking-widest text-ink-3">Platform</p>
-                <p className="mt-1 text-lg font-bold text-ink">Windows</p>
+              <div className="min-w-0 rounded-cf border border-rule bg-paper p-4">
+                <p className="cf-card-label">Platform</p>
+                <p className="text-lg leading-6 font-semibold text-ink">Windows</p>
               </div>
             </div>
 
             {/* Requirements */}
-            <ul className="mb-6 space-y-2 text-sm text-ink-2">
-              <li className="flex items-center gap-2">
-                <span className="h-1.5 w-1.5 rounded-full bg-blue/60" />
-                Windows 10 or 11 (64-bit)
+            <ul className="mb-6 space-y-2 text-sm leading-6 text-ink-2">
+              <li className="flex gap-2">
+                <span className="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-blue" />
+                Windows 10 or 11, 64-bit
               </li>
-              <li className="flex items-center gap-2">
-                <span className="h-1.5 w-1.5 rounded-full bg-blue/60" />
-                Moonlight is bundled — no separate install needed
+              <li className="flex gap-2">
+                <span className="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-blue" />
+                Moonlight is bundled. Nothing else to install
               </li>
-              <li className="flex items-center gap-2">
-                <span className="h-1.5 w-1.5 rounded-full bg-blue/60" />
-                10 Mbps+ internet connection recommended
+              <li className="flex gap-2">
+                <span className="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-blue" />
+                About 20 Mbps is comfortable at 1080p, around 50 Mbps for 4K
               </li>
             </ul>
 
@@ -152,56 +156,63 @@ export default function DownloadPage() {
             <button
               onClick={handleDownload}
               disabled={downloading}
-              className="cf-btn-primary w-full"
+              className="cf-btn-primary min-h-[44px] w-full"
             >
-              {downloading ? "Starting download…" : `Download v${info.version}`}
+              {downloading ? "Starting download" : `Download v${info.version}`}
             </button>
 
-            {/* SHA256 */}
-            <div className="mt-4 rounded-cf border border-rule bg-paper-2 p-3">
-              <p className="mb-1 text-[10px] font-semibold uppercase tracking-widest text-ink-3">SHA-256 checksum</p>
-              <p className="break-all font-mono text-[11px] text-ink-3">{info.sha256}</p>
+            {/* SHA-256. Sixty-four characters with no break opportunity in
+                them: without break-all this single line is wider than a phone
+                and drags the whole page sideways. The container also scrolls,
+                so a longer digest cannot reintroduce the overflow. */}
+            <div className="mt-4 min-w-0 rounded-cf border border-rule bg-paper p-3">
+              <p className="cf-card-label">SHA-256 checksum</p>
+              <p className="overflow-x-auto font-mono text-[11px] leading-5 break-all text-ink-2">
+                {info.sha256}
+              </p>
             </div>
 
             {/* Unsigned-installer walkthrough — shown until code signing is live.
                 The route returns signed:true once INSTALLER_SIGNED is set, and
                 this whole block disappears without a code change. */}
             {!info.signed && (
-              <div className="mt-5 rounded-cf border border-amber-400/25 bg-amber-400/[0.06] p-5">
-                <p className="text-sm font-semibold text-amber-100">
-                  Windows will warn you about this installer — here&apos;s why, and what to do
+              <div className="cf-note mt-5">
+                <p className="text-base leading-6 font-semibold text-ink">
+                  Windows will warn you about this installer.
                 </p>
-                <p className="mt-2 text-xs leading-relaxed text-amber-200/70">
-                  Our code-signing certificate is being issued right now (we&apos;ve applied and it&apos;s in
-                  progress). Until it arrives, Windows can&apos;t verify the publisher, so it shows
-                  standard warnings for the installer. The app is safe — you can verify the file
-                  yourself with the SHA-256 checksum above.
+                <p className="mt-2 text-sm leading-6 text-ink-2">
+                  Our code-signing certificate is still being issued. Until it arrives Windows
+                  cannot check the publisher, so it shows its standard warnings. Verify the file
+                  yourself against the checksum above, then work through the three prompts.
                 </p>
-                <ol className="mt-3 space-y-2 text-xs leading-relaxed text-amber-100/80">
+                <ol className="mt-4 space-y-3 text-sm leading-6 text-ink-2">
                   <li>
-                    <strong>1. Browser warning</strong> — if your browser flags the download, choose
-                    <em> Keep</em> (Chrome/Edge: Downloads → ⋯ → Keep).
+                    <strong className="text-ink">1. Browser warning.</strong> If your browser flags
+                    the download, choose Keep. In Chrome and Edge that is Downloads, then the three
+                    dots, then Keep.
                   </li>
                   <li>
-                    <strong>2. SmartScreen</strong> — when you run the installer and see
-                    &ldquo;Windows protected your PC&rdquo;, click <em>More info</em>, then
-                    <em> Run anyway</em>.
+                    <strong className="text-ink">2. SmartScreen.</strong> When you run the installer
+                    and see &ldquo;Windows protected your PC&rdquo;, click More info, then Run
+                    anyway.
                   </li>
                   <li>
-                    <strong>3. Permission pop-ups</strong> — on first connect, Windows will ask to
-                    allow Coreframe&apos;s secure network component (Tailscale) and firewall access.
-                    Click <em>Yes / Allow</em> on these — they create the private, encrypted link to
-                    your GPU workstation. This happens once.
+                    <strong className="text-ink">3. Permission prompts.</strong> On first connect,
+                    Windows asks to allow Coreframe&apos;s network component (Tailscale) and
+                    firewall access. Click Yes. They create the private encrypted link to your
+                    workstation, and it happens once.
                   </li>
                 </ol>
-                <p className="mt-3 text-[11px] leading-relaxed text-amber-200/50">
-                  To verify the download: open PowerShell in your Downloads folder and run{" "}
-                  <code className="rounded bg-paper-2 px-1 py-0.5 font-mono text-[10px]">
+                <div className="mt-4 text-xs leading-5 text-ink-2">
+                  To check the file: open PowerShell in your Downloads folder and run
+                  <code className="mt-2 block overflow-x-auto rounded-cf border border-rule bg-paper px-2 py-1.5 font-mono text-[11px] break-all text-ink">
                     certutil -hashfile &quot;{info.filename}&quot; SHA256
-                  </code>{" "}
-                  — the output must match the checksum shown above. This notice will disappear once
-                  our signed installer ships.
-                </p>
+                  </code>
+                  <span className="mt-2 block">
+                    The output must match the checksum above. This notice goes away when the signed
+                    installer ships.
+                  </span>
+                </div>
               </div>
             )}
           </div>
@@ -209,12 +220,15 @@ export default function DownloadPage() {
 
         {/* File not yet uploaded */}
         {stage === "unavailable" && info && (
-          <div className="rounded-cf border border-rule bg-paper-2 p-8 text-center">
-            <p className="text-base text-ink-2">
-              {info.version ? `v${info.version} is` : "The Windows installer is"} being
-              prepared. Check back shortly or{" "}
-              <a href="mailto:support@coreframecloud.com" className="text-blue underline underline-offset-2">
-                email us
+          <div className="rounded-cf border border-rule bg-paper-2 p-6 text-center sm:p-8">
+            <p className="text-base leading-6 text-ink-2">
+              {info.version ? `v${info.version} is` : "The Windows installer is"} being prepared.
+              Check back shortly, or email{" "}
+              <a
+                href="mailto:support@coreframecloud.com"
+                className="break-words text-blue underline underline-offset-4"
+              >
+                support@coreframecloud.com
               </a>{" "}
               for a direct link.
             </p>
@@ -223,16 +237,21 @@ export default function DownloadPage() {
 
         {/* Error */}
         {stage === "error" && (
-          <div className="rounded-cf border border-red-500/20 bg-red-500/[0.04] p-8 text-center">
-            <p className="text-sm text-red-300/70">Something went wrong. Please try again or contact support.</p>
-            <button onClick={() => window.location.reload()} className="cf-btn-secondary mt-4">
+          <div className="rounded-cf border border-destructive/30 bg-paper-2 p-6 text-center sm:p-8">
+            <p className="text-sm leading-6 text-destructive">
+              Something went wrong at our end. Try again, or email support.
+            </p>
+            <button
+              onClick={() => window.location.reload()}
+              className="cf-btn-secondary mt-4 min-h-[44px]"
+            >
               Retry
             </button>
           </div>
         )}
 
-        <p className="mt-6 text-center text-xs text-ink-3">
-          Access is limited to registered Coreframe customers during private beta.
+        <p className="mt-6 text-center text-sm text-ink-3">
+          The download is open to registered Coreframe customers during the private beta.
         </p>
       </div>
     </main>

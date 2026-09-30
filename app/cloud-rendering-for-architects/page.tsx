@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { BackgroundGlow } from "@/components/home/background-glow";
+import { SpecBlock, K, V, C } from "@/components/home/spec-block";
+import { NODE } from "@/lib/node-spec";
 import {
   getRateCard,
   planTiers,
@@ -8,7 +11,6 @@ import {
   storageRatePerTb,
   billingSentence,
 } from "@/lib/rate-card";
-import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Cloud Rendering for Architects — RTX 5080, India",
@@ -25,46 +27,58 @@ export const metadata: Metadata = {
   alternates: { canonical: "/cloud-rendering-for-architects" },
 };
 
+/**
+ * THE SPEC IS NOT TYPED ON THIS PAGE. It comes from lib/node-spec, which is
+ * where every page reads it since the site spent weeks claiming server-grade
+ * memory and a server-grade CPU that this fleet has never had.
+ *
+ * NO SPEED CLAIMS. The old copy said a fly-through needs "sustained GPU
+ * throughput your local machine can't sustain", and the FAQ said the node
+ * "outperforms most mid-range local GPUs". Both were assertions about a reader's
+ * hardware that we have never measured, on a page aimed at people who would
+ * know. What is true, and is all this page now claims, is that the render
+ * happens somewhere else: your own machine stays free, and several people can
+ * render at once on separate workstations.
+ *
+ * THE FAQ IS VISIBLE. The FAQPage JSON-LD used to describe questions that
+ * appeared nowhere on the page. Both now render from the same array, so the
+ * structured data and the copy cannot drift apart.
+ */
+
 const useCases = [
   {
-    icon: "🏛️",
-    title: "D5 Render walkthroughs",
-    body: "Fly-through animations and real-time walkthroughs need sustained GPU throughput your local machine can't sustain for long sessions. Offload to RTX 5080 and let the render run.",
+    title: "D5 Render walkthroughs.",
+    body: "The fly-through renders on the node while your own machine stays free. You keep modelling; the animation finishes somewhere else.",
   },
   {
-    icon: "🪟",
-    title: "Enscape + Revit / SketchUp",
-    body: "Install Revit or SketchUp on the workstation alongside Enscape. RTX ray tracing works natively. Your Enscape named-user licence activates exactly as it does locally.",
+    title: "Enscape inside Revit or SketchUp.",
+    body: "Enscape is a plugin, so its host application goes on first. Your named-user licence signs in exactly as it does on your own PC.",
   },
   {
-    icon: "🌳",
-    title: "Lumion scenes with large assets",
-    body: "16 GB GDDR7 VRAM fits complex Lumion scenes with high-res textures, detailed vegetation, and animated water — without dropping to lower quality settings.",
+    title: "Lumion scenes with heavy assets.",
+    body: `${NODE.vram} on the card. High-resolution textures, dense vegetation and animated water fit without turning the quality setting down to make them fit.`,
   },
   {
-    icon: "👥",
-    title: "Team handoffs, no re-uploading",
-    body: "On committed plans, your project files live on persistent NAS. A designer uploads the model; the renderer picks it up immediately. No copying, no waiting.",
+    title: "Handoffs without a pen drive.",
+    body: "On a committed plan the project files live on NAS. A designer uploads the model and whoever renders it opens the same file. The latest one is not on somebody's desktop.",
   },
   {
-    icon: "🔒",
-    title: "Client NDA projects stay in India",
-    body: "All data is hosted in Bengaluru. Your client's unreleased building design never touches an overseas server — important for large commercial and government projects.",
+    title: "Client NDA work stays in India.",
+    body: `Every node and every byte of storage sits in ${NODE.location}. A client's unreleased building does not touch an overseas server.`,
   },
   {
-    icon: "📐",
-    title: "Scale for deadline crunches",
-    body: "Before a presentation, multiple team members can run separate render sessions simultaneously. Each gets their own RTX 5080 instance. Scale up, scale down.",
+    title: "Everyone renders at once.",
+    body: "In the week before a presentation, each person takes their own workstation for as long as they need it, and hands it back the same day.",
   },
 ];
 
 const workflow = [
-  { n: "01", title: "Create account & add credit", body: "Sign up, verify email, and add wallet credit. Takes under 5 minutes." },
-  { n: "02", title: "Launch a Windows workstation", body: "One click. RTX 5080 boots with WDDM display drivers. Ready in under 2 minutes." },
-  { n: "03", title: "Install your apps", body: "Install D5 Render, Lumion, Enscape, Revit, or SketchUp and sign in with your existing licences. BYOL — no extra software fees." },
-  { n: "04", title: "Transfer your project files", body: "Upload scene files and assets to Coreframe's secure storage layer over an encrypted transfer." },
-  { n: "05", title: "Render", body: "Run at full RTX 5080 speed. For committed-plan studios, files persist on NAS so any team member can continue the session." },
-  { n: "06", title: "Download & shut down", body: "Download outputs. Shut down the workstation. Billing stops. Committed-plan files stay on NAS for next time." },
+  { n: "01", title: "Open the account.", body: "Sign up, verify your email, add credit to the wallet." },
+  { n: "02", title: "Launch a workstation.", body: `One click. A ${NODE.gpu} machine running ${NODE.os} boots and hands you a desktop.` },
+  { n: "03", title: "Sign in to your software.", body: "D5 Render, Twinmotion, Unreal and Blender are on the image already. Revit, AutoCAD, Lumion and Enscape are set up with you once, then they are on every workstation you launch, running on your own licence." },
+  { n: "04", title: "Move the project across.", body: "Drag the scene and its assets in. No FTP, no VPN, no shared drive to configure." },
+  { n: "05", title: "Render.", body: "The node does the work. On a committed plan the files stay on NAS, so the next person to open the job has them." },
+  { n: "06", title: "Close the window.", body: "Download what you need and shut the session down. The billing stops. NAS keeps the project." },
 ];
 
 /**
@@ -82,35 +96,30 @@ const planWhatsapp = (plan: string) =>
     `Hi Coreframe, I'd like to discuss the ${plan} plan for my architecture studio.`
   )}`;
 
+/** One array. It renders as the page's Questions section AND as the JSON-LD. */
+const faqs = [
+  {
+    q: "Can I run Revit on a cloud GPU workstation?",
+    a: "Yes. Revit runs on the workstation the way it runs on your own PC, and Enscape, D5 Render and the other Revit plugins work with it. Bring your own Autodesk licence — we never supply one.",
+  },
+  {
+    q: "How do team members share project files?",
+    a: "On committed plans the project files live on persistent NAS storage. Anyone with a named seat opens the same files. There is no copying between sessions and no pen drive.",
+  },
+  {
+    q: "Is cloud rendering faster than a local workstation for architects?",
+    a: "It depends on the machine you have now, so we do not publish a multiple and we do not publish render times. What is reliably true is that the render happens somewhere else: your own machine stays free while it runs, and several people in the studio can render at the same time on separate workstations instead of queueing for one desk.",
+  },
+];
+
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "FAQPage",
-  mainEntity: [
-    {
-      "@type": "Question",
-      name: "Can I run Revit on a cloud GPU workstation?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "Yes. Install Revit on the Windows workstation just as you would locally. Enscape, D5 Render, and other Revit plugins all work. BYOL — bring your own Autodesk licence.",
-      },
-    },
-    {
-      "@type": "Question",
-      name: "How do team members share project files?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "On committed plans, project files live on persistent NAS storage. Any team member with a named seat can access the same files immediately — no manual file transfers between sessions.",
-      },
-    },
-    {
-      "@type": "Question",
-      name: "Is cloud rendering faster than a local workstation for architects?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "It depends on your local GPU. An RTX 5080 with 16 GB GDDR7 outperforms most mid-range local GPUs for D5 Render, Lumion, and Enscape. The bigger benefit is removing the local bottleneck — your machine stays free while the cloud GPU renders.",
-      },
-    },
-  ],
+  mainEntity: faqs.map((f) => ({
+    "@type": "Question",
+    name: f.q,
+    acceptedAnswer: { "@type": "Answer", text: f.a },
+  })),
 };
 
 export default async function ArchitectsPage() {
@@ -155,101 +164,159 @@ export default async function ArchitectsPage() {
       <BackgroundGlow />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
-      <main className="relative mx-auto max-w-5xl px-6 pb-20 pt-16 md:pt-20">
+      <main className="relative">
+        <section className="cf-section px-5">
+          <div className="cf-col">
+            <p className="cf-eyebrow mb-5">Architecture studios · India</p>
+            <h1 className="cf-display">
+              Nobody should be waiting for the render desk.
+            </h1>
+            <p className="cf-lead mt-6">
+              Rent {NODE.gpu} workstations by the minute for D5 Render, Lumion,
+              Enscape and Revit. Several people can render at the same time
+              instead of queueing for the one machine that can. Project files stay
+              on NAS in {NODE.location}, so the latest one is never on a pen drive.
+            </p>
 
-        <div className="cf-eyebrow">
-          Cloud Rendering · Architecture Studios · India
-        </div>
-        <h1 className="cf-display mt-3">
-          Cloud GPU for Architecture Studios.<br className="hidden sm:block" /> RTX 5080. Hosted in India.
-        </h1>
-        <p className="mt-4 max-w-2xl text-sm leading-7 text-ink-2">
-          Skip GPU hardware upgrades. Launch an RTX 5080 Windows workstation for D5 Render,
-          Lumion, Enscape, or Revit. Persistent NAS storage keeps your team's projects accessible
-          anytime. All data stays in Bengaluru.
-        </p>
+            <div className="mt-8 flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:gap-4">
+              <Link href="/signup" className="cf-btn-primary w-full sm:w-auto min-h-[44px]">
+                Get started
+              </Link>
+              <Link href="/enterprise" className="cf-btn-secondary w-full sm:w-auto min-h-[44px]">
+                Studio plans
+              </Link>
+            </div>
+          </div>
+        </section>
 
-        <div className="mt-5 flex flex-wrap gap-3">
-          <Link href="/signup" className="rounded-full bg-blue px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue transition">
-            Get started →
-          </Link>
-          <Link href="/enterprise" className="rounded-full border border-rule px-5 py-2.5 text-sm text-ink hover:bg-paper-2 transition">
-            Studio plans
-          </Link>
-        </div>
+        <div className="cf-rule" />
 
-        {/* Use cases */}
-        <div className="mt-12">
-          <h2 className="cf-section-title uppercase text-ink-3 mb-5">What architects use it for</h2>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {useCases.map((u) => (
-              <div key={u.title} className="rounded-[18px] border border-rule bg-paper-2 p-5">
-                <div className="text-xl mb-2">{u.icon}</div>
-                <h3 className="text-sm font-semibold text-ink">{u.title}</h3>
-                <p className="mt-1.5 text-xs leading-5 text-ink-2">{u.body}</p>
-              </div>
+        <section className="cf-section px-5">
+          <div className="cf-wide">
+            <SpecBlock label="The machine you are renting">
+              <C># one workstation, per seat</C>
+              {"\n\n"}
+              {"  "}<K>gpu</K>{"            "}<V>{NODE.gpu}</V> · <V>{NODE.vram}</V>{"\n"}
+              {"  "}<K>bandwidth</K>{"      "}<V>{NODE.memoryBandwidth}</V> memory bandwidth on the card{"\n"}
+              {"  "}<K>memory</K>{"         "}<V>{NODE.ram}</V> system RAM{"\n"}
+              {"  "}<K>cpu</K>{"            "}<V>{NODE.cpu}</V>{"\n"}
+              {"  "}<K>working disk</K>{"   "}<V>{NODE.disk}</V>{"\n"}
+              {"  "}<K>os</K>{"             "}<V>{NODE.os}</V> — a full desktop, not a render queue{"\n"}
+              {"  "}<K>access</K>{"         "}Coreframe Connect app, streamed at <V>{NODE.stream}</V>{"\n"}
+              {"  "}<K>location</K>{"       "}<V>{NODE.location}</V>{"\n"}
+              {"  "}<K>licences</K>{"       "}yours — we never supply one
+            </SpecBlock>
+          </div>
+        </section>
+
+        <div className="cf-rule" />
+
+        <section className="cf-section px-5">
+          <div className="cf-wide">
+            <p className="cf-eyebrow mb-5">What architects use it for</p>
+            <h2 className="cf-section-title">Six things a studio stops waiting on.</h2>
+            <div className="mt-10 grid grid-cols-1 gap-9 sm:grid-cols-2 lg:grid-cols-3">
+              {useCases.map((u) => (
+                <div key={u.title} className="cf-card">
+                  <h3 className="text-base font-semibold tracking-[-0.01em] text-ink">{u.title}</h3>
+                  <p className="mt-2.5 text-sm leading-[1.62] break-words text-ink-2">{u.body}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <div className="cf-rule" />
+
+        <section className="cf-section px-5">
+          <div className="cf-wide">
+            <p className="cf-eyebrow mb-5">How it works</p>
+            <h2 className="cf-section-title">Six steps, and you only pay while the machine is running.</h2>
+            <div className="mt-10 grid grid-cols-1 gap-9 sm:grid-cols-2 lg:grid-cols-3">
+              {workflow.map((s) => (
+                <div key={s.n} className="cf-card">
+                  <p className="cf-card-label">{s.n}</p>
+                  <h3 className="text-base font-semibold tracking-[-0.01em] text-ink">{s.title}</h3>
+                  <p className="mt-2.5 text-sm leading-[1.62] break-words text-ink-2">{s.body}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <div className="cf-rule" />
+
+        <section className="cf-section px-5">
+          <div className="cf-wide">
+            <p className="cf-eyebrow mb-5">Plans</p>
+            <h2 className="cf-section-title">Pay by the minute, or commit for the year.</h2>
+            <div className="mt-10 grid grid-cols-1 gap-9 sm:grid-cols-2 lg:grid-cols-3">
+              {plans.map((p) => (
+                <div key={p.name} className="cf-card">
+                  <p className="cf-card-label">
+                    {p.name}
+                    {p.highlight ? " · best value" : ""}
+                  </p>
+                  <p className="font-display text-2xl font-semibold tracking-[-0.02em] break-words text-ink">
+                    {p.price}
+                  </p>
+                  <p className="mt-2.5 text-sm leading-[1.62] break-words text-ink-2">{p.note}</p>
+                  <Link
+                    href={p.href}
+                    target={p.href.startsWith("https://wa") ? "_blank" : undefined}
+                    rel={p.href.startsWith("https://wa") ? "noreferrer" : undefined}
+                    className={`mt-5 min-h-[44px] w-full ${p.highlight ? "cf-btn-primary" : "cf-btn-secondary"}`}
+                  >
+                    {p.cta}
+                  </Link>
+                </div>
+              ))}
+            </div>
+            <p className="mt-8 text-sm leading-[1.62] text-ink-2">
+              All prices include 18% GST — what you see is what you pay, and every invoice shows the
+              taxable value and GST split.
+              {adhoc ? ` Committed tiers bill extra GPU-hours below the ${adhoc} ad-hoc rate.` : ""}
+              {storageRate ? ` Persistent NAS storage beyond your plan, or on its own, is ${storageRate}/TB/month and is retained for as long as it is subscribed.` : ""}
+              {" "}Software is bring-your-own-licence. Named-user licences work.
+            </p>
+          </div>
+        </section>
+
+        <div className="cf-rule" />
+
+        <section className="cf-section px-5">
+          <div className="cf-col">
+            <p className="cf-eyebrow mb-5">Questions</p>
+            <h2 className="cf-section-title">What studios ask before they start.</h2>
+            <dl className="mt-10 divide-y divide-rule border-y border-rule">
+              {faqs.map((f) => (
+                <div key={f.q} className="py-6">
+                  <dt className="text-lg font-semibold tracking-[-0.02em] break-words text-ink">{f.q}</dt>
+                  <dd className="mt-2.5 text-base leading-[1.62] break-words text-ink-2">{f.a}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+        </section>
+
+        <section className="cf-section px-5 pt-0">
+          <div className="cf-col flex flex-wrap gap-x-6 gap-y-1 text-sm">
+            {[
+              ["/", "Home"],
+              ["/d5-render-cloud-workstation", "D5 Render"],
+              ["/lumion-cloud-gpu", "Lumion"],
+              ["/enscape-cloud-gpu", "Enscape"],
+            ].map(([href, label]) => (
+              <Link
+                key={href}
+                href={href}
+                className="inline-flex min-h-[44px] items-center text-blue hover:underline"
+              >
+                {label} &rarr;
+              </Link>
             ))}
           </div>
-        </div>
-
-        {/* Workflow */}
-        <div className="mt-12">
-          <h2 className="cf-section-title uppercase text-ink-3 mb-5">How it works</h2>
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {workflow.map((s) => (
-              <div key={s.n} className="rounded-[18px] border border-rule bg-paper-2 p-5">
-                <div className="text-xs font-bold text-ink-3 mb-1">{s.n}</div>
-                <h3 className="text-sm font-semibold text-ink">{s.title}</h3>
-                <p className="mt-1.5 text-xs leading-5 text-ink-2">{s.body}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Plans */}
-        <div className="mt-12">
-          <h2 className="cf-section-title uppercase text-ink-3 mb-5">Plans</h2>
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-            {plans.map((p) => (
-              <div key={p.name} className={`relative rounded-[18px] border p-5 ${p.highlight ? "border-blue/25 bg-blue/[0.04]" : "border-rule bg-paper-2"}`}>
-                {/* Same fix as the enterprise page: left-1/2 shrink-to-fit gives
-                    the badge only half the card to lay out in. "Best value" is
-                    short enough to survive that today, which is exactly why it
-                    would break silently later. */}
-                {p.highlight && (
-                  <div className="absolute -top-3 inset-x-0 flex justify-center">
-                    <span className="whitespace-nowrap rounded-full bg-blue px-3 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white">Best value</span>
-                  </div>
-                )}
-                <div className={`text-[10px] font-semibold uppercase tracking-wider ${p.highlight ? "text-blue/70" : "text-ink-3"}`}>{p.name}</div>
-                <div className="mt-1 text-lg font-bold text-ink">{p.price}</div>
-                <p className="mt-1.5 text-[11px] leading-4 text-ink-2">{p.note}</p>
-                <Link
-                  href={p.href}
-                  target={p.href.startsWith("https://wa") ? "_blank" : undefined}
-                  rel={p.href.startsWith("https://wa") ? "noreferrer" : undefined}
-                  className={`mt-4 block w-full rounded-cf px-4 py-2 text-center text-xs font-semibold transition ${p.highlight ? "bg-blue text-white hover:bg-blue" : "border border-rule bg-paper-2 text-ink hover:bg-paper-2"}`}
-                >
-                  {p.cta}
-                </Link>
-              </div>
-            ))}
-          </div>
-          <p className="mt-3 text-[11px] leading-5 text-ink-3">
-            All prices include 18% GST — what you see is what you pay, and every invoice shows the
-            taxable value and GST split.
-            {adhoc ? ` Committed tiers bill extra GPU-hours below the ${adhoc} ad-hoc rate.` : ""}
-            {storageRate ? ` Persistent NAS storage beyond your plan, or on its own, is ${storageRate}/TB/month and is retained for as long as it is subscribed.` : ""}
-            {" "}Software is BYOL · Named-user licences work.
-          </p>
-        </div>
-
-        <div className="mt-10 flex flex-wrap gap-4 text-sm">
-          <Link href="/" className="text-ink-2 hover:text-ink transition">← Home</Link>
-          <Link href="/d5-render-cloud-workstation" className="text-ink-2 hover:text-ink transition">D5 Render →</Link>
-          <Link href="/lumion-cloud-gpu" className="text-ink-2 hover:text-ink transition">Lumion →</Link>
-          <Link href="/enscape-cloud-gpu" className="text-ink-2 hover:text-ink transition">Enscape →</Link>
-        </div>
+        </section>
       </main>
     </div>
   );

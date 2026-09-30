@@ -1,6 +1,7 @@
 "use client";
 
 import { InPageLink } from "@/components/ui/in-page-link";
+import { NODE } from "@/lib/node-spec";
 import { trackEvent } from "@/lib/analytics";
 import Link from "next/link";
 import { STORAGE, type StorageTerms } from "@/lib/storage-terms";
@@ -113,8 +114,8 @@ export function PricingSection({
 
             <ul className="mt-6 space-y-2 text-sm text-ink-2">
               <li className="flex gap-2"><span className="text-blue">✓</span> No commitment, cancel anytime</li>
-              <li className="flex gap-2"><span className="text-blue">✓</span> Full Windows desktop via RDP</li>
-              <li className="flex gap-2"><span className="text-blue">✓</span> RTX 5080 · 16 GB GDDR7</li>
+              <li className="flex gap-2"><span className="text-blue">✓</span> {NODE.os}, streamed at {NODE.stream} in the Connect app</li>
+              <li className="flex gap-2"><span className="text-blue">✓</span> {NODE.gpu} · {NODE.vram}</li>
               <li className="flex gap-2"><span className="text-blue">✓</span> <span className="text-ink-3">{storage.trialGb} GB persistent storage free, {storage.paidGb} GB with credit · kept {storage.retentionDays} days · session scratch cleared at session end</span></li>
             </ul>
 

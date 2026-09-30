@@ -72,27 +72,27 @@ export default async function SoftwareLandingPage({
     .filter(Boolean) as SoftwarePage[];
 
   return (
-    <main className="mx-auto max-w-4xl px-6 py-20">
+    <main className="cf-section px-5">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema(page)) }}
       />
 
-      <h1 className="cf-display">{page.title}</h1>
-      <p className="mt-6 text-lg leading-8 text-ink-2">{page.intro}</p>
+      <div className="cf-col">
+        <h1 className="cf-display">{page.title}</h1>
+        <p className="cf-lead mt-[22px]">{page.intro}</p>
+      </div>
 
-      <section className="mt-12 rounded-cf border border-rule bg-paper-2 p-6">
-        <h2 className="cf-section-title uppercase text-ink-3">
-          The problem
-        </h2>
-        <p className="mt-3 leading-7 text-ink-2">{page.problem}</p>
+      <section className="cf-col mt-16">
+        <p className="cf-eyebrow mb-4">The problem</p>
+        <p className="cf-section-copy break-words">{page.problem}</p>
       </section>
 
-      <section className="mt-12">
-        <h2 className="cf-section-title">Why rent a GPU for this</h2>
-        <ul className="mt-5 space-y-3">
+      <section className="cf-col mt-16">
+        <h2 className="cf-section-title">Why rent a GPU for this.</h2>
+        <ul className="mt-6 space-y-3">
           {page.why.map((point) => (
-            <li key={point} className="flex gap-3 leading-7 text-ink-2">
+            <li key={point} className="flex gap-3 leading-7 break-words text-ink-2">
               <span className="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-blue/70" />
               <span>{point}</span>
             </li>
@@ -101,12 +101,12 @@ export default async function SoftwareLandingPage({
       </section>
 
       {page.sections?.length ? (
-        <div className="mt-12 space-y-12">
+        <div className="cf-col mt-16 space-y-14">
           {page.sections.map((section) => (
             <section key={section.h2}>
               <h2 className="cf-section-title">{section.h2}</h2>
               {section.body.map((para) => (
-                <p key={para} className="mt-4 leading-8 text-ink-2">
+                <p key={para} className="cf-section-copy mt-4 break-words">
                   {para}
                 </p>
               ))}
@@ -115,30 +115,32 @@ export default async function SoftwareLandingPage({
         </div>
       ) : null}
 
-      <section className="mt-12 rounded-cf border border-blue/20 bg-blue/[0.05] p-6">
-        <h2 className="cf-section-title">Licensing</h2>
-        <p className="mt-3 leading-7 text-ink-2">{page.licence}</p>
-        <Link
-          href="/apps"
-          className="mt-4 inline-block text-sm text-blue underline underline-offset-4 hover:text-blue"
-        >
-          See everything that is preinstalled →
-        </Link>
+      <section className="cf-col mt-16">
+        <h2 className="cf-section-title">Licensing.</h2>
+        <div className="cf-note mt-6">
+          <p className="cf-section-copy break-words">{page.licence}</p>
+          <Link
+            href="/apps"
+            className="mt-3 inline-flex min-h-[44px] items-center text-sm text-blue underline underline-offset-4"
+          >
+            See everything that is preinstalled →
+          </Link>
+        </div>
       </section>
 
-      <section className="mt-12">
-        <h2 className="cf-section-title">Questions</h2>
-        <div className="mt-6 space-y-6">
+      <section className="cf-col mt-16">
+        <h2 className="cf-section-title">Questions.</h2>
+        <div className="mt-8 space-y-7">
           {page.faqs.map((faq) => (
             <div key={faq.q}>
               <h3 className="font-semibold text-ink">{faq.q}</h3>
-              <p className="mt-2 leading-7 text-ink-2">{faq.a}</p>
+              <p className="mt-2 leading-7 break-words text-ink-2">{faq.a}</p>
             </div>
           ))}
         </div>
       </section>
 
-      <div className="mt-12 flex flex-wrap gap-4">
+      <div className="cf-col mt-16 flex flex-wrap gap-3">
         <Link href="/login" className="cf-btn-primary">
           Start free
         </Link>
@@ -151,16 +153,14 @@ export default async function SoftwareLandingPage({
       </div>
 
       {related.length > 0 && (
-        <section className="mt-16 border-t border-rule pt-8">
-          <h2 className="cf-section-title uppercase text-ink-3">
-            Related
-          </h2>
-          <ul className="mt-4 space-y-2">
+        <section className="cf-col mt-16 border-t border-rule pt-8">
+          <p className="cf-eyebrow mb-4">Related</p>
+          <ul className="space-y-1">
             {related.map((r) => (
               <li key={r.slug}>
                 <Link
                   href={`/software/${r.slug}`}
-                  className="text-blue hover:text-blue hover:underline underline-offset-4"
+                  className="inline-flex min-h-[44px] items-center break-words text-blue underline-offset-4 hover:underline"
                 >
                   {r.title}
                 </Link>

@@ -42,9 +42,20 @@ function Row({
   );
 }
 
-export function WhyWeVerify({ trialMinutes }: { trialMinutes: number | null }) {
+export function WhyWeVerify({
+  trialMinutes,
+  trialStorageGb,
+}: {
+  trialMinutes: number | null;
+  /** From the live rate card, same as `trialMinutes`. When it is absent the
+   *  sentence drops the storage clause rather than naming a number nobody
+   *  promised — a hardcoded "20 GB" sat here next to a live minutes figure,
+   *  which is the same bug removed from three other files. There is no
+   *  default and there must never be one. */
+  trialStorageGb?: number;
+}) {
   return (
-    <section className="mt-8 rounded-[1.6rem] border border-rule bg-paper-2 p-6">
+    <section className="mt-8 rounded-cf border border-rule bg-paper-2 p-6">
       <h2 className="cf-section-title">
         Why we ask for an ID check
       </h2>
@@ -76,8 +87,8 @@ export function WhyWeVerify({ trialMinutes }: { trialMinutes: number | null }) {
         </Row>
         {trialMinutes ? (
           <Row icon={<Gift className="h-4 w-4" />} title="Your free minutes are on the other side">
-            {trialMinutes} GPU minutes and 20 GB of storage are credited once
-            you are verified. No card needed.
+            {trialMinutes} GPU minutes{trialStorageGb ? ` and ${trialStorageGb} GB of storage` : ""}{" "}
+            credited once you are verified. No card needed.
           </Row>
         ) : null}
       </ul>

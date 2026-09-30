@@ -2,32 +2,43 @@
  * The one link in the Instagram bio.
  *
  * Kept as a SERVER component. It exports `metadata`, which a client component
- * may not do, and the price below is read from the live rate card — the same
- * rule as every other page on this site. The draft version of this file used
- * inline `onMouseOver`/`onMouseOut` handlers, which a server component cannot
- * pass ("Event handlers cannot be passed to Client Component props") and which
- * would have failed the build outright. The hover is CSS instead, which also
- * works before hydration — worth having on a page whose whole audience arrives
- * through the Instagram in-app browser on a phone.
+ * may not do, and the price and the trial below are read from the live rate
+ * card — the same rule as every other page on this site. The draft version of
+ * this file used inline `onMouseOver`/`onMouseOut` handlers, which a server
+ * component cannot pass ("Event handlers cannot be passed to Client Component
+ * props") and which would have failed the build outright.
+ *
+ * PHONE FIRST, AND LITERALLY SO. Every visitor arrives by tapping a bio link
+ * inside the Instagram in-app browser, one-handed, on a 390px screen. So: one
+ * column, one tap target per row, 64px minimum on each, 16px body type that
+ * iOS will not offer to zoom, and no hover state that carries meaning. The
+ * hover and focus rings are Tailwind classes rather than an inline <style>
+ * block, so they are plain CSS and work before hydration.
+ *
+ * It was a dark page with hand-written hex colours sitting between the light
+ * site header and the light site footer, which the root layout renders on this
+ * route like any other. It now uses the same tokens as the rest of the site.
  */
 
 import type { Metadata } from "next";
-import { getRateCard, adhocRate, billingSentence } from "@/lib/rate-card";
+import { COMPANY } from "@/lib/company";
+import { NODE, NODE_SUMMARY } from "@/lib/node-spec";
+import { getRateCard, adhocRate, billingSentence, getTrialTerms } from "@/lib/rate-card";
 
 export const metadata: Metadata = {
   title: "Coreframe Cloud — Links",
-  // NO PRICE in the metadata. A description is cached by search engines and
-  // quoted by answer engines for months, and it is the one string on the page
-  // that cannot read the live rate card without making metadata generation do a
-  // network call. The draft carried "₹399/hr" here, twice, while billing had
-  // been ₹299 for days.
+  // NO PRICE and NO TRIAL TERMS in the metadata. A description is cached by
+  // search engines and quoted by answer engines for months, and it is the one
+  // string on the page that cannot read the live rate card without making
+  // metadata generation do a network call. The draft carried "₹399/hr" here,
+  // twice, while billing had been ₹299 for days — and an unconditional "free
+  // trial" here would outlive the day the trial is switched off.
   description:
-    "RTX 5080 GPU workstations for architects and creative studios. Billed per minute, GST included. Hosted in Bengaluru, India.",
+    `${NODE.gpu} GPU workstations for architects and creative studios. Billed per minute, GST included. Hosted in ${NODE.location}.`,
   alternates: { canonical: "/links" },
   openGraph: {
     title: "Coreframe Cloud",
-    description:
-      "GPU workstations for architects. RTX 5080 · billed per minute · free trial, no card.",
+    description: `GPU workstations for architects. ${NODE.gpu}, billed per minute, hosted in ${NODE.location}.`,
     url: "https://www.coreframecloud.com/links",
     siteName: "Coreframe Cloud",
     // public/og-image.png does not exist — the draft pointed at it, which would
@@ -38,53 +49,58 @@ export const metadata: Metadata = {
 };
 
 type BioLink = {
+  /** The tap target's own sentence. Kept short enough to hold two lines at 390px. */
   label: string;
+  /** The fact underneath it. This is where the detail goes, not in the label. */
+  note: string;
   href: string;
   primary?: boolean;
-  icon: string;
-  badge?: string;
 };
 
 /**
  * Every href is a route that exists. The draft pointed at /cfd and /pricing,
- * neither of which is a route: pricing is an anchor on the homepage (`/#pricing`,
- * which is what the footer uses) and the CFD page is /ansys-cfd-gpu. Two of the
- * five links in the Instagram bio would have 404'd.
+ * neither of which was a route at the time; /pricing is a real page now and
+ * /ansys-cfd-gpu is the CFD page. Two of the five links in the Instagram bio
+ * would have 404'd.
  *
  * /tools is real but is NOT a Next route — next.config.ts rewrites it to the
  * control plane. It resolves; do not "fix" it by pointing somewhere else.
  */
-function bioLinks(rate: string | null): BioLink[] {
+function bioLinks(rate: string | null, trialMinutes: number | null): BioLink[] {
   return [
     {
-      label: "Start Free — 200 GPU minutes, no card",
+      // The minutes are live or they are absent. Never a number the platform
+      // will not grant — the person finds out after handing over an Aadhaar.
+      label: trialMinutes ? `Start free. ${trialMinutes} GPU minutes, no card.` : "Create an account.",
+      note: trialMinutes
+        ? "An email address is the whole sign-up. The minutes are credited once your ID check clears."
+        : "An email address is the whole sign-up. Add credit when you need a machine.",
       href: "https://www.coreframecloud.com/?utm_source=instagram&utm_medium=bio&utm_content=start_free",
       primary: true,
-      icon: "⚡",
-    },
-    {
-      label: "IFC Checker — free, no signup",
-      href: "https://www.coreframecloud.com/tools?utm_source=instagram&utm_medium=bio&utm_content=ifc_tool",
-      icon: "🔧",
-    },
-    {
-      label: "CFD on GPU — talk to us",
-      href: "https://www.coreframecloud.com/ansys-cfd-gpu?utm_source=instagram&utm_medium=bio&utm_content=cfd",
-      icon: "🌊",
-    },
-    {
-      label: "WhatsApp us",
-      href: "https://wa.me/916366889488?text=Hi%2C+I+saw+your+Instagram+and+want+to+know+more+about+Coreframe+Cloud.",
-      icon: "💬",
     },
     {
       // The rate is live or it is absent. Never a number billing does not charge.
-      label: rate ? `Pricing — ${rate}/hr, per-minute billing` : "Pricing — per-minute billing",
+      label: rate ? `See the rate. ${rate} an hour.` : "See what an hour costs.",
+      note: "Pay by the minute when you need a machine for an afternoon, or commit monthly if you are on it every week.",
       // Query BEFORE the fragment. `/#pricing?utm_source=...` puts the whole
       // query string inside the fragment, where it never reaches analytics —
       // the link still works, so the tracking silently measures nothing.
       href: "https://www.coreframecloud.com/pricing?utm_source=instagram&utm_medium=bio&utm_content=pricing",
-      icon: "₹",
+    },
+    {
+      label: "Check an IFC file before you convert it.",
+      note: "Free, no signup. It names the doors that lost their openings, the spaces that went missing and the wrong units.",
+      href: "https://www.coreframecloud.com/tools?utm_source=instagram&utm_medium=bio&utm_content=ifc_tool",
+    },
+    {
+      label: "Run CFD on a GPU.",
+      note: "You bring the solver licence. We size the machine for your mesh and say so before you book.",
+      href: "https://www.coreframecloud.com/ansys-cfd-gpu?utm_source=instagram&utm_medium=bio&utm_content=cfd",
+    },
+    {
+      label: "Ask us something on WhatsApp.",
+      note: "A file that will not open, a deadline this week, what a month of this costs.",
+      href: `${COMPANY.whatsapp}?text=Hi%2C+I+saw+your+Instagram+and+want+to+know+more+about+Coreframe+Cloud.`,
     },
   ];
 }
@@ -92,114 +108,83 @@ function bioLinks(rate: string | null): BioLink[] {
 export default async function LinksPage() {
   const card = await getRateCard();
   const rate = adhocRate(card);
+  const trial = getTrialTerms(card);
 
   return (
-    <>
-      {/* Hover without JavaScript, so a server component can own this page and
-          the effect works before hydration. */}
-      <style>{`
-        .cf-bio-link { transition: opacity .2s ease, transform .2s ease; }
-        .cf-bio-link:hover { opacity: .85; transform: translateY(-1px); }
-        .cf-bio-link:focus-visible { outline: 2px solid #2D7FF9; outline-offset: 3px; }
-      `}</style>
+    <main className="bg-paper">
+      <section className="cf-section px-5">
+        {/* Narrower than cf-col on purpose. This is a phone page; 460px keeps
+            the line length short on a tablet instead of stretching five tap
+            targets across a 680px measure. */}
+        <div className="mx-auto w-full max-w-[460px]">
+          <p className="cf-eyebrow">Coreframe Cloud</p>
 
-      <main
-        style={{
-          minHeight: "100vh",
-          background: "#07090F",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "flex-start",
-          padding: "48px 20px 80px",
-          fontFamily: "'Segoe UI', system-ui, sans-serif",
-        }}
-      >
-        {/* Logo */}
-        <div style={{ marginBottom: 8, fontSize: 28, fontWeight: 900, letterSpacing: 2 }}>
-          <span style={{ color: "#fff" }}>CORE</span>
-          <span style={{ color: "#2D7FF9" }}>FRAME</span>
-          <span
-            style={{
-              color: "#2D7FF9",
-              fontSize: 14,
-              fontWeight: 300,
-              letterSpacing: 2,
-              marginLeft: 8,
-              verticalAlign: "middle",
-            }}
-          >
-            CLOUD
-          </span>
-        </div>
+          <h1 className="cf-display mt-3">A render machine you rent by the minute.</h1>
 
-        {/* Tagline */}
-        <p style={{ color: "#7A9CC0", fontSize: 14, marginBottom: 8, letterSpacing: 0.5, textAlign: "center" }}>
-          RTX 5080 GPU workstations for architects &amp; creative studios
-        </p>
-        <p style={{ color: "#8FA3BC", fontSize: 13, marginBottom: 40, textAlign: "center" }}>
-          {rate ? `${rate}/hr · ` : ""}Billed per minute · Bengaluru, India
-        </p>
+          <p className="cf-lead mt-4">
+            One {NODE.gpu} workstation in {NODE.location}, streamed at {NODE.stream} to the
+            laptop you already own. Start it when a deadline lands. Stop it when the render is
+            done.
+          </p>
 
-        {/* Link buttons */}
-        <div style={{ width: "100%", maxWidth: 420, display: "flex", flexDirection: "column", gap: 14 }}>
-          {bioLinks(rate).map((link) => (
-            <a
-              key={link.href}
-              className="cf-bio-link"
-              href={link.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 12,
-                padding: "16px 20px",
-                borderRadius: 12,
-                background: link.primary ? "#2D7FF9" : "rgba(255,255,255,0.03)",
-                border: `1px solid ${link.primary ? "#2D7FF9" : "rgba(45,127,249,0.2)"}`,
-                color: "#fff",
-                textDecoration: "none",
-                fontSize: 15,
-                fontWeight: link.primary ? 700 : 500,
-                boxShadow: link.primary ? "0 0 24px rgba(45,127,249,0.35)" : "none",
-                position: "relative",
-              }}
-            >
-              <span style={{ fontSize: 20 }} aria-hidden>
-                {link.icon}
-              </span>
-              <span style={{ flex: 1 }}>{link.label}</span>
-              {link.badge ? (
-                <span
-                  style={{
-                    background: "#F59E0B",
-                    color: "#000",
-                    fontSize: 11,
-                    fontWeight: 700,
-                    padding: "2px 10px",
-                    borderRadius: 20,
-                    letterSpacing: 1,
-                  }}
-                >
-                  {link.badge}
+          <p className="mt-5 font-mono text-[12.5px] leading-[1.7] break-words text-ink-3">
+            {NODE_SUMMARY}
+          </p>
+
+          {rate ? (
+            <p className="mt-1 font-mono text-[12.5px] leading-[1.7] break-words text-ink-2">
+              {rate} an hour{card?.prices_include_gst ? ", GST included" : ""}
+            </p>
+          ) : null}
+
+          {/* One column. Never two. A row of side-by-side links on a 390px
+              screen gives you two 165px targets and a mis-tap. */}
+          <div className="mt-8 flex flex-col gap-3.5">
+            {bioLinks(rate, trial?.gpu_minutes ?? null).map((link) => (
+              <a
+                key={link.href}
+                href={link.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={
+                  "flex min-h-[64px] w-full items-center gap-4 rounded-cf px-5 py-4 transition-colors " +
+                  "focus-visible:outline-2 focus-visible:outline-offset-[3px] focus-visible:outline-blue " +
+                  (link.primary
+                    ? "bg-blue text-white hover:bg-blue-ink"
+                    : "border border-rule bg-paper-2 text-ink hover:bg-paper")
+                }
+              >
+                <span className="min-w-0 flex-1">
+                  <span className="block text-base leading-[1.35] font-semibold break-words">
+                    {link.label}
+                  </span>
+                  <span
+                    className={
+                      "mt-1 block text-sm leading-[1.45] break-words " +
+                      (link.primary ? "text-white/80" : "text-ink-2")
+                    }
+                  >
+                    {link.note}
+                  </span>
                 </span>
-              ) : null}
-              <span aria-hidden style={{ color: link.primary ? "rgba(255,255,255,0.6)" : "#8FA3BC" }}>
-                →
-              </span>
-            </a>
-          ))}
+                <span
+                  aria-hidden
+                  className={"shrink-0 text-lg leading-none " + (link.primary ? "text-white/70" : "text-ink-3")}
+                >
+                  &rarr;
+                </span>
+              </a>
+            ))}
+          </div>
+
+          {/* One honest line about how billing works, from the rate card itself. */}
+          <p className="mt-7 text-sm leading-[1.6] text-ink-2">{billingSentence(card)}</p>
+
+          <p className="mt-7 border-t border-rule pt-5 font-mono text-[11.5px] leading-none tracking-[0.16em] text-ink-3 uppercase">
+            {NODE.location}
+          </p>
         </div>
-
-        {/* One honest line about how billing works, from the rate card itself. */}
-        <p style={{ marginTop: 28, maxWidth: 420, color: "#7A9CC0", fontSize: 12, lineHeight: 1.6, textAlign: "center" }}>
-          {billingSentence(card)}
-        </p>
-
-        {/* Instagram handle */}
-        <div style={{ marginTop: 40, color: "#8FA3BC", fontSize: 13, letterSpacing: 1 }}>@coreframecloud</div>
-      </main>
-    </>
+      </section>
+    </main>
   );
 }

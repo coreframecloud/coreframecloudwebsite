@@ -73,7 +73,7 @@ function MagicLinkVerifier() {
           <span className="text-blue">FRAME</span>
         </a>
 
-        <div className="rounded-[1.6rem] border border-rule bg-paper-2 p-8 backdrop-blur-xl">
+        <div className="rounded-cf border border-rule bg-paper-2 p-6 sm:p-8">
           {status === "loading" && (
             <>
               <Loader2 className="mx-auto mb-4 h-10 w-10 animate-spin text-blue" />
@@ -84,20 +84,20 @@ function MagicLinkVerifier() {
 
           {status === "success" && (
             <>
-              <CheckCircle className="mx-auto mb-4 h-10 w-10 text-green-400" />
-              <p className="font-semibold text-ink">You're in!</p>
-              <p className="mt-1 text-sm text-ink-2">Redirecting to your dashboard…</p>
+              <CheckCircle className="mx-auto mb-4 h-10 w-10 text-blue" />
+              <p className="font-semibold text-ink">You&apos;re in.</p>
+              <p className="mt-1 text-sm text-ink-2">Taking you to your dashboard.</p>
             </>
           )}
 
           {status === "error" && (
             <>
-              <XCircle className="mx-auto mb-4 h-10 w-10 text-red-400" />
-              <p className="font-semibold text-ink">Link invalid or expired</p>
-              <p className="mt-2 text-sm text-ink-2">{errorMsg}</p>
+              <XCircle className="mx-auto mb-4 h-10 w-10 text-destructive" />
+              <p className="font-semibold text-ink">That link will not work.</p>
+              <p className="mt-2 text-sm break-words text-ink-2">{errorMsg}</p>
               <a
                 href="/login"
-                className="mt-5 inline-block rounded-cf bg-blue px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-blue"
+                className="cf-btn-primary mt-5 min-h-11 w-full sm:w-auto"
               >
                 Request a new link
               </a>
