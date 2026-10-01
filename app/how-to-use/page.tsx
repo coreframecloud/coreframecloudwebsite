@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { NODE } from "@/lib/node-spec";
 
@@ -38,7 +39,7 @@ const STEPS = [
   },
   {
     title: "4. Install Coreframe Connect.",
-    body: "Connect is the Windows client. It handles the private network link and the stream, so there is nothing else to set up. Download it from your account, run the installer, sign in. Windows may warn you during the install while our code-signing certificate is being issued — the download page walks you through each prompt.",
+    body: "Connect is the Windows client. It handles the private network link and the stream, so there is nothing else to set up. Download it from your account using Chrome — Edge blocks the file outright — then run the installer and sign in. Windows will warn you about it, because the installer is not code-signed yet. Installing on Windows, below, shows the two clicks that get past it.",
   },
   {
     title: "5. Press Connect.",
@@ -142,6 +143,40 @@ export default function HowToUsePage() {
               </li>
             ))}
           </ol>
+        </section>
+
+        {/* Public on purpose. The same walkthrough lives on /download, but that page
+            is behind sign-in, so there was no link anyone could send to a customer who
+            was stuck BEFORE they got in. This one can be pasted into a WhatsApp reply. */}
+        <section id="installing-on-windows" className="mt-14 scroll-mt-24">
+          <h2 className="cf-section-title">Installing on Windows.</h2>
+          <p className="cf-section-copy mt-3">
+            Windows warns you about our installer and the way past it is not obvious. Two things.
+            Download in Chrome rather than Edge &mdash; Edge blocks the file outright and gives you
+            no way through. Then, when the blue &ldquo;Windows protected your PC&rdquo; box appears,
+            click <strong className="text-ink">More info</strong>, which is a small link and easy to
+            miss, and then <strong className="text-ink">Run anyway</strong>.
+          </p>
+          <p className="cf-section-copy mt-3">
+            The warning is there because our installer is not code-signed yet, so Windows cannot
+            check the publisher. That reputation builds as more people install it &mdash; so if you
+            click through, you are genuinely helping us get there. We are a young company and we
+            would rather say that plainly than pretend the warning is not happening. Nothing is
+            wrong with your machine or with the file.
+          </p>
+          <figure className="mt-6">
+            <Image
+              src="/guide/windows-install.png"
+              alt="Download in Chrome rather than Edge, then click More info and Run anyway in the Windows SmartScreen dialog."
+              width={1080}
+              height={1240}
+              priority={false}
+              className="h-auto w-full max-w-[460px] rounded-cf border border-rule"
+            />
+            <figcaption className="mt-2 text-xs leading-5 text-ink-3">
+              An illustration of the dialog, not a screenshot of your machine.
+            </figcaption>
+          </figure>
         </section>
 
         <section id="saving-your-work" className="cf-note mt-14 scroll-mt-24">

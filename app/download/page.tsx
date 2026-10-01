@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 
 interface DownloadInfo {
@@ -180,21 +181,35 @@ export default function DownloadPage() {
                 <p className="text-base leading-6 font-semibold text-ink">
                   Windows will warn you about this installer.
                 </p>
+                {/* The honest version, and the ask. SmartScreen reputation really is
+                    built from install volume on an unsigned binary, so "clicking through
+                    helps" is a fact rather than a line - which is the only reason it is
+                    worth saying. The earlier copy ("our certificate is still being
+                    issued") implied it was days away and quietly aged into a promise. */}
                 <p className="mt-2 text-sm leading-6 text-ink-2">
-                  Our code-signing certificate is still being issued. Until it arrives Windows
-                  cannot check the publisher, so it shows its standard warnings. Verify the file
-                  yourself against the checksum above, then work through the three prompts.
+                  Our installer is not code-signed yet, so Windows cannot check the publisher and
+                  treats it as unknown. That reputation builds as more people install it &mdash; so
+                  if you click through, you are genuinely helping us get there. We are a young
+                  company and we would rather say that plainly than pretend the warning is not
+                  happening. Nothing is wrong with your machine or with the file, and you can
+                  verify it yourself against the checksum above.
                 </p>
                 <ol className="mt-4 space-y-3 text-sm leading-6 text-ink-2">
+                  {/* Edge does NOT behave like Chrome here - it blocks the download
+                      outright rather than offering Keep, observed first-hand on 30 Sep.
+                      The old copy told people to do the same thing in both, which sent
+                      Edge users looking for a button that is not there. */}
                   <li>
-                    <strong className="text-ink">1. Browser warning.</strong> If your browser flags
-                    the download, choose Keep. In Chrome and Edge that is Downloads, then the three
-                    dots, then Keep.
+                    <strong className="text-ink">1. Use Chrome, not Edge.</strong> Edge blocks this
+                    download outright and gives you no way through. Chrome lets it finish &mdash; if
+                    it flags the file, open Downloads, click the three dots, then Keep.
                   </li>
                   <li>
-                    <strong className="text-ink">2. SmartScreen.</strong> When you run the installer
-                    and see &ldquo;Windows protected your PC&rdquo;, click More info, then Run
-                    anyway.
+                    <strong className="text-ink">2. SmartScreen.</strong> When you run the
+                    installer and see &ldquo;Windows protected your PC&rdquo;, click{" "}
+                    <strong className="text-ink">More info</strong> &mdash; it is easy to miss,
+                    the button only appears after that &mdash; then{" "}
+                    <strong className="text-ink">Run anyway</strong>.
                   </li>
                   <li>
                     <strong className="text-ink">3. Permission prompts.</strong> On first connect,
@@ -203,6 +218,22 @@ export default function DownloadPage() {
                     workstation, and it happens once.
                   </li>
                 </ol>
+                {/* The two clicks, drawn. People skim an ordered list and then still
+                    cannot find "More info", because in the real dialog it is a small
+                    link rather than a button. */}
+                <figure className="mt-5">
+                  <Image
+                    src="/guide/windows-install.png"
+                    alt="Download in Chrome rather than Edge, then click More info and Run anyway in the Windows SmartScreen dialog."
+                    width={1080}
+                    height={1240}
+                    className="h-auto w-full max-w-[460px] rounded-cf border border-rule"
+                  />
+                  <figcaption className="mt-2 text-xs leading-5 text-ink-3">
+                    An illustration of the dialog, not a screenshot of your machine.
+                  </figcaption>
+                </figure>
+
                 <div className="mt-4 text-xs leading-5 text-ink-2">
                   To check the file: open PowerShell in your Downloads folder and run
                   <code className="mt-2 block overflow-x-auto rounded-cf border border-rule bg-paper px-2 py-1.5 font-mono text-[11px] break-all text-ink">
