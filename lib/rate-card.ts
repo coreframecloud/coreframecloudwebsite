@@ -203,6 +203,41 @@ export type FirstTopupBonus = { percent: number; capRupees: number };
  * Returns null when the bonus is off or the control plane is unreachable, so
  * callers render nothing rather than a number nobody is honouring.
  */
+/**
+ * The lowest hourly figure we actually publish, and which plan it belongs to.
+ *
+ * EXISTS BECAUSE SOMEONE NEARLY PUBLISHED "AS LOW AS ₹220 ON STUDIO" (1 Oct
+ * 2026). Both halves were wrong. The lowest effective rate on the card was
+ * ₹278.36, and it is on Big Firm -- Studio is the SHORTEST commitment and
+ * therefore the most expensive per hour, not the cheapest. A "from ₹X" claim
+ * computed by hand will always eventually say something the billing system
+ * does not do; this computes it from the card or returns null.
+ *
+ * Uses effective_included_hourly_rupees, which is what an hour inside the
+ * allowance actually costs. Dividing the monthly fee by included hours is NOT
+ * the same number and is not the one to quote.
+ */
+export function lowestPublishedHourly(
+  card: RateCard | null,
+): { rupees: number; planName: string } | null {
+  const tiers = (card?.plans ?? []).filter(
+    (p) => p.effective_included_hourly_rupees != null,
+  );
+  if (!tiers.length) return null;
+  const best = tiers.reduce((a, b) =>
+    a.effective_included_hourly_rupees! <= b.effective_included_hourly_rupees! ? a : b,
+  );
+  return { rupees: best.effective_included_hourly_rupees!, planName: best.name };
+}
+
+/** "₹399/hr, GST included" — or without the clause if the card says otherwise. */
+export function gstClause(card: RateCard | null): string | null {
+  if (!card) return null;
+  return card.prices_include_gst
+    ? `all prices include ${card.gst_rate_percent}% GST`
+    : null;
+}
+
 export function firstTopupBonus(card: RateCard | null): FirstTopupBonus | null {
   const percent = card?.trial?.first_topup_bonus_percent ?? 0;
   const cap = card?.trial?.first_topup_bonus_cap_rupees ?? 0;
