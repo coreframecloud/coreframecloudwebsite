@@ -184,6 +184,9 @@ const nextConfig: NextConfig = {
       // the checker page and the shared-report view
       { source: "/tools", destination: `${CONTROL_PLANE}/tools` },
       { source: "/tools/:path*", destination: `${CONTROL_PLANE}/tools/:path*` },
+      // the free DWG dimension checker. Its API already arrives through the
+      // /api/tools/:path* rule below, so only the page needs a rule here.
+      { source: "/dwg-check", destination: `${CONTROL_PLANE}/dwg-check` },
       { source: "/r/:token", destination: `${CONTROL_PLANE}/r/:token` },
       // its API. Scoped to /api/tools so nothing else on /api is proxied.
       { source: "/api/tools/:path*", destination: `${CONTROL_PLANE}/api/tools/:path*` },

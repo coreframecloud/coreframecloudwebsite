@@ -86,7 +86,14 @@ const AI_SEARCH_BOTS = [
 
 // Nothing here is secret — /api/ is authenticated and /signup is a redirect
 // target — but neither belongs in an index.
-const DISALLOWED_PATHS = ["/api/", "/signup"];
+// /r/ holds SHARED CHECK REPORTS -- one customer's drawing, named, with its
+// findings and its layer names, behind nothing but a random token. Those
+// tokens were reachable at www through the rewrite in next.config.ts and
+// nothing in this file kept a crawler out of them, so a shared report could
+// have been indexed and then found by searching the project name. It was
+// never secret, but "unlisted" and "published" are different promises and we
+// made the first one.
+const DISALLOWED_PATHS = ["/api/", "/signup", "/r/"];
 
 export function GET(): Response {
   const lines: string[] = [];

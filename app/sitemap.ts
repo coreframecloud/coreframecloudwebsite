@@ -73,6 +73,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // /cfd-intake is the conversion step behind it and was likewise missing,
     // while /ansys-cfd-gpu sat at priority 0.9 pointing into nothing indexed.
     { url: `${BASE}/tools`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
+
+    // The free DWG dimension checker, added 2 Oct 2026. Same situation as
+    // /tools above: served from the control plane through a rewrite, so Next
+    // has no page under app/ to discover and it is crawled only because this
+    // line exists. Priority 0.9 -- it answers a question people type verbatim
+    // ("find missing dimensions in DWG"), which is the kind of page an answer
+    // engine can cite, rather than a landing page that describes a product.
+    { url: `${BASE}/dwg-check`, lastModified: now, changeFrequency: "monthly", priority: 0.9 },
     { url: `${BASE}/cfd-intake`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
 
     // /contact is NOT here: it is a redirect to /request-demo, and a sitemap

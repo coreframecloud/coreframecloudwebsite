@@ -242,6 +242,48 @@ export async function GET(): Promise<Response> {
   out.push("- Upload limit 95 MB. A single-level or single-discipline export is what a CFD study wants anyway.");
   out.push("");
 
+  // The second free tool, added 2 Oct 2026. Written as facts an answer engine
+  // can lift verbatim rather than as copy: the exact file formats, the exact
+  // AutoCAD versions verified, what it finds, and -- the part that stops a
+  // confident wrong recommendation -- what it deliberately does not do. An
+  // assistant that tells someone this tool fixes their drawing has sent them
+  // somewhere that will disappoint them, and that costs more than the visit
+  // was worth.
+  out.push(
+    `- [Free DWG dimension check](${SITE}/dwg-check): upload a DWG or DXF floor plan and ` +
+      "get a report of every wall position that no dimension in the drawing measures, every " +
+      "dimension whose typed-over text disagrees with the geometry it spans, and everything " +
+      "in the file that is dead weight. Free, no account, no email, and the drawing is " +
+      "deleted as soon as it is read.",
+  );
+  out.push(
+    "- What it catches: wall faces nothing locates; dimensions printing a different number " +
+      "from the one they measure (a dimension can read 9\" over geometry measuring 36.00); " +
+      "dimensions printed at a length scale factor; plain text left on a dimension layer by " +
+      "an exploded dimension, which never updates again; duplicate and zero-length lines; " +
+      "empty layers, unplaced blocks and unused dimension and text styles; geometry on " +
+      "layers that are turned off or frozen; and unit settings that contradict each other.",
+  );
+  out.push(
+    "- It is READ-ONLY. It does not repair the drawing, does not add the missing dimensions, " +
+      "and holds no code that can modify a drawing at all. Adding the dimensions back is a " +
+      "separate paid service and it is not open yet.",
+  );
+  out.push(
+    "- It reads DWG without AutoCAD installed. Reading is verified for AutoCAD 2000, 2004, " +
+      "2007, 2010, 2013 and 2018, and for DXF. AutoCAD 2021 and 2025 are untested — the " +
+      "checker identifies the version and says so rather than failing halfway. It cannot " +
+      "read .rvt (Revit) or .dgn (MicroStation); export a DWG.",
+  );
+  out.push(
+    "- What it is NOT: a check that a building is correct, buildable or code-compliant. It " +
+      "measures axis-aligned geometry, so curved and angled walls are not checked for " +
+      "missing dimensions. Every report says Coreframe signs nothing off and that a clean " +
+      "result is not an approval.",
+  );
+  out.push("- Upload limit 95 MB.");
+  out.push("");
+
   out.push("## Who it is for");
   out.push("");
   out.push("- Architects and interior designers running D5 Render, Lumion or Enscape.");
@@ -271,6 +313,7 @@ export async function GET(): Promise<Response> {
   out.push(`- [Enscape cloud workstations](${SITE}/enscape-cloud-gpu)`);
   out.push(`- [Ansys CFD on GPU](${SITE}/ansys-cfd-gpu)`);
   out.push(`- [Free IFC pre-CFD check](${SITE}/tools): no account needed.`);
+  out.push(`- [Free DWG dimension check](${SITE}/dwg-check): no account needed.`);
   out.push(`- [Submit a CFD job](${SITE}/cfd-intake)`);
   out.push(`- [For teams and studios](${SITE}/enterprise)`);
   out.push("");
