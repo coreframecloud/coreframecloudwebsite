@@ -25,6 +25,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // 4-10) and this page was left out, so it was found only by links.
     { url: `${BASE}/d5-render-cloud-workstation`, lastModified: now, changeFrequency: "monthly", priority: 0.9 },
     { url: `${BASE}/d5-render-vs-local-gpu`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
+    // Added 2 Oct 2026. Both answer a question people type verbatim, which is
+    // what an answer engine can actually cite -- unlike a landing page, which
+    // only describes a product. A page absent from here is a page crawlers
+    // find late or not at all, so these two lines are not optional.
+    { url: `${BASE}/coreframe-vs-irender`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
+    { url: `${BASE}/vram-for-architectural-rendering`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
     { url: `${BASE}/ansys-cfd-gpu`, lastModified: now, changeFrequency: "monthly", priority: 0.9 },
     { url: `${BASE}/cloud-rendering-for-architects`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
 
