@@ -1,755 +1,249 @@
 "use client";
 
 /**
- * One-time identity verification, on the website only.
+ * Finish sign-up: the one or two contact checks left before an account is
+ * active. Website only.
  *
- * Coreframe Connect never shows this — an account has to be fully verified and
- * approved before it can sign in to the app at all, so putting the flow in the
- * desktop client would mean shipping a screen that only ever appears to people
- * who cannot use the app yet.
+ * PAID-FIRST ONBOARDING (10 Oct 2026). This used to be a 1,900-line identity
+ * flow — DigiLocker, Indian passport file numbers, legal-name correction, GSTIN
+ * and a bank-account penny check. The owner retired all of it: paying is the
+ * filter now, and the only checks left are the ones CERT-In requires of us —
+ * a confirmed email and a confirmed mobile number. So this page asks for
+ * exactly the step the server says is left, and then sends the customer to add
+ * funds.
  *
- * Round trip:
- *   /verify          -> POST /verification/digilocker/start -> DigiLocker
- *   DigiLocker       -> redirects to /verify/complete
- *   /verify/complete -> POST /verification/digilocker/complete (polled)
+ * Driven by `next_step` from GET /verification/status ("email" | "mobile" |
+ * "done"). A control plane from before that field existed is still handled:
+ * the mobile step is shown whenever the number is not yet verified, and an
+ * account that is neither active nor missing a contact check gets an honest
+ * "we are finishing your account" screen instead of a redirect loop.
  *
- * The bearer token lives in localStorage (set at login), so nothing sensitive
- * travels in the URL across the DigiLocker round trip.
+ * The token this page holds is verification-scoped; every response that comes
+ * back with `access_token` replaces it (adoptToken), because /me/wallet refuses
+ * the scoped one with a 403 — the loop reported on 26 Sep.
  */
 
-import { useCallback, useEffect, useRef, useState } from "react";
-import Link from "next/link";
+import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { OtpInput } from "@/components/ui/otp-input";
+import { CheckCircle2, Clock, Loader2, Mail, MessageCircle, Phone } from "lucide-react";
 import {
-  ArrowRight,
-  BookUser,
-  Building2,
-  CheckCircle2,
-  Clock,
-  Fingerprint,
-  Landmark,
-  Loader2,
-  RefreshCw,
-  ShieldCheck,
-  XCircle,
-} from "lucide-react";
+  COUNTRIES,
+  INDIA,
+  fetchCountries,
+  validatePhone,
+  type Country,
+} from "@/lib/validation";
 
 const API = "https://control.coreframecloud.com/api";
-const POLL_MS = 3000;
-const POLL_TIMEOUT_MS = 3 * 60 * 1000;
+const DONE_URL = "/my-activity?topup=1";
 
-/* ── Shared control classes ───────────────────────────────────────────────
-   44px and a 16px font on a phone, 40px and 14px from md up. The 16px is not
-   a taste call: any smaller and iOS Safari zooms the page the moment the
-   field takes focus, and it does not zoom back — on this flow that means
-   somebody fighting the viewport while typing a 15-character file number.
-   Same shape as app/cfd-intake and app/login so the three forms on this site
-   behave identically. */
-const fieldBase =
-  "w-full min-w-0 rounded-cf border border-rule bg-paper px-3 text-base text-ink outline-none transition placeholder:text-ink-3 focus:border-blue focus:ring-2 focus:ring-blue/20 md:text-sm";
-const inputCls = `${fieldBase} h-11 md:h-10`;
-
-/* `min-h-11` rather than a height: components/ui/button ships `h-9`, and a
-   36px primary button on the screen that gates the account is not acceptable.
-   min-height wins over height without having to fight tailwind-merge. */
+/* 44px and a 16px font on a phone: anything smaller and iOS Safari zooms the
+   page when the field takes focus, and does not zoom back. */
+const inputCls =
+  "h-11 w-full min-w-0 rounded-cf border border-rule bg-paper px-3 text-base text-ink outline-none transition placeholder:text-ink-3 focus:border-blue focus:ring-2 focus:ring-blue/20 md:h-10 md:text-sm";
 const btnPrimary = "cf-btn-primary min-h-11 w-full disabled:opacity-60";
-const btnSecondary = "cf-btn-secondary min-h-11 w-full disabled:opacity-60";
-
-/* Errors are the one place a colour carries meaning on its own, and
-   `destructive` is the only one the palette has. */
 const errorBox =
   "rounded-cf border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm leading-6 break-words text-destructive";
 
-/* Warning, pending and success all share ONE construction: an inset panel
-   with a blue left edge, and the state said in a WORD above it. The old
-   screens carried the state in amber or green alone — #fde68a and #bbf7d0 on
-   white paper, which is to say in nothing at all for anybody reading this on
-   a phone in daylight. */
-const stateBox = "cf-glass-inset border-l-2 border-l-blue px-4 py-3";
-const stateWord =
-  "mb-2 font-mono text-[11.5px] leading-none font-semibold tracking-[0.18em] text-ink-2 uppercase";
-const stateLead = "text-sm font-semibold text-ink";
-const stateBody = "mt-1 text-sm leading-6 text-ink-2";
-
-interface BankState {
-  required: boolean;
-  verified: boolean;
-  status: string | null;
-  name_at_bank: string | null;
-  account_masked: string | null;
-  failure_reason: string | null;
-}
-
-interface BusinessState {
-  bank?: BankState;
-  business_verified: boolean;
-  gstin: string | null;
-  gstin_status: string | null;
-  legal_name: string | null;
-  trade_name: string | null;
-  constitution: string | null;
-  registered_state: string | null;
-  failure_reason: string | null;
-}
+type NextStep = "email" | "mobile" | "done";
 
 interface VerificationStatus {
-  customer_type?: string;
-  business?: BusinessState;
-  kyc_required: boolean;
-  kyc_status: string;
-  identity_verified: boolean;
-  // Whether the ACCOUNT is usable — distinct from whether the identity checked
-  // out. A verified identity with a poor name match is held for review, so
-  // `identity_verified` alone must never be treated as approval.
+  next_step?: NextStep;
+  account_status?: string;
   account_active: boolean;
-  mobile_otp_required: boolean;
-  mobile_verified: boolean;
-  // Is there a mobile-code step in front of this customer right now? Computed
-  // on the server, because computing it here is what went wrong: the old
-  // `mobile_otp_required && !mobile_verified` ignored kyc_mobile_number, which
-  // satisfies the requirement on its own.
-  needs_mobile_otp?: boolean;
-  mobile_otp_channel?: string;
-  // Which document route actually verified this identity: "digilocker",
-  // "passport", or null. null is a normal value — every account verified
-  // before the column was written on the DigiLocker path has it — so the
-  // wording keyed on this must be safe when it is missing.
-  kyc_document_type?: string | null;
-  phone_masked?: string | null;
   email_verified: boolean;
+  mobile_verified: boolean;
+  needs_mobile_otp?: boolean;
   has_phone_number: boolean;
-  attempts: number;
-  max_attempts: number;
-  failure_reason: string | null;
-  verified_name: string | null;
-  // When a spent attempt budget clears itself. null means it will not — the
-  // cooldown is off, or this is not a state that retries.
-  retry_available_at: string | null;
-  // Whether the name on the account matches the one on the document, and
-  // whether the customer is in a position to fix it. Deliberately booleans —
-  // the API never tells the client what the document says, so correcting it
-  // cannot be a copy-paste.
-  name_matches_document: boolean | null;
-  can_correct_legal_name: boolean;
-  // What the CUSTOMER typed at signup. Safe to show — it is their own input,
-  // unlike verified_name, which the API withholds while a mismatch is open.
-  account_name: string | null;
-  // Tries left at the name form today. null means the server could not tell,
-  // and the page then shows no number rather than a wrong one.
-  legal_name_attempts_remaining: number | null;
-  // Present ONLY once the account is active: the full-access token that
-  // replaces the verification-scoped one the customer is holding. Every
-  // verification response can carry it, /status included. It was returned all
-  // along and never declared here, which is part of why nothing read it.
+  phone_masked?: string | null;
   access_token?: string;
-  token_type?: string;
   user?: unknown;
-  // Paid passport checks left today. Three is a low budget and the customer
-  // has to be able to watch it, not discover it by being locked out.
-  passport_attempts_remaining?: number | null;
 }
 
-type Phase = "loading" | "intro" | "gstin" | "bank" | "redirecting" | "polling" | "approved" | "review" | "failed" | "duplicate" | "error";
+type Phase = "loading" | "email" | "phone" | "otp" | "done" | "held" | "error";
 
-const FAILURE_COPY: Record<string, string> = {
-  expired: "The DigiLocker link expired before it was completed. Links are valid for 10 minutes.",
-  consent_denied: "Consent was declined on the DigiLocker screen, so nothing was shared with us.",
-  AADHAAR_NOT_LINKED:
-    "Your Aadhaar is not linked in DigiLocker yet. Sign in to DigiLocker, link your Aadhaar, then try again.",
-  failed: "We could not read your documents from DigiLocker.",
-  duplicate_identity:
-    "This identity is already registered to another Coreframe account. We allow one account per person.",
-};
-
-/**
- * Why this customer is being asked for a mobile code, in terms of the route
- * they actually took.
- *
- * This screen used to state, unconditionally, that their Aadhaar record held
- * no mobile number and so none could be taken from DigiLocker. For a passport
- * customer every clause of that is false: no Aadhaar was read, DigiLocker was
- * never opened, and the passport record does not carry a mobile number at all
- * — not as an exception, but by design. It is the same leftover as the
- * "Opening DigiLocker…" heading that once sat above the passport form.
- *
- * null is expected, not a fault: accounts verified before kyc_document_type
- * was written on the DigiLocker path have none, and so does an account whose
- * identity was reset. Those get wording that names no document.
- */
-function whyMobileStep(documentType?: string | null): string {
-  switch ((documentType || "").toLowerCase()) {
-    case "passport":
-      return (
-        "A passport record does not carry a mobile number, so there was none " +
-        "for us to take from it. Confirming the number on your account takes " +
-        "a few seconds."
-      );
-    case "digilocker":
-      return (
-        "Your Aadhaar record did not include a mobile number, so we could not " +
-        "take one from DigiLocker. Confirming the number on your account " +
-        "takes a few seconds."
-      );
-    default:
-      return (
-        "We could not take a confirmed mobile number from the document you " +
-        "verified with. Confirming the number on your account takes a few " +
-        "seconds."
-      );
+/** Which screen the status calls for. Pure, so the fallback is easy to read. */
+function phaseFor(s: VerificationStatus): Phase {
+  if (s.account_active) return "done";
+  const mobileStep: Phase = s.has_phone_number ? "otp" : "phone";
+  switch (s.next_step) {
+    case "email":
+      return "email";
+    case "mobile":
+      return mobileStep;
+    case "done":
+      // Done by the server's count but not active yet — activation is a
+      // moment behind, or a person is looking. Never loop back to /my-activity.
+      return "held";
   }
-}
-
-/**
- * What to call the document this customer actually verified with, for the
- * name-mismatch screens. Those were written when DigiLocker was the only way
- * in and say "your Aadhaar" five times; a passport customer read all five.
- *
- * null -> "your identity document": never a guess, and never "Aadhaar".
- */
-function documentNoun(documentType?: string | null): string {
-  switch ((documentType || "").toLowerCase()) {
-    case "passport":
-      return "your passport";
-    case "digilocker":
-      return "your Aadhaar";
-    default:
-      return "your identity document";
-  }
-}
-
-/** "Your Aadhaar" / "Your passport" / "Your identity document". */
-function DocumentNoun(documentType?: string | null): string {
-  const n = documentNoun(documentType);
-  return n.charAt(0).toUpperCase() + n.slice(1);
+  // Older control plane: no next_step. Ask for what is visibly missing.
+  if (!s.email_verified) return "email";
+  if (!s.mobile_verified) return mobileStep;
+  return "held";
 }
 
 function Card({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="cf-glass w-full max-w-lg p-5 sm:p-7 md:p-8">
-      {children}
-    </div>
-  );
+  return <div className="cf-glass w-full max-w-lg p-5 sm:p-7 md:p-8">{children}</div>;
 }
 
-/**
- * THE ICON SITS ABOVE THE HEADING, NOT BESIDE IT.
- *
- * Beside it, a 40px badge and a 16px gap took 56px off a 390px screen before
- * the first word, and headings on this flow are sentences — "Verification
- * received. We are looking at it." wrapped to four lines in a column barely
- * wider than the badge. Stacked, the serif gets the whole measure.
- */
-function Header({ icon, title, sub }: { icon: React.ReactNode; title: string; sub?: string }) {
+function Header({ icon, title, sub }: { icon: React.ReactNode; title: string; sub?: React.ReactNode }) {
   return (
     <div className="mb-6">
       <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-full bg-blue/10 text-blue">
         {icon}
       </div>
+      <p className="cf-eyebrow mb-2">Finish sign-up</p>
       <h1 className="font-display text-[27px] leading-[1.14] tracking-[-0.01em] text-ink sm:text-[32px]">
         {title}
       </h1>
-      {sub && (
-        <p className="mt-2 text-[15px] leading-6 break-words text-ink-2">{sub}</p>
-      )}
+      {sub && <p className="mt-2 text-[15px] leading-6 break-words text-ink-2">{sub}</p>}
     </div>
   );
 }
 
-/**
- * WHICH STEPS THIS ACCOUNT ACTUALLY FACES, read off the status the server
- * already sent. Nothing here decides anything and nothing here is clickable —
- * it is a label on the state the flow is in.
- *
- * It has to be derived rather than hardcoded because the sequence genuinely
- * differs: a business proves the entity and then its bank account before
- * anybody looks at the person, and the mobile code only exists for a customer
- * whose document carried no number. A fixed "Step 2 of 4" would be wrong for
- * most of the people reading it.
- */
-function stepsFor(status: VerificationStatus | null): string[] {
-  const steps: string[] = [];
-  if (status?.customer_type === "b2b") {
-    steps.push("Business");
-    if (status?.business?.bank?.required) steps.push("Bank");
-  }
-  steps.push("Identity");
-  if (status?.needs_mobile_otp) steps.push("Mobile");
-  return steps;
-}
-
-/**
- * At 390px there is no room for four words across, so the bar carries numbers
- * only and a full "Step 2 of 3 — Identity" line sits under it. Labels come
- * back from sm up. Same approach as app/cfd-intake/cfd-intake-form.tsx.
- *
- * Renders nothing when there is only one step: a one-item progress bar tells
- * the customer nothing and costs them 60px of screen.
- */
-function StepBar({ status, current }: { status: VerificationStatus | null; current: string }) {
-  const steps = stepsFor(status);
-  const index = steps.indexOf(current);
-  if (steps.length < 2 || index < 0) return null;
-  return (
-    <div className="mb-6">
-      <ol className="flex gap-1">
-        {steps.map((s, i) => (
-          <li
-            key={s}
-            aria-current={i === index ? "step" : undefined}
-            className={`flex min-h-11 min-w-0 flex-1 flex-col items-center justify-center gap-0.5 rounded-cf border px-1 py-2 text-[11px] font-medium sm:px-2 sm:text-xs ${
-              i === index
-                ? "border-blue bg-blue text-white"
-                : i < index
-                  ? "border-rule bg-paper-2 text-ink"
-                  : "border-rule bg-paper/50 text-ink-3"
-            }`}
-          >
-            <span className="text-sm leading-none font-semibold sm:text-base">
-              {i < index ? "\u2713" : i + 1}
-            </span>
-            <span className="hidden truncate sm:block">{s}</span>
-          </li>
-        ))}
-      </ol>
-      <p className="mt-2 text-center text-[13px] text-ink-2 sm:hidden">
-        Step {index + 1} of {steps.length} — {steps[index]}
-      </p>
-    </div>
-  );
-}
-
-/**
- * WHERE THE "File No." IS, DRAWN RATHER THAN PHOTOGRAPHED.
- *
- * A scan of a real passport page would be the obvious thing to show and the
- * wrong thing to ship: the last page carries parents' and spouse's names, a
- * home address, a PIN code and the old passport number, and every one of those
- * would then sit in our bundle, on our CDN, in everyone's browser cache. The
- * sample number here is invented, the other fields are drawn as redaction
- * bars, and nothing about any real person is in the file.
- *
- * It answers the only question the field actually raises - "which of these
- * numbers is it?" - which the copy alone could not, because the page also
- * carries a barcode number and an old passport number that look just as
- * plausible.
- */
-function FileNumberDiagram() {
-  const redactions = [
-    { label: "Name of Father / Legal Guardian", w: 150 },
-    { label: "Name of Mother", w: 128 },
-    { label: "Name of Spouse", w: 134 },
-    { label: "Address", w: 186 },
-  ];
-  return (
-    <figure className="mt-1">
-      <svg
-        viewBox="0 0 320 226"
-        className="w-full rounded-cf border border-rule bg-term"
-        role="img"
-        aria-label="The last page of an Indian passport. Every personal field is
-          shown blanked out. The File No. at the bottom is highlighted."
-      >
-        {/* barcode, drawn as an abstract block — it is the decoy number */}
-        <g fill="currentColor" className="text-ink-3">
-          {Array.from({ length: 17 }).map((_, i) => (
-            <rect
-              key={i}
-              x={208 + i * 5}
-              y={14}
-              width={i % 3 === 0 ? 2.5 : 1.2}
-              height={20}
-              />
-          ))}
-        </g>
-        <rect x={232} y={38} width={56} height={7} rx={2}
-              className="fill-term-dim/35" />
-
-        {redactions.map((r, i) => (
-          <g key={r.label}>
-            <text x={16} y={30 + i * 34} className="fill-term-dim"
-                  style={{ fontSize: 7 }}>
-              {r.label}
-            </text>
-            <rect x={16} y={35 + i * 34} width={r.w} height={11} rx={2.5}
-                  className="fill-term-dim/35" />
-          </g>
-        ))}
-        {/* the address runs to a second line on a real page */}
-        <rect x={16} y={151} width={120} height={11} rx={2.5}
-              className="fill-term-dim/35" />
-
-        <line x1={16} y1={172} x2={304} y2={172}
-              className="stroke-term-ink/15" strokeWidth={1} />
-
-        {/* the one that matters */}
-        <text x={16} y={184} className="fill-blue" style={{ fontSize: 7.5 }}>
-          File No.
-        </text>
-        <rect x={14} y={188} width={152} height={22} rx={5}
-              className="fill-blue/10 stroke-blue/80" strokeWidth={1.5} />
-        <text x={23} y={203} className="fill-term-ink"
-              style={{ fontSize: 11.5, fontFamily: "ui-monospace, monospace", letterSpacing: 0.8 }}>
-          DL1234567890123
-        </text>
-        <text x={176} y={202} className="fill-blue" style={{ fontSize: 8 }}>
-          ← this one, 15 characters
-        </text>
-      </svg>
-      <figcaption className="mt-1.5 text-[13px] leading-5 text-ink-2">
-        Illustration. The number shown is made up, and the other fields are
-        blanked because they are nobody&apos;s business but yours — we never ask
-        for them.
-      </figcaption>
-    </figure>
-  );
-}
-
-export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
+export default function VerifyFlow() {
   const [phase, setPhase] = useState<Phase>("loading");
-  // The name as verified by THIS run, taken from the completion response.
-  // `status.verified_name` is fetched when the page loads — before verification
-  // has happened — so reading the confirmed name from it shows whatever was on
-  // the account beforehand, which is either nothing or a previous attempt.
-  const [verifiedName, setVerifiedName] = useState<string | null>(null);
   const [status, setStatus] = useState<VerificationStatus | null>(null);
   const [error, setError] = useState("");
-  const [reason, setReason] = useState("");
-  const [gstin, setGstin] = useState("");
-  const [gstinBusy, setGstinBusy] = useState(false);
-  const [business, setBusiness] = useState<BusinessState | null>(null);
-  const [bank, setBank] = useState<{ upi_link?: string; qr?: string; expected?: string } | null>(null);
-  const [phoneInput, setPhoneInput] = useState("");
-  const [phoneBusy, setPhoneBusy] = useState(false);
-  const [phoneError, setPhoneError] = useState("");
-  const [passportOpen, setPassportOpen] = useState(false);
-  // Stored bare and uppercase; shown grouped in fives. Keeping the raw value
-  // in state and formatting for display means the submit path never has to
-  // guess what the separators meant.
-  const [passportFile, setPassportFile] = useState("");
-  const [passportDob, setPassportDob] = useState("");
-  const [passportBusy, setPassportBusy] = useState(false);
-  const [passportError, setPassportError] = useState("");
-  const [showFileHint, setShowFileHint] = useState(false);
-  const [otpCode, setOtpCode] = useState("");
-  const [otpBusy, setOtpBusy] = useState(false);
-  const [otpError, setOtpError] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [countries, setCountries] = useState<Country[]>(COUNTRIES);
+  const [phoneCountry, setPhoneCountry] = useState<Country>(INDIA);
+  const [phone, setPhone] = useState("");
   const [otpSent, setOtpSent] = useState(false);
-  const [legalName, setLegalName] = useState("");
-  const [legalNameBusy, setLegalNameBusy] = useState(false);
-  const [legalNameError, setLegalNameError] = useState("");
-  const [bankBusy, setBankBusy] = useState(false);
-  const [bankHint, setBankHint] = useState("");
-  // THE PASSPORT PANEL IS A PLACE, SO GIVE IT A HISTORY ENTRY.
-  //
-  // It was React state with no entry of its own, so Back from inside the
-  // passport form did what Back always does with no entry: left /verify
-  // entirely. The previous page was /login, which then showed a sign-in form
-  // to somebody already signed in - a dead end reached by pressing the most
-  // ordinary button in the browser.
-  //
-  // pushState on open, popstate closes. The in-page "Back to the other
-  // options" button calls history.back() rather than setting state directly,
-  // so the entry is consumed either way and a second Back does not land on a
-  // screen the customer has already left.
-  useEffect(() => {
-    if (!passportOpen || typeof window === "undefined") return;
-    window.history.pushState({ cfPassport: true }, "");
-    const onPop = () => setPassportOpen(false);
-    window.addEventListener("popstate", onPop);
-    return () => window.removeEventListener("popstate", onPop);
-  }, [passportOpen]);
-
-  const closePassport = useCallback(() => {
-    if (typeof window !== "undefined" && window.history.state?.cfPassport) {
-      window.history.back();          // popstate closes it
-    } else {
-      setPassportOpen(false);
-    }
-  }, []);
-
-  const passportFileLength = passportFile.replace(/[^A-Z0-9]/g, "").length;
-  const passportFileGrouped =
-    passportFile.replace(/[^A-Z0-9]/g, "").match(/.{1,5}/g)?.join(" ") ?? "";
-
-  const pollStarted = useRef<number>(0);
-  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  const token = useCallback(() => {
-    if (typeof window === "undefined") return null;
-    return localStorage.getItem("cf_customer_token");
-  }, []);
+  const [otpCode, setOtpCode] = useState("");
+  const [emailResent, setEmailResent] = useState(false);
 
   const authHeaders = useCallback((): HeadersInit => {
-    return { "Content-Type": "application/json", Authorization: `Bearer ${token()}` };
-  }, [token]);
+    let tok: string | null = null;
+    try {
+      tok = localStorage.getItem("cf_customer_token");
+    } catch {
+      /* storage blocked */
+    }
+    return { "Content-Type": "application/json", Authorization: `Bearer ${tok}` };
+  }, []);
 
-  /**
-   * Swap the verification-scoped token for the full one the API just handed
-   * back, if it handed one back.
-   *
-   * THIS IS THE LOOP. Every verification endpoint that can activate an
-   * account returns `access_token` once it does, because the token the
-   * customer is holding is verification-scoped and /me/wallet refuses it with
-   * a 403. Three call sites swapped it; the passport check, the mobile code,
-   * the name correction and -- worst of all -- the /status poll on page load
-   * did not. So the customer was activated, shown "You're verified", sent to
-   * /my-activity, 403'd, bounced back to /verify, shown "You're verified"
-   * again, for ever. The server was offering the way out on every single
-   * request and the page was discarding it.
-   *
-   * Called on EVERY verification response, including the initial status read,
-   * so an account already stuck in the loop heals on its next page load
-   * without anyone signing out.
-   */
+  /** Swap in the full-access token whenever the API hands one back. */
   const adoptToken = useCallback((data: { access_token?: string; user?: unknown }) => {
-    if (typeof window === "undefined" || !data?.access_token) return;
+    if (!data?.access_token) return;
     try {
       localStorage.setItem("cf_customer_token", data.access_token);
       if (data.user) localStorage.setItem("cf_customer_user", JSON.stringify(data.user));
-    } catch { /* private mode: the page still works, the next load retries */ }
+    } catch {
+      /* private mode: the next load retries */
+    }
   }, []);
 
-  // ── initial load ──────────────────────────────────────────────────────────
-  useEffect(() => {
-    if (!token()) {
+  const apply = useCallback(
+    (data: VerificationStatus) => {
+      adoptToken(data);
+      setStatus(data);
+      const next = phaseFor(data);
+      setPhase(next);
+      if (next === "done") {
+        // A beat on the confirmation, then straight on to adding funds.
+        setTimeout(() => {
+          window.location.href = DONE_URL;
+        }, 1200);
+      }
+    },
+    [adoptToken],
+  );
+
+  const loadStatus = useCallback(async () => {
+    const res = await fetch(`${API}/verification/status`, { headers: authHeaders() });
+    if (res.status === 401) {
       window.location.href = "/login?next=/verify";
       return;
     }
-    (async () => {
-      try {
-        const res = await fetch(`${API}/verification/status`, { headers: authHeaders() });
-        if (res.status === 401) {
-          window.location.href = "/login?next=/verify";
-          return;
-        }
-        const data: VerificationStatus = await res.json();
-        if (!res.ok) throw new Error("Could not load your verification status.");
-        // /status has ALWAYS returned a full token for an active account. It
-        // was never read, which is why the bounce from /my-activity never
-        // healed itself.
-        adoptToken(data);
-        setStatus(data);
+    const data = (await res.json()) as VerificationStatus;
+    if (!res.ok) throw new Error("Could not load your account status.");
+    apply(data);
+  }, [apply, authHeaders]);
 
-        const needsGstin =
-          data.customer_type === "b2b" && !data.business?.business_verified;
-
-        if (data.identity_verified || data.kyc_status === "verified") {
-          // Identity is done — which is NOT the same as the account being
-          // usable. A verified identity with a poor name match is held for a
-          // human to look at, and this branch used to jump straight to
-          // "approved" on that basis alone, so a held account was told "your
-          // account is active" every time it opened this page.
-          //
-          // A business additionally has to prove the ENTITY before either.
-          setPhase(
-            needsGstin ? "gstin" : data.account_active ? "approved" : "review",
-          );
-        } else if (resume) {
-          setPhase("polling");
-        } else if (needsGstin) {
-          // GSTIN first: it is instant and free of a browser round trip, so a
-          // wrong GSTIN is caught before we spend a DigiLocker verification.
-          setPhase("gstin");
-        } else {
-          setPhase("intro");
-        }
-      } catch (err: unknown) {
-        setError(err instanceof Error ? err.message : "Something went wrong.");
-        setPhase("error");
-      }
-    })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  // ── polling after the DigiLocker round trip ───────────────────────────────
+  // ── initial load ──────────────────────────────────────────────────────────
   useEffect(() => {
-    if (phase !== "polling") return;
-    if (!pollStarted.current) pollStarted.current = Date.now();
-
-    async function poll() {
+    let hasToken = false;
+    try {
+      hasToken = Boolean(localStorage.getItem("cf_customer_token"));
+    } catch {
+      /* treated as signed out */
+    }
+    if (!hasToken) {
+      window.location.href = "/login?next=/verify";
+      return;
+    }
+    loadStatus().catch((err: unknown) => {
+      setError(err instanceof Error ? err.message : "Something went wrong.");
+      setPhase("error");
+    });
+    fetchCountries(API).then((list) => {
+      setCountries(list);
+      // Default the dial code to the country they signed up from, if known.
+      let home: string | undefined;
       try {
-        const res = await fetch(`${API}/verification/digilocker/complete`, {
-          method: "POST",
-          headers: authHeaders(),
-        });
-        const data = await res.json();
-
-        if (res.status === 401) {
-          window.location.href = "/login?next=/verify";
-          return;
-        }
-        if (!res.ok) {
-          // 502/503 = provider hiccup; keep trying until the timeout.
-          if (res.status >= 500) return schedule();
-          throw new Error(data.detail ?? "Verification failed.");
-        }
-
-        if (data.verified) {
-          // The token we used to get here is verification-scoped and works
-          // nowhere else. When verification activates the account the API
-          // returns a full one — swap it in so the customer is simply logged
-          // in, rather than bounced back to the login page.
-          if (data.access_token) {
-            localStorage.setItem("cf_customer_token", data.access_token);
-            if (data.user) localStorage.setItem("cf_customer_user", JSON.stringify(data.user));
-          }
-          // `account_active` is the authority — it is the server saying the
-          // account is usable. The old test was
-          // `auto_approved || !awaiting_review`, and when the API omitted
-          // `awaiting_review` that read as `!undefined` === true, so a held
-          // account was shown "your account is active" and then bounced back
-          // here from every page. Never infer success from a missing field.
-          setVerifiedName(data.verified_name ?? null);
-          setPhase(data.account_active ? "approved" : "review");
-          return;
-        }
-        // Terminal and NOT retryable — a retry button here would invite the
-        // customer to burn attempts on something that can never succeed.
-        if (data.kyc_status === "duplicate_identity") {
-          setReason(FAILURE_COPY.duplicate_identity);
-          setPhase("duplicate");
-          return;
-        }
-        if (data.retry_required || ["expired", "consent_denied", "failed"].includes(data.kyc_status)) {
-          setReason(FAILURE_COPY[data.reason] ?? FAILURE_COPY[data.kyc_status] ?? "Verification did not complete.");
-          setPhase("failed");
-          return;
-        }
-        if (Date.now() - pollStarted.current > POLL_TIMEOUT_MS) {
-          setReason("We did not hear back from DigiLocker in time.");
-          setPhase("failed");
-          return;
-        }
-        schedule();
-      } catch (err: unknown) {
-        setError(err instanceof Error ? err.message : "Something went wrong.");
-        setPhase("error");
+        const raw = localStorage.getItem("cf_customer_user");
+        home = raw ? (JSON.parse(raw) as { country_code?: string }).country_code : undefined;
+      } catch {
+        /* India it is */
       }
-    }
+      const pick = list.find((c) => c.iso === (home ?? "IN").toUpperCase());
+      if (pick) setPhoneCountry(pick);
+    });
+  }, [loadStatus]);
 
-    function schedule() {
-      timer.current = setTimeout(poll, POLL_MS);
-    }
-
-    poll();
-    return () => {
-      if (timer.current) clearTimeout(timer.current);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [phase]);
-
-  // Google OAuth creates accounts with no phone number — it is the third signup
-  // door and carries most of the signups, so most people arriving here have
-  // never been asked for one. Verification cannot start without it.
+  // ── mobile number (Google sign-ups arrive without one) ─────────────────────
   async function submitPhone(e: React.FormEvent) {
     e.preventDefault();
-    setPhoneError("");
-    const value = phoneInput.trim();
-    // Shape only; the server normalises to E.164 and decides. Same rule as the
-    // signup form: 10 digits starting 6-9, however it is spaced.
-    if (!/^(?:0091|91)?0?[6-9]\d{9}$/.test(value.replace(/\D/g, ""))) {
-      return setPhoneError("Enter a 10-digit Indian mobile number (starting 6, 7, 8 or 9).");
-    }
-    setPhoneBusy(true);
+    setError("");
+    const check = validatePhone(phone, phoneCountry);
+    if (!check.ok) return setError(check.error);
+    setBusy(true);
     try {
       const res = await fetch(`${API}/verification/phone`, {
         method: "POST",
         headers: authHeaders(),
-        body: JSON.stringify({ phone_number: value }),
+        body: JSON.stringify({ phone_number: check.value }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.detail ?? `Error ${res.status}`);
-      setStatus(data);
+      if (!res.ok) throw new Error(typeof data.detail === "string" ? data.detail : `Error ${res.status}`);
+      // The response is a status; keep any next_step it carries, and if it is
+      // an older shape without the phone flag, the number is now on file.
+      apply({ ...data, has_phone_number: data.has_phone_number ?? true });
     } catch (err: unknown) {
-      setPhoneError(err instanceof Error ? err.message : "Could not save that number. Try again.");
+      setError(err instanceof Error ? err.message : "Could not save that number. Try again.");
     } finally {
-      setPhoneBusy(false);
+      setBusy(false);
     }
   }
 
-  async function submitPassport(e: React.FormEvent) {
-    e.preventDefault();
-    setPassportError("");
-    const file = passportFile.trim().toUpperCase();
-    const dob = passportDob.trim();
-    // FIFTEEN, EXACTLY AS PRINTED. Proved against production with a real file
-    // number, which returned VALID with the holder's name and date of birth.
-    // Nothing is added to it - an earlier version prefixed "PA1" on a
-    // misreading of the vendor's example, which made 18 and was refused.
-    const bare = file.replace(/[^A-Z0-9]/g, "");
-    if (bare.length !== 15) {
-      return setPassportError(
-        bare.length === 8
-          ? "That is the passport number from the front page. This check needs " +
-            "the \"File No.\" printed on the last page — 15 characters."
-          : `That is ${bare.length} character${bare.length === 1 ? "" : "s"}. ` +
-            "The \"File No.\" on the last page of your passport is 15 — two " +
-            "letters then digits."
-      );
-    }
-    setPassportBusy(true);
-    try {
-      const res = await fetch(`${API}/verification/passport`, {
-        method: "POST",
-        headers: authHeaders(),
-        body: JSON.stringify({ file_number: bare, dob }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.detail ?? `Error ${res.status}`);
-      adoptToken(data);
-      setStatus(data);
-      if (data.verified) {
-        setPhase(data.account_active ? "approved" : "review");
-      } else {
-        // A wrong file number is not a failed verification in the DigiLocker
-        // sense - there is no consent to redo and no link to expire. Keep them
-        // on this form with the reason, rather than throwing them to the
-        // generic failure screen which would offer "try again with DigiLocker".
-        setPassportError(data.reason ?? "Those details did not match a record.");
-      }
-    } catch (err: unknown) {
-      setPassportError(err instanceof Error ? err.message : "Could not check that. Try again.");
-    } finally {
-      setPassportBusy(false);
-    }
-  }
-
-  // ── the mobile-code step ──────────────────────────────────────────────────
-  //
-  // Both calls are authenticated with the bearer token this page already holds.
-  // The older /auth/request-mobile-otp takes a bare user_id and no token at
-  // all, which is fine for a signup that has not issued one yet and would be a
-  // needless widening of that surface here.
-
-  async function sendOtpCode() {
-    setOtpError("");
-    setOtpBusy(true);
+  // ── WhatsApp code ─────────────────────────────────────────────────────────
+  async function sendCode() {
+    setError("");
+    setBusy(true);
     try {
       const res = await fetch(`${API}/verification/mobile-otp/send`, {
         method: "POST",
         headers: authHeaders(),
       });
       const data = await res.json();
-      // A 503 here is the server saying it could not DELIVER, which is a real
-      // answer and must be shown as one. The path this replaces returned 200
-      // and an expiry for a code that was never sent.
-      if (!res.ok) throw new Error(data.detail ?? `Error ${res.status}`);
+      // A 503 is the server saying it could not DELIVER — a real answer.
+      if (!res.ok) throw new Error(typeof data.detail === "string" ? data.detail : `Error ${res.status}`);
       setOtpSent(true);
     } catch (err: unknown) {
-      setOtpError(err instanceof Error ? err.message : "Could not send the code. Try again.");
+      setError(err instanceof Error ? err.message : "Could not send the code. Try again.");
     } finally {
-      setOtpBusy(false);
+      setBusy(false);
     }
   }
 
-  async function submitOtpCode(e: React.FormEvent) {
+  async function submitCode(e: React.FormEvent) {
     e.preventDefault();
-    setOtpError("");
+    setError("");
     const value = otpCode.replace(/\D/g, "");
-    if (value.length !== 6) return setOtpError("Enter the 6-digit code.");
-
-    setOtpBusy(true);
+    if (value.length !== 6) return setError("Enter the 6-digit code.");
+    setBusy(true);
     try {
       const res = await fetch(`${API}/verification/mobile-otp/verify`, {
         method: "POST",
@@ -757,567 +251,67 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
         body: JSON.stringify({ code: value }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.detail ?? `Error ${res.status}`);
-      adoptToken(data);
-      setStatus(data);
+      if (!res.ok) throw new Error(typeof data.detail === "string" ? data.detail : `Error ${res.status}`);
       setOtpCode("");
       setOtpSent(false);
-      // Verifying the number can be the last hold on the account, in which case
-      // reconsider_auto_approval has already activated it inside that request.
-      if (data.account_active) setPhase("approved");
+      apply({ ...data, mobile_verified: data.mobile_verified ?? true });
     } catch (err: unknown) {
-      setOtpError(err instanceof Error ? err.message : "That code did not work.");
+      setError(err instanceof Error ? err.message : "That code did not work.");
     } finally {
-      setOtpBusy(false);
+      setBusy(false);
     }
   }
 
-  async function submitLegalName(e: React.FormEvent) {
-    e.preventDefault();
-    setLegalNameError("");
-    const value = legalName.trim();
-    if (value.length < 2)
-      return setLegalNameError(
-        `Enter your full name as printed on ${documentNoun(status?.kyc_document_type)}.`,
-      );
-
-    setLegalNameBusy(true);
-    try {
-      const res = await fetch(`${API}/verification/legal-name`, {
-        method: "POST",
-        headers: authHeaders(),
-        body: JSON.stringify({ full_name: value }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.detail ?? `Error ${res.status}`);
-      adoptToken(data);
-      setStatus(data);
-      // Matching the name clears this hold; it does not necessarily clear the
-      // others. An account held for a second reason stays on this screen, now
-      // correctly saying there is nothing further for them to do.
-      setPhase(data.account_active ? "approved" : "review");
-    } catch (err: unknown) {
-      setLegalNameError(err instanceof Error ? err.message : "Could not update the name. Try again.");
-      // Re-read the status so the tries-left line and the out-of-tries card are
-      // right without a reload. A rejected attempt still spends one, and a page
-      // that keeps saying "3 tries" while the server counts down is how #113
-      // ran out without noticing.
-      try {
-        const again = await fetch(`${API}/verification/status`, { headers: authHeaders() });
-        if (again.ok) setStatus(await again.json());
-      } catch { /* the error above is the one that matters */ }
-    } finally {
-      setLegalNameBusy(false);
-    }
-  }
-
-  async function submitGstin(e: React.FormEvent) {
-    e.preventDefault();
+  // ── email ─────────────────────────────────────────────────────────────────
+  async function resendEmail() {
     setError("");
-    const value = gstin.trim().toUpperCase();
-    if (value.length !== 15) {
-      setError("A GSTIN is 15 characters — 2-digit state code, PAN, then 3 more.");
-      return;
-    }
-    setGstinBusy(true);
+    let email = "";
     try {
-      const res = await fetch(`${API}/verification/gstin`, {
+      const raw = localStorage.getItem("cf_customer_user");
+      email = raw ? ((JSON.parse(raw) as { email?: string }).email ?? "") : "";
+    } catch {
+      /* fall through to the error below */
+    }
+    if (!email) return setError("We could not tell which email to use. Sign in again from /login.");
+    setBusy(true);
+    try {
+      const res = await fetch(`${API}/auth/request-magic-link`, {
         method: "POST",
-        headers: authHeaders(),
-        body: JSON.stringify({ gstin: value }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.detail ?? "Could not verify that GSTIN.");
-
-      if (!data.verified) {
-        setError(
-          data.gstin_status === "not_found"
-            ? "That GSTIN is not on the GST register. Check it against your GST certificate."
-            : data.reason || "That GST registration is not active."
-        );
-        return;
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(typeof data.detail === "string" ? data.detail : `Error ${res.status}`);
       }
-
-      if (data.access_token) {
-        localStorage.setItem("cf_customer_token", data.access_token);
-        if (data.user) localStorage.setItem("cf_customer_user", JSON.stringify(data.user));
-      }
-      setBusiness({
-        business_verified: true,
-        gstin: value,
-        gstin_status: data.gstin_status,
-        legal_name: data.legal_name,
-        trade_name: data.trade_name,
-        constitution: data.constitution,
-        registered_state: data.registered_state,
-        failure_reason: null,
-      });
-      // GST done. Bank control is next for a business, then identity.
-      if (status?.business?.bank?.required && !status?.business?.bank?.verified) {
-        setPhase("bank");
-      } else if (status?.identity_verified || status?.kyc_status === "verified") {
-        setPhase(data.account_active ? "approved" : "review");
-      } else {
-        setPhase("intro");
-      }
+      setEmailResent(true);
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Could not verify that GSTIN.");
+      setError(err instanceof Error ? err.message : "Could not send the link. Try again.");
     } finally {
-      setGstinBusy(false);
+      setBusy(false);
     }
   }
 
-  async function startBankCheck() {
+  async function recheck() {
     setError("");
-    setBankBusy(true);
+    setBusy(true);
     try {
-      const res = await fetch(`${API}/verification/bank/start`, {
-        method: "POST",
-        headers: authHeaders(),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.detail ?? "Could not start the bank check.");
-      setBank({ upi_link: data.upi_link, qr: data.qr_code_base64, expected: data.expected_name });
-      setBankHint("Send the ₹1 from your company account, then press Check payment.");
+      await loadStatus();
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Could not start the bank check.");
+      setError(err instanceof Error ? err.message : "Something went wrong.");
     } finally {
-      setBankBusy(false);
+      setBusy(false);
     }
   }
 
-  async function checkBankPayment() {
-    setError("");
-    setBankBusy(true);
-    try {
-      const res = await fetch(`${API}/verification/bank/complete`, {
-        method: "POST",
-        headers: authHeaders(),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.detail ?? "Could not check the payment.");
-
-      if (data.verified) {
-        if (data.access_token) {
-          localStorage.setItem("cf_customer_token", data.access_token);
-          if (data.user) localStorage.setItem("cf_customer_user", JSON.stringify(data.user));
-        }
-        if (status?.identity_verified || status?.kyc_status === "verified") {
-          setPhase(data.account_active ? "approved" : "review");
-        } else {
-          setPhase("intro");
-        }
-        return;
-      }
-      if (data.pending) {
-        setBankHint("No payment received yet. Complete the ₹1 UPI payment, then check again.");
-        return;
-      }
-      setBankHint("");
-      setError(data.reason || "That attempt did not complete. Start a new one.");
-      setBank(null);
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Could not check the payment.");
-    } finally {
-      setBankBusy(false);
-    }
-  }
-
-  // ── start ─────────────────────────────────────────────────────────────────
-  async function startVerification(userFlow: "signup" | "signin") {
-    setError("");
-    setPhase("redirecting");
-    try {
-      const res = await fetch(`${API}/verification/digilocker/start?user_flow=${userFlow}`, {
-        method: "POST",
-        headers: authHeaders(),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.detail ?? "Could not start verification.");
-      if (data.already_verified) {
-        // Already verified is not the same as already approved.
-        setPhase(data.account_active ? "approved" : "review");
-        return;
-      }
-      window.location.href = data.url;
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Could not start verification.");
-      setPhase("intro");
-    }
-  }
-
-  // ── render ────────────────────────────────────────────────────────────────
-
+  // ══════════════════════════════════════════════════════════════════════════
   if (phase === "loading") {
     return (
       <Card>
         <div className="flex items-center gap-3 text-ink-2">
-          <Loader2 className="h-4 w-4 animate-spin" />
-          <span className="text-[15px]">Loading your account…</span>
+          <Loader2 className="h-5 w-5 animate-spin text-blue" />
+          Checking your account…
         </div>
-      </Card>
-    );
-  }
-
-  if (phase === "approved") {
-    return (
-      <Card>
-        <Header
-          icon={<CheckCircle2 className="h-5 w-5" />}
-          title="You’re verified."
-          sub={
-            (verifiedName ?? status?.verified_name)
-              ? `Identity confirmed as ${verifiedName ?? status?.verified_name}. Your account is active.`
-              : "Your identity has been confirmed and your account is active."
-          }
-        />
-        <div className="grid grid-cols-1 gap-3">
-          {/* Hard navigation, not a client-side Link. The token was swapped for
-              a full one moments ago; a soft transition can carry stale auth
-              state into /my-activity, which then 403s and bounces the customer
-              straight back here — the loop reported after the first live run. */}
-          <Button asChild className={btnPrimary}>
-            {/* eslint-disable-next-line @next/next/no-html-link-for-pages --
-                a full page load is the point. The verification-scoped token was
-                swapped for a full one moments ago; a client-side <Link/> keeps
-                the running JS context, which can carry the old token into
-                /my-activity, get a 403 and bounce the customer back here. */}
-            <a href="/my-activity">
-              <ArrowRight className="mr-2 h-4 w-4" />
-              Go to my account
-            </a>
-          </Button>
-          {/* Connect HAS been handed out since 0.3.0 shipped. This line still
-              said it had not, and it is the LAST thing a newly verified
-              customer reads. User 86 got to this screen, read "we will email
-              you as soon as your workstation is ready", and reported that he
-              could not proceed — which was accurate: the screen told him to
-              stop and wait for an email that was never going to be sent.
-
-              /my-activity has carried the same download permanently and
-              unconditionally the whole time. That does not help someone who
-              has just been told not to bother looking. */}
-          {/* eslint-disable-next-line @next/next/no-html-link-for-pages --
-              same reason as the button above: /download reads the bearer token
-              out of localStorage when it mounts, and a client-side transition
-              can carry the pre-swap verification token into it. */}
-          <a
-            href="/download"
-            className="inline-flex min-h-11 w-full items-center justify-center text-center text-sm font-semibold text-blue"
-          >
-            Download Coreframe Connect →
-          </a>
-          <p className="text-center text-[13px] leading-5 text-ink-2">
-            Install it and sign in with the same email you used here.
-          </p>
-        </div>
-      </Card>
-    );
-  }
-
-  if (phase === "review") {
-    // The one hold the customer can clear themselves. Everything else here —
-    // age, a duplicate identity, a business check — is genuinely ours to
-    // decide, and telling them to wait is the honest answer. A name mismatch
-    // is not: their studio name is sitting in the field that has to hold their
-    // legal name, and only they can say what that is. Telling them to wait was
-    // how #55 sat untouched from the 4th of September.
-    // Checked BEFORE the name branch. Both are holds the customer can clear,
-    // but this one is thirty mechanical seconds, and clearing it re-renders
-    // straight into the name step if that is also outstanding.
-    if (status?.needs_mobile_otp) {
-      return (
-        <Card>
-          <StepBar status={status} current="Mobile" />
-          <Header
-            icon={<Fingerprint className="h-5 w-5" />}
-            title="Confirm your mobile number."
-            sub="Your identity checked out. We just need a contact number you have confirmed, which Indian regulations require us to hold."
-          />
-
-          <p className="cf-glass-inset mb-4 px-4 py-3 text-sm leading-6 text-ink-2">
-            {whyMobileStep(status.kyc_document_type)}
-          </p>
-
-          {!otpSent ? (
-            <div className="grid grid-cols-1 gap-3">
-              <p className="text-sm text-ink-2">
-                We will send a 6-digit code on{" "}
-                <b className="text-ink">WhatsApp</b>
-                {status.phone_masked ? (
-                  <> to <b className="text-ink">{status.phone_masked}</b></>
-                ) : null}
-                .
-              </p>
-              <p className="text-[13px] leading-5 text-ink-2">
-                It arrives on WhatsApp, not as an SMS — check WhatsApp, not your
-                messages app.
-              </p>
-              {otpError && (
-                <p className={errorBox}>
-                  {otpError}
-                </p>
-              )}
-              <Button
-                onClick={sendOtpCode}
-                disabled={otpBusy}
-                className={btnPrimary}
-              >
-                {otpBusy ? "Sending…" : "Send me the code"}
-              </Button>
-            </div>
-          ) : (
-            <form onSubmit={submitOtpCode} className="grid grid-cols-1 gap-3">
-              <label htmlFor="cf-mobile-otp" className="text-[13px] font-medium text-ink">
-                Enter the 6-digit code we sent on WhatsApp
-              </label>
-              <OtpInput
-                id="cf-mobile-otp"
-                value={otpCode}
-                onChange={(v) => { setOtpCode(v); setOtpError(""); }}
-                autoFocus
-              />
-              {otpError && (
-                <p className={errorBox}>
-                  {otpError}
-                </p>
-              )}
-              <button
-                type="submit"
-                disabled={otpBusy}
-                className={btnPrimary}
-              >
-                {otpBusy ? "Checking…" : "Confirm my number"}
-              </button>
-              <button
-                type="button"
-                onClick={() => { setOtpSent(false); setOtpCode(""); setOtpError(""); }}
-                className="inline-flex min-h-11 w-full items-center justify-center text-center text-sm text-ink-2 hover:text-ink"
-              >
-                Didn&apos;t get it? Send another code
-              </button>
-            </form>
-          )}
-
-          <div className="mt-5 text-sm leading-6 text-ink-2">
-            No WhatsApp on that number?{" "}
-            <Link href="/contact" className="text-blue hover:underline">
-              Tell us
-            </Link>{" "}
-            and we will verify you by hand.
-          </div>
-        </Card>
-      );
-    }
-
-    if (status?.can_correct_legal_name) {
-      const triesLeft = status.legal_name_attempts_remaining;
-
-      // OUT OF TRIES IS ITS OWN SCREEN, not the same form with a refusal on it.
-      //
-      // Account #113 spent all three attempts here on 20 Sep, was never told
-      // there were three, and signed up again four minutes later under another
-      // name — which then failed on duplicate identity. Two accounts in the
-      // queue, one real customer, and an ad spend to get him there. A form that
-      // cannot succeed must stop pretending it can, and must hand over a route
-      // that works.
-      if (triesLeft === 0) {
-        return (
-          <Card>
-            <Header
-              icon={<Clock className="h-5 w-5" />}
-              title="We will sort this one out."
-              sub={`${DocumentNoun(status.kyc_document_type)} was verified. The name on the account still does not match the document, and you have used today's attempts.`}
-            />
-            <div className={`${stateBox} mb-4`}>
-              <p className={stateWord}>Action needed</p>
-              <p className={stateLead}>Email us and we will fix the name.</p>
-              <p className={stateBody}>
-                Write to{" "}
-                <b className="break-all text-ink">support@coreframecloud.com</b> from this
-                address and a person will correct it for you, usually the same day. Do not
-                create a second account — a second signup on the same identity is refused
-                automatically and slows this down.
-              </p>
-            </div>
-            <p className="text-sm text-ink-2">
-              You can also try again yourself tomorrow, when today&apos;s attempts reset.
-            </p>
-            <div className="mt-5 text-sm text-ink-2">
-              <Link href="/contact" className="text-blue hover:underline">Contact us</Link>
-            </div>
-          </Card>
-        );
-      }
-
-      return (
-        <Card>
-          <Header
-            icon={<Clock className="h-5 w-5" />}
-            title="One thing does not match."
-            sub={`${DocumentNoun(status.kyc_document_type)} was verified. The name on your account is not the name on the document, so we cannot activate it yet.`}
-          />
-          {/* THEIR OWN NAME, BACK AT THEM. "The name on your account does not
-              match" is abstract, and #113 read it three times without acting on
-              it. Seeing "Ai Upscale" in the sentence makes the mistake obvious,
-              because the customer knows perfectly well that is not their name.
-              The document name is never shown — the API withholds it while a
-              mismatch is open, so this cannot become a copy-paste. */}
-          {status.account_name ? (
-            <p className="cf-glass-inset mb-4 px-4 py-3 text-sm leading-6 break-words text-ink-2">
-              You signed up as <b className="text-ink">{status.account_name}</b>. That
-              needs to be your name as printed on {documentNoun(status.kyc_document_type)} — you can keep{" "}
-              <b className="text-ink">{status.account_name}</b> as your display name afterwards.
-            </p>
-          ) : null}
-          <form onSubmit={submitLegalName} className="grid grid-cols-1 gap-3">
-            <label htmlFor="cf-legal-name" className="text-[13px] font-medium text-ink">
-              Your full name, exactly as on {documentNoun(status.kyc_document_type)}
-            </label>
-            <input
-              id="cf-legal-name"
-              value={legalName}
-              onChange={(e) => { setLegalName(e.target.value); setLegalNameError(""); }}
-              className={inputCls}
-              placeholder="Rahul Kumar Sharma"
-              autoComplete="name"
-              autoFocus
-            />
-            <p className="text-[13px] leading-5 text-ink-2">
-              Include every part of it — a middle name or father&apos;s name if {documentNoun(status.kyc_document_type)} has one.
-              If you signed up with a studio or brand name, that is almost certainly what happened;
-              you can still use it as your display name afterwards.
-            </p>
-            {legalNameError && (
-              <p className={errorBox}>
-                {legalNameError}
-              </p>
-            )}
-            <button
-              type="submit"
-              disabled={legalNameBusy}
-              className={btnPrimary}
-            >
-              {legalNameBusy ? "Checking…" : "Check and continue"}
-            </button>
-            {typeof triesLeft === "number" ? (
-              <p className="text-center text-[13px] leading-5 text-ink-2">
-                {triesLeft === 1
-                  ? "This is your last try today — after that we will fix it for you by email."
-                  : `You have ${triesLeft} tries today.`}
-              </p>
-            ) : null}
-          </form>
-          <div className="mt-5 text-sm text-ink-2">
-            Not sure? <Link href="/contact" className="text-blue hover:underline">Contact us</Link>
-          </div>
-        </Card>
-      );
-    }
-
-    return (
-      <Card>
-        <Header
-          icon={<Clock className="h-5 w-5" />}
-          title="Your verification is under review."
-          sub="Your documents came through. Something on the account needs a quick look from our team, so activation is not automatic in this case."
-        />
-        <div className={stateBox}>
-          <p className={stateWord}>Pending</p>
-          <p className={stateLead}>There is nothing else for you to do.</p>
-          <p className={stateBody}>
-            We usually complete this within one business day. You will get an email as
-            soon as your account is active.
-          </p>
-        </div>
-        <div className="mt-5 text-sm text-ink-2">
-          Questions? <Link href="/contact" className="text-blue hover:underline">Contact us</Link>
-        </div>
-      </Card>
-    );
-  }
-
-  if (phase === "failed") {
-    const outOfAttempts = !!status && status.max_attempts > 0 && status.attempts >= status.max_attempts;
-    // Rounded UP and floored at 1: "try again in 0 minutes" is worse than
-    // saying nothing, and a customer who reads "1 minute" and comes back at 61
-    // seconds should succeed rather than be refused again.
-    // Append Z when the API sends a zone-less timestamp. FastAPI serialises
-    // naive UTC datetimes without an offset, and JavaScript parses a zone-less
-    // string as LOCAL time — in IST that puts the retry 5h30m in the past, so
-    // this would always render "1 minute" and refuse the customer who believed
-    // it. Same bug that made every node heartbeat read "5h ago" in the admin
-    // panel, which is why that file has a utcDate() helper.
-    const retryRaw = status?.retry_available_at ?? null;
-    const retryAt = retryRaw
-      ? new Date(/(?:Z|[+-]\d{2}:?\d{2})$/.test(retryRaw) ? retryRaw : `${retryRaw}Z`)
-      : null;
-    const retryMinutes = retryAt && !Number.isNaN(retryAt.getTime())
-      ? Math.max(1, Math.ceil((retryAt.getTime() - Date.now()) / 60000))
-      : null;
-    return (
-      <Card>
-        <Header icon={<XCircle className="h-5 w-5" />} title="Verification did not complete." sub={reason} />
-        {outOfAttempts ? (
-          // Attempts clear themselves after a cooldown, so telling everyone to
-          // contact us spends exactly the support round trip the auto-reset was
-          // written to save. Say when instead — and only fall back to asking
-          // them to write in when the API says it will NOT clear.
-          retryMinutes !== null ? (
-            <div className={stateBox}>
-              <p className={stateWord}>Pending</p>
-              <p className={stateLead}>
-                Try again in about {retryMinutes} minute{retryMinutes === 1 ? "" : "s"}.
-              </p>
-              <p className={stateBody}>
-                You have used all the attempts we allow in one go. Nothing is wrong with
-                your account and there is no need to contact us. Most of the time this just
-                means the DigiLocker link expired before it was opened; it is only valid
-                for 10 minutes.
-              </p>
-            </div>
-          ) : (
-            <p className={errorBox}>
-              You have used all available attempts.{" "}
-              <Link href="/contact" className="underline underline-offset-2">Contact us</Link>{" "}
-              and we will reset it for you.
-            </p>
-          )
-        ) : (
-          <Button
-            onClick={() => startVerification("signin")}
-            className={btnPrimary}
-          >
-            <RefreshCw className="mr-2 h-4 w-4" />
-            Try again
-          </Button>
-        )}
-      </Card>
-    );
-  }
-
-  if (phase === "duplicate") {
-    return (
-      <Card>
-        <Header
-          icon={<XCircle className="h-5 w-5" />}
-          title="This identity is already registered."
-          sub={reason}
-        />
-        <div className={stateBox}>
-          <p className={stateWord}>Action needed</p>
-          <p className={stateLead}>Sign in to the account you already have.</p>
-          <p className={stateBody}>
-            Coreframe allows one account per person. If you have lost access to it,{" "}
-            <Link href="/contact" className="text-blue underline underline-offset-2">
-              contact us
-            </Link>{" "}
-            and we will help you recover it.
-          </p>
-        </div>
-        <Button asChild className={`${btnPrimary} mt-4`}>
-          <Link href="/login">Sign in to my account</Link>
-        </Button>
       </Card>
     );
   }
@@ -1325,547 +319,177 @@ export default function VerifyFlow({ resume = false }: { resume?: boolean }) {
   if (phase === "error") {
     return (
       <Card>
-        <Header icon={<XCircle className="h-5 w-5" />} title="Something went wrong." sub={error} />
-        <Button onClick={() => window.location.reload()} className={btnPrimary}>
-          <RefreshCw className="mr-2 h-4 w-4" />
-          Reload
+        <Header icon={<Clock className="h-5 w-5" />} title="We could not load your account." />
+        <p className={errorBox}>{error}</p>
+        <Button onClick={() => window.location.reload()} className={`${btnPrimary} mt-5`}>
+          Try again
         </Button>
       </Card>
     );
   }
 
-  if (phase === "gstin") {
+  if (phase === "done") {
     return (
       <Card>
-        <StepBar status={status} current="Business" />
         <Header
-          icon={<Building2 className="h-5 w-5" />}
-          title="Verify your business."
-          sub="We check your GSTIN against the GST register. Instant, and it sets your place of supply for invoices."
+          icon={<CheckCircle2 className="h-5 w-5" />}
+          title="You're all set."
+          sub="Taking you to add funds — your first session starts from there."
         />
-
-        {business?.business_verified && (
-          <div className={`${stateBox} mb-5`}>
-            <p className={stateWord}>Verified</p>
-            <p className={`${stateLead} break-words`}>
-              {business.legal_name || business.trade_name}
-            </p>
-            {(business.constitution || business.registered_state) && (
-              <p className={`${stateBody} break-words`}>
-                {[business.constitution, business.registered_state]
-                  .filter(Boolean)
-                  .join(" · ")}
-              </p>
-            )}
-          </div>
-        )}
-
-        <form onSubmit={submitGstin} className="grid grid-cols-1 gap-4">
-          <div className="grid grid-cols-1 gap-1.5">
-            <label htmlFor="cf-gstin" className="text-[13px] font-medium text-ink">
-              GSTIN
-            </label>
-            <input
-              id="cf-gstin"
-              value={gstin}
-              onChange={(e) => { setGstin(e.target.value.toUpperCase()); setError(""); }}
-              maxLength={15}
-              placeholder="29AAICP2912R1ZR"
-              className={`${inputCls} font-mono tracking-[0.18em] uppercase`}
-              required
-            />
-            <p className="text-[13px] leading-5 text-ink-2">
-              15 characters, exactly as printed on your GST certificate.
-            </p>
-          </div>
-
-          {error && (
-            <p className={errorBox}>
-              {error}
-            </p>
-          )}
-
-          <Button type="submit" disabled={gstinBusy} className={btnPrimary}>
-            {gstinBusy ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ArrowRight className="mr-2 h-4 w-4" />}
-            {gstinBusy ? "Checking the GST register…" : "Verify GSTIN"}
-          </Button>
-        </form>
-
-        <p className="mt-5 text-[13px] leading-5 text-ink-2">
-          A business account needs two things: this, which proves the company is
-          real and GST-active, and a DigiLocker check on you as the signatory,
-          which proves a real person is accountable for the account. You will do
-          that next.
-        </p>
+        <a href={DONE_URL} className={btnPrimary}>
+          Add funds
+        </a>
       </Card>
     );
   }
 
-  if (phase === "bank") {
+  if (phase === "held") {
     return (
       <Card>
-        <StepBar status={status} current="Bank" />
         <Header
-          icon={<Landmark className="h-5 w-5" />}
-          title="Confirm your company bank account."
-          sub="Send ₹1 by UPI from the company's account. We refund it within 48 hours."
+          icon={<Clock className="h-5 w-5" />}
+          title="Your email and mobile are confirmed."
+          sub="We are switching your account on. This usually takes a moment — check again, or message us on WhatsApp from the button on this page if it does not change."
         />
-
-        <p className="mb-5 text-[15px] leading-6 text-ink-2">
-          A GSTIN is printed on every invoice your company issues, so quoting one proves
-          very little. Sending money from the account proves you control it, which is the
-          point of this step.
-        </p>
-
-        {!bank ? (
-          <Button
-            onClick={startBankCheck}
-            disabled={bankBusy}
-            className={btnPrimary}
-          >
-            {bankBusy ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ArrowRight className="mr-2 h-4 w-4" />}
-            {bankBusy ? "Preparing…" : "Start bank verification"}
-          </Button>
-        ) : (
-          <div className="grid grid-cols-1 gap-4">
-            {/* THE QR HAS TO SURVIVE A 390px SCREEN.
-                Inside the card there are about 318 usable pixels at that width,
-                so the code is sized in viewport-safe steps rather than pinned at
-                192px, and the panel around it is `max-w-full` with the image set
-                to shrink rather than crop. A cropped QR is an unscannable QR,
-                and this is the step that moves money. */}
-            {bank.qr && (
-              <div className="flex max-w-full justify-center rounded-cf border border-rule bg-paper p-3 sm:p-4">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={`data:image/png;base64,${bank.qr}`}
-                  alt="UPI QR code for the ₹1 verification payment"
-                  className="h-auto w-full max-w-[220px] min-w-0"
-                />
-              </div>
-            )}
-
-            {bank.upi_link && (
-              <a href={bank.upi_link} className={btnSecondary}>
-                Open a UPI app on this device
-              </a>
-            )}
-
-            <p className="text-[13px] leading-5 break-words text-ink-2">
-              Pay from the account held by{" "}
-              <b className="break-words text-ink">{bank.expected || "your company"}</b>. A
-              personal account will not match and the check will be held for review. The
-              link expires in 10 minutes.
-            </p>
-
-            {bankHint && (
-              <div className={stateBox}>
-                <p className={stateWord}>Action needed</p>
-                <p className={`${stateLead} break-words`}>{bankHint}</p>
-              </div>
-            )}
-
-            <Button
-              onClick={checkBankPayment}
-              disabled={bankBusy}
-              className={btnPrimary}
-            >
-              {bankBusy ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <RefreshCw className="mr-2 h-4 w-4" />}
-              {bankBusy ? "Checking…" : "Check payment"}
-            </Button>
-          </div>
-        )}
-
-        {error && (
-          <p className={`${errorBox} mt-4`}>
-            {error}
-          </p>
-        )}
+        {error && <p className={`${errorBox} mb-4`}>{error}</p>}
+        <Button onClick={recheck} disabled={busy} className={btnPrimary}>
+          {busy ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+          Check again
+        </Button>
       </Card>
     );
   }
 
-  if (phase === "redirecting" || phase === "polling") {
+  if (phase === "email") {
     return (
       <Card>
         <Header
-          icon={<Loader2 className="h-5 w-5 animate-spin" />}
-          title={phase === "redirecting" ? "Opening DigiLocker…" : "Confirming with DigiLocker…"}
-          sub={
-            phase === "redirecting"
-              ? "You will be taken to the official DigiLocker page to approve sharing your documents."
-              : "This usually takes a few seconds. Please keep this page open."
-          }
+          icon={<Mail className="h-5 w-5" />}
+          title="Confirm your email."
+          sub="Open the sign-in link we emailed you. That confirms the address, and you will land back here for the last step."
         />
-      </Card>
-    );
-  }
-
-  // ── intro ─────────────────────────────────────────────────────────────────
-  const otpOutstanding = !!status?.mobile_otp_required && !status?.mobile_verified;
-
-  return (
-    <Card>
-      <StepBar status={status} current="Identity" />
-      <Header
-        icon={<Fingerprint className="h-5 w-5" />}
-        title="Verify your identity."
-        sub="A one-time check before your account is activated. It takes about a minute."
-      />
-
-      {/* THE BULLETS FOLLOW THE ROUTE THE CUSTOMER IS ON.
-          They were written when DigiLocker was the only way through, and they
-          stayed fixed at the top of the card — so somebody who had chosen the
-          passport was reading "you will be taken to DigiLocker to approve
-          sharing your Aadhaar and PAN" above a passport form. The passport
-          route touches no DigiLocker account and no Aadhaar at all; telling a
-          customer we are about to handle their Aadhaar when we are not is a
-          promise about their data that the code does not keep, and it is the
-          kind of sentence a DPDP reviewer reads literally. */}
-      <ul className="mb-6 grid grid-cols-1 gap-3 text-sm leading-6 text-ink-2">
-        {passportOpen ? (
-          <>
-            <li className="flex gap-3">
-              <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-blue" />
-              <span>
-                We check your <b className="text-ink">&ldquo;File No.&rdquo;</b> and date of birth
-                against the Indian passport record.
-              </span>
-            </li>
-            <li className="flex gap-3">
-              <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-blue" />
-              <span>
-                We keep your verified name and date of birth. No Aadhaar, no
-                address.
-              </span>
-            </li>
-          </>
-        ) : (
-          <>
-            <li className="flex gap-3">
-              <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-blue" />
-              <span>
-                One official record — <b className="text-ink">DigiLocker</b> or your{" "}
-                <b className="text-ink">Indian passport</b>. Either is enough.
-              </span>
-            </li>
-            <li className="flex gap-3">
-              <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-blue" />
-              <span>
-                We never see your full Aadhaar number — only the last four
-                digits, your verified name and address.
-              </span>
-            </li>
-          </>
+        {emailResent && (
+          <p className="cf-glass-inset mb-4 border-l-2 border-l-blue px-4 py-3 text-sm leading-6 text-ink-2">
+            A new link is on its way. It expires in 15 minutes.
+          </p>
         )}
-        <li className="flex gap-3">
-          <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-blue" />
-          <span>
-            Indian law (CERT-In Direction 20(3)/2022) requires verified
-            subscriber records for anyone renting compute.
-          </span>
-        </li>
-      </ul>
-
-      {business?.business_verified && (
-        <div className={`${stateBox} mb-4`}>
-          <p className={stateWord}>Verified</p>
-          <p className={`${stateLead} break-words`}>
-            {business.legal_name || business.trade_name}
-          </p>
-          <p className={stateBody}>
-            One step left — confirm your own identity as the signatory.
-          </p>
-        </div>
-      )}
-
-      {status?.failure_reason && (
-        <div className={`${stateBox} mb-4`}>
-          <p className={stateWord}>Action needed</p>
-          <p className={stateLead}>Your last attempt did not complete.</p>
-          <p className={`${stateBody} break-words`}>
-            Reason: {status.failure_reason}. You can try again below.
-          </p>
-        </div>
-      )}
-
-      {/* No longer a demand for action. DigiLocker returns the Aadhaar-linked
-          mobile — UIDAI has just OTP'd it — so in almost every case the contact
-          number requirement is satisfied by the step the customer is about to
-          take. Telling them to go and add one first was busywork. */}
-      {otpOutstanding && !status?.has_phone_number && (
-        <p className="cf-glass-inset mb-4 px-4 py-3 text-sm leading-6 text-ink-2">
-          If you verify through DigiLocker we will record the mobile number
-          linked to your Aadhaar as your contact number. The passport route
-          does not carry one, so there we will ask you to confirm a number
-          afterwards — Indian regulations require us to hold a verified one.
-        </p>
-      )}
-
-      {error && (
-        <p className={`${errorBox} mb-4`}>
-          {error}
-        </p>
-      )}
-
-      {status && !status.has_phone_number ? (
-        <form onSubmit={submitPhone} className="grid grid-cols-1 gap-3">
-          <label htmlFor="cf-phone" className="text-[13px] font-medium text-ink">
-            First, your mobile number
-          </label>
-          <input
-            id="cf-phone"
-            value={phoneInput}
-            onChange={(e) => { setPhoneInput(e.target.value); setPhoneError(""); }}
-            className={inputCls}
-            placeholder="98765 43210"
-            type="tel"
-            inputMode="tel"
-            autoComplete="tel"
-            autoFocus
-          />
-          {/* SAY WHAT HAPPENS NEXT, because the old wording promised a code.
-              It read "we send sign-in codes there", which alongside a button
-              labelled "Save and continue" reads as "a code is on its way". It
-              is not: the code is a later step, offered only after the identity
-              check, and it only sends when the customer presses for it. One
-              account holder waited for a WhatsApp that nothing was ever going
-              to send - the OTP table shows no mobile code generated at all. */}
-          {/* WHAT ACTUALLY HAPPENS, IN BOTH CASES.
-              The previous wording promised a code after the identity check
-              full stop, and for most people none ever came: DigiLocker returns
-              the Aadhaar-linked mobile, which validated the number outright.
-              It was ALSO wrong the other way - it used to validate even when
-              the Aadhaar number and the typed number were different, so a
-              number nobody had proved sat on the account for good. Both halves
-              are fixed; this says which of the two will happen. */}
-          <p className="text-[13px] leading-5 text-ink-2">
-            You signed in with Google, so we have not asked for one yet. An
-            Indian mobile number — it is how we reach you about your account.
-            If you verify through DigiLocker and this is the number linked to
-            your Aadhaar, the identity check confirms it. Otherwise — a
-            different number, or the passport route, which carries no number
-            at all — we will send a code to it afterwards. Either way, nothing
-            arrives just yet.
-          </p>
-          {phoneError && (
-            <p className={errorBox}>
-              {phoneError}
-            </p>
-          )}
-          <Button type="submit" disabled={phoneBusy} className={btnPrimary}>
-            {phoneBusy ? "Saving…" : "Save and continue"}
+        {error && <p className={`${errorBox} mb-4`}>{error}</p>}
+        <div className="grid gap-3">
+          <Button onClick={resendEmail} disabled={busy} className={btnPrimary}>
+            {busy ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+            Send the link again
           </Button>
-        </form>
-      ) : passportOpen ? (
-        /* The passport form takes the whole card once chosen — the same room
-           DigiLocker gets, because it is the same kind of decision. */
-        <form onSubmit={submitPassport} className="grid grid-cols-1 gap-3">
-          <div className="flex items-center gap-2">
-            <BookUser className="h-4 w-4 text-blue" />
-            <p className="text-base font-semibold text-ink">Verify with your passport.</p>
-          </div>
-          {/* Said plainly and first. An overseas customer cannot be served
-              by this at all - it queries the Indian passport record - and
-              finding that out after typing everything in is worse than
-              being told now. */}
-          <div className={stateBox}>
-            <p className={stateWord}>Indian passports only</p>
-            <p className={stateBody}>
-              This check queries the Indian passport record, so a passport issued by any
-              other country cannot be checked here. Use DigiLocker instead.
-            </p>
-          </div>
-          <label htmlFor="cf-passport-file" className="mt-1 text-[13px] font-medium text-ink">
-            File number
-            <span className="mt-0.5 block text-[13px] leading-5 font-normal text-ink-2">
-              The <b className="text-ink">&ldquo;File No.&rdquo;</b> printed on the last page of
-              your passport — 15 characters, two letters then digits. Not the passport
-              number on the front page.
-            </span>
-          </label>
-          {/* UPPERCASED AS IT IS TYPED, not silently on submit.
-              autoCapitalize is a soft-keyboard hint and does nothing on a
-              desktop browser, so a file number typed in lower case sat there
-              looking wrong while the request went up in caps. Now what is on
-              screen is what is sent. */}
-          {/* GROUPED IN FIVES AS IT IS TYPED, and counted.
-              Fifteen unbroken characters cannot be checked against a document
-              by eye - you lose your place, and the only feedback used to come
-              after pressing the button and spending one of three attempts a
-              day. Three groups of five read straight off the page, and the
-              counter says how far along you are before you submit. */}
-          <input
-            id="cf-passport-file"
-            value={passportFileGrouped}
-            onChange={(e) => {
-              const bare = e.target.value
-                .replace(/[^A-Za-z0-9]/g, "")
-                .toUpperCase()
-                .slice(0, 15);
-              setPassportFile(bare);
-              setPassportError("");
-            }}
-            className={`${inputCls} font-mono text-[17px] tracking-[0.16em] md:text-[17px] placeholder:font-sans placeholder:text-base placeholder:tracking-normal`}
-            placeholder="XX123 45678 90123"
-            inputMode="text"
-            autoCapitalize="characters"
-            autoCorrect="off"
-            spellCheck={false}
-            autoFocus
-          />
-          <div className="-mt-1 flex items-center justify-between">
-            {/* The page carries a barcode number and an old passport number as
-                well, so "which of these is it?" is a fair question and the copy
-                alone cannot answer it. */}
-            <button
-              type="button"
-              onClick={() => setShowFileHint((v) => !v)}
-              className="inline-flex min-h-11 items-center text-[13px] text-blue underline underline-offset-2"
-            >
-              {showFileHint ? "Hide" : "Where do I find it?"}
-            </button>
-            <p className="text-right text-[13px] tabular-nums text-ink-2">
-              <span className={passportFileLength === 15 ? "text-blue" : ""}>
-                {passportFileLength}
-              </span>
-              {" / 15"}
-            </p>
-          </div>
-          {showFileHint && <FileNumberDiagram />}
-          <label htmlFor="cf-passport-dob" className="mt-1 text-[13px] font-medium text-ink">
-            Date of birth, as on the passport
-          </label>
-          <input
-            id="cf-passport-dob"
-            value={passportDob}
-            onChange={(e) => { setPassportDob(e.target.value); setPassportError(""); }}
-            className={inputCls}
-            type="date"
-            max={new Date().toISOString().slice(0, 10)}
-          />
-          {passportError && (
-            <p className={errorBox}>
-              {passportError}
-            </p>
-          )}
-          <Button
-            type="submit"
-            disabled={passportBusy}
-            className={btnPrimary}
-          >
-            {passportBusy ? "Checking…" : "Validate with my passport"}
-          </Button>
-          <p className="text-[13px] leading-5 text-ink-2">
-            We check the name and date of birth against the passport record.
-            You will still confirm your mobile number afterwards, which Indian
-            regulations require us to hold.
-          </p>
-          {/* SAY HOW MANY ARE LEFT, BEFORE THEY RUN OUT. Each check is a paid
-              lookup so the daily budget is three, and until now the only sign
-              of it was "Too many requests. Try again later." after the third -
-              which names neither the limit nor when it clears. This is the same
-              fix the legal-name form already carries. */}
-          {/* THE SAME THING WAS ON SCREEN TWICE. This line is the warning
-              before you run out; the red box above is the answer to pressing
-              the button. At zero they said the same sentence back to back, in
-              two colours, on a phone. It is hidden while an error is showing,
-              and it never repeats what the error already said. */}
-          {!passportError &&
-            typeof status?.passport_attempts_remaining === "number" &&
-            status.passport_attempts_remaining <= 2 && (
-              <p className="text-[13px] leading-5 font-medium text-ink">
-                {status.passport_attempts_remaining === 0
-                  ? "Daily verification limit reached."
-                  : `${status.passport_attempts_remaining} check${
-                      status.passport_attempts_remaining === 1 ? "" : "s"
-                    } left today.`}
-              </p>
-            )}
           <button
             type="button"
-            onClick={closePassport}
-            className="inline-flex min-h-11 w-full items-center justify-center text-center text-sm text-ink-2 hover:text-ink"
+            onClick={recheck}
+            disabled={busy}
+            className="cf-btn-secondary min-h-11 w-full disabled:opacity-60"
           >
-            ← Back to the other options
+            I have opened it
+          </button>
+        </div>
+      </Card>
+    );
+  }
+
+  if (phase === "phone") {
+    return (
+      <Card>
+        <Header
+          icon={<Phone className="h-5 w-5" />}
+          title="Add your mobile number."
+          sub="We'll send a code on WhatsApp. Indian regulations (CERT-In) require a verified contact number for compute rental — any country code works."
+        />
+        <form onSubmit={submitPhone} className="grid gap-4">
+          <div className="flex gap-2">
+            <select
+              value={phoneCountry.iso}
+              onChange={(e) => {
+                const next = countries.find((c) => c.iso === e.target.value);
+                if (next) setPhoneCountry(next);
+                setError("");
+              }}
+              className={`${inputCls} w-[112px] shrink-0 cursor-pointer sm:w-36`}
+              aria-label="Country dialling code"
+            >
+              {countries.map((c) => (
+                <option key={c.iso} value={c.iso} className="bg-paper text-ink">
+                  +{c.dial_code} {c.country}
+                </option>
+              ))}
+            </select>
+            <input
+              type="tel"
+              inputMode="numeric"
+              value={phone}
+              onChange={(e) => {
+                setPhone(e.target.value);
+                setError("");
+              }}
+              className={inputCls}
+              placeholder={phoneCountry.dial_code === "91" ? "98765 43210" : "mobile number"}
+              autoComplete="tel-national"
+              aria-label="Mobile number"
+              autoFocus
+              required
+            />
+          </div>
+          {error && <p className={errorBox}>{error}</p>}
+          <Button type="submit" disabled={busy} className={btnPrimary}>
+            {busy ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+            Save number
+          </Button>
+        </form>
+      </Card>
+    );
+  }
+
+  // phase === "otp"
+  return (
+    <Card>
+      <Header
+        icon={<MessageCircle className="h-5 w-5" />}
+        title="Confirm your mobile."
+        sub={
+          <>
+            We will send a 6-digit code on WhatsApp to{" "}
+            <span className="font-medium text-ink">{status?.phone_masked ?? "the number on your account"}</span>.
+          </>
+        }
+      />
+      {!otpSent ? (
+        <div className="grid gap-4">
+          {error && <p className={errorBox}>{error}</p>}
+          <Button onClick={sendCode} disabled={busy} className={btnPrimary}>
+            {busy ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+            Send code on WhatsApp
+          </Button>
+        </div>
+      ) : (
+        <form onSubmit={submitCode} className="grid gap-4">
+          <OtpInput
+            value={otpCode}
+            onChange={(v) => {
+              setOtpCode(v);
+              setError("");
+            }}
+            autoFocus
+          />
+          {error && <p className={errorBox}>{error}</p>}
+          <Button type="submit" disabled={busy || otpCode.length < 6} className={btnPrimary}>
+            {busy ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+            Confirm
+          </Button>
+          <button
+            type="button"
+            onClick={sendCode}
+            disabled={busy}
+            className="inline-flex min-h-11 items-center self-start text-[13px] text-ink-3 hover:text-ink-2"
+          >
+            Send a new code
           </button>
         </form>
-      ) : (
-      <div className="grid grid-cols-1 gap-3">
-        {/* TWO ROUTES, TWO IDENTICAL ROWS.
-            They were side-by-side panels, which read as clutter: different
-            heights, different numbers of buttons, and the longer description
-            pushing one taller than the other. Two rows of the same shape
-            compare at a glance - name, one line, one button - and the copy is
-            cut to what actually decides between them.
-
-            The passport used to sit under a grey text link below the fold,
-            which is the same mistake that buried "create a DigiLocker
-            account": somebody without the thing being asked for reads the page
-            as a dead end and leaves. 35 of 66 held accounts did exactly
-            that. */}
-        <p className="text-[15px] leading-6 text-ink-2">
-          Choose whichever you already have. We only need one.
-        </p>
-
-        {/* ── DigiLocker ──────────────────────────────────────────────── */}
-        <div className="cf-glass-inset flex flex-col gap-3 p-4 sm:flex-row sm:items-center">
-          <div className="flex-1">
-            <div className="flex items-center gap-2">
-              <Landmark className="h-4 w-4 shrink-0 text-blue" />
-              <p className="text-sm font-semibold text-ink">DigiLocker</p>
-            </div>
-            <p className="mt-1 text-[13px] leading-5 text-ink-2">
-              The Government of India&apos;s document service. Proves your name,
-              address and contact number in one step.{" "}
-              {/* A REAL CONTROL, not a hint. Creating an account happens inside
-                  this same flow, so it is a route rather than a consolation
-                  prize - and for most people it is the route they need. */}
-              <button
-                type="button"
-                onClick={() => startVerification("signup")}
-                className="font-semibold text-blue underline underline-offset-2 hover:text-blue"
-              >
-                No account? Create one →
-              </button>
-            </p>
-          </div>
-          <Button
-            onClick={() => startVerification("signin")}
-            className={`${btnPrimary} shrink-0 sm:w-44`}
-          >
-            Use DigiLocker
-            <ArrowRight className="ml-2 h-4 w-4" />
-          </Button>
-        </div>
-
-        {/* ── Passport ────────────────────────────────────────────────── */}
-        <div className="cf-glass-inset flex flex-col gap-3 p-4 sm:flex-row sm:items-center">
-          <div className="flex-1">
-            <div className="flex items-center gap-2">
-              <BookUser className="h-4 w-4 shrink-0 text-blue" />
-              <p className="text-sm font-semibold text-ink">Indian passport</p>
-            </div>
-            <p className="mt-1 text-[13px] leading-5 text-ink-2">
-              No DigiLocker account needed. Takes the 15-character
-              &ldquo;File No.&rdquo; from the last page, and your date of birth.
-            </p>
-          </div>
-          <Button
-            onClick={() => setPassportOpen(true)}
-            className={`${btnPrimary} shrink-0 sm:w-44`}
-          >
-            Use passport
-            <ArrowRight className="ml-2 h-4 w-4" />
-          </Button>
-        </div>
-      </div>
       )}
-
-      <p className="mt-5 text-[13px] leading-5 text-ink-2">
-        Sharing is consent-based and compliant with the Digital Personal Data Protection Act, 2023.
-        See our <Link href="/privacy-policy" className="text-blue hover:underline">privacy policy</Link>.
-      </p>
     </Card>
   );
 }

@@ -1,7 +1,12 @@
 import type { Metadata } from "next";
-import { WhyWeVerify } from "@/components/auth/why-we-verify";
 import { NODE } from "@/lib/node-spec";
-import { adhocRateHourly, getRateCard, getTrialTerms } from "@/lib/rate-card";
+import {
+  adhocRateHourly,
+  getIntroOffer,
+  getRateCard,
+  hoursLabel,
+  rupees,
+} from "@/lib/rate-card";
 import LoginForm from "../login/login-form";
 
 /**
@@ -15,34 +20,26 @@ import LoginForm from "../login/login-form";
  *  2. Next's redirect() drops the query string, so every utm_* parameter the ad
  *     carried died on arrival and no signup could ever be attributed to a
  *     campaign. The attribution columns were there; nothing could fill them.
- *  3. The ad promised free minutes and the page that answered it mentioned
- *     none of them, and said nothing about the ID check waiting one screen
- *     later — the step where roughly fifty people have already gone quiet.
+ *  3. The page that answered the ad did not repeat the ad's promise.
  *
- * So this is a real page now: the same form, the promise the ad made repeated
- * where it lands, and the ID check explained before it is asked for.
- *
- * THE TITLE AND DESCRIPTION ARE GENERATED, NOT TYPED. They carried "200 GPU
- * minutes" and "20 GB of storage" as literals, which is the one number on this
- * page nobody may hardcode: the day the control plane changes the trial, or
- * switches it off, a static string goes on promising it in the search result
- * that brought the person here. `generateMetadata` reads the same rate card the
- * body does, and says nothing about a trial when there is no trial to honour.
+ * PAID-FIRST (10 Oct 2026). The free trial and the identity-document check are
+ * gone: sign-up is email + a WhatsApp code to the mobile, and paying is the
+ * filter. The offer line is the intro offer from the live rate card — never a
+ * typed number — and says nothing when the control plane publishes no offer.
  */
 
 export async function generateMetadata(): Promise<Metadata> {
   const card = await getRateCard();
-  const trial = getTrialTerms(card);
+  const offer = getIntroOffer(card);
   const hourly = adhocRateHourly(card);
-  const after = hourly ? ` Billed by the minute after that, from ${hourly}.` : " Billed by the minute after that.";
 
   // The root layout appends " | Coreframe Cloud" via its title template.
   return {
-    title: trial
-      ? `Start free — ${trial.gpu_minutes} GPU minutes on an ${NODE.gpu}`
+    title: offer
+      ? `Create your account — ${rupees(offer.priceRupees)} = ${hoursLabel(offer.hours)} on an ${NODE.gpu}`
       : `Create your Coreframe account`,
-    description: trial
-      ? `Create a Coreframe account and get ${trial.gpu_minutes} free GPU minutes on an ${NODE.gpu} with ${trial.storage_gb} GB of storage. No card needed.${after}`
+    description: offer
+      ? `Create a Coreframe account with your email and mobile — no paperwork. Your first top-up of ${rupees(offer.priceRupees)} buys ${hoursLabel(offer.hours)} on an ${NODE.gpu}.${hourly ? ` Billed by the minute, ${hourly} after that.` : " Billed by the minute."}`
       : `Create a Coreframe account and run an ${NODE.gpu} workstation from the laptop you already own.${hourly ? ` Billed by the minute, from ${hourly}.` : " Billed by the minute."}`,
     alternates: { canonical: "/signup" },
   };
@@ -50,19 +47,18 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function SignupPage() {
   const card = await getRateCard();
-  const trial = getTrialTerms(card);
+  const intro = getIntroOffer(card);
   const hourly = adhocRateHourly(card);
 
-  const offer = trial
+  const offer = intro
     ? [
-        `${trial.gpu_minutes} free GPU minutes on an ${NODE.gpu}`,
-        `${trial.storage_gb} GB storage`,
-        "no card",
+        `First top-up: ${rupees(intro.priceRupees)} = ${hoursLabel(intro.hours)}${intro.gpuName ? ` of ${intro.gpuName}` : ""}`,
+        "no paperwork",
         hourly ? `${hourly} after that` : null,
       ]
         .filter(Boolean)
         .join(" · ")
-    : undefined;
+    : "Email and mobile only — no paperwork. Pay by the minute.";
 
   return (
     <div className="relative min-h-screen text-ink">
@@ -72,12 +68,35 @@ export default async function SignupPage() {
           {/* The offer used to be a box here, above the card. It read well and
               it cost us the campaign: it pushed the email input to 673px on a
               657px viewport, so 87 people landed and none reached the field.
-              It is one line under the headline now, still rendered from the
-              live rate card and never from a hardcoded number. Nothing else
-              goes above the form on this page. */}
+              It is one line under the headline now, rendered from the live
+              rate card. Nothing else goes above the form on this page. */}
           <LoginForm variant="start" offer={offer} />
 
-          <WhyWeVerify trialMinutes={trial?.gpu_minutes ?? null} trialStorageGb={trial?.storage_gb} />
+          <section className="mt-8 rounded-cf border border-rule bg-paper-2 p-6">
+            <h2 className="cf-section-title">How sign-up works</h2>
+            <ol className="mt-4 space-y-3 text-sm leading-6 text-ink-2">
+              <li>
+                <b className="font-medium text-ink">1. Your email.</b> We send a link — no
+                password to remember.
+              </li>
+              <li>
+                <b className="font-medium text-ink">2. Your mobile.</b> A one-time code on
+                WhatsApp. Indian regulations (CERT-In) require a verified contact number for
+                compute rental. Any country code works.
+              </li>
+              <li>
+                <b className="font-medium text-ink">3. Add funds.</b>{" "}
+                {intro
+                  ? `Your first top-up of ${rupees(intro.priceRupees)} buys ${hoursLabel(intro.hours)}${intro.gpuName ? ` of ${intro.gpuName}` : ""}.`
+                  : "Top up your wallet and start a session."}{" "}
+                Card, UPI or netbanking — international cards accepted. A GST invoice is issued
+                automatically.
+              </li>
+            </ol>
+            <p className="mt-4 text-xs leading-5 text-ink-3">
+              No Aadhaar, passport or ID upload.
+            </p>
+          </section>
         </div>
       </main>
     </div>

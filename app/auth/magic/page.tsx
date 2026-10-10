@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { CheckCircle, XCircle, Loader2 } from "lucide-react";
 import { Suspense } from "react";
@@ -10,8 +11,11 @@ const API = "https://control.coreframecloud.com/api";
 
 function MagicLinkVerifier() {
   const params = useSearchParams();
-  const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
-  const [errorMsg, setErrorMsg] = useState("");
+  const token = params.get("t");
+  // A missing token is known at render time; deriving it (rather than setting
+  // state inside the effect) keeps the effect to the network call alone.
+  const [status, setStatus] = useState<"loading" | "success" | "error">(token ? "loading" : "error");
+  const [errorMsg, setErrorMsg] = useState(token ? "" : "Missing sign-in token. Please request a new link.");
 
   // Fire EXACTLY once per token. useSearchParams() returns a fresh object on
   // some re-renders and React StrictMode invokes effects twice in development;
@@ -23,12 +27,7 @@ function MagicLinkVerifier() {
   const attempted = useRef<string | null>(null);
 
   useEffect(() => {
-    const token = params.get("t");
-    if (!token) {
-      setErrorMsg("Missing sign-in token. Please request a new link.");
-      setStatus("error");
-      return;
-    }
+    if (!token) return;
     if (attempted.current === token) return;
     attempted.current = token;
 
@@ -51,8 +50,8 @@ function MagicLinkVerifier() {
         // for that new account (or the API says is_new_user), once per account.
         trackSignupIfNew(data, "magic_link");
         setStatus("success");
-        // An account still awaiting approval has identity verification left to
-        // do — send it there rather than to a dashboard it cannot use.
+        // pending_approval now means only that the email or mobile is not
+        // confirmed yet — /verify asks for that one step, then on to add funds.
         const next = data.user?.status === "pending_approval" ? "/verify" : "/my-activity";
         setTimeout(() => {
           window.location.href = next;
@@ -62,7 +61,7 @@ function MagicLinkVerifier() {
         setErrorMsg("Something went wrong. Please try again.");
         setStatus("error");
       });
-  }, [params]);
+  }, [token]);
 
   return (
     <div className="relative flex min-h-screen items-center justify-center px-4">
@@ -73,10 +72,10 @@ function MagicLinkVerifier() {
 
       <div className="relative w-full max-w-sm text-center">
         {/* Logo */}
-        <a href="/" className="mb-10 inline-block text-2xl font-extrabold tracking-tight">
+        <Link href="/" className="mb-10 inline-block text-2xl font-extrabold tracking-tight">
           <span className="text-ink">CORE</span>
           <span className="text-blue">FRAME</span>
-        </a>
+        </Link>
 
         <div className="rounded-cf border border-rule bg-paper-2 p-6 sm:p-8">
           {status === "loading" && (

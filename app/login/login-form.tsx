@@ -3,10 +3,13 @@
 import { useState, useEffect } from "react";
 import {
   COUNTRIES,
+  INDIA,
   fetchCountries,
+  fetchIndianGstStates,
   validateGstin,
   validatePhone,
   type Country,
+  type GstState,
 } from "@/lib/validation";
 import { readAttribution } from "@/lib/attribution";
 import { markPendingSignup, trackSignupIfNew } from "@/lib/analytics";
@@ -200,9 +203,13 @@ export default function LoginForm({
     }
     fetchCountries(API).then((list) => {
       setCountries(list);
-      const india = list.find((c) => c.dial_code === "91");
-      if (india) setPhoneCountry(india);
+      const india = list.find((c) => c.iso === "IN");
+      if (india) {
+        setPhoneCountry(india);
+        setHomeCountry(india);
+      }
     });
+    fetchIndianGstStates(API).then(setGstStates);
   }, []);
 
   // Safari and Chrome restore this page from the back/forward cache without
@@ -231,10 +238,16 @@ export default function LoginForm({
   // Country list comes from the API so the picker and the server's validator
   // are one table; COUNTRIES is the offline fallback.
   const [countries, setCountries] = useState<Country[]>(COUNTRIES);
-  const [phoneCountry, setPhoneCountry] = useState<Country>(COUNTRIES[0]);
-  // Individual vs registered business. A business additionally verifies its
-  // GSTIN — the signatory's DigiLocker proves the person, the GSTIN proves the
-  // entity. Neither substitutes for the other.
+  const [phoneCountry, setPhoneCountry] = useState<Country>(INDIA);
+  // Where the customer is. Mandatory (owner, 10 Oct 2026): it decides the tax
+  // on every invoice — an Indian state sets the place of supply, anywhere else
+  // is a foreign customer charged IGST — so it is asked once here rather than
+  // guessed later. India requires the GST state too.
+  const [homeCountry, setHomeCountry] = useState<Country>(INDIA);
+  const [homeState, setHomeState] = useState("");
+  const [gstStates, setGstStates] = useState<GstState[]>([]);
+  // Individual vs registered business. A business gives its GSTIN so its
+  // invoices carry it and the place of supply is right; nothing else differs.
   const [linkAccountType, setLinkAccountType] = useState<"b2c" | "b2b">("b2c");
   const [linkGstin, setLinkGstin] = useState("");
   const [linkLoading, setLinkLoading] = useState(false);
@@ -252,9 +265,9 @@ export default function LoginForm({
     const params = new URLSearchParams(window.location.search);
     const next = params.get("next");
 
-    // An account still awaiting approval almost always needs to finish identity
-    // verification — send them straight there rather than to an account page
-    // that can only tell them they cannot do anything yet.
+    // pending_approval now means only that email or mobile is unconfirmed —
+    // /verify asks for exactly the step that is left (usually the WhatsApp
+    // code) and then sends them on to add funds.
     const user = data.user as { status?: string } | null;
     if (user?.status === "pending_approval" && !next) {
       window.location.href = "/verify";
@@ -321,6 +334,10 @@ export default function LoginForm({
     // Length rules per country, and India's mobile-prefix rule, live in
     // lib/validation.ts alongside the server's copy — so "10 digits" is not
     // hardcoded here and wrong the moment someone signs up from Dubai.
+    if (!homeCountry) return setError("Select your country.");
+    if (homeCountry.iso === "IN" && !homeState) {
+      return setError("Select your state — it sets the GST on your invoices.");
+    }
     const phoneCheck = validatePhone(linkPhone, phoneCountry);
     if (!phoneCheck.ok) return setError(phoneCheck.error);
 
@@ -345,6 +362,9 @@ export default function LoginForm({
           phone: (validatePhone(linkPhone, phoneCountry) as { value: string }).value,
           phone_country_code: phoneCountry.dial_code,
           customer_type: linkAccountType,
+          // ISO-3166 alpha-2, and the GST state code for India only.
+          country_code: homeCountry.iso,
+          state_code: homeCountry.iso === "IN" ? homeState : undefined,
           gstin: linkAccountType === "b2b" ? linkGstin.trim().toUpperCase() : undefined,
           // Where they came from, captured on their first landing and frozen
           // since. Sent only on the call that CREATES the account — resending
@@ -426,7 +446,7 @@ export default function LoginForm({
             two stacked COREFRAME marks read as a template someone forgot to
             finish. The serif heading is what carries the brand on this screen. */}
         <h1 className={`font-display text-[34px] leading-[1.1] tracking-[-0.01em] text-ink ${isStart ? "mt-3" : "mt-4"}`}>
-          {isStart ? "Start free" : "Sign in"}
+          {isStart ? "Create your account" : "Sign in"}
         </h1>
         <p className="mt-1 text-sm text-ink-2">
           {isStart
@@ -610,8 +630,7 @@ export default function LoginForm({
                   <Field label="Full name">
                     <Input value={linkName} onChange={(e) => { setLinkName(e.target.value); setError(""); }} className={inputCls} placeholder="Rahul Sharma" required />
                     <p className="mt-1 text-xs text-ink-3">
-                      Your own legal name, as on your Aadhaar or passport — not the
-                      company&apos;s.
+                      Printed on your invoices.
                     </p>
                   </Field>
                   <Field label={linkAccountType === "b2b"
@@ -634,19 +653,64 @@ export default function LoginForm({
                 </div>
                 {/* Required, not optional. Indian law (CERT-In Direction
                     20(3)/2022) makes us hold a validated contact number for
-                    anyone renting compute, and the verification step needs one.
-                    Asking here is one field; asking later means bouncing someone
-                    out of verification to go and add it. */}
+                    anyone renting compute, so the number gets a one-time code
+                    over WhatsApp after the email link. Any country: paid-first
+                    onboarding (10 Oct 2026) is open to international
+                    customers. */}
+                <div className={`grid gap-4 ${homeCountry.iso === "IN" ? "sm:grid-cols-2 sm:gap-3" : ""}`}>
+                  <Field label="Country">
+                    <select
+                      value={homeCountry.iso}
+                      onChange={(e) => {
+                        const next = countries.find((c) => c.iso === e.target.value);
+                        if (next) {
+                          setHomeCountry(next);
+                          // The phone code follows the country; it can still
+                          // be changed on its own for a number from elsewhere.
+                          setPhoneCountry(next);
+                        }
+                        setError("");
+                      }}
+                      className={`${inputCls} cursor-pointer`}
+                      aria-label="Country"
+                      required
+                    >
+                      {countries.map((c) => (
+                        <option key={c.iso} value={c.iso} className="bg-paper text-ink">
+                          {c.country}
+                        </option>
+                      ))}
+                    </select>
+                  </Field>
+                  {homeCountry.iso === "IN" && (
+                    <Field label="State">
+                      <select
+                        value={homeState}
+                        onChange={(e) => { setHomeState(e.target.value); setError(""); }}
+                        className={`${inputCls} cursor-pointer`}
+                        aria-label="State"
+                        required
+                      >
+                        <option value="" className="bg-paper text-ink">Select your state</option>
+                        {gstStates.map((st) => (
+                          <option key={st.code} value={st.code} className="bg-paper text-ink">
+                            {st.name}
+                          </option>
+                        ))}
+                      </select>
+                    </Field>
+                  )}
+                </div>
                 <Field label="Mobile number">
                   <div className="flex gap-2">
                     <select
-                      value={phoneCountry.dial_code}
+                      value={phoneCountry.iso}
                       onChange={(e) => {
-                        const next = countries.find((c) => c.dial_code === e.target.value);
+                        const next = countries.find((c) => c.iso === e.target.value);
                         if (next) setPhoneCountry(next);
                         setError("");
                       }}
-                      className={`${inputCls} w-[104px] shrink-0 cursor-pointer sm:w-32`}
+                      className={`${inputCls} w-[112px] shrink-0 cursor-pointer sm:w-36`}
                       aria-label="Country dialling code"
                     >
                       {countries.map((c) => (
@@ -656,11 +720,11 @@ export default function LoginForm({
                         // select was given can end up invisible - it used to be
                         // white on white. Paper and ink, stated explicitly.
                         <option
-                          key={c.dial_code}
-                          value={c.dial_code}
+                          key={c.iso}
+                          value={c.iso}
                           className="bg-paper text-ink"
                         >
-                          +{c.dial_code} {(c.country || "").split(" ")[0]}
+                          +{c.dial_code} {c.country}
                         </option>
                       ))}
                     </select>
@@ -676,7 +740,7 @@ export default function LoginForm({
                     />
                   </div>
                   <p className="mt-1 text-xs text-ink-3">
-                    Used for identity verification and account security. Indian regulations
+                    We&apos;ll send a code on WhatsApp. Indian regulations
                     require us to hold a verified contact number for compute rental.
                   </p>
                 </Field>
