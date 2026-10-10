@@ -34,3 +34,22 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Ad tracking environment variables
+
+Set in Vercel → Project → Settings → Environment Variables (Production, and
+Preview if wanted). All are optional and all are `NEXT_PUBLIC_*`, so they are
+inlined at **build** time: redeploy after adding or changing one. Names only —
+never commit values (`.env*` is gitignored).
+
+| Variable | What it turns on |
+|---|---|
+| `NEXT_PUBLIC_META_PIXEL_ID` | Meta pixel (digits only). Unset = no pixel loaded. |
+| `NEXT_PUBLIC_GOOGLE_ADS_ID` | Google Ads tag, e.g. `AW-…`. Unset = no Ads tag. |
+| `NEXT_PUBLIC_GOOGLE_ADS_LABEL_SIGNUP` | Ads conversion label sent on `sign_up` |
+| `NEXT_PUBLIC_GOOGLE_ADS_LABEL_LEAD` | Ads conversion label sent on WhatsApp `generate_lead` |
+| `NEXT_PUBLIC_GOOGLE_ADS_LABEL_PURCHASE` | Ads conversion label sent on wallet `purchase` |
+
+The labels are optional: without them, mark the GA4 events `sign_up`,
+`generate_lead` and `purchase` as key events and import them into Google Ads.
+Conversions are sent from `trackConversion` in `lib/analytics.ts`.

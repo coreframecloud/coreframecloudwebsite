@@ -1,7 +1,7 @@
 "use client";
 
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
-import { trackClarityEvent, trackEvent } from "@/lib/analytics";
+import { trackClarityEvent, trackEvent, trackWhatsAppLead } from "@/lib/analytics";
 
 type FormState = {
   name: string;
@@ -140,6 +140,7 @@ export function ContactSection() {
       const message = buildWhatsAppMessage(form);
       const whatsappUrl = `https://wa.me/916366889488?text=${message}`;
 
+      trackWhatsAppLead("reserve_access");
       window.open(whatsappUrl, "_blank", "noopener,noreferrer");
       setForm(initialState);
       startedRef.current = false;

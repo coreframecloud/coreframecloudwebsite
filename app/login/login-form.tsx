@@ -9,6 +9,7 @@ import {
   type Country,
 } from "@/lib/validation";
 import { readAttribution } from "@/lib/attribution";
+import { markPendingSignup, trackSignupIfNew } from "@/lib/analytics";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { OtpInput } from "@/components/ui/otp-input";
@@ -356,6 +357,9 @@ export default function LoginForm({
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.detail ?? `Error ${res.status}`);
+      // NOT a conversion yet: no account exists until the link is redeemed.
+      // This only lets /auth/magic recognise that redemption as a new signup.
+      markPendingSignup(linkEmail);
       setLinkStep("sent");
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Something went wrong.");
@@ -402,6 +406,7 @@ export default function LoginForm({
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.detail ?? `Error ${res.status}`);
+      trackSignupIfNew(data, "email_code");
       storeAndRedirect(data);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Invalid or expired code.");

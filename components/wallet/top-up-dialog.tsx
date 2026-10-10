@@ -26,6 +26,7 @@
  */
 
 import { useCallback, useEffect, useState } from "react";
+import { trackConversion } from "@/lib/analytics";
 
 const API = "https://control.coreframecloud.com/api";
 
@@ -173,6 +174,15 @@ export default function TopUpDialog({
               });
               const v = await vr.json();
               if (!vr.ok) throw new Error(v?.detail ?? "We could not confirm that payment.");
+              // Server-confirmed payment, so this is a real purchase. Value is
+              // what the customer paid (GST included), not the net credit; the
+              // payment id deduplicates across GA4, Google Ads and Meta.
+              trackConversion("purchase", {
+                value: rupees,
+                currency: order.currency ?? "INR",
+                transaction_id: resp.razorpay_payment_id,
+                location: "wallet_topup",
+              });
               setDone({
                 credited: v.net_wallet_credit_rupees ?? rupees,
                 balance: v.wallet_balance_rupees ?? 0,

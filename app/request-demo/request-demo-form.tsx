@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Mail, MessageCircle } from "lucide-react";
+import { trackWhatsAppLead } from "@/lib/analytics";
 
 export default function RequestDemoForm() {
   const [email, setEmail] = useState("");
@@ -30,6 +31,7 @@ Workload: ${workload}
 Selected GPU: ${gpu || "Not selected"}`;
 
     const url = `https://wa.me/916366889488?text=${encodeURIComponent(message)}`;
+    trackWhatsAppLead("request_demo");
     window.open(url, "_blank");
   };
 

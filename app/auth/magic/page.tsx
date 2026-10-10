@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { CheckCircle, XCircle, Loader2 } from "lucide-react";
 import { Suspense } from "react";
+import { trackSignupIfNew } from "@/lib/analytics";
 
 const API = "https://control.coreframecloud.com/api";
 
@@ -45,6 +46,10 @@ function MagicLinkVerifier() {
         }
         localStorage.setItem("cf_customer_token", data.access_token);
         localStorage.setItem("cf_customer_user", JSON.stringify(data.user));
+        // THE sign-up conversion. verify-magic-link is the call that creates
+        // the account for a new email; this fires only when this browser asked
+        // for that new account (or the API says is_new_user), once per account.
+        trackSignupIfNew(data, "magic_link");
         setStatus("success");
         // An account still awaiting approval has identity verification left to
         // do — send it there rather than to a dashboard it cannot use.

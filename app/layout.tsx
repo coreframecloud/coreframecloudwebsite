@@ -33,6 +33,7 @@ const plexMono = IBM_Plex_Mono({
 import { COMPANY_MAPS_URL, COMPANY_YOUTUBE_URL, COMPANY_INSTAGRAM_URL } from "@/lib/company";
 import Script from "next/script";
 import { AttributionCapture } from "@/components/attribution-capture";
+import { WhatsAppClickTracker } from "@/components/analytics/whatsapp-click-tracker";
 import { WhatsAppButton } from "@/components/home/whatsapp-button";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
@@ -41,6 +42,21 @@ import { BareOnLanding } from "@/components/layout/bare-on-landing";
 import { SiteFooter } from "@/components/home/site-footer";
 import { TrialStrip } from "@/components/home/trial-strip";
 import { getRateCard, planTiers } from "@/lib/rate-card";
+
+/**
+ * Ad-platform tags, both optional and both off unless their env var is set at
+ * BUILD time (NEXT_PUBLIC_* is inlined by `next build`). Validated to the shape
+ * each platform issues, because the value is interpolated into an inline
+ * script: a malformed or hostile value loads nothing rather than running.
+ *
+ * Conversions themselves are sent from lib/analytics.ts (trackConversion).
+ */
+const META_PIXEL_ID = /^\d{5,20}$/.test(process.env.NEXT_PUBLIC_META_PIXEL_ID ?? "")
+  ? process.env.NEXT_PUBLIC_META_PIXEL_ID
+  : undefined;
+const GOOGLE_ADS_ID = /^AW-\d{5,20}$/.test(process.env.NEXT_PUBLIC_GOOGLE_ADS_ID ?? "")
+  ? process.env.NEXT_PUBLIC_GOOGLE_ADS_ID
+  : undefined;
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.coreframecloud.com"),
@@ -193,9 +209,25 @@ export default async function RootLayout({
             function gtag(){window.dataLayer.push(arguments);}
             window.gtag = gtag;
             gtag('js', new Date());
-            gtag('config', 'G-BX4WY4GBSZ');
+            gtag('config', 'G-BX4WY4GBSZ');${GOOGLE_ADS_ID ? `
+            gtag('config', '${GOOGLE_ADS_ID}');` : ""}
           `}
         </Script>
+
+        {/* Meta pixel — only when NEXT_PUBLIC_META_PIXEL_ID is set. */}
+        {META_PIXEL_ID ? (
+          <Script id="meta-pixel" strategy="afterInteractive">
+            {`
+              !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+              n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+              n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+              t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+              document,'script','https://connect.facebook.net/en_US/fbevents.js');
+              fbq('init', '${META_PIXEL_ID}');
+              fbq('track', 'PageView');
+            `}
+          </Script>
+        ) : null}
 
         {/* Microsoft Clarity */}
         <Script id="microsoft-clarity" strategy="afterInteractive">
@@ -339,6 +371,7 @@ export default async function RootLayout({
           <SiteHeader />
         </BareOnLanding>
         <AttributionCapture />
+        <WhatsAppClickTracker />
         {children}
         <SiteFooter />
 

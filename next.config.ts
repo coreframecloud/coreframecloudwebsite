@@ -41,7 +41,10 @@ import type { NextConfig } from "next";
 const CSP = [
   "default-src 'self'",
   // Read the note above before touching 'unsafe-inline' on this line.
-  "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.clarity.ms https://*.clarity.ms https://va.vercel-scripts.com https://static.cloudflareinsights.com https://checkout.razorpay.com https://cdn.razorpay.com",
+  "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.clarity.ms https://*.clarity.ms https://va.vercel-scripts.com https://static.cloudflareinsights.com https://checkout.razorpay.com https://cdn.razorpay.com https://connect.facebook.net",
+  // connect.facebook.net is the Meta pixel loader (fbevents.js plus the
+  // per-pixel config it pulls from the same host). Only loaded when
+  // NEXT_PUBLIC_META_PIXEL_ID is set; see app/layout.tsx.
   // No 'unsafe-eval' anywhere on purpose: nothing here needs it.
   // RAZORPAY IS HERE BECAUSE I LEFT IT OUT AND BROKE PAYMENTS ON THIS SITE.
   //
@@ -70,18 +73,25 @@ const CSP = [
   // stats.g.doubleclick.net and www.google.com/g/collect - three origins that
   // are not obvious from the tag snippet and would have taken every pageview
   // with them, silently, on the first deploy.
-  "connect-src 'self' https://control.coreframecloud.com https://www.google-analytics.com https://*.google-analytics.com https://analytics.google.com https://*.analytics.google.com https://www.googletagmanager.com https://stats.g.doubleclick.net https://www.google.com https://*.clarity.ms https://c.bing.com https://va.vercel-scripts.com https://cloudflareinsights.com https://static.cloudflareinsights.com https://api.razorpay.com https://lumberjack.razorpay.com https://lumberjack-cx.razorpay.com",
+  "connect-src 'self' https://control.coreframecloud.com https://www.google-analytics.com https://*.google-analytics.com https://analytics.google.com https://*.analytics.google.com https://www.googletagmanager.com https://stats.g.doubleclick.net https://www.google.com https://*.clarity.ms https://c.bing.com https://va.vercel-scripts.com https://cloudflareinsights.com https://static.cloudflareinsights.com https://api.razorpay.com https://lumberjack.razorpay.com https://lumberjack-cx.razorpay.com https://www.facebook.com https://connect.facebook.net https://googleads.g.doubleclick.net https://www.googleadservices.com",
+  // The two Meta hosts are the pixel's event POSTs; the googleads/googleadservices
+  // pair is the Google Ads conversion ping, only sent when
+  // NEXT_PUBLIC_GOOGLE_ADS_ID is set.
+  // Already any https: origin, which covers the Meta pixel's
+  // www.facebook.com/tr image beacon.
   "img-src 'self' data: blob: https:",
   // Next and Tailwind both emit inline <style>. There is no nonce-free way
   // around this one, and its blast radius is far smaller than script's.
   "style-src 'self' 'unsafe-inline'",
   "font-src 'self' data: https://cdn.razorpay.com",
   // The embedded product videos.
-  "frame-src https://www.youtube.com https://www.youtube-nocookie.com https://api.razorpay.com https://checkout.razorpay.com",
+  "frame-src https://www.youtube.com https://www.youtube-nocookie.com https://api.razorpay.com https://checkout.razorpay.com https://www.facebook.com https://td.doubleclick.net",
   "object-src 'none'",
   "base-uri 'self'",
   "frame-ancestors 'none'",
-  "form-action 'self'",
+  // www.facebook.com: the Meta pixel falls back to a form POST to /tr inside
+  // a hidden iframe for large payloads, and that iframe is frame-src too.
+  "form-action 'self' https://www.facebook.com",
 ].join("; ") + ";";
 
 const securityHeaders = [
