@@ -5,6 +5,32 @@
 export const WALKTHROUGH_YOUTUBE_ID = "WlAbunHAGdE";
 
 /**
+ * The VideoObject for the walkthrough, shared by this section and the blog
+ * article that embeds the same video, so the two cannot describe it
+ * differently. Notes on each field are in the section below.
+ */
+export function walkthroughVideoObject(youtubeId: string) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "VideoObject",
+    // Must match the published YouTube title character for character. A
+    // VideoObject whose name disagrees with the video it points at is a
+    // mismatch Google resolves by dropping the rich result, silently.
+    name: "Coreframe Cloud - Renting an RTX 5080 by the minute — a full session, start to finish",
+    description:
+      "A full Coreframe session, uncut: sign in, pick a workstation, upload a scene, render it, pull the result back down and close the machine. Recorded on an RTX 5080 workstation hosted in Bengaluru.",
+    thumbnailUrl: [`https://i.ytimg.com/vi/${youtubeId}/maxresdefault.jpg`],
+    uploadDate: "2026-09-30",
+    duration: "PT4M39S",
+    embedUrl: `https://www.youtube.com/embed/${youtubeId}`,
+    publisher: {
+      "@type": "Organization",
+      name: "Coreframe Compute Labs Private Limited",
+    },
+  };
+}
+
+/**
  * The walkthrough.
  *
  * Deliberately described as one unedited session. The whole page argues that
@@ -32,24 +58,7 @@ export function WalkthroughSection({ youtubeId }: { youtubeId?: string }) {
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "VideoObject",
-              // Must match the published YouTube title character for character. A
-              // VideoObject whose name disagrees with the video it points at is a
-              // mismatch Google resolves by dropping the rich result, silently.
-              name: "Coreframe Cloud - Renting an RTX 5080 by the minute — a full session, start to finish",
-              description:
-                "A full Coreframe session, uncut: sign in, pick a workstation, upload a scene, render it, pull the result back down and close the machine. Recorded on an RTX 5080 workstation hosted in Bengaluru.",
-              thumbnailUrl: [`https://i.ytimg.com/vi/${youtubeId}/maxresdefault.jpg`],
-              uploadDate: "2026-09-30",
-              duration: "PT4M39S",
-              embedUrl: `https://www.youtube.com/embed/${youtubeId}`,
-              publisher: {
-                "@type": "Organization",
-                name: "Coreframe Compute Labs Private Limited",
-              },
-            }),
+            __html: JSON.stringify(walkthroughVideoObject(youtubeId)),
           }}
         />
       ) : null}

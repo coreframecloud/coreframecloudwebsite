@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { SOFTWARE_PAGES } from "@/lib/software-pages";
+import { publishedPosts } from "@/lib/blog";
 
 /**
  * Canonical host is www: the apex 308-redirects to it. Listing apex URLs here
@@ -11,6 +12,9 @@ const BASE = "https://www.coreframecloud.com";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
+  // Published posts only, never drafts, on every build. /blog itself is
+  // listed once there is something on it; until then it 404s in production.
+  const posts = publishedPosts();
 
   return [
     { url: `${BASE}/`, lastModified: now, changeFrequency: "weekly", priority: 1.0 },
@@ -71,6 +75,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: now,
       changeFrequency: "monthly" as const,
       priority: 0.8,
+    })),
+
+    // The blog. lastModified is the post's own date, not the build time, so
+    // a redeploy does not tell crawlers that every article changed.
+    ...(posts.length
+      ? [{ url: `${BASE}/blog`, lastModified: now, changeFrequency: "weekly" as const, priority: 0.6 }]
+      : []),
+    ...posts.map((p) => ({
+      url: `${BASE}/blog/${p.slug}`,
+      lastModified: new Date(p.dateModified ?? p.datePublished),
+      changeFrequency: "monthly" as const,
+      priority: 0.7,
     })),
 
     // The free IFC pre-CFD checker. Served from the control plane through a

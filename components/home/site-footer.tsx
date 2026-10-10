@@ -14,6 +14,7 @@ import {
   COMPANY_INSTAGRAM_URL,
   COMPANY_INSTAGRAM_HANDLE,
 } from "@/lib/company";
+import { publishedPosts } from "@/lib/blog";
 
 export function SiteFooter() {
   return (
@@ -57,6 +58,9 @@ export function SiteFooter() {
                 { label: "Pricing", href: "/pricing" },
                 { label: "Enterprise plans", href: "/enterprise" },
                 { label: "About Coreframe", href: "/about" },
+                // Only once a post is published: a link to a page that 404s
+                // in production is worse than no link.
+                ...(publishedPosts().length ? [{ label: "Blog", href: "/blog" }] : []),
               ].map((l) => (
                 <Link key={l.href} href={l.href} className="flex min-h-11 items-center text-xs text-ink-2 transition hover:text-ink">{l.label}</Link>
               ))}
