@@ -19,18 +19,31 @@
  * hands Razorpay an order the server created and hands the result back for the
  * server to verify against its own secret.
  *
- * Billing state is MANDATORY, not a nicety: the state code is what decides
- * CGST+SGST versus IGST on the tax invoice this payment raises, and an invoice
- * taxed wrongly can only be corrected by credit note. The list is fetched from
- * /public/gst-states rather than hardcoded, so three clients cannot drift.
+ * Billing COUNTRY is mandatory, and for India so is the STATE: the state code
+ * decides CGST+SGST versus IGST on the tax invoice this payment raises, and an
+ * invoice taxed wrongly can only be corrected by credit note. The list is
+ * fetched from /public/gst-states rather than hardcoded, so three clients
+ * cannot drift. Any other country is sent as GST state code 96 ("Outside
+ * India (Foreign Country)"), IGST applies, and the postal code is free-form.
+ *
+ * Paid-first onboarding (10 Oct 2026): the first top-up has a higher minimum
+ * (`min_topup_rupees_now` from the wallet status) and may carry the intro
+ * offer, badged on its preset with numbers from the rate card.
  */
 
 import { useCallback, useEffect, useState } from "react";
 import { trackConversion } from "@/lib/analytics";
+import { hoursLabel, type IntroOffer } from "@/lib/rate-card";
+import {
+  COUNTRIES,
+  FOREIGN_STATE_CODE,
+  INDIA,
+  countryByIso,
+  fetchIndianGstStates,
+  type GstState,
+} from "@/lib/validation";
 
 const API = "https://control.coreframecloud.com/api";
-
-type GstState = { code: string; name: string };
 
 type PaymentsConfig = {
   enabled: boolean;
@@ -59,23 +72,38 @@ function loadRazorpay(): Promise<boolean> {
   });
 }
 
-const PRESETS = [500, 1000, 2000, 5000];
+const PRESET_LADDER = [500, 1000, 2000, 5000, 10000, 20000];
 
 export default function TopUpDialog({
   open,
   onClose,
   onCredited,
   user,
+  minTopupNow,
+  introOffer,
+  presetAmount,
+  defaultCountry,
 }: {
   open: boolean;
   onClose: () => void;
   onCredited: (newBalanceRupees: number) => void;
   user: { full_name?: string; email?: string; id?: string } | null;
+  /** The smallest top-up THIS customer may make right now — higher on a first
+   *  top-up. From the wallet status; absent on an older control plane. */
+  minTopupNow?: number | null;
+  /** Set only when this customer can still claim the intro offer. */
+  introOffer?: IntroOffer | null;
+  /** Amount to preselect when the dialog opens (the intro offer button). */
+  presetAmount?: number | null;
+  /** ISO-3166 alpha-2 from sign-up, when the API reports it. */
+  defaultCountry?: string | null;
 }) {
   const [config, setConfig] = useState<PaymentsConfig | null>(null);
   const [states, setStates] = useState<GstState[]>([]);
-  const [amount, setAmount] = useState<string>("500");
+  const [amount, setAmount] = useState<string>("");
   const [name, setName] = useState(user?.full_name ?? "");
+  const [countryIso, setCountryIso] = useState(countryByIso(defaultCountry)?.iso ?? INDIA.iso);
+  const isIndia = countryIso === "IN";
   const [stateCode, setStateCode] = useState("");
   const [city, setCity] = useState("");
   const [pincode, setPincode] = useState("");
@@ -90,16 +118,35 @@ export default function TopUpDialog({
 
     fetch(`${API}/payments/config`, { headers: { Authorization: `Bearer ${token}` } })
       .then((r) => (r.ok ? r.json() : null))
-      .then((c) => { if (c) { setConfig(c); setAmount(String(c.min_topup_rupees)); } })
+      .then((c: PaymentsConfig | null) => {
+        if (!c) return;
+        // The effective floor is the higher of the gateway's minimum and this
+        // customer's own (a first top-up starts at the intro price).
+        const floor = Math.max(c.min_topup_rupees, minTopupNow ?? 0);
+        setConfig({ ...c, min_topup_rupees: floor });
+        setAmount(String(presetAmount && presetAmount >= floor ? presetAmount : floor));
+      })
       .catch(() => setConfig({ enabled: false, key_id: null, min_topup_rupees: 500, max_topup_rupees: 50000 }));
 
-    fetch(`${API}/public/gst-states`)
-      .then((r) => (r.ok ? r.json() : []))
-      .then((s) => setStates(Array.isArray(s) ? s : []))
-      .catch(() => setStates([]));
+    fetchIndianGstStates(API).then(setStates);
 
     loadRazorpay();
-  }, [open]);
+  }, [open, minTopupNow, presetAmount]);
+
+  // The sign-up country arrives with the wallet status, possibly after the
+  // dialog mounted; adopt it until the customer picks one themselves.
+  const [countryTouched, setCountryTouched] = useState(false);
+  useEffect(() => {
+    const iso = countryByIso(defaultCountry)?.iso;
+    if (iso && !countryTouched) setCountryIso(iso);
+  }, [defaultCountry, countryTouched]);
+
+  const presets = (() => {
+    const floor = config?.min_topup_rupees ?? minTopupNow ?? 500;
+    const max = config?.max_topup_rupees ?? 50000;
+    const ladder = PRESET_LADDER.filter((p) => p > floor && p <= max);
+    return [floor, ...ladder].slice(0, 4);
+  })();
 
   // THE LIMIT HAS TO ARRIVE WHILE THEY TYPE, NOT AFTER THEY COMMIT.
   //
@@ -125,8 +172,11 @@ export default function TopUpDialog({
         `Enter an amount between ₹${config.min_topup_rupees.toLocaleString("en-IN")} and ₹${config.max_topup_rupees.toLocaleString("en-IN")}.`,
       );
     }
-    if (!stateCode) return setError("Select your state — it decides the GST split on your invoice.");
-    if (pincode && !/^\d{6}$/.test(pincode.trim())) return setError("PIN code must be 6 digits.");
+    if (!countryIso) return setError("Select your country.");
+    if (isIndia) {
+      if (!stateCode) return setError("Select your state — it decides the GST split on your invoice.");
+      if (!/^\d{6}$/.test(pincode.trim())) return setError("Enter your 6-digit PIN code.");
+    }
 
     setBusy(true);
     try {
@@ -141,7 +191,9 @@ export default function TopUpDialog({
           billing_address: {
             name: name.trim() || undefined,
             city: city.trim() || undefined,
-            state_code: stateCode,
+            // Outside India is GST state 96 (foreign country): IGST applies.
+            state_code: isIndia ? stateCode : FOREIGN_STATE_CODE,
+            country_code: countryIso,
             pincode: pincode.trim() || undefined,
           },
         }),
@@ -214,7 +266,7 @@ export default function TopUpDialog({
     } finally {
       setBusy(false);
     }
-  }, [amount, city, config, name, onCredited, pincode, stateCode, user]);
+  }, [amount, city, config, countryIso, isIndia, name, onCredited, pincode, stateCode, user]);
 
   if (!open) return null;
 
@@ -275,21 +327,37 @@ export default function TopUpDialog({
             ) : (
               <>
                 <div className="mt-5 flex flex-wrap gap-2">
-                  {PRESETS.filter((p) => !config || (p >= config.min_topup_rupees && p <= config.max_topup_rupees)).map((p) => (
-                    <button
-                      key={p}
-                      type="button"
-                      onClick={() => setAmount(String(p))}
-                      className={`inline-flex min-h-11 items-center justify-center rounded-cf border px-4 text-sm font-semibold tabular-nums transition ${
-                        amount === String(p)
-                          ? "border-blue bg-blue-soft text-blue"
-                          : "border-rule bg-paper-2 text-ink-2 hover:text-ink"
-                      }`}
-                    >
-                      ₹{p.toLocaleString("en-IN")}
-                    </button>
-                  ))}
+                  {presets.map((p) => {
+                    const intro = introOffer && p === introOffer.priceRupees;
+                    return (
+                      <button
+                        key={p}
+                        type="button"
+                        onClick={() => setAmount(String(p))}
+                        className={`inline-flex min-h-11 flex-col items-center justify-center rounded-cf border px-4 py-1 text-sm font-semibold tabular-nums transition ${
+                          amount === String(p)
+                            ? "border-blue bg-blue-soft text-blue"
+                            : "border-rule bg-paper-2 text-ink-2 hover:text-ink"
+                        }`}
+                      >
+                        ₹{p.toLocaleString("en-IN")}
+                        {intro && (
+                          <span className="text-[11px] font-medium leading-4 text-blue">
+                            Intro: {hoursLabel(introOffer.hours)}
+                          </span>
+                        )}
+                      </button>
+                    );
+                  })}
                 </div>
+                {introOffer && (
+                  <p className="mt-2 text-xs leading-5 text-ink-2">
+                    Intro offer: your first top-up of ₹{introOffer.priceRupees.toLocaleString("en-IN")} buys{" "}
+                    {hoursLabel(introOffer.hours)}
+                    {introOffer.gpuName ? ` of ${introOffer.gpuName}` : ""}
+                    {introOffer.validityDays ? ` — use within ${introOffer.validityDays} days` : ""}.
+                  </p>
+                )}
 
                 <label className="mt-4 block cf-eyebrow">
                   Amount (₹)
@@ -333,6 +401,23 @@ export default function TopUpDialog({
                   </div>
                   <div className="sm:col-span-2">
                     <label className="block cf-eyebrow">
+                      Country <span className="text-blue">(required)</span>
+                    </label>
+                    <select
+                      value={countryIso}
+                      onChange={(e) => { setCountryIso(e.target.value); setCountryTouched(true); setError(""); }}
+                      className="mt-1.5 h-11 w-full cursor-pointer rounded-cf border border-rule bg-paper px-3 text-base text-ink outline-none focus:border-blue md:h-10 md:text-sm"
+                    >
+                      {COUNTRIES.map((c) => (
+                        <option key={c.iso} value={c.iso} className="bg-paper text-ink">
+                          {c.country}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  {isIndia && (
+                  <div className="sm:col-span-2">
+                    <label className="block cf-eyebrow">
                       State <span className="text-blue">(required)</span>
                     </label>
                     <select
@@ -356,6 +441,7 @@ export default function TopUpDialog({
                       Your state decides the GST split on the invoice, so it cannot be guessed.
                     </p>
                   </div>
+                  )}
                   <div>
                     <label className="block cf-eyebrow">
                       City
@@ -368,12 +454,17 @@ export default function TopUpDialog({
                   </div>
                   <div>
                     <label className="block cf-eyebrow">
-                      PIN code
+                      {isIndia ? (
+                        <>PIN code <span className="text-blue">(required)</span></>
+                      ) : (
+                        "Postal code"
+                      )}
                     </label>
                     <input
                       value={pincode}
-                      onChange={(e) => setPincode(e.target.value)}
-                      inputMode="numeric"
+                      onChange={(e) => { setPincode(e.target.value); setError(""); }}
+                      inputMode={isIndia ? "numeric" : "text"}
+                      maxLength={isIndia ? 6 : 12}
                       className="mt-1.5 h-11 w-full rounded-cf border border-rule bg-paper px-3 text-base tabular-nums text-ink outline-none focus:border-blue md:h-10 md:text-sm"
                     />
                   </div>
@@ -393,6 +484,8 @@ export default function TopUpDialog({
                   {busy ? "Opening payment…" : `Pay ₹${Number(amount || 0).toLocaleString("en-IN")}`}
                 </button>
                 <p className="mt-3 text-center text-xs leading-5 text-ink-2">
+                  International cards accepted. Prices include 18% GST.
+                  <br />
                   Payments are processed by Razorpay. We never see your card details.
                 </p>
               </>

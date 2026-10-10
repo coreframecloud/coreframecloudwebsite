@@ -3,6 +3,15 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import TopUpDialog from "@/components/wallet/top-up-dialog";
+import { trackEvent } from "@/lib/analytics";
+import {
+  getIntroOffer,
+  hoursLabel,
+  minFirstTopup,
+  rupees,
+  type IntroOffer,
+} from "@/lib/rate-card";
+import { useRateCard } from "@/lib/use-rate-card";
 
 const API = "https://control.coreframecloud.com/api";
 
@@ -41,6 +50,14 @@ interface WalletData {
   storage_paid_unlocked: boolean;
   storage_retention_days: number;
   storage_retention_active_minutes: number;
+  // Paid-first onboarding (10 Oct 2026). Optional: an older control plane
+  // omits them, and then neither the intro card nor the "add funds to start"
+  // state is shown — the page reads exactly as it did before.
+  paid_access?: boolean;
+  intro_offer_available?: boolean;
+  min_topup_rupees_now?: number;
+  /** ISO-3166 alpha-2 from sign-up; preselects the billing country. */
+  country_code?: string | null;
 }
 
 function formatBytes(bytes: number): string {
@@ -50,112 +67,102 @@ function formatBytes(bytes: number): string {
   return `${gb.toFixed(gb < 10 ? 1 : 0)} GB`;
 }
 
-/** Free minutes and disk both run out, and both were invisible to customers —
- *  the wallet chip only ever showed money. A trial that expires unannounced
- *  reads as the product silently taking something away. */
+/**
+ * The first thing a signed-in customer without paid access needs: how to get
+ * it. Paid-first onboarding (10 Oct 2026) replaced the free-minutes card with
+ * this. Every number is from the rate card or the wallet status — the intro
+ * card renders nothing it cannot source, and the "add funds to start" state
+ * drops the amount rather than typing one.
+ */
+function StartCard({
+  wallet,
+  offer,
+  fallbackMin,
+  onAdd,
+}: {
+  wallet: WalletData | null;
+  offer: IntroOffer | null;
+  fallbackMin: number | null;
+  onAdd: (amount: number | null, source: "intro_offer" | "first_topup") => void;
+}) {
+  if (!wallet) return null;
+  const introLive = wallet.intro_offer_available === true && offer != null;
+  const needsPayment = wallet.paid_access === false;
+  if (!introLive && !needsPayment) return null;
+
+  if (introLive) {
+    return (
+      <section className="cf-glass border-l-2! border-l-blue! p-5 sm:p-6">
+        <div className="flex flex-wrap items-baseline justify-between gap-2">
+          <h2 className="cf-eyebrow">Intro offer</h2>
+          {offer.validityDays ? (
+            <span className="font-mono text-[11px] whitespace-nowrap text-ink-2">
+              Use within {offer.validityDays} days
+            </span>
+          ) : null}
+        </div>
+        <p className="mt-3 font-display text-3xl leading-tight font-bold text-ink">
+          {rupees(offer.priceRupees)} <span className="text-blue">→</span>{" "}
+          {hoursLabel(offer.hours)}
+          {offer.gpuName ? <span className="text-ink-2"> of {offer.gpuName}</span> : null}
+        </p>
+        <p className="mt-2 text-sm leading-6 text-ink-2">
+          {needsPayment
+            ? "Your account is ready. Your first top-up unlocks sessions — "
+            : "Your first top-up — "}
+          one per customer, billed per minute of streaming. Card, UPI or netbanking;
+          international cards accepted.
+        </p>
+        <button
+          type="button"
+          onClick={() => onAdd(offer.priceRupees, "intro_offer")}
+          className="cf-btn-primary mt-5 w-full sm:w-auto"
+        >
+          Add {rupees(offer.priceRupees)} · {hoursLabel(offer.hours, true)}
+        </button>
+      </section>
+    );
+  }
+
+  const min = wallet.min_topup_rupees_now ?? fallbackMin;
+  return (
+    <section className="cf-glass border-l-2! border-l-blue! p-5 sm:p-6">
+      <h2 className="cf-eyebrow">Ready when you are</h2>
+      <p className="mt-3 font-display text-2xl leading-tight font-bold text-ink">
+        {min ? `Add ${rupees(min)} to start.` : "Add funds to start."}
+      </p>
+      <p className="mt-2 text-sm leading-6 text-ink-2">
+        Your account is set up. Sessions start once your wallet has its first top-up —
+        billed per minute of streaming, GST included.
+      </p>
+      <button
+        type="button"
+        onClick={() => onAdd(min, "first_topup")}
+        className="cf-btn-primary mt-5 w-full sm:w-auto"
+      >
+        {min ? `Add ${rupees(min)}` : "Add funds"}
+      </button>
+    </section>
+  );
+}
+
+/** Disk usage. The free-minutes half of this panel went with the trial. */
 function UsageCards({ wallet }: { wallet: WalletData | null }) {
   if (!wallet) return null;
-  const mins = wallet.trial_minutes_remaining ?? 0;
-  // What the grant WAS, so a countdown has a denominator and a finished trial
-  // can say what it gave. Falls back to the advertised 200 for accounts
-  // granted before the figure was recorded.
-  const trialGrantMins = wallet.trial_granted_minutes || 200;
-  // A trial is "spent" only once it was actually granted — an account that
-  // never had one should show nothing here rather than a hollow celebration.
-  const trialSpent = mins <= 0 && (wallet.trial_granted_at != null || trialGrantMins > 0);
-  const trialWorthRupees = Math.round(
-    (trialGrantMins / 60) * (wallet.gpu_rate_from_rupees ?? 399),
-  );
   const quotaGb =
     wallet.storage_quota_gb ||
     (wallet.storage_quota_bytes ? Math.round(wallet.storage_quota_bytes / 1024 ** 3) : 0);
-  // The free tier's SIZE, not how much of it is currently in force: a paid
-  // account whose trial-storage clock has run out still got 20 GB free, and
-  // the bar must keep saying so.
-  const freeTier = wallet.storage_free_tier_gb || 20;
-  const capGb = wallet.storage_paid_cap_gb || 50;
-  // Retention is measured in billable minutes; customers think in hours.
-  // Fallbacks matter here: these fields ship with an API build the site does
-  // not control the timing of, and a missing number rendered a sentence that
-  // read "every  days". Copy that depends on an API field must never be able
-  // to render blank — default to the configured policy instead.
-  const retentionDays = wallet.storage_retention_days || 30;
-  const retentionMins = wallet.storage_retention_active_minutes || 60;
-  const retentionHours =
-    retentionMins >= 60 && retentionMins % 60 === 0
-      ? `${retentionMins / 60} hour${retentionMins === 60 ? "" : "s"}`
-      : `${retentionMins} minutes`;
+  // What is included without a top-up. Trial storage is retired, so a missing
+  // figure is 0 — not the old "20" — and the bar then shows one zone.
+  const freeTier = wallet.storage_free_tier_gb ?? 0;
+  const capGb = wallet.storage_paid_cap_gb || quotaGb || 0;
   // Fraction of the CAP, not of the current quota, so the fill sits in the
   // same place on the bar whether or not the paid tier is unlocked.
   const usedFrac = capGb > 0 ? Math.min(1, (wallet.storage_used_bytes ?? 0) / (capGb * 1024 ** 3)) : 0;
+  const freeFrac = capGb > 0 ? Math.min(1, freeTier / capGb) : 0;
 
   return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 mt-4">
-      {/* The trial card has three lives, and the third one is the reason this
-          is not just a number. While minutes remain it is a countdown. When
-          they run out it must not become a dead "0" — that reads as the
-          product taking something away. It becomes a receipt: here is what you
-          got for free, here is what it would have cost, carry on. */}
-      <div className={`cf-glass p-5 sm:p-6 ${trialSpent ? "border-l-2! border-l-blue!" : ""}`}>
-        <div className="flex items-baseline justify-between">
-          <h2 className="cf-eyebrow">
-            {trialSpent ? "Free trial" : "Free GPU minutes"}
-          </h2>
-          {mins > 0 && wallet.trial_expires_at && (
-            <span className="font-mono text-[11px] whitespace-nowrap text-ink-2">
-              Expires {formatDate(wallet.trial_expires_at)}
-            </span>
-          )}
-        </div>
-
-        {mins > 0 ? (
-          <>
-            <div className="mt-4 flex items-end gap-2">
-              <span className="font-display text-5xl leading-none font-bold tabular-nums text-blue">{mins}</span>
-              <span className="pb-1 text-lg leading-none font-semibold text-blue">min</span>
-              <span className="pb-1.5 ml-1 text-sm font-medium text-ink-2">remaining</span>
-            </div>
-            {/* How much of the grant is left, so "120" means something without
-                remembering what it started at. */}
-            <div className="mt-4 h-2.5 w-full overflow-hidden rounded-full bg-ink/10">
-              <div
-                className="h-full rounded-full bg-blue"
-                style={{ width: `${Math.max(2, Math.min(100, (mins / trialGrantMins) * 100))}%` }}
-              />
-            </div>
-            <p className="mt-2 text-xs text-ink-3">
-              {trialGrantMins - mins} of {trialGrantMins} minutes used
-            </p>
-            <p className="mt-3 text-xs text-ink-2">
-              Free minutes are spent before wallet money — nothing is charged until these run out.
-            </p>
-          </>
-        ) : (
-          <>
-            <div className="mt-4 flex items-center gap-3">
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-blue/15 text-xl text-blue">
-                ✓
-              </div>
-              <div>
-                <p className="text-2xl font-bold leading-tight text-ink">
-                  {trialGrantMins} free minutes used
-                </p>
-                <p className="text-xs text-ink-2">
-                  worth about ₹{trialWorthRupees.toLocaleString("en-IN")} of GPU time, on us
-                </p>
-              </div>
-            </div>
-            <div className="mt-4 h-2.5 w-full overflow-hidden rounded-full bg-blue/15">
-              <div className="h-full w-full rounded-full bg-blue/70" />
-            </div>
-            <p className="mt-3 text-xs text-ink-2">
-              Your trial is complete. Sessions now bill from your wallet, per minute of
-              streaming — provisioning and failed connections are never charged.
-            </p>
-          </>
-        )}
-      </div>
-
+    <div className="mt-4 grid grid-cols-1 gap-4">
       {/* USAGE is the headline. The previous version made "20 GB free" the big
           number and pushed actual usage into small text above the panel, so a
           full-width allocation bar read as a full disk. Now the number answers
@@ -167,9 +174,11 @@ function UsageCards({ wallet }: { wallet: WalletData | null }) {
           <h2 className="cf-eyebrow">
             Storage
           </h2>
-          <span className="font-mono text-[11px] whitespace-nowrap text-ink-2">
-            {wallet.storage_allowance_gb ?? freeTier} GB free, always
-          </span>
+          {wallet.storage_allowance_gb ? (
+            <span className="font-mono text-[11px] whitespace-nowrap text-ink-2">
+              {wallet.storage_allowance_gb} GB included
+            </span>
+          ) : null}
         </div>
 
         <div className="mt-4 flex items-end gap-2">
@@ -227,17 +236,19 @@ function UsageCards({ wallet }: { wallet: WalletData | null }) {
         <div className="relative mt-4 h-3.5 w-full overflow-hidden rounded-full bg-ink/10">
           {/* Zones: what the allowance is made of. Faint - this is the track. */}
           <div className="absolute inset-0 flex">
-            <div className="h-full bg-blue/20" style={{ width: `${(freeTier / capGb) * 100}%` }} />
+            <div className="h-full bg-blue/20" style={{ width: `${freeFrac * 100}%` }} />
             <div
               className={`h-full ${wallet.storage_paid_unlocked ? "bg-blue/20" : "bg-transparent"}`}
-              style={{ width: `${((capGb - freeTier) / capGb) * 100}%` }}
+              style={{ width: `${(1 - freeFrac) * 100}%` }}
             />
           </div>
-          {/* Where the free tier ends. Visible whether or not anything is used. */}
-          <div
-            className="absolute top-0 h-full w-px bg-ink/25"
-            style={{ left: `${(freeTier / capGb) * 100}%` }}
-          />
+          {/* Where the included tier ends, when there is one. */}
+          {freeFrac > 0 && freeFrac < 1 && (
+            <div
+              className="absolute top-0 h-full w-px bg-ink/25"
+              style={{ left: `${freeFrac * 100}%` }}
+            />
+          )}
           {/* Consumption. A minimum sliver so "a little" never looks like none. */}
           {usedFrac > 0 && (
             <div
@@ -251,21 +262,20 @@ function UsageCards({ wallet }: { wallet: WalletData | null }) {
 
         {/* Scale, so the tick means something without hovering. */}
         <div className="mt-1 flex font-mono text-[10px] tabular-nums text-ink-3">
-          <span style={{ width: `${(freeTier / capGb) * 100}%` }}>0</span>
-          <span className="flex-1">{freeTier} GB</span>
+          <span style={{ width: `${freeFrac * 100}%` }}>0</span>
+          <span className="flex-1">{freeFrac > 0 && freeFrac < 1 ? `${freeTier} GB` : ""}</span>
           <span>{capGb} GB</span>
         </div>
 
         <div className="mt-4 space-y-1.5 text-xs">
-          <div className="flex items-center gap-2">
-            <span className="h-2 w-2 shrink-0 rounded-full bg-blue" />
-            <span className="text-ink-2">
-              <b className="text-ink">{freeTier} GB free on us</b>
-              {!wallet.storage_paid_unlocked && wallet.trial_storage_expires_at
-                ? ` · during your trial, until ${formatDate(wallet.trial_storage_expires_at)}`
-                : " · included, not billed"}
-            </span>
-          </div>
+          {freeTier > 0 && (
+            <div className="flex items-center gap-2">
+              <span className="h-2 w-2 shrink-0 rounded-full bg-blue" />
+              <span className="text-ink-2">
+                <b className="text-ink">{freeTier} GB included</b> · not billed
+              </span>
+            </div>
+          )}
           <div className="flex items-center gap-2">
             <span
               className={`h-2 w-2 shrink-0 rounded-full ${
@@ -275,13 +285,13 @@ function UsageCards({ wallet }: { wallet: WalletData | null }) {
             <span className={wallet.storage_paid_unlocked ? "text-ink-2" : "text-ink-2"}>
               {wallet.storage_paid_unlocked ? (
                 <>
-                  <b className="text-blue">+{capGb - freeTier} GB unlocked</b> by your
-                  recharge — the space is yours whatever your balance does
+                  <b className="text-blue">{freeTier > 0 ? "+" : ""}{capGb - freeTier} GB unlocked</b> by your
+                  top-up — the space is yours whatever your balance does
                 </>
               ) : (
                 <>
-                  <b className="text-ink-2">+{capGb - freeTier} GB</b> unlocks with any wallet
-                  recharge, and stays unlocked
+                  <b className="text-ink-2">{freeTier > 0 ? "+" : ""}{capGb - freeTier} GB</b> unlocks with your
+                  first top-up, and stays unlocked
                 </>
               )}
             </span>
@@ -401,11 +411,34 @@ export default function MyActivityPage() {
   // that hash opens the dialog straight away rather than landing the customer
   // on a page and making them hunt for the button they just clicked.
   const [topUpOpen, setTopUpOpen] = useState(false);
+  const [topUpPreset, setTopUpPreset] = useState<number | null>(null);
+  const [blocked, setBlocked] = useState<string | null>(null);
+  const card = useRateCard();
+  const introOffer = getIntroOffer(card);
+
+  function openTopUp(amount: number | null, source: "intro_offer" | "first_topup" | "add_funds") {
+    setTopUpPreset(amount);
+    setTopUpOpen(true);
+    // Intent, not a conversion: the purchase conversion fires only when
+    // /payments/verify confirms the money (top-up dialog).
+    if (source !== "add_funds") {
+      trackEvent("begin_checkout", {
+        value: amount ?? undefined,
+        currency: "INR",
+        location: source === "intro_offer" ? "my_activity_intro_offer" : "my_activity_first_topup",
+      });
+    }
+  }
 
   useEffect(() => {
     setMounted(true);
-    if (typeof window !== "undefined" && window.location.hash === "#add-funds") {
-      setTopUpOpen(true);
+    if (typeof window !== "undefined") {
+      // #add-funds from the header's wallet chip; ?topup=1 from the end of
+      // sign-up and the header's "Add ₹… · … hrs" button.
+      const params = new URLSearchParams(window.location.search);
+      if (window.location.hash === "#add-funds" || params.get("topup") === "1") {
+        setTopUpOpen(true);
+      }
     }
     const t = localStorage.getItem("cf_customer_token");
     const uRaw = localStorage.getItem("cf_customer_user");
@@ -433,16 +466,17 @@ export default function MyActivityPage() {
       try {
         const r = await fetch(url, { headers });
         // 401 = the token is bad; sign them out.
-        // 403 = the token is FINE but the account is not verified yet — it is a
-        // verification-scoped token, which is supposed to be refused here.
-        // Deleting it on 403 signed people out while the header still showed
-        // them as logged in, which is where the contradiction came from.
+        // 403 = the token is fine but this account may not use the page. That
+        // USED to mean "not verified" and always went to /verify; now only a
+        // pending account belongs there (checked below), and a suspended or
+        // otherwise refused one is told so instead of looping through /verify.
+        // 402 = paid access required; the page itself still renders.
         if (r.status === 401) throw new Error("auth_failed");
-        if (r.status === 403) throw new Error("needs_verification");
+        if (r.status === 403) throw new Error("forbidden");
         if (!r.ok) return null;
         return r.json();
       } catch (err: unknown) {
-        if (err instanceof Error && ["auth_failed", "needs_verification"].includes(err.message)) throw err;
+        if (err instanceof Error && ["auth_failed", "forbidden"].includes(err.message)) throw err;
         return null; // network errors or missing endpoints → treat as empty
       }
     };
@@ -457,10 +491,26 @@ export default function MyActivityPage() {
         setSessions(Array.isArray(s) ? s : []);
         setPayments(Array.isArray(p) ? p : []);
       })
-      .catch((err) => {
-        if (err.message === "needs_verification") {
-          // Keep the session; send them to finish verifying.
-          window.location.href = "/verify";
+      .catch(async (err) => {
+        if (err.message === "forbidden") {
+          // Keep the session. Ask the one endpoint a scoped token may call
+          // whether sign-up is unfinished; only then is /verify the answer.
+          try {
+            const r = await fetch(`${API}/verification/status`, { headers });
+            const st = r.ok ? await r.json() : null;
+            const pending =
+              st?.account_status === "pending_approval" ||
+              (st && st.account_active === false && st.next_step && st.next_step !== "done");
+            if (pending) {
+              window.location.href = "/verify";
+              return;
+            }
+          } catch {
+            /* fall through to the message */
+          }
+          setBlocked(
+            "Your account cannot use this page right now. Contact support@coreframecloud.com and we will sort it out.",
+          );
           return;
         }
         if (err.message === "auth_failed") {
@@ -506,6 +556,22 @@ export default function MyActivityPage() {
             <div className="h-4 w-64 rounded bg-ink/10" />
             <div className="mt-8 h-32 rounded-glass bg-ink/5" />
             <div className="h-48 rounded-glass bg-ink/5" />
+          </div>
+        </div>
+      </main>
+    );
+  }
+
+  if (blocked) {
+    return (
+      <main className="relative min-h-screen text-ink">
+        <div className="cf-aurora" />
+        <div className="mx-auto max-w-lg px-4 py-16 sm:px-6">
+          <div className="cf-glass p-6 sm:p-8">
+            <h1 className="font-display text-2xl leading-tight font-semibold text-ink">
+              Account on hold.
+            </h1>
+            <p className="mt-2 text-[15px] leading-6 text-ink-2">{blocked}</p>
           </div>
         </div>
       </main>
@@ -620,6 +686,18 @@ export default function MyActivityPage() {
           </div>
         </section>
 
+        {/* How to start: the intro offer, or "add funds to start" when the
+            account has no paid access yet. Retail only — an org's wallet is
+            the org admin's to fund. */}
+        {user?.customer_type !== "b2b" && user?.role !== "org_admin" && (
+          <StartCard
+            wallet={wallet}
+            offer={introOffer}
+            fallbackMin={minFirstTopup(card)}
+            onAdd={openTopUp}
+          />
+        )}
+
         {/* Wallet section — layout depends on role */}
         {user?.role === "org_admin" ? (
           /* B2B Org admin: balance card + link to org portal */
@@ -679,6 +757,14 @@ export default function MyActivityPage() {
                   ? `GPU time from ₹${Math.round(wallet.gpu_rate_from_rupees)}/hr · GST included`
                   : "— rates unavailable"}
               </p>
+              {/* Minutes granted before the trial was retired (10 Oct 2026)
+                  are still the customer's; say so while any remain. */}
+              {(wallet?.trial_minutes_remaining ?? 0) > 0 && (
+                <p className="mt-2 text-xs tabular-nums text-ink-2">
+                  Plus {wallet!.trial_minutes_remaining} earlier-granted GPU minutes
+                  {wallet!.trial_expires_at ? `, until ${formatDate(wallet!.trial_expires_at)}` : ""}
+                </p>
+              )}
               {wallet?.next_expiry && (
                 <p className="mt-2 text-xs tabular-nums text-ink-2">
                   ₹{Math.round(wallet.next_expiry.amount_rupees).toLocaleString("en-IN")} expires on{" "}
@@ -705,7 +791,7 @@ export default function MyActivityPage() {
               </div>
               <button
                 type="button"
-                onClick={() => setTopUpOpen(true)}
+                onClick={() => openTopUp(null, "add_funds")}
                 className="cf-btn-primary mt-6 w-full sm:w-auto"
               >
                 Add funds
@@ -725,9 +811,8 @@ export default function MyActivityPage() {
           </div>
         )}
 
-        {/* Free minutes and disk. Rendered for every segment: a B2B engineer
-            on the org's pooled wallet still has their own storage and their
-            own trial clock. */}
+        {/* Disk. Rendered for every segment: a B2B engineer on the org's
+            pooled wallet still has their own storage. */}
         <UsageCards wallet={wallet} />
 
         {/* Recent Sessions */}
@@ -861,15 +946,34 @@ export default function MyActivityPage() {
         open={topUpOpen}
         onClose={() => {
           setTopUpOpen(false);
-          // Clear the deep-link hash so a refresh does not reopen the dialog.
-          if (typeof window !== "undefined" && window.location.hash === "#add-funds") {
+          setTopUpPreset(null);
+          // Clear the deep link so a refresh does not reopen the dialog.
+          if (
+            typeof window !== "undefined" &&
+            (window.location.hash === "#add-funds" || window.location.search.includes("topup="))
+          ) {
             window.history.replaceState(null, "", window.location.pathname);
           }
         }}
         onCredited={(balance) =>
-          setWallet((w) => (w ? { ...w, wallet_balance_rupees: balance } : w))
+          setWallet((w) =>
+            w
+              ? {
+                  ...w,
+                  wallet_balance_rupees: balance,
+                  // Paid now. The server is authoritative on the next load;
+                  // this only stops the "add funds to start" card lingering.
+                  paid_access: w.paid_access === undefined ? undefined : true,
+                  intro_offer_available: false,
+                }
+              : w,
+          )
         }
         user={user}
+        minTopupNow={wallet?.min_topup_rupees_now ?? null}
+        introOffer={wallet?.intro_offer_available ? introOffer : null}
+        presetAmount={topUpPreset ?? (wallet?.intro_offer_available ? introOffer?.priceRupees ?? null : null)}
+        defaultCountry={wallet?.country_code ?? null}
       />
     </main>
   );

@@ -2,10 +2,19 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState, useEffect, useRef, MouseEvent } from "react";
+import { useState, useEffect, useRef, useSyncExternalStore, MouseEvent } from "react";
 import { Menu, X } from "lucide-react";
 import { CoreframeWordmarkAtlas } from "@/components/brand/coreframe-wordmark-atlas";
 import { trackEvent } from "@/lib/analytics";
+import { getIntroOffer, hoursLabel, rupees } from "@/lib/rate-card";
+import { useRateCard } from "@/lib/use-rate-card";
+
+// True on the client after hydration, false during SSR — without a setState
+// in an effect (react-hooks/set-state-in-effect).
+const noopSubscribe = () => () => {};
+function useMounted(): boolean {
+  return useSyncExternalStore(noopSubscribe, () => true, () => false);
+}
 
 /**
  * Three links. That is the whole nav, on purpose.
@@ -32,7 +41,11 @@ const navLinks = [
 interface WalletData {
   wallet_balance_rupees: number;
   hourly_rate_rupees_per_hour: number;
-  trial_credit_hours: number;
+  // Paid-first onboarding (10 Oct 2026); absent on an older control plane,
+  // in which case the header shows the plain "My Activity" link.
+  paid_access?: boolean;
+  intro_offer_available?: boolean;
+  min_topup_rupees_now?: number;
 }
 
 interface AuthState {
@@ -122,11 +135,10 @@ function UserAvatar({ initials, accountNumber, onSignOut }: { initials: string; 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
-  const [mounted, setMounted] = useState(false);
+  const mounted = useMounted();
   const [auth, setAuth] = useState<AuthState | null>(null);
 
   useEffect(() => {
-    setMounted(true);
     const token = localStorage.getItem("cf_customer_token");
     const userRaw = localStorage.getItem("cf_customer_user");
     if (!token || !userRaw) return;
@@ -210,6 +222,19 @@ export function SiteHeader() {
     ? auth.user.full_name.trim().charAt(0).toUpperCase()
     : "?";
 
+  // What the account CTA should be. Pending: finish sign-up. Active but never
+  // paid: the first top-up, with the intro offer's hours when it is still
+  // claimable — all numbers from the wallet status and the rate card.
+  const pending = auth?.user?.status === "pending_approval";
+  const needsTopup = !pending && auth?.wallet?.paid_access === false;
+  // Only fetched for the one visitor who will see the offer.
+  const card = useRateCard(needsTopup && auth?.wallet?.intro_offer_available === true);
+  const intro = getIntroOffer(card);
+  const topupAmount = auth?.wallet?.min_topup_rupees_now ?? intro?.priceRupees ?? null;
+  const topupLabel = topupAmount
+    ? `Add ${rupees(topupAmount)}${intro && intro.priceRupees === topupAmount ? ` · ${hoursLabel(intro.hours, true)}` : ""}`
+    : "Add funds to start";
+
   const balance =
     auth?.wallet != null
       ? `₹${auth.wallet.wallet_balance_rupees.toFixed(0)}`
@@ -265,13 +290,21 @@ export function SiteHeader() {
                   label stayed "My Activity", which sent people to a
                   verification page they had not asked for. The mobile menu got
                   this right; the desktop nav did not. */}
-              {auth.user?.status === "pending_approval" ? (
+              {pending ? (
                 <Link
                   href="/verify"
                   className="text-sm font-semibold text-blue transition hover:text-blue-ink"
-                  onClick={() => trackEvent("finish_verification_click", { location: "header_cta" })}
+                  onClick={() => trackEvent("finish_signup_click", { location: "header_cta" })}
                 >
-                  Complete verification
+                  Finish sign-up
+                </Link>
+              ) : needsTopup ? (
+                <Link
+                  href="/my-activity?topup=1"
+                  className="inline-flex items-center justify-center rounded-cf bg-blue px-3 py-1.5 text-sm font-semibold text-white transition hover:bg-blue"
+                  onClick={() => trackEvent("first_topup_click", { location: "header_cta" })}
+                >
+                  {topupLabel}
                 </Link>
               ) : (
                 <Link
@@ -364,12 +397,21 @@ export function SiteHeader() {
                 {/* An unverified account cannot load My Activity — the API
                     refuses its verification-scoped token — so send it to the
                     step that actually unblocks the person. */}
+                {needsTopup && (
+                  <Link
+                    href="/my-activity?topup=1"
+                    onClick={() => { setOpen(false); trackEvent("first_topup_click", { location: "mobile_menu" }); }}
+                    className="rounded-cf bg-blue px-3 py-2.5 text-sm font-semibold text-white"
+                  >
+                    {topupLabel}
+                  </Link>
+                )}
                 <Link
-                  href={auth.user?.status === "pending_approval" ? "/verify" : "/my-activity"}
-                  onClick={() => { setOpen(false); trackEvent("my_activity_click", { location: "mobile_menu" }); }}
+                  href={pending ? "/verify" : "/my-activity"}
+                  onClick={() => { setOpen(false); trackEvent(pending ? "finish_signup_click" : "my_activity_click", { location: "mobile_menu" }); }}
                   className="rounded-cf px-3 py-2.5 text-sm font-medium text-ink transition hover:bg-paper-2 hover:text-ink"
                 >
-                  {auth.user?.status === "pending_approval" ? "Complete verification" : "My Activity"}
+                  {pending ? "Finish sign-up" : "My Activity"}
                 </Link>
                 {auth.user?.role === "org_admin" && (
                   <Link
