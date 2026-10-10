@@ -23,7 +23,7 @@
 import type { Metadata } from "next";
 import { COMPANY } from "@/lib/company";
 import { NODE, NODE_SUMMARY } from "@/lib/node-spec";
-import { getRateCard, adhocRate, billingSentence, getTrialTerms } from "@/lib/rate-card";
+import { getRateCard, adhocRate, billingSentence, introOfferHeadline } from "@/lib/rate-card";
 
 export const metadata: Metadata = {
   title: "Coreframe Cloud — Links",
@@ -66,15 +66,12 @@ type BioLink = {
  * /tools is real but is NOT a Next route — next.config.ts rewrites it to the
  * control plane. It resolves; do not "fix" it by pointing somewhere else.
  */
-function bioLinks(rate: string | null, trialMinutes: number | null): BioLink[] {
+function bioLinks(rate: string | null, introHeadline: string | null): BioLink[] {
   return [
     {
-      // The minutes are live or they are absent. Never a number the platform
-      // will not grant — the person finds out after handing over an Aadhaar.
-      label: trialMinutes ? `Start free. ${trialMinutes} GPU minutes, no card.` : "Create an account.",
-      note: trialMinutes
-        ? "An email address is the whole sign-up. The minutes are credited once your ID check clears."
-        : "An email address is the whole sign-up. Add credit when you need a machine.",
+      // The offer is live or it is absent. Never a number billing will not grant.
+      label: introHeadline ? `First top-up: ${introHeadline}.` : "Create an account.",
+      note: "Email and a WhatsApp code to your mobile — no paperwork. International cards accepted.",
       href: "https://www.coreframecloud.com/?utm_source=instagram&utm_medium=bio&utm_content=start_free",
       primary: true,
     },
@@ -108,7 +105,7 @@ function bioLinks(rate: string | null, trialMinutes: number | null): BioLink[] {
 export default async function LinksPage() {
   const card = await getRateCard();
   const rate = adhocRate(card);
-  const trial = getTrialTerms(card);
+  const introHeadline = introOfferHeadline(card);
 
   return (
     <main className="bg-paper">
@@ -140,7 +137,7 @@ export default async function LinksPage() {
           {/* One column. Never two. A row of side-by-side links on a 390px
               screen gives you two 165px targets and a mis-tap. */}
           <div className="mt-8 flex flex-col gap-3.5">
-            {bioLinks(rate, trial?.gpu_minutes ?? null).map((link) => (
+            {bioLinks(rate, introHeadline).map((link) => (
               <a
                 key={link.href}
                 href={link.href}

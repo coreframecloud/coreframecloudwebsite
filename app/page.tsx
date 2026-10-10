@@ -15,7 +15,9 @@ import {
   getRateCard,
   adhocRateValue,
   formatHourly,
-  getTrialTerms,
+  getIntroOffer,
+  hoursLabel,
+  rupees,
 } from "@/lib/rate-card";
 import { storageTerms } from "@/lib/storage-terms";
 
@@ -70,11 +72,10 @@ export default async function Page() {
   const adhocRate = entry ? formatHourly(entry).replace("/hr", "") : undefined;
   const adhocRateNumber = adhocRateValue(rateCard);
 
-  // Trial figures vanish the moment trials are switched off in the control
-  // plane, rather than advertising an offer the platform will refuse after
-  // someone has handed over their ID.
-  const trial = getTrialTerms(rateCard);
-  const trialMinutes = trial?.enabled ? trial.gpu_minutes : undefined;
+  // The intro offer vanishes the moment it is switched off in the control
+  // plane, rather than advertising something billing will not grant.
+  const intro = getIntroOffer(rateCard);
+  const introLabel = intro ? `${rupees(intro.priceRupees)} = ${hoursLabel(intro.hours)}` : null;
 
   const storage = storageTerms(rateCard);
 
@@ -114,7 +115,7 @@ export default async function Page() {
       <DisciplineCards />
       <div className="cf-rule" />
 
-      <VersusSection trialMinutes={trialMinutes} />
+      <VersusSection introLabel={introLabel} />
       <div className="cf-rule" />
 
       <section className="cf-section px-5">
@@ -134,7 +135,7 @@ export default async function Page() {
 
       {/* The walkthrough, published 30 Sep 2026. One id, used by both the
           embed and the VideoObject schema in walkthrough-section.tsx. */}
-      <RateCardSection adhocRate={adhocRate} trialMinutes={trialMinutes} />
+      <RateCardSection adhocRate={adhocRate} intro={intro} />
     </main>
   );
 }

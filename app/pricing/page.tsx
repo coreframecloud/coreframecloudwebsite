@@ -4,7 +4,7 @@ import { ExplainerFaq } from "@/components/home/explainer-faq";
 import {
   getRateCard,
   formatHourly,
-  getTrialTerms,
+  getIntroOffer,
   billingSentence,
   bestOverageRate,
   entryPlanFee,
@@ -42,7 +42,7 @@ export default async function PricingPage() {
   const rateCard = await getRateCard();
   const entry = rateCard?.gpus.find((g) => !g.quote_on_request);
   const adhocRate = entry ? formatHourly(entry).replace("/hr", "") : undefined;
-  const trial = getTrialTerms(rateCard);
+  const intro = getIntroOffer(rateCard);
   const storage = storageTerms(rateCard);
 
   return (
@@ -73,11 +73,12 @@ export default async function PricingPage() {
         perMinute={perMinuteRate(rateCard)}
         example={sessionCostExample(rateCard)}
         commitmentCheaper={commitmentIsCheaper(rateCard)}
+        intro={intro}
       />
 
       <div className="cf-rule" />
 
-      <ExplainerFaq storage={storage} trial={trial} adhocRate={adhocRate} />
+      <ExplainerFaq storage={storage} intro={intro} adhocRate={adhocRate} />
     </main>
   );
 }

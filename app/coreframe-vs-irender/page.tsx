@@ -7,8 +7,10 @@ import {
   getRateCard,
   adhocRateHourly,
   adhocRateValue,
-  getTrialTerms,
+  getIntroOffer,
   firstTopupBonus,
+  hoursLabel,
+  rupees,
   lowestPublishedHourly,
   gstClause,
 } from "@/lib/rate-card";
@@ -35,8 +37,9 @@ import {
  *
  * IT HAS TO BE FAIR, same rule as d5-render-vs-local-gpu. iRender beats us on
  * three things that matter -- more VRAM per node, four times the system RAM,
- * and multi-GPU configurations we do not sell at all -- and their new-customer
- * bonus is twice ours. All of that is on the page. A comparison that finds for
+ * and multi-GPU configurations we do not sell at all. All of that is on the
+ * page. The joining offers are compared only from live numbers: ours from the
+ * rate card's intro offer, theirs as read on the date below. A comparison that finds for
  * its author on every line reads as marketing and gets cited by nobody.
  *
  * NO RENDER-TIME CLAIMS. We have not benchmarked their hardware against ours
@@ -93,8 +96,9 @@ export default async function Page() {
   const card = await getRateCard();
   const rate = adhocRateHourly(card);
   const rateValue = adhocRateValue(card);
-  const trial = getTrialTerms(card);
-  const bonus = firstTopupBonus(card);
+  const intro = getIntroOffer(card);
+  // The old percentage bonus, only while no intro offer replaces it.
+  const bonus = intro ? null : firstTopupBonus(card);
   const lowest = lowestPublishedHourly(card);
   const gst = gstClause(card);
 
@@ -102,7 +106,9 @@ export default async function Page() {
     `More VRAM in a single node. Their 4090 is ${IRENDER.gpu4090.vram} and their 5090 is ${IRENDER.gpu5090.vram}, against our ${NODE.vram}. If a scene will not fit, price is irrelevant.`,
     `Four times the system RAM — ${IRENDER.ram} against our ${NODE.ram}. That matters for very large scenes and point clouds.`,
     "Multi-GPU nodes, up to eight cards. We do not sell that at all, at any price.",
-    `A bigger joining offer: ${IRENDER.firstChargeBonus}${bonus ? `, against our ${bonus.percent}%` : ""}.`,
+    ...(intro
+      ? []
+      : [`A bigger joining offer: ${IRENDER.firstChargeBonus}${bonus ? `, against our ${bonus.percent}%` : ""}.`]),
     "A long track record with VFX and animation studios, well outside our market.",
   ];
 
@@ -114,9 +120,10 @@ export default async function Page() {
     "An Indian GST invoice for every payment, under SAC 998315. A business importing the same service from abroad generally has to account for IGST itself under reverse charge — worth asking your accountant what that costs you, because the sticker price abroad is not the landed price.",
     "Your files stay on storage in India.",
     "Software already installed. D5, Lumion, Enscape and Twinmotion are on the machine when it starts.",
-    trial?.gpu_minutes
-      ? `${trial.gpu_minutes} free minutes with no card, so you can judge it on your own project.`
-      : "A free trial so you can judge it on your own project.",
+    intro
+      ? `A first top-up of ${rupees(intro.priceRupees)} buys ${hoursLabel(intro.hours)}${intro.gpuName ? ` on an ${intro.gpuName}` : ""}, so you can judge it on your own project. (Theirs: ${IRENDER.firstChargeBonus}.)`
+      : "Billed per minute, so judging it on your own project costs minutes, not a month.",
+    "Sign-up is an email and a WhatsApp code — no ID documents — and international cards are accepted.",
   ];
 
   return (
@@ -252,15 +259,15 @@ export default async function Page() {
           <div className="cf-col">
             <h2 className="cf-title">Try it on your own project</h2>
             <p className="cf-lead mt-5">
-              {trial?.gpu_minutes
-                ? `${trial.gpu_minutes} minutes, no card, the same machine paying customers use.`
-                : "The same machine paying customers use."}{" "}
+              {intro
+                ? `Your first top-up of ${rupees(intro.priceRupees)} buys ${hoursLabel(intro.hours)} on the same machine every customer uses.`
+                : "The same machine every customer uses, billed per minute."}{" "}
               Open your own scene and judge it from that rather than from this
               page.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:gap-4">
               <Link href="/login" className="cf-btn-primary">
-                {trial?.gpu_minutes ? `Start free — ${trial.gpu_minutes} minutes` : "Create an account"}
+                {intro ? `Get started — ${rupees(intro.priceRupees)} for ${hoursLabel(intro.hours)}` : "Create an account"}
               </Link>
               <Link href="/d5-render-vs-local-gpu" className="cf-btn-secondary">
                 Or compare against buying a machine

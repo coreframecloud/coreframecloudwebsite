@@ -100,7 +100,7 @@ export function BenefitsSection({ storage }: { storage: StorageTerms }) {
         title={<>Upload once.<br /><Grad>Pick up where you stopped.</Grad></>}
         body="Your project files live on Coreframe storage in India, not on the workstation. Close a session on Monday, open one on Friday, and everything is where you left it — no copying scenes onto a drive, no re-uploading 40 GB."
         points={[
-          `${storage.trialGb} GB free on every account, ${storage.paidGb} GB once you top up`,
+          `${storage.paidGb} GB of persistent storage included with your account`,
           "Your files, not the machine's — the workstation itself resets clean between sessions",
           "Stored in India, on our own hardware",
         ]}

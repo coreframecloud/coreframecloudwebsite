@@ -29,6 +29,7 @@ import type { RateCard } from "@/lib/rate-card";
  * true if the fetch fails, rather than rendering nothing.
  */
 export type StorageTerms = {
+  /** Legacy trial allowance. Not shown anywhere since paid-first onboarding. */
   trialGb: number;
   paidGb: number;
   retentionDays: number;
@@ -62,9 +63,10 @@ export function storageTerms(card: RateCard | null): StorageTerms {
   };
 }
 
-/** "20 GB persistent storage free, 50 GB once you add credit" — from live terms. */
+/** "50 GB persistent storage included" — from live terms. Trial storage went
+ *  with the free trial (10 Oct 2026); every account now has paid. */
 export function storageShort(t: StorageTerms): string {
-  return `${t.trialGb} GB persistent storage free, ${t.paidGb} GB once you add credit`;
+  return `${t.paidGb} GB persistent storage included`;
 }
 
 /**

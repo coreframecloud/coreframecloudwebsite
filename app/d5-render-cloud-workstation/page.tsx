@@ -3,7 +3,7 @@ import Link from "next/link";
 import { BackgroundGlow } from "@/components/home/background-glow";
 import {
   getRateCard,
-  getTrialTerms,
+  introOfferFaq,
   adhocRateHourly,
   billingSentence,
   pricingFaqAnswer,
@@ -67,7 +67,7 @@ const SPECS: [string, string][] = [
 
 export default async function D5Page() {
   const card = await getRateCard();
-  const trial = getTrialTerms(card);
+  const introFaq = introOfferFaq(card);
   const hourly = adhocRateHourly(card);
   const priceAnswer = pricingFaqAnswer(card);
 
@@ -86,7 +86,7 @@ export default async function D5Page() {
     },
     {
       q: "How much VRAM does D5 Render need?",
-      a: `VRAM is the ceiling on scene size in any GPU renderer: geometry, textures and lightmaps all have to fit on the card. The ${NODE.gpu} in a Coreframe workstation has ${NODE.vram}. Many laptops and entry desktops sold for design work ship with 6 to 8 GB, which is what forces people to cut texture resolution or split a scene. We will not predict how your particular scene behaves — run it on a trial session and watch the VRAM meter yourself.`,
+      a: `VRAM is the ceiling on scene size in any GPU renderer: geometry, textures and lightmaps all have to fit on the card. The ${NODE.gpu} in a Coreframe workstation has ${NODE.vram}. Many laptops and entry desktops sold for design work ship with 6 to 8 GB, which is what forces people to cut texture resolution or split a scene. We will not predict how your particular scene behaves — run it in a session and watch the VRAM meter yourself.`,
     },
     {
       q: "What happens to my D5 project files when the session ends?",
@@ -101,18 +101,7 @@ export default async function D5Page() {
       a: "You are streaming a desktop, so what matters is a steady connection rather than a fast one. Around 25 Mbps with stable latency is a comfortable working floor. Rendering happens on the workstation in Bengaluru, and a finished 4K or 8K still is a file you download, not something streamed frame by frame.",
     },
     ...(priceAnswer ? [{ q: "How much does it cost to render in D5 on Coreframe?", a: priceAnswer }] : []),
-    ...(trial?.enabled
-      ? [
-          {
-            q: "Can I try it before paying?",
-            a: `Yes — ${trial.gpu_minutes} free GPU minutes valid for ${trial.gpu_validity_days} days, with no card required.${
-              trial.requires_identity_verification
-                ? " Identity verification through DigiLocker is required first, because Indian regulations require a verified subscriber record for rented compute."
-                : ""
-            } We make no claim about what you can finish in that time — it depends entirely on your scene. Use it to open your heaviest project and see how the machine behaves.`,
-          },
-        ]
-      : []),
+    ...(introFaq ? [introFaq] : []),
   ];
 
   const jsonLd = {
@@ -216,7 +205,7 @@ export default async function D5Page() {
             <Link href="/how-to-use" className="text-blue underline underline-offset-4">
               The full setup walkthrough
             </Link>{" "}
-            covers installing Coreframe Connect and the identity check.
+            covers sign-up and installing Coreframe Connect.
           </p>
         </section>
 
@@ -280,7 +269,7 @@ export default async function D5Page() {
             put on this page.
           </p>
           <Link href="/signup" className="cf-btn-primary mt-6">
-            Start free
+            Get started
           </Link>
         </section>
 

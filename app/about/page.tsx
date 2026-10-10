@@ -5,7 +5,7 @@ import { COMPANY_ADDRESS_FULL, COMPANY_VISITING_ADDRESS_LINE } from "@/lib/compa
 import { NODE, WORKSTATION_REPLACEMENT_COST } from "@/lib/node-spec";
 import {
   getRateCard,
-  getTrialTerms,
+  introOfferFaq,
   adhocRateHourly,
   billingSentence,
   entryPlanFee,
@@ -91,7 +91,7 @@ const CONFUSED_WITH = [
 
 export default async function AboutPage() {
   const card = await getRateCard();
-  const trial = getTrialTerms(card);
+  const introFaq = introOfferFaq(card);
   const hourly = adhocRateHourly(card);
   const planFrom = entryPlanFee(card);
   const perTb = storageRatePerTb(card);
@@ -115,7 +115,7 @@ export default async function AboutPage() {
     },
     {
       q: "What technology does Coreframe Cloud run on?",
-      a: `The workstations are ${NODE.os} on dedicated NVIDIA ${NODE.gpu} GPUs — ${NODE.vram}, ${NODE.ram} of RAM and an ${NODE.cpu} — with the desktop streamed at ${NODE.stream} over an encrypted private network, which keeps latency low enough for real-time viewport work. D5 Render, Blender, Twinmotion and Unreal Engine ship on the standard image. The website runs on Next.js and Vercel behind Cloudflare, the control plane is Dockerised services on PostgreSQL, and project files live on NAS storage in the same Bengaluru facility. Payments run through Razorpay and identity verification through DigiLocker.`,
+      a: `The workstations are ${NODE.os} on dedicated NVIDIA ${NODE.gpu} GPUs — ${NODE.vram}, ${NODE.ram} of RAM and an ${NODE.cpu} — with the desktop streamed at ${NODE.stream} over an encrypted private network, which keeps latency low enough for real-time viewport work. D5 Render, Blender, Twinmotion and Unreal Engine ship on the standard image. The website runs on Next.js and Vercel behind Cloudflare, the control plane is Dockerised services on PostgreSQL, and project files live on NAS storage in the same Bengaluru facility. Payments run through Razorpay, and sign-in codes are sent by email and WhatsApp.`,
     },
     {
       q: "Is a Coreframe workstation faster than the machine I already have?",
@@ -123,7 +123,7 @@ export default async function AboutPage() {
       // Open Data medians and turn them into "roughly three times" — a number
       // about a benchmark scene being read as a number about the reader's
       // file. Nobody here has seen their file.
-      a: `It depends on your scene, your renderer and your settings, and nobody who has not opened your file can put a number on it. Two things are checkable instead. The card has ${NODE.vram}, and VRAM is a ceiling rather than a speed: geometry, textures and lightmaps have to fit on it, and when they do not the work is not slower, it is cut down. And the render does not run on your laptop, so your own machine stays usable while it finishes. The comparison worth trusting is your own heaviest project on a trial session, not anyone's benchmark.`,
+      a: `It depends on your scene, your renderer and your settings, and nobody who has not opened your file can put a number on it. Two things are checkable instead. The card has ${NODE.vram}, and VRAM is a ceiling rather than a speed: geometry, textures and lightmaps have to fit on it, and when they do not the work is not slower, it is cut down. And the render does not run on your laptop, so your own machine stays usable while it finishes. The comparison worth trusting is your own heaviest project in a session, not anyone's benchmark.`,
     },
     {
       q: "Can I use Coreframe from a construction site or a client's office?",
@@ -163,18 +163,7 @@ export default async function AboutPage() {
           },
         ]
       : []),
-    ...(trial?.enabled
-      ? [
-          {
-            q: "Is there a free trial?",
-            a: `Yes — ${trial.gpu_minutes} free GPU minutes valid for ${trial.gpu_validity_days} days, and ${trial.storage_gb} GB of free storage for ${trial.storage_validity_days} days, with no card required.${
-              trial.requires_identity_verification
-                ? " Identity verification through DigiLocker is required before the trial starts, because Indian regulations require a verified subscriber record for rented compute."
-                : ""
-            }`,
-          },
-        ]
-      : []),
+    ...(introFaq ? [introFaq] : []),
   ];
 
   const jsonLd = {
@@ -415,7 +404,7 @@ export default async function AboutPage() {
               and run it on one of our machines instead.
             </p>
             <Link href="/signup" className="cf-btn-primary mt-6 min-h-[44px]">
-              Start free
+              Get started
             </Link>
           </section>
         </div>

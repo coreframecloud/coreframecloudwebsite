@@ -8,7 +8,9 @@ import {
   adhocRateHourly,
   adhocRateValue,
   billingSentence,
-  getTrialTerms,
+  getIntroOffer,
+  hoursLabel,
+  rupees,
 } from "@/lib/rate-card";
 
 /**
@@ -67,7 +69,7 @@ export default async function ComparisonPage() {
   const card = await getRateCard();
   const hourly = adhocRateHourly(card);
   const rate = adhocRateValue(card);
-  const trial = getTrialTerms(card);
+  const intro = getIntroOffer(card);
 
   const breakEvenHours = rate ? Math.round(WORKSTATION_RUPEES / rate) : null;
   const hoursPerWeek = 10;
@@ -316,14 +318,14 @@ export default async function ComparisonPage() {
               <p className="cf-eyebrow mb-4">Settle it yourself</p>
               <h2 className="cf-section-title">Open the file that ties up your machine.</h2>
               <p className="cf-section-copy mt-4">
-                {trial
-                  ? `There are ${trial.gpu_minutes} free GPU minutes on the site.`
+                {intro
+                  ? `Your first top-up of ${rupees(intro.priceRupees)} buys ${hoursLabel(intro.hours)}.`
                   : "Top up the wallet and launch one session."}{" "}
                 Load the project that costs you an afternoon and see how a
                 rented workstation handles it before you decide either way.
               </p>
               <Link href="/signup" className="cf-btn-primary mt-6 w-full sm:w-auto min-h-[44px]">
-                {trial ? "Start free" : "Create an account"}
+                {intro ? "Get started" : "Create an account"}
               </Link>
             </div>
           </div>

@@ -1,12 +1,21 @@
 import Link from "next/link";
-import { getRateCard, getTrialTerms } from "@/lib/rate-card";
+import {
+  adhocRateHourly,
+  getIntroOffer,
+  getRateCard,
+  hoursLabel,
+  rupees,
+} from "@/lib/rate-card";
 
 /**
- * The trial offer, above the header on every page. A rolling ticker.
+ * The intro offer, above the header on every page. A rolling ticker.
+ *
+ * Was the free-trial strip until paid-first onboarding (10 Oct 2026): no more
+ * free minutes and no more ID check — the first top-up carries the offer.
  *
  * THIRD VERSION, AND THE REASONING MATTERS. It started as pale blue on a pale
  * blue wash — the lowest-contrast thing on the site, in the position seen
- * first, saying the thing most likely to start a trial. It read as a cookie
+ * first, saying the thing most likely to start a sign-up. It read as a cookie
  * notice. Then it went near-black, which was legible but disappeared into the
  * browser chrome: a dark bar under a dark tab strip is a bar nobody sees.
  *
@@ -25,20 +34,23 @@ import { getRateCard, getTrialTerms } from "@/lib/rate-card";
  * shout is blue against white, not blue against another hue.
  *
  * Every figure comes from the control plane, and the whole bar disappears
- * when there is no trial — never advertise what the platform will refuse
- * after someone has handed over their ID.
+ * when there is no intro offer — never advertise what billing will not grant.
  */
-export async function TrialStrip() {
-  const terms = getTrialTerms(await getRateCard());
-  if (!terms) return null;
+export async function IntroStrip() {
+  const card = await getRateCard();
+  const offer = getIntroOffer(card);
+  if (!offer) return null;
+  const hourly = adhocRateHourly(card);
+  const headline = `First top-up: ${rupees(offer.priceRupees)} = ${hoursLabel(offer.hours)}`;
+  const gpu = offer.gpuName ? `of ${offer.gpuName}` : "of GPU time";
 
   // One pass of the message. Rendered several times so the loop has no seam,
   // and so a wide monitor is never showing empty bar.
   const segments = [
-    { strong: `${terms.gpu_minutes} free minutes`, rest: "on a real RTX 5080" },
-    { strong: `${terms.storage_gb} GB storage`, rest: "included" },
-    { strong: "No card needed", rest: "start in two minutes" },
-    { strong: "Billed by the minute", rest: "GST included" },
+    { strong: headline, rest: gpu },
+    { strong: "No paperwork", rest: "email and mobile, that is all" },
+    { strong: "International cards", rest: "accepted" },
+    { strong: "Billed by the minute", rest: hourly ? `${hourly} after that, GST included` : "GST included" },
   ];
 
   const pass = (key: string) => (
@@ -48,7 +60,7 @@ export async function TrialStrip() {
           <span className="font-semibold text-white">{s.strong}</span>
           {/* Explicit {" "}. A literal space written as `> {s.rest}` gets
               trimmed by JSX at the tag boundary, which rendered
-              "20 GB storageincluded". */}
+              "No paperworkemail and mobile". */}
           {" "}
           <span className="text-white/75">{s.rest}</span>
           <span className="cf-ticker-dot" aria-hidden="true" />
@@ -56,7 +68,7 @@ export async function TrialStrip() {
       ))}
       <span className="cf-ticker-item">
         <span className="font-semibold text-white underline decoration-white/50 underline-offset-4">
-          Start free →
+          Get started →
         </span>
         <span className="cf-ticker-dot" aria-hidden="true" />
       </span>
@@ -67,7 +79,7 @@ export async function TrialStrip() {
     <Link
       href="/signup"
       className="cf-ticker group block bg-blue"
-      aria-label={`Start free: ${terms.gpu_minutes} free GPU minutes on an RTX 5080, ${terms.storage_gb} GB storage, no card needed`}
+      aria-label={`${headline} ${gpu}. No paperwork. Billed by the minute.`}
     >
       <div className="cf-ticker-track">
         {pass("a")}

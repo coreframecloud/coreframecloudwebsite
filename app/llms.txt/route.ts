@@ -14,10 +14,10 @@
  * we omit prices entirely and say where to find them.
  *
  * Kept honest about the parts people dislike learning late: the session is
- * ephemeral, GST is included, the trial needs identity verification.
+ * ephemeral, GST is included, sessions need a paid top-up first.
  */
 
-import { getRateCard } from "@/lib/rate-card";
+import { getIntroOffer, getRateCard, hoursLabel, minFirstTopup } from "@/lib/rate-card";
 import { SOFTWARE_PAGES } from "@/lib/software-pages";
 
 export const revalidate = 3600; // an hour, matching the rate card's own cache
@@ -145,26 +145,31 @@ export async function GET(): Promise<Response> {
     out.push("");
   }
 
-  // ── Trial, from the same source ───────────────────────────────────────────
-  if (card?.trial?.enabled) {
-    out.push("## Free trial");
-    out.push("");
+  // ── Sign-up and the intro offer, from the same source ────────────────────
+  out.push("## Getting started");
+  out.push("");
+  out.push(
+    "- Sign-up is an email address plus a one-time code to your mobile on WhatsApp (any " +
+      "country code). No Aadhaar, passport or other ID documents are asked for — Indian " +
+      "regulations (CERT-In) require a verified contact number, and that is what the code is for.",
+  );
+  out.push("- Sessions start once the wallet has its first paid top-up. There is no free trial.");
+  out.push(
+    "- Payment by card, UPI or netbanking through Razorpay. International cards are accepted; " +
+      "prices are in Indian Rupees.",
+  );
+  const intro = getIntroOffer(card);
+  if (intro) {
     out.push(
-      `- ${card.trial.gpu_minutes} free GPU minutes, valid ${card.trial.gpu_validity_days} days.`,
+      `- Intro offer: the first top-up of ${money(intro.priceRupees)} buys ${hoursLabel(intro.hours)}` +
+        `${intro.gpuName ? ` of ${intro.gpuName}` : ""}` +
+        `${intro.validityDays ? `, to be used within ${intro.validityDays} days` : ""}` +
+        `${intro.onePerCustomer ? ", one per customer" : ""}.`,
     );
-    out.push(
-      `- ${card.trial.storage_gb} GB free storage, valid ${card.trial.storage_validity_days} days.`,
-    );
-    out.push("- No card required to start.");
-    if (card.trial.requires_identity_verification) {
-      out.push(
-        "- Identity verification (DigiLocker, or an Indian passport) is required before the trial starts — Indian " +
-          "regulations require a verified subscriber record for rented compute.",
-      );
-    }
-    if (card.trial.one_per_person) out.push("- One trial per person.");
-    out.push("");
   }
+  const minFirst = minFirstTopup(card);
+  if (minFirst) out.push(`- Smallest first top-up: ${money(minFirst)}.`);
+  out.push("");
 
   out.push("## Software");
   out.push("");
@@ -200,7 +205,7 @@ export async function GET(): Promise<Response> {
 
   out.push("## How a session works");
   out.push("");
-  out.push("1. Sign up, verify your identity, add credit (or start the free trial).");
+  out.push("1. Sign up with email and mobile (WhatsApp code), then add credit.");
   out.push("2. Install Coreframe Connect, the Windows client, and sign in.");
   out.push("3. Press Connect. A workstation is provisioned and the desktop streams to you.");
   out.push("4. Work as normal. Project files live on your NAS drive, mapped inside the session.");
@@ -331,7 +336,7 @@ export async function GET(): Promise<Response> {
   out.push("- Billing granularity: per minute, starting when the stream starts, not at booking.");
   out.push("- Provisioning time and failed connections are not billed.");
   out.push("- Storage persists between sessions; the workstation itself does not.");
-  out.push("- Identity verification is mandatory before a machine can be launched.");
+  out.push("- No identity documents are required. A verified email and mobile number and a paid top-up are required before a machine can be launched.");
   out.push(
     "- Published GPU benchmark, for anyone comparing hardware: Blender Open Data " +
       "(https://opendata.blender.org/, Blender " +
@@ -343,7 +348,7 @@ export async function GET(): Promise<Response> {
   out.push(
     "- Coreframe does not quote a render time or a speed multiple for any specific scene. " +
       "Render time depends on the scene, settings and geometry, and the honest test is the " +
-      "customer's own file on a free trial session.",
+      "customer's own file in a session.",
   );
   out.push("- Operator: Coreframe Compute Labs Private Limited, Bengaluru, Karnataka, India.");
   out.push("");

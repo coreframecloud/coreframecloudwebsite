@@ -17,11 +17,11 @@
  */
 
 import type { StorageTerms } from "@/lib/storage-terms";
-import type { TrialTerms } from "@/lib/rate-card";
+import { hoursLabel, rupees, type IntroOffer } from "@/lib/rate-card";
 
 type QA = { q: string; a: string };
 
-function buildFaq(storage: StorageTerms, trial: TrialTerms | null, adhocRate?: string): QA[] {
+function buildFaq(storage: StorageTerms, intro: IntroOffer | null, adhocRate?: string): QA[] {
   const items: QA[] = [
     {
       q: "Is this a render farm?",
@@ -33,7 +33,7 @@ function buildFaq(storage: StorageTerms, trial: TrialTerms | null, adhocRate?: s
     },
     {
       q: "Where do my files live, and who can see them?",
-      a: `On Coreframe storage in India, tied to your account — ${storage.trialGb} GB free, ${storage.paidGb} GB once you top up. The workstation itself is wiped and restored to a clean image after every session, so nothing you worked on is left behind for the next person. That's also why software you install yourself only lasts for that session.`,
+      a: `On Coreframe storage in India, tied to your account — ${storage.paidGb} GB included. The workstation itself is wiped and restored to a clean image after every session, so nothing you worked on is left behind for the next person. That's also why software you install yourself only lasts for that session.`,
     },
     {
       q: "Do I need to install anything?",
@@ -46,15 +46,23 @@ function buildFaq(storage: StorageTerms, trial: TrialTerms | null, adhocRate?: s
         : "Billed per minute of actual use, with GST included in the published rate. Nothing is charged automatically; you add money to your wallet and sessions draw from it. There's no subscription running in the background.",
     },
     {
+      q: "Do I need Aadhaar, a passport or any ID documents?",
+      a: "No. Sign-up is your email, a one-time code to your mobile on WhatsApp, and a payment. Indian regulations (CERT-In) require us to keep a verified contact number for anyone renting compute, which is what the mobile code is for — any country code works.",
+    },
+    {
+      q: "Can I pay from outside India?",
+      a: "Yes. International cards are accepted through Razorpay, alongside UPI, netbanking and Indian cards. Prices are in rupees, and every top-up comes with an invoice.",
+    },
+    {
       q: "Can my whole team use one account?",
       a: "You create an organisation and invite people to it with a join code. Everyone gets their own login and their own sessions, billed to the organisation, with one GST invoice.",
     },
   ];
 
-  if (trial?.gpu_minutes) {
+  if (intro) {
     items.splice(1, 0, {
-      q: `What do I get in the free ${trial.gpu_minutes} minutes?`,
-      a: `A full workstation, the same one paying customers use, for ${trial.gpu_minutes} minutes — no card required. Enough to open your own project and judge it for yourself rather than from a spec sheet. How much of a render that covers depends entirely on your scene, so we won't pretend to a number.`,
+      q: "Is there an offer for new customers?",
+      a: `Yes — your first top-up of ${rupees(intro.priceRupees)} buys ${hoursLabel(intro.hours)}${intro.gpuName ? ` on an ${intro.gpuName}` : ""}${intro.validityDays ? `, to use within ${intro.validityDays} days` : ""}. One per customer. It is the same workstation every paying customer uses, billed per minute, so you can open your own project and judge it yourself. How much of a render that covers depends entirely on your scene, so we won't pretend to a number.`,
     });
   }
 
@@ -63,14 +71,14 @@ function buildFaq(storage: StorageTerms, trial: TrialTerms | null, adhocRate?: s
 
 export function ExplainerFaq({
   storage,
-  trial,
+  intro,
   adhocRate,
 }: {
   storage: StorageTerms;
-  trial: TrialTerms | null;
+  intro: IntroOffer | null;
   adhocRate?: string;
 }) {
-  const faq = buildFaq(storage, trial, adhocRate);
+  const faq = buildFaq(storage, intro, adhocRate);
 
   return (
     <section id="faq" className="cf-wide scroll-mt-24 px-5 py-20">

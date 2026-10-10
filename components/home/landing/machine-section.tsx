@@ -37,7 +37,7 @@ export function MachineSection({
           {"  "}<K>bandwidth</K>{"       "}<V>{NODE.memoryBandwidth}</V> memory bandwidth on the card{"\n"}
           {"  "}<K>working disk</K>{"    "}<V>{NODE.disk}</V> on the workstation — your scratch,{"\n"}
           {"                  "}your cache, your project files while you work{"\n"}
-          {"  "}<K>transfer</K>{"        "}<V>{storage.trialGb} GB</V> kept between sessions, for moving{"\n"}
+          {"  "}<K>transfer</K>{"        "}<V>{storage.paidGb} GB</V> kept between sessions, for moving{"\n"}
           {"                  "}files in and out{"\n"}
           {"  "}<K>stream</K>{"          "}<V>4K at 60 fps</V>, low latency — it feels local{"\n"}
           {"  "}<K>software licence</K> <V>yours</V> — Blender, Twinmotion, D5, Lumion,{"\n"}

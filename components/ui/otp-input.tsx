@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 
 /**
  * The 6-digit code field, shared by every flow that asks for one:
- * email sign-in, signup verification and the WhatsApp identity check.
+ * email sign-in, signup verification and the WhatsApp mobile check.
  *
  * WHY THIS IS NOT `<Input className="text-3xl">`:
  *

@@ -318,6 +318,25 @@ export function minFirstTopup(card: RateCard | null): number | null {
   );
 }
 
+/**
+ * The new-customer FAQ entry, for pages with FAQPage JSON-LD. Null when no
+ * offer is live, so the question is dropped rather than answered with a blank.
+ * No render-time claim: what 8 hours covers depends on the scene.
+ */
+export function introOfferFaq(card: RateCard | null): { q: string; a: string } | null {
+  const o = getIntroOffer(card);
+  if (!o) return null;
+  return {
+    q: "Is there an offer for new customers?",
+    a:
+      `Yes — your first top-up of ${rupees(o.priceRupees)} buys ${hoursLabel(o.hours)}` +
+      `${o.gpuName ? ` on an ${o.gpuName}` : ""}${o.validityDays ? `, to use within ${o.validityDays} days` : ""}, ` +
+      "one per customer. Sign-up is an email and a WhatsApp code to your mobile — no ID documents — " +
+      "and international cards are accepted. We make no claim about what you can finish in that " +
+      "time; it depends entirely on your scene.",
+  };
+}
+
 export type FirstTopupBonus = { percent: number; capRupees: number };
 
 /**

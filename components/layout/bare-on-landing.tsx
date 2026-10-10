@@ -18,7 +18,7 @@ import { usePathname } from "next/navigation";
  * the logo inside the form is the only way back into the site, which is the
  * point.
  *
- * It takes its children rather than importing them, because TrialStrip is an
+ * It takes its children rather than importing them, because IntroStrip is an
  * async server component and cannot be imported into a client module. Rendered
  * on the server, passed in as a node, dropped here.
  *

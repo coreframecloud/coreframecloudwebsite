@@ -142,7 +142,7 @@ export default async function SoftwareLandingPage({
 
       <div className="cf-col mt-16 flex flex-wrap gap-3">
         <Link href="/login" className="cf-btn-primary">
-          Start free
+          Get started
         </Link>
         <Link href="/how-to-use" className="cf-btn-secondary">
           How it works

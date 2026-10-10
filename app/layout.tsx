@@ -40,8 +40,8 @@ import "./globals.css";
 import { SiteHeader } from "@/components/home/site-header";
 import { BareOnLanding } from "@/components/layout/bare-on-landing";
 import { SiteFooter } from "@/components/home/site-footer";
-import { TrialStrip } from "@/components/home/trial-strip";
-import { getRateCard, planTiers } from "@/lib/rate-card";
+import { IntroStrip } from "@/components/home/intro-strip";
+import { getIntroOffer, hoursLabel, getRateCard, planTiers } from "@/lib/rate-card";
 
 /**
  * Ad-platform tags, both optional and both off unless their env var is set at
@@ -141,6 +141,7 @@ export default async function RootLayout({
   const adhoc = rateCard?.gpus.find((g) => !g.quote_on_request && g.hourly_rate_rupees != null);
   const tiers = planTiers(rateCard);
   const storagePerTb = rateCard?.storage_rate_rupees_per_tb_month ?? null;
+  const intro = getIntroOffer(rateCard);
 
   const offers = [
     adhoc?.hourly_rate_rupees != null && {
@@ -184,6 +185,17 @@ export default async function RootLayout({
         valueAddedTaxIncluded: true,
         unitText: "TB per month",
       },
+    },
+    // The intro offer, only while the control plane says it is enabled.
+    intro && {
+      "@type": "Offer",
+      name: `Intro offer — first top-up, ${hoursLabel(intro.hours)}${intro.gpuName ? ` of ${intro.gpuName}` : ""}`,
+      description:
+        `First wallet top-up of ${intro.priceRupees} INR buys ${hoursLabel(intro.hours)} of GPU time` +
+        `${intro.validityDays ? `, valid ${intro.validityDays} days` : ""}. One per customer.`,
+      price: String(Math.round(intro.priceRupees)),
+      priceCurrency: "INR",
+      valueAddedTaxIncluded: true,
     },
   ].filter(Boolean);
 
@@ -367,7 +379,7 @@ export default async function RootLayout({
           highest intent, and until now the offer was only on the front page.
         */}
         <BareOnLanding>
-          <TrialStrip />
+          <IntroStrip />
           <SiteHeader />
         </BareOnLanding>
         <AttributionCapture />

@@ -39,7 +39,7 @@ export function MachineSpecSection({ storage }: { storage: StorageTerms }) {
     ["VRAM", "16 GB GDDR7"],
     ["Network", "Dedicated 1 Gbps"],
     ["Location", "Bengaluru, India"],
-    ["Storage", `${storage.trialGb} GB free · ${storage.paidGb} GB after top-up`],
+    ["Storage", `${storage.paidGb} GB persistent, included`],
     ["Billing", "Per minute · GST included"],
   ];
 

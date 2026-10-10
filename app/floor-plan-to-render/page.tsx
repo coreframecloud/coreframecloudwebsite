@@ -40,7 +40,7 @@ import { NODE } from "@/lib/node-spec";
 export const metadata: Metadata = {
   title: "Floor Plan to Interior Render — Upload a DXF, Coreframe Studio",
   description:
-    "Turn a 2D DXF floor plan into an interior render in the browser. Coreframe Studio reads your walls, doors and windows, lets you pick a room and a camera angle, and exports at 2K or 4K. No installer, no ID check. Hosted in Bengaluru.",
+    "Turn a 2D DXF floor plan into an interior render in the browser. Coreframe Studio reads your walls, doors and windows, lets you pick a room and a camera angle, and exports at 2K or 4K. No installer, just an email. Hosted in Bengaluru.",
   keywords: [
     "floor plan to 3d render",
     "DXF to interior render",
@@ -91,8 +91,8 @@ const faqs = [
     a: "Reading the drawing, browsing the rooms and comparing the three camera angles cost nothing. You pay only when you ask for an image: a 2K export is 30 credits and a 4K export is 42. What a credit costs is shown in Studio before you spend one.",
   },
   {
-    q: "Do I have to install anything, or verify my identity?",
-    a: "Neither. Studio runs in the browser and starts with an email and a code. That is different from Coreframe's GPU workstation product, which does need a client app and identity verification, because that hands you a real machine.",
+    q: "Do I have to install anything?",
+    a: "No. Studio runs in the browser and starts with an email and a code. That is different from Coreframe's GPU workstation product, which needs a small client app and a confirmed mobile number, because that hands you a real machine.",
   },
   {
     q: "What happens to my client's drawing?",
@@ -129,8 +129,8 @@ export default function Page() {
               Upload a DXF. Coreframe Studio reads the walls, doors and windows
               out of the drawing, works out where a photographer would stand,
               and gives you an interior image you can export at 2K or 4K. It
-              runs in the browser — nothing to install, and no ID check to get
-              started.
+              runs in the browser — nothing to install, and an email is all it
+              takes to start.
             </p>
 
             {/* Studio is not open to the public yet. Saying so here, plainly, is

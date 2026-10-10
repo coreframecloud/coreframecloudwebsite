@@ -5,6 +5,7 @@ import { NODE } from "@/lib/node-spec";
 import { trackEvent } from "@/lib/analytics";
 import Link from "next/link";
 import { STORAGE, type StorageTerms } from "@/lib/storage-terms";
+import { hoursLabel, rupees, type IntroOffer } from "@/lib/rate-card";
 
 /**
  * Every price on this section now comes from the control-plane rate card, via
@@ -64,7 +65,10 @@ export function PricingSection({
   perMinute,
   example,
   commitmentCheaper = false,
+  intro = null,
 }: {
+  /** The first-top-up offer from the rate card, or null to say nothing. */
+  intro?: IntroOffer | null;
   adhocRate?: string;
   storage?: StorageTerms;
   billingNote: string;
@@ -113,10 +117,14 @@ export function PricingSection({
             </p>
 
             <ul className="mt-6 space-y-2 text-sm text-ink-2">
+              {intro && (
+                <li className="flex gap-2"><span className="text-blue">✓</span> <span><b className="text-ink">First top-up: {rupees(intro.priceRupees)} = {hoursLabel(intro.hours)}</b>{intro.validityDays ? ` · use within ${intro.validityDays} days` : ""}</span></li>
+              )}
               <li className="flex gap-2"><span className="text-blue">✓</span> No commitment, cancel anytime</li>
+              <li className="flex gap-2"><span className="text-blue">✓</span> Email + mobile sign-up, no paperwork · international cards accepted</li>
               <li className="flex gap-2"><span className="text-blue">✓</span> {NODE.os}, streamed at {NODE.stream} in the Connect app</li>
               <li className="flex gap-2"><span className="text-blue">✓</span> {NODE.gpu} · {NODE.vram}</li>
-              <li className="flex gap-2"><span className="text-blue">✓</span> <span className="text-ink-3">{storage.trialGb} GB persistent storage free, {storage.paidGb} GB with credit · kept {storage.retentionDays} days · session scratch cleared at session end</span></li>
+              <li className="flex gap-2"><span className="text-blue">✓</span> <span className="text-ink-3">{storage.paidGb} GB persistent storage included · kept between sessions · session scratch cleared at session end</span></li>
             </ul>
 
             <div className="mt-8">

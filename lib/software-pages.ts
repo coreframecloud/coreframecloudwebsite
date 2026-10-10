@@ -151,11 +151,11 @@ export const SOFTWARE_PAGES: SoftwarePage[] = [
       },
       {
         q: "How much VRAM do I need for 3ds Max GPU rendering?",
-        a: `VRAM is a ceiling rather than a speed: geometry, textures and lightmaps have to fit on the card, and when they do not, a GPU render fails or forces you to cut texture resolution. A Coreframe node has ${NODE.vram}, against the 6 to 8 GB in many laptops and entry desktops sold for design work. We will not predict how your particular scene behaves — open it in a trial session and watch the VRAM meter.`,
+        a: `VRAM is a ceiling rather than a speed: geometry, textures and lightmaps have to fit on the card, and when they do not, a GPU render fails or forces you to cut texture resolution. A Coreframe node has ${NODE.vram}, against the 6 to 8 GB in many laptops and entry desktops sold for design work. We will not predict how your particular scene behaves — open it in a session and watch the VRAM meter.`,
       },
       {
         q: "Do I need to reinstall 3ds Max every session?",
-        a: "On ad-hoc hourly sessions, yes, because the machine resets to a clean image each time and the setup time is billed like any other minute. On a committed monthly plan we build your applications into the baseline image on your nodes, so they are there when you sign in. If you tell us what you use before a trial, we install it beforehand so the free minutes test your real workflow instead of paying for setup.",
+        a: "On ad-hoc hourly sessions, yes, because the machine resets to a clean image each time and the setup time is billed like any other minute. On a committed monthly plan we build your applications into the baseline image on your nodes, so they are there when you sign in. If you tell us what you use before your first session, we install it beforehand so your first hours test your real workflow instead of paying for setup.",
       },
     ],
     related: ["revit-cloud-workstation", "vray-cloud-rendering", "sketchup-cloud-workstation"],

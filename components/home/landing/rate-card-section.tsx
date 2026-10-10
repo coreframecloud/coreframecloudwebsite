@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { SpecBlock, K, V } from "@/components/home/spec-block";
+import { hoursLabel, rupees, type IntroOffer } from "@/lib/rate-card";
 
 /**
  * The close: the whole commercial offer in one block, then two doors.
@@ -10,10 +11,9 @@ import { SpecBlock, K, V } from "@/components/home/spec-block";
  * a figure that survives a rate change in the control plane is worse than no
  * figure at all. When a value is missing its line disappears.
  *
- * The identity-check line is stated plainly rather than buried. It is the most
- * common reason someone abandons signup, and finding out about it after
- * entering an email feels like a trap; saying it here costs a few visitors and
- * keeps the ones who stay.
+ * What sign-up asks for is stated plainly: email and a WhatsApp code to the
+ * mobile, no ID documents (paid-first onboarding, 10 Oct 2026). The intro
+ * offer line comes from the rate card and disappears when there is none.
  *
  * The benchmark line exists so the 3-4x claim in the discipline cards has its
  * source printed on the same page. A speed multiple without its source is the
@@ -21,10 +21,10 @@ import { SpecBlock, K, V } from "@/components/home/spec-block";
  */
 export function RateCardSection({
   adhocRate,
-  trialMinutes,
+  intro,
 }: {
   adhocRate?: string;
-  trialMinutes?: number;
+  intro?: IntroOffer | null;
 }) {
   return (
     <section className="cf-section px-5">
@@ -35,14 +35,15 @@ export function RateCardSection({
               {"  "}<K>price</K>{"            "}<V>{adhocRate} / hour</V> · GST included · billed per minute{"\n"}
             </>
           ) : null}
-          {trialMinutes ? (
+          {intro ? (
             <>
-              {"  "}<K>free to start</K>{"    "}<V>{trialMinutes} GPU minutes</V> · no card · no commitment{"\n"}
+              {"  "}<K>first top-up</K>{"     "}<V>{rupees(intro.priceRupees)} = {hoursLabel(intro.hours)}</V>
+              {intro.validityDays ? ` · use within ${intro.validityDays} days` : ""}{"\n"}
             </>
           ) : null}
           {"  "}<K>commitment</K>{"       "}none. no seats, no tiers, nothing to cancel{"\n"}
-          {"  "}<K>required</K>{"         "}Aadhaar or passport check before GPU access,{"\n"}
-          {"                   "}as it is for every cloud provider in India{"\n"}
+          {"  "}<K>sign-up</K>{"          "}email + a WhatsApp code to your mobile.{"\n"}
+          {"                   "}no ID documents · international cards accepted{"\n"}
           {"  "}<K>the machine</K>{"      "}RTX 5080 · 16 GB GDDR7 · 64 GB RAM ·{"\n"}
           {"                   "}1 TB NVMe Gen 5 · 4K 60 fps stream{"\n"}
           {"  "}<K>benchmarks</K>{"       "}Blender Open Data, 4.5.0, Cycles, read 20 Sep 2026{"\n"}
@@ -55,7 +56,7 @@ export function RateCardSection({
 
         <div className="mt-7 flex flex-wrap gap-3.5">
           <Link href="/signup" className="cf-btn-primary">
-            {trialMinutes ? `Start free — ${trialMinutes} minutes` : "Create an account"}
+            {intro ? `Get started — ${rupees(intro.priceRupees)} for ${hoursLabel(intro.hours)}` : "Create an account"}
           </Link>
           <Link href="/floor-plan-to-render" className="cf-btn-secondary">
             See Coreframe Studio

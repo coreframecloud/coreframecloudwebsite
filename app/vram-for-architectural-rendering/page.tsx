@@ -3,7 +3,7 @@ import Link from "next/link";
 import { BackgroundGlow } from "@/components/home/background-glow";
 import { SpecBlock, K, B } from "@/components/home/spec-block";
 import { NODE } from "@/lib/node-spec";
-import { getRateCard, adhocRateHourly, getTrialTerms } from "@/lib/rate-card";
+import { getRateCard, adhocRateHourly, getIntroOffer, hoursLabel, rupees } from "@/lib/rate-card";
 
 /**
  * How much VRAM architectural rendering actually needs.
@@ -91,7 +91,7 @@ const FAQ: { q: string; a: string }[] = [
 export default async function Page() {
   const card = await getRateCard();
   const rate = adhocRateHourly(card);
-  const trial = getTrialTerms(card);
+  const intro = getIntroOffer(card);
 
   const eightIsFine = [
     "One building, no site context, at 1080p or 1440p.",
@@ -254,7 +254,7 @@ export default async function Page() {
             </p>
             <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:gap-4">
               <Link href="/login" className="cf-btn-primary">
-                {trial?.gpu_minutes ? `Try it — ${trial.gpu_minutes} free minutes` : "Create an account"}
+                {intro ? `Try it — ${rupees(intro.priceRupees)} for ${hoursLabel(intro.hours)}` : "Create an account"}
               </Link>
               <Link href="/coreframe-vs-irender" className="cf-btn-secondary">
                 Compare the two on price

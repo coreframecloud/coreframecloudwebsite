@@ -17,7 +17,7 @@ import { SpecBlock, B, K } from "@/components/home/spec-block";
  * the table below already makes every one of those arguments line by line.
  * Prose that restates a table is prose nobody reads.
  */
-export function VersusSection({ trialMinutes }: { trialMinutes?: number }) {
+export function VersusSection({ introLabel }: { introLabel?: string | null }) {
   return (
     <>
       <section className="cf-section px-5">
@@ -41,7 +41,7 @@ export function VersusSection({ trialMinutes }: { trialMinutes?: number }) {
             {"\n\n"}
             {"  how it's sold       by the month               "}<B>by the minute</B>{"\n"}
             {"  to try it           commit first               "}
-            <B>{trialMinutes ? `${trialMinutes} minutes, no card` : "no card to start"}</B>{"\n"}
+            <B>{introLabel ?? "pay per minute"}</B>{"\n"}
             {"  access              RDP / VNC                  "}<B>Coreframe Connect app</B>{"\n"}
             {"  stream quality      desktop-grade              "}<B>4K · 60 fps · low latency</B>{"\n"}
             {"  viewport feel       laggy, dropped frames      "}<B>works like a local machine</B>{"\n"}

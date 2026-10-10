@@ -6,7 +6,7 @@ import { NODE } from "@/lib/node-spec";
 export const metadata: Metadata = {
   title: "How to use Coreframe — GPU workstations for 3D rendering",
   description:
-    "Set up Coreframe in ten minutes: sign up, verify your identity, install Coreframe Connect, launch a Windows RTX workstation, and work with your files on persistent NAS storage. Billed per minute of streaming.",
+    "Set up Coreframe in ten minutes: sign up with email and mobile, add credit, install Coreframe Connect, launch a Windows RTX workstation, and work with your files on persistent NAS storage. Billed per minute of streaming.",
   alternates: { canonical: "/how-to-use" },
 };
 
@@ -30,12 +30,12 @@ const STEPS = [
     body: "Sign up with your email address. Choose Individual if you are a freelancer or working on your own projects, or Business if you are GST-registered and need invoices in the company's name. A business account also asks for your registered name and GSTIN, which then appear on every tax invoice.",
   },
   {
-    title: "2. Verify your identity.",
-    body: "Indian regulations require a verified subscriber record for anyone renting compute, so this step comes before a workstation can start. It runs through DigiLocker and takes a couple of minutes. If DigiLocker will not work for you, an Indian passport can be used instead. Business accounts verify the company as well: the GSTIN against the GST register, and control of the company bank account. The person is proved separately from the company, because neither stands in for the other.",
+    title: "2. Confirm your mobile number.",
+    body: "We send a one-time code to your mobile on WhatsApp. Indian regulations (CERT-In) require a verified contact number for anyone renting compute, so this comes before a workstation can start. Any country code works, and there are no ID documents to upload.",
   },
   {
-    title: "3. Add credit, or start the free trial.",
-    body: "New accounts get free GPU minutes and storage to try the service, with no card. After that, top up your wallet from the app or the website. There is no setup fee and no monthly minimum on pay-as-you-go. Business accounts can be invoiced monthly instead of prepaying.",
+    title: "3. Add credit.",
+    body: "Top up your wallet from the website or the app, by card, UPI or netbanking — international cards are accepted. New customers get an intro offer on their first top-up; the current terms are on the Pricing page. There is no setup fee and no monthly minimum on pay-as-you-go. Business accounts can be invoiced monthly instead of prepaying.",
   },
   {
     title: "4. Install Coreframe Connect.",
@@ -82,7 +82,7 @@ const FAQS = [
   },
   {
     q: "Can my whole studio use one account?",
-    a: "No. Each person needs their own account, because the identity record is per person. A business account holds the whole team under one organisation, with a shared wallet and a shared drive, so you get one bill and one place to manage seats while everyone signs in as themselves.",
+    a: "No. Each person needs their own account, because the sign-in and contact record are per person. A business account holds the whole team under one organisation, with a shared wallet and a shared drive, so you get one bill and one place to manage seats while everyone signs in as themselves.",
   },
   {
     q: "Where are the machines located?",
@@ -100,7 +100,7 @@ export default function HowToUsePage() {
     "@type": "HowTo",
     name: "How to use Coreframe GPU workstations",
     description:
-      "Sign up, verify your identity, install Coreframe Connect and launch a Windows RTX GPU workstation for 3D rendering, billed per minute.",
+      "Sign up with email and mobile, add credit, install Coreframe Connect and launch a Windows RTX GPU workstation for 3D rendering, billed per minute.",
     step: STEPS.map((s, i) => ({
       "@type": "HowToStep",
       position: i + 1,

@@ -722,15 +722,14 @@ export default function OrgAdminPage() {
                       <span className="text-sm font-medium break-words text-ink">
                         {m.full_name || m.email}
                       </span>
+                      {/* Legacy KYC flag. Identity checks were retired on
+                          10 Oct 2026, so only a past verification is shown —
+                          "pending" would describe a step nobody can take. */}
                       {m.identity_verified ? (
                         <span className="rounded-full border border-blue/25 bg-blue-soft px-2 py-0.5 text-[10px] font-medium whitespace-nowrap text-blue">
-                          Identity verified
+                          Verified
                         </span>
-                      ) : (
-                        <span className="rounded-full border border-rule-strong bg-paper-2 px-2 py-0.5 text-[10px] whitespace-nowrap text-ink-2">
-                          Identity pending
-                        </span>
-                      )}
+                      ) : null}
                     </div>
                     <div className="mt-0.5 text-xs break-all text-ink-2">{m.email}</div>
                     {m.identity_name && m.identity_name !== m.full_name && (

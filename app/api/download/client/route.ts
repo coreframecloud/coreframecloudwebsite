@@ -16,7 +16,7 @@ const CONTROL_API = "https://control.coreframecloud.com/api";
 // users were emailed direct links instead. Do not reintroduce them.
 const RELEASES_BASE = "https://control.coreframecloud.com/releases/";
 
-// Kill switch. Downloads stay OFF until identity verification and live payments
+// Kill switch. Downloads stay OFF until sign-up (email + mobile) and live payments
 // are proven end to end -- handing out the installer before then means someone
 // could install Connect and reach a half-finished onboarding.
 //
