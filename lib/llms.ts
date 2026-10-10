@@ -418,10 +418,6 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
     "- **vs Indian GPU clouds** built for AI: those mostly rent Linux GPU servers. Coreframe " +
       "rents a Windows desktop with a display driver for interactive design applications.",
   );
-  out.push(
-    "- **vs cloud gaming** (for example GeForce NOW): those stream games from their own " +
-      "catalogue and do not give you a desktop on which to run D5, Lumion or Adobe applications.",
-  );
   out.push("");
 
   out.push("## Billing and invoices");

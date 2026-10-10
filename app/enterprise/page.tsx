@@ -8,7 +8,6 @@ import {
   getRateCard,
   planTiers,
   adhocRate as adhocRateOf,
-  bestOverageRate,
   entryPlanFee,
   storageRatePerTb,
   billingSentence,
@@ -24,7 +23,7 @@ export const metadata: Metadata = {
     // engines and quoted by answer engines long after a rate changes, and it is
     // the one string on the page that cannot read the live rate card without
     // making metadata generation depend on a network call.
-    "Monthly RTX 5080 workstation plans for architecture and design studios: included GPU-hours, named seats and shared NAS storage. GST included, Bengaluru.",
+    "Studio plans for architecture and design firms: one shared pool of RTX 5080 hours, a shared studio drive with far more storage, and logins for the whole team. GST included, Bengaluru.",
   keywords: [
     "cloud GPU plan India",
     "GPU workstation monthly plan India",
@@ -100,7 +99,6 @@ export default async function EnterprisePage() {
     card?.gpus.find((g) => !g.quote_on_request && g.hourly_rate_rupees != null)
       ?.hourly_rate_rupees ?? null;
   const adhoc = adhocRateOf(card);
-  const bestOverage = bestOverageRate(card);
   const fromFee = entryPlanFee(card);
   const storageRate = storageRatePerTb(card);
   const cheaper = commitmentIsCheaper(card);
@@ -115,28 +113,17 @@ export default async function EnterprisePage() {
           <div className="cf-wide">
             {/* Header */}
             <div className="max-w-[680px]">
-              <div className="cf-eyebrow">Committed monthly plans</div>
-              <h1 className="cf-display mt-3">Monthly plans for studios that render every week.</h1>
+              <div className="cf-eyebrow">Studio plans</div>
+              <h1 className="cf-display mt-3">One account for the whole studio.</h1>
+              {/* The firm plans are sold on what a team gets, not on hours per
+                  rupee: a pooled allowance, a shared drive and logins for every
+                  member. Owner's call, 10 Oct 2026. Do not lead with a per-hour
+                  comparison against pay-as-you-go here. */}
               <p className="cf-lead mt-5">
-                {/* Conditional on the comparison HOLDING, not on the numbers being
-                    present. Modelling an ad-hoc cut to ₹199 against the old tiers
-                    left this paragraph asserting that ₹379/hr was "cheaper" than
-                    ₹199/hr — on the page whose entire job is to sell the commitment. */}
-                {cheaper && adhoc && bestOverage ? (
-                  <>
-                    Committing costs less per hour. Every tier bills GPU-hours below the ad-hoc
-                    rate, on included hours and extra ones alike, going as low as{" "}
-                    <span className="font-medium text-ink">
-                      {bestOverage}/hr against {adhoc}/hr
-                    </span>
-                  </>
-                ) : (
-                  <>
-                    One monthly fee that covers GPU-hours, persistent project storage and named
-                    render seats
-                  </>
-                )}
-                .{fromFee ? ` Plans start at ${fromFee} a month.` : ""}
+                A studio plan isn&rsquo;t just a bigger bag of hours. Your team shares one pool of
+                GPU time, works off one shared drive with far more storage than a single account
+                gets, and everyone signs in as themselves. You get one bill for all of it.
+                {fromFee ? ` Plans start at ${fromFee} a month.` : ""}
               </p>
               <p className="cf-section-copy mt-4">
                 Every plan runs on the same machine: {NODE.gpu}, {NODE.vram}, {NODE.ram} of RAM, an{" "}
@@ -165,6 +152,33 @@ export default async function EnterprisePage() {
                 invoice shows the taxable value and the GST split, so you can claim input tax
                 credit.
               </p>
+            </div>
+
+            {/* What a studio plan adds */}
+            <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+              {[
+                {
+                  title: "One shared pool of hours",
+                  body: "The plan's GPU-hours belong to the studio, not to one login. Whoever is on deadline this week uses them, and nobody's personal wallet runs dry mid-render.",
+                },
+                {
+                  title: "A shared studio drive",
+                  body: "Much bigger storage than a single account, mounted in every member's session as one drive. Projects, textures and asset libraries live in one place for the whole team.",
+                },
+                {
+                  title: "A login for each person",
+                  body: "Each person signs in with their own account, so licences tied to a person keep working. Members ask to join the company account and the admin approves them.",
+                },
+                {
+                  title: "One bill, one admin",
+                  body: "Usage from every member lands on the company account with one GST invoice. The admin sees who used what in the portal, and you can ask to be invoiced monthly.",
+                },
+              ].map((f) => (
+                <div key={f.title} className="min-w-0 rounded-cf border border-rule bg-paper-2 p-6">
+                  <h2 className="text-base font-semibold text-ink">{f.title}</h2>
+                  <p className="mt-2 text-sm leading-6 text-ink-2">{f.body}</p>
+                </div>
+              ))}
             </div>
 
             {/* Plans */}
@@ -282,10 +296,10 @@ export default async function EnterprisePage() {
 
                       <div className="mt-7 grow space-y-3 border-t border-rule pt-6">
                         {[
-                          { label: "Persistent storage", value: plan.storage },
+                          { label: "Shared studio storage", value: plan.storage },
                           { label: "File retention", value: plan.retention },
-                          { label: "Named render seats", value: plan.seats },
-                          { label: "Included GPU-hrs / mo", value: plan.includedHours + " hrs" },
+                          { label: "Team logins", value: plan.seats },
+                          { label: "Shared GPU-hrs / mo", value: plan.includedHours + " hrs" },
                           {
                             label: "Extra GPU-hours",
                             value: plan.extraRate ? `${plan.extraRate} / hr` : "—",

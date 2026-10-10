@@ -3,7 +3,6 @@ import { blenderInteriorRender } from "./posts/blender-interior-render";
 import { laptopD5Lumion } from "./posts/laptop-d5-lumion";
 import { costWorkstationFarmBuy } from "./posts/cost-workstation-farm-buy";
 import { afterEffectsRemoteGpu } from "./posts/after-effects-remote-gpu";
-import { geforceNowVsWorkstation } from "./posts/geforce-now-vs-workstation";
 
 /** Newest first. Same date today, so this order is the editorial order. */
 export const POSTS: BlogPost[] = [
@@ -11,7 +10,6 @@ export const POSTS: BlogPost[] = [
   costWorkstationFarmBuy,
   blenderInteriorRender,
   afterEffectsRemoteGpu,
-  geforceNowVsWorkstation,
 ];
 
 /**
