@@ -91,20 +91,20 @@ export default async function ComparisonPage() {
   ];
 
   const rentWins = [
-    "Your rendering is bursty. Heavy for the week before a deadline, near zero after it.",
-    "You are hiring remotely and would otherwise ship someone a machine you cannot get back.",
+    "Your rendering comes in bursts: heavy the week before a deadline, near zero after it.",
+    "You're hiring remotely and would otherwise ship someone a machine you can't get back.",
     "You need a second or third machine for a deadline and not for the rest of the quarter.",
-    "You are a student or a freelancer, and the capital is the actual obstacle.",
+    "You're a student or a freelancer, and the up-front money is what's stopping you.",
     "You want to see a 4K still come out before you buy hardware that can produce one.",
-    "Cash matters more than cost. Renting is operating expense, with nothing on the books.",
+    "Cash flow matters more to you than total cost. Renting is an operating expense, with nothing on the books.",
   ];
 
   const buyWins = [
-    "You render most days, every week, all year. Past the break-even below, owning is cheaper.",
-    "Your internet drops. A streamed desktop needs a steady link and there is no way around it.",
+    "You render most days, all year round. Past the break-even below, owning is cheaper.",
+    "Your internet drops. A streamed desktop needs a steady link, and there's no way around that.",
     "You need the machine on site, or on an office network that cannot reach the internet.",
     "You run a specialist plugin you want installed once and still there next year.",
-    "The hardware earns its keep doing something other than rendering as well.",
+    "The hardware also earns its keep doing things other than rendering.",
   ];
 
   return (
@@ -117,10 +117,10 @@ export default async function ComparisonPage() {
             <p className="cf-eyebrow mb-5">Comparison</p>
             <h1 className="cf-display">Rent a GPU, or buy the machine.</h1>
             <p className="cf-lead mt-6">
-              It depends on how many hours a year you actually render, and the
-              number where it flips is calculable. This page does the arithmetic
-              in front of you instead of asserting a conclusion, and it says
-              plainly where buying is the better decision.
+              It depends on how many hours a year you actually render, and you
+              can work out where it tips. We do the arithmetic below where you
+              can check it, and we say plainly where buying is the better
+              decision.
             </p>
           </div>
         </section>
@@ -155,22 +155,22 @@ export default async function ComparisonPage() {
             <p className="cf-eyebrow mb-5">The capital</p>
             <h2 className="cf-section-title">What owning actually costs.</h2>
             <p className="cf-section-copy mt-4">
-              A machine that renders the way a Coreframe node does &mdash; a{" "}
+              A machine that renders the way a Coreframe node does (a{" "}
               {NODE.gpu} with {NODE.vram}, {NODE.ram} of system memory, a{" "}
-              {NODE.cpu} and a {NODE.disk} &mdash; lands at about{" "}
+              {NODE.cpu} and a {NODE.disk}) costs about{" "}
               <strong className="font-semibold text-ink">
                 {WORKSTATION_REPLACEMENT_COST}
               </strong>{" "}
-              in India once GST and import costs are in. That is the first
-              number, and it is not the only one. The machine depreciates, takes
-              desk space and power, and is still on the books if a hire does not
-              work out or a project is cancelled.
+              in India once GST and import costs are in. And that&rsquo;s only
+              the purchase. The machine depreciates, takes desk space and power,
+              and stays on the books if a hire doesn&rsquo;t work out or a project
+              gets cancelled.
             </p>
             <p className="cf-section-copy mt-4">
               The part studios underestimate is utilisation. You render hard for
               four days before a client presentation and barely at all for the
-              three weeks after. The machine is idle for most of its life, and
-              idle hardware still costs what it cost.
+              three weeks after. The machine sits idle for most of its life, and
+              you paid for those idle weeks up front.
             </p>
           </div>
         </section>
@@ -185,10 +185,10 @@ export default async function ComparisonPage() {
                   {breakEvenHours.toLocaleString("en-IN")} rented hours.
                 </h2>
                 <p className="cf-section-copy mt-4">
-                  At {hourly} including GST, that is what the hardware money is
-                  worth in workstation time. At {hoursPerWeek} hours of
-                  rendering a week &mdash; a fair figure for a small studio
-                  &mdash; it takes roughly{" "}
+                  At {hourly} including GST, that&rsquo;s what the hardware money
+                  buys in workstation time. At {hoursPerWeek} hours of
+                  rendering a week, which is fair for a small studio, it takes
+                  roughly{" "}
                   <strong className="font-semibold text-ink">
                     {breakEvenYears} years
                   </strong>{" "}
@@ -196,15 +196,14 @@ export default async function ComparisonPage() {
                 </p>
                 <p className="cf-section-copy mt-4">
                   Render more than that and owning starts to win on cost. Render
-                  less and you are buying idle time. Both figures are computed
-                  on this page from the live rate card, so you are checking the
-                  arithmetic against the price we actually charge.
+                  less and you&rsquo;re paying for idle time. Both figures are
+                  worked out on this page from the live rate card, so you&rsquo;re
+                  checking the arithmetic against the price we actually charge.
                 </p>
                 <p className="mt-4 text-sm leading-[1.62] text-ink-2">
-                  This is a hardware cost comparison, not financial advice. It
-                  ignores tax treatment, financing and resale value, all of
-                  which differ by business and are worth asking your accountant
-                  about.
+                  This compares hardware costs and isn&rsquo;t financial advice. It
+                  leaves out tax treatment, financing and resale value. Those
+                  differ by business, so ask your accountant.
                 </p>
               </div>
             </div>
@@ -216,17 +215,17 @@ export default async function ComparisonPage() {
         <section className="cf-section px-5">
           <div className="cf-col">
             <p className="cf-eyebrow mb-5">The fair part</p>
-            <h2 className="cf-section-title">What buying is genuinely better at.</h2>
+            <h2 className="cf-section-title">What buying does better.</h2>
             <p className="cf-section-copy mt-4">
               A machine on your desk has no per-minute cost and no network
               dependency. It works on a site with no signal and on an office
               network that cannot reach the internet. You install a plugin once
-              and it is still there next year. Nobody can change its price. None
-              of that is small, and renting does not give it to you.
+              and it&rsquo;s still there next year. Nobody can change its price.
+              Those are real advantages, and renting doesn&rsquo;t give you them.
             </p>
             <p className="cf-section-copy mt-4">
-              So the question is not which one is better. It is which of the two
-              lists below describes your week.
+              So look at the two lists below and see which one sounds like your
+              week.
             </p>
           </div>
         </section>
@@ -266,20 +265,19 @@ export default async function ComparisonPage() {
         <section className="cf-section px-5">
           <div className="cf-col">
             <p className="cf-eyebrow mb-5">The specification that matters</p>
-            <h2 className="cf-section-title">VRAM is a ceiling, not a speed.</h2>
+            <h2 className="cf-section-title">VRAM sets how big a scene can be.</h2>
             <p className="cf-section-copy mt-4">
               Check it before anything else. Geometry, textures and lightmaps
-              have to fit on the card. When they do not, the work does not get
-              slower &mdash; it gets cut down, and you send the client a smaller
-              image than the one they asked for. Plenty of laptops and entry
+              have to fit on the card. When they don&rsquo;t, you have to cut the
+              scene down, and the client gets a smaller image than the one they
+              asked for. Plenty of laptops and entry
               desktops sold for design work ship with 6 to 8 GB. A Coreframe
               node has {NODE.vram}.
             </p>
             <p className="cf-section-copy mt-4">
-              We publish no render times and no speed multiples for either
-              option. They depend on your scene, your settings and your
-              geometry, which is also why the only comparison worth trusting is
-              the one you run on your own file.
+              We don&rsquo;t publish render times or speed multiples for either
+              option. They depend on your scene and your settings, so the only
+              comparison worth trusting is the one you run on your own file.
             </p>
           </div>
         </section>
@@ -291,21 +289,20 @@ export default async function ComparisonPage() {
             <p className="cf-eyebrow mb-5">The other side of it</p>
             <h2 className="cf-section-title">What renting gives up.</h2>
             <p className="cf-section-copy mt-4">
-              Three things, stated before you sign up rather than discovered in
-              week two. The workstation resets to a clean image between
-              sessions: your files persist on separate storage, software does
-              not, and on a committed plan we build what you need into your
-              baseline image instead.
+              Three things you should know before you sign up. First, the
+              workstation resets to a clean image between sessions. Your files
+              persist on separate storage but software doesn&rsquo;t, so on a
+              committed plan we build what you need into your baseline image.
             </p>
             <p className="cf-section-copy mt-4">
-              You need a steady connection. {NODE.stream} looks its best on
+              Second, you need a steady connection. {NODE.stream} looks its best on
               about 50&nbsp;Mbps and still holds up at 35. 1080p is comfortable
               on 20. Steady matters more than fast.
             </p>
             <p className="cf-section-copy mt-4">
-              And {billingSentence(card).charAt(0).toLowerCase()}
-              {billingSentence(card).slice(1)} That is cheap for bursty work and
-              relentless if you render all day, every day.
+              Third, {billingSentence(card).charAt(0).toLowerCase()}
+              {billingSentence(card).slice(1)} That&rsquo;s cheap when work comes
+              in bursts, and it adds up fast if you render all day, every day.
             </p>
           </div>
         </section>
@@ -321,8 +318,8 @@ export default async function ComparisonPage() {
                 {intro
                   ? `Your first top-up of ${rupees(intro.priceRupees)} buys ${hoursLabel(intro.hours)}.`
                   : "Top up the wallet and launch one session."}{" "}
-                Load the project that costs you an afternoon and see how a
-                rented workstation handles it before you decide either way.
+                Load the project that eats your afternoon and see how a rented
+                workstation handles it before you decide either way.
               </p>
               <Link href="/signup" className="cf-btn-primary mt-6 w-full sm:w-auto min-h-[44px]">
                 {intro ? "Get started" : "Create an account"}

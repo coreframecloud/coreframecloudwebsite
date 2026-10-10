@@ -28,8 +28,8 @@ export function VersusSection({ introLabel }: { introLabel?: string | null }) {
           </h2>
           <p className="cf-section-copy mt-4">
             We stream a real workstation at 4K and 60 frames a second, so the viewport moves when
-            you move it. Remote desktop was built for spreadsheets — it drops frames the moment a
-            scene starts orbiting, and you feel every one of them.
+            you move it. Remote desktop was built for spreadsheets. It drops frames as soon as you
+            start orbiting a scene, and you feel every one.
           </p>
         </div>
       </section>

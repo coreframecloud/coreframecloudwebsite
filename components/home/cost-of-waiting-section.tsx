@@ -20,16 +20,16 @@ export function CostOfWaitingSection({ ratePerHour }: { ratePerHour: number | nu
       <section className="cf-section px-5">
         <div className="cf-col">
           <p className="cf-eyebrow mb-5">What it&apos;s for</p>
-          <h2 className="cf-section-title">You are not paid to watch a progress bar.</h2>
+          <h2 className="cf-section-title">Nobody pays you to watch a progress bar.</h2>
           <p className="cf-section-copy mt-4">
             The machine under your desk was the right call three years ago. Since then your
-            scenes got heavier, your clients got faster, and the bottleneck stopped being your
-            ideas. Every hour a frame is cooking is an hour you are not designing, not
-            presenting, and not starting the next project.
+            scenes have got heavier and your clients expect things sooner, so the bottleneck
+            isn&rsquo;t your ideas any more. Every hour a frame spends cooking is an hour you
+            aren&rsquo;t designing, presenting or starting the next project.
           </p>
           <p className="cf-section-copy mt-4">
-            You can buy your way out of that for six lakhs. Or you can rent the machine for the
-            afternoon you need it.
+            You can buy your way out of that for six lakhs, or rent the machine for the afternoon
+            you need it.
           </p>
         </div>
       </section>
@@ -39,15 +39,15 @@ export function CostOfWaitingSection({ ratePerHour }: { ratePerHour: number | nu
           <p className="cf-eyebrow mb-5">Your arithmetic, not ours</p>
           <h2 className="cf-section-title">What is the waiting costing you?</h2>
           <p className="cf-section-copy mt-4 max-w-[62ch]">
-            Put in your own numbers. We have deliberately not invented a figure to put here —
-            the only one that matters is yours.
+            Put in your own numbers. We haven&rsquo;t made up a figure for this, because yours is
+            the only one that counts.
           </p>
           <div className="mt-7">
             <WaitingCalculator ratePerHour={ratePerHour} />
           </div>
           <p className="mt-4 text-[13px] leading-[1.65] text-ink-3">
-            Built entirely from what you entered, over 48 working weeks. We have not assumed a
-            saving on your behalf.
+            This uses only what you entered, over 48 working weeks. We haven&rsquo;t assumed any
+            saving for you.
           </p>
 
         </div>

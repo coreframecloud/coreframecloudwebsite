@@ -103,27 +103,27 @@ export default async function Page() {
   const gst = gstClause(card);
 
   const irenderWins = [
-    `More VRAM in a single node. Their 4090 is ${IRENDER.gpu4090.vram} and their 5090 is ${IRENDER.gpu5090.vram}, against our ${NODE.vram}. If a scene will not fit, price is irrelevant.`,
-    `Four times the system RAM — ${IRENDER.ram} against our ${NODE.ram}. That matters for very large scenes and point clouds.`,
-    "Multi-GPU nodes, up to eight cards. We do not sell that at all, at any price.",
+    `More VRAM in a single node. Their 4090 is ${IRENDER.gpu4090.vram} and their 5090 is ${IRENDER.gpu5090.vram}, against our ${NODE.vram}. If a scene won't fit, the price doesn't matter.`,
+    `Four times the system RAM: ${IRENDER.ram} against our ${NODE.ram}. That matters for very large scenes and point clouds.`,
+    "Multi-GPU nodes, up to eight cards. We don't sell that at any price.",
     ...(intro
       ? []
       : [`A bigger joining offer: ${IRENDER.firstChargeBonus}${bonus ? `, against our ${bonus.percent}%` : ""}.`]),
-    "A long track record with VFX and animation studios, well outside our market.",
+    "A long track record with VFX and animation studios, which is well outside our market.",
   ];
 
   const coreframeWins = [
-    "Billed in rupees. No card forex markup, and no exchange-rate risk between quoting a client and paying the invoice.",
+    "Billed in rupees, so there's no card forex markup and no exchange-rate risk between quoting a client and paying the invoice.",
     gst
-      ? `The published rate is what leaves your account — ${gst}, nothing added at checkout.`
+      ? `The published rate is what leaves your account (${gst}), with nothing added at checkout.`
       : "The published rate is what leaves your account.",
-    "An Indian GST invoice for every payment, under SAC 998315. A business importing the same service from abroad generally has to account for IGST itself under reverse charge — worth asking your accountant what that costs you, because the sticker price abroad is not the landed price.",
+    "An Indian GST invoice for every payment, under SAC 998315. A business importing the same service from abroad generally has to account for IGST itself under reverse charge. Ask your accountant what that costs you, because the sticker price abroad isn't the landed price.",
     "Your files stay on storage in India.",
-    "Software already installed. D5, Lumion, Enscape and Twinmotion are on the machine when it starts.",
+    "The software is already installed. D5, Lumion, Enscape and Twinmotion are on the machine when it starts.",
     intro
       ? `A first top-up of ${rupees(intro.priceRupees)} buys ${hoursLabel(intro.hours)}${intro.gpuName ? ` on an ${intro.gpuName}` : ""}, so you can judge it on your own project. (Theirs: ${IRENDER.firstChargeBonus}.)`
-      : "Billed per minute, so judging it on your own project costs minutes, not a month.",
-    "Sign-up is an email and a WhatsApp code — no ID documents — and international cards are accepted.",
+      : "Billed per minute, so trying it on your own project costs you minutes instead of a month.",
+    "Sign-up takes an email and a WhatsApp code, with no ID documents, and we accept international cards.",
   ];
 
   return (
@@ -135,8 +135,8 @@ export default async function Page() {
             <p className="cf-eyebrow mb-5">Comparison</p>
             <h1 className="cf-display">Coreframe vs iRender.</h1>
             <p className="cf-lead mt-6">
-              Both rent you a GPU by the hour. One bills in dollars from
-              Vietnam, the other in rupees from Bengaluru. Here are both price
+              Both rent you a GPU by the hour. iRender bills in dollars from
+              Vietnam, and we bill in rupees from Bengaluru. Below are both price
               lists as published, the conversion with its rate shown, and the
               three things iRender does better than we do.
             </p>
@@ -147,7 +147,7 @@ export default async function Page() {
 
         <section className="cf-section px-5">
           <div className="cf-wide">
-            <SpecBlock label={`Published rates — iRender read ${IRENDER_CHECKED}`}>
+            <SpecBlock label={`Published rates (iRender read ${IRENDER_CHECKED})`}>
               {"  "}
               {pad("", 26)}
               {pad("per hour", 14)}
@@ -189,9 +189,9 @@ export default async function Page() {
               iRender rates read from their public price page on{" "}
               {IRENDER_CHECKED}. Rupee column converted at the mid-market rate
               of ₹{FX.usdInr} to the dollar on {FX.asOf}; that rate moves and
-              your bank will add its own markup on top. Our rate is served live
-              from our billing system, so this page cannot quote a price we do
-              not charge.
+              your bank will add its own markup on top. Our rate comes live from our
+              billing system, so this page can&apos;t quote a price we don&apos;t
+              charge.
             </p>
             {lowest ? (
               <p className="mt-4 text-sm text-white/70">
@@ -200,7 +200,7 @@ export default async function Page() {
                   ₹{lowest.rupees.toLocaleString("en-IN", { maximumFractionDigits: 2 })}/hr
                 </b>{" "}
                 on {lowest.planName}, for hours inside the monthly allowance.
-                That figure is computed from the rate card, not quoted by hand.
+                We work that figure out from the rate card; nobody types it in.
               </p>
             ) : null}
             {rateValue ? (
@@ -209,7 +209,7 @@ export default async function Page() {
                 <b className="text-white">
                   {Math.round((rateValue / (IRENDER.gpu4090.list * FX.usdInr)) * 100)}%
                 </b>{" "}
-                of iRender&apos;s list price for a single-4090 node — before any
+                of iRender&apos;s list price for a single-4090 node, before any
                 forex markup on your card.
               </p>
             ) : null}
@@ -222,8 +222,8 @@ export default async function Page() {
           <div className="cf-col">
             <h2 className="cf-title">Where iRender is the better choice</h2>
             <p className="cf-lead mt-5">
-              There are real ones, and if any of them describes you then the
-              price comparison above does not matter.
+              There are real ones. If any of these describes you, ignore the
+              price comparison above.
             </p>
             <ul className="mt-7 grid gap-4">
               {irenderWins.map((t) => (
@@ -237,18 +237,18 @@ export default async function Page() {
 
         <section className="cf-section px-5">
           <div className="cf-col">
-            <h2 className="cf-title">Where we are the better choice</h2>
+            <h2 className="cf-title">Where we&apos;re the better choice</h2>
             <ul className="mt-7 grid gap-4">
               {coreframeWins.map((t) => (
                 <li key={t} className="cf-card-sm text-white/80">{t}</li>
               ))}
             </ul>
             <p className="cf-lead mt-8">
-              The short version: if your scene fits in {NODE.vram} and you are
-              invoicing an Indian client, we are cheaper and the paperwork is
-              simpler. If your scene does not fit, go and use the bigger card —
-              we would rather say so than take an hour of your money and have
-              you run out of memory.
+              In short: if your scene fits in {NODE.vram} and you&apos;re
+              invoicing an Indian client, we&apos;re cheaper and the paperwork is
+              simpler. If it doesn&apos;t fit, go and use the bigger card.
+              We&apos;d rather tell you that than take an hour of your money and
+              have you run out of memory.
             </p>
           </div>
         </section>
@@ -262,12 +262,11 @@ export default async function Page() {
               {intro
                 ? `Your first top-up of ${rupees(intro.priceRupees)} buys ${hoursLabel(intro.hours)} on the same machine every customer uses.`
                 : "The same machine every customer uses, billed per minute."}{" "}
-              Open your own scene and judge it from that rather than from this
-              page.
+              Open your own scene and judge us on that.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:gap-4">
               <Link href="/login" className="cf-btn-primary">
-                {intro ? `Get started — ${rupees(intro.priceRupees)} for ${hoursLabel(intro.hours)}` : "Create an account"}
+                {intro ? `Get started: ${rupees(intro.priceRupees)} for ${hoursLabel(intro.hours)}` : "Create an account"}
               </Link>
               <Link href="/d5-render-vs-local-gpu" className="cf-btn-secondary">
                 Or compare against buying a machine

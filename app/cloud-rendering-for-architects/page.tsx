@@ -48,23 +48,23 @@ export const metadata: Metadata = {
 const useCases = [
   {
     title: "D5 Render walkthroughs.",
-    body: "The fly-through renders on the node while your own machine stays free. You keep modelling; the animation finishes somewhere else.",
+    body: "The fly-through renders on the node, so your own machine stays free and you can keep modelling while it runs.",
   },
   {
     title: "Enscape inside Revit or SketchUp.",
-    body: "Enscape is a plugin, so its host application goes on first. Your named-user licence signs in exactly as it does on your own PC.",
+    body: "Enscape is a plugin, so its host application goes on first. Your named-user licence signs in the same way it does on your own PC.",
   },
   {
     title: "Lumion scenes with heavy assets.",
-    body: `${NODE.vram} on the card. High-resolution textures, dense vegetation and animated water fit without turning the quality setting down to make them fit.`,
+    body: `${NODE.vram} on the card. High-resolution textures, dense vegetation and animated water fit without you having to turn the quality setting down.`,
   },
   {
     title: "Handoffs without a pen drive.",
-    body: "On a committed plan the project files live on NAS. A designer uploads the model and whoever renders it opens the same file. The latest one is not on somebody's desktop.",
+    body: "On a committed plan the project files live on NAS. A designer uploads the model and whoever renders it opens the same file, instead of hunting for the latest copy on somebody's desktop.",
   },
   {
     title: "Client NDA work stays in India.",
-    body: `Every node and every byte of storage sits in ${NODE.location}. A client's unreleased building does not touch an overseas server.`,
+    body: `Every node and every byte of storage sits in ${NODE.location}. A client's unreleased building never touches an overseas server.`,
   },
   {
     title: "Everyone renders at once.",
@@ -75,10 +75,10 @@ const useCases = [
 const workflow = [
   { n: "01", title: "Open the account.", body: "Sign up, verify your email, add credit to the wallet." },
   { n: "02", title: "Launch a workstation.", body: `One click. A ${NODE.gpu} machine running ${NODE.os} boots and hands you a desktop.` },
-  { n: "03", title: "Sign in to your software.", body: "D5 Render, Twinmotion, Unreal and Blender are on the image already. Revit, AutoCAD, Lumion and Enscape are set up with you once, then they are on every workstation you launch, running on your own licence." },
-  { n: "04", title: "Move the project across.", body: "Drag the scene and its assets in. No FTP, no VPN, no shared drive to configure." },
+  { n: "03", title: "Sign in to your software.", body: "D5 Render, Twinmotion, Unreal and Blender are on the image already. We set up Revit, AutoCAD, Lumion and Enscape with you once, and after that they're on every workstation you launch, running on your own licence." },
+  { n: "04", title: "Move the project across.", body: "Drag the scene and its assets in. You don't need FTP, a VPN or a shared drive." },
   { n: "05", title: "Render.", body: "The node does the work. On a committed plan the files stay on NAS, so the next person to open the job has them." },
-  { n: "06", title: "Close the window.", body: "Download what you need and shut the session down. The billing stops. NAS keeps the project." },
+  { n: "06", title: "Close the window.", body: "Download what you need and shut the session down. Billing stops, and NAS keeps the project." },
 ];
 
 /**
@@ -100,15 +100,15 @@ const planWhatsapp = (plan: string) =>
 const faqs = [
   {
     q: "Can I run Revit on a cloud GPU workstation?",
-    a: "Yes. Revit runs on the workstation the way it runs on your own PC, and Enscape, D5 Render and the other Revit plugins work with it. Bring your own Autodesk licence — we never supply one.",
+    a: "Yes. Revit runs on the workstation the way it runs on your own PC, and Enscape, D5 Render and the other Revit plugins work with it. You bring your own Autodesk licence; we never supply one.",
   },
   {
     q: "How do team members share project files?",
-    a: "On committed plans the project files live on persistent NAS storage. Anyone with a named seat opens the same files. There is no copying between sessions and no pen drive.",
+    a: "On committed plans the project files live on persistent NAS storage. Anyone with a named seat opens the same files, so nobody copies files between sessions or passes round a pen drive.",
   },
   {
     q: "Is cloud rendering faster than a local workstation for architects?",
-    a: "It depends on the machine you have now, so we do not publish a multiple and we do not publish render times. What is reliably true is that the render happens somewhere else: your own machine stays free while it runs, and several people in the studio can render at the same time on separate workstations instead of queueing for one desk.",
+    a: "It depends on the machine you have now, so we don't publish a speed multiple or render times. What we can say is that the render happens somewhere else. Your own machine stays free while it runs, and several people in the studio can render at the same time on separate workstations instead of queueing for one desk.",
   },
 ];
 
@@ -133,7 +133,7 @@ export default async function ArchitectsPage() {
       price: adhocRateHourly(card) ?? "—",
       note:
         `${billingSentence(card)} No commitment. 20 GB persistent storage free, ` +
-        "50 GB with credit · kept while your account is active. Session scratch cleared at session end — " +
+        "50 GB with credit · kept while your account is active. Session scratch is cleared at session end, so " +
         "download outputs first.",
       cta: "Get started",
       href: "/signup",
@@ -174,7 +174,7 @@ export default async function ArchitectsPage() {
             <p className="cf-lead mt-6">
               Rent {NODE.gpu} workstations by the minute for D5 Render, Lumion,
               Enscape and Revit. Several people can render at the same time
-              instead of queueing for the one machine that can. Project files stay
+              instead of queueing for the one machine that&rsquo;s up to it. Project files stay
               on NAS in {NODE.location}, so the latest one is never on a pen drive.
             </p>
 
@@ -201,10 +201,10 @@ export default async function ArchitectsPage() {
               {"  "}<K>memory</K>{"         "}<V>{NODE.ram}</V> system RAM{"\n"}
               {"  "}<K>cpu</K>{"            "}<V>{NODE.cpu}</V>{"\n"}
               {"  "}<K>working disk</K>{"   "}<V>{NODE.disk}</V>{"\n"}
-              {"  "}<K>os</K>{"             "}<V>{NODE.os}</V> — a full desktop, not a render queue{"\n"}
+              {"  "}<K>os</K>{"             "}<V>{NODE.os}</V>, a full desktop you work on{"\n"}
               {"  "}<K>access</K>{"         "}Coreframe Connect app, streamed at <V>{NODE.stream}</V>{"\n"}
               {"  "}<K>location</K>{"       "}<V>{NODE.location}</V>{"\n"}
-              {"  "}<K>licences</K>{"       "}yours — we never supply one
+              {"  "}<K>licences</K>{"       "}yours; we never supply one
             </SpecBlock>
           </div>
         </section>
@@ -273,7 +273,7 @@ export default async function ArchitectsPage() {
               ))}
             </div>
             <p className="mt-8 text-sm leading-[1.62] text-ink-2">
-              All prices include 18% GST — what you see is what you pay, and every invoice shows the
+              All prices include 18% GST, so what you see is what you pay. Every invoice shows the
               taxable value and GST split.
               {adhoc ? ` Committed tiers bill extra GPU-hours below the ${adhoc} ad-hoc rate.` : ""}
               {storageRate ? ` Persistent NAS storage beyond your plan, or on its own, is ${storageRate}/TB/month and is retained for as long as it is subscribed.` : ""}

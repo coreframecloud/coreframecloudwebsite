@@ -320,7 +320,7 @@ export default function VerifyFlow() {
   if (phase === "error") {
     return (
       <Card>
-        <Header icon={<Clock className="h-5 w-5" />} title="We could not load your account." />
+        <Header icon={<Clock className="h-5 w-5" />} title="We couldn't load your account." />
         <p className={errorBox}>{error}</p>
         <Button onClick={() => window.location.reload()} className={`${btnPrimary} mt-5`}>
           Try again
@@ -335,7 +335,7 @@ export default function VerifyFlow() {
         <Header
           icon={<CheckCircle2 className="h-5 w-5" />}
           title="You're all set."
-          sub="Taking you to add funds — your first session starts from there."
+          sub="Taking you to add funds. Your first session starts from there."
         />
         <a href={DONE_URL} className={btnPrimary}>
           Add funds
@@ -350,7 +350,7 @@ export default function VerifyFlow() {
         <Header
           icon={<Clock className="h-5 w-5" />}
           title="Your email and mobile are confirmed."
-          sub="We are switching your account on. This usually takes a moment — check again, or message us on WhatsApp from the button on this page if it does not change."
+          sub="We're switching your account on, which usually takes a moment. Check again, or message us on WhatsApp with the button on this page if nothing changes."
         />
         {error && <p className={`${errorBox} mb-4`}>{error}</p>}
         <Button onClick={recheck} disabled={busy} className={btnPrimary}>
@@ -367,7 +367,7 @@ export default function VerifyFlow() {
         <Header
           icon={<Mail className="h-5 w-5" />}
           title="Confirm your email."
-          sub="Open the sign-in link we emailed you. That confirms the address, and you will land back here for the last step."
+          sub="Open the sign-in link we emailed you. That confirms the address and brings you back here for the last step."
         />
         {emailResent && (
           <p className="cf-glass-inset mb-4 border-l-2 border-l-blue px-4 py-3 text-sm leading-6 text-ink-2">
@@ -399,7 +399,7 @@ export default function VerifyFlow() {
         <Header
           icon={<Phone className="h-5 w-5" />}
           title="Add your mobile number."
-          sub="We'll send a code on WhatsApp. Indian regulations (CERT-In) require a verified contact number for compute rental — any country code works."
+          sub="We'll send a code on WhatsApp, because Indian regulations (CERT-In) require a verified contact number for compute rental. Any country code works."
         />
         <form onSubmit={submitPhone} className="grid gap-4">
           <div className="flex gap-2">
@@ -453,7 +453,7 @@ export default function VerifyFlow() {
         title="Confirm your mobile."
         sub={
           <>
-            We will send a 6-digit code on WhatsApp to{" "}
+            We&apos;ll send a 6-digit code on WhatsApp to{" "}
             <span className="font-medium text-ink">{status?.phone_masked ?? "the number on your account"}</span>.
           </>
         }

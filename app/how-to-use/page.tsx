@@ -27,7 +27,7 @@ export const metadata: Metadata = {
 const STEPS = [
   {
     title: "1. Create an account.",
-    body: "Sign up with your email address. Choose Individual if you are a freelancer or working on your own projects, or Business if you are GST-registered and need invoices in the company's name. A business account also asks for your registered name and GSTIN, which then appear on every tax invoice.",
+    body: "Sign up with your email address. Choose Individual if you're a freelancer or working on your own projects, or Business if you're GST-registered and need invoices in the company's name. A business account also asks for your registered name and GSTIN, which then appear on every tax invoice.",
   },
   {
     title: "2. Confirm your mobile number.",
@@ -35,50 +35,50 @@ const STEPS = [
   },
   {
     title: "3. Add credit.",
-    body: "Top up your wallet from the website or the app, by card, UPI or netbanking — international cards are accepted. New customers get an intro offer on their first top-up; the current terms are on the Pricing page. There is no setup fee and no monthly minimum on pay-as-you-go. Business accounts can be invoiced monthly instead of prepaying.",
+    body: "Top up your wallet from the website or the app by card, UPI or netbanking. International cards work too. New customers get an intro offer on their first top-up, and the current terms are on the Pricing page. Pay-as-you-go has no setup fee and no monthly minimum. Business accounts can be invoiced monthly instead of prepaying.",
   },
   {
     title: "4. Install Coreframe Connect.",
-    body: "Connect is the Windows client. It handles the private network link and the stream, so there is nothing else to set up. Download it from your account using Chrome — Edge blocks the file outright — then run the installer and sign in. Windows will warn you about it, because the installer is not code-signed yet. Installing on Windows, below, shows the two clicks that get past it.",
+    body: "Connect is the Windows client. It handles the private network link and the stream, so there's nothing else to set up. Download it from your account in Chrome (Edge blocks the file outright), then run the installer and sign in. Windows will warn you about it because the installer isn't code-signed yet. The Installing on Windows section below shows the two clicks that get past the warning.",
   },
   {
     title: "5. Press Connect.",
-    body: `Pick your machine and press Connect. A workstation is prepared for you and the desktop appears in about two minutes, streamed at ${NODE.stream}. Billing does not start until the stream does. Provisioning time and failed connections are never charged.`,
+    body: `Pick your machine and press Connect. A workstation is prepared for you and the desktop appears in about two minutes, streamed at ${NODE.stream}. Billing doesn't start until the stream does, and we never charge for provisioning time or failed connections.`,
   },
   {
     title: "6. Work, then end the session.",
-    body: "You get a full Windows desktop with the professional applications already installed. Your storage is mapped as drive N:, labelled Coreframe Datalake. Save project files there and nowhere else. When you are done, end the session from Connect. Billing stops at that moment and everything on N: stays where you left it.",
+    body: "You get a full Windows desktop with the professional applications already installed. Your storage is mapped as drive N:, labelled Coreframe Datalake. Save project files there and nowhere else. When you're done, end the session from Connect. Billing stops right then, and everything on N: stays where you left it.",
   },
 ];
 
 const FAQS = [
   {
     q: "What is Coreframe?",
-    a: `Coreframe rents Windows GPU workstations by the minute, hosted in India. You stream a real ${NODE.gpu} desktop to the laptop you already own and use it as you would a workstation under your desk — D5 Render, Lumion, Enscape, Revit, 3ds Max, Blender, CFD work, anything that needs a GPU. It is not a render farm. You drive the machine yourself rather than submitting jobs to a queue.`,
+    a: `Coreframe rents Windows GPU workstations by the minute, hosted in India. You stream a real ${NODE.gpu} desktop to the laptop you already own and use it like a workstation under your desk, for D5 Render, Lumion, Enscape, Revit, 3ds Max, Blender, CFD work or anything else that needs a GPU. You drive the machine yourself. There's no job queue, because it isn't a render farm.`,
   },
   {
     q: "How is Coreframe billed?",
-    a: "Per minute, and only while the stream is running. Billing starts when the remote desktop appears and stops when you end the session. Provisioning time, failed connections and uploads are not charged. Prices include GST and a tax invoice is issued for every payment.",
+    a: "Per minute, and only while the stream is running. Billing starts when the remote desktop appears and stops when you end the session. We don't charge for provisioning time, failed connections or uploads. Prices include GST, and you get a tax invoice for every payment.",
   },
   {
     q: "Do I need my own software licences?",
-    a: "For commercial applications, yes. D5 Render, Lumion, Enscape, V-Ray, Revit, AutoCAD, 3ds Max and the like are licensed to you rather than to the machine, so you install them and sign in with your own subscription. Free software — Blender, Twinmotion, Unreal Engine, the Autodesk viewers and the usual utilities — is already installed.",
+    a: "For commercial applications, yes. D5 Render, Lumion, Enscape, V-Ray, Revit, AutoCAD, 3ds Max and the like are licensed to you, not the machine, so you install them and sign in with your own subscription. Free software is already installed: Blender, Twinmotion, Unreal Engine, the Autodesk viewers and the usual utilities.",
   },
   {
     q: "Can I install my own software on the workstation?",
-    a: "The applications are installed for you rather than by you. Your session runs as a standard Windows user, which is what lets us promise the machine is reset to a clean image before the next customer: nothing you or anyone else runs can survive it. Anything portable that does not need an installer will run. If you need an application we do not carry, email admin@coreframecloud.com. Free software we add to the standard image, usually the same day. Licensed software — Autodesk, Chaos, Lumion — needs your own account even to download, so we arrange a short setup session with you, and after that it is on every workstation you launch.",
+    a: "We install the applications for you. Your session runs as a standard Windows user, which is how we can promise the machine goes back to a clean image before the next customer, with nothing you or anyone else ran surviving the reset. Portable software that doesn't need an installer will run. If you need an application we don't carry, email admin@coreframecloud.com. We add free software to the standard image, usually the same day. Licensed software from Autodesk, Chaos or Lumion needs your own account even to download, so we arrange a short setup session with you. After that it's on every workstation you launch.",
   },
   {
     q: "Where exactly do I save my files?",
-    a: "On drive N:, labelled Coreframe Datalake. It is mapped for you before the desktop appears, and it is the only place that survives the session. The Desktop, Documents, Downloads and the whole C: drive are wiped when you finish, along with anything you installed. If your project uses linked assets — D5 Render, Twinmotion and 3ds Max all do — keep the entire project folder on N: rather than only the scene file, because the links break the moment the textures sit somewhere that no longer exists. The simplest habit is Save As to N: at the very start, so every later save already lands in the right place.",
+    a: "On drive N:, labelled Coreframe Datalake. It's mapped for you before the desktop appears, and it's the only place that survives the session. The Desktop, Documents, Downloads and the whole C: drive are wiped when you finish, along with anything you installed. If your project uses linked assets (D5 Render, Twinmotion and 3ds Max all do), keep the whole project folder on N:, not just the scene file. Otherwise the links break as soon as the textures point somewhere that no longer exists. The easiest habit is to Save As to N: right at the start, so every later save lands in the right place.",
   },
   {
     q: "Why is the workstation wiped between sessions?",
-    a: "So every customer starts from an identical, clean machine and no trace of anyone else's work can reach them. If your projects are under NDA, this is the property you want: the previous session cannot leave files, credentials or browser history behind for you to find, and yours cannot for the next person.",
+    a: "So every customer starts from an identical, clean machine and nothing from anyone else's work can reach them. If your projects are under NDA, that's what you want. The previous session can't leave files, credentials or browser history behind for you to find, and yours can't leave anything for the next person.",
   },
   {
     q: "What internet speed do I need?",
-    a: "About 20 Mbps is comfortable at 1080p, and around 50 Mbps shows the 4K stream at its best. Steadiness matters more than raw bandwidth — a wired connection or 5 GHz Wi-Fi beats a quicker link that drops packets, because streaming is more sensitive to latency and jitter than to throughput.",
+    a: "About 20 Mbps is comfortable at 1080p, and around 50 Mbps shows the 4K stream at its best. A steady connection matters more than raw bandwidth. Streaming is more sensitive to latency and jitter than to throughput, so a wired connection or 5 GHz Wi-Fi beats a quicker link that drops packets.",
   },
   {
     q: "Can my whole studio use one account?",
@@ -90,7 +90,7 @@ const FAQS = [
   },
   {
     q: "How do I get my files onto the workstation?",
-    a: "Upload them to your Coreframe storage from the app or the website before the session, and they are on the mapped drive when the desktop appears. You can also download straight into the session from cloud storage you already use.",
+    a: "Upload them to your Coreframe storage from the app or the website before the session, and they'll be on the mapped drive when the desktop appears. You can also download straight into the session from cloud storage you already use.",
   },
 ];
 
@@ -130,7 +130,7 @@ export default function HowToUsePage() {
         <p className="cf-lead mt-5">
           Coreframe rents Windows GPU workstations by the minute, hosted in India. You stream a real{" "}
           {NODE.gpu} desktop to the computer you already own, work on it as normal, and pay for the
-          minutes you use. Here is the whole thing, start to finish.
+          minutes you use. Here&apos;s the whole thing, start to finish.
         </p>
 
         <section className="mt-14">
@@ -151,18 +151,17 @@ export default function HowToUsePage() {
         <section id="installing-on-windows" className="mt-14 scroll-mt-24">
           <h2 className="cf-section-title">Installing on Windows.</h2>
           <p className="cf-section-copy mt-3">
-            Windows warns you about our installer and the way past it is not obvious. Two things.
-            Download in Chrome rather than Edge &mdash; Edge blocks the file outright and gives you
-            no way through. Then, when the blue &ldquo;Windows protected your PC&rdquo; box appears,
+            Windows warns you about our installer, and the way past it isn&apos;t obvious. First,
+            download in Chrome. Edge blocks the file outright and gives you no way through. Then, when the blue &ldquo;Windows protected your PC&rdquo; box appears,
             click <strong className="text-ink">More info</strong>, which is a small link and easy to
             miss, and then <strong className="text-ink">Run anyway</strong>.
           </p>
           <p className="cf-section-copy mt-3">
-            The warning is there because our installer is not code-signed yet, so Windows cannot
-            check the publisher. That reputation builds as more people install it &mdash; so if you
-            click through, you are genuinely helping us get there. We are a young company and we
-            would rather say that plainly than pretend the warning is not happening. Nothing is
-            wrong with your machine or with the file.
+            The warning is there because our installer isn&apos;t code-signed yet, so Windows can&apos;t
+            check the publisher. Windows builds that reputation as more people install it, so
+            clicking through does help us get there. We&apos;re a young company and we&apos;d rather
+            tell you that than pretend the warning isn&apos;t there. Nothing is wrong with your
+            machine or with the file.
           </p>
           <figure className="mt-6">
             <Image
@@ -184,12 +183,12 @@ export default function HowToUsePage() {
           <p className="cf-section-copy mt-3">
             The workstation resets between sessions. Software you install, and anything left on the
             Desktop, in Documents or on C:, is wiped when you finish. Only drive{" "}
-            <span className="font-mono font-semibold text-ink">N:</span> — labelled Coreframe
-            Datalake — survives. Save your work there and nothing is lost.
+            <span className="font-mono font-semibold text-ink">N:</span>, labelled Coreframe
+            Datalake, survives. Save your work there and you won&apos;t lose any of it.
           </p>
           <p className="cf-section-copy mt-3">
-            That reset is what makes every session start from a clean, identical machine. No
-            leftovers from the customer before you, and none of yours for the customer after.
+            That reset is why every session starts on a clean, identical machine. Nothing is left
+            over from the customer before you, and nothing of yours is left for the customer after.
           </p>
         </section>
 

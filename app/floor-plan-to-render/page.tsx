@@ -58,17 +58,17 @@ const steps = [
   {
     n: "01",
     title: "Upload the DXF.",
-    body: "We read the walls off the layer your drawing uses, close the rooms and report the real areas. You see which layer we picked and can correct it before anything else happens. Free.",
+    body: "We read the walls off the layer your drawing uses, close the rooms and report the real areas. You see which layer we picked and can correct it before anything else happens. This step is free.",
   },
   {
     n: "02",
     title: "Pick a room and say what it is.",
-    body: "Every room in the plan, listed separately. Tell us it is a bedroom or a kitchen — one click — and the furniture and the camera position change to match. Free.",
+    body: "Every room in the plan is listed separately. One click tells us it's a bedroom or a kitchen, and the furniture and camera position change to match. There's no charge for this either.",
   },
   {
     n: "03",
     title: "Say how it should feel.",
-    body: "One sentence is enough: “matte handle-less cabinets in muted olive”. You get three camera angles back and compare them side by side. Still free.",
+    body: "One sentence is enough: “matte handle-less cabinets in muted olive”. You get three camera angles back to compare side by side. That's free too.",
   },
   {
     n: "04",
@@ -80,23 +80,23 @@ const steps = [
 const faqs = [
   {
     q: "What file does Coreframe Studio need?",
-    a: "A DXF. If you work in DWG, Revit or ArchiCAD, exporting a DXF is a Save As. There is a three-click guide inside Studio, and a demo 3BHK plan you can download and try it on if you do not have a drawing to hand.",
+    a: "A DXF. If you work in DWG, Revit or ArchiCAD, exporting a DXF is a Save As. There's a three-click guide inside Studio, and a demo 3BHK plan you can download and try if you don't have a drawing to hand.",
   },
   {
     q: "Does it invent rooms or windows that are not on my plan?",
-    a: "No. Walls, corners, doors and windows are read from the DXF. If a room has no window marked, we do not add one — it may be windowless on purpose, and that is your decision. Furniture and the camera position ARE placed by us, suggested from the room's shape and the room type you picked, and Studio says so on screen every time.",
+    a: "No. Walls, corners, doors and windows are read from the DXF. If a room has no window marked, we don't add one. It may be windowless on purpose, and that's your call. We do place the furniture and the camera, based on the room's shape and the room type you picked, and Studio tells you so on screen every time.",
   },
   {
     q: "What does it cost?",
-    a: "Reading the drawing, browsing the rooms and comparing the three camera angles cost nothing. You pay only when you ask for an image: a 2K export is 30 credits and a 4K export is 42. What a credit costs is shown in Studio before you spend one.",
+    a: "Reading the drawing, browsing the rooms and comparing the three camera angles are free. You pay only when you ask for an image: a 2K export is 30 credits and a 4K export is 42. What a credit costs is shown in Studio before you spend one.",
   },
   {
     q: "Do I have to install anything?",
-    a: "No. Studio runs in the browser and starts with an email and a code. That is different from Coreframe's GPU workstation product, which needs a small client app and a confirmed mobile number, because that hands you a real machine.",
+    a: "No. Studio runs in the browser, and you start with an email and a code. Coreframe's GPU workstation product is different: it hands you a real machine, so it needs a small client app and a confirmed mobile number.",
   },
   {
     q: "What happens to my client's drawing?",
-    a: "It stays in your account until you delete it, and there is a delete button. We do not purge on a schedule and we do not train anything on your drawings. Everything is hosted in Bengaluru.",
+    a: "It stays in your account until you delete it (there's a delete button). We don't purge on a schedule, and we don't train anything on your drawings. Everything is hosted in Bengaluru.",
   },
 ];
 
@@ -129,8 +129,8 @@ export default function Page() {
               Upload a DXF. Coreframe Studio reads the walls, doors and windows
               out of the drawing, works out where a photographer would stand,
               and gives you an interior image you can export at 2K or 4K. It
-              runs in the browser — nothing to install, and an email is all it
-              takes to start.
+              runs in the browser, so there&rsquo;s nothing to install, and you
+              only need an email to start.
             </p>
 
             {/* Studio is not open to the public yet. Saying so here, plainly, is
@@ -141,9 +141,9 @@ export default function Page() {
             <div className="cf-note mt-9">
               <p className="cf-eyebrow mb-3 text-blue">Releasing soon</p>
               <p className="text-base leading-[1.62] text-ink">
-                Coreframe Studio is in private testing. It is not open for
-                sign-ups yet — the five-page guide below is the clearest look at
-                how it reads a drawing and what it gives you back.
+                Coreframe Studio is in private testing and isn&rsquo;t open for
+                sign-ups yet. Until it is, the five-page guide below is the best
+                way to see how it reads a drawing and what it gives you back.
               </p>
             </div>
 
@@ -209,7 +209,7 @@ export default function Page() {
                 className="h-auto w-full max-w-full"
               />
               <figcaption className="mt-4 text-sm leading-[1.62] text-ink-2">
-                The demo plan, drawn to scale — 10 rooms, 1,147 sq ft. Download
+                The demo plan, drawn to scale: 10 rooms, 1,147 sq ft. Download
                 it above and run it through Studio yourself.
               </figcaption>
             </figure>
@@ -242,24 +242,24 @@ export default function Page() {
             <h2 className="cf-section-title">We never invent your building.</h2>
             <p className="cf-section-copy mt-6">
               The walls, corners, doors and windows come from your DXF. If a room
-              has no window marked in the drawing, Studio does not add one — it
-              may be windowless on purpose, and that is the architect&rsquo;s
-              decision, not ours.
+              has no window marked in the drawing, Studio doesn&rsquo;t add one.
+              It may be windowless on purpose, and that&rsquo;s the
+              architect&rsquo;s decision to make.
             </p>
             <p className="cf-section-copy mt-4">
-              The furniture and the camera position are ours. They are suggested
-              from the room&rsquo;s shape and from the room type you pick, and
-              Studio says so on screen every time it places anything:{" "}
+              The furniture and the camera position are ours. We suggest them
+              from the room&rsquo;s shape and the room type you pick, and Studio
+              tells you on screen every time it places anything:{" "}
               <em className="text-ink">
                 &ldquo;We placed a bed, 2 nightstands, a wardrobe. None of it is in
                 your drawing.&rdquo;
               </em>
             </p>
             <p className="cf-section-copy mt-4">
-              Adding a window that is not on the plan changes what the building is.
-              Suggesting a bed in a room you called a bedroom does not. We keep
-              that line, and we label which side of it every part of the image came
-              from.
+              Adding a window that isn&rsquo;t on the plan would change the
+              building. Suggesting a bed in a room you called a bedroom doesn&rsquo;t,
+              so that&rsquo;s where we draw the line, and we label which side of it
+              every part of the image came from.
             </p>
           </div>
         </section>

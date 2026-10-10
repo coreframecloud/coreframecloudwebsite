@@ -67,7 +67,7 @@ export function WaitingCalculator({ ratePerHour }: { ratePerHour: number | null 
         </p>
         <p className="mt-2.5 text-[14.5px] leading-[1.6] text-ink-2">
           {hoursBack < 1
-            ? "Nothing, on these numbers. Which is a fine answer."
+            ? "Nothing, on these numbers. That's a fine answer too."
             : `${inr.format(Math.round(hoursBack))} billable hours a year, spent queueing.`}
         </p>
         {hoursBack >= 1 && gpuCost !== null ? (

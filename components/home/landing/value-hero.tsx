@@ -17,13 +17,13 @@ export function ValueHero() {
       <div className="cf-col">
         <p className="cf-eyebrow mb-5">GPU workstations · Bengaluru</p>
         <h1 className="cf-display">
-          Now that you&rsquo;re here &mdash; here is what we&rsquo;re worth to your studio.
+          You&rsquo;re here, so here&rsquo;s what we&rsquo;re worth to your studio.
         </h1>
         <p className="cf-lead mt-[22px]">
-          We give you back the hours you currently spend waiting. A real Windows workstation with
-          a current-generation RTX&nbsp;5080, opened from the laptop you already own, streamed in
-          4K. You work; when you close it, the billing stops. No month to commit to and nothing
-          to cancel.
+          We give you back the hours you spend waiting. You get a real Windows workstation with a
+          current-generation RTX&nbsp;5080, opened from the laptop you already own and streamed in
+          4K. Close it and billing stops. You don&rsquo;t sign up for a month, and there&rsquo;s
+          nothing to cancel.
         </p>
       </div>
     </section>

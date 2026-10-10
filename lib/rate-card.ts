@@ -331,11 +331,11 @@ export function introOfferFaq(card: RateCard | null): { q: string; a: string } |
   return {
     q: "Is there an offer for new customers?",
     a:
-      `Yes — your first top-up of ${rupees(o.priceRupees)} buys ${hoursLabel(o.hours)}` +
+      `Yes. Your first top-up of ${rupees(o.priceRupees)} buys ${hoursLabel(o.hours)}` +
       `${o.gpuName ? ` on an ${o.gpuName}` : ""}${o.validityDays ? `, to use within ${o.validityDays} days` : ""}, ` +
-      "one per customer. Sign-up is an email and a WhatsApp code to your mobile — no ID documents — " +
-      "and international cards are accepted. We make no claim about what you can finish in that " +
-      "time; it depends entirely on your scene.",
+      "one per customer. You sign up with an email and a WhatsApp code to your mobile, with no ID documents, " +
+      "and international cards work. We won't say what you can finish in that time, because it " +
+      "depends entirely on your scene.",
   };
 }
 
@@ -470,8 +470,8 @@ export function billingSentence(card: RateCard | null): string {
   const min = card.minimum_billable_minutes;
   const minimum = min && min > 1 ? ` There is a ${min}-minute minimum.` : "";
   return (
-    "Billed per minute from the moment the stream starts, not per whole hour — " +
-    `provisioning, uploads and failed connections are free.${minimum}`
+    "Billed per minute from the moment the stream starts, not per whole hour. " +
+    `Provisioning, uploads and failed connections are free.${minimum}`
   );
 }
 
@@ -501,7 +501,7 @@ export function pricingFaqAnswer(card: RateCard | null): string | null {
   if (fee && best) {
     parts.push(
       `Committed monthly plans start at ${fee}/month and bill extra hours below the ad-hoc rate at every tier` +
-        (tiers.length ? ` — ${tiers.join(", ")}.` : "."),
+        (tiers.length ? `: ${tiers.join(", ")}.` : "."),
     );
   }
   parts.push("All prices include 18% GST, and a GST invoice showing the tax split is issued.");

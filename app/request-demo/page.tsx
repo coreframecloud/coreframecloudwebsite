@@ -22,9 +22,9 @@ export default function RequestDemoPage() {
             <h1 className="cf-display mt-3">Tell us what you need a machine for.</h1>
 
             <p className="cf-lead mt-5">
-              Your email, your number and the kind of work you run. That is the whole form. It
-              hands the details to WhatsApp, where you can send the scene, the deadline and the
-              file that will not open, and the conversation carries on there.
+              All we ask for is your email, your number and the kind of work you run. The form passes
+              those to WhatsApp, and we carry on the conversation there. Send us the scene, the
+              deadline, or the file that won&apos;t open.
             </p>
           </div>
 

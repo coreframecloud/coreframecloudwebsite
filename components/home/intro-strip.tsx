@@ -48,7 +48,7 @@ export async function IntroStrip() {
   // and so a wide monitor is never showing empty bar.
   const segments = [
     { strong: headline, rest: gpu },
-    { strong: "No paperwork", rest: "email and mobile, that is all" },
+    { strong: "No paperwork", rest: "just your email and mobile number" },
     { strong: "International cards", rest: "accepted" },
     { strong: "Billed by the minute", rest: hourly ? `${hourly} after that, GST included` : "GST included" },
   ];

@@ -51,15 +51,15 @@ export default async function EnscapePage() {
     },
     {
       q: "Can I use Enscape with Revit or SketchUp on a cloud workstation?",
-      a: "Yes. Enscape is a plugin, so install its host application first — Revit, SketchUp, Rhino or Archicad — then Enscape on top, and work exactly as you would locally. Both sign in with your own accounts.",
+      a: "Yes. Enscape is a plugin, so install its host application first (Revit, SketchUp, Rhino or Archicad), then Enscape on top, and work the way you would locally. Both sign in with your own accounts.",
     },
     {
       q: "What is in the workstation?",
-      a: `${NODE.gpu} with ${NODE.vram}, ${NODE.ram} of system memory, ${NODE.cpu} and ${NODE.disk}, running ${NODE.os} in ${NODE.location}. One customer per node — the card is not shared and not sliced into a virtual GPU.`,
+      a: `${NODE.gpu} with ${NODE.vram}, ${NODE.ram} of system memory, ${NODE.cpu} and ${NODE.disk}, running ${NODE.os} in ${NODE.location}. One customer per node. Nobody shares the card, and it isn't sliced into a virtual GPU.`,
     },
     {
       q: "Do I need my own Enscape licence?",
-      a: "Yes — Enscape is bring your own licence. Sign in to your Enscape account on the workstation to activate your named-user or floating seat. Coreframe charges for GPU-hours and nothing else.",
+      a: "Yes, Enscape is bring your own licence. Sign in to your Enscape account on the workstation to activate your named-user or floating seat. Coreframe only charges for GPU-hours.",
     },
     ...(priceAnswer
       ? [{ q: "How much does an Enscape cloud workstation cost in India?", a: priceAnswer }]
@@ -93,8 +93,8 @@ export default async function EnscapePage() {
               <br className="hidden md:block" /> Ray tracing included.
             </h1>
             <p className="cf-lead mt-[22px]">
-              Enscape ray-traces in real time, which asks for VRAM and RT cores
-              the modelling laptop does not have. Start a Windows workstation with
+              Enscape ray-traces in real time, which needs VRAM and RT cores
+              your modelling laptop doesn&rsquo;t have. Start a Windows workstation with
               an RTX&nbsp;5080, install Revit or SketchUp and Enscape on top, and
               walk the client through the building while your own machine stays
               free.
@@ -102,7 +102,7 @@ export default async function EnscapePage() {
             <p className="cf-section-copy mt-5">
               You reach it through the Coreframe Connect app, streamed at{" "}
               {NODE.stream}. The viewport moves when you move the mouse, which is
-              the whole point of a real-time renderer.
+              what you want from a real-time renderer.
             </p>
 
             <div className="mt-8 flex flex-wrap gap-3">
@@ -122,16 +122,16 @@ export default async function EnscapePage() {
             <div className="mt-9 grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3">
               {[
                 {
-                  title: "RT cores, not emulation",
-                  body: "Enscape's ray-traced reflections, shadows and global illumination run on the dedicated RT cores of the RTX 5080 — the same silicon a local RTX machine uses for them.",
+                  title: "Real RT cores",
+                  body: "Enscape's ray-traced reflections, shadows and global illumination run on the RTX 5080's dedicated RT cores, the same silicon a local RTX machine uses.",
                 },
                 {
                   title: "Your host app, same desktop",
-                  body: "Install Revit, SketchUp, Rhino or Archicad on the same workstation. Enscape plugs into it exactly as it does locally, because it is an ordinary Windows desktop.",
+                  body: "Install Revit, SketchUp, Rhino or Archicad on the same workstation. Enscape plugs into it the same way it does locally. It's an ordinary Windows desktop.",
                 },
                 {
                   title: "No machine to buy",
-                  body: `A workstation that renders comfortably lands at about ${WORKSTATION_REPLACEMENT_COST} in India, gets bought once, and sits idle the three weeks after the presentation it was bought for. Renting means the machine exists when the deadline does.`,
+                  body: `A workstation that renders comfortably costs about ${WORKSTATION_REPLACEMENT_COST} in India. You buy it once, and then it sits idle for the three weeks after the presentation you bought it for. Rent one and it's there when the deadline is.`,
                 },
               ].map((c) => (
                 <div key={c.title} className="cf-card">
@@ -160,10 +160,10 @@ export default async function EnscapePage() {
               ))}
             </dl>
             <p className="cf-section-copy mt-5">
-              One node, one GPU, one customer at a time. The comparison worth
-              making is VRAM: {NODE.vram} against the 6 to 8 GB in most laptops
-              sold for design work, and VRAM is what decides whether a scene loads
-              at full texture resolution or has to be cut down.
+              Each node has one GPU and one customer at a time. The number to
+              compare is VRAM: {NODE.vram}, against the 6 to 8 GB in most laptops
+              sold for design work. VRAM decides whether a scene loads at full
+              texture resolution or has to be cut down.
             </p>
           </div>
         </section>
@@ -182,8 +182,8 @@ export default async function EnscapePage() {
                 </span>{" "}
                 Sign in to your Enscape account on the workstation to activate your
                 seat. Named-user and floating both work. All prices include 18%
-                GST — what you see is what you pay, and a GST invoice showing the
-                taxable value and the tax split is issued.
+                GST, so what you see is what you pay. You get a GST invoice showing
+                the taxable value and the tax split.
               </p>
             </div>
           </div>

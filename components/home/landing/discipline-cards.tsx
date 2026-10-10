@@ -31,22 +31,21 @@ const CARDS = [
     title: "Present at 8K, not 2K",
     body: (
       <>
-        16 GB of VRAM holds a scene that an 8 GB card drops. Render stills large enough to print,
-        and put a walkthrough in front of a client instead of a still. On Blender Open Data medians
-        the 5080 does <strong className="font-semibold text-ink">3× the work of a 4060</strong> and{" "}
-        <strong className="font-semibold text-ink">4× a 3060</strong> — both rounded down, with the
-        raw figures in the rate card below.
+        16 GB of VRAM holds a scene that an 8 GB card drops. You can render stills big enough to
+        print, and show a client a walkthrough instead of a still. On Blender Open Data medians the
+        5080 does 3× the work of a 4060 and 4× a 3060. We rounded both down, and the raw figures are
+        in the rate card below.
       </>
     ),
   },
   {
     who: "Students & freelancers",
-    title: "Buy the hours, not the hardware",
+    title: "Rent a GPU for the weeks you need one",
     body: (
       <>
-        You need a serious GPU for the four weeks of a thesis or a competition entry, not for four
-        years. Rent it for those weeks instead — and your portfolio piece is limited by your idea
-        rather than by what your laptop can hold.
+        A thesis or a competition entry needs a serious GPU for about four weeks, and you&rsquo;d
+        be buying one for four years. Rent it for those weeks, and your laptop stops deciding how
+        ambitious your portfolio piece can be.
       </>
     ),
   },
@@ -55,9 +54,8 @@ const CARDS = [
     title: "A workstation for the week you need it",
     body: (
       <>
-        Your solver may be CPU-bound — most still are — but{" "}
-        <strong className="font-semibold text-ink">post-processing and visualisation are not</strong>.
-        ParaView, EnSight, CAD viewports and any GPU solver your tool supports run on a machine you
+        Your solver may well be CPU-bound (most still are), but post-processing and visualisation
+        aren&rsquo;t. ParaView, EnSight, CAD viewports and any GPU solver your tool supports run on a machine you
         didn&rsquo;t have to buy, for as long as the project lasts.
       </>
     ),
@@ -67,11 +65,10 @@ const CARDS = [
     title: "Heavy models, thin laptop",
     body: (
       <>
-        A full services model in Revit or Navisworks will bring a work laptop to its knees — usually
-        because it runs out of memory, not GPU.{" "}
-        <strong className="font-semibold text-ink">64 GB of RAM behind a 5080</strong> opens it, from
-        the same laptop, in the same afternoon — and hands the client a rendered walkthrough rather
-        than a plan set.
+        A full services model in Revit or Navisworks will bring a work laptop to its knees, and
+        it&rsquo;s usually memory that runs out, not the GPU. With 64 GB of RAM behind a 5080 it
+        opens from that same laptop the same afternoon, and you can hand the client a rendered
+        walkthrough instead of a plan set.
       </>
     ),
   },

@@ -25,15 +25,15 @@ function buildFaq(storage: StorageTerms, intro: IntroOffer | null, adhocRate?: s
   const items: QA[] = [
     {
       q: "Is this a render farm?",
-      a: "No. A render farm takes your finished file and returns images. Coreframe gives you the whole machine — you open D5 or Lumion, move around the viewport, adjust lighting and see it live. If all you need is unattended batch rendering, a render farm is genuinely cheaper and we'll say so.",
+      a: "No. A render farm takes your finished file and sends back images. Coreframe gives you the whole machine: you open D5 or Lumion, move around the viewport, change the lighting and see it live. If all you need is unattended batch rendering, a render farm really is cheaper, and we'll tell you so.",
     },
     {
       q: "What internet speed do I need?",
-      a: "About 25 Mbps with stable latency is the practical floor. Below that the experience gets frustrating and we'd rather tell you now than take your money. Trying it on the connection you'd actually use is the honest test.",
+      a: "About 25 Mbps with stable latency is the practical minimum. Below that it gets frustrating, and we'd rather tell you now than take your money. The real test is trying it on the connection you'd actually use.",
     },
     {
       q: "Where do my files live, and who can see them?",
-      a: `On Coreframe storage in India, tied to your account — ${storage.paidGb} GB included. The workstation itself is wiped and restored to a clean image after every session, so nothing you worked on is left behind for the next person. That's also why software you install yourself only lasts for that session.`,
+      a: `On Coreframe storage in India, tied to your account, with ${storage.paidGb} GB included. After every session the workstation is wiped and restored to a clean image, so nothing you worked on is left for the next person. That's also why software you install yourself only lasts for that session.`,
     },
     {
       q: "Do I need to install anything?",
@@ -42,12 +42,12 @@ function buildFaq(storage: StorageTerms, intro: IntroOffer | null, adhocRate?: s
     {
       q: "How am I charged?",
       a: adhocRate
-        ? `${adhocRate} per hour with GST included, billed per minute — you pay for the time the machine is actually running, not for whole hours. Nothing is charged automatically; you add money to your wallet and sessions draw from it. There's no subscription running in the background.`
-        : "Billed per minute of actual use, with GST included in the published rate. Nothing is charged automatically; you add money to your wallet and sessions draw from it. There's no subscription running in the background.",
+        ? `${adhocRate} per hour with GST included, billed per minute. You pay for the minutes the machine is actually running instead of rounding up to whole hours. Nothing is charged automatically: you add money to your wallet and sessions draw from it, with no subscription running in the background.`
+        : "You're billed per minute of actual use, and GST is included in the published rate. Nothing is charged automatically: you add money to your wallet and sessions draw from it, with no subscription running in the background.",
     },
     {
       q: "Do I need Aadhaar, a passport or any ID documents?",
-      a: "No. Sign-up is your email, a one-time code to your mobile on WhatsApp, and a payment. Indian regulations (CERT-In) require us to keep a verified contact number for anyone renting compute, which is what the mobile code is for — any country code works.",
+      a: "No. You sign up with your email, a one-time code sent to your mobile on WhatsApp, and a payment. Indian regulations (CERT-In) require us to keep a verified contact number for anyone renting compute, which is what the mobile code is for. Any country code works.",
     },
     {
       q: "Can I pay from outside India?",
@@ -62,7 +62,7 @@ function buildFaq(storage: StorageTerms, intro: IntroOffer | null, adhocRate?: s
   if (intro) {
     items.splice(1, 0, {
       q: "Is there an offer for new customers?",
-      a: `Yes — your first top-up of ${rupees(intro.priceRupees)} buys ${hoursLabel(intro.hours)}${intro.gpuName ? ` on an ${intro.gpuName}` : ""}${intro.validityDays ? `, to use within ${intro.validityDays} days` : ""}. One per customer. It is the same workstation every paying customer uses, billed per minute, so you can open your own project and judge it yourself. How much of a render that covers depends entirely on your scene, so we won't pretend to a number.`,
+      a: `Yes. Your first top-up of ${rupees(intro.priceRupees)} buys ${hoursLabel(intro.hours)}${intro.gpuName ? ` on an ${intro.gpuName}` : ""}${intro.validityDays ? `, to use within ${intro.validityDays} days` : ""}. It's one per customer. You get the same workstation every paying customer uses, billed per minute, so you can open your own project and judge it for yourself. How much rendering that covers depends entirely on your scene, so we won't guess at a number.`,
     });
   }
 

@@ -109,10 +109,10 @@ function StartCard({
         </p>
         <p className="mt-2 text-sm leading-6 text-ink-2">
           {needsPayment
-            ? "Your account is ready. Your first top-up unlocks sessions — "
-            : "Your first top-up — "}
-          one per customer, billed per minute of streaming. Card, UPI or netbanking;
-          international cards accepted.
+            ? "Your account is ready, and your first top-up unlocks sessions. It\u2019s "
+            : "Your first top-up is "}
+          one per customer and billed per minute of streaming. Pay by card, UPI or netbanking;
+          international cards work too.
         </p>
         <button
           type="button"
@@ -133,8 +133,8 @@ function StartCard({
         {min ? `Add ${rupees(min)} to start.` : "Add funds to start."}
       </p>
       <p className="mt-2 text-sm leading-6 text-ink-2">
-        Your account is set up. Sessions start once your wallet has its first top-up —
-        billed per minute of streaming.
+        Your account is set up. Sessions start once your wallet has its first top-up, and
+        they&rsquo;re billed per minute of streaming.
       </p>
       <button
         type="button"
@@ -210,7 +210,7 @@ function UsageCards({ wallet }: { wallet: WalletData | null }) {
             <p className="mt-2 text-xs leading-5 text-ink-2">
               Taken from your wallet each morning at ₹
               {wallet.storage_rate_rupees_per_tb_month ?? 1999}/TB/month. Delete what you
-              do not need and it stops the same day — there is nothing to cancel.
+              don&rsquo;t need and the charge stops the same day. There&rsquo;s nothing to cancel.
             </p>
           </div>
         )}
@@ -287,7 +287,7 @@ function UsageCards({ wallet }: { wallet: WalletData | null }) {
               {wallet.storage_paid_unlocked ? (
                 <>
                   <b className="text-blue">{freeTier > 0 ? "+" : ""}{capGb - freeTier} GB unlocked</b> by your
-                  top-up — the space is yours whatever your balance does
+                  top-up. The space stays yours whatever your balance does
                 </>
               ) : (
                 <>
@@ -606,7 +606,7 @@ export default function MyActivityPage() {
             <h1 className="cf-section-title">
               My activity.
               {user?.full_name && (
-                <span className="font-normal break-words text-ink-3"> — {user.full_name}</span>
+                <span className="font-normal break-words text-ink-3"> · {user.full_name}</span>
               )}
             </h1>
           </div>
@@ -642,9 +642,9 @@ export default function MyActivityPage() {
                 Inside a session, save everything to{" "}
                 <span className="rounded-cf border border-rule-strong bg-paper-2 px-1.5 py-0.5 font-mono text-sm font-semibold whitespace-nowrap text-ink">
                   N:
-                </span>{" "}
-                — the drive labelled <span className="font-semibold text-ink">Coreframe Datalake</span>.
-                It is already mapped when the desktop appears, and it is the only
+                </span>,
+                the drive labelled <span className="font-semibold text-ink">Coreframe Datalake</span>.
+                It&rsquo;s already mapped when the desktop appears, and it&rsquo;s the only
                 place that survives the session.
               </p>
 
@@ -652,8 +652,8 @@ export default function MyActivityPage() {
                 <div className="cf-glass-inset p-4">
                   <p className="font-mono text-[11.5px] leading-none font-medium tracking-[0.2em] uppercase text-blue">Kept</p>
                   <p className="mt-2 text-sm leading-6 text-ink-2">
-                    Anything under <span className="font-mono text-ink">N:\</span>. Waiting for you
-                    next session, and downloadable from here any time.
+                    Anything under <span className="font-mono text-ink">N:\</span>. It&rsquo;ll be
+                    waiting next session, and you can download it from here any time.
                   </p>
                 </div>
                 <div className="cf-glass-inset p-4">
@@ -666,8 +666,8 @@ export default function MyActivityPage() {
                 <div className="cf-glass-inset p-4">
                   <p className="font-mono text-[11.5px] leading-none font-medium tracking-[0.2em] uppercase text-blue">Linked assets</p>
                   <p className="mt-2 text-sm leading-6 text-ink-2">
-                    Keep the <span className="font-semibold text-ink">whole project folder</span> on
-                    N:, not just the scene file — D5, Twinmotion and 3ds Max break if textures move.
+                    Keep the whole project folder on N:, not just the scene file. D5, Twinmotion
+                    and 3ds Max break if textures move.
                   </p>
                 </div>
               </div>
@@ -756,7 +756,7 @@ export default function MyActivityPage() {
               <p className="mt-1 text-xs text-ink-2">
                 {wallet?.gpu_rate_from_rupees != null
                   ? `GPU time from ₹${Math.round(wallet.gpu_rate_from_rupees)}/hr · GST included`
-                  : "— rates unavailable"}
+                  : "Rates unavailable right now"}
               </p>
               {/* Minutes granted before the trial was retired (10 Oct 2026)
                   are still the customer's; say so while any remain. */}

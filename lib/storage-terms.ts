@@ -123,7 +123,7 @@ export function storageBilling(card: RateCard | null): StorageBilling {
 export function storageBillingShort(t: StorageBilling): string {
   return t.active
     ? `${t.allowanceGb} GB included. Above that, Rs ${t.ratePerTbMonth}/TB/month, ` +
-      `charged daily from your wallet — delete what you do not need and it stops the same day.`
+      `charged daily from your wallet. Delete what you don't need and it stops the same day.`
     : `${t.allowanceGb} GB included with every account.`;
 }
 
@@ -146,9 +146,9 @@ export function storageBillingTerms(t: StorageBilling): string[] {
       `That ${t.allowanceGb} GB is yours whatever else happens on the account.`,
     `Storage above ${t.allowanceGb} GB costs Rs ${t.ratePerTbMonth} per TB per month, ` +
       `charged once a day from your wallet for that day only. Bring your storage back ` +
-      `under ${t.allowanceGb} GB and the charge stops the same day — there is nothing to cancel.`,
+      `under ${t.allowanceGb} GB and the charge stops the same day. There's nothing to cancel.`,
     `If your balance cannot cover a day, nothing is deleted. We email you, new GPU ` +
       `sessions pause until it is settled, and your files stay downloadable. After 30 days ` +
-      `and a final notice we remove data above the free ${t.allowanceGb} GB — never below it.`,
+      `and a final notice we remove data above the free ${t.allowanceGb} GB, never below it.`,
   ];
 }

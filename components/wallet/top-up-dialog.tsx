@@ -185,7 +185,7 @@ export default function TopUpDialog({
     }
     if (!countryIso) return setError("Select your country.");
     if (isIndia) {
-      if (!stateCode) return setError("Select your state — it decides the GST split on your invoice.");
+      if (!stateCode) return setError("Select your state. It decides the GST split on your invoice.");
       if (!/^\d{6}$/.test(pincode.trim())) return setError("Enter your 6-digit PIN code.");
     }
 
@@ -269,7 +269,7 @@ export default function TopUpDialog({
         setError("");
       } else if (msg.includes("confirm that payment")) {
         setError(
-          "Your payment went through but we could not confirm it here. It will be credited automatically within a few minutes — refresh this page, and contact us if it has not appeared.",
+          "Your payment went through, but we couldn't confirm it here. It'll be credited automatically within a few minutes. Refresh this page, and contact us if it hasn't appeared.",
         );
       } else {
         setError(msg);
@@ -366,7 +366,7 @@ export default function TopUpDialog({
                     Intro offer: your first top-up of ₹{introOffer.priceRupees.toLocaleString("en-IN")} buys{" "}
                     {hoursLabel(introOffer.hours)}
                     {introOffer.gpuName ? ` of ${introOffer.gpuName}` : ""}
-                    {introOffer.validityDays ? ` — use within ${introOffer.validityDays} days` : ""}.
+                    {introOffer.validityDays ? `, to use within ${introOffer.validityDays} days` : ""}.
                   </p>
                 )}
 

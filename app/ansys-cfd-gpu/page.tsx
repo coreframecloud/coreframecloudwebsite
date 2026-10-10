@@ -37,19 +37,19 @@ const SPECS: [string, string][] = [
 const whyGpu = [
   {
     title: "Where a GPU solver helps",
-    body: "Ansys Fluent has a native GPU solver that moves pressure-based steady and transient solving onto the card. OpenFOAM is a different case: only the linear solve goes to the GPU, and meshing, matrix assembly and I/O stay on the CPU. We publish no speedup figure, ours or anyone else's, because none of them were measured on your mesh. Benchmark it on a short booking.",
+    body: "Ansys Fluent has a native GPU solver that moves pressure-based steady and transient solving onto the card. OpenFOAM is a different case: only the linear solve goes to the GPU, and meshing, matrix assembly and I/O stay on the CPU. We don't publish a speedup figure, ours or anyone else's, because none of them were measured on your mesh. Benchmark it on a short booking.",
   },
   {
     title: "VRAM sets your mesh ceiling",
-    body: `VRAM is the hard ceiling. Ansys's own figures are roughly 1.0–1.9 GB per million tet or hex cells and 1.8–2.8 GB per million polyhedral cells. On this card's ${NODE.vram} that is about 8 million tet cells or 5 million polyhedral — and a mesh-independence study needs the same case two or three times over. Tell us your cell count and we will say plainly whether it fits.`,
+    body: `VRAM is the hard ceiling. Ansys's own figures are roughly 1.0 to 1.9 GB per million tet or hex cells and 1.8 to 2.8 GB per million polyhedral cells. On this card's ${NODE.vram} that's about 8 million tet cells or 5 million polyhedral, and a mesh-independence study needs the same case two or three times over. Tell us your cell count and we'll tell you straight whether it fits.`,
   },
   {
     title: "Memory bandwidth, not clock speed",
-    body: `Each solver iteration moves the full mesh state across memory, repeatedly. This card runs at ${NODE.memoryBandwidth}, which is the figure that matters for an iterative solve — far more than the core clock does.`,
+    body: `Each solver iteration moves the full mesh state across memory, over and over. This card runs at ${NODE.memoryBandwidth}, and for an iterative solve that figure matters far more than the core clock.`,
   },
   {
     title: "No idle machine on the books",
-    body: `A workstation of this class lands at about ${WORKSTATION_REPLACEMENT_COST} in India, and CFD work is bursty: a fortnight of solving, then a month of post-processing on a laptop. Renting by the hour means you pay for the hours the solver actually runs, on a machine you do not have to house, insure or depreciate.`,
+    body: `A workstation of this class lands at about ${WORKSTATION_REPLACEMENT_COST} in India, and CFD work is bursty: a fortnight of solving, then a month of post-processing on a laptop. Renting by the hour means you pay for the hours the solver actually runs, on a machine you don't have to house, insure or depreciate.`,
   },
 ];
 
@@ -70,17 +70,17 @@ const pricingTiers = [
   },
   {
     label: "Engineering",
-    elements: "2 M – 20 M elements",
+    elements: "2 M to 20 M elements",
     useFor: "Design validation, steady-state RANS",
   },
   {
     label: "Industrial",
-    elements: "20 M – 80 M elements",
+    elements: "20 M to 80 M elements",
     useFor: "Full-scale external aero, large HVAC, wind tunnel",
   },
   {
     label: "Large scale",
-    elements: "80 M – 200 M elements",
+    elements: "80 M to 200 M elements",
     useFor: "Complex multi-physics, LES, transient, parametric campaigns",
   },
 ];
@@ -94,7 +94,7 @@ const jsonLd = {
       name: "Does Ansys Fluent support GPU acceleration?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Yes. Ansys Fluent has a dedicated GPU solver, available since Ansys 2022 R1, that offloads pressure-based steady and transient solving to NVIDIA GPUs through CUDA. How much it helps depends on the case and on the solver: in OpenFOAM only the linear solve moves to the GPU, while matrix assembly and I/O stay on the CPU, so a share of the wall-clock time is untouched by the card. Ansys also tests and supports professional cards rather than the GeForce hardware we currently run. We publish no speedup figure, ours or anyone else's, because none of them were measured on your mesh — benchmark it on a short booking before you plan a deadline around it.",
+        text: "Yes. Ansys Fluent has a dedicated GPU solver, available since Ansys 2022 R1, that offloads pressure-based steady and transient solving to NVIDIA GPUs through CUDA. How much it helps depends on the case and on the solver: in OpenFOAM only the linear solve moves to the GPU, while matrix assembly and I/O stay on the CPU, so a share of the wall-clock time is untouched by the card. Ansys also tests and supports professional cards rather than the GeForce hardware we currently run. We don't publish a speedup figure, ours or anyone else's, because none of them were measured on your mesh. Benchmark it on a short booking before you plan a deadline around it.",
       },
     },
     {
@@ -102,7 +102,7 @@ const jsonLd = {
       name: "How large a mesh can you run?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: `Ansys publishes roughly 1.0-1.9 GB of GPU memory per million tet or hex cells and 1.8-2.8 GB per million polyhedral cells. Our current card is a ${NODE.gpu} with ${NODE.vram}, which works out at about 8 million tet cells or 5 million polyhedral, with less headroom again if you are running a mesh-independence study. A larger mesh needs a bigger card than we currently offer - tell us your cell count and we will say so before you book rather than after.`,
+        text: `Ansys publishes roughly 1.0-1.9 GB of GPU memory per million tet or hex cells and 1.8-2.8 GB per million polyhedral cells. Our current card is a ${NODE.gpu} with ${NODE.vram}, which works out at about 8 million tet cells or 5 million polyhedral, with less headroom again if you're running a mesh-independence study. A larger mesh needs a bigger card than we currently offer. Tell us your cell count and we'll say so before you book, not after.`,
       },
     },
     {
@@ -110,7 +110,7 @@ const jsonLd = {
       name: "Do I need my own Ansys licence?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Yes. We rent hardware, not software. You bring your own Ansys, Siemens or other commercial licence, or use an open-source solver such as OpenFOAM or SU2. We are not an Ansys reseller and have no licence-supply arrangement with any CFD vendor. Check your own licence terms for remote or hosted use before you book - that is between you and your vendor, and we would rather you confirm it than assume.",
+        text: "Yes. We rent hardware, not software. You bring your own Ansys, Siemens or other commercial licence, or use an open-source solver such as OpenFOAM or SU2. We aren't an Ansys reseller and have no licence-supply arrangement with any CFD vendor. Check your own licence terms for remote or hosted use before you book. That's between you and your vendor, and we'd rather you confirm it than assume.",
       },
     },
     {
@@ -126,7 +126,7 @@ const jsonLd = {
       name: "How is pricing calculated?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Hourly, for the workstation, billed in INR with a GST invoice. You are renting a machine and running your own solver on it, so the cost depends on how long you use it rather than on your mesh size. Contact us for the current rate.",
+        text: "Hourly, for the workstation, billed in INR with a GST invoice. You're renting a machine and running your own solver on it, so the cost depends on how long you use it, not on your mesh size. Contact us for the current rate.",
       },
     },
   ],
@@ -151,14 +151,14 @@ export default function AnsysCfdPage() {
             </h1>
             <p className="cf-lead mt-[22px]">
               Rent an RTX-class GPU workstation by the hour and run Ansys Fluent,
-              OpenFOAM or whichever solver you are licensed for. You keep the
-              engineering and the licence; we provide the machine, billed in INR
-              with a GST invoice.
+              OpenFOAM or whichever solver you&rsquo;re licensed for. The
+              engineering and the licence stay yours. We provide the machine,
+              billed in INR with a GST invoice.
             </p>
             <p className="cf-section-copy mt-5">
-              We do not run your simulation, choose your turbulence model or
-              interpret your results. This is hardware rental. The engineering,
-              and responsibility for it, stays with you.
+              We don&rsquo;t run your simulation, pick your turbulence model or
+              interpret your results. This is hardware rental, and the
+              engineering, along with responsibility for it, stays with you.
             </p>
 
             <div className="mt-8 flex flex-wrap gap-3">
@@ -185,10 +185,10 @@ export default function AnsysCfdPage() {
                   free IFC pre-CFD check
                 </Link>{" "}
                 reads a model export and reports the things that will break the
-                conversion — doors that lost their openings, missing spaces, wrong
-                units, storeys that will not resolve. No signup, and the file is
-                deleted as soon as it is read. Finding these after handover costs
-                a week.
+                conversion: doors that lost their openings, missing spaces, wrong
+                units, storeys that won&rsquo;t resolve. There&rsquo;s no signup,
+                and the file is deleted as soon as it&rsquo;s read. Finding these
+                after handover costs a week.
               </p>
             </div>
           </div>
@@ -231,29 +231,29 @@ export default function AnsysCfdPage() {
           <div className="cf-col">
             <h2 className="cf-section-title">How we size the hardware.</h2>
             <p className="cf-section-copy mt-5">
-              VRAM is the binding constraint, and it is worth being blunt about
-              it. Ansys publishes roughly 1.0–1.9 GB per million tet or hex cells
-              and 1.8–2.8 GB per million polyhedral cells. Our current card has{" "}
+              VRAM is the limit you&rsquo;ll hit first, so here it is plainly.
+              Ansys publishes roughly 1.0 to 1.9 GB per million tet or hex cells
+              and 1.8 to 2.8 GB per million polyhedral cells. Our current card has{" "}
               {NODE.vram}, which is about 8 million tet or 5 million polyhedral
-              cells — less if you are running the same case at two or three
-              refinement levels, as a mesh-independence study requires.
+              cells. It&rsquo;s less if you&rsquo;re running the same case at two
+              or three refinement levels, as a mesh-independence study requires.
             </p>
             <p className="cf-section-copy mt-4">
-              Two caveats you should hear from us rather than find out. Ansys
-              tests and supports professional cards — A-series, L40S, A100 — and
-              GeForce is not on that list, so validate your workflow on a short
+              Two caveats, so you hear them from us first. Ansys tests and
+              supports professional cards (A-series, L40S, A100), and GeForce
+              isn&rsquo;t on that list, so validate your workflow on a short
               booking before you commit to a deadline. And FDS, which is what most
               car-park and atrium smoke work in India uses, is CPU-only and gets
               nothing from a GPU at all.
             </p>
             <p className="cf-section-copy mt-4">
-              If your case will not fit, we will say so before you book. A bigger
+              If your case won&rsquo;t fit, we&rsquo;ll say so before you book. A bigger
               card, RTX 6000-class, is on the roadmap when demand justifies it.
             </p>
             <p className="mt-4 text-base leading-[1.62] text-ink-3">
               CFD hardware is quoted separately from the self-serve rendering
               fleet. The only GPU you can rent by the hour on Coreframe is the{" "}
-              {NODE.gpu} — see{" "}
+              {NODE.gpu}. More on{" "}
               <Link href="/compute-nodes" className="text-blue underline underline-offset-4">
                 compute nodes
               </Link>
@@ -281,19 +281,19 @@ export default function AnsysCfdPage() {
             <h2 className="cf-section-title">You bring the licence.</h2>
             <p className="cf-section-copy mt-5">
               We rent hardware, not software. Bring your own Ansys, Siemens or
-              other commercial licence, or run an open-source solver — OpenFOAM,
-              SU2, Code_Saturne. We are not a reseller for any CFD vendor and we
-              have no licence-supply arrangement with one.
+              other commercial licence, or run an open-source solver such as
+              OpenFOAM, SU2 or Code_Saturne. We aren&rsquo;t a reseller for any
+              CFD vendor and have no licence-supply arrangement with one.
             </p>
             <p className="cf-section-copy mt-4">
               Check your own licence terms for remote or hosted use before
               booking. Some commercial licences restrict it and some are
-              node-locked. That is between you and your vendor — we would rather
-              you confirmed it than assumed.
+              node-locked. That&rsquo;s between you and your vendor, and
+              we&rsquo;d rather you confirmed it than assumed.
             </p>
             <p className="mt-4 text-base leading-[1.62] text-ink-3">
-              We do not perform CFD analysis, and nothing produced on our hardware
-              is reviewed, verified or signed off by us.
+              We don&rsquo;t perform CFD analysis, and we don&rsquo;t review,
+              verify or sign off anything produced on our hardware.
             </p>
             <a
               href={wa("Hi Coreframe, I'd like to ask about hourly GPU workstations for CFD.")}
@@ -310,9 +310,10 @@ export default function AnsysCfdPage() {
           <div className="cf-wide">
             <h2 className="cf-section-title">Pricing.</h2>
             <p className="cf-section-copy mt-5">
-              A CFD job is quoted per job, on mesh element count — the thing that
+              We quote CFD per job, based on mesh element count, since that
               drives both GPU memory and wall-clock time. Send us your .cas file
-              or your element count and you get a figure back, not a range.
+              or your element count and we&rsquo;ll send back one figure rather
+              than a range.
             </p>
 
             {/* One row per tier, label stacked above the values on a phone: a

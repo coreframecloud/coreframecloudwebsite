@@ -71,8 +71,8 @@ export default function CfdIntakePage() {
               <p className="text-sm leading-[1.6] text-ink">
                 <span className="font-semibold">If this came out of Revit or ArchiCAD, run it through the free IFC check first.</span>{" "}
                 It takes seconds, needs no signup, and names the documented reasons a model fails
-                conversion &mdash; doors that lost their openings, missing spaces, the wrong units.
-                The file is deleted as soon as it is read.
+                conversion: doors that lost their openings, missing spaces, the wrong units. The
+                file is deleted as soon as it&rsquo;s read.
               </p>
               <p className="mt-3">
                 <a
@@ -95,9 +95,9 @@ export default function CfdIntakePage() {
               * Our current card is an {NODE.gpu} with {NODE.vram}. Ansys publishes roughly 1.0-1.9 GB
               of GPU memory per million tet/hex cells and 1.8-2.8 GB per million polyhedral cells,
               which puts a practical ceiling around 8 million tet or 5 million polyhedral cells on
-              this hardware &mdash; less if you are running a mesh-independence study. A larger mesh
-              needs a bigger card than we currently have, and we say so before you book rather than
-              after. Solve times depend on the physics, the turbulence model and the convergence
+              this hardware, and less if you&rsquo;re running a mesh-independence study. A larger
+              mesh needs a bigger card than we currently have, and we&rsquo;ll tell you before you
+              book, not after. Solve times depend on the physics, the turbulence model and the convergence
               criteria, so we quote them per case instead of publishing a number. Coreframe supplies
               the compute; you supply the solver licence and the engineer of record.
             </p>

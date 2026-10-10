@@ -58,8 +58,8 @@ export function WalkthroughSection({ youtubeId }: { youtubeId?: string }) {
         <p className="cf-eyebrow mb-5">Walkthrough</p>
         <h2 className="cf-section-title">The whole thing, start to finish.</h2>
         <p className="cf-section-copy mt-4 max-w-[62ch]">
-          One unedited session: launching a workstation, loading a scene, rendering it, and
-          pulling the output back down. No cuts.
+          This is one session with nothing cut out. We launch a workstation, load a scene, render
+          it and pull the output back down.
         </p>
 
         <div className="mt-7 overflow-hidden rounded-cf border border-rule">
@@ -67,7 +67,7 @@ export function WalkthroughSection({ youtubeId }: { youtubeId?: string }) {
             <iframe
               className="aspect-video w-full"
               src={`https://www.youtube-nocookie.com/embed/${youtubeId}`}
-              title="Coreframe Cloud — a full session, start to finish"
+              title="Coreframe Cloud: a full session, start to finish"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
               loading="lazy"

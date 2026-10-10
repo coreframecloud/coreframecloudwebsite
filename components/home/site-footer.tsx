@@ -33,7 +33,7 @@ export function SiteFooter() {
               <CoreframeWordmarkAtlas iconSize={40} animated={false} />
             </Link>
             <p className="mt-3 max-w-xs text-xs leading-5 text-ink-2">
-              3D rendering managed workstations and ultra-fast CFD analysis. Hosted in Bengaluru, India.
+              Managed workstations for 3D rendering and CFD analysis, hosted in Bengaluru, India.
             </p>
             <Link
               href={COMPANY.whatsapp}

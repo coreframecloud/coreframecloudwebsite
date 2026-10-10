@@ -144,8 +144,8 @@ Selected GPU: ${gpu || "Not selected"}`;
         </div>
 
         <div className="rounded-cf border border-rule bg-paper-2 p-5 text-sm leading-7 text-ink-2 sm:p-6">
-          No availability for now. Use this form to reserve priority access
-          and share your workload category.
+          We have no availability right now. Use this form to reserve priority
+          access and tell us what kind of work you run.
         </div>
       </div>
     </div>

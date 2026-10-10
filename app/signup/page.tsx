@@ -39,7 +39,7 @@ export async function generateMetadata(): Promise<Metadata> {
       ? `Create your account — ${rupees(offer.priceRupees)} = ${hoursLabel(offer.hours)} on an ${NODE.gpu}`
       : `Create your Coreframe account`,
     description: offer
-      ? `Create a Coreframe account with your email and mobile — no paperwork. Your first top-up of ${rupees(offer.priceRupees)} buys ${hoursLabel(offer.hours)} on an ${NODE.gpu}.${hourly ? ` Billed by the minute, ${hourly} after that.` : " Billed by the minute."}`
+      ? `Create a Coreframe account with your email and mobile, no paperwork. Your first top-up of ${rupees(offer.priceRupees)} buys ${hoursLabel(offer.hours)} on an ${NODE.gpu}.${hourly ? ` Billed by the minute, ${hourly} after that.` : " Billed by the minute."}`
       : `Create a Coreframe account and run an ${NODE.gpu} workstation from the laptop you already own.${hourly ? ` Billed by the minute, from ${hourly}.` : " Billed by the minute."}`,
     alternates: { canonical: "/signup" },
   };
@@ -58,7 +58,7 @@ export default async function SignupPage() {
       ]
         .filter(Boolean)
         .join(" · ")
-    : "Email and mobile only — no paperwork. Pay by the minute.";
+    : "Just your email and mobile, no paperwork. Pay by the minute.";
 
   return (
     <div className="relative min-h-screen text-ink">
@@ -76,25 +76,25 @@ export default async function SignupPage() {
             <h2 className="cf-section-title">How sign-up works</h2>
             <ol className="mt-4 space-y-3 text-sm leading-6 text-ink-2">
               <li>
-                <b className="font-medium text-ink">1. Your email.</b> We send a link — no
-                password to remember.
+                <b className="font-medium text-ink">1. Your email.</b> We send you a link, so
+                there&rsquo;s no password to remember.
               </li>
               <li>
-                <b className="font-medium text-ink">2. Your mobile.</b> A one-time code on
-                WhatsApp. Indian regulations (CERT-In) require a verified contact number for
-                compute rental. Any country code works.
+                <b className="font-medium text-ink">2. Your mobile.</b> We send a one-time code
+                on WhatsApp, because Indian regulations (CERT-In) require a verified contact number
+                for compute rental. Any country code works.
               </li>
               <li>
                 <b className="font-medium text-ink">3. Add funds.</b>{" "}
                 {intro
                   ? `Your first top-up of ${rupees(intro.priceRupees)} buys ${hoursLabel(intro.hours)}${intro.gpuName ? ` of ${intro.gpuName}` : ""}.`
                   : "Top up your wallet and start a session."}{" "}
-                Card, UPI or netbanking — international cards accepted. An invoice is issued
-                automatically.
+                Pay by card, UPI or netbanking (international cards work too), and the invoice
+                is issued automatically.
               </li>
             </ol>
             <p className="mt-4 text-xs leading-5 text-ink-3">
-              No Aadhaar, passport or ID upload.
+              You don&rsquo;t upload Aadhaar, a passport or any other ID.
             </p>
           </section>
         </div>

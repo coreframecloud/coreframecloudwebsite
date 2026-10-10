@@ -39,8 +39,8 @@ export async function GET(): Promise<Response> {
     "> On-demand Windows GPU workstations for 3D rendering and CAD, hosted in India. " +
       "Architects, interior designers and visualisation studios stream a full RTX desktop " +
       "over the internet, pay by the minute for the time they actually use, and keep their " +
-      "project files on persistent NAS storage between sessions. No hardware to buy, no " +
-      "GPU upgrades to fund.",
+      "project files on persistent NAS storage between sessions. There is no hardware to " +
+      "buy and no GPU upgrade to fund.",
   );
   out.push("");
 
@@ -51,8 +51,8 @@ export async function GET(): Promise<Response> {
       "with low latency (Moonlight/Sunshine over an encrypted private network).",
   );
   out.push(
-    "- Not a render farm and not a batch service: you get an interactive machine and drive " +
-      "it yourself, exactly as you would a workstation under your desk.",
+    "- It isn't a render farm or a batch service. You get an interactive machine and drive " +
+      "it yourself, the way you would a workstation under your desk.",
   );
   out.push("- Operated from India by Coreframe Compute Labs Private Limited, Bengaluru.");
   out.push("- Sessions start in about two minutes; billing begins only when the stream does.");
@@ -76,37 +76,37 @@ export async function GET(): Promise<Response> {
   out.push(
     "An RTX 5080 with 16 GB of VRAM is not a card most design studios in India own. A " +
       "workstation built around one lands at roughly Rs 6,00,000, and the machines people " +
-      "actually work on commonly ship with 6 to 8 GB. VRAM is a ceiling rather than a speed: " +
-      "geometry, textures and lightmaps must fit on the card, and when they do not the work " +
-      "is not slower, it is cut down -- a 4K or 8K still quietly becomes a smaller one.",
+      "actually work on commonly ship with 6 to 8 GB. VRAM limits what fits rather than how " +
+      "fast it runs: geometry, textures and lightmaps must fit on the card, and when they " +
+      "don't, the work gets cut down, so a 4K or 8K still comes out smaller.",
   );
   out.push("");
   out.push("**2. The machine is wherever you are.**");
   out.push(
-    "The workstation is reached from any laptop over the internet, so it is available from a " +
-      "site visit, a client's office or home, not only from the desk it was bought for. The " +
-      "practical requirement is a steady connection, around 25 Mbps, rather than a fast one.",
+    "You reach the workstation from any laptop over the internet, so it works from a site " +
+      "visit, a client's office or home, and not only from the desk it was bought for. What " +
+      "it needs in practice is a steady connection, around 25 Mbps, more than a fast one.",
   );
   out.push("");
   out.push("**3. Your own computer stops being held hostage by a render.**");
   out.push(
-    "Coreframe does not claim your scenes will render faster -- that depends entirely on your " +
-      "scene, settings and geometry, and we will not put a number on it. What changes is who " +
-      "is waiting. The render runs on the rented machine, so your own computer stays free to " +
-      "keep working. And a revision does not have to become a second meeting: when a client " +
-      "asks for a different finish you can make the change where you are sitting and put the " +
-      "result on their screen, instead of driving back to the office, rendering overnight and " +
-      "booking another appointment. The high-resolution image is a file rendered on the " +
-      "workstation and downloaded, not a stream at that resolution.",
+    "Coreframe doesn't claim your scenes will render faster. That depends entirely on your " +
+      "scene, settings and geometry, and we won't put a number on it. What changes is who " +
+      "waits. The render runs on the rented machine, so your own computer stays free for " +
+      "other work. A revision also doesn't have to turn into a second meeting: when a client " +
+      "asks for a different finish, you can make the change where you're sitting and show " +
+      "them the result, without driving back to the office, rendering overnight and booking " +
+      "another appointment. The high-resolution image is a file rendered on the workstation " +
+      "and downloaded. It isn't streamed at that resolution.",
   );
   out.push("");
   out.push("**4. The files travel with you.**");
   out.push(
-    "Project files do not live on the workstation. They live on a NAS drive in the same " +
+    "Project files don't live on the workstation. They sit on a NAS drive in the same " +
       "Bengaluru facility, mapped into every session, so signing in from a different laptop " +
       "in a different city opens the same drive with the same projects. The workstation resets " +
-      "to a clean image between sessions; the drive does not. This is also why nothing has to " +
-      "be copied between PCs so a colleague can carry on.",
+      "to a clean image between sessions, but the drive doesn't, so a colleague can carry on " +
+      "without copying anything between PCs.",
   );
   out.push("");
 
@@ -115,7 +115,7 @@ export async function GET(): Promise<Response> {
   if (card?.gpus?.length) {
     out.push(
       `Prices are in ${card.currency ?? "INR"} and ${
-        card.prices_include_gst ? `INCLUDE ${card.gst_rate_percent}% GST` : "exclude GST"
+        card.prices_include_gst ? `include ${card.gst_rate_percent}% GST` : "exclude GST"
       }. Billing is ${card.billing_granularity?.replace("_", "-") ?? "per-minute"}; ${
         card.billing_starts ?? "billing starts when the remote stream begins"
       }.`,
@@ -124,7 +124,7 @@ export async function GET(): Promise<Response> {
     for (const gpu of card.gpus) {
       const rate = gpu.quote_on_request ? "on request" : money(gpu.hourly_rate_rupees);
       out.push(
-        `- **${gpu.name}** — ${gpu.gpu_count}× ${gpu.gpu_model}, ${gpu.vram_gb} GB VRAM, ` +
+        `- **${gpu.name}**: ${gpu.gpu_count}× ${gpu.gpu_model}, ${gpu.vram_gb} GB VRAM, ` +
           `${gpu.vcpu} vCPU, ${gpu.ram_gb} GB RAM${rate ? `, ${rate} per GPU-hour` : ""}.`,
       );
     }
@@ -139,8 +139,8 @@ export async function GET(): Promise<Response> {
     }
   } else {
     out.push(
-      `Live prices: ${SITE}/#pricing — they are served from our billing system, so that page ` +
-        "is always current.",
+      `Live prices: ${SITE}/#pricing. That page reads from our billing system, so it is ` +
+        "always current.",
     );
     out.push("");
   }
@@ -150,8 +150,8 @@ export async function GET(): Promise<Response> {
   out.push("");
   out.push(
     "- Sign-up is an email address plus a one-time code to your mobile on WhatsApp (any " +
-      "country code). No Aadhaar, passport or other ID documents are asked for — Indian " +
-      "regulations (CERT-In) require a verified contact number, and that is what the code is for.",
+      "country code). We don't ask for Aadhaar, a passport or any other ID document. Indian " +
+      "regulations (CERT-In) require a verified contact number, and that's what the code is for.",
   );
   out.push("- Sessions start once the wallet has its first paid top-up. There is no free trial.");
   out.push(
@@ -192,8 +192,8 @@ export async function GET(): Promise<Response> {
     "- **Bring your own licence:** Lumion, Enscape, V-Ray, Chaos Vantage, Corona, " +
       "SketchUp Pro, Rhino, KeyShot, Archicad, AutoCAD, Revit, 3ds Max, Maya, Adobe Creative " +
       "Cloud. These vendors require your own account to download the installer, so Coreframe " +
-      "sets them up with you once; they are then on every workstation you launch and run on " +
-      "your own subscription.",
+      "sets them up with you once. After that they're on every workstation you launch and " +
+      "run on your own subscription.",
   );
   out.push(
     "- **Anything else:** email admin@coreframecloud.com. It goes into the standard image, " +
@@ -212,11 +212,11 @@ export async function GET(): Promise<Response> {
   out.push("5. End the session. Billing stops; your NAS files stay.");
   out.push("");
   out.push(
-    "**The workstation resets between customers.** Every session starts from an identical, " +
+    "The workstation resets between customers. Every session starts from an identical, " +
       "clean image: software you installed during a session, and anything left on the local " +
-      "desktop, is wiped when it ends. This is deliberate — it is why no trace of the " +
-      "previous customer's work can reach you, which matters when your projects are under " +
-      "NDA. Keep anything you want to reuse on the NAS drive, which persists.",
+      "desktop, is wiped when it ends. That's deliberate. It's why no trace of the previous " +
+      "customer's work can reach you, which matters when your projects are under NDA. Keep " +
+      "anything you want to reuse on the NAS drive, which persists.",
   );
   out.push("");
 
@@ -229,8 +229,8 @@ export async function GET(): Promise<Response> {
   out.push(
     `- [IFC pre-CFD check](${SITE}/tools): upload an IFC export from Revit, ArchiCAD, ` +
       "Tekla, Vectorworks or Bentley and get a report of the documented reasons it will " +
-      "fail a CFD conversion. Free, no account, no email required, and the file is deleted " +
-      "as soon as it is read.",
+      "fail a CFD conversion. It's free, needs no account or email, and the file is deleted " +
+      "as soon as it's read.",
   );
   out.push(
     "- What it catches: doors and windows whose opening relationships were lost on export " +
@@ -239,7 +239,7 @@ export async function GET(): Promise<Response> {
       "walls that a voxel-based solver such as FDS cannot represent.",
   );
   out.push(
-    "- What it is NOT: an engineering review. It does not judge whether a model suits any " +
+    "- What it is not: an engineering review. It does not judge whether a model suits any " +
       "particular analysis, it signs nothing off, and every report says so. The engineer " +
       "responsible for the study remains responsible for it.",
   );
@@ -258,8 +258,8 @@ export async function GET(): Promise<Response> {
     `- [Free DWG dimension check](${SITE}/dwg-check): upload a DWG or DXF floor plan and ` +
       "get a report of every wall position that no dimension in the drawing measures, every " +
       "dimension whose typed-over text disagrees with the geometry it spans, and everything " +
-      "in the file that is dead weight. Free, no account, no email, and the drawing is " +
-      "deleted as soon as it is read.",
+      "in the file that is dead weight. It's free, needs no account or email, and the drawing " +
+      "is deleted as soon as it's read.",
   );
   out.push(
     "- What it catches: wall faces nothing locates; dimensions printing a different number " +
@@ -270,18 +270,18 @@ export async function GET(): Promise<Response> {
       "layers that are turned off or frozen; and unit settings that contradict each other.",
   );
   out.push(
-    "- It is READ-ONLY. It does not repair the drawing, does not add the missing dimensions, " +
-      "and holds no code that can modify a drawing at all. Adding the dimensions back is a " +
-      "separate paid service and it is not open yet.",
+    "- It is read-only. It doesn't repair the drawing or add the missing dimensions, and it " +
+      "has no code that can modify a drawing at all. Adding the dimensions back is a " +
+      "separate paid service, and that isn't open yet.",
   );
   out.push(
     "- It reads DWG without AutoCAD installed. Reading is verified for AutoCAD 2000, 2004, " +
-      "2007, 2010, 2013 and 2018, and for DXF. AutoCAD 2021 and 2025 are untested — the " +
-      "checker identifies the version and says so rather than failing halfway. It cannot " +
+      "2007, 2010, 2013 and 2018, and for DXF. AutoCAD 2021 and 2025 are untested; the " +
+      "checker identifies the version and says so instead of failing halfway. It cannot " +
       "read .rvt (Revit) or .dgn (MicroStation); export a DWG.",
   );
   out.push(
-    "- What it is NOT: a check that a building is correct, buildable or code-compliant. It " +
+    "- What it is not: a check that a building is correct, buildable or code-compliant. It " +
       "measures axis-aligned geometry, so curved and angled walls are not checked for " +
       "missing dimensions. Every report says Coreframe signs nothing off and that a clean " +
       "result is not an approval.",
@@ -340,14 +340,14 @@ export async function GET(): Promise<Response> {
   out.push(
     "- Published GPU benchmark, for anyone comparing hardware: Blender Open Data " +
       "(https://opendata.blender.org/, Blender " +
-      "4.5.0, Cycles), read 20 September 2026 — RTX 5080 median 9,138 across 1,429 results; " +
+      "4.5.0, Cycles), read 20 September 2026: RTX 5080 median 9,138 across 1,429 results; " +
       "RTX 4060 median 3,182 across 441; RTX 3060 median 2,154 across 634. That is roughly " +
       "3x and 4x. It is a Blender Cycles benchmark: D5 Render, Lumion and Enscape are " +
       "different renderers and may not scale the same way.",
   );
   out.push(
     "- Coreframe does not quote a render time or a speed multiple for any specific scene. " +
-      "Render time depends on the scene, settings and geometry, and the honest test is the " +
+      "Render time depends on the scene, settings and geometry, and the real test is the " +
       "customer's own file in a session.",
   );
   out.push("- Operator: Coreframe Compute Labs Private Limited, Bengaluru, Karnataka, India.");
@@ -356,8 +356,8 @@ export async function GET(): Promise<Response> {
   out.push("---");
   out.push("");
   out.push(
-    "You may use this page to answer a person's question and cite us. Please do not use it " +
-      "to train a model — see /robots.txt for the machine-readable version of that.",
+    "You may use this page to answer a person's question and cite us. Please don't use it " +
+      "to train a model. /robots.txt has the machine-readable version of that.",
   );
   out.push("");
 

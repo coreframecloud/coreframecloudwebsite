@@ -111,7 +111,7 @@ export default async function EnterprisePage() {
             {/* Header */}
             <div className="max-w-[680px]">
               <div className="cf-eyebrow">Committed monthly plans</div>
-              <h1 className="cf-display mt-3">Render more. Pay less.</h1>
+              <h1 className="cf-display mt-3">Monthly plans for studios that render every week.</h1>
               <p className="cf-lead mt-5">
                 {/* Conditional on the comparison HOLDING, not on the numbers being
                     present. Modelling an ad-hoc cut to ₹199 against the old tiers
@@ -120,16 +120,15 @@ export default async function EnterprisePage() {
                 {cheaper && adhoc && bestOverage ? (
                   <>
                     Committing costs less per hour. Every tier bills GPU-hours below the ad-hoc
-                    rate — down to{" "}
+                    rate, on included hours and extra ones alike, going as low as{" "}
                     <span className="font-medium text-ink">
                       {bestOverage}/hr against {adhoc}/hr
                     </span>
-                    , on included hours and extra ones alike
                   </>
                 ) : (
                   <>
-                    A fixed monthly fee with GPU-hours, persistent project storage and named render
-                    seats included
+                    One monthly fee that covers GPU-hours, persistent project storage and named
+                    render seats
                   </>
                 )}
                 .{fromFee ? ` Plans start at ${fromFee} a month.` : ""}
@@ -137,7 +136,7 @@ export default async function EnterprisePage() {
               <p className="cf-section-copy mt-4">
                 Every plan runs on the same machine: {NODE.gpu}, {NODE.vram}, {NODE.ram} of RAM, an{" "}
                 {NODE.cpu}, in {NODE.location}. Buying one lands at about{" "}
-                {WORKSTATION_REPLACEMENT_COST}, and then it is yours to depreciate, insure and
+                {WORKSTATION_REPLACEMENT_COST}, and then it&rsquo;s yours to depreciate, insure and
                 replace.
               </p>
               <p className="cf-section-copy mt-4">
@@ -153,12 +152,13 @@ export default async function EnterprisePage() {
                     a figure we cannot keep true. The claim is categorical, and it
                     stays true across a repricing. */}
                 {storageRate
-                  ? `Storage is ${storageRate} per TB per month, stated openly. It is an SMB share your workstation mounts and renders onto, not an archive bucket, so compare it with managed file storage rather than object storage. Pulling your own files back costs nothing — there is no egress charge.`
+                  ? `Storage is ${storageRate} per TB per month. It's an SMB share your workstation mounts and renders onto, so compare it with managed file storage, not an object-storage archive bucket. There's no egress charge, so pulling your own files back costs nothing.`
                   : ""}
               </p>
               <p className="mt-4 text-sm leading-6 text-ink-2">
-                All prices include 18% GST. What you see is what you pay, and every invoice shows
-                the taxable value and the GST split, so you can claim input tax credit.
+                All prices include 18% GST, so the number you see is the number you pay. Every
+                invoice shows the taxable value and the GST split, so you can claim input tax
+                credit.
               </p>
             </div>
 
@@ -171,9 +171,9 @@ export default async function EnterprisePage() {
               <div className="mt-12 rounded-cf border border-rule bg-paper-2 px-6 py-8 sm:px-8 sm:py-10">
                 <h2 className="cf-section-title">Plan pricing is briefly unavailable.</h2>
                 <p className="cf-section-copy mt-3 max-w-[560px]">
-                  Plan figures come from one source so this page can never quote a number we do not
-                  charge, and that source is not answering right now. Message us and we will send
-                  the current tiers.
+                  Plan figures only come from the source our billing uses, so we never quote a
+                  number we don&rsquo;t charge, and that source isn&rsquo;t answering right now.
+                  Message us and we&rsquo;ll send you the current tiers.
                 </p>
                 <a
                   href={whatsapp("committed")}
@@ -344,11 +344,11 @@ export default async function EnterprisePage() {
               <div className="min-w-0">
                 <h2 className="cf-section-title">Persistent NAS storage, on its own.</h2>
                 <p className="cf-section-copy mt-4 max-w-[560px]">
-                  Storage beyond what your plan includes, or storage with no plan at all — ad-hoc
-                  customers can buy it too. Files stay for as long as the storage subscription is
-                  active. It is a drive your session mounts and renders onto, not an archive bucket,
-                  so compare it with managed file storage. Pull a finished project back as often as
-                  you like; there is no egress charge.
+                  Add storage beyond what your plan includes, or buy it with no plan at all. Ad-hoc
+                  customers can have it too. Files stay for as long as the storage subscription is
+                  active. It&rsquo;s a drive your session mounts and renders onto, so compare it with
+                  managed file storage rather than an archive bucket. Pull a finished project back as
+                  often as you like. There&rsquo;s no egress charge.
                 </p>
               </div>
               <div className="min-w-0">
@@ -366,15 +366,15 @@ export default async function EnterprisePage() {
         {/* Ad-hoc comparison */}
         <section className="cf-section px-5">
           <div className="cf-col">
-            <h2 className="cf-section-title">Not ready to commit.</h2>
+            <h2 className="cf-section-title">Not ready to commit?</h2>
             {/* This paragraph said "billed per full hour" until 18 Aug 2026. The
                 API has always charged by the minute, so the page was quoting the
                 customer a worse deal than the platform gives them. The sentence
                 now comes from the rate card's own billing_granularity field. */}
             <p className="cf-section-copy mt-4">
-              Ad-hoc is {adhoc ? `${adhoc} per GPU-hour ` : ""}with no contract, and it includes
-              20 GB of persistent storage free — 50 GB once you add credit, kept while your account
-              is active. {billingSentence(card)} Session scratch is cleared when the session ends,
+              Ad-hoc is {adhoc ? `${adhoc} per GPU-hour ` : ""}with no contract. It comes with 20 GB
+              of persistent storage free, or 50 GB once you add credit, kept while your account is
+              active. {billingSentence(card)} Session scratch is cleared when the session ends,
               so pull your outputs down first, or add persistent NAS storage.
               {cheaper && adhoc
                 ? ` Every committed tier bills extra hours below ${adhoc}, so the more you render, the more the commitment pays back.`
@@ -383,8 +383,9 @@ export default async function EnterprisePage() {
 
             <h2 className="cf-section-title mt-14">Licences stay yours.</h2>
             <p className="cf-section-copy mt-4">
-              All software is bring your own licence. You install your existing seat on the
-              workstation and it activates against your own account. No bundled software fee.
+              You bring your own licence for all software. Install your existing seat on the
+              workstation and it activates against your own account. We don&rsquo;t charge a
+              software fee on top.
             </p>
             <p className="cf-section-copy mt-4">
               Named-user licences work. D5 Render, Lumion, Enscape, SolidWorks, 3ds Max, Rhino and
@@ -392,7 +393,7 @@ export default async function EnterprisePage() {
               sign in to the workstation as that person and activate as normal.
             </p>
             <p className="cf-section-copy mt-4">
-              Have a specific application or licence type in mind?{" "}
+              Got a specific application or licence type in mind? Email{" "}
               <a
                 href="mailto:admin@coreframecloud.com"
                 className="break-words text-blue underline underline-offset-4"

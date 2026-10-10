@@ -52,15 +52,15 @@ export default async function LumionPage() {
   const faqs: { q: string; a: string }[] = [
     {
       q: "Does Lumion work on a cloud GPU?",
-      a: `Yes, on a card with a WDDM display driver. That rules out the compute-only datacentre cards most GPU rentals hand you, which Lumion will not start on. A Coreframe workstation is a ${NODE.os} machine with a consumer ${NODE.gpu} and the full WDDM driver, so Lumion installs and runs the way it does on a desktop under your table. You reach the machine through the Coreframe Connect app and it is streamed to you at ${NODE.stream}.`,
+      a: `Yes, on a card with a WDDM display driver. That rules out the compute-only datacentre cards most GPU rentals hand you, because Lumion won't start on them. A Coreframe workstation is a ${NODE.os} machine with a consumer ${NODE.gpu} and the full WDDM driver, so Lumion installs and runs the way it does on a desktop under your table. You reach the machine through the Coreframe Connect app, streamed to you at ${NODE.stream}.`,
     },
     {
       q: "What is in the workstation?",
-      a: `${NODE.gpu} with ${NODE.vram}, ${NODE.ram} of system memory, ${NODE.cpu} and ${NODE.disk}, running ${NODE.os} in ${NODE.location}. One customer per node — the card is not shared and not sliced into a virtual GPU.`,
+      a: `${NODE.gpu} with ${NODE.vram}, ${NODE.ram} of system memory, ${NODE.cpu} and ${NODE.disk}, running ${NODE.os} in ${NODE.location}. One customer per node. Nobody shares the card, and it isn't sliced into a virtual GPU.`,
     },
     {
       q: "Do I need my own Lumion licence?",
-      a: "Yes — Lumion is bring your own licence. Install Lumion on the workstation and activate your existing named-user or floating seat. Coreframe charges for the machine and nothing else.",
+      a: "Yes, Lumion is bring your own licence. Install Lumion on the workstation and activate your existing named-user or floating seat. Coreframe only charges for the machine.",
     },
     // Appended only when the rate card answered. This used to be a hand-typed
     // rate described as "charged per full hour" — wrong about the unit from the
@@ -98,16 +98,16 @@ export default async function LumionPage() {
               <br className="hidden md:block" /> Nothing to buy.
             </h1>
             <p className="cf-lead mt-[22px]">
-              Lumion does its work on the GPU. That is why the laptop you model on
-              stalls the moment the viewport has to resolve. Start a Windows
+              Lumion does its work on the GPU, which is why the laptop you model on
+              stalls as soon as the viewport has to resolve. Start a Windows
               workstation with an RTX&nbsp;5080, install your own Lumion licence,
               and the scene renders there while your own machine stays free for
               the next drawing.
             </p>
             <p className="cf-section-copy mt-5">
               You reach it through the Coreframe Connect app, streamed at{" "}
-              {NODE.stream}. Not a remote desktop, and not a render queue you
-              submit a file to and wait on.
+              {NODE.stream}. It isn&rsquo;t a remote desktop, and there&rsquo;s no render
+              queue to submit a file to and wait on.
             </p>
 
             <div className="mt-8 flex flex-wrap gap-3">
@@ -128,15 +128,15 @@ export default async function LumionPage() {
               {[
                 {
                   title: "VRAM is the ceiling",
-                  body: `Geometry, textures and vegetation all have to fit on the card. This one carries ${NODE.vram}. Many laptops and entry desktops sold for design work carry 6 to 8 GB, which is what forces a scene to be cut down.`,
+                  body: `Geometry, textures and vegetation all have to fit on the card. This one carries ${NODE.vram}. Many laptops and entry desktops sold for design work have 6 to 8 GB, and that's what forces you to cut a scene down.`,
                 },
                 {
                   title: "Consumer RTX drivers",
-                  body: "Lumion needs a WDDM display driver. This is a consumer card running the consumer driver — not a datacentre card with a compute-only driver, which Lumion refuses to start on.",
+                  body: "Lumion needs a WDDM display driver. This is a consumer card running the consumer driver. Lumion refuses to start on a datacentre card with a compute-only driver.",
                 },
                 {
                   title: "Files stay in India",
-                  body: `The node is in ${NODE.location} and project storage sits beside it. Nothing leaves the country, which is the question NDA clients ask first.`,
+                  body: `The node is in ${NODE.location} and project storage sits beside it. Nothing leaves the country, and that's usually the first thing NDA clients ask about.`,
                 },
               ].map((c) => (
                 <div key={c.title} className="cf-card">
@@ -165,9 +165,9 @@ export default async function LumionPage() {
               ))}
             </dl>
             <p className="cf-section-copy mt-5">
-              One node, one GPU, one customer at a time. We do not publish render
-              times, because they depend on your scene, your settings and your
-              geometry — open your heaviest project on it and watch.
+              Each node has one GPU and one customer at a time. We don&rsquo;t publish
+              render times because they depend on your scene and your settings.
+              Open your heaviest project on it and see for yourself.
             </p>
           </div>
         </section>
@@ -185,9 +185,9 @@ export default async function LumionPage() {
                   The Lumion licence is yours to bring.
                 </span>{" "}
                 Named-user and floating seats both work. Install Lumion, activate
-                your seat, and start. All prices include 18% GST — what you see is
-                what you pay, and a GST invoice showing the taxable value and the
-                tax split is issued.
+                your seat and start. All prices include 18% GST, so what you see is
+                what you pay. You get a GST invoice showing the taxable value and
+                the tax split.
               </p>
             </div>
           </div>

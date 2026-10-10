@@ -33,22 +33,22 @@ export function MachineSection({
           {"\n\n"}
           {"  "}<K>node</K>{"            "}gpu-node-01 · Bengaluru{"\n"}
           {"  "}<K>gpu</K>{"             "}{NODE.gpu} · <V>{NODE.vram}</V> · current generation{"\n"}
-          {"  "}<K>memory</K>{"          "}<V>{NODE.ram}</V> system RAM — big scenes, many apps open{"\n"}
+          {"  "}<K>memory</K>{"          "}<V>{NODE.ram}</V> system RAM, enough for big scenes and a lot open{"\n"}
           {"  "}<K>bandwidth</K>{"       "}<V>{NODE.memoryBandwidth}</V> memory bandwidth on the card{"\n"}
-          {"  "}<K>working disk</K>{"    "}<V>{NODE.disk}</V> on the workstation — your scratch,{"\n"}
-          {"                  "}your cache, your project files while you work{"\n"}
+          {"  "}<K>working disk</K>{"    "}<V>{NODE.disk}</V> on the workstation for scratch,{"\n"}
+          {"                  "}cache and the project files you&rsquo;re working on{"\n"}
           {"  "}<K>transfer</K>{"        "}<V>{storage.paidGb} GB</V> kept between sessions, for moving{"\n"}
           {"                  "}files in and out{"\n"}
-          {"  "}<K>stream</K>{"          "}<V>4K at 60 fps</V>, low latency — it feels local{"\n"}
-          {"  "}<K>software licence</K> <V>yours</V> — Blender, Twinmotion, D5, Lumion,{"\n"}
+          {"  "}<K>stream</K>{"          "}<V>4K at 60 fps</V>, low latency, so it feels local{"\n"}
+          {"  "}<K>software licence</K> <V>yours</V>: Blender, Twinmotion, D5, Lumion,{"\n"}
           {"                  "}Enscape, 3ds Max, Revit, SolidWorks{"\n"}
-          {"  "}<K>files</K>{"           "}drag in, drag out. no VPN, no FTP, no setup{"\n"}
+          {"  "}<K>files</K>{"           "}drag them in and out. no VPN or FTP to set up{"\n"}
           {adhocRate ? (
             <>
               {"  "}<K>billing</K>{"         "}<V>{adhocRate} / hour</V> incl. GST · <V>charged per minute</V>{"\n"}
             </>
           ) : null}
-          {"  "}<K>commitment</K>{"      "}none. no month, no seat, nothing to cancel{"\n"}
+          {"  "}<K>commitment</K>{"      "}none. no monthly plan, no seats, nothing to cancel{"\n"}
           {"  "}<K>to stop</K>{"         "}close the window
         </SpecBlock>
 
@@ -61,9 +61,10 @@ export function MachineSection({
             1080p is comfortable on 20.
           </p>
           <p className="mt-2 text-[14.5px] leading-[1.62] text-ink-2">
-            Steady matters more than fast — a wired connection or 5&nbsp;GHz Wi-Fi beats a
-            quicker link that drops packets. No graphics card, no dedicated line, no office
-            network, and nothing to install beyond the app.
+            A steady connection matters more than a fast one, so a wired link or 5&nbsp;GHz Wi-Fi
+            will do better than a quicker line that drops packets. You don&rsquo;t need a graphics
+            card, a dedicated line or an office network, and the app is the only thing you
+            install.
           </p>
         </div>
       </div>

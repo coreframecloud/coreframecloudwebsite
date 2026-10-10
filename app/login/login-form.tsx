@@ -337,7 +337,7 @@ export default function LoginForm({
     // hardcoded here and wrong the moment someone signs up from Dubai.
     if (!homeCountry) return setError("Select your country.");
     if (homeCountry.iso === "IN" && !homeState) {
-      return setError("Select your state — it sets the GST on your invoices.");
+      return setError("Select your state. It sets the GST on your invoices.");
     }
     const phoneCheck = validatePhone(linkPhone, phoneCountry);
     if (!phoneCheck.ok) return setError(phoneCheck.error);
@@ -452,7 +452,7 @@ export default function LoginForm({
         <p className="mt-1 text-sm text-ink-2">
           {isStart
             ? offer ?? "Enter your email and we\u2019ll send you a link."
-            : "New here? Just enter your email \u2014 we\u2019ll handle the rest."}
+            : "New here? Just enter your email and we\u2019ll handle the rest."}
         </p>
       </div>
 
@@ -554,13 +554,13 @@ export default function LoginForm({
                 {error && <ErrorBox msg={error} />}
                 {isStart ? (
                   <p className="-mt-1 text-xs leading-5 text-ink-2">
-                    No password. We&apos;ll email you a link &mdash; click it and your account is ready.
+                    No password needed. We&apos;ll email you a link, and your account is ready once you click it.
                   </p>
                 ) : (
                   <div className="cf-glass-inset px-4 py-3">
                     <p className="text-sm font-medium text-ink">Sign in with a link.</p>
                     <p className="mt-0.5 text-xs text-ink-2">
-                      We&apos;ll send a sign-in link to your email. Click it and you are in.
+                      We&apos;ll email you a sign-in link. Click it and you&apos;re in.
                     </p>
                   </div>
                 )}
@@ -621,7 +621,7 @@ export default function LoginForm({
                       required
                     />
                     <p className="mt-1 text-xs text-ink-3">
-                      We check this against the GST register — it has to be active, and
+                      We check this against the GST register. It has to be active, and
                       we read the registered name back from it. It also sets your place
                       of supply on every invoice.
                     </p>
@@ -741,7 +741,7 @@ export default function LoginForm({
                     />
                   </div>
                   <p className="mt-1 text-xs text-ink-3">
-                    We&apos;ll send a code on WhatsApp. Indian regulations
+                    We&apos;ll send a code on WhatsApp, because Indian regulations
                     require us to hold a verified contact number for compute rental.
                   </p>
                 </Field>

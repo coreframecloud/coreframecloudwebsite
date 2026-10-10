@@ -98,8 +98,8 @@ export default function DownloadPage() {
               Downloads are paused while we finish onboarding.
             </p>
             <p className="mt-3 text-sm leading-6 text-ink-2">
-              Your account is unaffected. We will email you the moment the client is available.
-              There is nothing for you to do.
+              Your account isn&apos;t affected, and you don&apos;t need to do anything. We&apos;ll email
+              you as soon as the client is available.
             </p>
             <Link href="/contact" className="cf-btn-primary mt-6 min-h-[44px]">
               Talk to us
@@ -187,12 +187,12 @@ export default function DownloadPage() {
                     worth saying. The earlier copy ("our certificate is still being
                     issued") implied it was days away and quietly aged into a promise. */}
                 <p className="mt-2 text-sm leading-6 text-ink-2">
-                  Our installer is not code-signed yet, so Windows cannot check the publisher and
-                  treats it as unknown. That reputation builds as more people install it &mdash; so
-                  if you click through, you are genuinely helping us get there. We are a young
-                  company and we would rather say that plainly than pretend the warning is not
-                  happening. Nothing is wrong with your machine or with the file, and you can
-                  verify it yourself against the checksum above.
+                  Our installer isn&apos;t code-signed yet, so Windows can&apos;t check the publisher and
+                  treats it as unknown. Windows builds that reputation as more people install it,
+                  so clicking through does help us get there. We&apos;re a young company and
+                  we&apos;d rather tell you that than pretend the warning isn&apos;t there. Nothing is
+                  wrong with your machine or with the file, and you can check it yourself against
+                  the checksum above.
                 </p>
                 <ol className="mt-4 space-y-3 text-sm leading-6 text-ink-2">
                   {/* Edge does NOT behave like Chrome here - it blocks the download
@@ -201,21 +201,21 @@ export default function DownloadPage() {
                       Edge users looking for a button that is not there. */}
                   <li>
                     <strong className="text-ink">1. Use Chrome, not Edge.</strong> Edge blocks this
-                    download outright and gives you no way through. Chrome lets it finish &mdash; if
+                    download outright and gives you no way through. Chrome lets it finish. If
                     it flags the file, open Downloads, click the three dots, then Keep.
                   </li>
                   <li>
                     <strong className="text-ink">2. SmartScreen.</strong> When you run the
                     installer and see &ldquo;Windows protected your PC&rdquo;, click{" "}
-                    <strong className="text-ink">More info</strong> &mdash; it is easy to miss,
-                    the button only appears after that &mdash; then{" "}
-                    <strong className="text-ink">Run anyway</strong>.
+                    <strong className="text-ink">More info</strong>, then{" "}
+                    <strong className="text-ink">Run anyway</strong>. It&apos;s easy to miss: the Run
+                    anyway button only appears after you click More info.
                   </li>
                   <li>
                     <strong className="text-ink">3. Permission prompts.</strong> On first connect,
                     Windows asks to allow Coreframe&apos;s network component (Tailscale) and
-                    firewall access. Click Yes. They create the private encrypted link to your
-                    workstation, and it happens once.
+                    firewall access. Click Yes. They set up the private encrypted link to your
+                    workstation, and you only see them once.
                   </li>
                 </ol>
                 {/* The two clicks, drawn. People skim an ordered list and then still

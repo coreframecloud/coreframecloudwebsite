@@ -52,7 +52,7 @@ const GOOD_FOR = [
   },
   {
     title: "Long renders and animation output.",
-    text: "The render runs on the node. Your own laptop stays free — keep modelling, keep drafting, keep answering email while the frames finish.",
+    text: "The render runs on the node, so your own laptop stays free. You can carry on modelling or answering email while the frames finish.",
   },
   {
     title: "Client review sessions.",
@@ -75,10 +75,10 @@ export default async function ComputeNodesPage() {
             <div className="cf-eyebrow">Compute nodes</div>
             <h1 className="cf-display mt-3">One node. One GPU. Nothing to configure.</h1>
             <p className="cf-lead mt-5 max-w-[680px]">
-              Every Coreframe node is the same machine — {NODE.gpu}, {NODE.vram}, {NODE.ram} of RAM,
-              an {NODE.cpu}, in {NODE.location}. One machine means one price, and no tier you can
-              pick wrong. A workstation like it costs about {WORKSTATION_REPLACEMENT_COST} to buy,
-              and then sits under a desk waiting for the weeks you need it.
+              Every Coreframe node is the same machine: {NODE.gpu}, {NODE.vram}, {NODE.ram} of RAM
+              and an {NODE.cpu}, in {NODE.location}. One machine means one price, and there&apos;s no
+              tier to pick wrong. A workstation like it costs about {WORKSTATION_REPLACEMENT_COST} to
+              buy, and then it sits under a desk waiting for the weeks you need it.
             </p>
           </div>
         </section>
@@ -135,7 +135,7 @@ export default async function ComputeNodesPage() {
                     <span className="font-medium text-ink">
                       {rate ? `${rate} per GPU-hour, GST included.` : "GST is inside the published rate."}
                     </span>{" "}
-                    What you see is what you pay. Every invoice shows the taxable value and the 18%
+                    The price you see is the price you pay. Every invoice shows the taxable value and the 18%
                     GST split, so you can claim input credit.
                   </li>
                   <li>
@@ -144,7 +144,7 @@ export default async function ComputeNodesPage() {
                   </li>
                   <li>
                     <span className="font-medium text-ink">Nothing to commit to.</span> Start a node
-                    when you need it, close it when you are done. If you render every week, a
+                    when you need it and close it when you&apos;re done. If you render every week, a
                     monthly plan bills the hours lower.
                   </li>
                   <li>
@@ -185,12 +185,12 @@ export default async function ComputeNodesPage() {
             <h2 className="cf-section-title">Licences are yours.</h2>
             <p className="cf-section-copy mt-4">
               Bring your own D5 Render, Lumion, Enscape or SolidWorks seat. You install it on the
-              workstation and sign in as yourself. We rent you the hardware and the install, never
-              the licence.
+              workstation and sign in as yourself. We rent you the hardware and do the install. The
+              licence is always your own.
             </p>
             <p className="cf-section-copy mt-4">
-              Need something this configuration does not cover — more storage, a different image, a
-              node that stays up for a month? Ask, and we will tell you straight whether we can run
+              Need something this setup doesn&apos;t cover, like more storage, a different image or a
+              node that stays up for a month? Ask, and we&apos;ll tell you straight whether we can run
               it.
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-4">

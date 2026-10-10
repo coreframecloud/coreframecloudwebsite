@@ -99,23 +99,23 @@ export default async function AboutPage() {
   const faqs: { q: string; a: string }[] = [
     {
       q: "What is Coreframe Cloud?",
-      a: `Coreframe Cloud is a cloud GPU workstation service operated by Coreframe Compute Labs Private Limited, a company registered in Bengaluru, Karnataka, India. It rents full ${NODE.os} desktops running on NVIDIA ${NODE.gpu} graphics cards, streamed over the internet and billed by the minute, to architects, interior designers, visualisation studios, 3D artists and engineers who need a GPU without buying a workstation.`,
+      a: `Coreframe Cloud is a cloud GPU workstation service run by Coreframe Compute Labs Private Limited, a company registered in Bengaluru, Karnataka, India. It rents full ${NODE.os} desktops on NVIDIA ${NODE.gpu} graphics cards, streamed over the internet and billed by the minute. The people who use it are architects, interior designers, visualisation studios, 3D artists and engineers who need a GPU but don't want to buy a workstation.`,
     },
     {
       q: "What makes Coreframe Cloud different from other cloud GPU services?",
-      a: `The combination rather than any single part. You get a whole dedicated ${NODE.gpu} rather than a shared card or a virtualised slice, so the ${NODE.vram} is entirely yours. Billing is per minute from the moment the stream starts, so a forty-minute Lumion pass costs forty minutes rather than a month. And the price is an Indian one: rupees, 18% GST already included, with a tax invoice a studio can claim input credit against. The two categories either side of us each miss something. GPU clouds built for AI training run headless Linux on datacentre cards no architect needs. International cloud-workstation services bill in dollars and cannot issue an Indian GST invoice.`,
+      a: `Mostly the combination. You get a whole dedicated ${NODE.gpu}, with no sharing and no virtualised slice, so all ${NODE.vram} of it is yours. Billing is per minute from the moment the stream starts, so a forty-minute Lumion pass costs you forty minutes, not a month. And it's priced for India: rupees, 18% GST already included, and a tax invoice your studio can claim input credit against. The services on either side of us each miss something. GPU clouds built for AI training run headless Linux on datacentre cards no architect needs. International cloud-workstation services bill in dollars and can't issue an Indian GST invoice.`,
     },
     {
       q: "Who is Coreframe Cloud for?",
-      a: `Architects, interior designers and architectural visualisation studios in India, along with freelance 3D visualisers and students who need workstation-class hardware without buying it. A second, smaller group is simulation engineers running GPU-accelerated CFD. The common thread is bursty work: heavy rendering for the week before a client presentation and almost none for the three weeks after. That is the pattern that makes a ${WORKSTATION_REPLACEMENT_COST} machine hard to justify.`,
+      a: `Architects, interior designers and architectural visualisation studios in India, along with freelance 3D visualisers and students who need workstation-class hardware without buying it. A second, smaller group is simulation engineers running GPU-accelerated CFD. The common thread is bursty work: heavy rendering in the week before a client presentation and almost none in the three weeks after. That's the pattern that makes a ${WORKSTATION_REPLACEMENT_COST} machine hard to justify.`,
     },
     {
       q: "Why was Coreframe Cloud started?",
-      a: `Coreframe Compute Labs was founded in Bengaluru in 2026 around one observation. The workstation an Indian design studio needs in order to render comfortably lands at about ${WORKSTATION_REPLACEMENT_COST}, gets bought once, and then sits idle most of the week. The cloud alternatives were either headless Linux boxes built for AI training or foreign services billing in dollars with no Indian tax invoice, and neither suits someone who wants to open Lumion and hit render. So we built the unglamorous version: a real ${NODE.os} machine with a real GPU, hosted in Bengaluru, rented by the minute, with a GST invoice at the end of it.`,
+      a: `Coreframe Compute Labs was founded in Bengaluru in 2026 around one observation. The workstation an Indian design studio needs to render comfortably costs about ${WORKSTATION_REPLACEMENT_COST} landed. It gets bought once and then sits idle most of the week. The cloud options were either headless Linux boxes built for AI training or foreign services that bill in dollars with no Indian tax invoice. Neither suits someone who just wants to open Lumion and hit render. So we built the unglamorous version: a real ${NODE.os} machine with a real GPU, hosted in Bengaluru, rented by the minute, with a GST invoice at the end of it.`,
     },
     {
       q: "What technology does Coreframe Cloud run on?",
-      a: `The workstations are ${NODE.os} on dedicated NVIDIA ${NODE.gpu} GPUs — ${NODE.vram}, ${NODE.ram} of RAM and an ${NODE.cpu} — with the desktop streamed at ${NODE.stream} over an encrypted private network, which keeps latency low enough for real-time viewport work. D5 Render, Blender, Twinmotion and Unreal Engine ship on the standard image. The website runs on Next.js and Vercel behind Cloudflare, the control plane is Dockerised services on PostgreSQL, and project files live on NAS storage in the same Bengaluru facility. Payments run through Razorpay, and sign-in codes are sent by email and WhatsApp.`,
+      a: `The workstations run ${NODE.os} on dedicated NVIDIA ${NODE.gpu} GPUs, with ${NODE.vram}, ${NODE.ram} of RAM and an ${NODE.cpu}. The desktop streams at ${NODE.stream} over an encrypted private network, which keeps latency low enough for real-time viewport work. D5 Render, Blender, Twinmotion and Unreal Engine ship on the standard image. The website runs on Next.js and Vercel behind Cloudflare, the control plane is Dockerised services on PostgreSQL, and project files live on NAS storage in the same Bengaluru facility. Payments run through Razorpay, and sign-in codes are sent by email and WhatsApp.`,
     },
     {
       q: "Is a Coreframe workstation faster than the machine I already have?",
@@ -123,15 +123,15 @@ export default async function AboutPage() {
       // Open Data medians and turn them into "roughly three times" — a number
       // about a benchmark scene being read as a number about the reader's
       // file. Nobody here has seen their file.
-      a: `It depends on your scene, your renderer and your settings, and nobody who has not opened your file can put a number on it. Two things are checkable instead. The card has ${NODE.vram}, and VRAM is a ceiling rather than a speed: geometry, textures and lightmaps have to fit on it, and when they do not the work is not slower, it is cut down. And the render does not run on your laptop, so your own machine stays usable while it finishes. The comparison worth trusting is your own heaviest project in a session, not anyone's benchmark.`,
+      a: `It depends on your scene, your renderer and your settings, and nobody who hasn't opened your file can put a number on it. Two things you can check. The card has ${NODE.vram}, and VRAM decides what fits rather than how fast it goes: geometry, textures and lightmaps have to fit on it, and when they don't, the work gets cut down. Also, the render doesn't run on your laptop, so your own machine stays usable while it finishes. Your own heaviest project, opened in a session, will tell you more than any benchmark.`,
     },
     {
       q: "Can I use Coreframe from a construction site or a client's office?",
-      a: "Yes. The workstation is reached over the internet from any laptop, so it is available from a site visit, a client's office or home rather than only from the desk a machine was bought for. What matters is a steady connection rather than a fast one — around 20 Mbps is comfortable at 1080p, and about 50 Mbps shows the stream at its best. Test the connection before promising a client a live demo on it, or tether. A high-resolution still is rendered on the workstation and downloaded as a file; the desktop you are looking at is a stream, and the image is not streamed at that resolution.",
+      a: "Yes. You reach the workstation over the internet from any laptop, so it works from a site visit, a client's office or home, not just the desk a machine was bought for. A steady connection matters more than a fast one. Around 20 Mbps is comfortable at 1080p, and about 50 Mbps shows the stream at its best. Test the connection before you promise a client a live demo on it, or tether. High-resolution stills are rendered on the workstation and downloaded as files. The desktop you're looking at is a stream, and the image isn't streamed at that resolution.",
     },
     {
       q: "Do my project files stay available if I sign in from a different computer?",
-      a: "Yes. Your files do not live on the workstation. They live on a NAS drive in the same Bengaluru facility, mapped into every session, so signing in from a different laptop in a different city opens the same drive with the same projects. The workstation itself resets to a clean image between sessions; the drive does not. It also means nothing has to be copied between PCs for a colleague to carry on where you stopped.",
+      a: "Yes. Your files don't live on the workstation. They sit on a NAS drive in the same Bengaluru facility, mapped into every session, so if you sign in from a different laptop in a different city you get the same drive and the same projects. The workstation resets to a clean image between sessions, but the drive doesn't. A colleague can carry on where you stopped without copying anything between PCs.",
     },
     {
       q: "Who owns and runs Coreframe Cloud?",
@@ -139,7 +139,7 @@ export default async function AboutPage() {
     },
     {
       q: "Is Coreframe Cloud a render farm?",
-      a: "No. A render farm takes a submitted job and sends frames back. Coreframe gives you an interactive Windows machine that you drive yourself, so you set up the scene, adjust materials and render in the same session, exactly as you would on a workstation under your desk.",
+      a: "No. A render farm takes a submitted job and sends frames back. Coreframe gives you an interactive Windows machine that you drive yourself, so you set up the scene, adjust materials and render in the same session, the way you would on a workstation under your desk.",
     },
     {
       q: "Where are Coreframe Cloud's machines located?",
@@ -151,7 +151,7 @@ export default async function AboutPage() {
     },
     {
       q: "What software is already installed on a Coreframe workstation?",
-      a: "Blender, D5 Render, Twinmotion, Unreal Engine with Quixel Bridge, FreeCAD, ParaView, Autodesk DWG TrueView and Navisworks Freedom, plus the usual working tools. Licensed applications such as Lumion, Enscape, V-Ray, Revit, 3ds Max, Rhino and SketchUp run on the machine but need your own licence, because those vendors require your own account even to download the installer.",
+      a: "Blender, D5 Render, Twinmotion, Unreal Engine with Quixel Bridge, FreeCAD, ParaView, Autodesk DWG TrueView and Navisworks Freedom, plus the usual working tools. Licensed apps like Lumion, Enscape, V-Ray, Revit, 3ds Max, Rhino and SketchUp run on the machine but need your own licence, because those vendors make you use your own account even to download the installer.",
     },
     ...(hourly
       ? [
@@ -203,21 +203,18 @@ export default async function AboutPage() {
           <h1 className="cf-display mt-3">What is Coreframe Cloud?</h1>
 
           <p className="cf-lead mt-8">
-            Coreframe Cloud is a cloud GPU workstation service operated by{" "}
-            <strong className="font-semibold text-ink">
-              Coreframe Compute Labs Private Limited
-            </strong>
-            , a company registered in Bengaluru, Karnataka, India. We rent full {NODE.os} desktops
-            running on NVIDIA {NODE.gpu} graphics cards, streamed to the laptop you already own and
-            billed by the minute. Architects, interior designers, visualisation studios, 3D artists
-            and simulation engineers use it for the hours they need a GPU, instead of buying a
-            machine that sits idle most of the month.
+            Coreframe Cloud is a cloud GPU workstation service run by Coreframe Compute Labs
+            Private Limited, a company registered in Bengaluru, Karnataka, India. We rent full{" "}
+            {NODE.os} desktops on NVIDIA {NODE.gpu} graphics cards, streamed to the laptop you
+            already own and billed by the minute. Architects, interior designers, visualisation
+            studios, 3D artists and simulation engineers use it for the hours they actually need a
+            GPU, so they don&rsquo;t have to buy a machine that sits idle most of the month.
           </p>
 
           <p className="cf-section-copy mt-5">
-            You sign in, a {NODE.os} machine starts in about two minutes, and you work on it as you
-            would on a computer under your desk — open the CAD file, set up the scene, render, save.
-            Project files stay on storage in India between sessions. Close the session and billing
+            You sign in, a {NODE.os} machine starts in about two minutes, and you use it like the
+            computer under your desk: open the CAD file, set up the scene, render, save. Your
+            project files stay on storage in India between sessions. Close the session and billing
             stops.
           </p>
 
@@ -236,8 +233,8 @@ export default async function AboutPage() {
           <section className="mt-14">
             <h2 className="cf-section-title">What the machine is.</h2>
             <p className="cf-section-copy mt-4">
-              One node, one GPU, handed to one customer at a time. No shared graphics card and no
-              virtualised slice of one.
+              Each node has one GPU and goes to one customer at a time. You don&rsquo;t share the
+              card with anyone, and you don&rsquo;t get a virtualised slice of it.
             </p>
             <dl className="mt-6 divide-y divide-rule rounded-cf border border-rule bg-paper-2">
               {SPECS.map(([k, v]) => (
@@ -267,50 +264,50 @@ export default async function AboutPage() {
             <p className="cf-section-copy mt-3">
               An {NODE.gpu} with {NODE.vram} is not a card most design studios in India own. A
               workstation built around one lands at about {WORKSTATION_REPLACEMENT_COST}, and the
-              machines people actually work on commonly ship with 6 to 8 GB. That number is a
-              ceiling, not a speed. Geometry, textures and lightmaps all have to fit on the card,
-              and when they do not, the work does not get slower — it gets cut down. A 4K still
-              quietly becomes a smaller one.
+              machines people actually work on commonly ship with 6 to 8 GB. That number limits
+              what fits on the card. Geometry, textures and lightmaps all have to fit, and when
+              they don&rsquo;t, the work gets cut down to size and your 4K still comes out
+              smaller.
             </p>
 
             <h3 className="mt-8 text-lg leading-6 font-semibold text-ink">
               2. The machine is wherever you are.
             </h3>
             <p className="cf-section-copy mt-3">
-              You reach it from any laptop over the internet. A site visit, a client&rsquo;s office,
-              home — not only the desk it was bought for. What it asks of your connection is
-              steadiness rather than speed: 20 Mbps is comfortable at 1080p and about 50 Mbps shows
-              the stream at its best. Test it before promising a client a live demo, or tether.
+              You reach it from any laptop over the internet, so it works from a site visit, a
+              client&rsquo;s office or home, and not only from the desk it was bought for. Your
+              connection needs to be steady more than fast. 20 Mbps is comfortable at 1080p and
+              about 50 Mbps shows the stream at its best. Test it before you promise a client a
+              live demo, or tether.
             </p>
 
             <h3 className="mt-8 text-lg leading-6 font-semibold text-ink">
               3. Your own computer stops being held hostage by a render.
             </h3>
             <p className="cf-section-copy mt-3">
-              We will not tell you your scenes will render faster. That depends on your scene, your
-              settings and your geometry, and anyone who puts a number on it before seeing your file
-              is guessing. What changes is who is waiting, and where.
+              We won&rsquo;t tell you your scenes will render faster. That depends on your scene,
+              your settings and your geometry, and anyone who puts a number on it before seeing your
+              file is guessing. What changes is who waits, and where.
             </p>
             <p className="cf-section-copy mt-4">
-              The render runs on the rented machine, so your own computer stays free. You keep
-              modelling, drafting or answering email while it works. And a revision does not have to
-              become a second meeting: when a client asks for a different finish, you make the
-              change where you are sitting and put the result on their screen before the meeting
-              ends, instead of driving back to the office, rendering overnight and booking another
-              appointment.
+              The render runs on the rented machine, so your own computer stays free for modelling,
+              drafting or email while it works. A revision also doesn&rsquo;t have to turn into a
+              second meeting. When a client asks for a different finish, you make the change where
+              you&rsquo;re sitting and show them the result before the meeting ends. You
+              don&rsquo;t drive back to the office, render overnight and book another appointment.
             </p>
 
             <h3 className="mt-8 text-lg leading-6 font-semibold text-ink">
               4. The files travel with you.
             </h3>
             <p className="cf-section-copy mt-3">
-              Your projects do not live on the workstation. They live on a NAS drive in the same
-              Bengaluru facility, mapped into every session, so signing in from a different laptop
-              in a different city opens the same drive with the same work on it. The workstation
-              resets to a clean image between sessions; the drive does not. Nothing has to go on a
-              pen drive for a colleague to carry on.
+              Your projects don&rsquo;t live on the workstation. They sit on a NAS drive in the same
+              Bengaluru facility, mapped into every session, so if you sign in from a different
+              laptop in a different city you get the same drive with the same work on it. The
+              workstation resets to a clean image between sessions, but the drive doesn&rsquo;t. A
+              colleague can carry on without anything going on a pen drive.
               {perTb
-                ? ` Storage beyond what your plan includes is ${perTb} per TB per month, billed on the space reserved.`
+                ? ` Storage beyond what your plan includes costs ${perTb} per TB per month, billed on the space you reserve.`
                 : ""}
             </p>
           </section>
@@ -321,24 +318,23 @@ export default async function AboutPage() {
               <li className="flex gap-3 leading-7 text-ink-2">
                 <span className="mt-3 h-1.5 w-1.5 shrink-0 rounded-full bg-blue" />
                 <span>
-                  <strong className="text-ink">Not a render farm.</strong> A farm takes a submitted
-                  job and returns frames. This is an interactive machine you drive yourself.
+                  It isn&rsquo;t a render farm. A farm takes a submitted job and sends frames back.
+                  This is an interactive machine you drive yourself.
                 </span>
               </li>
               <li className="flex gap-3 leading-7 text-ink-2">
                 <span className="mt-3 h-1.5 w-1.5 shrink-0 rounded-full bg-blue" />
                 <span>
-                  <strong className="text-ink">Not a software licence.</strong> Licensed
-                  applications run on the machine, but you bring your own seat. We provide the
-                  hardware and the install, never the licence.
+                  It isn&rsquo;t a software licence. Licensed apps run on the machine, but you bring
+                  your own seat. We provide the hardware and the install, never the licence.
                 </span>
               </li>
               <li className="flex gap-3 leading-7 text-ink-2">
                 <span className="mt-3 h-1.5 w-1.5 shrink-0 rounded-full bg-blue" />
                 <span>
-                  <strong className="text-ink">Not a machine-learning GPU cloud.</strong> It is a{" "}
-                  {NODE.os} desktop for graphics and simulation work, not a Linux container for
-                  training models.
+                  It isn&rsquo;t a machine-learning GPU cloud. You get a {NODE.os} desktop for
+                  graphics and simulation work, and there&rsquo;s no Linux container for training
+                  models.
                 </span>
               </li>
             </ul>
@@ -347,16 +343,16 @@ export default async function AboutPage() {
           <section className="mt-14">
             <h2 className="cf-section-title">Companies we are not.</h2>
             <p className="cf-section-copy mt-4">
-              Several unrelated businesses use a similar name. For the avoidance of doubt, Coreframe
-              Cloud is Coreframe Compute Labs Private Limited, CIN U63119KA2026PTC220789, Bengaluru.
-              It has no connection to:
+              A few unrelated businesses use a similar name. Coreframe Cloud is Coreframe Compute
+              Labs Private Limited, CIN U63119KA2026PTC220789, Bengaluru, and it has no connection
+              to any of these:
             </p>
             <ul className="mt-6 space-y-3">
               {CONFUSED_WITH.map(([name, what]) => (
                 <li key={name} className="flex gap-3 leading-7 text-ink-2">
                   <span className="mt-3 h-1.5 w-1.5 shrink-0 rounded-full bg-ink-3" />
                   <span className="min-w-0 break-words">
-                    <strong className="font-medium text-ink">{name}</strong> — {what}
+                    <strong className="font-medium text-ink">{name}</strong>: {what}
                   </span>
                 </li>
               ))}
@@ -368,15 +364,15 @@ export default async function AboutPage() {
               <h2 className="cf-section-title">What it costs.</h2>
               <p className="cf-section-copy mt-4">
                 Ad-hoc sessions are{" "}
-                <strong className="font-semibold text-ink">{hourly}</strong>, with 18% GST already
-                inside that figure. {billingSentence(card)}
+                <strong className="font-semibold text-ink">{hourly}</strong>, and that already
+                includes 18% GST. {billingSentence(card)}
                 {planFrom
-                  ? ` Studios that render every week take a committed monthly plan instead, from ${planFrom} a month, which bills extra hours below the ad-hoc rate.`
+                  ? ` If your studio renders every week, there are committed monthly plans from ${planFrom} a month, and extra hours on a plan bill below the ad-hoc rate.`
                   : ""}
               </p>
               <p className="cf-section-copy mt-4">
-                Prices on this page are read from the same rate card the billing system charges
-                from, so they cannot drift from what you are actually charged.{" "}
+                The prices on this page come from the same rate card our billing charges from, so
+                they always match what you actually pay.{" "}
                 <Link href="/pricing" className="text-blue underline underline-offset-4">
                   Full pricing
                 </Link>
@@ -400,8 +396,8 @@ export default async function AboutPage() {
           <section className="cf-note mt-14">
             <h2 className="cf-section-title">Try it on your own file.</h2>
             <p className="cf-section-copy mt-3">
-              We will not tell you how fast your scenes will render. Take the heaviest file you have
-              and run it on one of our machines instead.
+              We won&rsquo;t guess how fast your scenes will render. Bring the heaviest file you
+              have and run it on one of our machines.
             </p>
             <Link href="/signup" className="cf-btn-primary mt-6 min-h-[44px]">
               Get started

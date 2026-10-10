@@ -125,8 +125,8 @@ export default async function Page() {
             The kind of studio that treats an hour as something it owns.
           </h2>
           <p className="cf-section-copy mt-4">
-            Not everyone needs this. If a render finishing overnight has never cost you anything,
-            it won&rsquo;t now. These are the people we built it for.
+            Not everyone needs this. If an overnight render has never cost you anything, it
+            won&rsquo;t start now. We built it for people like these.
           </p>
         </div>
       </section>

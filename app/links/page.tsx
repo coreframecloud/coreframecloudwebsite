@@ -71,14 +71,14 @@ function bioLinks(rate: string | null, introHeadline: string | null): BioLink[] 
     {
       // The offer is live or it is absent. Never a number billing will not grant.
       label: introHeadline ? `First top-up: ${introHeadline}.` : "Create an account.",
-      note: "Email and a WhatsApp code to your mobile — no paperwork. International cards accepted.",
+      note: "Just your email and a WhatsApp code to your mobile, no paperwork. International cards work too.",
       href: "https://www.coreframecloud.com/?utm_source=instagram&utm_medium=bio&utm_content=start_free",
       primary: true,
     },
     {
       // The rate is live or it is absent. Never a number billing does not charge.
       label: rate ? `See the rate. ${rate} an hour.` : "See what an hour costs.",
-      note: "Pay by the minute when you need a machine for an afternoon, or commit monthly if you are on it every week.",
+      note: "Pay by the minute if you need a machine for an afternoon, or take a monthly plan if you're on it every week.",
       // Query BEFORE the fragment. `/#pricing?utm_source=...` puts the whole
       // query string inside the fragment, where it never reaches analytics —
       // the link still works, so the tracking silently measures nothing.
@@ -96,7 +96,7 @@ function bioLinks(rate: string | null, introHeadline: string | null): BioLink[] 
     },
     {
       label: "Ask us something on WhatsApp.",
-      note: "A file that will not open, a deadline this week, what a month of this costs.",
+      note: "A file that won't open, a deadline this week, or what a month of this would cost.",
       href: `${COMPANY.whatsapp}?text=Hi%2C+I+saw+your+Instagram+and+want+to+know+more+about+Coreframe+Cloud.`,
     },
   ];

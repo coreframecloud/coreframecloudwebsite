@@ -50,13 +50,13 @@ export function RateCardSection({
           {"                   "}RTX 5080 <V>9,138</V> median · 1,429 results{"\n"}
           {"                   "}RTX 4060 3,182 · 441   ·   RTX 3060 2,154 · 634{"\n"}
           {"                   "}= 2.87x a 4060 and 4.24x a 3060, published as 3x/4x{"\n"}
-          {"                   "}opendata.blender.org — Cycles only; D5, Lumion and{"\n"}
+          {"                   "}opendata.blender.org. Cycles only: D5, Lumion and{"\n"}
           {"                   "}Enscape are different renderers and may not scale so
         </SpecBlock>
 
         <div className="mt-7 flex flex-wrap gap-3.5">
           <Link href="/signup" className="cf-btn-primary">
-            {intro ? `Get started — ${rupees(intro.priceRupees)} for ${hoursLabel(intro.hours)}` : "Create an account"}
+            {intro ? `Get started: ${rupees(intro.priceRupees)} for ${hoursLabel(intro.hours)}` : "Create an account"}
           </Link>
           <Link href="/floor-plan-to-render" className="cf-btn-secondary">
             See Coreframe Studio

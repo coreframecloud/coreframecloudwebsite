@@ -43,17 +43,17 @@ const solutions = [
   {
     icon: MonitorSmartphone,
     title: "GPU workstations.",
-    text: `A full ${NODE.os} desktop with a ${NODE.gpu} in it, streamed to the laptop you already have. Revit, AutoCAD, D5 Render, Lumion, Enscape — your licences, our machine.`,
+    text: `A full ${NODE.os} desktop with a ${NODE.gpu} in it, streamed to the laptop you already have. Revit, AutoCAD, D5 Render, Lumion and Enscape run on our machine with your licences.`,
   },
   {
     icon: Workflow,
     title: "Rendering off your own machine.",
-    text: "The render runs on the node, not on the laptop in front of you. Your machine stays free while it works, and several people can render at the same time, each on their own workstation, instead of queueing for the one desk that can.",
+    text: "The render runs on the node, so the laptop in front of you stays free while it works. Several people can render at the same time, each on their own workstation, instead of queueing for the one desk that can.",
   },
   {
     icon: HardDrive,
     title: "Shared project storage.",
-    text: "Project files sit on NAS and persist between sessions. A designer uploads the model and whoever renders it opens the same file. The latest version is not on a pen drive or on somebody's desktop.",
+    text: "Project files sit on NAS and persist between sessions. A designer uploads the model and whoever renders it opens the same file, so nobody has to hunt for the latest version on a pen drive or somebody's desktop.",
   },
   {
     icon: ShieldCheck,
@@ -65,7 +65,7 @@ const solutions = [
 /** Checkable in the first session. Nothing here needs a certificate to verify. */
 const trustItems = [
   "Every node and every byte of storage sits in Bengaluru. Your client's drawings do not leave India.",
-  `You reach the machine through the Coreframe Connect app, streamed at ${NODE.stream}. Not RDP.`,
+  `You reach the machine through the Coreframe Connect app, streamed at ${NODE.stream}, not over RDP.`,
   "The workstation resets to a clean image between customers, so no trace of one studio's project reaches the next.",
 ];
 
@@ -82,10 +82,10 @@ export default function SolutionsPage() {
               One machine can render. Everything queues behind it.
             </h1>
             <p className="cf-lead mt-6">
-              That is the arrangement most studios are actually working around.
-              Coreframe replaces it with machines you rent by the minute: a
-              workstation per person when the deadline needs it, and none of
-              them on your books the week after.
+              That&apos;s how most studios actually work today. With Coreframe you
+              rent machines by the minute instead, so everyone gets a
+              workstation when the deadline needs it and none of them are on
+              your books the week after.
             </p>
           </div>
         </section>
@@ -149,10 +149,10 @@ export default function SolutionsPage() {
           <div className="cf-col">
             <div className="cf-note">
               <p className="cf-eyebrow mb-4 text-blue">Next step</p>
-              <h2 className="cf-section-title">Start with one seat, not with a rollout.</h2>
+              <h2 className="cf-section-title">Start with one seat.</h2>
               <p className="cf-section-copy mt-4">
                 Put one person on it for a week and see what happens to the
-                queue. GPU, memory, storage, operating system and who gets
+                queue. You don&apos;t need to roll it out to everyone first. GPU, memory, storage, operating system and who gets
                 access are all set with you before the second seat goes live.
               </p>
 

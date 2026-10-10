@@ -60,7 +60,7 @@ const SPECS: [string, string][] = [
   ["OS", NODE.os],
   ["Access", `Coreframe Connect app, streamed at ${NODE.stream}`],
   ["Display driver", "WDDM, which D5 needs for real-time viewport work"],
-  ["D5 Render", "Preinstalled — sign in with your own D5 account"],
+  ["D5 Render", "Preinstalled; sign in with your own D5 account"],
   ["Project storage", "Persistent, separate from the machine"],
   ["Location", NODE.location],
 ];
@@ -74,31 +74,31 @@ export default async function D5Page() {
   const faqs: { q: string; a: string }[] = [
     {
       q: "Can I run D5 Render on a cloud workstation?",
-      a: `Yes. Coreframe gives you a full ${NODE.os} desktop with an NVIDIA ${NODE.gpu}, and D5 Render is already installed on it. You sign in with your own D5 account, open your project and work in the live viewport exactly as you would on a local machine. It is the real application, not a web version of it, and you reach it through the Coreframe Connect app rather than a remote desktop — the stream runs at ${NODE.stream}.`,
+      a: `Yes. Coreframe gives you a full ${NODE.os} desktop with an NVIDIA ${NODE.gpu}, and D5 Render is already installed on it. You sign in with your own D5 account, open your project and work in the live viewport the same way you would on a local machine. It's the full desktop application. You reach it through the Coreframe Connect app rather than a remote desktop, and the stream runs at ${NODE.stream}.`,
     },
     {
       q: "Is D5 Render included, or do I need my own licence?",
-      a: "The application is installed for you, so you never spend paid minutes downloading it. The account is yours: you sign in with your own D5 credentials, and whatever plan you hold with D5 is what applies. We supply the machine, not the licence.",
+      a: "The application is installed for you, so you never spend paid minutes downloading it. The account is yours: you sign in with your own D5 credentials, and whatever plan you hold with D5 is what applies. We supply the machine. The licence is yours.",
     },
     {
       q: "Is this the same as a render farm?",
-      a: "No. A render farm takes a finished scene, renders frames on machines you never see, and sends images back. Coreframe hands you the machine itself. You can move the camera, change a material, relight the scene and re-render in the same session, which is how D5 is actually used — the feedback loop is the point of a real-time renderer.",
+      a: "No. A render farm takes a finished scene, renders frames on machines you never see, and sends images back. Coreframe hands you the machine itself. You can move the camera, change a material, relight the scene and re-render in the same session. That back-and-forth is how people use D5, and it's why you'd pick a real-time renderer in the first place.",
     },
     {
       q: "How much VRAM does D5 Render need?",
-      a: `VRAM is the ceiling on scene size in any GPU renderer: geometry, textures and lightmaps all have to fit on the card. The ${NODE.gpu} in a Coreframe workstation has ${NODE.vram}. Many laptops and entry desktops sold for design work ship with 6 to 8 GB, which is what forces people to cut texture resolution or split a scene. We will not predict how your particular scene behaves — run it in a session and watch the VRAM meter yourself.`,
+      a: `VRAM is the ceiling on scene size in any GPU renderer: geometry, textures and lightmaps all have to fit on the card. The ${NODE.gpu} in a Coreframe workstation has ${NODE.vram}. Many laptops and entry desktops sold for design work ship with 6 to 8 GB, which is what forces people to cut texture resolution or split a scene. We can't tell you how your particular scene will behave, so run it in a session and watch the VRAM meter yourself.`,
     },
     {
       q: "What happens to my D5 project files when the session ends?",
-      a: "Every session starts from an identical clean machine, so anything installed during a session is gone when it ends. Your project files do not live on that machine — they sit on persistent storage that carries over, so a session opened on Friday picks up where Monday's stopped. The clean reset is what guarantees no trace of another customer's work, or yours, is left behind.",
+      a: "Every session starts from an identical clean machine, so anything installed during a session is gone when it ends. Your project files don't live on that machine. They sit on persistent storage that carries over, so a session you open on Friday picks up where Monday's stopped. The clean reset is how we make sure no trace of another customer's work, or yours, is left behind.",
     },
     {
       q: "Can I use D5 Render with Revit, SketchUp, Rhino or 3ds Max on the same machine?",
-      a: "Yes. It is an ordinary Windows desktop, so the D5 plugins and the host applications sit side by side. Blender and Twinmotion are preinstalled alongside D5. Revit, SketchUp, Rhino, 3ds Max and similar licensed applications run on the machine but need your own licence, because those vendors require your own account even to download the installer.",
+      a: "Yes. It's an ordinary Windows desktop, so the D5 plugins and the host applications sit side by side. Blender and Twinmotion are preinstalled alongside D5. Revit, SketchUp, Rhino, 3ds Max and similar licensed applications run on the machine but need your own licence, because those vendors require your own account even to download the installer.",
     },
     {
       q: "What internet speed do I need to use a Coreframe workstation?",
-      a: "You are streaming a desktop, so what matters is a steady connection rather than a fast one. Around 25 Mbps with stable latency is a comfortable working floor. Rendering happens on the workstation in Bengaluru, and a finished 4K or 8K still is a file you download, not something streamed frame by frame.",
+      a: "You're streaming a desktop, so a steady connection matters more than a fast one. Around 25 Mbps with stable latency is a comfortable working floor. Rendering happens on the workstation in Bengaluru, and a finished 4K or 8K still is a file you download. It isn't streamed to you frame by frame.",
     },
     ...(priceAnswer ? [{ q: "How much does it cost to render in D5 on Coreframe?", a: priceAnswer }] : []),
     ...(introFaq ? [introFaq] : []),
@@ -133,8 +133,8 @@ export default async function D5Page() {
           Coreframe gives you a full Windows desktop with an NVIDIA RTX 5080, D5
           Render already installed, streamed to whatever laptop you own and
           billed by the minute. You sign in with your own D5 account, open your
-          project and work in the live viewport — the real application on real
-          hardware, not a web preview and not a queue.
+          project and work in the live viewport. It&rsquo;s the full application on
+          real hardware, with no web preview in between and no queue.
         </p>
 
         <section className="mt-14">
@@ -142,21 +142,21 @@ export default async function D5Page() {
             The problem D5 users actually have.
           </h2>
           <p className="mt-4 leading-8 text-ink-2">
-            D5 is a real-time renderer, which is exactly why weak hardware hurts
-            so much. The whole reason to use it is that you move the camera and
-            the image resolves while you watch. On an underpowered card that loop
+            D5 is a real-time renderer, which is why weak hardware hurts it so
+            much. You use it because you move the camera and the image resolves
+            while you watch. On an underpowered card that loop
             breaks: the viewport stutters, you stop exploring options, and a 4K
             still becomes something you set running and walk away from.
           </p>
           <p className="mt-4 leading-8 text-ink-2">
             The usual answer is to buy a workstation. A machine that renders
-            comfortably lands at roughly {WORKSTATION_REPLACEMENT_COST} in
-            India, gets bought once, and sits idle most of the week — because
-            visualisation work is bursty. You need serious hardware for the four days before a client
+            comfortably costs roughly {WORKSTATION_REPLACEMENT_COST} in
+            India. You buy it once and it sits idle most of the week, because
+            visualisation work comes in bursts. You need serious hardware for the four days before a client
             presentation and almost none for the three weeks after it.
           </p>
           <p className="mt-4 leading-8 text-ink-2">
-            Renting inverts that. The machine exists when the deadline does.
+            Renting flips that around: you have the machine for those four days and don&rsquo;t pay for the three weeks.
           </p>
         </section>
 
@@ -171,13 +171,13 @@ export default async function D5Page() {
             ))}
           </dl>
           <p className="mt-5 leading-8 text-ink-2">
-            One node, one GPU, one customer at a time — no shared card and no
-            virtualised slice of one. The comparison worth making is VRAM, not
-            speed: this card carries {NODE.vram}, while many laptops and entry
-            desktops sold for design work carry 6 to 8 GB. That is the number
-            that decides whether a scene loads at full texture resolution or has
-            to be cut down. We do not publish render times, because they depend
-            entirely on your scene, your settings and your geometry.
+            Each node has one GPU and one customer at a time. You don&rsquo;t share the
+            card, and you don&rsquo;t get a virtualised slice of it. The number we&rsquo;d
+            compare is VRAM: this card has {NODE.vram}, while many laptops and
+            entry desktops sold for design work have 6 to 8 GB. VRAM decides
+            whether a scene loads at full texture resolution or has to be cut
+            down. We don&rsquo;t publish render times because they depend entirely on
+            your scene and your settings.
           </p>
         </section>
 
@@ -187,10 +187,10 @@ export default async function D5Page() {
           </h2>
           <ol className="mt-6 space-y-5">
             {[
-              "Sign in and start a workstation. It comes up in about two minutes, and provisioning is free — billing starts when the stream does.",
+              "Sign in and start a workstation. It comes up in about two minutes. Provisioning is free, and billing starts when the stream does.",
               "Your project files are already there, on persistent storage that survives between sessions. Nothing has to be copied onto the machine each time.",
               "Open D5, sign in with your own account, and work. Twinmotion, Blender and Unreal Engine are on the same desktop if you need them.",
-              "Render at full resolution on the workstation. The finished image is a file you download, not something streamed pixel by pixel.",
+              "Render at full resolution on the workstation. The finished image is a file you download. It doesn't come through the stream.",
               "Close the session. Billing stops, the machine is wiped back to a clean image, and your files stay where they were.",
             ].map((step, i) => (
               <li key={i} className="flex gap-4 leading-8 text-ink-2">
@@ -214,18 +214,19 @@ export default async function D5Page() {
             The revision that happens in the room.
           </h2>
           <p className="mt-4 leading-8 text-ink-2">
-            The version of this that studios feel most is the client meeting. A
+            Studios feel this most in client meetings. A
             client asks for the kitchen in a different finish, and the normal
             answer is to go back to the office, re-render overnight and book a
-            second meeting. With the workstation reachable from a laptop, the
-            change can be made where you are sitting and the result put on the
-            client&rsquo;s own screen before the meeting ends.
+            second meeting. With the workstation reachable from a laptop, you
+            can make the change where you&rsquo;re sitting and put the result on
+            the client&rsquo;s own screen before the meeting ends.
           </p>
           <p className="mt-4 leading-8 text-ink-2">
-            Two honest caveats. Test the connection at the client&rsquo;s office
-            first, or tether — a demo that stalls in front of their client is
-            worse than not offering it. And the high-resolution still is a file
-            rendered on the workstation, not a live stream at that resolution.
+            Two caveats. Test the connection at the client&rsquo;s office first,
+            or tether, because a demo that stalls in front of the client is worse
+            than no demo. And the high-resolution still is a file rendered on the
+            workstation. You won&rsquo;t see it as a live stream at that
+            resolution.
           </p>
         </section>
 
@@ -237,9 +238,9 @@ export default async function D5Page() {
               18% GST already included in that figure. {billingSentence(card)}
             </p>
             <p className="mt-4 leading-8 text-ink-2">
-              That price is read from the same rate card the billing system
-              charges from, so a figure on this page cannot drift from what you
-              are actually charged. A GST tax invoice showing the split is issued
+              We read that price from the same rate card billing charges from,
+              so the figure on this page can&rsquo;t drift from what you&rsquo;re
+              actually charged. A GST tax invoice showing the split is issued
               on every recharge.{" "}
               <Link href="/pricing" className="text-blue underline underline-offset-4">
                 Full pricing and monthly plans
@@ -265,8 +266,8 @@ export default async function D5Page() {
           <h2 className="cf-section-title">Test it with your own scene.</h2>
           <p className="mt-3 leading-7 text-ink-2">
             Take the D5 project that ties up your machine all afternoon and run
-            it on ours. That answers the question better than any number we could
-            put on this page.
+            it on ours. You&rsquo;ll learn more from that than from any number we
+            could put on this page.
           </p>
           <Link href="/signup" className="cf-btn-primary mt-6">
             Get started

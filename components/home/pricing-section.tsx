@@ -108,12 +108,12 @@ export function PricingSection({
             {perMinute ? (
               <p className="mt-2 text-sm text-blue">
                 {perMinute} a minute
-                {example ? ` — a ${example.minutes}-minute session costs ${example.cost}` : ""}
+                {example ? `, so a ${example.minutes}-minute session costs ${example.cost}` : ""}
               </p>
             ) : null}
             <p className="mt-4 text-sm leading-6 text-ink-2">
-              Spin up anytime, no contract. {billingNote} Best for one-off renders
-              or trying the platform before committing.
+              Start a machine whenever you like, with no contract. {billingNote} It
+              suits one-off renders, or trying us out before you commit to a plan.
             </p>
 
             <ul className="mt-6 space-y-2 text-sm text-ink-2">
@@ -141,7 +141,7 @@ export function PricingSection({
           {/* Committed */}
           <div className="rounded-[28px] border border-blue/20 bg-blue/[0.04] p-8">
             <div className="cf-eyebrow">
-              Committed Monthly Plans
+              Committed monthly plans
             </div>
             <Price value={bestOverage} unit="/ GPU-hour" />
             <p className="mt-4 text-sm leading-6 text-ink-2">
@@ -151,15 +151,15 @@ export function PricingSection({
                   it. When it does not hold, the plans still have a real pitch;
                   it just is not "cheaper per hour". */}
               {commitmentCheaper && adhocRate
-                ? `Committing is genuinely cheaper per hour — every tier bills below the ${adhocRate} ad-hoc rate, on included hours and extra ones alike. `
+                ? `Committing is cheaper per hour. Every tier bills below the ${adhocRate} ad-hoc rate, for included hours and extra ones. `
                 : ""}
               Included hours, named seats and NAS storage come with the monthly fee.
-              {storageRate ? ` Extra persistent storage is billed openly at ${storageRate}/TB/month, with no egress charge — pulling your own files back costs nothing.` : ""}
+              {storageRate ? ` Extra persistent storage is ${storageRate}/TB/month. There's no egress charge, so pulling your own files back costs nothing.` : ""}
             </p>
 
             <ul className="mt-6 space-y-2 text-sm text-ink-2">
-              <li className="flex gap-2"><span className="text-blue">✓</span> Persistent NAS storage (2–10 TB included)</li>
-              <li className="flex gap-2"><span className="text-blue">✓</span> 5–25 named render seats</li>
+              <li className="flex gap-2"><span className="text-blue">✓</span> Persistent NAS storage (2 to 10 TB included)</li>
+              <li className="flex gap-2"><span className="text-blue">✓</span> 5 to 25 named render seats</li>
               <li className="flex gap-2"><span className="text-blue">✓</span> Included GPU-hours each month</li>
               {entryPlanFee ? <li className="flex gap-2"><span className="text-blue">✓</span> Plans from {entryPlanFee}/month</li> : null}
             </ul>
@@ -170,7 +170,7 @@ export function PricingSection({
                 className="cf-btn-primary w-full text-center block"
                 onClick={() => trackEvent("enterprise_click", { location: "pricing_committed" })}
               >
-                See Committed Plans →
+                See committed plans →
               </Link>
             </div>
           </div>
@@ -183,9 +183,9 @@ export function PricingSection({
               Add-on · Persistent NAS storage
             </div>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-ink-2">
-              Need your project files to outlive the session? Add persistent NAS storage to any
-              account — ad-hoc or committed. Your data is retained for as long as the storage
-              subscription is active.
+              If your project files need to outlive the session, you can add persistent NAS
+              storage to any account, ad-hoc or committed. We keep your data for as long as the
+              storage subscription is active.
             </p>
           </div>
           <div className="mt-4 shrink-0 sm:mt-0 sm:text-right">
@@ -197,11 +197,11 @@ export function PricingSection({
         {/* BYOL note */}
         <div className="mt-6 rounded-[20px] border border-rule bg-paper-2 px-6 py-5">
           <p className="text-sm leading-6 text-ink-2">
-            <span className="font-semibold text-ink-2">Software licences are BYOL</span> — Bring Your Own Licence.
-            D5 Render, Lumion, Enscape, SolidWorks, 3ds Max, and similar apps all work on our instances.
-            Named-user licences are fully supported — install your licence on the workstation and it activates against your existing seat.
-            <span className="font-semibold text-ink-2"> All prices include GST.</span> What you see is what you pay —
-            an 18% GST component is inside every rate, and business customers get a full tax invoice showing the split.
+            Software licences are BYOL: you bring your own. D5 Render, Lumion, Enscape, SolidWorks,
+            3ds Max and similar apps all work on our machines. Named-user licences work too. Install
+            yours on the workstation and it activates against the seat you already have. All prices
+            include GST, so the rate you see is what you pay. The 18% GST is inside every rate, and
+            business customers get a full tax invoice showing the split.
           </p>
         </div>
 
@@ -211,7 +211,7 @@ export function PricingSection({
             className="cf-btn-primary"
             onClick={() => trackEvent("reserve_click", { location: "pricing_section_bottom" })}
           >
-            Reserve Access
+            Reserve access
           </InPageLink>
           <Link href="/enterprise" className="cf-btn-secondary" onClick={() => trackEvent("enterprise_click", { location: "pricing_bottom" })}>
             Compare plans

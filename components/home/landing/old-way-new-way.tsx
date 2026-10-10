@@ -28,19 +28,19 @@ import { useEffect, useRef } from "react";
 const PAIRS: { old: string; now: string }[] = [
   {
     old: "One render desk. Everyone waits their turn.",
-    now: "Four people, four machines, four laptops. Nobody queues.",
+    now: "Everyone gets their own machine from their own laptop, so nobody queues.",
   },
   {
-    old: "Your PC is hostage until the render finishes.",
-    now: "It renders somewhere else. You keep working on yours.",
+    old: "Your PC is stuck until the render finishes.",
+    now: "The render runs on our machine while you keep working on yours.",
   },
   {
-    old: "Latest file is on a pen drive. Or someone's desktop.",
-    now: "One drive, mapped into every session. Same work, any laptop.",
+    old: "The latest file is on a pen drive, or on someone's desktop.",
+    now: "One drive is mapped into every session, so the same files open on any laptop.",
   },
   {
     old: "The machine is at the office. You're not.",
-    now: "Open it from a site visit, a client's office, your sofa.",
+    now: "Open it from a site visit, a client's office or your sofa.",
   },
 ];
 

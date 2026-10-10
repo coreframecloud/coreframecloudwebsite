@@ -55,10 +55,10 @@ export default async function PricingPage() {
               a max-w-7xl container, which is why it broke "16 GB" from "GDDR7"
               mid-line — a measure that long has no good break points. */}
           <p className="cf-lead mt-[22px]">
-            Pay by the minute when you need a machine for an afternoon, or
-            commit monthly if you are on it every week. Same hardware either
-            way, same Bengaluru rack. Every price here includes GST and comes
-            with a tax invoice.
+            Pay by the minute if you need a machine for an afternoon, or take
+            a monthly plan if you&rsquo;re on it every week. Either way
+            it&rsquo;s the same hardware in the same Bengaluru rack. Every
+            price here includes GST and comes with a tax invoice.
           </p>
         </div>
       </section>

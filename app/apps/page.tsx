@@ -49,15 +49,15 @@ const faqs = [
   },
   {
     q: "Can I install my own software on a Coreframe workstation?",
-    a: "Applications are installed for you rather than by you: your session runs as a standard Windows user, which is what lets us guarantee the workstation is reset to a clean image before the next customer. D5 Render, Twinmotion, Unreal Engine, Blender and the rest of the standard set are already on the machine. Revit, AutoCAD, 3ds Max, V-Ray, Lumion and Enscape are set up with you once — those vendors need your own account to download — and after that they are on every workstation you launch, running on your own licence.",
+    a: "We install applications for you. Your session runs as a standard Windows user, which is how we can guarantee the workstation goes back to a clean image before the next customer. D5 Render, Twinmotion, Unreal Engine, Blender and the rest of the standard set are already on the machine. Revit, AutoCAD, 3ds Max, V-Ray, Lumion and Enscape we set up with you once, because those vendors only let you download from your own account. After that they're on every workstation you launch, running on your own licence.",
   },
   {
     q: "Does Coreframe provide licences for D5 Render, Lumion or Autodesk software?",
-    a: "No. Commercial applications are licensed to you, not to the machine. You sign in with your own subscription exactly as you would on your own PC. Only free and open-source software is ready to use without a licence of your own.",
+    a: "No. Commercial applications are licensed to you, and the licence doesn't come with the machine. You sign in with your own subscription, the same as on your own PC. Only free and open-source software is ready to use without a licence of your own.",
   },
   {
     q: "Does software I install stay on the workstation for next time?",
-    a: "Every session starts from an identical clean image, so nothing from the previous customer — or from your own previous session — remains on the machine. Your project files are kept separately on NAS storage, which does persist between sessions. If you need a particular application every day, tell us and we add it to the standard image.",
+    a: "Every session starts from an identical clean image, so nothing from the previous customer, or from your own last session, is left on the machine. Your project files are kept separately on NAS storage, and that does persist between sessions. If you need a particular application every day, tell us and we'll add it to the standard image.",
   },
 ];
 
@@ -123,14 +123,14 @@ export default function AppsPage() {
       <section className="cf-section px-5">
         <div className="cf-col">
           <p className="cf-eyebrow mb-5">Software</p>
-          <h1 className="cf-display">What is already on the machine.</h1>
+          <h1 className="cf-display">What&apos;s already on the machine.</h1>
           <p className="cf-lead mt-6">
             Every Coreframe workstation is a full {NODE.os} desktop with a{" "}
             {NODE.gpu} in it. A standard set of tools is installed and ready the
             moment your desktop appears, and you sign in to each one with your
-            own licence. Anything free and missing, we add to the image on
-            request. Licensed applications we set up with you once, because the
-            vendor needs your account to download.
+            own licence. If something free is missing, ask and we&apos;ll add it to
+            the image. Licensed applications we set up with you once, because the
+            vendor needs your account to download them.
           </p>
         </div>
       </section>
@@ -147,7 +147,7 @@ export default function AppsPage() {
 
       <Group
         title="Your licence, our machine."
-        blurb="These are licensed to you rather than to the machine. We set them up with you once — the vendor needs your own account to download — and after that they are on every workstation you launch, signed in with your subscription. We never supply licences for commercial software."
+        blurb="These are licensed to you, and the licence stays yours. We set them up with you once, since the vendor only lets you download from your own account. After that they're on every workstation you launch, signed in with your subscription. We never supply licences for commercial software."
         items={BRING_YOUR_OWN_LICENCE}
       />
 
@@ -163,9 +163,9 @@ export default function AppsPage() {
               customer starts from the same clean machine.
             </p>
             <p className="cf-section-copy mt-4">
-              That is a design decision rather than a limitation. It is what
-              guarantees no trace of anyone else&apos;s project can reach you,
-              which matters when your work is under NDA. Keep your files on the
+              We built it that way on purpose. It means nothing from anyone
+              else&apos;s project can reach you, which matters when your work is
+              under NDA. Keep your files on the
               NAS drive, which persists between sessions and is mapped into
               every workstation you launch.
             </p>
@@ -174,8 +174,8 @@ export default function AppsPage() {
               <Link href="/contact" className="text-blue underline underline-offset-4">
                 Tell us
               </Link>{" "}
-              and we add it to the standard image, so it is waiting for you next
-              time.
+              and we&apos;ll add it to the standard image, so it&apos;s waiting for
+              you next time.
             </p>
           </div>
         </div>
