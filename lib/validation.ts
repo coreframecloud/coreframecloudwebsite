@@ -23,9 +23,10 @@ export type Country = {
  * Every country, India first, with its ISO-3166 alpha-2 code and dial code.
  * Paid-first onboarding (10 Oct 2026) opened sign-up to international
  * customers, and the control plane's /auth/countries listed only India while
- * KYC ran on DigiLocker — so the pickers are built from this table, with the
- * API's length rules laid over it wherever the API knows a dial code (see
- * mergeCountries).
+ * KYC ran on DigiLocker. Since 10 Oct 2026 the signup pickers use the API's
+ * own list (fetchCountries / countriesFromApi: every country the API accepts,
+ * 243 in payment mode); this table is the OFFLINE FALLBACK, and the base an
+ * older API without ISO codes is merged over (mergeCountries).
  *
  * `iso` is what the API stores as `country_code`; it is also the <option>
  * value, because dial codes are shared (+1 is the US and Canada, +7 Russia and
@@ -234,17 +235,62 @@ export function validateGstin(raw: string): Validation {
   return { ok: true, value };
 }
 
+type ApiCountry = { iso2?: string; dial_code: string; country?: string; lengths?: number[] };
+
+/**
+ * The API's own list as Country rows. The API is the authority on which
+ * countries a signup may choose (it validates against the same table), so when
+ * it answers with ISO codes its list is used AS IS — including countries the
+ * bundled COUNTRIES table does not carry. Returns null for an older API whose
+ * rows have no `iso2`; the caller then falls back to mergeCountries.
+ */
+export function countriesFromApi(fromApi: ApiCountry[]): Country[] | null {
+  const rows: Country[] = [];
+  const seen = new Set<string>();
+  for (const c of fromApi) {
+    const iso = typeof c?.iso2 === "string" ? c.iso2.toUpperCase() : "";
+    if (!/^[A-Z]{2}$/.test(iso) || !c.dial_code || seen.has(iso)) continue;
+    seen.add(iso);
+    rows.push({
+      iso,
+      dial_code: String(c.dial_code),
+      country: c.country || countryByIso(iso)?.country || iso,
+      lengths: Array.isArray(c.lengths) ? c.lengths : [],
+    });
+  }
+  if (!rows.length) return null;
+  // India first, whatever order the API used.
+  rows.sort((a, b) => Number(b.iso === "IN") - Number(a.iso === "IN"));
+  return rows;
+}
+
+/**
+ * Countries for the signup pickers: the API's list when it is reachable (every
+ * country it accepts, and only those), the bundled COUNTRIES otherwise.
+ */
 export async function fetchCountries(apiBase: string): Promise<Country[]> {
   try {
     const res = await fetch(`${apiBase}/auth/countries`);
     if (!res.ok) return COUNTRIES;
     const data = await res.json();
-    return Array.isArray(data?.countries) && data.countries.length
-      ? mergeCountries(data.countries)
-      : COUNTRIES;
+    if (!Array.isArray(data?.countries) || !data.countries.length) return COUNTRIES;
+    return countriesFromApi(data.countries) ?? mergeCountries(data.countries);
   } catch {
     return COUNTRIES;
   }
+}
+
+/**
+ * Bundled list plus anything the API knows that it does not — for places
+ * (billing country) that must never SHRINK below the bundled list, e.g. when
+ * the API is in KYC mode and lists India only.
+ */
+export function withBundledCountries(list: Country[]): Country[] {
+  const have = new Set(list.map((c) => c.iso));
+  return [...list, ...COUNTRIES.filter((c) => !have.has(c.iso))].sort(
+    (a, b) =>
+      Number(b.iso === "IN") - Number(a.iso === "IN") || a.country.localeCompare(b.country),
+  );
 }
 
 export type GstState = { code: string; name: string };

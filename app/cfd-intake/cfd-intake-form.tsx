@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
+import { API_BASE } from "@/lib/api-base";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -282,8 +283,6 @@ function CheckChip({ checked, onChange, label }: {
 }
 
 // ─── Main Component ───────────────────────────────────────────────────────────
-
-const API_BASE = "https://control.coreframecloud.com/api";
 
 export default function CfdIntakeForm() {
   const [page, setPage] = useState(0);

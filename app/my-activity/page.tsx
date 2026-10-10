@@ -12,8 +12,9 @@ import {
   type IntroOffer,
 } from "@/lib/rate-card";
 import { useRateCard } from "@/lib/use-rate-card";
+import { API_BASE } from "@/lib/api-base";
 
-const API = "https://control.coreframecloud.com/api";
+const API = API_BASE;
 
 interface WalletData {
   wallet_balance_rupees: number;

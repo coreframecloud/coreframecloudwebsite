@@ -41,11 +41,15 @@ import {
   FOREIGN_STATE_CODE,
   INDIA,
   countryByIso,
+  fetchCountries,
+  withBundledCountries,
+  type Country,
   fetchIndianGstStates,
   type GstState,
 } from "@/lib/validation";
+import { API_BASE } from "@/lib/api-base";
 
-const API = "https://control.coreframecloud.com/api";
+const API = API_BASE;
 
 type PaymentsConfig = {
   enabled: boolean;
@@ -104,6 +108,9 @@ export default function TopUpDialog({
   const [states, setStates] = useState<GstState[]>([]);
   const [amount, setAmount] = useState<string>("");
   const [name, setName] = useState(user?.full_name ?? "");
+  // Bundled list until the API answers; then the API's list (every country a
+  // sign-up could have chosen) with the bundled ones kept, so it never shrinks.
+  const [countries, setCountries] = useState<Country[]>(COUNTRIES);
   const [countryIso, setCountryIso] = useState(countryByIso(defaultCountry)?.iso ?? INDIA.iso);
   const isIndia = countryIso === "IN";
   const [stateCode, setStateCode] = useState("");
@@ -131,6 +138,7 @@ export default function TopUpDialog({
       .catch(() => setConfig({ enabled: false, key_id: null, min_topup_rupees: 500, max_topup_rupees: 50000 }));
 
     fetchIndianGstStates(API).then(setStates);
+    fetchCountries(API).then((list) => setCountries(withBundledCountries(list)));
 
     loadRazorpay();
   }, [open, minTopupNow, presetAmount]);
@@ -139,9 +147,10 @@ export default function TopUpDialog({
   // dialog mounted; adopt it until the customer picks one themselves.
   const [countryTouched, setCountryTouched] = useState(false);
   useEffect(() => {
-    const iso = countryByIso(defaultCountry)?.iso;
+    const code = defaultCountry?.toUpperCase();
+    const iso = countries.find((c) => c.iso === code)?.iso;
     if (iso && !countryTouched) setCountryIso(iso);
-  }, [defaultCountry, countryTouched]);
+  }, [defaultCountry, countryTouched, countries]);
 
   const presets = (() => {
     const floor = config?.min_topup_rupees ?? minTopupNow ?? 500;
@@ -409,7 +418,7 @@ export default function TopUpDialog({
                       onChange={(e) => { setCountryIso(e.target.value); setCountryTouched(true); setError(""); }}
                       className="mt-1.5 h-11 w-full cursor-pointer rounded-cf border border-rule bg-paper px-3 text-base text-ink outline-none focus:border-blue md:h-10 md:text-sm"
                     >
-                      {COUNTRIES.map((c) => (
+                      {countries.map((c) => (
                         <option key={c.iso} value={c.iso} className="bg-paper text-ink">
                           {c.country}
                         </option>

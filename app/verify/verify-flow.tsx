@@ -34,8 +34,9 @@ import {
   validatePhone,
   type Country,
 } from "@/lib/validation";
+import { API_BASE } from "@/lib/api-base";
 
-const API = "https://control.coreframecloud.com/api";
+const API = API_BASE;
 const DONE_URL = "/my-activity?topup=1";
 
 /* 44px and a 16px font on a phone: anything smaller and iOS Safari zooms the

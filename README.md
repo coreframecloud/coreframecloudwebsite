@@ -53,3 +53,26 @@ never commit values (`.env*` is gitignored).
 The labels are optional: without them, mark the GA4 events `sign_up`,
 `generate_lead` and `purchase` as key events and import them into Google Ads.
 Conversions are sent from `trackConversion` in `lib/analytics.ts`.
+
+## Control-plane API base
+
+Every customer page (login, verify, My Activity, top-up, magic link, header,
+org admin, CFD intake, rate card, download route) reaches the control plane
+through ONE constant, `API_BASE` in `lib/api-base.ts`:
+
+| Variable | What it does |
+|---|---|
+| `NEXT_PUBLIC_CONTROL_PLANE_API` | API base URL, e.g. `https://staging.example.com/api`. Unset = `https://control.coreframecloud.com/api` (production, unchanged). |
+
+Like every `NEXT_PUBLIC_*` variable it is read at **build** time (the API
+base is inlined into the client bundles and the CSP header is baked into the
+build), so rebuild after changing it. Only an `https://` URL is accepted; `http://localhost` / `http://127.0.0.1`
+are accepted only under `next dev` (non-production). Anything else falls back
+to the production API. The CSP `connect-src` in `next.config.ts` always allows
+the production origin and adds the configured origin when it differs. The
+`/tools`, `/dwg-check`, `/r/*` and Studio rewrites in `next.config.ts` still
+point at production on purpose.
+
+The signup country pickers load `GET /auth/countries` from that API (every
+country it accepts); the bundled list in `lib/validation.ts` is only the
+offline fallback.

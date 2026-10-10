@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
+import { API_BASE } from "@/lib/api-base";
 
-const CONTROL_API = "https://control.coreframecloud.com/api";
+const CONTROL_API = API_BASE;
 
 // The installer, its checksum and its version all come from ONE place: the
 // release feed nginx serves out of /home/coreframe/releases on the control

@@ -12,7 +12,9 @@
  * cache: the API is authoritative and a session snapshots its rate at launch.
  */
 
-const API = process.env.NEXT_PUBLIC_CONTROL_PLANE_API ?? "https://control.coreframecloud.com/api";
+import { API_BASE } from "@/lib/api-base";
+
+const API = API_BASE;
 
 /** Tag for on-demand invalidation. The control plane POSTs to
  *  /api/revalidate-rate-card whenever a rate or plan changes. */

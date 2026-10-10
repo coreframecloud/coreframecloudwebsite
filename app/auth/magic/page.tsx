@@ -6,8 +6,9 @@ import { useSearchParams } from "next/navigation";
 import { CheckCircle, XCircle, Loader2 } from "lucide-react";
 import { Suspense } from "react";
 import { trackSignupIfNew } from "@/lib/analytics";
+import { API_BASE } from "@/lib/api-base";
 
-const API = "https://control.coreframecloud.com/api";
+const API = API_BASE;
 
 function MagicLinkVerifier() {
   const params = useSearchParams();

@@ -1,4 +1,16 @@
 import type { NextConfig } from "next";
+import { PRODUCTION_API_BASE, apiOrigin, resolveApiBase } from "./lib/api-base";
+
+// The control-plane API origin(s) the browser may call. The production origin
+// is ALWAYS allowed; a valid NEXT_PUBLIC_CONTROL_PLANE_API (see lib/api-base.ts
+// for what counts as valid) adds its own origin for staging / local testing.
+// Unset -> exactly the production policy, unchanged.
+const API_ORIGINS = Array.from(
+  new Set([
+    apiOrigin(PRODUCTION_API_BASE),
+    apiOrigin(resolveApiBase(process.env.NEXT_PUBLIC_CONTROL_PLANE_API, process.env.NODE_ENV)),
+  ]),
+).join(" ");
 
 /**
  * Security headers.
@@ -73,7 +85,7 @@ const CSP = [
   // stats.g.doubleclick.net and www.google.com/g/collect - three origins that
   // are not obvious from the tag snippet and would have taken every pageview
   // with them, silently, on the first deploy.
-  "connect-src 'self' https://control.coreframecloud.com https://www.google-analytics.com https://*.google-analytics.com https://analytics.google.com https://*.analytics.google.com https://www.googletagmanager.com https://stats.g.doubleclick.net https://www.google.com https://*.clarity.ms https://c.bing.com https://va.vercel-scripts.com https://cloudflareinsights.com https://static.cloudflareinsights.com https://api.razorpay.com https://lumberjack.razorpay.com https://lumberjack-cx.razorpay.com https://www.facebook.com https://connect.facebook.net https://googleads.g.doubleclick.net https://www.googleadservices.com",
+  `connect-src 'self' ${API_ORIGINS} https://www.google-analytics.com https://*.google-analytics.com https://analytics.google.com https://*.analytics.google.com https://www.googletagmanager.com https://stats.g.doubleclick.net https://www.google.com https://*.clarity.ms https://c.bing.com https://va.vercel-scripts.com https://cloudflareinsights.com https://static.cloudflareinsights.com https://api.razorpay.com https://lumberjack.razorpay.com https://lumberjack-cx.razorpay.com https://www.facebook.com https://connect.facebook.net https://googleads.g.doubleclick.net https://www.googleadservices.com`,
   // The two Meta hosts are the pixel's event POSTs; the googleads/googleadservices
   // pair is the Google Ads conversion ping, only sent when
   // NEXT_PUBLIC_GOOGLE_ADS_ID is set.

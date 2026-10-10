@@ -18,8 +18,9 @@ import { Input } from "@/components/ui/input";
 import { OtpInput } from "@/components/ui/otp-input";
 // CheckCircle went with the password tab's "signed in" state.
 import { Loader2, Mail, ArrowRight } from "lucide-react";
+import { API_BASE } from "@/lib/api-base";
 
-const API = "https://control.coreframecloud.com/api";
+const API = API_BASE;
 
 type Tab = "link" | "code";
 type LinkStep = "email" | "details" | "sent";

@@ -2,8 +2,9 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
+import { API_BASE } from "@/lib/api-base";
 
-const API = "https://control.coreframecloud.com/api";
+const API = API_BASE;
 
 interface OrgInfo {
   user_id: number;

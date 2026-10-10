@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from "react";
 import type { RateCard } from "@/lib/rate-card";
+import { API_BASE } from "@/lib/api-base";
 
-const API = process.env.NEXT_PUBLIC_CONTROL_PLANE_API ?? "https://control.coreframecloud.com/api";
+const API = API_BASE;
 
 /**
  * The live rate card, in the browser.

@@ -8,6 +8,7 @@ import { CoreframeWordmarkAtlas } from "@/components/brand/coreframe-wordmark-at
 import { trackEvent } from "@/lib/analytics";
 import { getIntroOffer, hoursLabel, rupees } from "@/lib/rate-card";
 import { useRateCard } from "@/lib/use-rate-card";
+import { API_BASE } from "@/lib/api-base";
 
 // True on the client after hydration, false during SSR — without a setState
 // in an effect (react-hooks/set-state-in-effect).
@@ -165,10 +166,10 @@ export function SiteHeader() {
 
     // Fetch wallet + fresh user info (so role/customer_type are always current)
     Promise.all([
-      fetch("https://control.coreframecloud.com/api/me/wallet", {
+      fetch(`${API_BASE}/me/wallet`, {
         headers: { Authorization: `Bearer ${token}` },
       }),
-      fetch("https://control.coreframecloud.com/api/me", {
+      fetch(`${API_BASE}/me`, {
         headers: { Authorization: `Bearer ${token}` },
       }),
     ])
