@@ -66,6 +66,29 @@ export type TrialTerms = {
   first_topup_bonus_cap_rupees: number;
 };
 
+/**
+ * The first-top-up offer, as the control plane publishes it: pay
+ * `price_rupees` once and `bonus_rupees` more is credited, which together buy
+ * `hours` of the cheapest GPU at the ad-hoc rate.
+ */
+export type IntroOfferApi = {
+  enabled: boolean;
+  price_rupees: number;
+  hours?: number;
+  bonus_rupees?: number;
+  validity_days?: number;
+  one_per_customer?: boolean;
+};
+
+/** How an account becomes usable. Replaced KYC on 10 Oct 2026: email + mobile
+ *  OTP, then paying is the filter. */
+export type Onboarding = {
+  mode: string;
+  requires_identity_verification: boolean;
+  requires_mobile_otp: boolean;
+  international: boolean;
+};
+
 export type B2cStorage = {
   trial_gb: number;
   paid_gb: number;
@@ -109,7 +132,14 @@ export type RateCard = {
     max_topup_rupees: number;
     /** Always 0 — the one-time setup fee is retired. */
     one_time_setup_fee_rupees: number;
+    /** The smallest FIRST top-up — the intro offer price while it runs.
+     *  Optional: a control plane from before paid-first onboarding omits it. */
+    min_first_topup_rupees?: number;
   };
+  // Paid-first onboarding (10 Oct 2026). Both optional so a control plane that
+  // predates them does not break the build; see getIntroOffer/getOnboarding.
+  intro_offer?: IntroOfferApi;
+  onboarding?: Onboarding;
   // Optional so an older control plane that predates this field does not break
   // the build — callers treat a missing block as "no trial to advertise".
   trial?: TrialTerms;
@@ -180,12 +210,112 @@ export async function getRateCard(): Promise<RateCard | null> {
  * this deploy, or trials are switched off. All three mean the same thing to a
  * caller — say nothing. Advertising a trial the platform will not grant costs
  * more than not advertising one, because the customer finds out after signing
- * up and handing over their Aadhaar.
+ * up.
+ *
+ * Paid-first onboarding (10 Oct 2026) retired the free trial; the site no
+ * longer advertises one anywhere. This stays so an API that still reports
+ * `trial.enabled` does not break a build, and it is hidden when false.
  */
 export function getTrialTerms(card: RateCard | null): TrialTerms | null {
   if (!card?.trial?.enabled) return null;
   if (!card.trial.gpu_minutes) return null;
   return card.trial;
+}
+
+/**
+ * The intro offer, resolved for display: what you pay, how many hours of which
+ * GPU it buys. Every field comes from the rate card.
+ */
+export type IntroOffer = {
+  priceRupees: number;
+  hours: number;
+  bonusRupees: number | null;
+  validityDays: number | null;
+  onePerCustomer: boolean;
+  gpuName: string | null;
+};
+
+/**
+ * The first-top-up offer, or null when there is nothing honest to advertise.
+ *
+ * Null when the control plane is unreachable, predates `intro_offer`, or has
+ * the offer switched off. Callers then show NO offer numbers — never a typed
+ * "Rs 1,000 = 8 hours", which is exactly the hardcoded figure the drift checks
+ * exist to catch.
+ *
+ * `hours` is normally published. If an API omits it, it is derived from what
+ * the customer gets (price + bonus) over the live ad-hoc rate — and only when
+ * both of those exist; otherwise null.
+ */
+export function getIntroOffer(card: RateCard | null): IntroOffer | null {
+  const io = card?.intro_offer;
+  if (!io?.enabled || !io.price_rupees || io.price_rupees <= 0) return null;
+  let hours = io.hours ?? null;
+  if (!hours) {
+    const rate = adhocRateValue(card);
+    if (rate && rate > 0) {
+      hours = Math.floor(((io.price_rupees + (io.bonus_rupees ?? 0)) / rate) * 10) / 10;
+    }
+  }
+  if (!hours || hours <= 0) return null;
+  const gpu = card?.gpus.find((g) => !g.quote_on_request && g.hourly_rate_rupees != null);
+  return {
+    priceRupees: io.price_rupees,
+    hours,
+    bonusRupees: io.bonus_rupees ?? null,
+    validityDays: io.validity_days ?? null,
+    onePerCustomer: io.one_per_customer ?? true,
+    gpuName: gpu?.name ?? null,
+  };
+}
+
+/** "₹1,000" */
+export function rupees(value: number): string {
+  return `₹${Math.round(value).toLocaleString("en-IN")}`;
+}
+
+/** "8 hours" / "7.5 hours" / "1 hour" */
+export function hoursLabel(hours: number, short = false): string {
+  const n = Number.isInteger(hours) ? String(hours) : hours.toFixed(1);
+  if (short) return `${n} hr${hours === 1 ? "" : "s"}`;
+  return `${n} hour${hours === 1 ? "" : "s"}`;
+}
+
+/** "₹1,000 = 8 hours of RTX 5080", or null when no offer is live. */
+export function introOfferHeadline(card: RateCard | null): string | null {
+  const o = getIntroOffer(card);
+  if (!o) return null;
+  return `${rupees(o.priceRupees)} = ${hoursLabel(o.hours)}${o.gpuName ? ` of ${o.gpuName}` : ""}`;
+}
+
+/**
+ * How sign-up works. Falls back to the owner's 10 Oct 2026 decision (email +
+ * mobile OTP, pay to start, international welcome) when the control plane does
+ * not publish the block yet — the site no longer offers any identity-document
+ * route, so describing one would be describing a screen that does not exist.
+ */
+export function getOnboarding(card: RateCard | null): Onboarding {
+  return (
+    card?.onboarding ?? {
+      mode: "payment",
+      requires_identity_verification: false,
+      requires_mobile_otp: true,
+      international: true,
+    }
+  );
+}
+
+/**
+ * Smallest first top-up: the published `min_first_topup_rupees`, else the
+ * intro offer price, else the ordinary wallet minimum. Null when unreachable.
+ */
+export function minFirstTopup(card: RateCard | null): number | null {
+  return (
+    card?.wallet?.min_first_topup_rupees ??
+    getIntroOffer(card)?.priceRupees ??
+    card?.wallet?.min_topup_rupees ??
+    null
+  );
 }
 
 export type FirstTopupBonus = { percent: number; capRupees: number };
