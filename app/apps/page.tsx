@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { JsonLd } from "@/components/seo/json-ld";
+import { breadcrumbList } from "@/lib/seo";
 import Link from "next/link";
 import { NODE } from "@/lib/node-spec";
 import {
@@ -8,9 +10,9 @@ import {
 } from "@/lib/software-catalogue";
 
 export const metadata: Metadata = {
-  title: "Preinstalled software on Coreframe GPU workstations",
+  title: "Preinstalled software on the workstations",
   description:
-    "Every Coreframe workstation ships with Blender, Twinmotion 2026.1, Unreal Engine 5.8, D5 Render, Autodesk viewers and the usual utilities ready to use. Bring your own licence for Lumion, Enscape, Revit or anything else you need.",
+    "Blender, D5 Render, Twinmotion and Unreal Engine are preinstalled on every Coreframe workstation. Bring your own licence for Lumion, Enscape, Revit and more.",
   alternates: { canonical: "/apps" },
 };
 
@@ -115,6 +117,7 @@ function Group({ title, blurb, items }: { title: string; blurb: string; items: S
 export default function AppsPage() {
   return (
     <main className="text-ink">
+      <JsonLd data={breadcrumbList([{ name: "Preinstalled software", path: "/apps" }])} />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}

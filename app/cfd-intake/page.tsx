@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { OG_IMAGE } from "@/lib/seo";
 import { BackgroundGlow } from "@/components/home/background-glow";
 import { NODE } from "@/lib/node-spec";
 import CfdIntakeForm from "./cfd-intake-form";
@@ -6,9 +7,10 @@ import CfdIntakeForm from "./cfd-intake-form";
 export const metadata: Metadata = {
   title: "Submit a CFD Analysis Job",
   description:
-    "Tell us your geometry, boundary conditions, solver preferences and turbulence model. We provision a GPU workstation sized to your case and hand it to you ready to run. You bring your own solver licence.",
+    "Send your geometry, boundary conditions and solver choice. We provision a GPU workstation sized to the case and hand it to you. You bring the solver licence.",
   alternates: { canonical: "/cfd-intake" },
   openGraph: {
+    images: [OG_IMAGE],
     title: "Submit a CFD Job — Coreframe Cloud",
     description:
       "Fill the intake form: geometry, BCs, physics, solver. We size and provision the GPU workstation. You bring your own solver licence.",

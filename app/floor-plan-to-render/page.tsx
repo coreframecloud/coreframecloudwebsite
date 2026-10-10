@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { JsonLd } from "@/components/seo/json-ld";
+import { breadcrumbList } from "@/lib/seo";
 import Link from "next/link";
 import { BackgroundGlow } from "@/components/home/background-glow";
 import { NODE } from "@/lib/node-spec";
@@ -38,9 +40,9 @@ import { NODE } from "@/lib/node-spec";
  */
 
 export const metadata: Metadata = {
-  title: "Floor Plan to Interior Render — Upload a DXF, Coreframe Studio",
+  title: "Floor Plan to Interior Render from a DXF",
   description:
-    "Turn a 2D DXF floor plan into an interior render in the browser. Coreframe Studio reads your walls, doors and windows, lets you pick a room and a camera angle, and exports at 2K or 4K. No installer, just an email. Hosted in Bengaluru.",
+    "Coreframe Studio turns a 2D DXF floor plan into an interior render in the browser: it reads walls, doors and windows, you pick a room, export at 2K or 4K.",
   keywords: [
     "floor plan to 3d render",
     "DXF to interior render",
@@ -103,6 +105,7 @@ const faqs = [
 export default function Page() {
   return (
     <div className="min-h-screen text-ink">
+      <JsonLd data={breadcrumbList([{ name: "Floor plan to render", path: "/floor-plan-to-render" }])} />
       <BackgroundGlow />
 
       <script

@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { JsonLd } from "@/components/seo/json-ld";
+import { breadcrumbList, OG_IMAGE } from "@/lib/seo";
 import Link from "next/link";
 import { BackgroundGlow } from "@/components/home/background-glow";
 import { COMPANY_ADDRESS_FULL, COMPANY_VISITING_ADDRESS_LINE } from "@/lib/company";
@@ -37,11 +39,12 @@ import { BANDWIDTH_SENTENCE } from "@/lib/streaming-terms";
  * number that does not survive checking costs more than the page earns.
  */
 export const metadata: Metadata = {
-  title: "What is Coreframe Cloud? — the company, the service, the machines",
+  title: { absolute: "What is Coreframe Cloud? Company, machines, prices" },
   description:
-    "Coreframe Cloud is a cloud GPU workstation service run by Coreframe Compute Labs Private Limited in Bengaluru, India. Rent a full Windows RTX 5080 desktop by the minute for rendering, CAD and CFD. Company details, hardware, pricing and what it is not.",
+    "Coreframe Cloud rents full Windows RTX 5080 desktops by the minute from Bengaluru, run by Coreframe Compute Labs Pvt Ltd. Company, hardware and limits.",
   alternates: { canonical: "/about" },
   openGraph: {
+    images: [OG_IMAGE],
     title: "What is Coreframe Cloud?",
     description:
       "A cloud GPU workstation service operated from Bengaluru by Coreframe Compute Labs Private Limited. What it is, what it runs on, and what it is not.",
@@ -192,6 +195,7 @@ export default async function AboutPage() {
 
   return (
     <div className="relative min-h-screen bg-paper text-ink">
+      <JsonLd data={breadcrumbList([{ name: "About Coreframe Cloud", path: "/about" }])} />
       <BackgroundGlow />
       <script
         type="application/ld+json"

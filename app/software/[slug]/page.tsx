@@ -6,6 +6,28 @@ import {
   SOFTWARE_PAGES_BY_SLUG,
   type SoftwarePage,
 } from "@/lib/software-pages";
+import { getRateCard, introOfferFaq, pricingFaqAnswer } from "@/lib/rate-card";
+import { JsonLd } from "@/components/seo/json-ld";
+import { breadcrumbList, faqPage, OG_IMAGE } from "@/lib/seo";
+
+/**
+ * `related` may name a top-level landing page as well as a /software slug.
+ *
+ * Until 10 Oct 2026 it could only resolve /software slugs, and three pages
+ * listed "d5-render-cloud-workstation" -- which lives at the top level -- so
+ * the link was silently filtered out. The strongest page on the site (D5
+ * ranks 4-10 in Search Console) was getting no links from its siblings.
+ */
+const LANDING_LINKS: Record<string, string> = {
+  "d5-render-cloud-workstation": "D5 Render cloud workstation",
+  "lumion-cloud-gpu": "Lumion on a cloud RTX 5080",
+  "enscape-cloud-gpu": "Enscape on a cloud RTX 5080",
+  "cloud-rendering-for-architects": "Cloud rendering for architects",
+  "d5-render-vs-local-gpu": "Renting a workstation vs buying one",
+  "vram-for-architectural-rendering": "Is 8 GB of VRAM enough?",
+  "cloud-workstation-vs-render-farm": "Cloud workstation vs render farm",
+  "coreframe-vs-irender": "Coreframe vs iRender",
+};
 
 /**
  * One landing page per application, rendered from lib/software-pages.ts.
@@ -35,10 +57,11 @@ export async function generateMetadata({
   const page = SOFTWARE_PAGES_BY_SLUG[slug];
   if (!page) return { title: "Page not found" };
   return {
-    title: page.title,
+    title: page.metaTitle ?? page.title,
     description: page.description,
     alternates: { canonical: `/software/${page.slug}` },
     openGraph: {
+      images: [OG_IMAGE],
       title: page.title,
       description: page.description,
       type: "article",
@@ -46,17 +69,6 @@ export async function generateMetadata({
   };
 }
 
-function faqSchema(page: SoftwarePage) {
-  return {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    mainEntity: page.faqs.map((f) => ({
-      "@type": "Question",
-      name: f.q,
-      acceptedAnswer: { "@type": "Answer", text: f.a },
-    })),
-  };
-}
 
 export default async function SoftwareLandingPage({
   params,
@@ -68,15 +80,29 @@ export default async function SoftwareLandingPage({
   if (!page) notFound();
 
   const related = page.related
-    .map((slug) => SOFTWARE_PAGES_BY_SLUG[slug])
-    .filter(Boolean) as SoftwarePage[];
+    .map((slug): { href: string; label: string } | null => {
+      const sw: SoftwarePage | undefined = SOFTWARE_PAGES_BY_SLUG[slug];
+      if (sw) return { href: `/software/${sw.slug}`, label: sw.title };
+      if (LANDING_LINKS[slug]) return { href: `/${slug}`, label: LANDING_LINKS[slug] };
+      return null;
+    })
+    .filter((r): r is { href: string; label: string } => r !== null);
+
+  // The price and the intro offer come from the live rate card, never from
+  // the page data, and are dropped (not blanked) when it is unreachable.
+  const card = await getRateCard();
+  const priceAnswer = pricingFaqAnswer(card);
+  const intro = introOfferFaq(card);
+  const faqs = [
+    ...page.faqs,
+    ...(priceAnswer ? [{ q: "How much does a Coreframe workstation cost?", a: priceAnswer }] : []),
+    ...(intro ? [intro] : []),
+  ];
 
   return (
     <main className="cf-section px-5">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema(page)) }}
-      />
+      <JsonLd data={faqPage(faqs)} />
+      <JsonLd data={breadcrumbList([{ name: page.metaTitle ?? page.title, path: `/software/${page.slug}` }])} />
 
       <div className="cf-col">
         <h1 className="cf-display">{page.title}</h1>
@@ -131,7 +157,7 @@ export default async function SoftwareLandingPage({
       <section className="cf-col mt-16">
         <h2 className="cf-section-title">Questions.</h2>
         <div className="mt-8 space-y-7">
-          {page.faqs.map((faq) => (
+          {faqs.map((faq) => (
             <div key={faq.q}>
               <h3 className="font-semibold text-ink">{faq.q}</h3>
               <p className="mt-2 leading-7 break-words text-ink-2">{faq.a}</p>
@@ -157,12 +183,12 @@ export default async function SoftwareLandingPage({
           <p className="cf-eyebrow mb-4">Related</p>
           <ul className="space-y-1">
             {related.map((r) => (
-              <li key={r.slug}>
+              <li key={r.href}>
                 <Link
-                  href={`/software/${r.slug}`}
+                  href={r.href}
                   className="inline-flex min-h-[44px] items-center break-words text-blue underline-offset-4 hover:underline"
                 >
-                  {r.title}
+                  {r.label}
                 </Link>
               </li>
             ))}

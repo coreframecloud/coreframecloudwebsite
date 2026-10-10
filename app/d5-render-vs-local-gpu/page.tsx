@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { JsonLd } from "@/components/seo/json-ld";
+import { breadcrumbList, OG_IMAGE } from "@/lib/seo";
 import Link from "next/link";
 import { BackgroundGlow } from "@/components/home/background-glow";
 import { SpecBlock, K, B } from "@/components/home/spec-block";
@@ -38,9 +40,9 @@ import { BANDWIDTH_SENTENCE } from "@/lib/streaming-terms";
  * node-spec said six lakh -- the exact drift both modules exist to stop.
  */
 export const metadata: Metadata = {
-  title: "Renting a cloud GPU vs buying a workstation",
+  title: "Rent a cloud GPU or buy a workstation?",
   description:
-    "An honest comparison for D5 Render, Lumion and Enscape users in India: what an RTX workstation really costs to own, where renting by the minute wins, where buying wins, and the break-even in hours.",
+    "For D5 Render, Lumion and Enscape users in India: what an RTX workstation costs to own, where renting by the minute wins, where buying wins, and break-even.",
   keywords: [
     "cloud vs workstation rendering",
     "rent GPU vs buy workstation",
@@ -49,6 +51,7 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: "/d5-render-vs-local-gpu" },
   openGraph: {
+    images: [OG_IMAGE],
     title: "Renting a cloud GPU vs buying a workstation",
     description:
       "What an RTX workstation costs to own, where renting wins, where buying wins, and the break-even in hours.",
@@ -110,6 +113,7 @@ export default async function ComparisonPage() {
 
   return (
     <div className="relative min-h-screen text-ink">
+      <JsonLd data={breadcrumbList([{ name: "Rent or buy a GPU workstation", path: "/d5-render-vs-local-gpu" }])} />
       <BackgroundGlow />
 
       <main className="relative">
@@ -335,6 +339,8 @@ export default async function ComparisonPage() {
               {[
                 ["/d5-render-cloud-workstation", `D5 Render on a rented ${NODE.gpu}`],
                 ["/compute-nodes", "What is in one Coreframe node"],
+                ["/cloud-workstation-vs-render-farm", "Cloud workstation vs render farm"],
+                ["/coreframe-vs-irender", "Coreframe vs iRender"],
                 ["/enterprise", "Committed monthly plans for studios"],
                 ["/about", "What Coreframe Cloud is"],
               ].map(([href, label]) => (

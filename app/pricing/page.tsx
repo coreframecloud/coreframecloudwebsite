@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { JsonLd } from "@/components/seo/json-ld";
+import { breadcrumbList } from "@/lib/seo";
 import { PricingSection } from "@/components/home/pricing-section";
 import { ExplainerFaq } from "@/components/home/explainer-faq";
 import {
@@ -16,9 +18,9 @@ import {
 import { storageTerms } from "@/lib/storage-terms";
 
 export const metadata: Metadata = {
-  title: "Pricing — Coreframe Cloud",
+  title: { absolute: "Pricing: RTX 5080 by the minute | Coreframe Cloud" },
   description:
-    "What an RTX 5080 workstation costs by the minute, what a committed monthly plan costs, and what happens to your files between sessions. Prices in rupees with GST included, billed per minute of actual use.",
+    "What an RTX 5080 workstation costs per minute and per month, in rupees with GST included, and what happens to your files between sessions.",
   alternates: { canonical: "/pricing" },
 };
 
@@ -47,6 +49,7 @@ export default async function PricingPage() {
 
   return (
     <main className="text-ink">
+      <JsonLd data={breadcrumbList([{ name: "Pricing", path: "/pricing" }])} />
       <section className="cf-section px-5 pb-0">
         <div className="cf-col">
           <p className="cf-eyebrow mb-5">Pricing</p>

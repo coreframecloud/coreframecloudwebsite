@@ -61,11 +61,11 @@ const GOOGLE_ADS_ID = /^AW-\d{5,20}$/.test(process.env.NEXT_PUBLIC_GOOGLE_ADS_ID
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.coreframecloud.com"),
   title: {
-    default: "Coreframe Cloud — RTX 5080 GPU workstations by the hour, India",
+    default: "Coreframe Cloud — RTX 5080 cloud workstations, India",
     template: "%s | Coreframe Cloud",
   },
   description:
-    "Coreframe Cloud rents full Windows RTX 5080 workstations by the minute from Bengaluru, India, for D5 Render, Lumion, Enscape, 3ds Max, Blender and GPU CFD. INR billing with GST included, persistent project storage, no hardware to buy.",
+    "Rent a full Windows RTX 5080 workstation by the minute from Bengaluru for D5 Render, Lumion, Enscape, 3ds Max and Blender. GST included, files persist.",
   keywords: [
     "faster D5 Render cloud India",
     "CFD simulation faster India",
@@ -90,28 +90,27 @@ export const metadata: Metadata = {
     apple: [{ url: "/apple-icon.png", sizes: "180x180", type: "image/png" }],
     shortcut: ["/favicon.ico"],
   },
+  // The share image is app/opengraph-image.tsx (1200x630). It is a file
+  // convention, so it reaches every route -- including the pages that set
+  // their own `openGraph` object, which used to replace this one and leave
+  // them with no image at all.
   openGraph: {
     title: "Coreframe Cloud — RTX GPU Workstations for Design Studios, India",
     description:
       "RTX 5080 GPU workstations on demand for D5 Render, Lumion, Enscape. Pay-as-you-go or committed plans. Hosted in Bengaluru.",
     url: "https://www.coreframecloud.com",
     siteName: "Coreframe Cloud",
+    locale: "en_IN",
     type: "website",
-    images: [
-      {
-        url: "/icon.png",
-        width: 512,
-        height: 512,
-        alt: "Coreframe Cloud",
-      },
-    ],
   },
+  // summary_large_image with no explicit image: X falls back to og:image.
+  // The old description ("managed AI infrastructure") described a product
+  // Coreframe does not sell.
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: "Coreframe Cloud",
     description:
-      "Cloud GPU workstations and managed AI infrastructure for professional teams.",
-    images: ["/icon.png"],
+      "Windows RTX 5080 workstations rented by the minute, streamed to the laptop you already own. Hosted in Bengaluru, India.",
   },
   other: {
     "contact:email": "admin@coreframecloud.com",
@@ -158,20 +157,26 @@ export default async function RootLayout({
         unitText: "GPU-hour",
       },
     },
-    tiers[0] && {
+    // Every published tier, not just the cheapest: "how much is the monthly
+    // plan" has as many answers as there are tiers, and an engine given one
+    // will quote it for all of them.
+    ...tiers.map((t) => ({
       "@type": "Offer",
-      name: `Committed Monthly — ${tiers[0].name}`,
-      price: String(Math.round(tiers[0].monthly_fee_rupees)),
+      name: `Monthly plan — ${t.name}`,
+      ...(t.included_gpu_hours
+        ? { description: `${t.included_gpu_hours} GPU-hours included per month.` }
+        : {}),
+      price: String(Math.round(t.monthly_fee_rupees)),
       priceCurrency: "INR",
       valueAddedTaxIncluded: true,
       priceSpecification: {
         "@type": "UnitPriceSpecification",
-        price: String(Math.round(tiers[0].monthly_fee_rupees)),
+        price: String(Math.round(t.monthly_fee_rupees)),
         priceCurrency: "INR",
         valueAddedTaxIncluded: true,
         unitText: "month",
       },
-    },
+    })),
     storagePerTb != null && storagePerTb > 0 && {
       "@type": "Offer",
       name: "Persistent NAS storage",
@@ -197,16 +202,18 @@ export default async function RootLayout({
       priceCurrency: "INR",
       valueAddedTaxIncluded: true,
     },
-  ].filter(Boolean);
+  ]
+    .filter(Boolean)
+    .map((o) => ({ ...(o as object), url: "https://www.coreframecloud.com/pricing" }));
 
   const serviceDescription =
     "On-demand Windows GPU workstations with NVIDIA RTX 5080 (16 GB GDDR7) for " +
-    "D5 Render, Lumion, Enscape, SolidWorks and 3ds Max, hosted in Bengaluru. " +
+    "D5 Render, Lumion, Enscape, 3ds Max, Blender and Unreal Engine, hosted in Bengaluru. " +
     "Billed per minute of actual use, with 18% GST included in every published rate.";
 
   return (
     <html
-      lang="en"
+      lang="en-IN"
       className={`${sourceSerif.variable} ${inter.variable} ${plexMono.variable}`}
     >
       <body className="bg-paper text-ink antialiased">
@@ -309,7 +316,12 @@ export default async function RootLayout({
                     postalCode: "560087",
                     addressCountry: "IN",
                   },
-                  areaServed: "IN",
+                  // India first, but since 10 Oct 2026 international cards are
+                  // accepted and no Indian ID is asked for.
+                  areaServed: [
+                    { "@type": "Country", name: "India" },
+                    { "@type": "Place", name: "Worldwide" },
+                  ],
                   foundingDate: "2026",
                   founder: { "@type": "Person", name: "Sowjanya Pandala" },
                   /**
@@ -359,12 +371,28 @@ export default async function RootLayout({
                   priceRange: "₹₹",
                 },
                 {
+                  "@type": "WebSite",
+                  "@id": "https://www.coreframecloud.com/#website",
+                  url: "https://www.coreframecloud.com",
+                  name: "Coreframe Cloud",
+                  alternateName: ["Coreframe", "coreframecloud.com"],
+                  inLanguage: "en-IN",
+                  publisher: { "@id": "https://www.coreframecloud.com/#organization" },
+                },
+                {
                   "@type": "Service",
                   "@id": "https://www.coreframecloud.com/#gpu-workstation-service",
                   name: "RTX 5080 Cloud GPU Workstation",
+                  serviceType: "Cloud GPU workstation rental",
+                  category: "Cloud computing",
+                  brand: { "@type": "Brand", name: "Coreframe Cloud" },
+                  url: "https://www.coreframecloud.com/pricing",
                   provider: { "@id": "https://www.coreframecloud.com/#organization" },
                   description: serviceDescription,
-                  areaServed: "IN",
+                  areaServed: [
+                    { "@type": "Country", name: "India" },
+                    { "@type": "Place", name: "Worldwide" },
+                  ],
                   ...(offers.length ? { offers } : {}),
                 },
               ],

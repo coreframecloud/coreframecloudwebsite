@@ -33,6 +33,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${BASE}/vram-for-architectural-rendering`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
     { url: `${BASE}/ansys-cfd-gpu`, lastModified: now, changeFrequency: "monthly", priority: 0.9 },
     { url: `${BASE}/cloud-rendering-for-architects`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
+    // Added 10 Oct 2026: answers "render farm vs cloud workstation", a query
+    // every result for which was a competitor's blog.
+    { url: `${BASE}/cloud-workstation-vs-render-farm`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
 
     // COREFRAME STUDIO. Missing entirely until now, which is most of why it is
     // in no index: /studio on this host is a permanent 301 to the app
@@ -57,6 +60,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // question at all.
     { url: `${BASE}/about`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
     { url: `${BASE}/apps`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
+    // The Connect client's page. People search the app by name, and it had no
+    // title, description or canonical of its own until 10 Oct 2026.
+    { url: `${BASE}/download`, lastModified: now, changeFrequency: "monthly", priority: 0.5 },
 
     // Per-application landing pages, generated from the same data the pages
     // render from — so a new page cannot be published and left out of here.

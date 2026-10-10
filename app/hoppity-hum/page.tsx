@@ -3,7 +3,7 @@ import Link from "next/link";
 import type { CSSProperties } from "react";
 
 export const metadata: Metadata = {
-  title: "Hoppity Hum — original songs for toddlers | Coreframe",
+  title: { absolute: "Hoppity Hum — original songs for toddlers | Coreframe" },
   description:
     "Hoppity Hum is Coreframe's original nursery-rhyme and learning-song channel for children aged 1-5, and the internal publishing tool behind it.",
 };

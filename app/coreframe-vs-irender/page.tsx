@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { JsonLd } from "@/components/seo/json-ld";
+import { breadcrumbList, OG_IMAGE } from "@/lib/seo";
 import Link from "next/link";
 import { BackgroundGlow } from "@/components/home/background-glow";
 import { SpecBlock, K, B } from "@/components/home/spec-block";
@@ -69,11 +71,10 @@ const FX = { usdInr: 95.92, asOf: "1 October 2026" };
 const inr = (usd: number) => `₹${Math.round(usd * FX.usdInr).toLocaleString("en-IN")}`;
 
 export const metadata: Metadata = {
-  title: "Coreframe vs iRender — cloud GPU pricing compared from India",
+  title: "Coreframe vs iRender — pricing compared",
   description:
-    `iRender bills in US dollars from $${IRENDER.gpu4090.list.toFixed(2)}/hr for a single RTX 4090. ` +
-    "Coreframe bills in rupees with GST included. A dated, sourced comparison for Indian " +
-    "studios, including where iRender is the better choice.",
+    `iRender bills in US dollars from $${IRENDER.gpu4090.list.toFixed(2)}/hr for one RTX 4090. ` +
+    "Coreframe bills in rupees, GST included. A dated, sourced comparison, including where iRender wins.",
   keywords: [
     "Coreframe vs iRender",
     "iRender alternative India",
@@ -82,6 +83,7 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: "/coreframe-vs-irender" },
   openGraph: {
+    images: [OG_IMAGE],
     title: "Coreframe vs iRender — cloud GPU pricing compared from India",
     description:
       "Dated, sourced pricing for both, in both currencies, including where iRender wins.",
@@ -128,6 +130,7 @@ export default async function Page() {
 
   return (
     <div className="relative min-h-screen text-ink">
+      <JsonLd data={breadcrumbList([{ name: "Coreframe vs iRender", path: "/coreframe-vs-irender" }])} />
       <BackgroundGlow />
       <main className="relative">
         <section className="cf-section px-5">

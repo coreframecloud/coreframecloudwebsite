@@ -24,6 +24,13 @@ export type SoftwarePage = {
   /** URL slug under / */
   slug: string;
   title: string;
+  /**
+   * The <title>, when `title` (which is also the H1) would run past 60
+   * characters once the " | Coreframe Cloud" suffix is added. Google cuts a
+   * long title at about 60, and what it cut was the application name's
+   * qualifier, not the brand.
+   */
+  metaTitle?: string;
   description: string;
   /** One-paragraph answer to "what is this page about", used as the lead. */
   intro: string;
@@ -58,6 +65,7 @@ export const SOFTWARE_PAGES: SoftwarePage[] = [
   {
     slug: "revit-cloud-workstation",
     title: "Revit Cloud Workstation — run Revit on a rented RTX GPU",
+    metaTitle: "Revit Cloud Workstation, rented RTX GPU",
     description:
       "Run Autodesk Revit on a Windows GPU workstation in India, billed per minute. Bring your Autodesk licence, open large models, and render without buying hardware.",
     intro:
@@ -89,12 +97,13 @@ export const SOFTWARE_PAGES: SoftwarePage[] = [
         a: "You pay per minute of streaming time at the published GPU-hour rate. There's no setup fee and no monthly minimum, and we don't bill for provisioning time or failed connections.",
       },
     ],
-    related: ["3ds-max-cloud-workstation", "twinmotion-cloud-workstation", "sketchup-cloud-workstation"],
+    related: ["enscape-cloud-gpu", "cloud-rendering-for-architects", "3ds-max-cloud-workstation", "twinmotion-cloud-workstation", "sketchup-cloud-workstation"],
   },
 
   {
     slug: "3ds-max-cloud-workstation",
     title: "3ds Max Cloud Workstation — GPU rendering by the hour",
+    metaTitle: "3ds Max Cloud Workstation by the hour",
     description:
       "Run Autodesk 3ds Max with V-Ray or Corona on a rented RTX GPU workstation in India. Per-minute billing, your own licence, no hardware purchase.",
     intro:
@@ -158,12 +167,13 @@ export const SOFTWARE_PAGES: SoftwarePage[] = [
         a: "On ad-hoc hourly sessions, yes, because the machine resets to a clean image each time and the setup time is billed like any other minute. On a committed monthly plan we build your applications into the baseline image on your nodes, so they are there when you sign in. If you tell us what you use before your first session, we install it beforehand so your first hours test your real workflow instead of paying for setup.",
       },
     ],
-    related: ["revit-cloud-workstation", "vray-cloud-rendering", "sketchup-cloud-workstation"],
+    related: ["vray-cloud-rendering", "cloud-workstation-vs-render-farm", "revit-cloud-workstation", "sketchup-cloud-workstation"],
   },
 
   {
     slug: "sketchup-cloud-workstation",
     title: "SketchUp Cloud Workstation with GPU rendering",
+    metaTitle: "SketchUp Cloud Workstation, GPU rendering",
     description:
       "Run SketchUp Pro with Enscape, V-Ray or D5 Render on a rented Windows RTX workstation in India. Per-minute billing, bring your own licence.",
     intro:
@@ -187,7 +197,7 @@ export const SOFTWARE_PAGES: SoftwarePage[] = [
       },
       { q: "Do my models persist between sessions?", a: RESET_ANSWER },
     ],
-    related: ["revit-cloud-workstation", "vray-cloud-rendering", "twinmotion-cloud-workstation"],
+    related: ["enscape-cloud-gpu", "d5-render-cloud-workstation", "revit-cloud-workstation", "vray-cloud-rendering", "twinmotion-cloud-workstation"],
   },
 
   /**
@@ -200,6 +210,7 @@ export const SOFTWARE_PAGES: SoftwarePage[] = [
   {
     slug: "blender-cloud-workstation",
     title: "Blender Cloud Workstation — Cycles rendering on a rented RTX GPU",
+    metaTitle: "Blender Cloud GPU Workstation for Cycles",
     description:
       "Run Blender with Cycles GPU rendering on a rented RTX workstation in India, billed per minute. Blender is preinstalled, so no licence is needed.",
     intro:
@@ -225,12 +236,13 @@ export const SOFTWARE_PAGES: SoftwarePage[] = [
       },
       { q: "Where should I keep my .blend files?", a: RESET_ANSWER },
     ],
-    related: ["d5-render-cloud-workstation", "3ds-max-cloud-workstation", "twinmotion-cloud-workstation"],
+    related: ["cloud-workstation-vs-render-farm", "d5-render-cloud-workstation", "3ds-max-cloud-workstation", "twinmotion-cloud-workstation"],
   },
 
   {
     slug: "twinmotion-cloud-workstation",
     title: "Twinmotion Cloud Workstation for architects",
+    metaTitle: "Twinmotion Cloud Workstation, RTX 5080",
     description:
       "Run Twinmotion on a rented RTX GPU workstation in India, billed per minute. Twinmotion is preinstalled and free for most users.",
     intro:
@@ -262,6 +274,7 @@ export const SOFTWARE_PAGES: SoftwarePage[] = [
   {
     slug: "vray-cloud-rendering",
     title: "V-Ray Cloud Rendering on a rented GPU workstation",
+    metaTitle: "V-Ray Cloud Rendering on a rented RTX GPU",
     description:
       "Run Chaos V-Ray GPU rendering on a rented RTX workstation in India, billed per minute. Works with 3ds Max, SketchUp, Rhino and Revit. Bring your Chaos licence.",
     intro:
@@ -292,6 +305,7 @@ export const SOFTWARE_PAGES: SoftwarePage[] = [
   {
     slug: "rhino-cloud-workstation",
     title: "Rhino Cloud Workstation — Rhino and Grasshopper on a rented GPU",
+    metaTitle: "Rhino & Grasshopper Cloud Workstation",
     description:
       "Run Rhino with Grasshopper, V-Ray or Enscape on a rented RTX GPU workstation in India. Per-minute billing, your own Rhino licence.",
     intro:
@@ -314,9 +328,75 @@ export const SOFTWARE_PAGES: SoftwarePage[] = [
     related: ["vray-cloud-rendering", "sketchup-cloud-workstation", "revit-cloud-workstation"],
   },
 
+  /**
+   * Added 10 Oct 2026 for video editors, who are a real customer group with no
+   * page: "after effects cloud render" and "premiere pro cloud editing" were
+   * owned by render-farm blogs. Written to be honest about the two things that
+   * decide whether this works for video -- getting footage onto the machine,
+   * and judging colour through a compressed stream -- because a video editor
+   * who discovers either in a paid session will not come back.
+   * No render or export times anywhere: they depend on the project.
+   */
+  {
+    slug: "after-effects-premiere-cloud-workstation",
+    title: "After Effects and Premiere Pro on a rented RTX workstation",
+    metaTitle: "After Effects & Premiere Cloud Workstation",
+    description:
+      "Run Adobe After Effects and Premiere Pro on a Windows RTX 5080 cloud workstation in India, billed per minute. Your own Adobe licence; files persist.",
+    intro:
+      `Coreframe rents a full ${NODE.os} desktop with an NVIDIA ${NODE.gpu} (${NODE.vram}) and ${NODE.ram} of RAM, streamed to the laptop you already own and billed by the minute. After Effects and Premiere Pro run on it with your own Adobe account, so a heavy comp or an export runs there while your own machine stays free.`,
+    problem:
+      "After Effects previews crawl and Premiere exports tie up your laptop for the evening, and a machine that copes costs far more than the few weeks a year you really need it.",
+    why: [
+      `Both applications use the GPU for playback, effects and encoding, and an ${NODE.gpu} has ${NODE.vram} for them to work in.`,
+      `${NODE.ram} of system RAM, which After Effects uses for RAM preview.`,
+      "Export and render on the rented machine while your own computer stays usable.",
+      "Pay for the busy weeks only. Per-minute billing stops when you end the session.",
+    ],
+    licence:
+      "Adobe Creative Cloud runs on your own subscription. Adobe needs your account even to download the installer, so we set it up with you once; after that it is on every workstation you launch, signed in to your plan.",
+    sections: [
+      {
+        h2: "Two things to check before you move a video project.",
+        body: [
+          "Footage has to reach the workstation first. Project files live on a persistent drive mapped into every session, and they get there over your own internet connection. That is easy for a motion-graphics project and slow for hundreds of gigabytes of camera originals, so work out how long your upload will take before you plan a deadline around it. Storage sizes are on the pricing page.",
+          `You see the desktop through a compressed stream at up to ${NODE.stream}. It is fine for editing, timing and motion work. It is not a reference monitor, so judge final colour and fine grain on the exported file, which you download, not on the stream.`,
+        ],
+      },
+      {
+        h2: "Where it fits, and where it doesn't.",
+        body: [
+          "It fits motion graphics, short-form edits, After Effects comps that need more GPU or RAM than your laptop has, and exports you would rather not run on the machine you are working on.",
+          "It is a single workstation that you drive yourself, not a render farm. If you need hundreds of After Effects frames spread across many machines at once, a render farm that supports After Effects is built for that. We would rather say so than sell you the wrong thing.",
+        ],
+      },
+    ],
+    faqs: [
+      {
+        q: "Can I run After Effects and Premiere Pro on a cloud PC in India?",
+        a: `Yes. A Coreframe workstation is a full ${NODE.os} desktop with an NVIDIA ${NODE.gpu}, hosted in ${NODE.location}, and After Effects, Premiere Pro and Media Encoder run on it with your own Adobe account. You reach it through the Coreframe Connect app and it is billed per minute of streaming.`,
+      },
+      {
+        q: "Does Coreframe provide an Adobe licence?",
+        a: "No. Creative Cloud is licensed to you, so you sign in with your own Adobe account. We set the applications up with you once so you are not installing them every session.",
+      },
+      {
+        q: "How do I get my footage onto the workstation?",
+        a: "Upload it to your persistent project drive, which is mapped into every session and stays between sessions. It travels over your own internet connection, so large camera originals take time. Plan the upload before the deadline, not during it.",
+      },
+      {
+        q: "Can I colour grade over the stream?",
+        a: `You can edit and grade, but the stream is compressed video at up to ${NODE.stream}, not a calibrated reference signal. Check final colour on the exported file after you download it.`,
+      },
+      { q: "What happens to my project files after a session?", a: RESET_ANSWER },
+    ],
+    related: ["cloud-workstation-vs-render-farm", "blender-cloud-workstation", "gpu-workstation-rental-india"],
+  },
+
   {
     slug: "gpu-workstation-rental-india",
     title: "GPU Workstation Rental in India — per-minute RTX workstations",
+    metaTitle: "Rent an RTX 5080 Workstation in India",
     description:
       "Rent a Windows RTX GPU workstation in India by the minute for 3D rendering, CAD and simulation. No hardware purchase, GST invoices, persistent NAS storage.",
     intro:
@@ -337,9 +417,11 @@ export const SOFTWARE_PAGES: SoftwarePage[] = [
         q: "Where can I rent a GPU workstation in India?",
         a: "Coreframe rents Windows RTX GPU workstations by the minute, hosted in India, for 3D rendering, CAD and simulation work. You stream the desktop to your own computer and pay only for streaming time.",
       },
+      // The price question is appended by the page from the live rate card
+      // ("How much does a Coreframe workstation cost?"), so no figure is typed here.
       {
-        q: "How much does it cost to rent a GPU in India?",
-        a: "Coreframe charges a published per-GPU-hour rate billed by the minute, with GST included and no setup fee. Current rates are on the pricing section of the site, served directly from the billing system.",
+        q: "Can I rent an RTX 5080 in India by the hour?",
+        a: `Yes. Every Coreframe workstation has one NVIDIA ${NODE.gpu} with ${NODE.vram}, ${NODE.ram} of RAM and an ${NODE.cpu}, running ${NODE.os} in ${NODE.location}. You rent the whole machine, not a slice of the card, and billing is per minute of streaming rather than per whole hour.`,
       },
       {
         q: "Do I need to buy software licences too?",
@@ -354,7 +436,7 @@ export const SOFTWARE_PAGES: SoftwarePage[] = [
         a: "Yes. A GST invoice is issued automatically for every payment. Business accounts can add their GSTIN so it appears on the invoice, and can be billed monthly instead of prepaying.",
       },
     ],
-    related: ["d5-render-cloud-workstation", "revit-cloud-workstation", "blender-cloud-workstation"],
+    related: ["d5-render-vs-local-gpu", "coreframe-vs-irender", "cloud-workstation-vs-render-farm", "d5-render-cloud-workstation", "lumion-cloud-gpu", "blender-cloud-workstation"],
   },
 ];
 

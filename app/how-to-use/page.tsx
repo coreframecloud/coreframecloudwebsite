@@ -1,13 +1,15 @@
 import type { Metadata } from "next";
+import { JsonLd } from "@/components/seo/json-ld";
+import { breadcrumbList } from "@/lib/seo";
 import Image from "next/image";
 import Link from "next/link";
 import { NODE } from "@/lib/node-spec";
 import { BANDWIDTH_SENTENCE } from "@/lib/streaming-terms";
 
 export const metadata: Metadata = {
-  title: "How to use Coreframe — GPU workstations for 3D rendering",
+  title: "How to use Coreframe Cloud, step by step",
   description:
-    "Set up Coreframe in ten minutes: sign up with email and mobile, add credit, install Coreframe Connect, launch a Windows RTX workstation, and work with your files on persistent NAS storage. Billed per minute of streaming.",
+    "Sign up with email and mobile, add credit, install Coreframe Connect and launch a Windows RTX workstation. Files stay on persistent storage. Billed per minute.",
   alternates: { canonical: "/how-to-use" },
 };
 
@@ -122,6 +124,7 @@ export default function HowToUsePage() {
 
   return (
     <main className="cf-section px-5">
+      <JsonLd data={breadcrumbList([{ name: "How to use Coreframe", path: "/how-to-use" }])} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(howTo) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
 

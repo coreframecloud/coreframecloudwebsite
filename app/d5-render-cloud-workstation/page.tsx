@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { JsonLd } from "@/components/seo/json-ld";
+import { breadcrumbList, OG_IMAGE } from "@/lib/seo";
 import Link from "next/link";
 import { BackgroundGlow } from "@/components/home/background-glow";
 import {
@@ -32,9 +34,9 @@ import { BANDWIDTH_SENTENCE } from "@/lib/streaming-terms";
  * the honest way to make the hardware point.
  */
 export const metadata: Metadata = {
-  title: "D5 Render Cloud Workstation — RTX 5080 by the minute",
+  title: "D5 Render Cloud Workstation, RTX 5080",
   description:
-    "Run D5 Render on a full Windows RTX 5080 workstation in India, billed per minute with GST included. D5 is preinstalled, you sign in with your own account, and project files persist between sessions.",
+    "Run D5 Render on a Windows RTX 5080 cloud workstation in India, billed per minute with GST. D5 is preinstalled; sign in with your account. Files persist.",
   keywords: [
     "D5 Render cloud workstation",
     "D5 Render cloud GPU India",
@@ -44,6 +46,7 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: "/d5-render-cloud-workstation" },
   openGraph: {
+    images: [OG_IMAGE],
     title: "D5 Render Cloud Workstation — RTX 5080 by the minute",
     description:
       "A full Windows desktop with an RTX 5080, D5 Render preinstalled, billed per minute from Bengaluru.",
@@ -117,6 +120,7 @@ export default async function D5Page() {
 
   return (
     <div className="relative min-h-screen text-ink">
+      <JsonLd data={breadcrumbList([{ name: "D5 Render cloud workstation", path: "/d5-render-cloud-workstation" }])} />
       <BackgroundGlow />
       <script
         type="application/ld+json"
@@ -284,6 +288,8 @@ export default async function D5Page() {
               ["/software/twinmotion-cloud-workstation", "Twinmotion cloud workstation"],
               ["/lumion-cloud-gpu", "Lumion on a cloud RTX 5080"],
               ["/apps", "Everything preinstalled on a workstation"],
+              ["/cloud-workstation-vs-render-farm", "Cloud workstation vs render farm"],
+              ["/vram-for-architectural-rendering", "Is 8 GB of VRAM enough?"],
             ].map(([href, label]) => (
               <li key={href}>
                 <Link

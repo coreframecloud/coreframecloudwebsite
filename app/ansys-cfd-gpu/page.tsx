@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { JsonLd } from "@/components/seo/json-ld";
+import { breadcrumbList } from "@/lib/seo";
 import { BackgroundGlow } from "@/components/home/background-glow";
 import Link from "next/link";
 import { NODE, WORKSTATION_REPLACEMENT_COST } from "@/lib/node-spec";
@@ -6,7 +8,7 @@ import { NODE, WORKSTATION_REPLACEMENT_COST } from "@/lib/node-spec";
 export const metadata: Metadata = {
   title: "GPU Workstations for CFD, by the Hour",
   description:
-    "Rent an RTX-class GPU workstation by the hour and run Ansys Fluent, OpenFOAM or your own CFD solver on it. You bring the licence and the engineering; we provide the hardware. India, INR billing, GST invoice.",
+    "Rent an RTX GPU workstation by the hour for Ansys Fluent, OpenFOAM or your own CFD solver. You bring the licence and engineering; INR billing, GST invoice.",
   keywords: [
     "Ansys CFD cloud GPU India",
     "GPU CFD simulation India",
@@ -138,6 +140,7 @@ export default function AnsysCfdPage() {
 
   return (
     <div className="relative min-h-screen text-ink">
+      <JsonLd data={breadcrumbList([{ name: "GPU workstations for CFD", path: "/ansys-cfd-gpu" }])} />
       <BackgroundGlow />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 

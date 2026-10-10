@@ -36,10 +36,10 @@ export async function generateMetadata(): Promise<Metadata> {
   // The root layout appends " | Coreframe Cloud" via its title template.
   return {
     title: offer
-      ? `Create your account — ${rupees(offer.priceRupees)} = ${hoursLabel(offer.hours)} on an ${NODE.gpu}`
+      ? `Sign up — ${rupees(offer.priceRupees)} = ${hoursLabel(offer.hours)} on an ${NODE.gpu}`
       : `Create your Coreframe account`,
     description: offer
-      ? `Create a Coreframe account with your email and mobile, no paperwork. Your first top-up of ${rupees(offer.priceRupees)} buys ${hoursLabel(offer.hours)} on an ${NODE.gpu}.${hourly ? ` Billed by the minute, ${hourly} after that.` : " Billed by the minute."}`
+      ? `Sign up with your email and mobile, no paperwork. Your first top-up of ${rupees(offer.priceRupees)} buys ${hoursLabel(offer.hours)} on an ${NODE.gpu}.${hourly ? ` Billed by the minute, ${hourly} after that.` : " Billed by the minute."}`
       : `Create a Coreframe account and run an ${NODE.gpu} workstation from the laptop you already own.${hourly ? ` Billed by the minute, from ${hourly}.` : " Billed by the minute."}`,
     alternates: { canonical: "/signup" },
   };

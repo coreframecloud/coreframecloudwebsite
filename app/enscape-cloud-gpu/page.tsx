@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { JsonLd } from "@/components/seo/json-ld";
+import { breadcrumbList } from "@/lib/seo";
 import { BackgroundGlow } from "@/components/home/background-glow";
 import { PricingCards } from "@/components/pricing/pricing-cards";
 import { getRateCard, pricingFaqAnswer } from "@/lib/rate-card";
@@ -7,9 +9,9 @@ import { NODE, WORKSTATION_REPLACEMENT_COST } from "@/lib/node-spec";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Enscape Cloud GPU Workstation — RTX 5080, India",
+  title: "Enscape Cloud GPU Workstation, RTX 5080",
   description:
-    "Run Enscape on an RTX 5080 cloud workstation in India. Real-time architectural visualisation on the GPU, billed per minute with GST included. BYOL — bring your Enscape subscription.",
+    "Run Enscape on an RTX 5080 cloud workstation in India, with Revit, SketchUp or Rhino on the same desktop. Billed per minute, GST included. Your own licence.",
   keywords: [
     "Enscape cloud GPU India",
     "Enscape cloud rendering India",
@@ -80,6 +82,7 @@ export default async function EnscapePage() {
 
   return (
     <div className="relative min-h-screen text-ink">
+      <JsonLd data={breadcrumbList([{ name: "Enscape cloud GPU workstation", path: "/enscape-cloud-gpu" }])} />
       <BackgroundGlow />
       <script
         type="application/ld+json"
@@ -213,6 +216,8 @@ export default async function EnscapePage() {
                 ["/", "Home"],
                 ["/d5-render-cloud-workstation", "D5 Render on a cloud RTX 5080"],
                 ["/lumion-cloud-gpu", "Lumion on a cloud RTX 5080"],
+                ["/software/revit-cloud-workstation", "Revit on a cloud workstation"],
+                ["/vram-for-architectural-rendering", "Is 8 GB of VRAM enough?"],
               ].map(([href, label]) => (
                 <li key={href}>
                   <Link

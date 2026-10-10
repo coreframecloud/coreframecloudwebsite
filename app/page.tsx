@@ -22,9 +22,9 @@ import {
 import { storageTerms } from "@/lib/storage-terms";
 
 export const metadata: Metadata = {
-  title: "RTX 5080 workstations by the hour — Coreframe Cloud",
+  title: "RTX 5080 Cloud Workstations, India — Coreframe Cloud",
   description:
-    "A real Windows workstation with a current-generation RTX 5080, opened from the laptop you already own and streamed in 4K. Billed per minute with GST included, hosted in Bengaluru. No month to commit to and nothing to cancel.",
+    "Rent a Windows RTX 5080 workstation by the minute and stream it in 4K to the laptop you own. GST included, hosted in Bengaluru, nothing to cancel.",
   alternates: { canonical: "/" },
   other: { "contact:email": "admin@coreframecloud.com" },
 };

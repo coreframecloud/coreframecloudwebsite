@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { JsonLd } from "@/components/seo/json-ld";
+import { breadcrumbList } from "@/lib/seo";
 import { BackgroundGlow } from "@/components/home/background-glow";
 import Link from "next/link";
 import { NODE, WORKSTATION_REPLACEMENT_COST } from "@/lib/node-spec";
@@ -16,13 +18,13 @@ import {
 import { storageTerms } from "@/lib/storage-terms";
 
 export const metadata: Metadata = {
-  title: "Monthly GPU Plans for Design Studios & Firms — India",
+  title: "Monthly GPU Plans for Design Studios",
   description:
     // No prices in the meta description. A description is cached by search
     // engines and quoted by answer engines long after a rate changes, and it is
     // the one string on the page that cannot read the live rate card without
     // making metadata generation depend on a network call.
-    "Committed monthly cloud GPU workstation plans for architecture and design studios: RTX 5080 workstations, persistent NAS storage, named render seats and included GPU-hours, with every tier billing extra hours below the ad-hoc rate. GST included. Hosted in Bengaluru, India.",
+    "Monthly RTX 5080 workstation plans for architecture and design studios: included GPU-hours, named seats and shared NAS storage. GST included, Bengaluru.",
   keywords: [
     "cloud GPU plan India",
     "GPU workstation monthly plan India",
@@ -105,6 +107,7 @@ export default async function EnterprisePage() {
 
   return (
     <div className="relative min-h-screen bg-paper text-ink">
+      <JsonLd data={breadcrumbList([{ name: "Monthly plans for studios", path: "/enterprise" }])} />
       <BackgroundGlow />
 
       <main className="relative">

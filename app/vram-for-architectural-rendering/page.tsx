@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { JsonLd } from "@/components/seo/json-ld";
+import { breadcrumbList, OG_IMAGE } from "@/lib/seo";
 import Link from "next/link";
 import { BackgroundGlow } from "@/components/home/background-glow";
 import { SpecBlock, K, B } from "@/components/home/spec-block";
@@ -42,7 +44,7 @@ const VENDOR = {
 };
 
 export const metadata: Metadata = {
-  title: "Is 8 GB of VRAM enough for architectural rendering?",
+  title: { absolute: "Is 8 GB VRAM enough for architectural rendering?" },
   description:
     "Enscape recommends 8 GB. D5 publishes no VRAM figure. Your scene decides, not your software: how to measure what it uses, and what happens when you run out.",
   keywords: [
@@ -53,6 +55,7 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: "/vram-for-architectural-rendering" },
   openGraph: {
+    images: [OG_IMAGE],
     title: "Is 8 GB of VRAM enough for architectural rendering?",
     description:
       "What the vendors actually publish, how to measure your own scene, and what happens when you run out.",
@@ -110,6 +113,7 @@ export default async function Page() {
 
   return (
     <div className="relative min-h-screen text-ink">
+      <JsonLd data={breadcrumbList([{ name: "VRAM for architectural rendering", path: "/vram-for-architectural-rendering" }])} />
       <BackgroundGlow />
       <script
         type="application/ld+json"

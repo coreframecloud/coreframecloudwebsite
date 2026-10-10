@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { JsonLd } from "@/components/seo/json-ld";
+import { breadcrumbList } from "@/lib/seo";
 import Link from "next/link";
 import { BackgroundGlow } from "@/components/home/background-glow";
 import { SpecBlock, K, V, C } from "@/components/home/spec-block";
@@ -14,7 +16,7 @@ import {
 } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "GPU Workstations, Rendering and Project Storage for Studios",
+  title: "GPU Workstations and Storage for Studios",
   description:
     "How Coreframe fits a design studio: remote Windows RTX workstations, centralised rendering and shared project storage, hosted in Bengaluru and billed in INR.",
   alternates: { canonical: "/solutions" },
@@ -72,6 +74,7 @@ const trustItems = [
 export default function SolutionsPage() {
   return (
     <div className="min-h-screen text-ink">
+      <JsonLd data={breadcrumbList([{ name: "Solutions", path: "/solutions" }])} />
       <BackgroundGlow />
 
       <main className="relative">

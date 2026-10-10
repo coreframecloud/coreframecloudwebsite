@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { JsonLd } from "@/components/seo/json-ld";
+import { breadcrumbList } from "@/lib/seo";
 import Link from "next/link";
 import { BackgroundGlow } from "@/components/home/background-glow";
 import { SpecBlock, K, V, C } from "@/components/home/spec-block";
@@ -14,9 +16,9 @@ import {
 import { storageTerms } from "@/lib/storage-terms";
 
 export const metadata: Metadata = {
-  title: "Cloud Rendering for Architects — RTX 5080, India",
+  title: "Cloud Rendering for Architects in India",
   description:
-    "Cloud GPU workstations for architecture studios. Run D5 Render, Lumion, Enscape, Revit on RTX 5080. Persistent project storage, named seats, data hosted in Bengaluru.",
+    "RTX 5080 cloud workstations for architecture studios: D5 Render, Lumion, Enscape and Revit, persistent project storage, named seats, hosted in Bengaluru.",
   keywords: [
     "cloud rendering for architects India",
     "cloud GPU architecture India",
@@ -163,6 +165,7 @@ export default async function ArchitectsPage() {
 
   return (
     <div className="relative min-h-screen text-ink">
+      <JsonLd data={breadcrumbList([{ name: "Cloud rendering for architects", path: "/cloud-rendering-for-architects" }])} />
       <BackgroundGlow />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
@@ -308,6 +311,8 @@ export default async function ArchitectsPage() {
               ["/d5-render-cloud-workstation", "D5 Render"],
               ["/lumion-cloud-gpu", "Lumion"],
               ["/enscape-cloud-gpu", "Enscape"],
+              ["/cloud-workstation-vs-render-farm", "Cloud workstation vs render farm"],
+              ["/floor-plan-to-render", "Floor plan to interior render (Studio)"],
             ].map(([href, label]) => (
               <Link
                 key={href}

@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { JsonLd } from "@/components/seo/json-ld";
+import { breadcrumbList } from "@/lib/seo";
 import { BackgroundGlow } from "@/components/home/background-glow";
 import { PricingCards } from "@/components/pricing/pricing-cards";
 import { getRateCard, pricingFaqAnswer } from "@/lib/rate-card";
@@ -7,7 +9,7 @@ import { NODE } from "@/lib/node-spec";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Lumion Cloud GPU Workstation — RTX 5080, India",
+  title: "Lumion Cloud GPU Workstation, RTX 5080",
   description:
     "Run Lumion on an RTX 5080 cloud workstation in India. Real-time rendering on the GPU, billed per minute with GST included. BYOL — bring your own Lumion licence.",
   keywords: [
@@ -85,6 +87,7 @@ export default async function LumionPage() {
 
   return (
     <div className="relative min-h-screen text-ink">
+      <JsonLd data={breadcrumbList([{ name: "Lumion cloud GPU workstation", path: "/lumion-cloud-gpu" }])} />
       <BackgroundGlow />
       <script
         type="application/ld+json"
@@ -217,6 +220,8 @@ export default async function LumionPage() {
                 ["/", "Home"],
                 ["/d5-render-cloud-workstation", "D5 Render on a cloud RTX 5080"],
                 ["/enscape-cloud-gpu", "Enscape on a cloud RTX 5080"],
+                ["/cloud-workstation-vs-render-farm", "Cloud workstation vs render farm"],
+                ["/vram-for-architectural-rendering", "Is 8 GB of VRAM enough?"],
               ].map(([href, label]) => (
                 <li key={href}>
                   <Link
