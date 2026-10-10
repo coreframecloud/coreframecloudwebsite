@@ -133,7 +133,7 @@ function StartCard({
       </p>
       <p className="mt-2 text-sm leading-6 text-ink-2">
         Your account is set up. Sessions start once your wallet has its first top-up —
-        billed per minute of streaming, GST included.
+        billed per minute of streaming.
       </p>
       <button
         type="button"

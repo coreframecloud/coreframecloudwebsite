@@ -24,7 +24,9 @@
  * invoice taxed wrongly can only be corrected by credit note. The list is
  * fetched from /public/gst-states rather than hardcoded, so three clients
  * cannot drift. Any other country is sent as GST state code 96 ("Outside
- * India (Foreign Country)"), IGST applies, and the postal code is free-form.
+ * India (Foreign Country)") with a free-form postal code; per the owner
+ * (10 Oct 2026) that is an export of services under LUT, so no GST is charged
+ * on the same rupee amount.
  *
  * Paid-first onboarding (10 Oct 2026): the first top-up has a higher minimum
  * (`min_topup_rupees_now` from the wallet status) and may carry the intro
@@ -191,7 +193,7 @@ export default function TopUpDialog({
           billing_address: {
             name: name.trim() || undefined,
             city: city.trim() || undefined,
-            // Outside India is GST state 96 (foreign country): IGST applies.
+            // Outside India is GST state 96 (foreign country): export, no GST.
             state_code: isIndia ? stateCode : FOREIGN_STATE_CODE,
             country_code: countryIso,
             pincode: pincode.trim() || undefined,
@@ -290,7 +292,7 @@ export default function TopUpDialog({
               ₹{done.credited.toLocaleString("en-IN")}
             </p>
             <p className="mt-2 text-[15px] leading-6 text-ink-2">
-              New balance ₹{done.balance.toLocaleString("en-IN")}. Your GST invoice is in Payments below.
+              New balance ₹{done.balance.toLocaleString("en-IN")}. Your invoice is in Payments below.
             </p>
 
             <button onClick={onClose} className="cf-btn-primary mt-6 w-full">
@@ -383,8 +385,7 @@ export default function TopUpDialog({
                 ) : config ? (
                   <p className="mt-1.5 text-xs leading-5 text-ink-2">
                     Minimum ₹{config.min_topup_rupees.toLocaleString("en-IN")}, maximum ₹
-                    {config.max_topup_rupees.toLocaleString("en-IN")}. GST included; a tax invoice is issued
-                    automatically.
+                    {config.max_topup_rupees.toLocaleString("en-IN")}. {isIndia ? "GST included; a tax invoice is issued automatically." : "An invoice is issued automatically."}
                   </p>
                 ) : null}
 
@@ -484,7 +485,12 @@ export default function TopUpDialog({
                   {busy ? "Opening payment…" : `Pay ₹${Number(amount || 0).toLocaleString("en-IN")}`}
                 </button>
                 <p className="mt-3 text-center text-xs leading-5 text-ink-2">
-                  International cards accepted. Prices include 18% GST.
+                  {/* Owner decision 10 Oct 2026: a customer billed outside India
+                      is an export of services under LUT — zero-rated, no GST —
+                      for the same rupee amount. */}
+                  {isIndia
+                    ? "International cards accepted. Prices include 18% GST."
+                    : "International cards accepted. International customers: no GST (export of services)."}
                   <br />
                   Payments are processed by Razorpay. We never see your card details.
                 </p>

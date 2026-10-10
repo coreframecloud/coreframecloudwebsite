@@ -89,7 +89,7 @@ export default async function SignupPage() {
                 {intro
                   ? `Your first top-up of ${rupees(intro.priceRupees)} buys ${hoursLabel(intro.hours)}${intro.gpuName ? ` of ${intro.gpuName}` : ""}.`
                   : "Top up your wallet and start a session."}{" "}
-                Card, UPI or netbanking — international cards accepted. A GST invoice is issued
+                Card, UPI or netbanking — international cards accepted. An invoice is issued
                 automatically.
               </li>
             </ol>
