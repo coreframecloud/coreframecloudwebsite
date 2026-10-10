@@ -3,9 +3,9 @@ import { BackgroundGlow } from "@/components/home/background-glow";
 import RequestDemoForm from "./request-demo-form";
 
 export const metadata: Metadata = {
-  title: "Contact Coreframe — Request Access or a Demo",
+  title: "Contact Coreframe: Monthly Plans or a Demo",
   description:
-    "Tell us your workload and how to reach you. We reply on WhatsApp, usually the same day, to set up GPU workstation access or a demo.",
+    "Tell us your workload and how to reach you. We reply on WhatsApp, usually the same day, to talk through a monthly plan or set up a demo.",
   alternates: { canonical: "/request-demo" },
 };
 
@@ -17,7 +17,7 @@ export default function RequestDemoPage() {
       <main className="relative">
         <section className="cf-section px-5">
           <div className="cf-col">
-            <p className="cf-eyebrow">Request access</p>
+            <p className="cf-eyebrow">Talk to us</p>
 
             <h1 className="cf-display mt-3">Tell us what you need a machine for.</h1>
 

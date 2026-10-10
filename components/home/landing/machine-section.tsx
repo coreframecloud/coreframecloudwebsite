@@ -1,6 +1,7 @@
 import { SpecBlock, K, V, C } from "@/components/home/spec-block";
 import { NODE } from "@/lib/node-spec";
 import type { StorageTerms } from "@/lib/storage-terms";
+import { BANDWIDTH_SENTENCE } from "@/lib/streaming-terms";
 
 /**
  * The machine, as a terminal session rather than a spec table.
@@ -57,8 +58,7 @@ export function MachineSection({
             <strong className="font-semibold">
               What you need at your end: a laptop and ordinary broadband.
             </strong>{" "}
-            4K at 60&nbsp;fps looks its best on about 50&nbsp;Mbps and still holds up at 35.
-            1080p is comfortable on 20.
+            {BANDWIDTH_SENTENCE}
           </p>
           <p className="mt-2 text-[14.5px] leading-[1.62] text-ink-2">
             A steady connection matters more than a fast one, so a wired link or 5&nbsp;GHz Wi-Fi

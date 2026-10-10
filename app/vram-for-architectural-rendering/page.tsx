@@ -44,7 +44,7 @@ const VENDOR = {
 export const metadata: Metadata = {
   title: "Is 8 GB of VRAM enough for architectural rendering?",
   description:
-    "Enscape recommends 8 GB. D5 publishes no VRAM figure at all. The honest answer depends on your scene, not your software — here is how to measure what yours actually uses, and what happens when you run out.",
+    "Enscape recommends 8 GB. D5 publishes no VRAM figure. Your scene decides, not your software: how to measure what it uses, and what happens when you run out.",
   keywords: [
     "is 8GB VRAM enough for rendering",
     "VRAM for Lumion D5 Enscape",

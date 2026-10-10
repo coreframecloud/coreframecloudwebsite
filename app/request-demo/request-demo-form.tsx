@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Mail, MessageCircle } from "lucide-react";
 import { trackWhatsAppLead } from "@/lib/analytics";
+import { NODE } from "@/lib/node-spec";
 
 export default function RequestDemoForm() {
   const [email, setEmail] = useState("");
@@ -23,7 +24,7 @@ export default function RequestDemoForm() {
   }, []);
 
   const handleWhatsAppSubmit = () => {
-    const message = `Hi Coreframe Cloud, I would like to reserve access.
+    const message = `Hi Coreframe Cloud, I'd like to talk about a monthly plan or a demo.
 
 Email: ${email}
 Mobile: ${mobile}
@@ -92,7 +93,7 @@ Selected GPU: ${gpu || "Not selected"}`;
               value={gpu}
               onChange={(e) => setGpu(e.target.value)}
               className="h-11 rounded-cf border-rule bg-paper text-base text-ink placeholder:text-ink-3 md:text-sm"
-              placeholder="RTX 5090"
+              placeholder={NODE.gpu}
             />
           </div>
 
@@ -112,7 +113,7 @@ Selected GPU: ${gpu || "Not selected"}`;
             Send the scene and the deadline.
           </div>
           <a
-            href="https://wa.me/916366889488?text=Hi%20Coreframe%20Cloud%2C%20I%20want%20to%20reserve%20GPU%20access."
+            href="https://wa.me/916366889488?text=Hi%20Coreframe%20Cloud%2C%20I%27d%20like%20to%20talk%20about%20a%20monthly%20plan%20or%20a%20demo."
             target="_blank"
             rel="noreferrer"
             className="mt-5 block"
@@ -144,8 +145,8 @@ Selected GPU: ${gpu || "Not selected"}`;
         </div>
 
         <div className="rounded-cf border border-rule bg-paper-2 p-5 text-sm leading-7 text-ink-2 sm:p-6">
-          We have no availability right now. Use this form to reserve priority
-          access and tell us what kind of work you run.
+          Use this form to ask about a monthly plan for your studio or to book a demo.
+          Tell us what kind of work you run and we&apos;ll take it from there.
         </div>
       </div>
     </div>

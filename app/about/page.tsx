@@ -11,6 +11,7 @@ import {
   entryPlanFee,
   storageRatePerTb,
 } from "@/lib/rate-card";
+import { BANDWIDTH_SENTENCE } from "@/lib/streaming-terms";
 
 /**
  * The page that answers "what is Coreframe Cloud".
@@ -127,7 +128,7 @@ export default async function AboutPage() {
     },
     {
       q: "Can I use Coreframe from a construction site or a client's office?",
-      a: "Yes. You reach the workstation over the internet from any laptop, so it works from a site visit, a client's office or home, not just the desk a machine was bought for. A steady connection matters more than a fast one. Around 20 Mbps is comfortable at 1080p, and about 50 Mbps shows the stream at its best. Test the connection before you promise a client a live demo on it, or tether. High-resolution stills are rendered on the workstation and downloaded as files. The desktop you're looking at is a stream, and the image isn't streamed at that resolution.",
+      a: `Yes. You reach the workstation over the internet from any laptop, so it works from a site visit, a client's office or home, not just the desk a machine was bought for. A steady connection matters more than a fast one. ${BANDWIDTH_SENTENCE} Test the connection before you promise a client a live demo on it, or tether. High-resolution stills are rendered on the workstation and downloaded as files. The desktop you're looking at is a stream, and the image isn't streamed at that resolution.`,
     },
     {
       q: "Do my project files stay available if I sign in from a different computer?",
@@ -276,8 +277,7 @@ export default async function AboutPage() {
             <p className="cf-section-copy mt-3">
               You reach it from any laptop over the internet, so it works from a site visit, a
               client&rsquo;s office or home, and not only from the desk it was bought for. Your
-              connection needs to be steady more than fast. 20 Mbps is comfortable at 1080p and
-              about 50 Mbps shows the stream at its best. Test it before you promise a client a
+              connection needs to be steady more than fast. {BANDWIDTH_SENTENCE} Test it before you promise a client a
               live demo, or tether.
             </p>
 

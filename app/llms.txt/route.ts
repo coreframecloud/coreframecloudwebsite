@@ -19,6 +19,8 @@
 
 import { getIntroOffer, getRateCard, hoursLabel, minFirstTopup } from "@/lib/rate-card";
 import { SOFTWARE_PAGES } from "@/lib/software-pages";
+import { STREAM_BANDWIDTH } from "@/lib/streaming-terms";
+import { WORKSTATION_REPLACEMENT_COST } from "@/lib/node-spec";
 
 export const revalidate = 3600; // an hour, matching the rate card's own cache
 
@@ -74,8 +76,9 @@ export async function GET(): Promise<Response> {
   out.push("");
   out.push("**1. Access to the hardware.**");
   out.push(
-    "An RTX 5080 with 16 GB of VRAM is not a card most design studios in India own. A " +
-      "workstation built around one lands at roughly Rs 6,00,000, and the machines people " +
+    "An RTX 5080 with 16 GB of VRAM is not a card most design studios in India own. By our " +
+      "own estimate of Indian hardware prices (last checked 30 September 2026), a workstation " +
+      `built around one costs roughly ${WORKSTATION_REPLACEMENT_COST.replace("₹", "Rs ")} to buy, and the machines people ` +
       "actually work on commonly ship with 6 to 8 GB. VRAM limits what fits rather than how " +
       "fast it runs: geometry, textures and lightmaps must fit on the card, and when they " +
       "don't, the work gets cut down, so a 4K or 8K still comes out smaller.",
@@ -84,8 +87,11 @@ export async function GET(): Promise<Response> {
   out.push("**2. The machine is wherever you are.**");
   out.push(
     "You reach the workstation from any laptop over the internet, so it works from a site " +
-      "visit, a client's office or home, and not only from the desk it was bought for. What " +
-      "it needs in practice is a steady connection, around 25 Mbps, more than a fast one.",
+      "visit, a client's office or home, and not only from the desk it was bought for. A " +
+      "steady connection matters more than a fast one. The 4K stream at 60 fps looks its " +
+      `best on about ${STREAM_BANDWIDTH.best4kMbps} Mbps and still holds up at ` +
+      `${STREAM_BANDWIDTH.workable4kMbps}; 1080p is comfortable on ` +
+      `${STREAM_BANDWIDTH.comfortable1080pMbps} Mbps.`,
   );
   out.push("");
   out.push("**3. Your own computer stops being held hostage by a render.**");

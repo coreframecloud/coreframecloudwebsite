@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { BackgroundGlow } from "@/components/home/background-glow";
 import { getRateCard, adhocRateHourly, adhocRate, billingSentence } from "@/lib/rate-card";
+import { storageTerms } from "@/lib/storage-terms";
 import { NODE, WORKSTATION_REPLACEMENT_COST } from "@/lib/node-spec";
 
 export const metadata: Metadata = {
@@ -62,6 +63,7 @@ const GOOD_FOR = [
 
 export default async function ComputeNodesPage() {
   const card = await getRateCard();
+  const storage = storageTerms(card);
   const nodePrice = adhocRateHourly(card);
   const rate = adhocRate(card);
 
@@ -149,7 +151,7 @@ export default async function ComputeNodesPage() {
                   </li>
                   <li>
                     <span className="font-medium text-ink">
-                      20 GB of storage free, 50 GB once you add credit.
+                      {storage.paidGb} GB of storage included, kept while your account is active.
                     </span>{" "}
                     Session scratch is wiped when the session ends. Pull your outputs down first, or
                     put the project on persistent NAS storage.

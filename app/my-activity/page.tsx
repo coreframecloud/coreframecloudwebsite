@@ -208,8 +208,10 @@ function UsageCards({ wallet }: { wallet: WalletData | null }) {
               </span>
             </div>
             <p className="mt-2 text-xs leading-5 text-ink-2">
-              Taken from your wallet each morning at ₹
-              {wallet.storage_rate_rupees_per_tb_month ?? 1999}/TB/month. Delete what you
+              {wallet.storage_rate_rupees_per_tb_month != null
+                ? `Taken from your wallet each morning at ₹${wallet.storage_rate_rupees_per_tb_month}/TB/month.`
+                : "Taken from your wallet each morning at the published storage rate."}{" "}
+              Delete what you
               don&rsquo;t need and the charge stops the same day. There&rsquo;s nothing to cancel.
             </p>
           </div>

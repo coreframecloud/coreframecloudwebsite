@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { NODE } from "@/lib/node-spec";
+import { BANDWIDTH_SENTENCE } from "@/lib/streaming-terms";
 
 export const metadata: Metadata = {
   title: "How to use Coreframe — GPU workstations for 3D rendering",
@@ -78,7 +79,7 @@ const FAQS = [
   },
   {
     q: "What internet speed do I need?",
-    a: "About 20 Mbps is comfortable at 1080p, and around 50 Mbps shows the 4K stream at its best. A steady connection matters more than raw bandwidth. Streaming is more sensitive to latency and jitter than to throughput, so a wired connection or 5 GHz Wi-Fi beats a quicker link that drops packets.",
+    a: `${BANDWIDTH_SENTENCE} A steady connection matters more than raw bandwidth. Streaming is more sensitive to latency and jitter than to throughput, so a wired connection or 5 GHz Wi-Fi beats a quicker link that drops packets.`,
   },
   {
     q: "Can my whole studio use one account?",

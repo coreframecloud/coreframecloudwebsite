@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { BANDWIDTH_SHORT } from "@/lib/streaming-terms";
 
 interface DownloadInfo {
   // Optional because the route omits them when the release feed on the control
@@ -149,7 +150,7 @@ export default function DownloadPage() {
               </li>
               <li className="flex gap-2">
                 <span className="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-blue" />
-                About 20 Mbps is comfortable at 1080p, around 50 Mbps for 4K
+                {BANDWIDTH_SHORT}
               </li>
             </ul>
 

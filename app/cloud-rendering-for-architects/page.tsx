@@ -11,6 +11,7 @@ import {
   storageRatePerTb,
   billingSentence,
 } from "@/lib/rate-card";
+import { storageTerms } from "@/lib/storage-terms";
 
 export const metadata: Metadata = {
   title: "Cloud Rendering for Architects — RTX 5080, India",
@@ -124,6 +125,7 @@ const jsonLd = {
 
 export default async function ArchitectsPage() {
   const card = await getRateCard();
+  const storage = storageTerms(card);
   const storageRate = storageRatePerTb(card);
   const adhoc = adhocRate(card);
 
@@ -132,8 +134,8 @@ export default async function ArchitectsPage() {
       name: "Ad-hoc",
       price: adhocRateHourly(card) ?? "—",
       note:
-        `${billingSentence(card)} No commitment. 20 GB persistent storage free, ` +
-        "50 GB with credit · kept while your account is active. Session scratch is cleared at session end, so " +
+        `${billingSentence(card)} No commitment. ${storage.paidGb} GB of persistent storage included, ` +
+        "kept while your account is active. Session scratch is cleared at session end, so " +
         "download outputs first.",
       cta: "Get started",
       href: "/signup",

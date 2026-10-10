@@ -13,6 +13,7 @@ import {
   commitmentIsCheaper,
   type RateCardPlan,
 } from "@/lib/rate-card";
+import { storageTerms } from "@/lib/storage-terms";
 
 export const metadata: Metadata = {
   title: "Monthly GPU Plans for Design Studios & Firms — India",
@@ -92,6 +93,7 @@ const whatsapp = (plan: string) =>
 export default async function EnterprisePage() {
   const card = await getRateCard();
   const plans = planTiers(card);
+  const storage = storageTerms(card);
   const adhocNumber =
     card?.gpus.find((g) => !g.quote_on_request && g.hourly_rate_rupees != null)
       ?.hourly_rate_rupees ?? null;
@@ -372,8 +374,8 @@ export default async function EnterprisePage() {
                 customer a worse deal than the platform gives them. The sentence
                 now comes from the rate card's own billing_granularity field. */}
             <p className="cf-section-copy mt-4">
-              Ad-hoc is {adhoc ? `${adhoc} per GPU-hour ` : ""}with no contract. It comes with 20 GB
-              of persistent storage free, or 50 GB once you add credit, kept while your account is
+              Ad-hoc is {adhoc ? `${adhoc} per GPU-hour ` : ""}with no contract. It comes with{" "}
+              {storage.paidGb} GB of persistent storage included, kept while your account is
               active. {billingSentence(card)} Session scratch is cleared when the session ends,
               so pull your outputs down first, or add persistent NAS storage.
               {cheaper && adhoc

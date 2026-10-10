@@ -9,6 +9,7 @@ import {
   pricingFaqAnswer,
 } from "@/lib/rate-card";
 import { NODE, WORKSTATION_REPLACEMENT_COST } from "@/lib/node-spec";
+import { BANDWIDTH_SENTENCE } from "@/lib/streaming-terms";
 
 /**
  * The D5 Render page, promoted out of the app/[slug] stub renderer.
@@ -98,7 +99,7 @@ export default async function D5Page() {
     },
     {
       q: "What internet speed do I need to use a Coreframe workstation?",
-      a: "You're streaming a desktop, so a steady connection matters more than a fast one. Around 25 Mbps with stable latency is a comfortable working floor. Rendering happens on the workstation in Bengaluru, and a finished 4K or 8K still is a file you download. It isn't streamed to you frame by frame.",
+      a: `You're streaming a desktop, so a steady connection matters more than a fast one. ${BANDWIDTH_SENTENCE} Rendering happens on the workstation in Bengaluru, and a finished 4K or 8K still is a file you download. It isn't streamed to you frame by frame.`,
     },
     ...(priceAnswer ? [{ q: "How much does it cost to render in D5 on Coreframe?", a: priceAnswer }] : []),
     ...(introFaq ? [introFaq] : []),

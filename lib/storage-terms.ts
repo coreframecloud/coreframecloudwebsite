@@ -138,17 +138,17 @@ export function storageBillingShort(t: StorageBilling): string {
 export function storageBillingTerms(t: StorageBilling): string[] {
   if (!t.active) {
     return [
-      `Every account includes ${t.allowanceGb} GB of persistent storage at no charge.`,
+      `Every account includes ${t.allowanceGb} GB of persistent storage.`,
     ];
   }
   return [
-    `Every account includes ${t.allowanceGb} GB of persistent storage at no charge. ` +
+    `Every account includes ${t.allowanceGb} GB of persistent storage. ` +
       `That ${t.allowanceGb} GB is yours whatever else happens on the account.`,
     `Storage above ${t.allowanceGb} GB costs Rs ${t.ratePerTbMonth} per TB per month, ` +
       `charged once a day from your wallet for that day only. Bring your storage back ` +
       `under ${t.allowanceGb} GB and the charge stops the same day. There's nothing to cancel.`,
     `If your balance cannot cover a day, nothing is deleted. We email you, new GPU ` +
       `sessions pause until it is settled, and your files stay downloadable. After 30 days ` +
-      `and a final notice we remove data above the free ${t.allowanceGb} GB, never below it.`,
+      `and a final notice we remove data above the included ${t.allowanceGb} GB, never below it.`,
   ];
 }

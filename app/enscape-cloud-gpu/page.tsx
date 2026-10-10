@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { BackgroundGlow } from "@/components/home/background-glow";
 import { PricingCards } from "@/components/pricing/pricing-cards";
 import { getRateCard, pricingFaqAnswer } from "@/lib/rate-card";
+import { storageTerms } from "@/lib/storage-terms";
 import { NODE, WORKSTATION_REPLACEMENT_COST } from "@/lib/node-spec";
 import Link from "next/link";
 
@@ -42,6 +43,7 @@ const SPECS: [string, string][] = [
 
 export default async function EnscapePage() {
   const card = await getRateCard();
+  const storage = storageTerms(card);
   const priceAnswer = pricingFaqAnswer(card);
 
   const faqs: { q: string; a: string }[] = [
@@ -173,7 +175,7 @@ export default async function EnscapePage() {
             <h2 className="cf-section-title">What it costs.</h2>
             <PricingCards
               card={card}
-              adhocNote="20 GB persistent storage free, 50 GB once you add credit. Session scratch is cleared when the session ends."
+              adhocNote={`${storage.paidGb} GB of persistent storage included, kept while your account is active. Session scratch is cleared when the session ends.`}
             />
             <div className="cf-note mt-8">
               <p className="cf-section-copy">

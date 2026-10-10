@@ -12,6 +12,7 @@ import {
   hoursLabel,
   rupees,
 } from "@/lib/rate-card";
+import { BANDWIDTH_SENTENCE } from "@/lib/streaming-terms";
 
 /**
  * Renting vs buying, argued honestly and with the arithmetic shown.
@@ -295,9 +296,8 @@ export default async function ComparisonPage() {
               committed plan we build what you need into your baseline image.
             </p>
             <p className="cf-section-copy mt-4">
-              Second, you need a steady connection. {NODE.stream} looks its best on
-              about 50&nbsp;Mbps and still holds up at 35. 1080p is comfortable
-              on 20. Steady matters more than fast.
+              Second, you need a steady connection. {BANDWIDTH_SENTENCE} Steady
+              matters more than fast.
             </p>
             <p className="cf-section-copy mt-4">
               Third, {billingSentence(card).charAt(0).toLowerCase()}

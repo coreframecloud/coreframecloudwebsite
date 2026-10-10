@@ -18,6 +18,7 @@
 
 import type { StorageTerms } from "@/lib/storage-terms";
 import { hoursLabel, rupees, type IntroOffer } from "@/lib/rate-card";
+import { BANDWIDTH_SENTENCE } from "@/lib/streaming-terms";
 
 type QA = { q: string; a: string };
 
@@ -29,7 +30,7 @@ function buildFaq(storage: StorageTerms, intro: IntroOffer | null, adhocRate?: s
     },
     {
       q: "What internet speed do I need?",
-      a: "About 25 Mbps with stable latency is the practical minimum. Below that it gets frustrating, and we'd rather tell you now than take your money. The real test is trying it on the connection you'd actually use.",
+      a: `${BANDWIDTH_SENTENCE} Stable latency matters as much as speed. On a weaker connection it gets frustrating, and we'd rather tell you now than take your money. The real test is trying it on the connection you'd actually use.`,
     },
     {
       q: "Where do my files live, and who can see them?",
