@@ -41,6 +41,7 @@ export function FrameStrip() {
             src={f.src}
             alt={f.alt}
             fill
+            quality={90}
             sizes="(max-width: 1024px) 100vw, 560px"
             className={`object-cover object-center transition-opacity duration-700 ${
               i === shown ? "opacity-100" : "opacity-0"

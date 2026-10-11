@@ -202,6 +202,9 @@ const nextConfig: NextConfig = {
   // e.g. the workstation frames in lib/workstation-frames.ts.
   images: {
     remotePatterns: [{ protocol: "https", hostname: "media.coreframecloud.com" }],
+    // 90 for the app screenshots in the workstation card: at the default 75 the
+    // small UI text in them goes soft.
+    qualities: [75, 90],
   },
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
