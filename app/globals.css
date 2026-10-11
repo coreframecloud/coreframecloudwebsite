@@ -186,6 +186,13 @@ body {
     text-wrap: balance;
   }
 
+  /* Alias used by a few older pages; it was never defined, so their section
+     headings rendered as body text. */
+  .cf-title {
+    @apply font-heading text-[clamp(26px,3.4vw,38px)] leading-[1.15] font-medium tracking-[-0.015em] text-ink;
+    text-wrap: balance;
+  }
+
   .cf-section-copy {
     @apply text-base leading-[1.62] text-ink-2;
   }
@@ -249,6 +256,12 @@ body {
   .cf-card:nth-child(4n + 2) { @apply bg-tint-lilac; }
   .cf-card:nth-child(4n + 3) { @apply bg-tint-mint; }
   .cf-card:nth-child(4n + 4) { @apply bg-tint-sand; }
+
+  /* Small soft card for lists of short points. Was used by two pages but
+     never defined, so their text sat unstyled (and white on white). */
+  .cf-card-sm {
+    @apply min-w-0 rounded-2xl bg-paper-2 px-5 py-4 text-[15px] leading-6 text-ink-2;
+  }
 
   .cf-card-label {
     @apply mb-3 font-mono text-[11px] leading-none font-medium tracking-[0.16em] text-blue uppercase;
@@ -748,3 +761,10 @@ body {
 .cfh-lift { transition: transform 0.25s ease, box-shadow 0.25s ease; }
 .cfh-lift:hover { transform: translateY(-4px); box-shadow: 0 18px 40px -18px rgb(16 17 19 / 0.35); }
 @media (prefers-reduced-motion: reduce) { .cfh-lift:hover { transform: none; } }
+/* Glass panels inside a dark page hero turn dark too, so the hero's white
+   text stays readable on them. */
+.cf-pagehero :is(.cf-glass, .cf-glass-inset, .cf-note, .bg-paper, .bg-paper-2) {
+  background: rgb(255 255 255 / 0.07);
+  border-color: rgb(255 255 255 / 0.14);
+  box-shadow: none;
+}
