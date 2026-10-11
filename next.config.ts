@@ -198,6 +198,11 @@ const securityHeaders = [
 const CONTROL_PLANE = "https://control.coreframecloud.com";
 
 const nextConfig: NextConfig = {
+  // Marketing images the owner hosts on our own R2 bucket (custom domain),
+  // e.g. the workstation frames in lib/workstation-frames.ts.
+  images: {
+    remotePatterns: [{ protocol: "https", hostname: "media.coreframecloud.com" }],
+  },
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
   },
