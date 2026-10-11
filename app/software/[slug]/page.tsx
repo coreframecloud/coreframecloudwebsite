@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { GenImage, OwnImage } from "@/components/visuals/media";
+import { StreamDiagram, FileSyncDiagram } from "@/components/visuals/diagrams";
 import { notFound } from "next/navigation";
 import {
   SOFTWARE_PAGES,
@@ -70,6 +72,31 @@ export async function generateMetadata({
 }
 
 
+/**
+ * One picture per software page. Generated images (Gemini) are labelled by
+ * GenImage; the Blender page uses our own Cycles render instead.
+ */
+type Hero = { src: string; alt: string; w: number; h: number; generated: boolean; caption?: string };
+const G = (src: string, alt: string): Hero => ({ src: `/visuals/${src}`, alt, w: 1600, h: 914, generated: true });
+const HERO_BY_SLUG: Record<string, Hero> = {
+  "revit-cloud-workstation": G("gen-architect-client-walkthrough-16x9.webp", "An architect walking clients through a 3D model"),
+  "3ds-max-cloud-workstation": G("gen-visualiser-home-16x9.webp", "A 3D visualiser working on a laptop at home"),
+  "sketchup-cloud-workstation": G("gen-designer-cafe-laptop-16x9.webp", "An interior designer working on a laptop in a cafe"),
+  "blender-cloud-workstation": {
+    src: "/home/hero-interior.webp",
+    alt: "The Blender 4.1 splash interior rendered in Cycles on a Coreframe RTX 5080",
+    w: 2560,
+    h: 1440,
+    generated: false,
+    caption: "Rendered in Blender Cycles on our RTX 5080. Scene: Blender 4.1 splash, blender.org demo files.",
+  },
+  "twinmotion-cloud-workstation": G("gen-team-review-16x9.webp", "A studio team reviewing a walkthrough on a big screen"),
+  "vray-cloud-rendering": G("gen-visualiser-home-16x9.webp", "A visualiser reviewing a photoreal interior on a laptop"),
+  "rhino-cloud-workstation": { src: "/visuals/gen-student-architecture-4x5.webp", alt: "An architecture student with a laptop and models", w: 1000, h: 1286, generated: true },
+  "after-effects-premiere-cloud-workstation": G("gen-motion-designer-desk-16x9.webp", "A motion designer at his desk"),
+  default: G("gen-designer-cafe-laptop-16x9.webp", "A designer working on a thin laptop"),
+};
+
 export default async function SoftwareLandingPage({
   params,
 }: {
@@ -99,84 +126,104 @@ export default async function SoftwareLandingPage({
     ...(intro ? [intro] : []),
   ];
 
+  const hero = HERO_BY_SLUG[page.slug] ?? HERO_BY_SLUG.default;
   return (
     <>
     <section className="cf-section cf-pagehero px-5">
-      <div className="cf-col">
-            <h1 className="cf-display">{page.title}</h1>
-            <p className="cf-lead mt-[22px]">{page.intro}</p>
+      <div className="cf-wide grid items-center gap-10 lg:grid-cols-[1.05fr_1fr]">
+        <div className="min-w-0">
+          <h1 className="cf-display">{page.title}</h1>
+          <p className="cf-lead mt-[22px]">{page.intro}</p>
+          <div className="mt-8 flex flex-wrap gap-3">
+            <Link href="/signup" className="cf-btn-primary">Sign up</Link>
+            <Link href="/pricing" className="cf-btn-secondary">Pricing</Link>
+          </div>
+        </div>
+        {hero.generated ? (
+          <GenImage src={hero.src} alt={hero.alt} width={hero.w} height={hero.h} sizes="(max-width: 1024px) 100vw, 480px" parallax priority />
+        ) : (
+          <OwnImage src={hero.src} alt={hero.alt} width={hero.w} height={hero.h} caption={hero.caption} sizes="(max-width: 1024px) 100vw, 480px" />
+        )}
       </div>
     </section>
     <main className="cf-section px-5">
       <JsonLd data={faqPage(faqs)} />
       <JsonLd data={breadcrumbList([{ name: page.metaTitle ?? page.title, path: `/software/${page.slug}` }])} />
 
-      <section className="cf-col mt-16">
-        <p className="cf-eyebrow mb-4">The problem</p>
-        <p className="cf-section-copy break-words">{page.problem}</p>
+      <section className="cf-wide">
+        <h2 className="cf-section-title">Why rent a GPU for this.</h2>
+        <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {page.why.map((point) => (
+            <div key={point} className="cf-card cfh-lift text-[15px] leading-6 break-words text-ink-2">
+              {point}
+            </div>
+          ))}
+        </div>
       </section>
 
-      <section className="cf-col mt-16">
-        <h2 className="cf-section-title">Why rent a GPU for this.</h2>
-        <ul className="mt-6 space-y-3">
-          {page.why.map((point) => (
-            <li key={point} className="flex gap-3 leading-7 break-words text-ink-2">
-              <span className="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-blue/70" />
-              <span>{point}</span>
-            </li>
-          ))}
-        </ul>
+      {/* How it works, as two animated diagrams instead of paragraphs. */}
+      <section className="cf-wide mt-16 grid gap-6 lg:grid-cols-2">
+        <div className="rounded-[24px] bg-tint-blue p-6">
+          <p className="mb-3 text-[13px] font-semibold tracking-[0.06em] text-ink-2 uppercase">Your laptop, our workstation</p>
+          <StreamDiagram />
+        </div>
+        <div className="rounded-[24px] bg-tint-mint p-6">
+          <p className="mb-3 text-[13px] font-semibold tracking-[0.06em] text-ink-2 uppercase">Files wait on your drive</p>
+          <FileSyncDiagram />
+        </div>
       </section>
 
       {page.sections?.length ? (
-        <div className="cf-col mt-16 space-y-14">
-          {page.sections.map((section) => (
-            <section key={section.h2}>
-              <h2 className="cf-section-title">{section.h2}</h2>
-              {section.body.map((para) => (
-                <p key={para} className="cf-section-copy mt-4 break-words">
-                  {para}
-                </p>
-              ))}
-            </section>
-          ))}
-        </div>
+        <section className="cf-col mt-16">
+          <h2 className="cf-section-title">The details.</h2>
+          <div className="mt-6 divide-y divide-rule rounded-[24px] border border-rule">
+            {page.sections.map((section) => (
+              <details key={section.h2} className="group px-6 py-5">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-medium text-ink">
+                  {section.h2}
+                  <span aria-hidden className="text-ink-3 transition group-open:rotate-45">+</span>
+                </summary>
+                {section.body.map((para) => (
+                  <p key={para} className="mt-3 text-[15px] leading-6 break-words text-ink-2">
+                    {para}
+                  </p>
+                ))}
+              </details>
+            ))}
+          </div>
+        </section>
       ) : null}
 
       <section className="cf-col mt-16">
-        <h2 className="cf-section-title">Licensing.</h2>
-        <div className="cf-note mt-6">
-          <p className="cf-section-copy break-words">{page.licence}</p>
-          <Link
-            href="/apps"
-            className="mt-3 inline-flex min-h-[44px] items-center text-sm text-blue underline underline-offset-4"
-          >
-            See everything that is preinstalled →
+        <div className="cf-note">
+          <p className="text-[15px] leading-6 break-words text-ink-2"><span className="font-semibold text-ink">Licensing. </span>{page.licence}</p>
+          <Link href="/apps" className="mt-2 inline-flex min-h-[44px] items-center text-sm text-blue underline underline-offset-4">
+            See what is preinstalled →
           </Link>
         </div>
       </section>
 
       <section className="cf-col mt-16">
         <h2 className="cf-section-title">Questions.</h2>
-        <div className="mt-8 space-y-7">
+        <div className="mt-6 divide-y divide-rule rounded-[24px] border border-rule">
           {faqs.map((faq) => (
-            <div key={faq.q}>
-              <h3 className="font-semibold text-ink">{faq.q}</h3>
-              <p className="mt-2 leading-7 break-words text-ink-2">{faq.a}</p>
-            </div>
+            <details key={faq.q} className="group px-6 py-5">
+              <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-medium text-ink">
+                {faq.q}
+                <span aria-hidden className="text-ink-3 transition group-open:rotate-45">+</span>
+              </summary>
+              <p className="mt-3 text-[15px] leading-6 break-words text-ink-2">{faq.a}</p>
+            </details>
           ))}
         </div>
       </section>
 
       <div className="cf-col mt-16 flex flex-wrap gap-3">
-        <Link href="/login" className="cf-btn-primary">
-          Get started
+        <Link href="/signup" className="cf-btn-primary">
+          Sign up
         </Link>
         <Link href="/how-to-use" className="cf-btn-secondary">
           How it works
-        </Link>
-        <Link href="/pricing" className="cf-btn-secondary">
-          Pricing
         </Link>
       </div>
 
