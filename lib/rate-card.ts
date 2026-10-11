@@ -119,6 +119,10 @@ export type RateCardPlan = {
   named_seats: number;
   overage_hourly_rate_rupees: number | null;
   file_retention_days: number | null;
+  /** Priced per customer (Big Firm, 11 Oct 2026). Its fee and rates come back
+   *  null; planTiers() leaves it out, quotePlans() returns it. Optional so an
+   *  older control plane does not break the build. */
+  quote_on_request?: boolean;
 };
 
 export type RateCard = {
@@ -428,9 +432,18 @@ export function adhocRateHourly(card: RateCard | null): string | null {
   return r ? `${r}/hr` : null;
 }
 
-/** Active plans, cheapest monthly fee first. Empty when none are published. */
+/** Active PRICED plans, cheapest monthly fee first. Empty when none are
+ *  published. Price-on-request tiers are left out, so every sentence built from
+ *  a fee or a rate stays true; quotePlans() has them. */
 export function planTiers(card: RateCard | null): RateCardPlan[] {
-  return [...(card?.plans ?? [])].sort((a, b) => a.monthly_fee_rupees - b.monthly_fee_rupees);
+  return (card?.plans ?? [])
+    .filter((p) => !p.quote_on_request && p.monthly_fee_rupees != null)
+    .sort((a, b) => a.monthly_fee_rupees - b.monthly_fee_rupees);
+}
+
+/** Tiers priced per customer, in the API's order. */
+export function quotePlans(card: RateCard | null): RateCardPlan[] {
+  return (card?.plans ?? []).filter((p) => p.quote_on_request);
 }
 
 /** "₹19,000" — the entry monthly plan, or null when no plans are published. */

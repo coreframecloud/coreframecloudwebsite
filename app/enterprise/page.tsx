@@ -6,6 +6,7 @@ import { NODE } from "@/lib/node-spec";
 import {
   getRateCard,
   planTiers,
+  quotePlans,
   entryPlanFee,
   storageRatePerTb,
   planStorageIsFree,
@@ -95,7 +96,9 @@ const IDEAS = [
 
 export default async function EnterprisePage() {
   const card = await getRateCard();
-  const plans = planTiers(card);
+  const priced = planTiers(card);
+  const plans = [...priced, ...quotePlans(card)];
+  const storageRateNumber = card?.storage_rate_rupees_per_tb_month ?? null;
   const adhocNumber =
     card?.gpus.find((g) => !g.quote_on_request && g.hourly_rate_rupees != null)
       ?.hourly_rate_rupees ?? null;
@@ -191,7 +194,7 @@ export default async function EnterprisePage() {
               </div>
             ) : (
               <div className={`mt-10 grid grid-cols-1 items-stretch gap-6 ${GRID_BY_COUNT[plans.length] ?? GRID_FALLBACK}`}>
-                {plans.map((raw) => <PlanCard key={raw.name} raw={raw} adhoc={adhocNumber} />)}
+                {plans.map((raw) => <PlanCard key={raw.name} raw={raw} adhoc={adhocNumber} storageRate={storageRateNumber} />)}
               </div>
             )}
             {storageRate ? (
@@ -238,7 +241,8 @@ export default async function EnterprisePage() {
   );
 }
 
-function PlanCard({ raw, adhoc }: { raw: RateCardPlan; adhoc: number | null }) {
+function PlanCard({ raw, adhoc, storageRate }: { raw: RateCardPlan; adhoc: number | null; storageRate: number | null }) {
+  const quote = Boolean(raw.quote_on_request);
   const presentation = PLAN_PRESENTATION[raw.name] ?? {};
   const storage = raw.included_storage_gb >= 1024 ? `${Math.round(raw.included_storage_gb / 1024)} TB` : `${raw.included_storage_gb} GB`;
   const extraRate = raw.overage_hourly_rate_rupees != null ? inr(raw.overage_hourly_rate_rupees) : null;
@@ -246,13 +250,18 @@ function PlanCard({ raw, adhoc }: { raw: RateCardPlan; adhoc: number | null }) {
   // (effective_included_hourly_rupees). The fee alone, without the storage it
   // includes, read as dearer than pay-as-you-go (owner, 11 Oct 2026).
   const effective = raw.effective_included_hourly_rupees != null ? Math.round(raw.effective_included_hourly_rupees) : null;
-  const storageFree = planStorageIsFree(raw);
+  const storageFree = !quote && planStorageIsFree(raw);
+  // The fee includes the storage at the published per-TB rate; the hourly
+  // figure above is the fee less that (owner, 11 Oct 2026).
+  const storageWorth =
+    storageRate != null && storageRate > 0 ? Math.round((raw.included_storage_gb / 1024) * storageRate) : null;
+  const savePct = effective != null && adhoc != null && adhoc > 0 ? Math.round((1 - effective / adhoc) * 100) : null;
   const note = presentation.dedicated ? "Reserved machine" : null;
   const rows = [
     { label: "Shared cloud storage", value: storage },
     { label: "Team logins", value: String(raw.named_seats) },
     { label: "Shared hours / month", value: `${Math.round(raw.included_gpu_hours)} hrs` },
-    { label: "Extra hours", value: extraRate ? `${extraRate} / hr` : "—" },
+    { label: "Extra hours", value: quote ? "On request" : extraRate ? `${extraRate} / hr` : "—" },
     { label: "Files kept", value: raw.file_retention_days ? `${raw.file_retention_days} days` : "—" },
     { label: "Minimum term", value: raw.commitment_months ? `${raw.commitment_months} months` : "1 month" },
   ];
@@ -270,14 +279,26 @@ function PlanCard({ raw, adhoc }: { raw: RateCardPlan; adhoc: number | null }) {
       <p className="font-heading text-[19px] font-medium">{raw.name}</p>
       <p className={`mt-1 min-h-[2.5rem] text-[14px] ${presentation.highlight ? "text-white/65" : "text-ink-2"}`}>{raw.tagline ?? ""}</p>
       <p className="mt-4 flex items-end gap-2">
-        <span className="font-heading text-[36px] leading-none font-medium">{inr(raw.monthly_fee_rupees)}</span>
-        <span className={presentation.highlight ? "text-white/60" : "text-ink-3"}>/ month</span>
+        {quote ? (
+          <span className="font-heading text-[30px] leading-none font-medium">Price on request</span>
+        ) : (
+          <>
+            <span className="font-heading text-[36px] leading-none font-medium">{inr(raw.monthly_fee_rupees)}</span>
+            <span className={presentation.highlight ? "text-white/60" : "text-ink-3"}>/ month</span>
+          </>
+        )}
       </p>
       {effective != null ? (
         <div className={`mt-4 rounded-2xl px-4 py-3 ${presentation.highlight ? "bg-white/10" : "bg-tint-blue"}`}>
-          <p className="font-heading text-[20px] leading-7 font-medium">≈ {inr(effective)} per hour</p>
+          <p className="font-heading text-[20px] leading-7 font-medium">
+            ≈ {inr(effective)} per hour{savePct != null && savePct > 0 ? ` · ${savePct}% less` : ""}
+          </p>
           <p className={`text-[13px] ${presentation.highlight ? "text-white/70" : "text-ink-2"}`}>
-            {storageFree ? `${storage} shared storage included, free` : `plus ${storage} storage`}
+            {storageFree
+              ? `${storage} shared storage included, free`
+              : storageWorth != null
+                ? `after the ${storage} storage included (worth ${inr(storageWorth)})`
+                : `${storage} storage included`}
             {adhoc != null ? ` · pay as you go is ${inr(adhoc)}/hr` : ""}
           </p>
         </div>
