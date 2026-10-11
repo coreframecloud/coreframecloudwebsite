@@ -3,6 +3,7 @@ import Link from "next/link";
 import { NODE } from "@/lib/node-spec";
 import { Reveal } from "@/components/home/redesign/reveal";
 import { FrameStrip } from "@/components/home/redesign/frame-strip";
+import { Drift } from "@/components/home/redesign/depth";
 import { PlanImage, ShellFurnished } from "@/components/visuals/studio-compare";
 import { walkthroughVideoObject } from "@/components/home/landing/walkthrough-section";
 
@@ -26,7 +27,7 @@ export function Bento({ youtubeId }: { youtubeId: string }) {
 
       <div className="mt-14 grid gap-5 lg:grid-cols-2">
         {/* Workstation */}
-        <Reveal className="cfh-card flex flex-col bg-tint-blue lg:row-span-2">
+        <Reveal tilt className="cfh-card flex flex-col bg-tint-blue lg:row-span-2">
           <h3 className="cfh-h3">The workstation</h3>
           <p className="mt-3 max-w-[30rem] text-[16px] leading-[1.6] text-ink-2">
             A full Windows 11 machine that&rsquo;s yours for the session, opened from the Coreframe
@@ -46,13 +47,13 @@ export function Bento({ youtubeId }: { youtubeId: string }) {
               <span className="font-semibold">{NODE.disk}</span> working disk
             </li>
           </ul>
-          <div className="mt-8 lg:mt-auto lg:pt-8">
+          <Drift className="mt-8 lg:mt-auto lg:pt-8">
             <FrameStrip />
-          </div>
+          </Drift>
         </Reveal>
 
         {/* Studio */}
-        <Reveal delay={0.05} className="cfh-card bg-tint-lilac">
+        <Reveal tilt delay={0.08} className="cfh-card bg-tint-lilac">
           <div className="grid gap-6 sm:grid-cols-[0.9fr_1.1fr] sm:items-center">
             <div>
               <h3 className="cfh-h3">Coreframe Studio</h3>
@@ -65,15 +66,19 @@ export function Bento({ youtubeId }: { youtubeId: string }) {
               </Link>
             </div>
             <div className="grid min-w-0 grid-cols-1 gap-3">
-              <PlanImage caption="Your plan (real drawing)" />
-              <ShellFurnished caption="Shell (rendered) · Furnished (generated)" />
+              <Drift amount={10}>
+                <PlanImage caption="Your plan (real drawing)" />
+              </Drift>
+              <Drift amount={16}>
+                <ShellFurnished caption="Shell (rendered) · Furnished (generated)" />
+              </Drift>
             </div>
           </div>
         </Reveal>
 
         <div className="grid min-w-0 gap-5 sm:grid-cols-2">
           {/* Studio plans */}
-          <Reveal delay={0.1} className="cfh-card bg-tint-mint">
+          <Reveal tilt delay={0.16} className="cfh-card bg-tint-mint">
             <h3 className="cfh-h3">For studios</h3>
             <ul className="mt-4 space-y-2 text-[15px] leading-[1.5] text-ink-2">
               <li className="font-semibold text-ink">Shared cloud storage for the whole team</li>
@@ -87,7 +92,7 @@ export function Bento({ youtubeId }: { youtubeId: string }) {
           </Reveal>
 
           {/* Billing */}
-          <Reveal delay={0.15} className="cfh-card flex flex-col bg-tint-sand">
+          <Reveal tilt delay={0.24} className="cfh-card flex flex-col bg-tint-sand">
             <h3 className="cfh-h3">By the minute</h3>
             <p className="mt-3 text-[15px] leading-[1.55] text-ink-2">
               No monthly plan and nothing to cancel. Every session shows what it cost.
@@ -106,18 +111,18 @@ export function Bento({ youtubeId }: { youtubeId: string }) {
         </div>
 
         {/* The walkthrough, full width */}
-        <Reveal className="cfh-card bg-night text-white lg:col-span-2">
+        <Reveal tilt delay={0.1} className="cfh-card bg-night text-white lg:col-span-2">
           <script
             type="application/ld+json"
             dangerouslySetInnerHTML={{ __html: JSON.stringify(walkthroughVideoObject(youtubeId)) }}
           />
           <div className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-center">
             <div>
-              <p className="text-[11.5px] font-semibold tracking-[0.12em] text-white/60 uppercase">
+              <p className="text-[11.5px] font-semibold tracking-[0.12em] text-white/80 uppercase">
                 Walkthrough
               </p>
               <h3 className="cfh-h3 mt-3">Watch a real session, start to finish</h3>
-              <p className="mt-3 text-[16px] leading-[1.6] text-white/70">
+              <p className="mt-3 text-[16px] leading-[1.6] text-white/85">
                 Sign in, launch a workstation, load a Blender scene, render it and pull the result
                 back down. Recorded on our RTX 5080 in Bengaluru, condensed to under five minutes.
               </p>

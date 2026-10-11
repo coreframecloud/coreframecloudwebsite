@@ -1,6 +1,6 @@
-import Image from "next/image";
 import Link from "next/link";
 import { Reveal } from "@/components/home/redesign/reveal";
+import { HeroBackdrop } from "@/components/home/redesign/depth";
 import { ChipTicker } from "@/components/home/redesign/chip-ticker";
 
 /**
@@ -14,13 +14,9 @@ import { ChipTicker } from "@/components/home/redesign/chip-ticker";
 export function RedesignHero({ introLabel }: { introLabel: string | null }) {
   return (
     <section className="relative isolate overflow-hidden bg-night text-white">
-      <Image
+      <HeroBackdrop
         src="/home/hero-interior.webp"
         alt="The Blender 4.1 splash interior, rendered in Cycles on a Coreframe RTX 5080"
-        fill
-        preload
-        sizes="100vw"
-        className="-z-20 object-cover object-center"
       />
       <div className="absolute inset-0 -z-10 bg-gradient-to-r from-[#0b0d11]/92 via-[#0b0d11]/60 to-[#0b0d11]/15" />
       <div className="absolute inset-x-0 bottom-0 -z-10 h-40 bg-gradient-to-t from-[#0b0d11]/70 to-transparent" />
@@ -35,7 +31,7 @@ export function RedesignHero({ introLabel }: { introLabel: string | null }) {
             <br />
             with an RTX&nbsp;5080 behind it.
           </h1>
-          <p className="mt-6 max-w-[34rem] text-[17px] leading-[1.6] text-white/80 sm:text-[18px]">
+          <p className="mt-6 max-w-[34rem] text-[17px] leading-[1.6] text-white/90 sm:text-[18px]">
             Rent a Windows workstation by the minute and open D5, Lumion, Blender or Twinmotion from
             the laptop you already own, streamed in 4K. Close it and billing stops.
           </p>
@@ -48,17 +44,17 @@ export function RedesignHero({ introLabel }: { introLabel: string | null }) {
             </Link>
           </div>
           {introLabel ? (
-            <p className="mt-6 text-[14px] text-white/70">
+            <p className="mt-6 text-[14px] text-white/85">
               First top-up: <span className="font-semibold text-white">{introLabel}</span>
             </p>
           ) : null}
         </Reveal>
 
         <Reveal delay={0.15} className="w-full">
-          <ChipTicker extra={introLabel ? [`First top-up: ${introLabel}`] : []} />
+          <ChipTicker />
         </Reveal>
       </div>
-      <p className="cfh-wrap pb-24 text-[11.5px] text-white/55 sm:pb-32">
+      <p className="cfh-wrap pb-24 text-[12px] text-white/80 sm:pb-32">
         Scene: Blender 4.1 splash, from the blender.org demo files. Rendered on our RTX&nbsp;5080.
       </p>
     </section>

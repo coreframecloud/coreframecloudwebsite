@@ -11,27 +11,21 @@ import { usePrefersReducedMotion } from "@/lib/use-reduced-motion";
  * is the same and it still advances, every 3.5 s, as a gentle crossfade of the
  * centre chip with no sliding (the owner expects motion, never a frozen list).
  *
- * The list and its wording are the owner's, verbatim (11 Oct 2026); each is
- * a fact the site already states. Price-bearing chips arrive as props from
+ * The list and its wording are the owner's, verbatim (11 Oct 2026, round 4). Price-bearing chips arrive as props from
  * the live rate card, never typed here.
  */
 type Chip = { text: string; highlight?: boolean };
 
 const FACTS: Chip[] = [
-  { text: "RTX 5080 · 16 GB" },
-  { text: "8 Core · 64 GB RAM" },
-  { text: "1 TB NVMe" },
-  { text: "4K at 60 fps" },
-  { text: "D5 · Lumion · Blender · Twinmotion" },
-  { text: "After Effects & Premiere" },
-  { text: "Billed by the minute" },
-  { text: "International cards accepted" },
-  { text: "No paperwork, just email and mobile" },
-  // The owner's highlight (11 Oct 2026): accent glass, a "Studios" tag, and
-  // the loop starts here and dwells on it twice as long.
-  { text: "Shared cloud storage for studio teams", highlight: true },
-  { text: "Save to your project drive" },
-  { text: "Studio: DXF to room image" },
+  { text: "RTX 5080" },
+  { text: "64 GB RAM" },
+  { text: "8-core dedicated workstation" },
+  { text: "Optimized BIOS for rendering" },
+  { text: "Cloud storage included" },
+  // The owner's highlight: accent glass and a "Studios" tag; the loop starts
+  // here and dwells twice as long.
+  { text: "Collaboration space for studio engineers", highlight: true },
+  { text: "Launch in 3 mins" },
 ];
 const HIGHLIGHT = FACTS.findIndex((f) => f.highlight);
 
@@ -63,8 +57,8 @@ export function ChipTicker({ extra = [] }: { extra?: string[] }) {
         let d = (i - cur + n) % n;
         if (d > n / 2) d -= n;
         const far = Math.abs(d);
-        const scale = reduce ? 1 : far === 0 ? 1 : far === 1 ? 0.88 : 0.76;
-        const opacity = reduce ? (far === 0 ? 1 : 0) : far === 0 ? 1 : far === 1 ? 0.5 : far === 2 ? 0.18 : 0;
+        const scale = reduce ? 1 : far === 0 ? 1 : far === 1 ? 0.9 : 0.82;
+        const opacity = reduce ? (far === 0 ? 1 : 0) : far === 0 ? 1 : far === 1 ? 0.78 : far === 2 ? 0.55 : 0;
         const offset = reduce ? 0 : d;
         return (
           <div
@@ -83,10 +77,10 @@ export function ChipTicker({ extra = [] }: { extra?: string[] }) {
             }}
           >
             <span
-              className={`cfh-chip whitespace-nowrap ${t.highlight ? "cfh-chip-hl" : far === 0 ? "bg-white/20 text-white" : ""}`}
+              className={`cfh-chip whitespace-nowrap ${t.highlight ? "cfh-chip-hl" : ""} ${far === 0 ? "cfh-chip-on" : ""}`}
             >
               {t.highlight ? (
-                <span className="mr-2 rounded bg-blue px-1.5 py-0.5 text-[10.5px] font-semibold tracking-[0.08em] text-white uppercase">
+                <span className="mr-2 rounded bg-white/25 px-1.5 py-0.5 text-[10.5px] font-semibold tracking-[0.08em] text-white uppercase">
                   Studios
                 </span>
               ) : null}

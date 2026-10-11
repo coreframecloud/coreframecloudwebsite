@@ -657,18 +657,27 @@ body {
   .cfh-link {
     @apply inline-flex items-center gap-1.5 text-[13px] font-semibold tracking-[0.04em] uppercase hover:underline;
   }
+  /* Hero ticker chips (owner, round 4: "too faint"). Inactive chips are dark
+     glass so white text holds contrast over the lightest part of the render;
+     the active one is near-opaque white with ink text, larger. */
   .cfh-chip {
-    @apply rounded-xl border border-white/15 bg-white/10 px-4 py-2.5 text-[13px] text-white/90 shadow-[0_8px_30px_rgba(0,0,0,0.25)] backdrop-blur-md;
+    @apply rounded-xl border border-white/30 bg-[rgba(11,13,17,0.62)] px-4 py-2.5 text-[15px] font-medium text-white shadow-[0_10px_30px_rgba(0,0,0,0.35)] backdrop-blur-md;
+  }
+  .cfh-chip-on {
+    @apply border-white bg-white/95 px-5 py-3 text-[17px] font-semibold text-ink;
   }
   .cfh-chip-hl {
-    @apply border-[#6f9bff]/60 bg-[#2f6be0]/35 text-white shadow-[0_8px_30px_rgba(47,107,224,0.35)];
+    @apply border-[#8fb3ff] bg-[rgba(47,107,224,0.85)] text-white shadow-[0_10px_30px_rgba(47,107,224,0.45)];
+  }
+  .cfh-chip-hl.cfh-chip-on {
+    @apply border-white bg-[#2f6be0] text-white;
   }
   .cfh-card {
     @apply relative min-w-0 overflow-hidden rounded-[24px] p-7 sm:p-9;
   }
   /* The white sheet that slides up over the hero, SiteGround-style. */
   .cfh-sheet {
-    @apply relative z-10 -mt-12 rounded-t-[40px] bg-paper sm:-mt-16 sm:rounded-t-[64px];
+    @apply relative z-10 -mt-12 rounded-t-[40px] bg-paper shadow-[0_-24px_60px_-12px_rgba(0,0,0,0.55)] sm:-mt-16 sm:rounded-t-[64px];
   }
   /* Horizontal card track whose first card lines up with .cfh-wrap content. */
   .cfh-track {

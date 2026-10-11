@@ -3,6 +3,7 @@ import Link from "next/link";
 import { NODE } from "@/lib/node-spec";
 import { hoursLabel, rupees, type IntroOffer } from "@/lib/rate-card";
 import { Reveal } from "@/components/home/redesign/reveal";
+import { ParallaxBg } from "@/components/home/redesign/depth";
 import { StreamDiagram } from "@/components/visuals/diagrams";
 
 /**
@@ -21,21 +22,15 @@ export function FactsBand() {
   ];
   return (
     <section className="relative isolate overflow-hidden bg-night py-24 text-white sm:py-28">
-      <Image
-        src="/home/blender-optix.webp"
-        alt=""
-        fill
-        sizes="100vw"
-        className="-z-20 object-cover opacity-[0.14]"
-      />
+      <ParallaxBg src="/home/blender-optix.webp" className="opacity-[0.16]" />
       <div className="absolute inset-0 -z-10 bg-gradient-to-b from-night via-night/60 to-night" />
       <div className="cfh-wrap grid gap-14 lg:grid-cols-[0.9fr_1.1fr]">
         <Reveal>
           <h2 className="cfh-h2">What&rsquo;s in the box</h2>
-          <p className="mt-4 max-w-[26rem] text-[17px] leading-[1.6] text-white/70">
+          <p className="mt-4 max-w-[26rem] text-[17px] leading-[1.6] text-white/85">
             The same machine for every customer, read off the hardware, not rounded up.
           </p>
-          <p className="mt-8 max-w-[28rem] text-[14px] leading-[1.6] text-white/60">
+          <p className="mt-8 max-w-[28rem] text-[14px] leading-[1.6] text-white/75">
             In Blender Cycles the RTX 5080 scores about 3× an RTX 4060: medians of 9,138 vs 3,182
             on Blender Open Data 4.5.0, read 20 Sep 2026 (opendata.blender.org). D5, Lumion and
             Enscape are different renderers and may not scale the same way.
@@ -45,7 +40,7 @@ export function FactsBand() {
           {facts.map((f, i) => (
             <Reveal key={f.k} delay={0.05 * i} className="bg-night/90 p-6">
               <p className="font-heading text-[19px] font-medium">{f.k}</p>
-              <p className="mt-1.5 text-[14px] text-white/60">{f.v}</p>
+              <p className="mt-1.5 text-[14px] text-white/75">{f.v}</p>
             </Reveal>
           ))}
         </div>
@@ -106,7 +101,7 @@ export function OfferBand({ adhocRate, intro }: { adhocRate?: string; intro: Int
               {rupees(intro.priceRupees)} = {hoursLabel(intro.hours)}
             </p>
           ) : null}
-          <ul className="mt-5 space-y-2 text-[16px] leading-[1.55] text-white/75">
+          <ul className="mt-5 space-y-2 text-[16px] leading-[1.55] text-white/85">
             {intro?.validityDays ? <li>Use it within {intro.validityDays} days.</li> : null}
             {adhocRate ? <li>After that, {adhocRate} an hour, GST included, charged per minute.</li> : null}
             <li>Sign up with your email and a WhatsApp code. No monthly plan.</li>

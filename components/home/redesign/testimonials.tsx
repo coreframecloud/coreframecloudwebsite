@@ -2,6 +2,8 @@
 
 import Image from "next/image";
 import { useRef } from "react";
+import { motion } from "framer-motion";
+import { usePrefersReducedMotion } from "@/lib/use-reduced-motion";
 import { TESTIMONIALS } from "@/lib/testimonials";
 import { Reveal } from "@/components/home/redesign/reveal";
 
@@ -20,6 +22,7 @@ const CYCLE = ["mint", "blue", "sand", "lilac"] as const;
  */
 export function Testimonials() {
   const track = useRef<HTMLDivElement>(null);
+  const reduce = usePrefersReducedMotion();
   if (TESTIMONIALS.length === 0) return null;
 
   const scroll = (dir: 1 | -1) => {
@@ -39,8 +42,12 @@ export function Testimonials() {
         className="cfh-track mt-12 flex snap-x snap-mandatory gap-5 overflow-x-auto scroll-smooth pb-4 [scrollbar-width:none]"
       >
         {TESTIMONIALS.map((t, i) => (
-          <figure
+          <motion.figure
             key={t.name + i}
+            initial={{ opacity: 0, x: reduce ? 0 : 80 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ duration: reduce ? 0.5 : 0.8, delay: reduce ? 0 : Math.min(i, 3) * 0.12, ease: [0.22, 1, 0.36, 1] }}
             className={`cfh-card grid w-[88vw] shrink-0 snap-start gap-8 sm:w-[min(980px,80vw)] ${
               t.photo ? "md:grid-cols-[1.2fr_0.8fr]" : ""
             } ${TINTS[t.tint ?? CYCLE[i % CYCLE.length]]}`}
@@ -67,7 +74,7 @@ export function Testimonials() {
                 className="aspect-square w-full rounded-2xl object-cover"
               />
             ) : null}
-          </figure>
+          </motion.figure>
         ))}
       </div>
       {TESTIMONIALS.length > 1 ? (
