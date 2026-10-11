@@ -58,8 +58,8 @@ export function Bento({ youtubeId }: { youtubeId: string }) {
             <div>
               <h3 className="cfh-h3">Coreframe Studio</h3>
               <p className="mt-3 text-[16px] leading-[1.6] text-ink-2">
-                Upload a DXF floor plan. We render the exact room shell, then generate a furnished
-                image from it.
+                Need mockups before finalising a style? Upload a DXF floor plan. Your plan and
+                dimensions stay exactly as drawn, and Studio generates the furnished room to compare.
               </p>
               <Link href="/floor-plan-to-render" className="cfh-link mt-5 text-ink">
                 Try Studio <span aria-hidden>↗</span>

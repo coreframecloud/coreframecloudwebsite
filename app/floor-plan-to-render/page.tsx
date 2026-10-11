@@ -43,7 +43,7 @@ import { NODE } from "@/lib/node-spec";
 export const metadata: Metadata = {
   title: "Floor Plan to Interior Render from a DXF",
   description:
-    "Coreframe Studio turns a 2D DXF floor plan into an interior render in the browser: it reads walls, doors and windows, you pick a room, export at 2K or 4K.",
+    "Try a style before you commit: Coreframe Studio turns a 2D DXF floor plan into furnished interior mockups in the browser, with your plan and dimensions kept exactly as drawn. Export at 2K or 4K.",
   keywords: [
     "floor plan to 3d render",
     "DXF to interior render",
@@ -67,7 +67,7 @@ const steps = [
 const faqs = [
   {
     q: "What file does Coreframe Studio need?",
-    a: "A DXF. If you work in DWG, Revit or ArchiCAD, exporting a DXF is a Save As. There's a three-click guide inside Studio, and a demo 3BHK plan you can download and try if you don't have a drawing to hand.",
+    a: "A DXF. If you work in DWG, Revit or ArchiCAD, exporting a DXF is a Save As. There's a three-click guide inside Studio.",
   },
   {
     q: "Does it invent rooms or windows that are not on my plan?",
@@ -112,19 +112,17 @@ export default function Page() {
           <div className="cf-wide grid items-center gap-10 lg:grid-cols-[1fr_1fr]">
             <div className="min-w-0">
               <p className="cf-eyebrow mb-5">Coreframe Studio</p>
-              <h1 className="cf-display">Turn a floor plan into the room.</h1>
-              <p className="cf-lead mt-6">Upload a DXF. Get the room back as an image, ready for your client.</p>
-              {/* Studio is in private testing: say so plainly, and make the
-                  guide the real action until it opens. */}
-              <p className="mt-6 inline-flex items-center gap-2 rounded-full bg-white/10 px-3.5 py-1.5 text-[13px]">
-                <span className="h-2 w-2 rounded-full bg-[#ffd166]" /> Opening soon. Private testing for now.
+              <h1 className="cf-display">Try a style before you commit.</h1>
+              <p className="cf-lead mt-6">
+                Need mockups before finalising a style? Upload your DXF. Your plan and dimensions stay
+                exactly as drawn.
               </p>
               <div className="mt-7 flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
-                <a href="/studio/guide.pdf" target="_blank" rel="noopener" className="cf-btn-primary w-full sm:w-auto">
-                  Read the guide
+                <a href={STUDIO} className="cf-btn-primary w-full sm:w-auto">
+                  Sign up and try Studio
                 </a>
-                <a href="https://studio.coreframecloud.com/studio/demo.dxf" className="cf-btn-secondary w-full sm:w-auto">
-                  Get the demo plan
+                <a href="/studio/guide.pdf" target="_blank" rel="noopener" className="cf-btn-secondary w-full sm:w-auto">
+                  Read the guide
                 </a>
               </div>
             </div>
@@ -204,7 +202,7 @@ export default function Page() {
                 </Link>
                 .
               </p>
-              <a href={STUDIO} className="cfh-pill-light mt-7">Open Studio</a>
+              <a href={STUDIO} className="cfh-pill-light mt-7">Sign up and try Studio</a>
             </div>
           </div>
         </section>
