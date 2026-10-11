@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { NODE } from "@/lib/node-spec";
 import { Reveal } from "@/components/home/redesign/reveal";
+import { FrameStrip } from "@/components/home/redesign/frame-strip";
 import { walkthroughVideoObject } from "@/components/home/landing/walkthrough-section";
 
 /**
@@ -44,20 +45,8 @@ export function Bento({ youtubeId }: { youtubeId: string }) {
               <span className="font-semibold">{NODE.disk}</span> working disk
             </li>
           </ul>
-          <div className="mt-7">
-            <Link href="/signup" className="cfh-pill-dark">
-              Sign up
-            </Link>
-          </div>
-          <div className="relative mt-9 -mr-7 -mb-7 overflow-hidden rounded-tl-2xl border border-rule shadow-[0_20px_60px_rgba(16,17,19,0.18)] sm:-mr-9 sm:-mb-9 lg:mt-auto">
-            <Image
-              src="/home/app-workstation.webp"
-              alt="The Coreframe app with an RTX 5080 workstation ready to launch"
-              width={923}
-              height={597}
-              sizes="(max-width: 1024px) 100vw, 560px"
-              className="h-auto w-full"
-            />
+          <div className="mt-8 lg:mt-auto lg:pt-8">
+            <FrameStrip />
           </div>
         </Reveal>
 
@@ -101,13 +90,13 @@ export function Bento({ youtubeId }: { youtubeId: string }) {
           </div>
         </Reveal>
 
-        <div className="grid gap-5 sm:grid-cols-2">
+        <div className="grid min-w-0 gap-5 sm:grid-cols-2">
           {/* Studio plans */}
           <Reveal delay={0.1} className="cfh-card bg-tint-mint">
             <h3 className="cfh-h3">For studios</h3>
             <ul className="mt-4 space-y-2 text-[15px] leading-[1.5] text-ink-2">
+              <li className="font-semibold text-ink">Shared cloud storage for the whole team</li>
               <li>One shared pool of hours</li>
-              <li>A shared studio drive</li>
               <li>A login for each person</li>
               <li>One bill, one admin</li>
             </ul>

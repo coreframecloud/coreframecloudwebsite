@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Reveal } from "@/components/home/redesign/reveal";
+import { ChipTicker } from "@/components/home/redesign/chip-ticker";
 
 /**
  * Full-bleed hero on a real Cycles render from our own machine (the interior
@@ -15,16 +16,16 @@ export function RedesignHero({ introLabel }: { introLabel: string | null }) {
     <section className="relative isolate overflow-hidden bg-night text-white">
       <Image
         src="/home/hero-interior.webp"
-        alt="An interior rendered in Blender Cycles on a Coreframe RTX 5080 workstation"
+        alt="The Blender 4.1 splash interior, rendered in Cycles on a Coreframe RTX 5080"
         fill
         preload
         sizes="100vw"
         className="-z-20 object-cover object-center"
       />
-      <div className="absolute inset-0 -z-10 bg-gradient-to-r from-[#0b0d11]/95 via-[#0b0d11]/75 to-[#0b0d11]/35" />
+      <div className="absolute inset-0 -z-10 bg-gradient-to-r from-[#0b0d11]/92 via-[#0b0d11]/60 to-[#0b0d11]/15" />
       <div className="absolute inset-x-0 bottom-0 -z-10 h-40 bg-gradient-to-t from-[#0b0d11]/70 to-transparent" />
 
-      <div className="cfh-wrap grid items-center gap-10 pt-20 pb-32 sm:pt-28 sm:pb-44 lg:grid-cols-[1.15fr_0.85fr]">
+      <div className="cfh-wrap grid items-center gap-10 pt-32 pb-10 sm:pt-40 sm:pb-14 lg:grid-cols-[1.15fr_0.85fr]">
         <Reveal>
           <p className="mb-6 inline-block rounded-md bg-white/12 px-3 py-1.5 text-[11.5px] font-semibold tracking-[0.12em] uppercase">
             GPU workstations · Bengaluru
@@ -53,13 +54,13 @@ export function RedesignHero({ introLabel }: { introLabel: string | null }) {
           ) : null}
         </Reveal>
 
-        <Reveal delay={0.15} className="flex flex-wrap gap-3 lg:flex-col lg:items-end">
-          <span className="cfh-chip">RTX 5080 · 16 GB</span>
-          <span className="cfh-chip lg:mr-10">D5 · Lumion · Blender · Twinmotion · After Effects</span>
-          <span className="cfh-chip">Billed by the minute, GST included</span>
-          <span className="cfh-chip lg:mr-6">Streamed in 4K at 60 fps</span>
+        <Reveal delay={0.15} className="w-full">
+          <ChipTicker extra={introLabel ? [`First top-up: ${introLabel}`] : []} />
         </Reveal>
       </div>
+      <p className="cfh-wrap pb-24 text-[11.5px] text-white/55 sm:pb-32">
+        Scene: Blender 4.1 splash, from the blender.org demo files. Rendered on our RTX&nbsp;5080.
+      </p>
     </section>
   );
 }
