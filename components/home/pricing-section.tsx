@@ -1,6 +1,5 @@
 "use client";
 
-import { InPageLink } from "@/components/ui/in-page-link";
 import { NODE } from "@/lib/node-spec";
 import { trackEvent } from "@/lib/analytics";
 import Link from "next/link";
@@ -111,20 +110,15 @@ export function PricingSection({
                 {example ? `, so a ${example.minutes}-minute session costs ${example.cost}` : ""}
               </p>
             ) : null}
-            <p className="mt-4 text-sm leading-6 text-ink-2">
-              Start a machine whenever you like, with no contract. {billingNote} It
-              suits one-off renders, or trying us out before you commit to a plan.
-            </p>
+            <p className="mt-4 text-sm leading-6 text-ink-2">No contract. {billingNote}</p>
 
             <ul className="mt-6 space-y-2 text-sm text-ink-2">
               {intro && (
                 <li className="flex gap-2"><span className="text-blue">✓</span> <span><b className="text-ink">First top-up: {rupees(intro.priceRupees)} = {hoursLabel(intro.hours)}</b>{intro.validityDays ? ` · use within ${intro.validityDays} days` : ""}</span></li>
               )}
-              <li className="flex gap-2"><span className="text-blue">✓</span> No commitment, cancel anytime</li>
-              <li className="flex gap-2"><span className="text-blue">✓</span> Email + mobile sign-up, no paperwork · international cards accepted</li>
-              <li className="flex gap-2"><span className="text-blue">✓</span> {NODE.os}, streamed at {NODE.stream} in the Connect app</li>
-              <li className="flex gap-2"><span className="text-blue">✓</span> {NODE.gpu} · {NODE.vram}</li>
-              <li className="flex gap-2"><span className="text-blue">✓</span> <span className="text-ink-3">{storage.paidGb} GB persistent storage included · kept between sessions · session scratch cleared at session end</span></li>
+              <li className="flex gap-2"><span className="text-blue">✓</span> Email and mobile sign-up, no paperwork</li>
+              <li className="flex gap-2"><span className="text-blue">✓</span> {NODE.gpu} · {NODE.vram} · {NODE.stream}</li>
+              <li className="flex gap-2"><span className="text-blue">✓</span> {storage.paidGb} GB of your own storage, kept between sessions</li>
             </ul>
 
             <div className="mt-8">
@@ -133,7 +127,7 @@ export function PricingSection({
                 className="cf-btn-primary w-full text-center block"
                 onClick={() => trackEvent("signup_click", { location: "pricing_adhoc" })}
               >
-                Get started
+                Sign up
               </Link>
             </div>
           </div>
@@ -150,17 +144,14 @@ export function PricingSection({
                   — the API refuses to publish those, and this refuses to assert
                   it. When it does not hold, the plans still have a real pitch;
                   it just is not "cheaper per hour". */}
-              {commitmentCheaper && adhocRate
-                ? `Committing is cheaper per hour. Every tier bills below the ${adhocRate} ad-hoc rate, for included hours and extra ones. `
-                : ""}
-              Included hours, named seats and NAS storage come with the monthly fee.
-              {storageRate ? ` Extra persistent storage is ${storageRate}/TB/month. There's no egress charge, so pulling your own files back costs nothing.` : ""}
+              {commitmentCheaper && adhocRate ? `Cheaper per hour than ${adhocRate} pay-as-you-go. ` : ""}
+              For studios: shared hours, shared cloud storage and a login for each person.
             </p>
 
             <ul className="mt-6 space-y-2 text-sm text-ink-2">
-              <li className="flex gap-2"><span className="text-blue">✓</span> Persistent NAS storage (2 to 10 TB included)</li>
-              <li className="flex gap-2"><span className="text-blue">✓</span> 5 to 25 named render seats</li>
-              <li className="flex gap-2"><span className="text-blue">✓</span> Included GPU-hours each month</li>
+              <li className="flex gap-2"><span className="text-blue">✓</span> 2 to 10 TB of shared cloud storage</li>
+              <li className="flex gap-2"><span className="text-blue">✓</span> 5 to 25 team logins</li>
+              <li className="flex gap-2"><span className="text-blue">✓</span> Hours included every month</li>
               {entryPlanFee ? <li className="flex gap-2"><span className="text-blue">✓</span> Plans from {entryPlanFee}/month</li> : null}
             </ul>
 
@@ -170,7 +161,7 @@ export function PricingSection({
                 className="cf-btn-primary w-full text-center block"
                 onClick={() => trackEvent("enterprise_click", { location: "pricing_committed" })}
               >
-                See committed plans →
+                See studio plans →
               </Link>
             </div>
           </div>
@@ -180,12 +171,10 @@ export function PricingSection({
         <div className="mt-6 rounded-[24px] border border-rule bg-paper-2 px-6 py-6 sm:flex sm:items-center sm:justify-between sm:gap-6">
           <div>
             <div className="cf-eyebrow">
-              Add-on · Persistent NAS storage
+              Add-on · More storage
             </div>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-ink-2">
-              If your project files need to outlive the session, you can add persistent NAS
-              storage to any account, ad-hoc or committed. We keep your data for as long as the
-              storage subscription is active.
+              Add storage to any account. Your files stay while the subscription is active.
             </p>
           </div>
           <div className="mt-4 shrink-0 sm:mt-0 sm:text-right">
@@ -194,25 +183,21 @@ export function PricingSection({
           </div>
         </div>
 
-        {/* BYOL note */}
-        <div className="mt-6 rounded-[20px] border border-rule bg-paper-2 px-6 py-5">
-          <p className="text-sm leading-6 text-ink-2">
-            Software licences are BYOL: you bring your own. D5 Render, Lumion, Enscape, SolidWorks,
-            3ds Max and similar apps all work on our machines. Named-user licences work too. Install
-            yours on the workstation and it activates against the seat you already have. All prices
-            include GST, so the rate you see is what you pay. The 18% GST is inside every rate, and
-            business customers get a full tax invoice showing the split.
-          </p>
+        {/* Licences and GST, as chips */}
+        <div className="mt-6 flex flex-wrap gap-2.5 text-[13.5px]">
+          {["GST included in every price", "Tax invoice with the GST split", "D5, Blender, Twinmotion installed", "Your own licence for paid apps like Lumion"].map((c) => (
+            <span key={c} className="rounded-full bg-tint-blue px-3.5 py-2 text-ink-2">{c}</span>
+          ))}
         </div>
 
         <div className="mt-8 flex flex-wrap gap-4">
-          <InPageLink
-            targetId="reserve-access"
+          <Link
+            href="/signup"
             className="cf-btn-primary"
-            onClick={() => trackEvent("reserve_click", { location: "pricing_section_bottom" })}
+            onClick={() => trackEvent("signup_click", { location: "pricing_section_bottom" })}
           >
-            Reserve access
-          </InPageLink>
+            Sign up
+          </Link>
           <Link href="/enterprise" className="cf-btn-secondary" onClick={() => trackEvent("enterprise_click", { location: "pricing_bottom" })}>
             Compare plans
           </Link>

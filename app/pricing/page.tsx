@@ -3,6 +3,9 @@ import { JsonLd } from "@/components/seo/json-ld";
 import { breadcrumbList } from "@/lib/seo";
 import { PricingSection } from "@/components/home/pricing-section";
 import { ExplainerFaq } from "@/components/home/explainer-faq";
+import { BillingMeter } from "@/components/visuals/billing-meter";
+import { RateBars } from "@/components/visuals/diagrams";
+import { GenImage } from "@/components/visuals/media";
 import {
   getRateCard,
   formatHourly,
@@ -14,6 +17,9 @@ import {
   perMinuteRate,
   sessionCostExample,
   commitmentIsCheaper,
+  adhocRateValue,
+  planTiers,
+  rupees,
 } from "@/lib/rate-card";
 import { storageTerms } from "@/lib/storage-terms";
 
@@ -46,6 +52,19 @@ export default async function PricingPage() {
   const adhocRate = entry ? formatHourly(entry).replace("/hr", "") : undefined;
   const intro = getIntroOffer(rateCard);
   const storage = storageTerms(rateCard);
+  // Rate bars: pay-as-you-go against the lowest plan rate, both from the card.
+  const adhocNum = adhocRateValue(rateCard);
+  const planRates = planTiers(rateCard)
+    .map((p) => p.overage_hourly_rate_rupees)
+    .filter((n): n is number => n != null);
+  const bestPlan = planRates.length ? Math.min(...planRates) : null;
+  const rateBars =
+    adhocNum && bestPlan
+      ? [
+          { label: "Pay as you go, per hour", value: rupees(adhocNum), ratio: 1 },
+          { label: "Studio plans, extra hours from", value: rupees(bestPlan), ratio: bestPlan / adhocNum },
+        ]
+      : [];
 
   return (
     <main className="text-ink">
@@ -58,11 +77,21 @@ export default async function PricingPage() {
               a max-w-7xl container, which is why it broke "16 GB" from "GDDR7"
               mid-line — a measure that long has no good break points. */}
           <p className="cf-lead mt-[22px]">
-            Pay by the minute if you need a machine for an afternoon, or take
-            a monthly plan if you&rsquo;re on it every week. Either way
-            it&rsquo;s the same hardware in the same Bengaluru rack. Every
-            price here includes GST and comes with a tax invoice.
+            By the minute, or a monthly plan. Same machines. GST included.
           </p>
+        </div>
+      </section>
+
+      {/* The billing idea as motion, not a paragraph: a session meter at the
+          live rate, the two rates side by side, and a generated scene. */}
+      <section className="cf-section px-5">
+        <div className="cf-wide grid items-center gap-8 lg:grid-cols-2">
+          <BillingMeter ratePerHour={adhocRateValue(rateCard)} />
+          <div>
+            <h2 className="cf-section-title">Pay for the minutes you use.</h2>
+            <p className="cf-section-copy mt-3">Close the window and billing stops.</p>
+            {rateBars.length ? <div className="mt-7"><RateBars rows={rateBars} /></div> : null}
+          </div>
         </div>
       </section>
 
@@ -80,6 +109,19 @@ export default async function PricingPage() {
       />
 
       <div className="cf-rule" />
+
+      <section className="cf-section px-5 pb-0">
+        <div className="cf-wide">
+          <GenImage
+            src="/visuals/gen-designer-cafe-laptop-16x9.webp"
+            alt="An interior designer working on a laptop in a Bengaluru cafe"
+            width={1600}
+            height={914}
+            sizes="(max-width: 960px) 100vw, 960px"
+            parallax
+          />
+        </div>
+      </section>
 
       <ExplainerFaq storage={storage} intro={intro} adhocRate={adhocRate} />
     </main>
