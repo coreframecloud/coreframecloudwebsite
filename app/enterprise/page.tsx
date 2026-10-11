@@ -77,12 +77,6 @@ function inr(n: number): string {
   return `₹${Math.round(n).toLocaleString("en-IN")}`;
 }
 
-/** "₹20/hr under ad-hoc", or null when either figure is missing. */
-function savingVsAdhoc(plan: RateCardPlan, adhoc: number | null): string | null {
-  if (adhoc == null || plan.overage_hourly_rate_rupees == null) return null;
-  const delta = Math.round(adhoc - plan.overage_hourly_rate_rupees);
-  return delta > 0 ? `₹${delta}/hr under ad-hoc` : null;
-}
 
 
 /**
@@ -247,7 +241,11 @@ function PlanCard({ raw, adhoc }: { raw: RateCardPlan; adhoc: number | null }) {
   const presentation = PLAN_PRESENTATION[raw.name] ?? {};
   const storage = raw.included_storage_gb >= 1024 ? `${Math.round(raw.included_storage_gb / 1024)} TB` : `${raw.included_storage_gb} GB`;
   const extraRate = raw.overage_hourly_rate_rupees != null ? inr(raw.overage_hourly_rate_rupees) : null;
-  const note = savingVsAdhoc(raw, adhoc) ?? (presentation.dedicated ? "Reserved machine" : null);
+  // What an hour inside the allowance actually costs, from the rate card
+  // (effective_included_hourly_rupees). The fee alone, without the storage it
+  // includes, read as dearer than pay-as-you-go (owner, 11 Oct 2026).
+  const effective = raw.effective_included_hourly_rupees != null ? Math.round(raw.effective_included_hourly_rupees) : null;
+  const note = presentation.dedicated ? "Reserved machine" : null;
   const rows = [
     { label: "Shared cloud storage", value: storage },
     { label: "Team logins", value: String(raw.named_seats) },
@@ -273,6 +271,14 @@ function PlanCard({ raw, adhoc }: { raw: RateCardPlan; adhoc: number | null }) {
         <span className="font-heading text-[36px] leading-none font-medium">{inr(raw.monthly_fee_rupees)}</span>
         <span className={presentation.highlight ? "text-white/60" : "text-ink-3"}>/ month</span>
       </p>
+      {effective != null ? (
+        <div className={`mt-4 rounded-2xl px-4 py-3 ${presentation.highlight ? "bg-white/10" : "bg-tint-blue"}`}>
+          <p className="font-heading text-[20px] leading-7 font-medium">≈ {inr(effective)} per hour</p>
+          <p className={`text-[13px] ${presentation.highlight ? "text-white/70" : "text-ink-2"}`}>
+            plus {storage} storage{adhoc != null ? ` · pay as you go is ${inr(adhoc)}/hr` : ""}
+          </p>
+        </div>
+      ) : null}
       <p className="mt-2 min-h-[1.5rem]">
         {note ? (
           <span className={`rounded-full px-2.5 py-1 text-[11.5px] font-semibold ${presentation.highlight ? "bg-white/15" : "bg-tint-blue text-blue-ink"}`}>{note}</span>

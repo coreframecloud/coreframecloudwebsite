@@ -121,10 +121,10 @@ export default function Page() {
               </p>
               <div className="mt-7 flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
                 <a href="/studio/guide.pdf" target="_blank" rel="noopener" className="cf-btn-primary w-full sm:w-auto">
-                  Read the 5-page guide
+                  Read the guide
                 </a>
                 <a href="https://studio.coreframecloud.com/studio/demo.dxf" className="cf-btn-secondary w-full sm:w-auto">
-                  Download the demo plan
+                  Get the demo plan
                 </a>
               </div>
             </div>

@@ -65,7 +65,10 @@ export function PricingSection({
   example,
   commitmentCheaper = false,
   intro = null,
+  effectiveFrom = null,
 }: {
+  /** Lowest effective rate per included plan hour, from the rate card. */
+  effectiveFrom?: { rupees: number; planName: string } | null;
   /** The first-top-up offer from the rate card, or null to say nothing. */
   intro?: IntroOffer | null;
   adhocRate?: string;
@@ -137,7 +140,17 @@ export function PricingSection({
             <div className="cf-eyebrow">
               Committed monthly plans
             </div>
-            <Price value={bestOverage} unit="/ GPU-hour" />
+            {effectiveFrom ? (
+              <Price value={`≈ ₹${Math.round(effectiveFrom.rupees).toLocaleString("en-IN")}`} unit="/ hour" />
+            ) : (
+              <Price value={bestOverage} unit="/ GPU-hour" />
+            )}
+            {effectiveFrom ? (
+              <p className="mt-2 text-sm text-blue">
+                per included hour on {effectiveFrom.planName}, plus shared storage
+                {adhocRate ? ` · pay as you go is ${adhocRate}/hr` : ""}
+              </p>
+            ) : null}
             <p className="mt-4 text-sm leading-6 text-ink-2">
               {/* The claim is conditional on it being TRUE, not on both numbers
                   existing. Cut the ad-hoc rate far enough and every tier inverts

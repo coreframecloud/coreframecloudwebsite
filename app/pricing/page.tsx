@@ -18,7 +18,7 @@ import {
   sessionCostExample,
   commitmentIsCheaper,
   adhocRateValue,
-  planTiers,
+  lowestPublishedHourly,
   rupees,
 } from "@/lib/rate-card";
 import { storageTerms } from "@/lib/storage-terms";
@@ -54,15 +54,18 @@ export default async function PricingPage() {
   const storage = storageTerms(rateCard);
   // Rate bars: pay-as-you-go against the lowest plan rate, both from the card.
   const adhocNum = adhocRateValue(rateCard);
-  const planRates = planTiers(rateCard)
-    .map((p) => p.overage_hourly_rate_rupees)
-    .filter((n): n is number => n != null);
-  const bestPlan = planRates.length ? Math.min(...planRates) : null;
+  // Plans compared on what an included hour actually costs (the rate card's
+  // effective_included_hourly_rupees), not the extra-hour rate.
+  const effectiveFrom = lowestPublishedHourly(rateCard);
   const rateBars =
-    adhocNum && bestPlan
+    adhocNum && effectiveFrom
       ? [
           { label: "Pay as you go, per hour", value: rupees(adhocNum), ratio: 1 },
-          { label: "Studio plans, extra hours from", value: rupees(bestPlan), ratio: bestPlan / adhocNum },
+          {
+            label: `Studio plans, per included hour from (${effectiveFrom.planName})`,
+            value: `≈ ${rupees(effectiveFrom.rupees)}`,
+            ratio: effectiveFrom.rupees / adhocNum,
+          },
         ]
       : [];
 
@@ -106,6 +109,7 @@ export default async function PricingPage() {
         example={sessionCostExample(rateCard)}
         commitmentCheaper={commitmentIsCheaper(rateCard)}
         intro={intro}
+        effectiveFrom={effectiveFrom}
       />
 
       <div className="cf-rule" />
