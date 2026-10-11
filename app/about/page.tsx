@@ -1,7 +1,10 @@
+import { GenImage } from "@/components/visuals/media";
+import { StreamDiagram } from "@/components/visuals/diagrams";
 import type { Metadata } from "next";
 import { JsonLd } from "@/components/seo/json-ld";
 import { breadcrumbList, OG_IMAGE } from "@/lib/seo";
 import Link from "next/link";
+import { Fold } from "@/components/visuals/fold";
 import { BackgroundGlow } from "@/components/home/background-glow";
 import { COMPANY_ADDRESS_FULL, COMPANY_VISITING_ADDRESS_LINE } from "@/lib/company";
 import { NODE, WORKSTATION_REPLACEMENT_COST } from "@/lib/node-spec";
@@ -203,22 +206,24 @@ export default async function AboutPage() {
       />
 
       <section className="cf-section cf-pagehero px-5">
-        <div className="cf-col">
+        <div className="cf-wide grid items-center gap-10 lg:grid-cols-[1.05fr_1fr]">
+          <div className="min-w-0">
               <div className="cf-eyebrow">About</div>
               <h1 className="cf-display mt-3">What is Coreframe Cloud?</h1>
           
-              <p className="cf-lead mt-8">
-                Coreframe Cloud is a cloud GPU workstation service run by Coreframe Compute Labs
-                Private Limited, a company registered in Bengaluru, Karnataka, India. We rent full{" "}
-                {NODE.os} desktops on NVIDIA {NODE.gpu} graphics cards, streamed to the laptop you
-                already own and billed by the minute. Architects, interior designers, visualisation
-                studios, 3D artists and simulation engineers use it for the hours they actually need a
-                GPU, so they don&rsquo;t have to buy a machine that sits idle most of the month.
+              <p className="cf-lead mt-6">
+                Windows workstations with an {NODE.gpu}, streamed to the laptop you own and billed by
+                the minute. Run by Coreframe Compute Labs Private Limited, Bengaluru.
               </p>
+        </div>
+          <GenImage src="/visuals/gen-team-review-16x9.webp" alt="A small design studio team reviewing an interior image together" width={1600} height={914} sizes="(max-width: 1024px) 100vw, 480px" parallax priority />
         </div>
       </section>
       <main className="relative cf-section px-5">
         <div className="cf-col">
+          <div className="rounded-[24px] bg-tint-blue p-6">
+            <StreamDiagram />
+          </div>
           <p className="cf-section-copy mt-5">
             You sign in, a {NODE.os} machine starts in about two minutes, and you use it like the
             computer under your desk: open the CAD file, set up the scene, render, save. Your
@@ -263,8 +268,7 @@ export default async function AboutPage() {
             </p>
           </section>
 
-          <section className="mt-14">
-            <h2 className="cf-section-title">The four problems this solves.</h2>
+          <Fold title="The four problems this solves.">
 
             <h3 className="mt-8 text-lg leading-6 font-semibold text-ink">
               1. Getting at the hardware.
@@ -317,10 +321,9 @@ export default async function AboutPage() {
                 ? ` Storage beyond what your plan includes costs ${perTb} per TB per month, billed on the space you reserve.`
                 : ""}
             </p>
-          </section>
+          </Fold>
 
-          <section className="mt-14">
-            <h2 className="cf-section-title">What it is not.</h2>
+          <Fold title="What it is not.">
             <ul className="mt-6 space-y-4">
               <li className="flex gap-3 leading-7 text-ink-2">
                 <span className="mt-3 h-1.5 w-1.5 shrink-0 rounded-full bg-blue" />
@@ -345,10 +348,9 @@ export default async function AboutPage() {
                 </span>
               </li>
             </ul>
-          </section>
+          </Fold>
 
-          <section className="mt-14">
-            <h2 className="cf-section-title">Companies we are not.</h2>
+          <Fold title="Companies we are not.">
             <p className="cf-section-copy mt-4">
               A few unrelated businesses use a similar name. Coreframe Cloud is Coreframe Compute
               Labs Private Limited, CIN U63119KA2026PTC220789, Bengaluru, and it has no connection
@@ -364,7 +366,7 @@ export default async function AboutPage() {
                 </li>
               ))}
             </ul>
-          </section>
+          </Fold>
 
           {hourly ? (
             <section className="mt-14">

@@ -1,3 +1,5 @@
+import { FileSyncDiagram } from "@/components/visuals/diagrams";
+import { OwnImage } from "@/components/visuals/media";
 import type { Metadata } from "next";
 import { JsonLd } from "@/components/seo/json-ld";
 import { breadcrumbList } from "@/lib/seo";
@@ -122,18 +124,21 @@ export default function AppsPage() {
       />
 
       <section className="cf-section px-5 cf-pagehero">
-        <div className="cf-col">
+        <div className="cf-wide grid items-center gap-10 lg:grid-cols-[1.05fr_1fr]">
+          <div className="min-w-0">
           <p className="cf-eyebrow mb-5">Software</p>
           <h1 className="cf-display">What&apos;s already on the machine.</h1>
           <p className="cf-lead mt-6">
-            Every Coreframe workstation is a full {NODE.os} desktop with a{" "}
-            {NODE.gpu} in it. A standard set of tools is installed and ready the
-            moment your desktop appears, and you sign in to each one with your
-            own licence. If something free is missing, ask and we&apos;ll add it to
-            the image. Adobe Creative Cloud is already installed, so you just sign in
-            with your Adobe account. Other licensed applications we set up with you
-            once, because the vendor needs your account to download them.
+            A full {NODE.os} desktop with the tools already installed. Sign in with your own licences.
           </p>
+        </div>
+          <OwnImage src="/blog/blender-interior-render-on-cloud-rtx-5080/file-on-workstation.webp" alt="Blender ready on a Coreframe workstation" width={923} height={597} caption="Blender, D5 and Twinmotion come installed." sizes="(max-width: 1024px) 100vw, 480px" />
+        </div>
+      </section>
+      <section className="cf-section px-5 pb-0">
+        <div className="cf-wide grid items-center gap-8 rounded-[28px] bg-tint-blue p-6 sm:p-10 lg:grid-cols-[0.8fr_1.2fr]">
+          <h2 className="cf-section-title">Your files and the apps, on one machine.</h2>
+          <div className="min-w-0"><FileSyncDiagram /></div>
         </div>
       </section>
 

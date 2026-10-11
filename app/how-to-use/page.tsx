@@ -1,8 +1,11 @@
+import { FileSyncDiagram } from "@/components/visuals/diagrams";
+import { OwnImage } from "@/components/visuals/media";
 import type { Metadata } from "next";
 import { JsonLd } from "@/components/seo/json-ld";
 import { breadcrumbList } from "@/lib/seo";
 import Image from "next/image";
 import Link from "next/link";
+import { Fold } from "@/components/visuals/fold";
 import { NODE } from "@/lib/node-spec";
 import { BANDWIDTH_SENTENCE } from "@/lib/streaming-terms";
 
@@ -125,16 +128,23 @@ export default function HowToUsePage() {
   return (
     <>
     <section className="cf-section cf-pagehero px-5">
-      <div className="cf-col">
+      <div className="cf-wide grid items-center gap-10 lg:grid-cols-[1.05fr_1fr]">
+          <div className="min-w-0">
             <div className="cf-eyebrow">How to use Coreframe</div>
             <h1 className="cf-display mt-3">From sign-up to your first render.</h1>
             <p className="cf-lead mt-5">
-              Coreframe rents Windows GPU workstations by the minute, hosted in India. You stream a real{" "}
-              {NODE.gpu} desktop to the computer you already own, work on it as normal, and pay for the
-              minutes you use. Here&apos;s the whole thing, start to finish.
-            </p>
+            Rent a Windows {NODE.gpu} desktop by the minute and stream it to the computer you own. Here&apos;s the whole thing, start to finish.
+          </p>
       </div>
+          <OwnImage src="/home/wt-launch.webp" alt="The Coreframe app with the RTX 5080 ready to launch" width={1000} height={698} caption="Step one: pick the RTX 5080 and launch." sizes="(max-width: 1024px) 100vw, 480px" />
+        </div>
     </section>
+      <section className="cf-section px-5 pb-0">
+        <div className="cf-wide grid items-center gap-8 rounded-[28px] bg-tint-blue p-6 sm:p-10 lg:grid-cols-[0.8fr_1.2fr]">
+          <h2 className="cf-section-title">Upload once. It waits on your drive.</h2>
+          <div className="min-w-0"><FileSyncDiagram /></div>
+        </div>
+      </section>
     <main className="cf-section px-5">
       <JsonLd data={breadcrumbList([{ name: "How to use Coreframe", path: "/how-to-use" }])} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(howTo) }} />
@@ -156,8 +166,7 @@ export default function HowToUsePage() {
         {/* Public on purpose. The same walkthrough lives on /download, but that page
             is behind sign-in, so there was no link anyone could send to a customer who
             was stuck BEFORE they got in. This one can be pasted into a WhatsApp reply. */}
-        <section id="installing-on-windows" className="mt-14 scroll-mt-24">
-          <h2 className="cf-section-title">Installing on Windows.</h2>
+        <Fold title="Installing on Windows.">
           <p className="cf-section-copy mt-3">
             Windows warns you about our installer, and the way past it isn&apos;t obvious. First,
             download in Chrome. Edge blocks the file outright and gives you no way through. Then, when the blue &ldquo;Windows protected your PC&rdquo; box appears,
@@ -184,10 +193,9 @@ export default function HowToUsePage() {
               An illustration of the dialog, not a screenshot of your machine.
             </figcaption>
           </figure>
-        </section>
+        </Fold>
 
-        <section id="saving-your-work" className="cf-note mt-14 scroll-mt-24">
-          <h2 className="cf-section-title">Read this before your first session.</h2>
+        <Fold title="Read this before your first session.">
           <p className="cf-section-copy mt-3">
             The workstation resets between sessions. Software you install, and anything left on the
             Desktop, in Documents or on C:, is wiped when you finish. Only drive{" "}
@@ -198,7 +206,7 @@ export default function HowToUsePage() {
             That reset is why every session starts on a clean, identical machine. Nothing is left
             over from the customer before you, and nothing of yours is left for the customer after.
           </p>
-        </section>
+        </Fold>
 
         <section className="mt-14">
           <h2 className="cf-section-title">Common questions.</h2>
