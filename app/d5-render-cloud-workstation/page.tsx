@@ -141,7 +141,7 @@ export default async function D5Page() {
             A full Windows desktop with an RTX 5080 and D5 Render installed, streamed to your laptop and billed by the minute. Sign in with your own D5 account.
           </p>
         </div>
-          <GenImage src="/visuals/gen-designer-cafe-laptop-16x9.webp" alt="An interior designer working on a laptop" width={1600} height={914} sizes="(max-width: 1024px) 100vw, 480px" parallax priority />
+          <GenImage src="/visuals/gen-homeowner-laptop-review-16x9.webp" alt="An interior designer showing a homeowner couple a design on a laptop" width={1600} height={914} sizes="(max-width: 1024px) 100vw, 480px" parallax priority />
         </div>
       </section>
       <section className="cf-section px-5 pb-0">

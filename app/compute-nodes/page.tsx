@@ -1,3 +1,4 @@
+import { GenImage } from "@/components/visuals/media";
 import type { Metadata } from "next";
 import { JsonLd } from "@/components/seo/json-ld";
 import { breadcrumbList } from "@/lib/seo";
@@ -76,13 +77,16 @@ export default async function ComputeNodesPage() {
 
       <main className="relative">
         <section className="cf-section px-5 cf-pagehero">
-          <div className="cf-wide">
+          <div className="cf-wide grid items-center gap-10 lg:grid-cols-[1.05fr_1fr]">
+          <div className="min-w-0">
             <div className="cf-eyebrow">Compute nodes</div>
             <h1 className="cf-display mt-3">One node. One GPU. Nothing to configure.</h1>
             <p className="cf-lead mt-5 max-w-[680px]">
             One machine for everyone: {NODE.gpu}, {NODE.vram}, {NODE.ram} of RAM, in {NODE.location}. One price, nothing to pick wrong.
           </p>
           </div>
+          <GenImage src="/visuals/gen-artist-dual-monitor-16x9.webp" alt="A 3D artist working at a two-monitor desk in a home studio" width={1600} height={914} sizes="(max-width: 1024px) 100vw, 480px" parallax priority />
+        </div>
         </section>
 
         <div className="cf-rule" />

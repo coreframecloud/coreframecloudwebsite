@@ -1,3 +1,4 @@
+import { GenImage } from "@/components/visuals/media";
 import type { Metadata } from "next";
 import { BackgroundGlow } from "@/components/home/background-glow";
 import RequestDemoForm from "./request-demo-form";
@@ -16,7 +17,8 @@ export default function RequestDemoPage() {
 
       <main className="relative">
         <section className="cf-section px-5 cf-pagehero">
-          <div className="cf-col">
+          <div className="cf-wide grid items-center gap-10 lg:grid-cols-[1.05fr_1fr]">
+          <div className="min-w-0">
             <p className="cf-eyebrow">Talk to us</p>
 
             <h1 className="cf-display mt-3">Tell us what you need a machine for.</h1>
@@ -27,6 +29,8 @@ export default function RequestDemoPage() {
               deadline, or the file that won&apos;t open.
             </p>
           </div>
+          <GenImage src="/visuals/gen-founder-video-call-16x9.webp" alt="A studio founder on a video call at her desk" width={1600} height={914} sizes="(max-width: 1024px) 100vw, 480px" parallax priority />
+        </div>
 
           <div className="cf-wide">
             <RequestDemoForm />

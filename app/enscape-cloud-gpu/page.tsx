@@ -118,7 +118,7 @@ export default async function EnscapePage() {
               </Link>
             </div>
           </div>
-          <GenImage src="/visuals/gen-architect-client-walkthrough-16x9.webp" alt="An architect presenting a 3D model to clients" width={1600} height={914} sizes="(max-width: 1024px) 100vw, 480px" parallax priority />
+          <GenImage src="/visuals/gen-architect-monitor-walk-16x9.webp" alt="An architect walking through a building model on a large monitor" width={1600} height={914} sizes="(max-width: 1024px) 100vw, 480px" parallax priority />
         </div>
         </section>
       <section className="cf-section px-5 pb-0">

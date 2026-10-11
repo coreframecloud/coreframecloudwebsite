@@ -123,7 +123,7 @@ export default async function LumionPage() {
               </Link>
             </div>
           </div>
-          <GenImage src="/visuals/gen-team-review-16x9.webp" alt="A studio team reviewing a walkthrough on a big screen" width={1600} height={914} sizes="(max-width: 1024px) 100vw, 480px" parallax priority />
+          <GenImage src="/visuals/gen-team-standup-16x9.webp" alt="A small design studio team in a quick morning meeting" width={1600} height={914} sizes="(max-width: 1024px) 100vw, 480px" parallax priority />
         </div>
         </section>
       <section className="cf-section px-5 pb-0">
