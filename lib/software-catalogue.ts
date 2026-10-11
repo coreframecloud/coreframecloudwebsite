@@ -184,7 +184,7 @@ export const BRING_YOUR_OWN_LICENCE: SoftwareItem[] = [
   { name: "SketchUp Pro", category: "CAD & BIM", note: "Sign in with your Trimble account.", vendorUrl: "https://www.sketchup.com/download/all" },
   { name: "Rhino", category: "CAD & BIM", note: "Evaluation available; then your own licence key.", vendorUrl: "https://www.rhino3d.com/download/" },
   { name: "Archicad", category: "CAD & BIM", note: "Graphisoft licence required.", vendorUrl: "https://graphisoft.com/downloads" },
-  { name: "Adobe Creative Cloud", category: "Images & textures", note: "Photoshop, Substance and the rest, on your own subscription.", vendorUrl: "https://creativecloud.adobe.com/apps/download/creative-cloud" },
+  { name: "Adobe Creative Cloud", category: "Images & textures", note: "Installed; sign in with your own Adobe account.", vendorUrl: "https://creativecloud.adobe.com/apps/download/creative-cloud" },
 ];
 
 export const CATEGORIES = [

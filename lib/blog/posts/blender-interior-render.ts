@@ -208,7 +208,7 @@ export const blenderInteriorRender: BlogPost = {
     { type: "h2", text: "Step 9: close the session so billing stops" },
     {
       type: "p",
-      text: `End the session from Connect. If the stream drops on its own (a Wi-Fi blip, a closed lid), Connect tells you the workstation is still running and gives you a few minutes to reconnect; ending it is a deliberate step. Once it's closed, the session shows up in My Activity on the website with its length and cost, and the GST invoices for your top-ups are on the same page.`,
+      text: `End the session from Connect. If the stream drops on its own (a Wi-Fi blip, a closed lid), Connect tells you the workstation is still running and gives you 15 minutes to reconnect; ending it is a deliberate step. Once it's closed, the session shows up in My Activity on the website with its length and cost, and the GST invoices for your top-ups are on the same page.`,
     },
     {
       type: "figure",

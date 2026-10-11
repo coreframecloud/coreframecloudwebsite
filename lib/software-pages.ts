@@ -354,7 +354,7 @@ export const SOFTWARE_PAGES: SoftwarePage[] = [
       "Pay for the busy weeks only. Per-minute billing stops when you end the session.",
     ],
     licence:
-      "Adobe Creative Cloud runs on your own subscription. Adobe needs your account even to download the installer, so we set it up with you once; after that it is on every workstation you launch, signed in to your plan.",
+      "Adobe Creative Cloud is installed on the workstation. You sign in with your own Adobe account, so it runs on your own subscription.",
     sections: [
       {
         h2: "Two things to check before you move a video project.",
@@ -378,7 +378,7 @@ export const SOFTWARE_PAGES: SoftwarePage[] = [
       },
       {
         q: "Does Coreframe provide an Adobe licence?",
-        a: "No. Creative Cloud is licensed to you, so you sign in with your own Adobe account. We set the applications up with you once so you are not installing them every session.",
+        a: "No. Creative Cloud is installed on the workstation and licensed to you, so you sign in with your own Adobe account.",
       },
       {
         q: "How do I get my footage onto the workstation?",

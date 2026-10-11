@@ -11,16 +11,17 @@ const IMG = `/blog/${SLUG}`;
  * every session (the drive, the download, the reconnect hold). Nothing here
  * claims an export or render time.
  *
- * Wording note: the site claims check forbids the phrase for elevated
- * rights; session accounts are standard users, and this article says what
- * that means for plugin installers without using it.
+ * Owner-confirmed facts (11 Oct 2026): Creative Cloud is installed on the
+ * workstation and each customer signs in with their own Adobe account; the
+ * reconnect hold is 15 minutes; fonts a user installs are wiped at session
+ * end. Plugin installers are deliberately not discussed.
  */
 export const afterEffectsRemoteGpu: BlogPost = {
   slug: SLUG,
   title: "After Effects on a remote GPU: what works and what doesn't",
   metaTitle: "After Effects on a Remote GPU: What Works",
   description:
-    "Motion graphics, heavy comps and exports work well on a rented RTX workstation. Camera originals, final colour and plugins need planning first.",
+    "Motion graphics, heavy comps and exports work well on a rented RTX workstation. Camera originals and final colour need planning first.",
   targetQueries: [
     "after effects cloud pc",
     "after effects cloud render",
@@ -40,7 +41,7 @@ export const afterEffectsRemoteGpu: BlogPost = {
       "The project drive in the Connect app. Footage goes up here before a session; finished exports come back down the same way. Account name blurred.",
   },
   answer: () =>
-    `After Effects runs well on a remote GPU workstation for motion graphics, heavy compositions and exports, because the work happens on the remote machine and your laptop only shows a video stream of it. Two things need planning. Your footage has to be uploaded first, which is quick for a motion-graphics project and slow for hundreds of gigabytes of camera originals. And the stream is compressed video, so judge final colour on the downloaded export, not on the stream. Plugins with their own installers also need setting up with us in advance.`,
+    `After Effects runs well on a remote GPU workstation for motion graphics, heavy compositions and exports, because the work happens on the remote machine and your laptop only shows a video stream of it. Two things need planning. Your footage has to be uploaded first, which is quick for a motion-graphics project and slow for hundreds of gigabytes of camera originals. And the stream is compressed video, so judge final colour on the downloaded export, not on the stream.`,
   body: (ctx) => [
     { type: "h2", text: "What a remote GPU workstation is, for an editor" },
     {
@@ -97,7 +98,7 @@ export const afterEffectsRemoteGpu: BlogPost = {
       type: "p",
       text: `What you see is a compressed video stream of the remote desktop. It's fine for editing, timing, motion and most grading decisions. It isn't a calibrated reference signal, and fine grain, banding and subtle colour shifts can look different through the stream than in the file. Grade on the workstation, then download the export and make final colour calls on that file on your own calibrated display.`,
     },
-    { type: "h3", text: "Plugins, fonts and caches" },
+    { type: "h3", text: "Fonts and caches" },
     {
       type: "p",
       text: `Each session starts from a clean machine, and session accounts are standard Windows users. That has three practical effects:`,
@@ -105,14 +106,13 @@ export const afterEffectsRemoteGpu: BlogPost = {
     {
       type: "ul",
       items: [
-        "Third-party plugins that come with their own installer (and ask for an administrator password) can't be installed by you mid-session. Tell us which ones you use before you plan a project around them.",
         "Fonts you install during a session are removed when it ends, along with anything else installed on the machine. Keep the project's fonts in a folder on your drive and install them for your user at the start of a session.",
         "Point the After Effects disk cache at the workstation's local drive. It's scratch space and is cleared when the session ends, so the first previews of each session are built fresh.",
       ],
     },
     {
       type: "p",
-      text: `Creative Cloud itself is set up once with you, signed in to your own plan, and is then available on every workstation you launch. The [After Effects and Premiere page](/software/after-effects-premiere-cloud-workstation) has the details.`,
+      text: `Creative Cloud is installed on the workstation; you sign in with your own Adobe account. The [After Effects and Premiere page](/software/after-effects-premiere-cloud-workstation) has the details.`,
     },
     { type: "h3", text: "Your connection" },
     {
@@ -121,12 +121,12 @@ export const afterEffectsRemoteGpu: BlogPost = {
     },
     {
       type: "p",
-      text: `If the connection drops mid-session, the workstation keeps running. Connect shows that the stream disconnected and holds the machine for a few minutes so you can reconnect and carry on where you were.`,
+      text: `If the connection drops mid-session, the workstation keeps running. Connect shows that the stream disconnected and holds the machine for 15 minutes so you can reconnect and carry on where you were.`,
     },
     {
       type: "figure",
       src: `${IMG}/session-held.webp`,
-      alt: "Coreframe Connect showing an active workstation with a notice that the stream disconnected, the workstation is still running, and it can be reconnected within about five minutes.",
+      alt: "Coreframe Connect showing an active workstation with a notice that the stream disconnected, the workstation is still running, and it can still be reconnected.",
       width: 923,
       height: 597,
       caption: "After a dropped stream: the workstation keeps running and Connect offers to reconnect. Recorded 30 Sep 2026; account name blurred.",
@@ -144,7 +144,7 @@ export const afterEffectsRemoteGpu: BlogPost = {
       items: [
         "Install the Connect app on your Windows laptop and create an account (email and a WhatsApp code, no ID documents).",
         "Upload one real project and its footage to the Files tab before launching.",
-        "Launch and open the project from the N: drive. Creative Cloud needs to be set up with us beforehand, as described above.",
+        "Launch, sign in to Creative Cloud with your own Adobe account, and open the project from the N: drive.",
         "Scrub the timeline, run a RAM preview, and queue one export.",
         "Download the export and check it on your own screen. Then end the session so billing stops.",
       ],
@@ -163,7 +163,7 @@ export const afterEffectsRemoteGpu: BlogPost = {
     },
     {
       q: "Does Coreframe supply an Adobe licence?",
-      a: "No. Creative Cloud runs on your own subscription. We set it up with you once, and it is then available on every workstation you launch.",
+      a: "No. Creative Cloud is installed on the workstation, and you sign in with your own Adobe account, so it runs on your own subscription.",
     },
     {
       q: "How do I get my footage onto the workstation?",
@@ -172,10 +172,6 @@ export const afterEffectsRemoteGpu: BlogPost = {
     {
       q: "Can I colour grade over the stream?",
       a: "You can grade, but the stream is compressed video, not a reference signal. Make final colour decisions on the exported file after downloading it.",
-    },
-    {
-      q: "Can I install After Effects plugins?",
-      a: "Plugins with their own installers usually need elevated rights, which session accounts do not have. Tell us which plugins you use and we will check what can be set up for you.",
     },
     {
       q: "What happens to my files after a session?",

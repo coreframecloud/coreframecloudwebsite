@@ -26,10 +26,8 @@ export const metadata: Metadata = {
  * THE PAGE USED TO CONTRADICT ITSELF. The visible copy said licensed apps are
  * ones "you install", the FAQ said "installed for you rather than by you", and
  * the call-out warned that anything you install is wiped. The FAQ is the
- * correct one, and the catalogue's own note on Steam says why: the session
- * account is not an administrator, so an installer that asks for administrator
- * rights cannot be run by the customer. Every mention on this page now says
- * the same thing.
+ * correct one: applications are installed for you, and every mention on
+ * this page now says the same thing.
  *
  * THE FAQ IS ALSO VISIBLE. FAQPage JSON-LD describing four questions that
  * appeared nowhere on the page is both a structured-data problem and how the
@@ -132,8 +130,9 @@ export default function AppsPage() {
             {NODE.gpu} in it. A standard set of tools is installed and ready the
             moment your desktop appears, and you sign in to each one with your
             own licence. If something free is missing, ask and we&apos;ll add it to
-            the image. Licensed applications we set up with you once, because the
-            vendor needs your account to download them.
+            the image. Adobe Creative Cloud is already installed, so you just sign in
+            with your Adobe account. Other licensed applications we set up with you
+            once, because the vendor needs your account to download them.
           </p>
         </div>
       </section>
@@ -150,7 +149,7 @@ export default function AppsPage() {
 
       <Group
         title="Your licence, our machine."
-        blurb="These are licensed to you, and the licence stays yours. We set them up with you once, since the vendor only lets you download from your own account. After that they're on every workstation you launch, signed in with your subscription. We never supply licences for commercial software."
+        blurb="These are licensed to you, and the licence stays yours. Adobe Creative Cloud is already installed; you sign in with your own Adobe account. The others we set up with you once, since the vendor only lets you download from your own account. After that they're on every workstation you launch, signed in with your subscription. We never supply licences for commercial software."
         items={BRING_YOUR_OWN_LICENCE}
       />
 
