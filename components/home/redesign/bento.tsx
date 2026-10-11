@@ -3,6 +3,7 @@ import Link from "next/link";
 import { NODE } from "@/lib/node-spec";
 import { Reveal } from "@/components/home/redesign/reveal";
 import { FrameStrip } from "@/components/home/redesign/frame-strip";
+import { PlanImage, ShellFurnished } from "@/components/visuals/studio-compare";
 import { walkthroughVideoObject } from "@/components/home/landing/walkthrough-section";
 
 /**
@@ -52,7 +53,7 @@ export function Bento({ youtubeId }: { youtubeId: string }) {
 
         {/* Studio */}
         <Reveal delay={0.05} className="cfh-card bg-tint-lilac">
-          <div className="grid gap-6 sm:grid-cols-[1fr_1.1fr] sm:items-center">
+          <div className="grid gap-6 sm:grid-cols-[0.9fr_1.1fr] sm:items-center">
             <div>
               <h3 className="cfh-h3">Coreframe Studio</h3>
               <p className="mt-3 text-[16px] leading-[1.6] text-ink-2">
@@ -63,29 +64,9 @@ export function Bento({ youtubeId }: { youtubeId: string }) {
                 Try Studio <span aria-hidden>↗</span>
               </Link>
             </div>
-            <div className="grid grid-cols-2 gap-2.5">
-              <figure>
-                <Image
-                  src="/home/studio-shell.webp"
-                  alt="An empty room shell rendered in Cycles from a DXF floor plan"
-                  width={800}
-                  height={1000}
-                  sizes="160px"
-                  className="aspect-[4/5] w-full rounded-xl object-cover"
-                />
-                <figcaption className="mt-1.5 text-[12px] text-ink-3">Shell (rendered)</figcaption>
-              </figure>
-              <figure>
-                <Image
-                  src="/home/studio-generated.webp"
-                  alt="A furnished living room generated from the shell"
-                  width={800}
-                  height={1000}
-                  sizes="160px"
-                  className="aspect-[4/5] w-full rounded-xl object-cover"
-                />
-                <figcaption className="mt-1.5 text-[12px] text-ink-3">Finish (generated)</figcaption>
-              </figure>
+            <div className="grid min-w-0 grid-cols-1 gap-3">
+              <PlanImage caption="Your plan (real drawing)" />
+              <ShellFurnished caption="Shell (rendered) · Furnished (generated)" />
             </div>
           </div>
         </Reveal>

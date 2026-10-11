@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { JsonLd } from "@/components/seo/json-ld";
 import { breadcrumbList } from "@/lib/seo";
 import Link from "next/link";
-import { BackgroundGlow } from "@/components/home/background-glow";
+import { Fold } from "@/components/visuals/fold";
+import { PlanImage, ShellFurnished } from "@/components/visuals/studio-compare";
 import { NODE } from "@/lib/node-spec";
 
 /**
@@ -57,26 +58,10 @@ export const metadata: Metadata = {
 const STUDIO = "https://studio.coreframecloud.com/studio";
 
 const steps = [
-  {
-    n: "01",
-    title: "Upload the DXF.",
-    body: "We read the walls off the layer your drawing uses, close the rooms and report the real areas. You see which layer we picked and can correct it before anything else happens. This step is free.",
-  },
-  {
-    n: "02",
-    title: "Pick a room and say what it is.",
-    body: "Every room in the plan is listed separately. One click tells us it's a bedroom or a kitchen, and the furniture and camera position change to match. There's no charge for this either.",
-  },
-  {
-    n: "03",
-    title: "Say how it should feel.",
-    body: "One sentence is enough: “matte handle-less cabinets in muted olive”. You get three camera angles back to compare side by side. That's free too.",
-  },
-  {
-    n: "04",
-    title: "Export the one you want.",
-    body: "2K for a client email, 4K for print. This is the only step that spends credits, and the cost is shown before you press it.",
-  },
+  { n: "1", title: "Upload your DXF.", body: "We find the walls and rooms. Free." },
+  { n: "2", title: "Pick a room.", body: "Tell us it's a bedroom or a kitchen. Free." },
+  { n: "3", title: "Say how it should feel.", body: "One sentence. You get three angles to compare. Free." },
+  { n: "4", title: "Export the one you like.", body: "2K for email, 4K for print. Only this step uses credits." },
 ];
 
 const faqs = [
@@ -106,7 +91,6 @@ export default function Page() {
   return (
     <div className="min-h-screen text-ink">
       <JsonLd data={breadcrumbList([{ name: "Floor plan to render", path: "/floor-plan-to-render" }])} />
-      <BackgroundGlow />
 
       <script
         type="application/ld+json"
@@ -125,177 +109,102 @@ export default function Page() {
 
       <main className="relative">
         <section className="cf-section px-5 cf-pagehero">
-          <div className="cf-col">
-            <p className="cf-eyebrow mb-5">Coreframe Studio</p>
-            <h1 className="cf-display">Turn a floor plan into the room.</h1>
-            <p className="cf-lead mt-6">
-            Upload a DXF and get an interior image, exported at 2K or 4K. In the browser, nothing to install.
-          </p>
-
-            {/* Studio is not open to the public yet. Saying so here, plainly, is
-                cheaper than letting someone click "Open Studio" and meet a sign-in
-                they cannot complete — the second costs trust, the first costs
-                nothing. The guide becomes the real action in the meantime, which is
-                why it is the primary button rather than a footnote. */}
-            <div className="cf-note mt-9">
-              <p className="cf-eyebrow mb-3 text-blue">Releasing soon</p>
-              <p className="text-base leading-[1.62] text-ink">
-                Coreframe Studio is in private testing and isn&rsquo;t open for
-                sign-ups yet. Until it is, the five-page guide below is the best
-                way to see how it reads a drawing and what it gives you back.
+          <div className="cf-wide grid items-center gap-10 lg:grid-cols-[1fr_1fr]">
+            <div className="min-w-0">
+              <p className="cf-eyebrow mb-5">Coreframe Studio</p>
+              <h1 className="cf-display">Turn a floor plan into the room.</h1>
+              <p className="cf-lead mt-6">Upload a DXF. Get the room back as an image, ready for your client.</p>
+              {/* Studio is in private testing: say so plainly, and make the
+                  guide the real action until it opens. */}
+              <p className="mt-6 inline-flex items-center gap-2 rounded-full bg-white/10 px-3.5 py-1.5 text-[13px]">
+                <span className="h-2 w-2 rounded-full bg-[#ffd166]" /> Opening soon. Private testing for now.
               </p>
+              <div className="mt-7 flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
+                <a href="/studio/guide.pdf" target="_blank" rel="noopener" className="cf-btn-primary w-full sm:w-auto">
+                  Read the 5-page guide
+                </a>
+                <a href="https://studio.coreframecloud.com/studio/demo.dxf" className="cf-btn-secondary w-full sm:w-auto">
+                  Download the demo plan
+                </a>
+              </div>
             </div>
-
-            <div className="mt-7 flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:gap-4">
-              <a
-                href="/studio/guide.pdf"
-                target="_blank"
-                rel="noopener"
-                className="cf-btn-primary w-full sm:w-auto min-h-[44px]"
-              >
-                Read the five-page guide
-              </a>
-              <a
-                href="https://studio.coreframecloud.com/studio/demo.dxf"
-                className="cf-btn-secondary w-full sm:w-auto min-h-[44px]"
-              >
-                Download a demo plan
-              </a>
-            </div>
-            <p className="mt-4 text-sm leading-[1.62] text-ink-2">
-              Reading your drawing is free. You spend credits only on an export.{" "}
-              {/* MOVED HERE FROM THE HOMEPAGE HERO, 28 Sep 2026. It was the only
-                  link to the guide anywhere on the site, sitting as a third-level
-                  line in a hero that is selling the workstation, not Studio. This
-                  is the page where someone is deciding about Studio. */}
-              Credits apply once Studio opens.
-            </p>
+            <PlanImage />
           </div>
         </section>
-
-        {/* A REAL PLAN, not a picture of one. Built by
-            apps/tools/scripts/make_3bhk.py in the control-plane repo: ten
-            rooms, 1,147 sq ft, and it opens in CAD. An AI-generated floor plan
-            would be spotted by this audience in seconds, on the one page that
-            promises we do not invent geometry. */}
-        <section className="cf-section px-5 pt-0">
-          <div className="cf-wide">
-            <figure className="rounded-cf border border-rule bg-paper-2 p-4 sm:p-8">
-              {/* THE PLAN WAS INVISIBLE FOR WEEKS AND THE CAUSE WAS ONE CHARACTER.
-                  public/brand/plan-3bhk.svg contained a room labelled
-                  `LIVING & DINING` — a bare ampersand, which is not valid XML. An
-                  SVG loaded as an image is parsed strictly, so the whole document
-                  failed and the browser drew nothing and showed the alt text.
-                  Nothing 404'd, nothing errored, and the file looked fine in an
-                  editor. It is now `&amp;`.
-
-                  apps/tools/scripts/make_3bhk.py in the control-plane repo
-                  generates this file and does not escape room names, so it will
-                  reintroduce the bug the next time a plan is regenerated. Escape
-                  there too.
-
-                  A plain <img> rather than next/image, separately: the optimizer
-                  refuses SVG unless `dangerouslyAllowSVG` is set, and setting it
-                  would push EVERY svg through the optimizer including any a user
-                  could later supply. An SVG gains nothing from it anyway — there is
-                  no format to negotiate and no raster to resize. */}
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="/brand/plan-3bhk.svg"
-                alt="Ground floor plan of a three-bedroom flat: living and dining, kitchen, utility, three bedrooms, two bathrooms, corridor and balcony, with door and window openings marked."
-                width={1320}
-                height={1100}
-                className="h-auto w-full max-w-full"
-              />
-              <figcaption className="mt-4 text-sm leading-[1.62] text-ink-2">
-                The demo plan, drawn to scale: 10 rooms, 1,147 sq ft. Download
-                it above and run it through Studio yourself.
-              </figcaption>
-            </figure>
-          </div>
-        </section>
-
-        <div className="cf-rule" />
 
         <section className="cf-section px-5">
+          <div className="cf-wide grid items-center gap-10 lg:grid-cols-[0.8fr_1.2fr]">
+            <div>
+              <h2 className="cf-section-title">From your drawing to the room.</h2>
+              <p className="cf-section-copy mt-3">Your walls and windows, exactly as drawn. Then we furnish it.</p>
+              <p className="mt-2 text-[14px] text-ink-3">Drag the line to compare.</p>
+            </div>
+            <ShellFurnished />
+          </div>
+        </section>
+
+        <section className="cf-section px-5 pt-0">
           <div className="cf-wide">
-            <p className="cf-eyebrow mb-5">How it goes</p>
-            <h2 className="cf-section-title">Four steps, and you only pay on the last one.</h2>
-            <ol className="mt-10 grid grid-cols-1 gap-9 sm:grid-cols-2">
-              {steps.map((s) => (
-                <li key={s.n} className="cf-card">
-                  <p className="cf-card-label">{s.n}</p>
-                  <h3 className="text-base font-semibold tracking-[-0.01em] text-ink">{s.title}</h3>
-                  <p className="mt-2.5 text-sm leading-[1.62] break-words text-ink-2">{s.body}</p>
+            <h2 className="cf-section-title">Four steps. You only pay on the last.</h2>
+            <ol className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              {steps.map((st) => (
+                <li key={st.n} className="cf-card cfh-lift">
+                  <span className="grid h-9 w-9 place-items-center rounded-full bg-ink font-heading text-[15px] text-white">{st.n}</span>
+                  <h3 className="mt-4 font-heading text-[18px] font-medium text-ink">{st.title}</h3>
+                  <p className="mt-1.5 text-[14.5px] leading-6 text-ink-2">{st.body}</p>
                 </li>
               ))}
             </ol>
           </div>
         </section>
 
-        <div className="cf-rule" />
-
-        <section className="cf-section px-5">
+        <section className="cf-section px-5 pt-0">
           <div className="cf-col">
-            <p className="cf-eyebrow mb-5">Where the line is</p>
             <h2 className="cf-section-title">We never invent your building.</h2>
-            <p className="cf-section-copy mt-6">
-              The walls, corners, doors and windows come from your DXF. If a room
-              has no window marked in the drawing, Studio doesn&rsquo;t add one.
-              It may be windowless on purpose, and that&rsquo;s the
-              architect&rsquo;s decision to make.
-            </p>
-            <p className="cf-section-copy mt-4">
-              The furniture and the camera position are ours. We suggest them
-              from the room&rsquo;s shape and the room type you pick, and Studio
-              tells you on screen every time it places anything:{" "}
-              <em className="text-ink">
-                &ldquo;We placed a bed, 2 nightstands, a wardrobe. None of it is in
-                your drawing.&rdquo;
-              </em>
-            </p>
-            <p className="cf-section-copy mt-4">
-              Adding a window that isn&rsquo;t on the plan would change the
-              building. Suggesting a bed in a room you called a bedroom doesn&rsquo;t,
-              so that&rsquo;s where we draw the line, and we label which side of it
-              every part of the image came from.
-            </p>
-          </div>
-        </section>
-
-        <div className="cf-rule" />
-
-        <section className="cf-section px-5">
-          <div className="cf-col">
-            <p className="cf-eyebrow mb-5">Questions</p>
-            <h2 className="cf-section-title">What architects ask first.</h2>
-            <dl className="mt-10 divide-y divide-rule border-y border-rule">
-              {faqs.map((f) => (
-                <div key={f.q} className="py-6">
-                  <dt className="text-lg font-semibold tracking-[-0.02em] break-words text-ink">{f.q}</dt>
-                  <dd className="mt-2.5 text-base leading-[1.62] break-words text-ink-2">{f.a}</dd>
-                </div>
-              ))}
-            </dl>
+            <p className="cf-section-copy mt-3">Walls, doors and windows come from your drawing. The furniture is ours, and Studio tells you so.</p>
+            <Fold title="Where exactly we draw the line">
+              <p className="cf-section-copy mt-3">
+                If a room has no window in the drawing, Studio doesn&rsquo;t add one. It may be windowless on
+                purpose, and that&rsquo;s the architect&rsquo;s call.
+              </p>
+              <p className="cf-section-copy mt-3">
+                We suggest furniture and the camera from the room&rsquo;s shape and the type you pick, and Studio
+                says so every time:{" "}
+                <em className="text-ink">&ldquo;We placed a bed, 2 nightstands, a wardrobe. None of it is in your drawing.&rdquo;</em>
+              </p>
+            </Fold>
           </div>
         </section>
 
         <section className="cf-section px-5 pt-0">
           <div className="cf-col">
-            <div className="cf-note">
-              <p className="cf-eyebrow mb-4 text-blue">Next step</p>
-              <h2 className="cf-section-title">Start with one room.</h2>
-              <p className="cf-section-copy mt-4">
-                One drawing, one image. Need a machine to drive your own software
-                instead?{" "}
-                <Link href="/" className="text-blue underline underline-offset-4">
-                  Coreframe also rents {NODE.gpu} workstations by the minute
+            <h2 className="cf-section-title">What architects ask first.</h2>
+            <div className="mt-6 divide-y divide-rule rounded-[24px] border border-rule">
+              {faqs.map((f) => (
+                <details key={f.q} className="group px-6 py-5">
+                  <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-medium text-ink">
+                    {f.q}
+                    <span aria-hidden className="text-ink-3 transition group-open:rotate-45">+</span>
+                  </summary>
+                  <p className="mt-3 text-[15px] leading-6 break-words text-ink-2">{f.a}</p>
+                </details>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="cf-section px-5 pt-0">
+          <div className="cf-wide">
+            <div className="rounded-[32px] bg-night px-7 py-12 text-white sm:px-14">
+              <h2 className="font-heading text-[28px] font-medium sm:text-[36px]">Start with one room.</h2>
+              <p className="mt-3 text-white/70">
+                Need a whole machine for your own software instead?{" "}
+                <Link href="/" className="text-[#a9c4ff] underline underline-offset-4">
+                  Rent an {NODE.gpu} by the minute
                 </Link>
                 .
               </p>
-              <a href={STUDIO} className="cf-btn-primary mt-6 w-full sm:w-auto min-h-[44px]">
-                Open Studio
-              </a>
+              <a href={STUDIO} className="cfh-pill-light mt-7">Open Studio</a>
             </div>
           </div>
         </section>
