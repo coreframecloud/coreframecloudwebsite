@@ -1,8 +1,8 @@
 /**
  * The id, exported so the page and the schema cannot disagree about which
- * video this is. https://youtu.be/WlAbunHAGdE
+ * video this is. https://youtu.be/ROYV3x87vDk
  */
-export const WALKTHROUGH_YOUTUBE_ID = "WlAbunHAGdE";
+export const WALKTHROUGH_YOUTUBE_ID = "ROYV3x87vDk";
 
 /**
  * The VideoObject for the walkthrough, shared by this section and the blog
@@ -20,7 +20,7 @@ export function walkthroughVideoObject(youtubeId: string) {
     description:
       "A full Coreframe session, uncut: sign in, pick a workstation, upload a scene, render it, pull the result back down and close the machine. Recorded on an RTX 5080 workstation hosted in Bengaluru.",
     thumbnailUrl: [`https://i.ytimg.com/vi/${youtubeId}/maxresdefault.jpg`],
-    uploadDate: "2026-09-30",
+    uploadDate: "2026-10-11",
     duration: "PT4M39S",
     embedUrl: `https://www.youtube.com/embed/${youtubeId}`,
     publisher: {
