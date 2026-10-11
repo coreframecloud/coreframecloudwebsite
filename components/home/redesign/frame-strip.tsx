@@ -2,13 +2,14 @@
 
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { useReducedMotion } from "framer-motion";
+import { usePrefersReducedMotion } from "@/lib/use-reduced-motion";
 
 /**
  * Real frames from our walkthrough recording (marketing-20261010/walkthrough),
  * crossfading every 3 s. The first is the app's RTX 5080 tile, cropped tight
  * and Lanczos-upscaled from the 1080p frame. Pauses on hover or with the
- * button; with reduced motion only the first frame shows, still.
+ * button. With reduced motion the markup is the same and it still advances,
+ * slower (every 5 s), as a plain crossfade.
  * Frames that showed the tester's email or name were left out.
  */
 const FRAMES = [
@@ -20,19 +21,19 @@ const FRAMES = [
 ];
 
 export function FrameStrip() {
-  const reduce = useReducedMotion();
+  const reduce = usePrefersReducedMotion();
   const [cur, setCur] = useState(0);
   const [hover, setHover] = useState(false);
   const [userPaused, setUserPaused] = useState(false);
   const paused = hover || userPaused;
 
   useEffect(() => {
-    if (reduce || paused) return;
-    const id = setInterval(() => setCur((c) => (c + 1) % FRAMES.length), 3000);
+    if (paused) return;
+    const id = setInterval(() => setCur((c) => (c + 1) % FRAMES.length), reduce ? 5000 : 3000);
     return () => clearInterval(id);
   }, [reduce, paused]);
 
-  const shown = reduce ? 0 : cur;
+  const shown = cur;
   return (
     <div
       className="group relative"
@@ -56,26 +57,24 @@ export function FrameStrip() {
           {FRAMES[shown].cap}
         </p>
       </div>
-      {!reduce ? (
-        <div className="mt-3 flex items-center gap-2">
-          {FRAMES.map((f, i) => (
-            <button
-              key={f.src}
-              type="button"
-              aria-label={`Show frame ${i + 1}: ${f.cap}`}
-              onClick={() => setCur(i)}
-              className={`h-1.5 rounded-full transition-all ${i === shown ? "w-6 bg-ink" : "w-1.5 bg-ink/25"}`}
-            />
-          ))}
+      <div className="mt-3 flex items-center gap-2">
+        {FRAMES.map((f, i) => (
           <button
+            key={f.src}
             type="button"
-            onClick={() => setUserPaused((p) => !p)}
-            className="ml-auto text-[12px] font-semibold tracking-[0.06em] text-ink-2 uppercase hover:text-ink"
-          >
-            {userPaused ? "Play" : "Pause"}
-          </button>
-        </div>
-      ) : null}
+            aria-label={`Show frame ${i + 1}: ${f.cap}`}
+            onClick={() => setCur(i)}
+            className={`h-1.5 rounded-full transition-all ${i === shown ? "w-6 bg-ink" : "w-1.5 bg-ink/25"}`}
+          />
+        ))}
+        <button
+          type="button"
+          onClick={() => setUserPaused((p) => !p)}
+          className="ml-auto text-[12px] font-semibold tracking-[0.06em] text-ink-2 uppercase hover:text-ink"
+        >
+          {userPaused ? "Play" : "Pause"}
+        </button>
+      </div>
     </div>
   );
 }

@@ -1,12 +1,13 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
 import type { ReactNode } from "react";
+import { usePrefersReducedMotion } from "@/lib/use-reduced-motion";
 
 /**
- * Fade-up on first scroll into view: the one transition the homepage uses,
- * so sections arrive the same way everywhere. With reduced motion requested
- * the content is simply there, no movement and no fade.
+ * Fade-up on first scroll into view: the one entrance the homepage uses. The
+ * markup is identical with reduced motion (no hydration mismatch); there the
+ * content only fades, it never slides.
  */
 export function Reveal({
   children,
@@ -17,15 +18,18 @@ export function Reveal({
   delay?: number;
   className?: string;
 }) {
-  const reduce = useReducedMotion();
-  if (reduce) return <div className={className}>{children}</div>;
+  const reduce = usePrefersReducedMotion();
   return (
     <motion.div
       className={className}
       initial={{ opacity: 0, y: 28 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-80px" }}
-      transition={{ duration: 0.7, delay, ease: [0.22, 1, 0.36, 1] }}
+      transition={
+        reduce
+          ? { opacity: { duration: 0.5, delay }, y: { duration: 0 } }
+          : { duration: 0.7, delay, ease: [0.22, 1, 0.36, 1] }
+      }
     >
       {children}
     </motion.div>
