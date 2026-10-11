@@ -53,7 +53,7 @@ export default function BlogIndexPage() {
         <div className="cf-wide">
           <ul className="mt-14 grid gap-x-8 gap-y-14 sm:grid-cols-2">
             {posts.map((p) => (
-              <li key={p.slug} className="cf-card">
+              <li key={p.slug} className="cf-card cfh-lift">
                 <Link href={`/blog/${p.slug}`} className="group block">
                   <div className="overflow-hidden rounded-cf border border-rule bg-paper-2">
                     <Image

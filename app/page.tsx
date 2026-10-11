@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { WALKTHROUGH_YOUTUBE_ID } from "@/components/home/landing/walkthrough-section";
 import { RedesignHero } from "@/components/home/redesign/hero";
 import { Bento } from "@/components/home/redesign/bento";
-import { FactsBand, BuiltFor, OfferBand } from "@/components/home/redesign/bands";
+import { FactsBand, BuiltFor, OfferBand, HowItWorks } from "@/components/home/redesign/bands";
 import { Testimonials } from "@/components/home/redesign/testimonials";
 import {
   getRateCard,
@@ -49,6 +49,7 @@ export default async function Page() {
       <RedesignHero introLabel={introLabel} />
       <div className="cfh-sheet">
         <Bento youtubeId={WALKTHROUGH_YOUTUBE_ID} />
+        <HowItWorks />
       </div>
       <FactsBand />
       <BuiltFor />

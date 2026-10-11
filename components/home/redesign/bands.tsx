@@ -3,6 +3,7 @@ import Link from "next/link";
 import { NODE } from "@/lib/node-spec";
 import { hoursLabel, rupees, type IntroOffer } from "@/lib/rate-card";
 import { Reveal } from "@/components/home/redesign/reveal";
+import { StreamDiagram } from "@/components/visuals/diagrams";
 
 /**
  * Dark band: what you get, as facts only. A real Blender screenshot from a
@@ -118,6 +119,31 @@ export function OfferBand({ adhocRate, intro }: { adhocRate?: string; intro: Int
               Full pricing
             </Link>
           </div>
+        </div>
+      </Reveal>
+    </section>
+  );
+}
+
+/** How it works in three steps, carried by the stream diagram. */
+export function HowItWorks() {
+  const steps = ["Sign up with email and mobile", "Top up by UPI or card", "Launch the RTX 5080 from the app"];
+  return (
+    <section className="cfh-wrap pb-24 sm:pb-28">
+      <Reveal className="grid items-center gap-10 rounded-[32px] bg-tint-blue p-7 sm:p-12 lg:grid-cols-[0.85fr_1.15fr]">
+        <div>
+          <h2 className="cfh-h2">Three steps. Then it feels local.</h2>
+          <ol className="mt-7 space-y-3">
+            {steps.map((t, i) => (
+              <li key={t} className="flex items-center gap-4 text-[16px] text-ink">
+                <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-ink font-heading text-[15px] text-white">{i + 1}</span>
+                {t}
+              </li>
+            ))}
+          </ol>
+        </div>
+        <div className="min-w-0 rounded-[24px] bg-paper p-5 sm:p-7">
+          <StreamDiagram />
         </div>
       </Reveal>
     </section>
