@@ -127,21 +127,24 @@ export default async function D5Page() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
+      <section className="cf-section cf-pagehero px-5">
+        <div className="cf-col">
+            <p className="cf-eyebrow mb-5">D5 Render · Cloud GPU · Bengaluru</p>
+            <h1 className="cf-display">
+              Run D5 Render on a rented RTX 5080.
+            </h1>
+          
+            <p className="cf-lead mt-[22px]">
+              Coreframe gives you a full Windows desktop with an NVIDIA RTX 5080, D5
+              Render already installed, streamed to whatever laptop you own and
+              billed by the minute. You sign in with your own D5 account, open your
+              project and work in the live viewport. It&rsquo;s the full application on
+              real hardware, with no web preview in between and no queue.
+            </p>
+        </div>
+      </section>
       <main className="relative cf-section px-5">
         <div className="cf-col">
-        <p className="cf-eyebrow mb-5">D5 Render · Cloud GPU · Bengaluru</p>
-        <h1 className="cf-display">
-          Run D5 Render on a rented RTX 5080.
-        </h1>
-
-        <p className="cf-lead mt-[22px]">
-          Coreframe gives you a full Windows desktop with an NVIDIA RTX 5080, D5
-          Render already installed, streamed to whatever laptop you own and
-          billed by the minute. You sign in with your own D5 account, open your
-          project and work in the live viewport. It&rsquo;s the full application on
-          real hardware, with no web preview in between and no queue.
-        </p>
-
         <section className="mt-14">
           <h2 className="cf-section-title">
             The problem D5 users actually have.

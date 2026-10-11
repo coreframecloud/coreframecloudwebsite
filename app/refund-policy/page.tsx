@@ -64,20 +64,24 @@ const policySections = [
 
 export default function RefundPolicyPage() {
   return (
+    <>
+    <section className="cf-section cf-pagehero px-5">
+      <div className="cf-wide">
+            <div className="cf-eyebrow">
+              Legal
+            </div>
+            <h1 className="cf-display mt-4">
+              Refund Policy
+            </h1>
+            <p className="mt-4 cf-eyebrow">
+              Last Updated: August 2026
+            </p>
+      </div>
+    </section>
     <main className="relative min-h-screen border-b border-rule text-ink">
       <BackgroundGlow />
 
       <div className="relative mx-auto max-w-4xl px-4 py-20 sm:px-6 lg:px-8">
-        <div className="cf-eyebrow">
-          Legal
-        </div>
-        <h1 className="cf-display mt-4">
-          Refund Policy
-        </h1>
-        <p className="mt-4 cf-eyebrow">
-          Last Updated: August 2026
-        </p>
-
         {/* Stated plainly and up front. A non-refundable term buried three
             sections down is the kind of thing that gets a charge disputed. */}
         <div className="mt-8 rounded-cf border border-rule bg-paper-2 border-l-2 border-l-blue px-6 py-5">
@@ -123,5 +127,6 @@ export default function RefundPolicyPage() {
         </div>
       </div>
     </main>
+    </>
   );
 }

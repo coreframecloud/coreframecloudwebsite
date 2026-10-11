@@ -78,7 +78,7 @@ export default function SolutionsPage() {
       <BackgroundGlow />
 
       <main className="relative">
-        <section className="cf-section px-5">
+        <section className="cf-section px-5 cf-pagehero">
           <div className="cf-col">
             <p className="cf-eyebrow mb-5">Solutions</p>
             <h1 className="cf-display">

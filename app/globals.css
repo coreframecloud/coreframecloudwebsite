@@ -1,22 +1,30 @@
 @import "tailwindcss";
 
 /* ─────────────────────────────────────────────────────────────────────────
-   Coreframe design tokens — approved 30 Sep 2026.
+   Coreframe design system — owner approved 11 Oct 2026 (replaces the 30 Sep
+   editorial system).
 
-   White paper, near-black ink, a serif for display, Inter for body, and a
-   monospace that carries every label and every hard fact. Hairline rules
-   instead of boxes. 3px radii, not pills. One accent blue.
+   Clean and calm, after world.siteground.com: white pages with dark bands,
+   soft rounded cards in four pale tints, pill buttons, Poppins for headings,
+   Inter for body, and the monospace kept only for fact blocks. One accent
+   blue. Our own renders sit behind the dark bands, never stock imagery, and
+   Studio images are always labelled "generated".
 
-   THE RULE THAT MAKES IT COHERENT: specifications never hide inside a
+   Shape: rounded cards (--radius-card 24px) and pills replace the old 3px
+   rule. Controls and inputs use --radius-cf (12px). Do not invent a third
+   radius or a second accent colour.
+
+   Motion: sections fade up once as they scroll in (components/scroll-reveal
+   and components/home/redesign/reveal); nothing moves under
+   prefers-reduced-motion.
+
+   THE RULE THAT STILL MAKES IT COHERENT: specifications never hide inside a
    paragraph. Anything a customer would write down — a price, a spec, a
    comparison — goes in a `.cf-term` block. Prose explains; the block states.
-
-   Do not add a second accent colour, a second radius or a second heading
-   font. The site read as five different products because every page invented
-   its own; that is what this file exists to stop.
+   Every price comes from the live rate card.
 
    Tailwind v4 is CSS-first: these @theme entries generate the utilities
-   (bg-paper, text-ink-2, border-rule, font-display, …). There is no
+   (bg-paper, text-ink-2, border-rule, font-heading, …). There is no
    tailwind.config.
    ───────────────────────────────────────────────────────────────────────── */
 @theme {
@@ -44,14 +52,16 @@
      = 3.59:1 -- a comment is still text, and these carry the labels that
      explain what the spec block is showing. */
 
-  --font-display: var(--font-source-serif), Georgia, "Times New Roman", serif;
+  /* Headings everywhere are Poppins now (11 Oct 2026); the serif is retired. */
+  --font-display: var(--font-poppins), var(--font-inter), -apple-system, "Segoe UI", sans-serif;
   --font-sans: var(--font-inter), -apple-system, "Segoe UI", sans-serif;
   --font-mono: var(--font-plex-mono), ui-monospace, Menlo, monospace;
 
-  --radius-cf: 3px;
+  --radius-cf: 12px;
+  --radius-card: 24px;
   /* Large glass surfaces only. Controls stay at 3px: a 14px input inside a
      14px card reads as a toy, and the editorial type needs the crisp edge. */
-  --radius-glass: 14px;
+  --radius-glass: 24px;
 
   /* ── shadcn's semantic names, mapped onto the palette above ───────────
      components/ui/* (button, input, card) are stock shadcn and address
@@ -88,13 +98,12 @@
   --color-input: var(--color-rule);
   --color-ring: var(--color-blue);
 
-  /* One radius. shadcn reaches for --radius-md and --radius-lg; both point
-     at the same 3px so a primitive cannot quietly introduce a rounder
-     corner than the design has. */
-  --radius-sm: 3px;
-  --radius-md: 3px;
-  --radius-lg: 3px;
-  --radius-xl: 3px;
+  /* shadcn's radii, mapped onto the two the system has: controls at 12px,
+     surfaces at 24px. */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 12px;
+  --radius-xl: 24px;
 }
 
 /* Light only, on purpose. The brief was a white site; honouring
@@ -168,12 +177,12 @@ body {
      Display sizes are clamped rather than stepped through breakpoints, so a
      heading is never stranded at an awkward size on a tablet. */
   .cf-display {
-    @apply font-display text-[clamp(36px,6.4vw,62px)] leading-[1.03] font-bold tracking-[-0.025em] text-ink;
+    @apply font-heading text-[clamp(34px,5.6vw,58px)] leading-[1.08] font-medium tracking-[-0.02em] text-ink;
     text-wrap: balance;
   }
 
   .cf-section-title {
-    @apply font-display text-[clamp(27px,3.6vw,38px)] leading-[1.12] font-semibold tracking-[-0.02em] text-ink;
+    @apply font-heading text-[clamp(26px,3.4vw,38px)] leading-[1.15] font-medium tracking-[-0.015em] text-ink;
     text-wrap: balance;
   }
 
@@ -185,29 +194,28 @@ body {
     @apply text-[clamp(17px,2.1vw,20px)] leading-[1.55] text-ink-2;
   }
 
-  /* The mono label above a section. Every section has exactly one. */
+  /* The small tag above a heading. Every section has at most one. */
   .cf-eyebrow {
-    @apply font-mono text-[11.5px] leading-none font-medium tracking-[0.2em] text-ink-3 uppercase;
+    @apply inline-block rounded-md bg-ink/[0.06] px-2.5 py-1.5 text-[11.5px] leading-none font-semibold tracking-[0.12em] text-ink-2 uppercase;
   }
 
   /* ── Buttons ────────────────────────────────────────────────────────────
-     Solid blue for the one action that matters on a page, hairline outline
-     for everything else. Mono and letterspaced so they read as controls
-     rather than as more prose. */
+     Pills. Solid near-black for the one action that matters on a page,
+     outline for everything else. */
   .cf-btn-primary {
-    @apply inline-flex min-h-11 items-center justify-center rounded-cf bg-blue px-5 py-[15px] font-mono text-[12.5px] leading-none font-semibold tracking-[0.09em] text-white uppercase transition-colors;
+    @apply inline-flex min-h-11 items-center justify-center rounded-full bg-ink px-6 py-3 text-[14px] leading-none font-semibold tracking-[0.02em] text-white uppercase transition-colors;
   }
 
   .cf-btn-primary:hover {
-    @apply bg-blue-ink;
+    @apply bg-[#2a2d33];
   }
 
   .cf-btn-secondary {
-    @apply inline-flex min-h-11 items-center justify-center rounded-cf border border-rule bg-transparent px-5 py-[15px] font-mono text-[12.5px] leading-none font-semibold tracking-[0.09em] text-ink uppercase transition-colors;
+    @apply inline-flex min-h-11 items-center justify-center rounded-full border border-rule-strong bg-transparent px-6 py-3 text-[14px] leading-none font-semibold tracking-[0.02em] text-ink uppercase transition-colors;
   }
 
   .cf-btn-secondary:hover {
-    @apply border-rule-strong bg-paper-2;
+    @apply bg-paper-2;
   }
 
   .cf-btn-primary:focus-visible,
@@ -220,7 +228,7 @@ body {
      a narrow screen rather than wrapping, because a wrapped spec table stops
      being readable as a table. */
   .cf-term {
-    @apply overflow-x-auto rounded-cf bg-term px-7 py-[26px] font-mono text-sm leading-[1.85] font-medium text-term-ink;
+    @apply overflow-x-auto rounded-[20px] bg-term px-7 py-[26px] font-mono text-sm leading-[1.85] font-medium text-term-ink;
   }
 
   .cf-term pre {
@@ -233,11 +241,14 @@ body {
   .cf-term .c { @apply text-term-comment; }
 
   /* ── Cards ──────────────────────────────────────────────────────────────
-     A rule on top, not a box. Boxes stack into visual noise; a rule keeps the
-     page reading as one sheet of paper. */
+     Soft rounded surfaces in four pale tints, cycling through a grid so
+     neighbours never match. */
   .cf-card {
-    @apply min-w-0 border-t-2 border-ink pt-5;
+    @apply min-w-0 rounded-[24px] bg-tint-blue p-7;
   }
+  .cf-card:nth-child(4n + 2) { @apply bg-tint-lilac; }
+  .cf-card:nth-child(4n + 3) { @apply bg-tint-mint; }
+  .cf-card:nth-child(4n + 4) { @apply bg-tint-sand; }
 
   .cf-card-label {
     @apply mb-3 font-mono text-[11px] leading-none font-medium tracking-[0.16em] text-blue uppercase;
@@ -245,7 +256,7 @@ body {
 
   /* A quiet call-out, for the one caveat a section cannot do without. */
   .cf-note {
-    @apply rounded-r-cf border-l-[3px] border-blue bg-blue-soft px-6 py-[22px];
+    @apply rounded-[20px] bg-tint-blue px-7 py-6;
   }
 
   /* ── Logo motion (unchanged) ───────────────────────────────────────────── */
@@ -636,8 +647,11 @@ body {
   .cfh-chip {
     @apply rounded-xl border border-white/15 bg-white/10 px-4 py-2.5 text-[13px] text-white/90 shadow-[0_8px_30px_rgba(0,0,0,0.25)] backdrop-blur-md;
   }
+  .cfh-chip-hl {
+    @apply border-[#6f9bff]/60 bg-[#2f6be0]/35 text-white shadow-[0_8px_30px_rgba(47,107,224,0.35)];
+  }
   .cfh-card {
-    @apply relative overflow-hidden rounded-[24px] p-7 sm:p-9;
+    @apply relative min-w-0 overflow-hidden rounded-[24px] p-7 sm:p-9;
   }
   /* The white sheet that slides up over the hero, SiteGround-style. */
   .cfh-sheet {
@@ -647,3 +661,58 @@ body {
     @apply mx-auto w-full max-w-[1180px] px-4 sm:px-6;
   }
 }
+
+/* ── Page hero band (every subpage's opening section) ─────────────────────
+   Dark, full-bleed, our Blender render faint behind, rounded at the bottom
+   so the white page reads as a sheet beneath it. Put `cf-pagehero` on the
+   opening <section> only.
+
+   UNLAYERED ON PURPOSE: the colour flips below must beat utilities like
+   text-ink written on the elements inside the hero. Nothing else in this
+   file should be unlayered; see the note on @layer components above. */
+.cf-pagehero {
+  position: relative;
+  isolation: isolate;
+  color: #fff;
+  background:
+    linear-gradient(100deg, rgb(11 13 17 / 0.96) 0%, rgb(11 13 17 / 0.86) 55%, rgb(11 13 17 / 0.7) 100%),
+    url("/home/hero-interior.webp") center 40% / cover no-repeat,
+    var(--color-night);
+  border-bottom-left-radius: 40px;
+  border-bottom-right-radius: 40px;
+  padding-top: clamp(64px, 9vw, 120px);
+  padding-bottom: clamp(64px, 9vw, 120px);
+}
+@media (min-width: 640px) {
+  .cf-pagehero { border-bottom-left-radius: 64px; border-bottom-right-radius: 64px; }
+}
+.cf-pagehero :is(.cf-display, .cf-section-title, .text-ink, h1, h2, h3, strong) { color: #fff; }
+.cf-pagehero :is(.cf-lead, .cf-section-copy, .text-ink-2, .text-ink-3, p) { color: rgb(255 255 255 / 0.74); }
+.cf-pagehero .cf-eyebrow { background: rgb(255 255 255 / 0.12); color: #fff; }
+.cf-pagehero a:not([class*="cf-btn"]) { color: #a9c4ff; }
+.cf-pagehero .cf-btn-primary { background: #fff; color: var(--color-ink); }
+.cf-pagehero .cf-btn-primary:hover { background: #e9ebef; }
+.cf-pagehero .cf-btn-secondary { border-color: rgb(255 255 255 / 0.4); color: #fff; }
+.cf-pagehero .cf-btn-secondary:hover { background: rgb(255 255 255 / 0.1); }
+.cf-pagehero .border-rule { border-color: rgb(255 255 255 / 0.15); }
+
+/* ── Fade-up reveal (components/scroll-reveal.tsx adds these) ─────────────
+   Only JavaScript adds .cf-reveal, so without JS nothing is ever hidden. */
+.cf-reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1), transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.cf-reveal.cf-in { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) {
+  .cf-reveal { opacity: 1; transform: none; transition: none; }
+}
+
+/* ── Footer: dark band (unlayered for the same reason as .cf-pagehero) ── */
+.cf-footer :is(.text-ink, h3) { color: #fff; }
+.cf-footer :is(.text-ink-2, .text-ink-3, p) { color: rgb(255 255 255 / 0.62); }
+.cf-footer a.text-ink-2:hover { color: #fff; }
+.cf-footer .cf-eyebrow { background: transparent; padding: 0; color: rgb(255 255 255 / 0.45); }
+.cf-footer .border-rule { border-color: rgb(255 255 255 / 0.1); }
+.cf-footer .text-blue { color: #8fb3ff; }
+.cf-pagehero .text-blue { color: #a9c4ff; }

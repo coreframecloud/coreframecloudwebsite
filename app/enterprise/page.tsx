@@ -109,7 +109,7 @@ export default async function EnterprisePage() {
       <BackgroundGlow />
 
       <main className="relative">
-        <section className="cf-section px-5">
+        <section className="cf-section cf-pagehero px-5">
           <div className="cf-wide">
             {/* Header */}
             <div className="max-w-[680px]">
@@ -153,7 +153,10 @@ export default async function EnterprisePage() {
                 credit.
               </p>
             </div>
-
+          </div>
+        </section>
+        <section className="cf-section px-5">
+          <div className="cf-wide">
             {/* What a studio plan adds */}
             <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
               {[

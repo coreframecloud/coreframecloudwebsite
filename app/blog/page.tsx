@@ -39,15 +39,18 @@ export default function BlogIndexPage() {
   return (
     <div className="relative min-h-screen text-ink">
       <JsonLd data={breadcrumbList([{ name: "Blog", path: "/blog" }])} />
+      <section className="cf-section cf-pagehero px-5">
+        <div className="cf-wide">
+              <p className="cf-eyebrow mb-5">Blog</p>
+              <h1 className="cf-display max-w-[16ch]">Notes on rendering and remote GPUs.</h1>
+              <p className="cf-lead mt-5 max-w-[60ch]">
+                What actually needs a GPU, what it costs to own one or rent one in India, and step-by-step
+                sessions on a cloud RTX workstation. Written by the {BLOG_AUTHOR.toLowerCase()}.
+              </p>
+        </div>
+      </section>
       <main className="cf-section px-5">
         <div className="cf-wide">
-          <p className="cf-eyebrow mb-5">Blog</p>
-          <h1 className="cf-display max-w-[16ch]">Notes on rendering and remote GPUs.</h1>
-          <p className="cf-lead mt-5 max-w-[60ch]">
-            What actually needs a GPU, what it costs to own one or rent one in India, and step-by-step
-            sessions on a cloud RTX workstation. Written by the {BLOG_AUTHOR.toLowerCase()}.
-          </p>
-
           <ul className="mt-14 grid gap-x-8 gap-y-14 sm:grid-cols-2">
             {posts.map((p) => (
               <li key={p.slug} className="cf-card">

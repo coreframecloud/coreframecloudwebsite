@@ -117,7 +117,7 @@ export default async function ComparisonPage() {
       <BackgroundGlow />
 
       <main className="relative">
-        <section className="cf-section px-5">
+        <section className="cf-section px-5 cf-pagehero">
           <div className="cf-col">
             <p className="cf-eyebrow mb-5">Comparison</p>
             <h1 className="cf-display">Rent a GPU, or buy the machine.</h1>

@@ -130,23 +130,26 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
         </div>
       ) : null}
 
+      <section className="cf-section cf-pagehero px-5">
+        <div className="cf-col">
+              <nav aria-label="Breadcrumb" className="mb-6 font-mono text-[12px] tracking-[0.06em] text-ink-3">
+                <Link href="/blog" className="hover:text-ink">
+                  Blog
+                </Link>
+                <span aria-hidden> / </span>
+                <span>{post.eyebrow}</span>
+              </nav>
+          
+              <h1 className="cf-display">{post.title}</h1>
+          
+              <p className="mt-5 font-mono text-[12px] tracking-[0.06em] text-ink-3">
+                {BLOG_AUTHOR} · <time dateTime={post.datePublished}>{formatDate(post.datePublished)}</time> ·{" "}
+                {minutes} min read
+              </p>
+        </div>
+      </section>
       <main className="cf-section px-5">
         <article className="cf-col">
-          <nav aria-label="Breadcrumb" className="mb-6 font-mono text-[12px] tracking-[0.06em] text-ink-3">
-            <Link href="/blog" className="hover:text-ink">
-              Blog
-            </Link>
-            <span aria-hidden> / </span>
-            <span>{post.eyebrow}</span>
-          </nav>
-
-          <h1 className="cf-display">{post.title}</h1>
-
-          <p className="mt-5 font-mono text-[12px] tracking-[0.06em] text-ink-3">
-            {BLOG_AUTHOR} · <time dateTime={post.datePublished}>{formatDate(post.datePublished)}</time> ·{" "}
-            {minutes} min read
-          </p>
-
           <figure className="mt-8">
             <Image
               src={post.hero.src}

@@ -145,7 +145,7 @@ export default function AnsysCfdPage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
       <main className="relative">
-        <section className="cf-section px-5">
+        <section className="cf-section px-5 cf-pagehero">
           <div className="cf-col">
             <p className="cf-eyebrow mb-5">CFD · Ansys · Bring your own licence</p>
             <h1 className="cf-display">

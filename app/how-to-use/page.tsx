@@ -123,20 +123,24 @@ export default function HowToUsePage() {
   };
 
   return (
+    <>
+    <section className="cf-section cf-pagehero px-5">
+      <div className="cf-col">
+            <div className="cf-eyebrow">How to use Coreframe</div>
+            <h1 className="cf-display mt-3">From sign-up to your first render.</h1>
+            <p className="cf-lead mt-5">
+              Coreframe rents Windows GPU workstations by the minute, hosted in India. You stream a real{" "}
+              {NODE.gpu} desktop to the computer you already own, work on it as normal, and pay for the
+              minutes you use. Here&apos;s the whole thing, start to finish.
+            </p>
+      </div>
+    </section>
     <main className="cf-section px-5">
       <JsonLd data={breadcrumbList([{ name: "How to use Coreframe", path: "/how-to-use" }])} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(howTo) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
 
       <div className="cf-col">
-        <div className="cf-eyebrow">How to use Coreframe</div>
-        <h1 className="cf-display mt-3">From sign-up to your first render.</h1>
-        <p className="cf-lead mt-5">
-          Coreframe rents Windows GPU workstations by the minute, hosted in India. You stream a real{" "}
-          {NODE.gpu} desktop to the computer you already own, work on it as normal, and pay for the
-          minutes you use. Here&apos;s the whole thing, start to finish.
-        </p>
-
         <section className="mt-14">
           <h2 className="cf-section-title">Six steps.</h2>
           <ol className="mt-8 space-y-8">
@@ -221,5 +225,6 @@ export default function HowToUsePage() {
         </div>
       </div>
     </main>
+    </>
   );
 }

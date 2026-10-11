@@ -100,14 +100,16 @@ export default async function SoftwareLandingPage({
   ];
 
   return (
+    <>
+    <section className="cf-section cf-pagehero px-5">
+      <div className="cf-col">
+            <h1 className="cf-display">{page.title}</h1>
+            <p className="cf-lead mt-[22px]">{page.intro}</p>
+      </div>
+    </section>
     <main className="cf-section px-5">
       <JsonLd data={faqPage(faqs)} />
       <JsonLd data={breadcrumbList([{ name: page.metaTitle ?? page.title, path: `/software/${page.slug}` }])} />
-
-      <div className="cf-col">
-        <h1 className="cf-display">{page.title}</h1>
-        <p className="cf-lead mt-[22px]">{page.intro}</p>
-      </div>
 
       <section className="cf-col mt-16">
         <p className="cf-eyebrow mb-4">The problem</p>
@@ -196,5 +198,6 @@ export default async function SoftwareLandingPage({
         </section>
       )}
     </main>
+    </>
   );
 }

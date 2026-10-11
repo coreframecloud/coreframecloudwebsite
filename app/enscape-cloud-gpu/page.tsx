@@ -90,7 +90,7 @@ export default async function EnscapePage() {
       />
 
       <main className="relative">
-        <section className="cf-section px-5">
+        <section className="cf-section px-5 cf-pagehero">
           <div className="cf-col">
             <p className="cf-eyebrow mb-5">Enscape · Cloud GPU · Bengaluru</p>
             <h1 className="cf-display">

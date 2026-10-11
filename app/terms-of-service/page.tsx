@@ -39,20 +39,24 @@ const prohibitedUses = [
 
 export default function TermsOfServicePage() {
   return (
+    <>
+    <section className="cf-section cf-pagehero px-5">
+      <div className="cf-wide">
+            <div className="cf-eyebrow">
+              Legal
+            </div>
+            <h1 className="cf-display mt-4">
+              Terms of Service
+            </h1>
+            <p className="mt-4 cf-eyebrow">
+              Last Updated: June 2026
+            </p>
+      </div>
+    </section>
     <main className="relative min-h-screen border-b border-rule text-ink">
       <BackgroundGlow />
 
       <div className="relative mx-auto max-w-4xl px-4 py-20 sm:px-6 lg:px-8">
-        <div className="cf-eyebrow">
-          Legal
-        </div>
-        <h1 className="cf-display mt-4">
-          Terms of Service
-        </h1>
-        <p className="mt-4 cf-eyebrow">
-          Last Updated: June 2026
-        </p>
-
         <div className="mt-10 space-y-10 text-base leading-8 text-ink-2">
           <section>
             <p>
@@ -135,5 +139,6 @@ export default function TermsOfServicePage() {
         </div>
       </div>
     </main>
+    </>
   );
 }

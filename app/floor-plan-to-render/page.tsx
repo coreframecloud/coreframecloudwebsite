@@ -124,7 +124,7 @@ export default function Page() {
       />
 
       <main className="relative">
-        <section className="cf-section px-5">
+        <section className="cf-section px-5 cf-pagehero">
           <div className="cf-col">
             <p className="cf-eyebrow mb-5">Coreframe Studio</p>
             <h1 className="cf-display">Turn a floor plan into the room.</h1>

@@ -20,14 +20,18 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 
 export default function PrivacyPolicyPage() {
   return (
+    <>
+    <section className="cf-section cf-pagehero px-5">
+      <div className="cf-wide">
+            <div className="text-sm font-semibold uppercase tracking-widest text-blue">Legal</div>
+            <h1 className="cf-display mt-3">Privacy Policy</h1>
+            <p className="mt-2 text-sm text-ink-3">Effective from June 28, 2026</p>
+      </div>
+    </section>
     <main className="relative min-h-screen border-b border-rule text-ink">
       <BackgroundGlow />
 
       <div className="relative mx-auto max-w-3xl px-6 py-20 sm:py-28">
-        <div className="text-sm font-semibold uppercase tracking-widest text-blue">Legal</div>
-        <h1 className="cf-display mt-3">Privacy Policy</h1>
-        <p className="mt-2 text-sm text-ink-3">Effective from June 28, 2026</p>
-
         <div className="mt-10 space-y-10 text-base leading-8 text-ink-2">
 
           <Section title="Our commitment">
@@ -133,5 +137,6 @@ export default function PrivacyPolicyPage() {
         </div>
       </div>
     </main>
+    </>
   );
 }

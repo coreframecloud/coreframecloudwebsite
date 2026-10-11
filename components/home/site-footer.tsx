@@ -18,12 +18,12 @@ import { visiblePosts } from "@/lib/blog";
 
 export function SiteFooter() {
   return (
-    <footer className="border-t border-rule bg-paper">
+    <footer className="cf-footer mt-10 rounded-t-[40px] bg-night text-white sm:rounded-t-[64px]">
       {/* pb-28 is not decoration. The WhatsApp button is `fixed bottom-6 right-6`
           and ~56px tall, so at full scroll it sits on top of the last ~80px of
           the page. Without this padding it covers the registered address and
           GSTIN — the two lines that are on the page for compliance reasons. */}
-      <div className="mx-auto max-w-7xl px-4 pt-8 pb-28 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl px-4 pt-16 pb-28 sm:px-6 lg:px-8">
 
         {/* Main row */}
         <div className="grid gap-8 lg:grid-cols-[1fr_auto_auto_auto]">
@@ -31,7 +31,7 @@ export function SiteFooter() {
           {/* Brand + tagline */}
           <div>
             <Link href="/" aria-label="COREFRAME Home" className="inline-flex min-h-11 items-center">
-              <CoreframeWordmarkAtlas iconSize={40} animated={false} />
+              <CoreframeWordmarkAtlas variant="light" iconSize={40} animated={false} />
             </Link>
             <p className="mt-3 max-w-xs text-xs leading-5 text-ink-2">
               Managed workstations for 3D rendering and CFD analysis, hosted in Bengaluru, India.
@@ -49,7 +49,7 @@ export function SiteFooter() {
           {/* Navigation */}
           <div>
             <h3 className="cf-eyebrow">Product</h3>
-            <div className="mt-3 flex flex-col gap-2">
+            <div className="mt-3 flex flex-col gap-0">
               {[
                 { label: "D5 Render", href: "/d5-render-cloud-workstation" },
                 { label: "Lumion", href: "/lumion-cloud-gpu" },
@@ -63,7 +63,7 @@ export function SiteFooter() {
                 // 404s in production is worse than no link.
                 ...(visiblePosts().length ? [{ label: "Blog", href: "/blog" }] : []),
               ].map((l) => (
-                <Link key={l.href} href={l.href} className="flex min-h-11 items-center text-xs text-ink-2 transition hover:text-ink">{l.label}</Link>
+                <Link key={l.href} href={l.href} className="flex min-h-11 items-center text-[13.5px] text-ink-2 transition hover:text-ink">{l.label}</Link>
               ))}
             </div>
           </div>
@@ -71,13 +71,13 @@ export function SiteFooter() {
           {/* Legal */}
           <div>
             <h3 className="cf-eyebrow">Legal</h3>
-            <div className="mt-3 flex flex-col gap-2">
+            <div className="mt-3 flex flex-col gap-0">
               {[
                 { label: "Privacy Policy", href: "/privacy-policy" },
                 { label: "Terms of Service", href: "/terms-of-service" },
                 { label: "Refund Policy", href: "/refund-policy" },
               ].map((l) => (
-                <Link key={l.href} href={l.href} className="flex min-h-11 items-center text-xs text-ink-2 transition hover:text-ink">{l.label}</Link>
+                <Link key={l.href} href={l.href} className="flex min-h-11 items-center text-[13.5px] text-ink-2 transition hover:text-ink">{l.label}</Link>
               ))}
             </div>
           </div>
@@ -85,16 +85,16 @@ export function SiteFooter() {
           {/* Contact */}
           <div>
             <h3 className="cf-eyebrow">Contact</h3>
-            <div className="mt-3 flex flex-col gap-2">
+            <div className="mt-3 flex flex-col gap-0">
               {/* Each mark sits beside its own visible label and is aria-hidden,
                   so a screen reader reads the contact once rather than twice.
                   They inherit currentColor, so the hover state comes free and
                   there is nothing to update when the palette moves. */}
-              <Link href={`mailto:${COMPANY.email}`} className="flex min-h-11 items-center gap-2 text-xs text-ink-2 transition hover:text-ink">
+              <Link href={`mailto:${COMPANY.email}`} className="flex min-h-11 items-center gap-2 text-[13.5px] text-ink-2 transition hover:text-ink">
                 <MailIcon className="h-[15px] w-[15px]" />
                 {COMPANY.email}
               </Link>
-              <Link href={COMPANY.whatsapp} target="_blank" rel="noreferrer" className="flex min-h-11 items-center gap-2 text-xs text-ink-2 transition hover:text-ink">
+              <Link href={COMPANY.whatsapp} target="_blank" rel="noreferrer" className="flex min-h-11 items-center gap-2 text-[13.5px] text-ink-2 transition hover:text-ink">
                 <WhatsAppIcon className="h-[15px] w-[15px]" />
                 {COMPANY.phone}
               </Link>
@@ -102,7 +102,7 @@ export function SiteFooter() {
                   and it is the only social profile in the Organization schema
                   (layout.tsx sameAs) -- a footer link is what makes that claim
                   verifiable to a crawler instead of an assertion. */}
-              <Link href={COMPANY_INSTAGRAM_URL} target="_blank" rel="noreferrer" className="flex min-h-11 items-center gap-2 text-xs text-ink-2 transition hover:text-ink">
+              <Link href={COMPANY_INSTAGRAM_URL} target="_blank" rel="noreferrer" className="flex min-h-11 items-center gap-2 text-[13.5px] text-ink-2 transition hover:text-ink">
                 <InstagramIcon className="h-[15px] w-[15px]" />
                 {COMPANY_INSTAGRAM_HANDLE}
               </Link>

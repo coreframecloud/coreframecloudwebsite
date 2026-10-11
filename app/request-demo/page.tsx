@@ -15,7 +15,7 @@ export default function RequestDemoPage() {
       <BackgroundGlow />
 
       <main className="relative">
-        <section className="cf-section px-5">
+        <section className="cf-section px-5 cf-pagehero">
           <div className="cf-col">
             <p className="cf-eyebrow">Talk to us</p>
 

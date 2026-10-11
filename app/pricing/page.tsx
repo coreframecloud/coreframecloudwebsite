@@ -50,7 +50,7 @@ export default async function PricingPage() {
   return (
     <main className="text-ink">
       <JsonLd data={breadcrumbList([{ name: "Pricing", path: "/pricing" }])} />
-      <section className="cf-section px-5 pb-0">
+      <section className="cf-section px-5 pb-0 cf-pagehero">
         <div className="cf-col">
           <p className="cf-eyebrow mb-5">Pricing</p>
           <h1 className="cf-display">Two ways to pay for it.</h1>

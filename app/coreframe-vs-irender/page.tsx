@@ -133,7 +133,7 @@ export default async function Page() {
       <JsonLd data={breadcrumbList([{ name: "Coreframe vs iRender", path: "/coreframe-vs-irender" }])} />
       <BackgroundGlow />
       <main className="relative">
-        <section className="cf-section px-5">
+        <section className="cf-section px-5 cf-pagehero">
           <div className="cf-col">
             <p className="cf-eyebrow mb-5">Comparison</p>
             <h1 className="cf-display">Coreframe vs iRender.</h1>

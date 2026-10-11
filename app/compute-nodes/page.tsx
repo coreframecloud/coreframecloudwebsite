@@ -75,7 +75,7 @@ export default async function ComputeNodesPage() {
       <BackgroundGlow />
 
       <main className="relative">
-        <section className="cf-section px-5">
+        <section className="cf-section px-5 cf-pagehero">
           <div className="cf-wide">
             <div className="cf-eyebrow">Compute nodes</div>
             <h1 className="cf-display mt-3">One node. One GPU. Nothing to configure.</h1>

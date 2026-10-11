@@ -1,22 +1,15 @@
 import type { Metadata } from "next";
-import { Inter, Source_Serif_4, IBM_Plex_Mono, Poppins } from "next/font/google";
+import { Inter, IBM_Plex_Mono, Poppins } from "next/font/google";
 
 /**
- * Three families, one job each: the serif carries display headings, Inter
- * carries body copy, the monospace carries every label, control and hard fact.
+ * Three families, one job each (11 Oct 2026): Poppins carries every heading,
+ * Inter carries body copy, the monospace carries fact blocks.
  *
  * next/font self-hosts these at build time, so there is no render-blocking
  * request to fonts.googleapis.com and no layout shift. The CSS variables are
  * consumed by @theme in globals.css (--font-display / --font-sans / --font-mono),
  * which is what turns them into font-display / font-sans / font-mono utilities.
  */
-const sourceSerif = Source_Serif_4({
-  subsets: ["latin"],
-  weight: ["400", "600", "700"],
-  variable: "--font-source-serif",
-  display: "swap",
-});
-
 const inter = Inter({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
@@ -24,7 +17,7 @@ const inter = Inter({
   display: "swap",
 });
 
-/** Geometric sans for the homepage's headings (the 11 Oct 2026 redesign). */
+/** Geometric sans for every heading (the 11 Oct 2026 redesign). */
 const poppins = Poppins({
   subsets: ["latin"],
   weight: ["500", "600"],
@@ -48,6 +41,7 @@ import "./globals.css";
 import { SiteHeader } from "@/components/home/site-header";
 import { BareOnLanding } from "@/components/layout/bare-on-landing";
 import { SiteFooter } from "@/components/home/site-footer";
+import { ScrollReveal } from "@/components/scroll-reveal";
 import { IntroStrip } from "@/components/home/intro-strip";
 import { getIntroOffer, hoursLabel, getRateCard, planTiers } from "@/lib/rate-card";
 
@@ -222,7 +216,7 @@ export default async function RootLayout({
   return (
     <html
       lang="en-IN"
-      className={`${sourceSerif.variable} ${inter.variable} ${plexMono.variable} ${poppins.variable}`}
+      className={`${inter.variable} ${plexMono.variable} ${poppins.variable}`}
     >
       <body className="bg-paper text-ink antialiased">
         {/* Google Analytics */}
@@ -422,6 +416,7 @@ export default async function RootLayout({
         <WhatsAppClickTracker />
         {children}
         <SiteFooter />
+        <ScrollReveal />
 
         {/* Floating WhatsApp button — every page except the paid landing
             pages, where it covers the terms line and offers a way out. */}

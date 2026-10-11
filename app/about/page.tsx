@@ -202,20 +202,23 @@ export default async function AboutPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
+      <section className="cf-section cf-pagehero px-5">
+        <div className="cf-col">
+              <div className="cf-eyebrow">About</div>
+              <h1 className="cf-display mt-3">What is Coreframe Cloud?</h1>
+          
+              <p className="cf-lead mt-8">
+                Coreframe Cloud is a cloud GPU workstation service run by Coreframe Compute Labs
+                Private Limited, a company registered in Bengaluru, Karnataka, India. We rent full{" "}
+                {NODE.os} desktops on NVIDIA {NODE.gpu} graphics cards, streamed to the laptop you
+                already own and billed by the minute. Architects, interior designers, visualisation
+                studios, 3D artists and simulation engineers use it for the hours they actually need a
+                GPU, so they don&rsquo;t have to buy a machine that sits idle most of the month.
+              </p>
+        </div>
+      </section>
       <main className="relative cf-section px-5">
         <div className="cf-col">
-          <div className="cf-eyebrow">About</div>
-          <h1 className="cf-display mt-3">What is Coreframe Cloud?</h1>
-
-          <p className="cf-lead mt-8">
-            Coreframe Cloud is a cloud GPU workstation service run by Coreframe Compute Labs
-            Private Limited, a company registered in Bengaluru, Karnataka, India. We rent full{" "}
-            {NODE.os} desktops on NVIDIA {NODE.gpu} graphics cards, streamed to the laptop you
-            already own and billed by the minute. Architects, interior designers, visualisation
-            studios, 3D artists and simulation engineers use it for the hours they actually need a
-            GPU, so they don&rsquo;t have to buy a machine that sits idle most of the month.
-          </p>
-
           <p className="cf-section-copy mt-5">
             You sign in, a {NODE.os} machine starts in about two minutes, and you use it like the
             computer under your desk: open the CAD file, set up the scene, render, save. Your

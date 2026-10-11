@@ -38,7 +38,7 @@ export default function CfdIntakePage() {
       <BackgroundGlow />
 
       <main className="relative">
-        <section className="cf-section px-5">
+        <section className="cf-section px-5 cf-pagehero">
           {/* Page header */}
           <div className="cf-col">
             <p className="cf-eyebrow">CFD job intake</p>

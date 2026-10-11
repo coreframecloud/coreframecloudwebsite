@@ -100,21 +100,24 @@ export default async function WorkstationVsFarmPage() {
       <JsonLd data={faqPage(faqs)} />
       <JsonLd data={breadcrumbList([{ name: "Cloud workstation vs render farm", path: "/cloud-workstation-vs-render-farm" }])} />
 
+      <section className="cf-section cf-pagehero px-5">
+        <div className="cf-col">
+              <p className="cf-eyebrow mb-5">Comparison · Rendering</p>
+              <h1 className="cf-display">Cloud workstation or render farm?</h1>
+          
+              <p className="cf-lead mt-[22px]">
+                Short answer: a render farm renders a <em>finished</em> scene on many
+                machines at once. A cloud workstation is <em>one</em> machine that you
+                drive yourself while the scene is still being made. If you use a
+                real-time renderer such as D5, Lumion or Enscape, or you are still
+                changing things, you want a workstation. If you have a finished
+                animation to push through an offline renderer, a farm is usually the
+                better tool.
+              </p>
+        </div>
+      </section>
       <main className="relative cf-section px-5">
         <div className="cf-col">
-          <p className="cf-eyebrow mb-5">Comparison · Rendering</p>
-          <h1 className="cf-display">Cloud workstation or render farm?</h1>
-
-          <p className="cf-lead mt-[22px]">
-            Short answer: a render farm renders a <em>finished</em> scene on many
-            machines at once. A cloud workstation is <em>one</em> machine that you
-            drive yourself while the scene is still being made. If you use a
-            real-time renderer such as D5, Lumion or Enscape, or you are still
-            changing things, you want a workstation. If you have a finished
-            animation to push through an offline renderer, a farm is usually the
-            better tool.
-          </p>
-
           <section className="mt-14">
             <h2 className="cf-section-title">Side by side.</h2>
             <div className="mt-6 overflow-x-auto rounded-cf border border-rule bg-paper-2">
