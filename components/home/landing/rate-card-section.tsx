@@ -45,7 +45,7 @@ export function RateCardSection({
           {"  "}<K>sign-up</K>{"          "}email + a WhatsApp code to your mobile.{"\n"}
           {"                   "}no ID documents · international cards accepted{"\n"}
           {"  "}<K>the machine</K>{"      "}RTX 5080 · 16 GB GDDR7 · 64 GB RAM ·{"\n"}
-          {"                   "}1 TB NVMe Gen 5 · 4K 60 fps stream{"\n"}
+          {"                   "}1 TB NVMe · 4K 60 fps stream{"\n"}
           {"  "}<K>benchmarks</K>{"       "}Blender Open Data, 4.5.0, Cycles, read 20 Sep 2026{"\n"}
           {"                   "}RTX 5080 <V>9,138</V> median · 1,429 results{"\n"}
           {"                   "}RTX 4060 3,182 · 441   ·   RTX 3060 2,154 · 634{"\n"}

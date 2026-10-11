@@ -23,7 +23,7 @@ const whatsapp = (message: string) =>
  * The spec list is BUILT FROM `lib/node-spec`, not typed here.
  *
  * This page used to carry its own copy — including "500 GB NVMe", which
- * disagreed with the 1 TB Gen 5 drive that is actually in the machine, and a
+ * disagreed with the 1 TB of NVMe that is actually in the machine, and a
  * CUDA-core and board-power figure nobody had read off the node. Sixteen pages
  * each kept their own list and they had already drifted apart. One import now,
  * and a fleet change edits one file.

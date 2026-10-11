@@ -34,7 +34,11 @@ export const NODE = {
   /** Read off gpu-node-01 (review, 10 Oct 2026): Ryzen 7 9700X, 8 cores / 16 threads. */
   cpuModel: "AMD Ryzen 7 9700X",
   cpuThreads: "8 cores / 16 threads",
-  disk: "1 TB NVMe Gen 5",
+  /**
+   * 2 × 480 GB Crucial E100 NVMe (PCIe Gen 4), shown as one figure on the
+   * owner's call (11 Oct 2026). Do not say "Gen 5": it is a Gen 4 drive.
+   */
+  disk: "1 TB NVMe",
   stream: "4K at 60 fps",
   os: "Windows 11",
   location: "Bengaluru, India",

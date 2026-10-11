@@ -10,7 +10,7 @@ import { BANDWIDTH_SENTENCE } from "@/lib/streaming-terms";
  *
  * `bandwidth` is the RTX 5080's 960 GB/s MEMORY bandwidth, not a disk figure.
  * An earlier draft carried "800 GB/s" against the NVMe, which is off by two
- * orders of magnitude — Gen 4 is about 7 GB/s and Gen 5 about 14 — and would
+ * orders of magnitude — a PCIe Gen 4 NVMe like ours is about 7 GB/s — and would
  * have been spotted instantly by exactly the engineers this page is courting.
  *
  * The rate and the transfer allowance are passed in from the live rate card,
