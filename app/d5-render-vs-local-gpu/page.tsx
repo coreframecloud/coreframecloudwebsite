@@ -1,3 +1,6 @@
+import { VramDiagram } from "@/components/visuals/diagrams";
+import { GenImage } from "@/components/visuals/media";
+import { Fold } from "@/components/visuals/fold";
 import type { Metadata } from "next";
 import { JsonLd } from "@/components/seo/json-ld";
 import { breadcrumbList, OG_IMAGE } from "@/lib/seo";
@@ -118,16 +121,16 @@ export default async function ComparisonPage() {
 
       <main className="relative">
         <section className="cf-section px-5 cf-pagehero">
-          <div className="cf-col">
+          <div className="cf-wide grid items-center gap-10 lg:grid-cols-[1.05fr_1fr]">
+          <div className="min-w-0">
             <p className="cf-eyebrow mb-5">Comparison</p>
             <h1 className="cf-display">Rent a GPU, or buy the machine.</h1>
             <p className="cf-lead mt-6">
-              It depends on how many hours a year you actually render, and you
-              can work out where it tips. We do the arithmetic below where you
-              can check it, and we say plainly where buying is the better
-              decision.
-            </p>
+            It depends on how many hours a year you render. The arithmetic is below, including when buying wins.
+          </p>
           </div>
+          <GenImage src="/visuals/gen-tired-designer.webp" alt="A designer waiting on a slow laptop late at night" width={1000} height={1750} sizes="(max-width: 1024px) 100vw, 480px" parallax priority />
+        </div>
         </section>
 
         <div className="cf-rule" />
@@ -219,8 +222,7 @@ export default async function ComparisonPage() {
 
         <section className="cf-section px-5">
           <div className="cf-col">
-            <p className="cf-eyebrow mb-5">The fair part</p>
-            <h2 className="cf-section-title">What buying does better.</h2>
+<Fold title="What buying does better.">
             <p className="cf-section-copy mt-4">
               A machine on your desk has no per-minute cost and no network
               dependency. It works on a site with no signal and on an office
@@ -232,7 +234,8 @@ export default async function ComparisonPage() {
               So look at the two lists below and see which one sounds like your
               week.
             </p>
-          </div>
+          </Fold>
+</div>
         </section>
 
         <section className="cf-section px-5 pt-0">
@@ -271,6 +274,9 @@ export default async function ComparisonPage() {
           <div className="cf-col">
             <p className="cf-eyebrow mb-5">The specification that matters</p>
             <h2 className="cf-section-title">VRAM sets how big a scene can be.</h2>
+            <div className="mt-6 rounded-[24px] bg-tint-blue p-6">
+              <VramDiagram />
+            </div>
             <p className="cf-section-copy mt-4">
               Check it before anything else. Geometry, textures and lightmaps
               have to fit on the card. When they don&rsquo;t, you have to cut the
@@ -291,8 +297,7 @@ export default async function ComparisonPage() {
 
         <section className="cf-section px-5">
           <div className="cf-col">
-            <p className="cf-eyebrow mb-5">The other side of it</p>
-            <h2 className="cf-section-title">What renting gives up.</h2>
+<Fold title="What renting gives up.">
             <p className="cf-section-copy mt-4">
               Three things you should know before you sign up. First, the
               workstation resets to a clean image between sessions. Your files
@@ -308,7 +313,8 @@ export default async function ComparisonPage() {
               {billingSentence(card).slice(1)} That&rsquo;s cheap when work comes
               in bursts, and it adds up fast if you render all day, every day.
             </p>
-          </div>
+          </Fold>
+</div>
         </section>
 
         <div className="cf-rule" />

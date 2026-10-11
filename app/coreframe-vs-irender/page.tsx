@@ -1,3 +1,5 @@
+import { BillingMeter } from "@/components/visuals/billing-meter";
+import { GenImage } from "@/components/visuals/media";
 import type { Metadata } from "next";
 import { JsonLd } from "@/components/seo/json-ld";
 import { breadcrumbList, OG_IMAGE } from "@/lib/seo";
@@ -134,17 +136,23 @@ export default async function Page() {
       <BackgroundGlow />
       <main className="relative">
         <section className="cf-section px-5 cf-pagehero">
-          <div className="cf-col">
+          <div className="cf-wide grid items-center gap-10 lg:grid-cols-[1.05fr_1fr]">
+          <div className="min-w-0">
             <p className="cf-eyebrow mb-5">Comparison</p>
             <h1 className="cf-display">Coreframe vs iRender.</h1>
             <p className="cf-lead mt-6">
-              Both rent you a GPU by the hour. iRender bills in dollars from
-              Vietnam, and we bill in rupees from Bengaluru. Below are both price
-              lists as published, the conversion with its rate shown, and the
-              three things iRender does better than we do.
-            </p>
+            Both rent you a GPU by the hour. Their prices and ours, side by side, with the conversion shown.
+          </p>
           </div>
+          <GenImage src="/visuals/gen-night-desk-laptop.webp" alt="A laptop on a desk at night with a client message waiting" width={1000} height={1750} sizes="(max-width: 1024px) 100vw, 480px" parallax priority />
+        </div>
         </section>
+      <section className="cf-section px-5 pb-0">
+        <div className="cf-wide grid items-center gap-8 rounded-[28px] bg-tint-blue p-6 sm:p-10 lg:grid-cols-[0.8fr_1.2fr]">
+          <h2 className="cf-section-title">Billed by the minute. Close it and it stops.</h2>
+          <div className="min-w-0"><BillingMeter ratePerHour={rateValue} /></div>
+        </div>
+      </section>
 
         <div className="cf-rule" />
 
@@ -188,7 +196,7 @@ export default async function Page() {
               <B>{NODE.vram}</B>
               {"\n"}
             </SpecBlock>
-            <p className="mt-6 text-sm text-white/55">
+            <p className="mt-6 text-sm text-ink-3">
               iRender rates read from their public price page on{" "}
               {IRENDER_CHECKED}. Rupee column converted at the mid-market rate
               of ₹{FX.usdInr} to the dollar on {FX.asOf}; that rate moves and
@@ -197,9 +205,9 @@ export default async function Page() {
               charge.
             </p>
             {lowest ? (
-              <p className="mt-4 text-sm text-white/70">
+              <p className="mt-4 text-sm text-ink-2">
                 On a committed plan it goes lower:{" "}
-                <b className="text-white">
+                <b className="text-ink">
                   ₹{lowest.rupees.toLocaleString("en-IN", { maximumFractionDigits: 2 })}/hr
                 </b>{" "}
                 on {lowest.planName}, for hours inside the monthly allowance.
@@ -207,9 +215,9 @@ export default async function Page() {
               </p>
             ) : null}
             {rateValue ? (
-              <p className="mt-4 text-sm text-white/70">
+              <p className="mt-4 text-sm text-ink-2">
                 At those figures a Coreframe hour is about{" "}
-                <b className="text-white">
+                <b className="text-ink">
                   {Math.round((rateValue / (IRENDER.gpu4090.list * FX.usdInr)) * 100)}%
                 </b>{" "}
                 of iRender&apos;s list price for a single-4090 node, before any
@@ -230,7 +238,7 @@ export default async function Page() {
             </p>
             <ul className="mt-7 grid gap-4">
               {irenderWins.map((t) => (
-                <li key={t} className="cf-card-sm text-white/80">{t}</li>
+                <li key={t} className="cf-card-sm text-ink-2">{t}</li>
               ))}
             </ul>
           </div>
@@ -243,7 +251,7 @@ export default async function Page() {
             <h2 className="cf-title">Where we&apos;re the better choice</h2>
             <ul className="mt-7 grid gap-4">
               {coreframeWins.map((t) => (
-                <li key={t} className="cf-card-sm text-white/80">{t}</li>
+                <li key={t} className="cf-card-sm text-ink-2">{t}</li>
               ))}
             </ul>
             <p className="cf-lead mt-8">

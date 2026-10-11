@@ -1,3 +1,6 @@
+import { Fold } from "@/components/visuals/fold";
+import { GenImage } from "@/components/visuals/media";
+import { VramDiagram } from "@/components/visuals/diagrams";
 import type { Metadata } from "next";
 import { JsonLd } from "@/components/seo/json-ld";
 import { breadcrumbList, OG_IMAGE } from "@/lib/seo";
@@ -132,17 +135,16 @@ export default async function Page() {
 
       <main className="relative">
         <section className="cf-section px-5 cf-pagehero">
-          <div className="cf-col">
+          <div className="cf-wide grid items-center gap-10 lg:grid-cols-[1.05fr_1fr]">
+          <div className="min-w-0">
             <p className="cf-eyebrow mb-5">Explainer</p>
             <h1 className="cf-display">Is 8 GB of VRAM enough?</h1>
             <p className="cf-lead mt-6">
-              Usually yes, until very suddenly it isn&apos;t. The software vendors
-              don&apos;t help much: one publishes a recommendation and the other
-              publishes no number at all. So below is what they do say, with the
-              date we read it, and then how to measure your own scene instead of
-              guessing from a spec table.
-            </p>
+            Usually, until suddenly it isn&apos;t. Here&apos;s what the vendors say, and how to measure your own scene.
+          </p>
           </div>
+          <GenImage src="/visuals/gen-student-architecture-4x5.webp" alt="An architecture student working on a laptop beside her models" width={1000} height={1286} sizes="(max-width: 1024px) 100vw, 480px" parallax priority />
+        </div>
         </section>
 
         <div className="cf-rule" />
@@ -175,7 +177,7 @@ export default async function Page() {
               <B>{NODE.vram}</B>
               {"\n"}
             </SpecBlock>
-            <p className="mt-6 text-sm text-white/55">
+            <p className="mt-6 text-sm text-ink-3">
               Enscape figures from Chaos&apos;s published system requirements.
               D5&apos;s own specification page lists GPU models and states that
               video memory determines how well complex scenes are handled, but
@@ -191,6 +193,9 @@ export default async function Page() {
         <section className="cf-section px-5">
           <div className="cf-col">
             <h2 className="cf-title">Running out happens all at once</h2>
+            <div className="mt-6 rounded-[24px] bg-tint-blue p-6">
+              <VramDiagram />
+            </div>
             <p className="cf-lead mt-5">
               The spec tables leave this out. A scene that exceeds the card&apos;s
               memory doesn&apos;t just render a bit more slowly. Either the
@@ -211,14 +216,15 @@ export default async function Page() {
 
         <section className="cf-section px-5">
           <div className="cf-col">
-            <h2 className="cf-title">Measure your own scene in two minutes</h2>
-            <ol className="mt-7 grid gap-4 text-white/80">
+<Fold title="Measure your own scene in two minutes">
+            <ol className="mt-7 grid gap-4 text-ink-2">
               <li className="cf-card-sm">Open your heaviest real project. A test file won&apos;t tell you much.</li>
-              <li className="cf-card-sm">Ctrl+Shift+Esc for Task Manager, then <b className="text-white">Performance</b> → your GPU.</li>
-              <li className="cf-card-sm">Watch <b className="text-white">Dedicated GPU memory</b> while you orbit the viewport, then while a render starts. The peak is your number.</li>
+              <li className="cf-card-sm">Ctrl+Shift+Esc for Task Manager, then <b className="text-ink">Performance</b> → your GPU.</li>
+              <li className="cf-card-sm">Watch <b className="text-ink">Dedicated GPU memory</b> while you orbit the viewport, then while a render starts. The peak is your number.</li>
               <li className="cf-card-sm">Add about 2 GB of headroom. That&apos;s the card you need, whatever the vendor table says.</li>
             </ol>
-          </div>
+          </Fold>
+</div>
         </section>
 
         <div className="cf-rule" />
@@ -227,11 +233,11 @@ export default async function Page() {
           <div className="cf-col">
             <h2 className="cf-title">When 8 GB is genuinely fine</h2>
             <ul className="mt-7 grid gap-4">
-              {eightIsFine.map((t) => <li key={t} className="cf-card-sm text-white/80">{t}</li>)}
+              {eightIsFine.map((t) => <li key={t} className="cf-card-sm text-ink-2">{t}</li>)}
             </ul>
             <h2 className="cf-title mt-14">When it is not</h2>
             <ul className="mt-7 grid gap-4">
-              {eightIsNot.map((t) => <li key={t} className="cf-card-sm text-white/80">{t}</li>)}
+              {eightIsNot.map((t) => <li key={t} className="cf-card-sm text-ink-2">{t}</li>)}
             </ul>
           </div>
         </section>
@@ -240,9 +246,9 @@ export default async function Page() {
 
         <section className="cf-section px-5">
           <div className="cf-col">
-            <h2 className="cf-title">Where we fit, and where we don&apos;t</h2>
+<Fold title="Where we fit, and where we don&apos;t">
             <p className="cf-lead mt-5">
-              A Coreframe workstation has <b className="text-white">{NODE.vram}</b>. That&apos;s
+              A Coreframe workstation has <b className="text-ink">{NODE.vram}</b>. That&apos;s
               twice Enscape&apos;s recommended figure, with enough headroom for
               4K textures and a reasonable amount of site context.
               {rate ? ` It rents at ${rate}.` : ""}
@@ -264,7 +270,8 @@ export default async function Page() {
                 Compare the two on price
               </Link>
             </div>
-          </div>
+          </Fold>
+</div>
         </section>
 
         <div className="cf-rule" />
@@ -275,8 +282,8 @@ export default async function Page() {
             <div className="mt-7 grid gap-5">
               {FAQ.map((f) => (
                 <div key={f.q} className="cf-card-sm">
-                  <p className="font-semibold text-white">{f.q}</p>
-                  <p className="mt-2 text-white/75">{f.a}</p>
+                  <p className="font-semibold text-ink">{f.q}</p>
+                  <p className="mt-2 text-ink-2">{f.a}</p>
                 </div>
               ))}
             </div>

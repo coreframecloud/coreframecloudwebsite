@@ -1,5 +1,8 @@
+import { StreamDiagram } from "@/components/visuals/diagrams";
+import { GenImage } from "@/components/visuals/media";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Fold } from "@/components/visuals/fold";
 import { BackgroundGlow } from "@/components/home/background-glow";
 import { JsonLd } from "@/components/seo/json-ld";
 import { breadcrumbList, faqPage, OG_IMAGE } from "@/lib/seo";
@@ -101,19 +104,22 @@ export default async function WorkstationVsFarmPage() {
       <JsonLd data={breadcrumbList([{ name: "Cloud workstation vs render farm", path: "/cloud-workstation-vs-render-farm" }])} />
 
       <section className="cf-section cf-pagehero px-5">
-        <div className="cf-col">
+        <div className="cf-wide grid items-center gap-10 lg:grid-cols-[1.05fr_1fr]">
+          <div className="min-w-0">
               <p className="cf-eyebrow mb-5">Comparison · Rendering</p>
               <h1 className="cf-display">Cloud workstation or render farm?</h1>
           
               <p className="cf-lead mt-[22px]">
-                Short answer: a render farm renders a <em>finished</em> scene on many
-                machines at once. A cloud workstation is <em>one</em> machine that you
-                drive yourself while the scene is still being made. If you use a
-                real-time renderer such as D5, Lumion or Enscape, or you are still
-                changing things, you want a workstation. If you have a finished
-                animation to push through an offline renderer, a farm is usually the
-                better tool.
-              </p>
+            A render farm renders a <em>finished</em> scene on many machines. A workstation is <em>one</em> machine you drive while the scene is still changing.
+          </p>
+        </div>
+          <GenImage src="/visuals/gen-visualiser-home-16x9.webp" alt="A 3D visualiser working on a laptop at home" width={1600} height={914} sizes="(max-width: 1024px) 100vw, 480px" parallax priority />
+        </div>
+      </section>
+      <section className="cf-section px-5 pb-0">
+        <div className="cf-wide grid items-center gap-8 rounded-[28px] bg-tint-blue p-6 sm:p-10 lg:grid-cols-[0.8fr_1.2fr]">
+          <h2 className="cf-section-title">One machine, yours, while you work.</h2>
+          <div className="min-w-0"><StreamDiagram /></div>
         </div>
       </section>
       <main className="relative cf-section px-5">
@@ -142,8 +148,7 @@ export default async function WorkstationVsFarmPage() {
             </div>
           </section>
 
-          <section className="mt-14">
-            <h2 className="cf-section-title">Where a render farm wins.</h2>
+          <Fold title="Where a render farm wins.">
             <p className="mt-4 leading-8 text-ink-2">
               A farm is the right answer when the creative work is done and what
               is left is volume. Hundreds of animation frames in V-Ray, Corona,
@@ -153,10 +158,9 @@ export default async function WorkstationVsFarmPage() {
               machine at a time, and we would rather say so here than have you
               find out mid-deadline.
             </p>
-          </section>
+          </Fold>
 
-          <section className="mt-14">
-            <h2 className="cf-section-title">Where a workstation wins.</h2>
+          <Fold title="Where a workstation wins.">
             <p className="mt-4 leading-8 text-ink-2">
               Real-time renderers are interactive by design. You use D5, Lumion,
               Enscape or Twinmotion because you move the camera and the image
@@ -174,10 +178,9 @@ export default async function WorkstationVsFarmPage() {
               sessions. We don&rsquo;t publish render times, because they depend
               on your scene and settings.
             </p>
-          </section>
+          </Fold>
 
-          <section className="mt-14">
-            <h2 className="cf-section-title">And the third option: buying.</h2>
+          <Fold title="And the third option: buying.">
             <p className="mt-4 leading-8 text-ink-2">
               If you would keep a GPU busy most of the working week, owning one
               can be cheaper than either. A machine of this class costs roughly{" "}
@@ -187,7 +190,7 @@ export default async function WorkstationVsFarmPage() {
               </Link>{" "}
               works through both sides.
             </p>
-          </section>
+          </Fold>
 
           {hourly ? (
             <section className="mt-14">

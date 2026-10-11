@@ -1,3 +1,6 @@
+import { StreamDiagram } from "@/components/visuals/diagrams";
+import { Fold } from "@/components/visuals/fold";
+import { GenImage } from "@/components/visuals/media";
 import type { Metadata } from "next";
 import { JsonLd } from "@/components/seo/json-ld";
 import { breadcrumbList } from "@/lib/seo";
@@ -171,17 +174,15 @@ export default async function ArchitectsPage() {
 
       <main className="relative">
         <section className="cf-section px-5 cf-pagehero">
-          <div className="cf-col">
+          <div className="cf-wide grid items-center gap-10 lg:grid-cols-[1.05fr_1fr]">
+          <div className="min-w-0">
             <p className="cf-eyebrow mb-5">Architecture studios · India</p>
             <h1 className="cf-display">
               Nobody should be waiting for the render desk.
             </h1>
             <p className="cf-lead mt-6">
-              Rent {NODE.gpu} workstations by the minute for D5 Render, Lumion,
-              Enscape and Revit. Several people can render at the same time
-              instead of queueing for the one machine that&rsquo;s up to it. Project files stay
-              on NAS in {NODE.location}, so the latest one is never on a pen drive.
-            </p>
+            {NODE.gpu} workstations by the minute for D5 Render, Lumion, Enscape and Revit. Everyone renders at once, from shared project files.
+          </p>
 
             <div className="mt-8 flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:gap-4">
               <Link href="/signup" className="cf-btn-primary w-full sm:w-auto min-h-[44px]">
@@ -192,7 +193,15 @@ export default async function ArchitectsPage() {
               </Link>
             </div>
           </div>
+          <GenImage src="/visuals/gen-architect-client-walkthrough-16x9.webp" alt="An architect showing clients a 3D walkthrough on a wall screen" width={1600} height={914} sizes="(max-width: 1024px) 100vw, 480px" parallax priority />
+        </div>
         </section>
+      <section className="cf-section px-5 pb-0">
+        <div className="cf-wide grid items-center gap-8 rounded-[28px] bg-tint-blue p-6 sm:p-10 lg:grid-cols-[0.8fr_1.2fr]">
+          <h2 className="cf-section-title">Open the project. Render. Close it.</h2>
+          <div className="min-w-0"><StreamDiagram /></div>
+        </div>
+      </section>
 
         <div className="cf-rule" />
 
@@ -291,8 +300,7 @@ export default async function ArchitectsPage() {
 
         <section className="cf-section px-5">
           <div className="cf-col">
-            <p className="cf-eyebrow mb-5">Questions</p>
-            <h2 className="cf-section-title">What studios ask before they start.</h2>
+<Fold title="What studios ask before they start.">
             <dl className="mt-10 divide-y divide-rule border-y border-rule">
               {faqs.map((f) => (
                 <div key={f.q} className="py-6">
@@ -301,7 +309,8 @@ export default async function ArchitectsPage() {
                 </div>
               ))}
             </dl>
-          </div>
+          </Fold>
+</div>
         </section>
 
         <section className="cf-section px-5 pt-0">
