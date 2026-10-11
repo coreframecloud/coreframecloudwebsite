@@ -68,7 +68,7 @@ export function PricingSection({
   effectiveFrom = null,
 }: {
   /** Lowest effective rate per included plan hour, from the rate card. */
-  effectiveFrom?: { rupees: number; planName: string } | null;
+  effectiveFrom?: { rupees: number; planName: string; storageFree?: boolean } | null;
   /** The first-top-up offer from the rate card, or null to say nothing. */
   intro?: IntroOffer | null;
   adhocRate?: string;
@@ -147,7 +147,8 @@ export function PricingSection({
             )}
             {effectiveFrom ? (
               <p className="mt-2 text-sm text-blue">
-                per included hour on {effectiveFrom.planName}, plus shared storage
+                per included hour on {effectiveFrom.planName},{" "}
+                {effectiveFrom.storageFree ? "shared storage included, free" : "plus shared storage"}
                 {adhocRate ? ` · pay as you go is ${adhocRate}/hr` : ""}
               </p>
             ) : null}

@@ -19,6 +19,7 @@ import {
   commitmentIsCheaper,
   adhocRateValue,
   lowestPublishedHourly,
+  planStorageIsFree,
   rupees,
 } from "@/lib/rate-card";
 import { storageTerms } from "@/lib/storage-terms";
@@ -56,7 +57,9 @@ export default async function PricingPage() {
   const adhocNum = adhocRateValue(rateCard);
   // Plans compared on what an included hour actually costs (the rate card's
   // effective_included_hourly_rupees), not the extra-hour rate.
-  const effectiveFrom = lowestPublishedHourly(rateCard);
+  const lowest = lowestPublishedHourly(rateCard);
+  const lowestPlan = lowest ? (rateCard?.plans ?? []).find((pl) => pl.name === lowest.planName) : undefined;
+  const effectiveFrom = lowest ? { ...lowest, storageFree: lowestPlan ? planStorageIsFree(lowestPlan) : false } : null;
   const rateBars =
     adhocNum && effectiveFrom
       ? [

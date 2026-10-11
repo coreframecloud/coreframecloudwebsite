@@ -8,6 +8,7 @@ import {
   planTiers,
   entryPlanFee,
   storageRatePerTb,
+  planStorageIsFree,
   type RateCardPlan,
 } from "@/lib/rate-card";
 import { Clock, Cloud, UserRound, ReceiptText } from "lucide-react";
@@ -245,6 +246,7 @@ function PlanCard({ raw, adhoc }: { raw: RateCardPlan; adhoc: number | null }) {
   // (effective_included_hourly_rupees). The fee alone, without the storage it
   // includes, read as dearer than pay-as-you-go (owner, 11 Oct 2026).
   const effective = raw.effective_included_hourly_rupees != null ? Math.round(raw.effective_included_hourly_rupees) : null;
+  const storageFree = planStorageIsFree(raw);
   const note = presentation.dedicated ? "Reserved machine" : null;
   const rows = [
     { label: "Shared cloud storage", value: storage },
@@ -275,7 +277,8 @@ function PlanCard({ raw, adhoc }: { raw: RateCardPlan; adhoc: number | null }) {
         <div className={`mt-4 rounded-2xl px-4 py-3 ${presentation.highlight ? "bg-white/10" : "bg-tint-blue"}`}>
           <p className="font-heading text-[20px] leading-7 font-medium">≈ {inr(effective)} per hour</p>
           <p className={`text-[13px] ${presentation.highlight ? "text-white/70" : "text-ink-2"}`}>
-            plus {storage} storage{adhoc != null ? ` · pay as you go is ${inr(adhoc)}/hr` : ""}
+            {storageFree ? `${storage} shared storage included, free` : `plus ${storage} storage`}
+            {adhoc != null ? ` · pay as you go is ${inr(adhoc)}/hr` : ""}
           </p>
         </div>
       ) : null}

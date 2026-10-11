@@ -579,3 +579,28 @@ export function sessionCostExample(
     cost: `₹${Math.round((adhoc / 60) * minutes).toLocaleString("en-IN")}`,
   };
 }
+
+/**
+ * Is the storage bundled with this plan free?
+ *
+ * The rate card has no explicit flag. From 11 Oct 2026 the owner made
+ * bundled storage free on some tiers (the fee is then just the included hours
+ * at the effective rate) and kept it inside the fee on others. So: storage is
+ * free when the included hours at effective_included_hourly_rupees account
+ * for the whole fee, within ₹999 of rounding. Without an effective rate, fall
+ * back to the overage rate: the hours alone at overage would cover the fee.
+ * Never typed per plan, so a re-price on the card flips the wording by itself.
+ */
+export function planStorageIsFree(plan: RateCardPlan): boolean {
+  const fee = plan.monthly_fee_rupees;
+  const hours = plan.included_gpu_hours;
+  if (!fee || !hours) return false;
+  const TOLERANCE = 999;
+  if (plan.effective_included_hourly_rupees != null) {
+    return Math.abs(plan.effective_included_hourly_rupees * hours - fee) <= TOLERANCE;
+  }
+  if (plan.overage_hourly_rate_rupees != null) {
+    return plan.overage_hourly_rate_rupees * hours >= fee - TOLERANCE;
+  }
+  return false;
+}
