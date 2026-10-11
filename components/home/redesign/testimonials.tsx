@@ -36,7 +36,7 @@ export function Testimonials() {
       </div>
       <div
         ref={track}
-        className="mt-12 flex snap-x snap-mandatory gap-5 overflow-x-auto scroll-smooth px-4 pb-4 [scrollbar-width:none] sm:px-[max(1.5rem,calc((100vw-1180px)/2+1.5rem))]"
+        className="cfh-track mt-12 flex snap-x snap-mandatory gap-5 overflow-x-auto scroll-smooth pb-4 [scrollbar-width:none]"
       >
         {TESTIMONIALS.map((t, i) => (
           <figure

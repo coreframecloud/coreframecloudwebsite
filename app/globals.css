@@ -657,6 +657,11 @@ body {
   .cfh-sheet {
     @apply relative z-10 -mt-12 rounded-t-[40px] bg-paper sm:-mt-16 sm:rounded-t-[64px];
   }
+  /* Horizontal card track whose first card lines up with .cfh-wrap content. */
+  .cfh-track {
+    padding-inline: max(1rem, calc((100vw - 1180px) / 2 + 1.5rem));
+    scroll-padding-inline: max(1rem, calc((100vw - 1180px) / 2 + 1.5rem));
+  }
   .cfh-wrap {
     @apply mx-auto w-full max-w-[1180px] px-4 sm:px-6;
   }
