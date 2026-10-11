@@ -8,9 +8,11 @@ import { usePrefersReducedMotion } from "@/lib/use-reduced-motion";
 /**
  * Pictures that replace paragraphs.
  *
- * GENERATED IMAGES ARE ALWAYS LABELLED. Anything from Gemini (public/visuals/
- * gen-*.webp) goes through <GenImage>, which prints "Illustration (generated)"
- * on the picture and says so in the alt text. Never call one a render.
+ * Marketing scenes (people, studios) from Gemini (public/visuals/gen-*.webp)
+ * go through <GenImage>. Owner, 11 Oct 2026: no "generated" badge on these;
+ * the alt text simply describes the scene. They are still NEVER called a
+ * render, "rendered on our RTX 5080" or a customer. Studio product output
+ * keeps its "generated image" label (components/visuals/studio-compare).
  *
  * Parallax is gentle (±24px) and switched off under reduced motion; the
  * markup is the same either way, so hydration always matches.
@@ -43,7 +45,7 @@ export function GenImage({
       <motion.div style={{ y }} className={parallax ? "-my-6" : ""}>
         <Image
           src={src}
-          alt={`${alt} (illustration, generated)`}
+          alt={alt}
           width={width}
           height={height}
           sizes={sizes}
@@ -51,9 +53,6 @@ export function GenImage({
           className="h-auto w-full object-cover"
         />
       </motion.div>
-      <figcaption className="absolute right-3 bottom-3 rounded-md bg-black/55 px-2 py-1 text-[10.5px] tracking-[0.04em] text-white/90 backdrop-blur">
-        Illustration (generated)
-      </figcaption>
     </figure>
   );
 }
