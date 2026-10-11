@@ -5,7 +5,7 @@ import Link from "next/link";
 import { BackgroundGlow } from "@/components/home/background-glow";
 import { getRateCard, adhocRateHourly, adhocRate, billingSentence } from "@/lib/rate-card";
 import { storageTerms } from "@/lib/storage-terms";
-import { NODE, WORKSTATION_REPLACEMENT_COST } from "@/lib/node-spec";
+import { NODE } from "@/lib/node-spec";
 
 export const metadata: Metadata = {
   // No price in the title or description: both are cached by search engines
@@ -80,11 +80,8 @@ export default async function ComputeNodesPage() {
             <div className="cf-eyebrow">Compute nodes</div>
             <h1 className="cf-display mt-3">One node. One GPU. Nothing to configure.</h1>
             <p className="cf-lead mt-5 max-w-[680px]">
-              Every Coreframe node is the same machine: {NODE.gpu}, {NODE.vram}, {NODE.ram} of RAM
-              and an {NODE.cpu}, in {NODE.location}. One machine means one price, and there&apos;s no
-              tier to pick wrong. A workstation like it costs about {WORKSTATION_REPLACEMENT_COST} to
-              buy, and then it sits under a desk waiting for the weeks you need it.
-            </p>
+            One machine for everyone: {NODE.gpu}, {NODE.vram}, {NODE.ram} of RAM, in {NODE.location}. One price, nothing to pick wrong.
+          </p>
           </div>
         </section>
 

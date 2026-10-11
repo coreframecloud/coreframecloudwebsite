@@ -1,3 +1,5 @@
+import { StreamDiagram } from "@/components/visuals/diagrams";
+import { GenImage } from "@/components/visuals/media";
 import type { Metadata } from "next";
 import { JsonLd } from "@/components/seo/json-ld";
 import { breadcrumbList, OG_IMAGE } from "@/lib/seo";
@@ -128,19 +130,24 @@ export default async function D5Page() {
       />
 
       <section className="cf-section cf-pagehero px-5">
-        <div className="cf-col">
+        <div className="cf-wide grid items-center gap-10 lg:grid-cols-[1.05fr_1fr]">
+          <div className="min-w-0">
             <p className="cf-eyebrow mb-5">D5 Render · Cloud GPU · Bengaluru</p>
             <h1 className="cf-display">
               Run D5 Render on a rented RTX 5080.
             </h1>
           
             <p className="cf-lead mt-[22px]">
-              Coreframe gives you a full Windows desktop with an NVIDIA RTX 5080, D5
-              Render already installed, streamed to whatever laptop you own and
-              billed by the minute. You sign in with your own D5 account, open your
-              project and work in the live viewport. It&rsquo;s the full application on
-              real hardware, with no web preview in between and no queue.
-            </p>
+            A full Windows desktop with an RTX 5080 and D5 Render installed, streamed to your laptop and billed by the minute. Sign in with your own D5 account.
+          </p>
+        </div>
+          <GenImage src="/visuals/gen-designer-cafe-laptop-16x9.webp" alt="An interior designer working on a laptop" width={1600} height={914} sizes="(max-width: 1024px) 100vw, 480px" parallax priority />
+        </div>
+      </section>
+      <section className="cf-section px-5 pb-0">
+        <div className="cf-wide grid items-center gap-8 rounded-[28px] bg-tint-blue p-6 sm:p-10 lg:grid-cols-[0.8fr_1.2fr]">
+          <h2 className="cf-section-title">D5 runs here. You see it there.</h2>
+          <div className="min-w-0"><StreamDiagram /></div>
         </div>
       </section>
       <main className="relative cf-section px-5">

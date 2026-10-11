@@ -1,3 +1,5 @@
+import { StreamDiagram } from "@/components/visuals/diagrams";
+import { GenImage } from "@/components/visuals/media";
 import type { Metadata } from "next";
 import { JsonLd } from "@/components/seo/json-ld";
 import { breadcrumbList } from "@/lib/seo";
@@ -96,19 +98,16 @@ export default async function LumionPage() {
 
       <main className="relative">
         <section className="cf-section px-5 cf-pagehero">
-          <div className="cf-col">
+          <div className="cf-wide grid items-center gap-10 lg:grid-cols-[1.05fr_1fr]">
+          <div className="min-w-0">
             <p className="cf-eyebrow mb-5">Lumion · Cloud GPU · Bengaluru</p>
             <h1 className="cf-display">
               Run Lumion on an RTX 5080.
               <br className="hidden md:block" /> Nothing to buy.
             </h1>
             <p className="cf-lead mt-[22px]">
-              Lumion does its work on the GPU, which is why the laptop you model on
-              stalls as soon as the viewport has to resolve. Start a Windows
-              workstation with an RTX&nbsp;5080, install your own Lumion licence,
-              and the scene renders there while your own machine stays free for
-              the next drawing.
-            </p>
+            Lumion needs a strong GPU. Run your own Lumion licence on an RTX&nbsp;5080 while your laptop stays free.
+          </p>
             <p className="cf-section-copy mt-5">
               You reach it through the Coreframe Connect app, streamed at{" "}
               {NODE.stream}. It isn&rsquo;t a remote desktop, and there&rsquo;s no render
@@ -124,7 +123,15 @@ export default async function LumionPage() {
               </Link>
             </div>
           </div>
+          <GenImage src="/visuals/gen-team-review-16x9.webp" alt="A studio team reviewing a walkthrough on a big screen" width={1600} height={914} sizes="(max-width: 1024px) 100vw, 480px" parallax priority />
+        </div>
         </section>
+      <section className="cf-section px-5 pb-0">
+        <div className="cf-wide grid items-center gap-8 rounded-[28px] bg-tint-blue p-6 sm:p-10 lg:grid-cols-[0.8fr_1.2fr]">
+          <h2 className="cf-section-title">Lumion runs here. You see it there.</h2>
+          <div className="min-w-0"><StreamDiagram /></div>
+        </div>
+      </section>
 
         <section className="cf-section px-5 pt-0">
           <div className="cf-wide">

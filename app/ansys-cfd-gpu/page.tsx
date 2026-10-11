@@ -1,3 +1,6 @@
+import { StreamDiagram } from "@/components/visuals/diagrams";
+import { Fold } from "@/components/visuals/fold";
+import { GenImage } from "@/components/visuals/media";
 import type { Metadata } from "next";
 import { JsonLd } from "@/components/seo/json-ld";
 import { breadcrumbList } from "@/lib/seo";
@@ -146,18 +149,16 @@ export default function AnsysCfdPage() {
 
       <main className="relative">
         <section className="cf-section px-5 cf-pagehero">
-          <div className="cf-col">
+          <div className="cf-wide grid items-center gap-10 lg:grid-cols-[1.05fr_1fr]">
+          <div className="min-w-0">
             <p className="cf-eyebrow mb-5">CFD · Ansys · Bring your own licence</p>
             <h1 className="cf-display">
               GPU workstations for CFD.
               <br className="hidden md:block" /> By the hour.
             </h1>
             <p className="cf-lead mt-[22px]">
-              Rent an RTX-class GPU workstation by the hour and run Ansys Fluent,
-              OpenFOAM or whichever solver you&rsquo;re licensed for. The
-              engineering and the licence stay yours. We provide the machine,
-              billed in INR with a GST invoice.
-            </p>
+            Run Ansys Fluent, OpenFOAM or your own solver on a rented RTX workstation. Your licence, our machine, billed in rupees with a GST invoice.
+          </p>
             <p className="cf-section-copy mt-5">
               We don&rsquo;t run your simulation, pick your turbulence model or
               interpret your results. This is hardware rental, and the
@@ -195,7 +196,15 @@ export default function AnsysCfdPage() {
               </p>
             </div>
           </div>
+          <GenImage src="/visuals/gen-engineer-simulation-16x9.webp" alt="An engineer studying an airflow simulation" width={1600} height={914} sizes="(max-width: 1024px) 100vw, 480px" parallax priority />
+        </div>
         </section>
+      <section className="cf-section px-5 pb-0">
+        <div className="cf-wide grid items-center gap-8 rounded-[28px] bg-tint-blue p-6 sm:p-10 lg:grid-cols-[0.8fr_1.2fr]">
+          <h2 className="cf-section-title">Your solver runs here. You drive it from there.</h2>
+          <div className="min-w-0"><StreamDiagram /></div>
+        </div>
+      </section>
 
         <section className="cf-section px-5 pt-0">
           <div className="cf-wide">
@@ -232,7 +241,7 @@ export default function AnsysCfdPage() {
 
         <section className="cf-section px-5 pt-0">
           <div className="cf-col">
-            <h2 className="cf-section-title">How we size the hardware.</h2>
+<Fold title="How we size the hardware.">
             <p className="cf-section-copy mt-5">
               VRAM is the limit you&rsquo;ll hit first, so here it is plainly.
               Ansys publishes roughly 1.0 to 1.9 GB per million tet or hex cells
@@ -262,7 +271,8 @@ export default function AnsysCfdPage() {
               </Link>
               .
             </p>
-          </div>
+          </Fold>
+</div>
         </section>
 
         <section className="cf-section px-5 pt-0">
@@ -281,7 +291,7 @@ export default function AnsysCfdPage() {
 
         <section className="cf-section px-5 pt-0">
           <div className="cf-col">
-            <h2 className="cf-section-title">You bring the licence.</h2>
+<Fold title="You bring the licence.">
             <p className="cf-section-copy mt-5">
               We rent hardware, not software. Bring your own Ansys, Siemens or
               other commercial licence, or run an open-source solver such as
@@ -306,7 +316,8 @@ export default function AnsysCfdPage() {
             >
               Ask about availability
             </a>
-          </div>
+          </Fold>
+</div>
         </section>
 
         <section className="cf-section px-5 pt-0">

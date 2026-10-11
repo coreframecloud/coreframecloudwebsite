@@ -1,3 +1,5 @@
+import { StreamDiagram } from "@/components/visuals/diagrams";
+import { GenImage } from "@/components/visuals/media";
 import type { Metadata } from "next";
 import { JsonLd } from "@/components/seo/json-ld";
 import { breadcrumbList } from "@/lib/seo";
@@ -91,19 +93,16 @@ export default async function EnscapePage() {
 
       <main className="relative">
         <section className="cf-section px-5 cf-pagehero">
-          <div className="cf-col">
+          <div className="cf-wide grid items-center gap-10 lg:grid-cols-[1.05fr_1fr]">
+          <div className="min-w-0">
             <p className="cf-eyebrow mb-5">Enscape · Cloud GPU · Bengaluru</p>
             <h1 className="cf-display">
               Run Enscape on an RTX 5080.
               <br className="hidden md:block" /> Ray tracing included.
             </h1>
             <p className="cf-lead mt-[22px]">
-              Enscape ray-traces in real time, which needs VRAM and RT cores
-              your modelling laptop doesn&rsquo;t have. Start a Windows workstation with
-              an RTX&nbsp;5080, install Revit or SketchUp and Enscape on top, and
-              walk the client through the building while your own machine stays
-              free.
-            </p>
+            Enscape needs VRAM your modelling laptop doesn&rsquo;t have. Run it on an RTX&nbsp;5080 and walk the client through the building.
+          </p>
             <p className="cf-section-copy mt-5">
               You reach it through the Coreframe Connect app, streamed at{" "}
               {NODE.stream}. The viewport moves when you move the mouse, which is
@@ -119,7 +118,15 @@ export default async function EnscapePage() {
               </Link>
             </div>
           </div>
+          <GenImage src="/visuals/gen-architect-client-walkthrough-16x9.webp" alt="An architect presenting a 3D model to clients" width={1600} height={914} sizes="(max-width: 1024px) 100vw, 480px" parallax priority />
+        </div>
         </section>
+      <section className="cf-section px-5 pb-0">
+        <div className="cf-wide grid items-center gap-8 rounded-[28px] bg-tint-blue p-6 sm:p-10 lg:grid-cols-[0.8fr_1.2fr]">
+          <h2 className="cf-section-title">Enscape runs here. You see it there.</h2>
+          <div className="min-w-0"><StreamDiagram /></div>
+        </div>
+      </section>
 
         <section className="cf-section px-5 pt-0">
           <div className="cf-wide">

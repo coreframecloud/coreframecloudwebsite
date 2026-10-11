@@ -85,11 +85,8 @@ export default function SolutionsPage() {
               One machine can render. Everything queues behind it.
             </h1>
             <p className="cf-lead mt-6">
-              That&apos;s how most studios actually work today. With Coreframe you
-              rent machines by the minute instead, so everyone gets a
-              workstation when the deadline needs it and none of them are on
-              your books the week after.
-            </p>
+            With Coreframe you rent machines by the minute, so everyone gets a workstation when the deadline needs it.
+          </p>
           </div>
         </section>
 

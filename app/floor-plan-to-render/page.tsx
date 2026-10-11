@@ -129,12 +129,8 @@ export default function Page() {
             <p className="cf-eyebrow mb-5">Coreframe Studio</p>
             <h1 className="cf-display">Turn a floor plan into the room.</h1>
             <p className="cf-lead mt-6">
-              Upload a DXF. Coreframe Studio reads the walls, doors and windows
-              out of the drawing, works out where a photographer would stand,
-              and gives you an interior image you can export at 2K or 4K. It
-              runs in the browser, so there&rsquo;s nothing to install, and you
-              only need an email to start.
-            </p>
+            Upload a DXF and get an interior image, exported at 2K or 4K. In the browser, nothing to install.
+          </p>
 
             {/* Studio is not open to the public yet. Saying so here, plainly, is
                 cheaper than letting someone click "Open Studio" and meet a sign-in
