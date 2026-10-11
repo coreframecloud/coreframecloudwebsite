@@ -10,7 +10,7 @@ import { WORKSTATION_FRAMES } from "@/lib/workstation-frames";
  * crossfading every 3 s. Pauses on hover or with the
  * button. With reduced motion the markup is the same and it still advances,
  * slower (every 5 s), as a plain crossfade.
- * Frames that showed the tester's email or name were left out.
+ * Customer details in the frames are blurred at source.
  */
 const FRAMES = WORKSTATION_FRAMES;
 
@@ -42,7 +42,7 @@ export function FrameStrip() {
             alt={f.alt}
             fill
             sizes="(max-width: 1024px) 100vw, 560px"
-            className={`object-cover transition-opacity duration-700 ${i === 0 ? "object-center" : "object-[50%_40%]"} ${
+            className={`object-cover object-center transition-opacity duration-700 ${
               i === shown ? "opacity-100" : "opacity-0"
             }`}
           />
