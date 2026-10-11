@@ -27,7 +27,8 @@ export const blenderInteriorRender: BlogPost = {
     "blender optix rtx 5080",
   ],
   datePublished: "2026-10-10",
-  draft: true,
+  draft: false,
+  credit: "Scene: Blender 4.1 splash, from the blender.org demo files.",
   eyebrow: "Walkthrough · Blender",
   hero: {
     src: `${IMG}/finished-render.webp`,

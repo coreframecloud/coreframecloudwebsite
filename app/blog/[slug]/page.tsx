@@ -163,6 +163,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
             {post.hero.caption ? (
               <figcaption className="mt-2.5 text-[13px] leading-5 text-ink-3">{post.hero.caption}</figcaption>
             ) : null}
+            {post.credit ? <p className="mt-1.5 text-[12px] leading-5 text-ink-3">{post.credit}</p> : null}
           </figure>
 
           <p className="cf-lead mt-8 text-ink">{plainText(answer)}</p>

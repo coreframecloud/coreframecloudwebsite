@@ -29,7 +29,7 @@ export const afterEffectsRemoteGpu: BlogPost = {
     "after effects remote gpu",
   ],
   datePublished: "2026-10-10",
-  draft: true,
+  draft: false,
   eyebrow: "Guide · Video",
   hero: {
     src: `${IMG}/connect-files-download.webp`,

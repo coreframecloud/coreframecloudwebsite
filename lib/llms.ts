@@ -26,6 +26,7 @@ import {
   type RateCard,
 } from "@/lib/rate-card";
 import { SOFTWARE_PAGES } from "@/lib/software-pages";
+import { publishedPosts } from "@/lib/blog";
 import { STREAM_BANDWIDTH } from "@/lib/streaming-terms";
 import { NODE, WORKSTATION_REPLACEMENT_COST } from "@/lib/node-spec";
 
@@ -457,6 +458,16 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
   }
   out.push(`- [Contact](${SITE}/request-demo)`);
   out.push("");
+
+  // Published posts only; a draft never reaches an answer engine.
+  const posts = publishedPosts();
+  if (posts.length) {
+    out.push("### Blog");
+    out.push("");
+    out.push(`- [Blog](${SITE}/blog): guides and full sessions on a cloud RTX workstation.`);
+    for (const p of posts) out.push(`- [${p.title}](${SITE}/blog/${p.slug}): ${p.description}`);
+    out.push("");
+  }
 
   out.push("## Facts worth quoting accurately");
   out.push("");

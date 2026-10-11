@@ -30,7 +30,7 @@ export const laptopD5Lumion: BlogPost = {
     "laptop for architecture rendering india",
   ],
   datePublished: "2026-10-10",
-  draft: true,
+  draft: false,
   eyebrow: "Guide · Hardware",
   hero: {
     src: `${IMG}/render-complete-task-manager.webp`,

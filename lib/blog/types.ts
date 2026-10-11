@@ -86,6 +86,8 @@ export type BlogPost = {
   draft: boolean;
   eyebrow: string;
   hero: BlogImage;
+  /** Small credit line under the hero image, e.g. for a third-party scene. */
+  credit?: string;
   /**
    * The answer-first opening paragraph. Written so an answer engine can lift
    * it whole: it answers the title's question before anything else.

@@ -30,7 +30,7 @@ export const costWorkstationFarmBuy: BlogPost = {
     "cloud workstation vs render farm",
   ],
   datePublished: "2026-10-10",
-  draft: true,
+  draft: false,
   eyebrow: "Guide · Cost",
   hero: {
     src: `${IMG}/session-billing.webp`,
