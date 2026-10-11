@@ -1,0 +1,170 @@
+import Image from "next/image";
+import Link from "next/link";
+import { NODE } from "@/lib/node-spec";
+import { Reveal } from "@/components/home/redesign/reveal";
+import { walkthroughVideoObject } from "@/components/home/landing/walkthrough-section";
+
+/**
+ * The products as soft-tinted cards, each with a real screenshot or image
+ * cropped inside (the SiteGround "bento"). Studio images are GENERATED, and
+ * the card says so: only the empty shell is a render.
+ */
+export function Bento({ youtubeId }: { youtubeId: string }) {
+  return (
+    <section className="cfh-wrap pt-20 pb-24 sm:pt-28">
+      <Reveal className="mx-auto max-w-[44rem] text-center">
+        <h2 className="cfh-h2">
+          A real workstation,
+          <br className="hidden sm:block" /> without buying one
+        </h2>
+        <p className="mt-4 text-[17px] leading-[1.6] text-ink-2">
+          Everything runs on our machines in Bengaluru. You bring the laptop and the project.
+        </p>
+      </Reveal>
+
+      <div className="mt-14 grid gap-5 lg:grid-cols-2">
+        {/* Workstation */}
+        <Reveal className="cfh-card flex flex-col bg-tint-blue lg:row-span-2">
+          <h3 className="cfh-h3">The workstation</h3>
+          <p className="mt-3 max-w-[30rem] text-[16px] leading-[1.6] text-ink-2">
+            A full Windows 11 machine that&rsquo;s yours for the session, opened from the Coreframe
+            app.
+          </p>
+          <ul className="mt-6 grid grid-cols-1 gap-x-6 gap-y-2.5 text-[15px] sm:grid-cols-2">
+            <li>
+              <span className="font-semibold">{NODE.gpu}</span> · {NODE.vram}
+            </li>
+            <li>
+              <span className="font-semibold">{NODE.ram}</span> system RAM
+            </li>
+            <li>
+              <span className="font-semibold">{NODE.cpuModel}</span>
+            </li>
+            <li>
+              <span className="font-semibold">{NODE.disk}</span> working disk
+            </li>
+          </ul>
+          <div className="mt-7">
+            <Link href="/signup" className="cfh-pill-dark">
+              Sign up
+            </Link>
+          </div>
+          <div className="relative mt-9 -mr-7 -mb-7 overflow-hidden rounded-tl-2xl border border-rule shadow-[0_20px_60px_rgba(16,17,19,0.18)] sm:-mr-9 sm:-mb-9 lg:mt-auto">
+            <Image
+              src="/home/app-workstation.webp"
+              alt="The Coreframe app with an RTX 5080 workstation ready to launch"
+              width={923}
+              height={597}
+              sizes="(max-width: 1024px) 100vw, 560px"
+              className="h-auto w-full"
+            />
+          </div>
+        </Reveal>
+
+        {/* Studio */}
+        <Reveal delay={0.05} className="cfh-card bg-tint-lilac">
+          <div className="grid gap-6 sm:grid-cols-[1fr_1.1fr] sm:items-center">
+            <div>
+              <h3 className="cfh-h3">Coreframe Studio</h3>
+              <p className="mt-3 text-[16px] leading-[1.6] text-ink-2">
+                Upload a DXF floor plan. We render the exact room shell, then generate a furnished
+                image from it.
+              </p>
+              <Link href="/floor-plan-to-render" className="cfh-link mt-5 text-ink">
+                Try Studio <span aria-hidden>↗</span>
+              </Link>
+            </div>
+            <div className="grid grid-cols-2 gap-2.5">
+              <figure>
+                <Image
+                  src="/home/studio-shell.webp"
+                  alt="An empty room shell rendered in Cycles from a DXF floor plan"
+                  width={800}
+                  height={1000}
+                  sizes="160px"
+                  className="aspect-[4/5] w-full rounded-xl object-cover"
+                />
+                <figcaption className="mt-1.5 text-[12px] text-ink-3">Shell (rendered)</figcaption>
+              </figure>
+              <figure>
+                <Image
+                  src="/home/studio-generated.webp"
+                  alt="A furnished living room generated from the shell"
+                  width={800}
+                  height={1000}
+                  sizes="160px"
+                  className="aspect-[4/5] w-full rounded-xl object-cover"
+                />
+                <figcaption className="mt-1.5 text-[12px] text-ink-3">Finish (generated)</figcaption>
+              </figure>
+            </div>
+          </div>
+        </Reveal>
+
+        <div className="grid gap-5 sm:grid-cols-2">
+          {/* Studio plans */}
+          <Reveal delay={0.1} className="cfh-card bg-tint-mint">
+            <h3 className="cfh-h3">For studios</h3>
+            <ul className="mt-4 space-y-2 text-[15px] leading-[1.5] text-ink-2">
+              <li>One shared pool of hours</li>
+              <li>A shared studio drive</li>
+              <li>A login for each person</li>
+              <li>One bill, one admin</li>
+            </ul>
+            <Link href="/enterprise" className="cfh-link mt-5 text-ink">
+              Studio plans <span aria-hidden>↗</span>
+            </Link>
+          </Reveal>
+
+          {/* Billing */}
+          <Reveal delay={0.15} className="cfh-card flex flex-col bg-tint-sand">
+            <h3 className="cfh-h3">By the minute</h3>
+            <p className="mt-3 text-[15px] leading-[1.55] text-ink-2">
+              No monthly plan and nothing to cancel. Every session shows what it cost.
+            </p>
+            <div className="mt-5 -mr-7 -mb-7 overflow-hidden rounded-tl-xl border border-rule sm:-mr-9 sm:-mb-9">
+              <Image
+                src="/home/app-billing.webp"
+                alt="Recent sessions with their duration and cost"
+                width={725}
+                height={342}
+                sizes="(max-width: 640px) 100vw, 280px"
+                className="h-auto w-full"
+              />
+            </div>
+          </Reveal>
+        </div>
+
+        {/* The walkthrough, full width */}
+        <Reveal className="cfh-card bg-night text-white lg:col-span-2">
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(walkthroughVideoObject(youtubeId)) }}
+          />
+          <div className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-center">
+            <div>
+              <p className="text-[11.5px] font-semibold tracking-[0.12em] text-white/60 uppercase">
+                Walkthrough
+              </p>
+              <h3 className="cfh-h3 mt-3">Watch a real session, start to finish</h3>
+              <p className="mt-3 text-[16px] leading-[1.6] text-white/70">
+                Sign in, launch a workstation, load a Blender scene, render it and pull the result
+                back down. Recorded on our RTX 5080 in Bengaluru, condensed to under five minutes.
+              </p>
+            </div>
+            <div className="overflow-hidden rounded-2xl border border-white/10">
+              <iframe
+                className="aspect-video w-full"
+                src={`https://www.youtube-nocookie.com/embed/${youtubeId}`}
+                title="Coreframe Cloud: a full session, start to finish"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                loading="lazy"
+              />
+            </div>
+          </div>
+        </Reveal>
+      </div>
+    </section>
+  );
+}

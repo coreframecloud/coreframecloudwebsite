@@ -598,3 +598,52 @@ body {
     }
   }
 }
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Homepage redesign (11 Oct 2026, owner brief: "clean, elegant, clear
+   transitions", after world.siteground.com). Scoped to .cfh-* so the rest of
+   the site keeps the editorial system above. Poppins for headings only here;
+   pills and big radii are deliberate on this page and nowhere else.
+   ───────────────────────────────────────────────────────────────────────── */
+@theme {
+  --font-heading: var(--font-poppins), var(--font-inter), -apple-system, "Segoe UI", sans-serif;
+  --color-tint-blue: #e8effb;
+  --color-tint-lilac: #eeebfa;
+  --color-tint-mint: #e3f3ec;
+  --color-tint-sand: #f6f1e4;
+  --color-night: #0f1115;
+}
+
+@layer components {
+  .cfh-h1 {
+    @apply font-heading text-[40px] leading-[1.08] font-medium tracking-[-0.02em] sm:text-[56px] lg:text-[64px];
+  }
+  .cfh-h2 {
+    @apply font-heading text-[30px] leading-[1.15] font-medium tracking-[-0.015em] sm:text-[40px];
+  }
+  .cfh-h3 {
+    @apply font-heading text-[22px] leading-[1.25] font-medium sm:text-[26px];
+  }
+  .cfh-pill {
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-[14px] font-semibold tracking-[0.02em] uppercase transition-colors duration-200;
+  }
+  .cfh-pill-dark { @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-[14px] font-semibold tracking-[0.02em] uppercase transition-colors duration-200 bg-ink text-white hover:bg-[#2a2d33]; }
+  .cfh-pill-light { @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-[14px] font-semibold tracking-[0.02em] uppercase transition-colors duration-200 bg-white text-ink hover:bg-[#e9ebef]; }
+  .cfh-pill-ghost { @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-[14px] font-semibold tracking-[0.02em] uppercase transition-colors duration-200 border border-white/40 text-white hover:bg-white/10; }
+  .cfh-link {
+    @apply inline-flex items-center gap-1.5 text-[13px] font-semibold tracking-[0.04em] uppercase hover:underline;
+  }
+  .cfh-chip {
+    @apply rounded-xl border border-white/15 bg-white/10 px-4 py-2.5 text-[13px] text-white/90 shadow-[0_8px_30px_rgba(0,0,0,0.25)] backdrop-blur-md;
+  }
+  .cfh-card {
+    @apply relative overflow-hidden rounded-[24px] p-7 sm:p-9;
+  }
+  /* The white sheet that slides up over the hero, SiteGround-style. */
+  .cfh-sheet {
+    @apply relative z-10 -mt-12 rounded-t-[40px] bg-paper sm:-mt-16 sm:rounded-t-[64px];
+  }
+  .cfh-wrap {
+    @apply mx-auto w-full max-w-[1180px] px-4 sm:px-6;
+  }
+}

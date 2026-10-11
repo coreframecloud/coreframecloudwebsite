@@ -31,6 +31,9 @@ export const NODE = {
    * the exact model. Add the model here once it has been read off the node.
    */
   cpu: "8-core AMD Ryzen 7",
+  /** Read off gpu-node-01 (review, 10 Oct 2026): Ryzen 7 9700X, 8 cores / 16 threads. */
+  cpuModel: "AMD Ryzen 7 9700X",
+  cpuThreads: "8 cores / 16 threads",
   disk: "1 TB NVMe Gen 5",
   stream: "4K at 60 fps",
   os: "Windows 11",

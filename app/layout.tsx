@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Source_Serif_4, IBM_Plex_Mono } from "next/font/google";
+import { Inter, Source_Serif_4, IBM_Plex_Mono, Poppins } from "next/font/google";
 
 /**
  * Three families, one job each: the serif carries display headings, Inter
@@ -21,6 +21,14 @@ const inter = Inter({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
   variable: "--font-inter",
+  display: "swap",
+});
+
+/** Geometric sans for the homepage's headings (the 11 Oct 2026 redesign). */
+const poppins = Poppins({
+  subsets: ["latin"],
+  weight: ["500", "600"],
+  variable: "--font-poppins",
   display: "swap",
 });
 
@@ -214,7 +222,7 @@ export default async function RootLayout({
   return (
     <html
       lang="en-IN"
-      className={`${sourceSerif.variable} ${inter.variable} ${plexMono.variable}`}
+      className={`${sourceSerif.variable} ${inter.variable} ${plexMono.variable} ${poppins.variable}`}
     >
       <body className="bg-paper text-ink antialiased">
         {/* Google Analytics */}
