@@ -721,3 +721,30 @@ body {
 .cf-footer .border-rule { border-color: rgb(255 255 255 / 0.1); }
 .cf-footer .text-blue { color: #8fb3ff; }
 .cf-pagehero .text-blue { color: #a9c4ff; }
+
+/* ── Animated diagrams (components/visuals) ───────────────────────────────
+   Pure CSS keyframes so the markup never depends on motion settings (no
+   hydration mismatch). Under prefers-reduced-motion nothing travels: the
+   same elements gently crossfade instead, so the diagrams still read as
+   alive, never frozen. */
+@keyframes cfv-pulse { 0%, 100% { opacity: 0.35; } 50% { opacity: 1; } }
+@keyframes cfv-fill { 0%, 8% { transform: scaleY(0.15); } 55%, 70% { transform: scaleY(1); } 100% { transform: scaleY(0.15); } }
+@keyframes cfv-slide { 0% { transform: translateX(0); opacity: 0; } 15% { opacity: 1; } 70% { transform: translateX(var(--cfv-dx, 220px)); opacity: 1; } 85%, 100% { transform: translateX(var(--cfv-dx, 220px)); opacity: 0; } }
+@keyframes cfv-grow { 0% { transform: scaleX(0); } 45%, 85% { transform: scaleX(1); } 100% { transform: scaleX(0); } }
+@keyframes cfv-blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.25; } }
+.cfv-pulse { animation: cfv-pulse 2.4s ease-in-out infinite; animation-delay: var(--cfv-delay, 0s); }
+.cfv-fill { transform-box: fill-box; transform-origin: bottom; animation: cfv-fill 6s ease-in-out infinite; }
+.cfv-slide { transform-box: fill-box; animation: cfv-slide var(--cfv-dur, 3.6s) ease-in-out infinite; animation-delay: var(--cfv-delay, 0s); }
+.cfv-blink { animation: cfv-blink 1.6s ease-in-out infinite; }
+.cfv-grow { transform-origin: left; animation: cfv-grow 5s cubic-bezier(0.22, 1, 0.36, 1) infinite; animation-delay: var(--cfv-delay, 0s); }
+.cfv-grow-x { transform-box: fill-box; transform-origin: left; animation: cfv-grow 5s cubic-bezier(0.22, 1, 0.36, 1) infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .cfv-fill { animation: cfv-pulse 4s ease-in-out infinite; transform: scaleY(0.7); }
+  .cfv-grow, .cfv-grow-x { animation: cfv-pulse 4s ease-in-out infinite; transform: none; }
+  .cfv-slide { animation: cfv-pulse 3.2s ease-in-out infinite; animation-delay: var(--cfv-delay, 0s); transform: translateX(calc(var(--cfv-dx, 220px) / 2)); }
+}
+
+/* Card hover lift, used on visual cards site-wide. */
+.cfh-lift { transition: transform 0.25s ease, box-shadow 0.25s ease; }
+.cfh-lift:hover { transform: translateY(-4px); box-shadow: 0 18px 40px -18px rgb(16 17 19 / 0.35); }
+@media (prefers-reduced-motion: reduce) { .cfh-lift:hover { transform: none; } }
