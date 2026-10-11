@@ -39,7 +39,7 @@ export function Bento({ youtubeId }: { youtubeId: string }) {
               <span className="font-semibold">{NODE.ram}</span> system RAM
             </li>
             <li>
-              <span className="font-semibold">{NODE.cpuModel}</span>
+              <span className="font-semibold">{NODE.cpuShort}</span> CPU
             </li>
             <li>
               <span className="font-semibold">{NODE.disk}</span> working disk

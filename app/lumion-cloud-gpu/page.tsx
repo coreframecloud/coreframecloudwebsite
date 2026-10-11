@@ -60,7 +60,7 @@ export default async function LumionPage() {
     },
     {
       q: "What is in the workstation?",
-      a: `${NODE.gpu} with ${NODE.vram}, ${NODE.ram} of system memory, ${NODE.cpu} and ${NODE.disk}, running ${NODE.os} in ${NODE.location}. One customer per node. Nobody shares the card, and it isn't sliced into a virtual GPU.`,
+      a: `${NODE.gpu} with ${NODE.vram}, ${NODE.ram} of system memory, an ${NODE.cpu} and ${NODE.disk}, running ${NODE.os} in ${NODE.location}. One customer per node. Nobody shares the card, and it isn't sliced into a virtual GPU.`,
     },
     {
       q: "Do I need my own Lumion licence?",

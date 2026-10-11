@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   // and quoted by answer engines for months after a rate changes.
   title: "RTX 5080 Workstation Specs — Compute Nodes",
   description:
-    "One node, one GPU: RTX 5080 with 16 GB GDDR7, 64 GB RAM and an 8-core Ryzen 7. Billed per minute from stream start, GST included. Hosted in Bengaluru.",
+    "One node, one GPU: RTX 5080 with 16 GB GDDR7, 64 GB RAM and an 8-core, 16-thread high-performance CPU. Billed per minute from stream start, GST included. Hosted in Bengaluru.",
   alternates: { canonical: "/compute-nodes" },
 };
 
@@ -98,7 +98,7 @@ export default async function ComputeNodesPage() {
             <div className="mt-10 grid grid-cols-1 gap-8 lg:grid-cols-3">
               <div className="min-w-0 lg:col-span-2">
                 {/* Label above value, never beside it. A two-column row put
-                    "8-core AMD Ryzen 7" opposite its label and ran off a
+                    the CPU line opposite its label and ran off a
                     390px screen; stacked, nothing can overflow. */}
                 <dl className="grid grid-cols-1 gap-x-8 gap-y-5 sm:grid-cols-2">
                   {SPECS.map((spec) => (

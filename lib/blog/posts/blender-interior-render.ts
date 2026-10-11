@@ -116,7 +116,7 @@ export const blenderInteriorRender: BlogPost = {
       items: [
         "Edit, Preferences, System.",
         "Under Cycles Render Devices, choose OptiX.",
-        `Tick the NVIDIA GeForce ${NODE.gpu}. Leave the CPU (an AMD Ryzen 7 9700X) unticked so the GPU does the work.`,
+        `Tick the NVIDIA GeForce ${NODE.gpu}. Leave the CPU unticked so the GPU does the work.`,
         "Close Preferences. In the Render Properties tab, set Device to GPU Compute.",
       ],
     },

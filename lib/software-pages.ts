@@ -123,7 +123,7 @@ export const SOFTWARE_PAGES: SoftwarePage[] = [
         body: [
           "What we'd recommend for 3ds Max depends on what you render with. It's worth getting this right, because the wrong assumption costs you money.",
           `V-Ray GPU and Chaos Vantage do their work on the graphics card. Those are the cases a rented ${NODE.gpu} is built for: ${NODE.vram} is the ceiling on how much scene fits, against the 6 to 8 GB in most laptops and entry desktops sold for design work. When a GPU render fails or forces you to cut texture resolution, VRAM is almost always why.`,
-          `Corona is a CPU renderer. So is V-Ray's CPU engine, which many studios still use for final frames. A Coreframe node has ${NODE.cpu}. That's a sensible CPU for driving a viewport and a GPU renderer, but it isn't a render node for CPU work. If your final frames come out of Corona, a rented workstation won't change that, and we'd rather tell you here than have you find out in your first session.`,
+          `Corona is a CPU renderer. So is V-Ray's CPU engine, which many studios still use for final frames. A Coreframe node has an ${NODE.cpu}. That's a sensible CPU for driving a viewport and a GPU renderer, but it isn't a render node for CPU work. If your final frames come out of Corona, a rented workstation won't change that, and we'd rather tell you here than have you find out in your first session.`,
           "Most studios are somewhere in between. They model and light interactively on the GPU in Vantage or V-Ray GPU and keep CPU final frames wherever they already run. That works well, and it's easier if you plan for it from the start.",
         ],
       },
@@ -156,7 +156,7 @@ export const SOFTWARE_PAGES: SoftwarePage[] = [
       { q: "What happens to my scene files after the session?", a: RESET_ANSWER },
       {
         q: "Will Corona render faster on a Coreframe workstation?",
-        a: `Probably not, and it's better to know that now. Corona is a CPU renderer, and a Coreframe node has ${NODE.cpu}. That's enough to drive the application and a GPU renderer, but it isn't a CPU render node, so if your final frames come out of Corona the machine won't change that. It helps with V-Ray GPU and Chaos Vantage, which render on the graphics card.`,
+        a: `Probably not, and it's better to know that now. Corona is a CPU renderer, and a Coreframe node has an ${NODE.cpu}. That's enough to drive the application and a GPU renderer, but it isn't a CPU render node, so if your final frames come out of Corona the machine won't change that. It helps with V-Ray GPU and Chaos Vantage, which render on the graphics card.`,
       },
       {
         q: "How much VRAM do I need for 3ds Max GPU rendering?",

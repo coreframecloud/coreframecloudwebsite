@@ -2,14 +2,14 @@
  * What is actually in a Coreframe workstation. One source, because it was
  * eight.
  *
- * The site claimed "64 GB ECC RAM and a 6-core AMD EPYC" on eight pages —
+ * The site claimed "64 GB ECC RAM" and a 6-core server CPU on eight pages —
  * about, compute-nodes, enterprise, d5-render, lumion, enscape and twice in
  * the software-page FAQ answers. Both halves were wrong, and wrong in the
- * flattering direction: ECC and EPYC are server-grade words, and the node is a
- * consumer Ryzen 7 with non-ECC memory.
+ * flattering direction: ECC and a server CPU are server-grade claims, and the node is a
+ * consumer desktop CPU with non-ECC memory.
  *
  * That is the worst kind of error on this site. The audience for a GPU
- * workstation page is exactly the audience that knows an EPYC has more than
+ * workstation page is exactly the audience that knows a server CPU has more than
  * six cores and that ECC is not what you get in a desktop board — so an
  * overstated spec does not read as marketing, it reads as either dishonesty or
  * not knowing your own hardware. Neither survives a trial.
@@ -27,13 +27,12 @@ export const NODE = {
   /** Non-ECC. Do not add "ECC": it is a consumer platform. */
   ram: "64 GB",
   /**
-   * Every Ryzen 7 part is 8-core, so the core count is safe without pinning
-   * the exact model. Add the model here once it has been read off the node.
+   * Owner's rule (11 Oct 2026): never name the CPU's maker or model anywhere
+   * on the site. Describe it by its cores and threads only.
    */
-  cpu: "8-core AMD Ryzen 7",
-  /** Read off gpu-node-01 (review, 10 Oct 2026): Ryzen 7 9700X, 8 cores / 16 threads. */
-  cpuModel: "AMD Ryzen 7 9700X",
-  cpuThreads: "8 cores / 16 threads",
+  cpu: "8-core, 16-thread high-performance CPU",
+  /** Where space is tight (spec tiles, chips). */
+  cpuShort: "8 cores / 16 threads",
   /**
    * 2 × 480 GB Crucial E100 NVMe (PCIe Gen 4), shown as one figure on the
    * owner's call (11 Oct 2026). Do not say "Gen 5": it is a Gen 4 drive.

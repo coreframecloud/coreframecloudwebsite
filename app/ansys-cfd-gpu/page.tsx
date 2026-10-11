@@ -120,7 +120,7 @@ const jsonLd = {
       name: "What hardware would my solver run on?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: `A ${NODE.gpu} with ${NODE.vram} at ${NODE.memoryBandwidth}, ${NODE.ram} of system memory, ${NODE.cpu} and ${NODE.disk}, running ${NODE.os} in ${NODE.location}. One customer per node, and you reach it through the Coreframe Connect app rather than a remote desktop.`,
+        text: `A ${NODE.gpu} with ${NODE.vram} at ${NODE.memoryBandwidth}, ${NODE.ram} of system memory, an ${NODE.cpu} and ${NODE.disk}, running ${NODE.os} in ${NODE.location}. One customer per node, and you reach it through the Coreframe Connect app rather than a remote desktop.`,
       },
     },
     {

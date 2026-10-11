@@ -12,7 +12,7 @@ import { Reveal } from "@/components/home/redesign/reveal";
 export function FactsBand() {
   const facts = [
     { k: `${NODE.gpu} · ${NODE.vram}`, v: "Current-generation graphics card" },
-    { k: NODE.cpuModel, v: NODE.cpuThreads },
+    { k: NODE.cpuShort, v: "High-performance CPU" },
     { k: `${NODE.ram} RAM`, v: "Big scenes and a lot open at once" },
     { k: NODE.stream, v: "Streamed to the laptop you own" },
     { k: "Hosted in Bengaluru", v: "Close to you, billed in rupees" },

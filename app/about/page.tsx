@@ -69,7 +69,7 @@ const COMPANY = [
  * Read from lib/node-spec, not typed here.
  *
  * This list used to be hand-written on this page and fifteen others, and it
- * carried "64 GB ECC RAM and a 6-core AMD EPYC" for weeks. Both halves were
+ * carried "64 GB ECC RAM" and a 6-core server CPU for weeks. Both halves were
  * false and both were flattering, which is the worst way to be wrong on a page
  * whose whole job is to be checkable.
  */

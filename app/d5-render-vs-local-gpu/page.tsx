@@ -161,7 +161,7 @@ export default async function ComparisonPage() {
             <h2 className="cf-section-title">What owning actually costs.</h2>
             <p className="cf-section-copy mt-4">
               A machine that renders the way a Coreframe node does (a{" "}
-              {NODE.gpu} with {NODE.vram}, {NODE.ram} of system memory, a{" "}
+              {NODE.gpu} with {NODE.vram}, {NODE.ram} of system memory, an{" "}
               {NODE.cpu} and a {NODE.disk}) costs about{" "}
               <strong className="font-semibold text-ink">
                 {WORKSTATION_REPLACEMENT_COST}
