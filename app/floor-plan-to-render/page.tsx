@@ -75,7 +75,7 @@ const faqs = [
   },
   {
     q: "What does it cost?",
-    a: "Reading the drawing, browsing the rooms and comparing the three camera angles are free. You pay only when you ask for an image: a 2K export is 30 credits and a 4K export is 42. What a credit costs is shown in Studio before you spend one.",
+    a: "Reading the drawing and generating previews are free: small pictures of three camera angles, up to 20 runs a day. You pay only to download one: 2K is 30 credits and 4K is 42. What a credit costs is shown in Studio before you spend one.",
   },
   {
     q: "Do I have to install anything?",
@@ -120,9 +120,6 @@ export default function Page() {
               <div className="mt-7 flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
                 <a href={STUDIO} className="cf-btn-primary w-full sm:w-auto">
                   Sign up and try Studio
-                </a>
-                <a href="/studio/guide.pdf" target="_blank" rel="noopener" className="cf-btn-secondary w-full sm:w-auto">
-                  Read the guide
                 </a>
               </div>
             </div>
