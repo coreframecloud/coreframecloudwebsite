@@ -108,6 +108,11 @@ export const metadata: Metadata = {
     "fast CFD analysis India",
     "GPU accelerated CFD India",
   ],
+  // Meta Business domain verification (business 1473783351254331, domain id 883377961527807,
+  // 12 Oct 2026). Must stay in the server-rendered <head>; removing it un-verifies the domain.
+  verification: {
+    other: { "facebook-domain-verification": "tl593t712tlvnsxy8dcfr223zas7lt" },
+  },
   // No canonical here on purpose. A layout-level canonical of "/" is inherited
   // by every page that does not set its own, which told Google that /solutions
   // and /request-demo were copies of the homepage. Each page sets its own.
