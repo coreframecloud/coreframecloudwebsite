@@ -64,7 +64,7 @@ export default async function SignupPage() {
     <div className="relative min-h-screen text-ink">
       <div className="cf-aurora" />
       <main className="relative flex min-h-screen justify-center px-5 py-10 sm:items-center sm:py-16">
-        <div className="w-full max-w-[440px]">
+        <div className="w-full max-w-lg">
           {/* The offer used to be a box here, above the card. It read well and
               it cost us the campaign: it pushed the email input to 673px on a
               657px viewport, so 87 people landed and none reached the field.
@@ -72,8 +72,10 @@ export default async function SignupPage() {
               rate card. Nothing else goes above the form on this page. */}
           <LoginForm variant="start" offer={offer} />
 
-          <section className="mt-8 rounded-cf border border-rule bg-paper-2 p-6">
-            <h2 className="cf-section-title">How sign-up works</h2>
+          {/* Quiet, like the card above it: an inset panel and a small heading,
+              not a section-sized title competing with "Create your account". */}
+          <section className="cf-glass-inset mt-6 p-5 sm:p-6">
+            <h2 className="font-display text-lg leading-snug font-medium text-ink">How sign-up works</h2>
             <ol className="mt-4 space-y-3 text-sm leading-6 text-ink-2">
               <li>
                 <b className="font-medium text-ink">1. Your email.</b> We send you a link, so

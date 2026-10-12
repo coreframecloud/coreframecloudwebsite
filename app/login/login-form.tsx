@@ -17,7 +17,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { OtpInput } from "@/components/ui/otp-input";
 // CheckCircle went with the password tab's "signed in" state.
-import { Loader2, Mail, ArrowRight } from "lucide-react";
+import { Loader2, Mail, ArrowRight, Check, LogIn, UserPlus } from "lucide-react";
 import { API_BASE } from "@/lib/api-base";
 
 const API = API_BASE;
@@ -69,8 +69,86 @@ function GoogleBlock({ api, below = false }: { api: string; below?: boolean }) {
   );
 }
 
-const inputCls =
-  "h-11 w-full rounded-cf border border-rule bg-paper px-3 shadow-sm text-base text-ink placeholder:text-ink-3 focus:border-blue focus:ring-0 md:text-sm";
+/* The field style of the WhatsApp-code step (/verify), so the two screens read
+   as one flow: 44px and 16px type on a phone (iOS zooms anything smaller),
+   a quiet border, and a soft blue ring on focus instead of a hard outline.
+   rule-strong, not rule: the borders stay as visible as the 11 Oct fix made
+   them. No w-full in the shared part, so a select that needs a fixed width
+   (the dial code) does not end up carrying two competing widths. */
+const fieldBase =
+  "h-11 min-w-0 rounded-cf border border-rule-strong bg-paper px-3 text-base text-ink outline-none transition placeholder:text-ink-3 focus:border-blue focus:ring-2 focus:ring-blue/20 focus-visible:border-blue focus-visible:ring-2 focus-visible:ring-blue/20 md:h-10 md:text-sm";
+const inputCls = `${fieldBase} w-full`;
+const selectCls = `${fieldBase} w-full cursor-pointer`;
+
+// ── Card header ────────────────────────────────────────────────────────────────
+// The same header the WhatsApp-code step (/verify) uses: a tinted round icon,
+// a small eyebrow, the Poppins heading and one line under it, all inside the
+// card and left-aligned, so sign-up and the step after it look like one flow.
+function CardHeader({
+  icon,
+  eyebrow,
+  title,
+  sub,
+  compact = false,
+}: {
+  icon: React.ReactNode;
+  eyebrow: string;
+  title: string;
+  sub?: React.ReactNode;
+  compact?: boolean;
+}) {
+  return (
+    <div className={compact ? "mb-5" : "mb-6"}>
+      <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-full bg-blue/10 text-blue">
+        {icon}
+      </div>
+      <p className="cf-eyebrow mb-2">{eyebrow}</p>
+      <h1 className="font-display text-[27px] leading-[1.14] tracking-[-0.01em] text-ink sm:text-[32px]">
+        {title}
+      </h1>
+      {sub && <p className="mt-2 text-[15px] leading-6 break-words text-ink-2">{sub}</p>}
+    </div>
+  );
+}
+
+// ── Account-type choice ─────────────────────────────────────────────────────────
+function TypeCard({
+  active,
+  onClick,
+  title,
+  sub,
+}: {
+  active: boolean;
+  onClick: () => void;
+  title: string;
+  sub: string;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={active}
+      className={`flex items-start gap-3 rounded-cf border px-4 py-3 text-left transition outline-none focus-visible:ring-2 focus-visible:ring-blue/30 ${
+        active
+          ? "border-blue bg-blue/[0.06] ring-2 ring-blue/15"
+          : "border-rule-strong bg-paper hover:border-ink/30"
+      }`}
+    >
+      <span
+        aria-hidden="true"
+        className={`mt-0.5 flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full border transition ${
+          active ? "border-blue bg-blue text-white" : "border-rule-strong bg-paper"
+        }`}
+      >
+        {active && <Check className="h-3 w-3" strokeWidth={3} />}
+      </span>
+      <span>
+        <span className="block text-sm font-medium text-ink">{title}</span>
+        <span className="mt-0.5 block text-xs leading-5 text-ink-2">{sub}</span>
+      </span>
+    </button>
+  );
+}
 
 // ── Tab button ─────────────────────────────────────────────────────────────────
 function TabBtn({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
@@ -440,24 +518,7 @@ export default function LoginForm({
 
   // ══════════════════════════════════════════════════════════════════════════
   return (
-    <div className="w-full max-w-[440px]">
-      {/* Logo. Every pixel above the email field is a pixel someone has to
-          scroll past, so this block is deliberately tight on the signup
-          variant: the input has to be reachable without scrolling on a phone. */}
-      <div className={`text-center ${isStart ? "mb-5" : "mb-8"}`}>
-        {/* No wordmark here. The site header renders one 40px above this, and
-            two stacked COREFRAME marks read as a template someone forgot to
-            finish. The serif heading is what carries the brand on this screen. */}
-        <h1 className={`font-display text-[34px] leading-[1.1] tracking-[-0.01em] text-ink ${isStart ? "mt-3" : "mt-4"}`}>
-          {isStart ? "Create your account" : "Sign in"}
-        </h1>
-        <p className="mt-1 text-sm text-ink-2">
-          {isStart
-            ? offer ?? "Enter your email and we\u2019ll send you a link."
-            : "New here? Just enter your email and we\u2019ll handle the rest."}
-        </p>
-      </div>
-
+    <div className="w-full max-w-lg">
       {/* Already signed in — say so, and offer both ways out. */}
       {signedInAs && (
         <div className="mb-4 rounded-cf border border-blue/25 bg-blue/10 p-5">
@@ -492,8 +553,23 @@ export default function LoginForm({
         </div>
       )}
 
-      {/* Card */}
-      <div className="cf-glass p-5 sm:p-7">
+      {/* Card. Same shell, padding and header as the WhatsApp-code step.
+          Every pixel above the email field is a pixel someone has to scroll
+          past, so the header stays compact: the field still sits well inside
+          the first screen on a 390x844 phone. No wordmark: the site header
+          renders one just above. */}
+      <div className="cf-glass w-full p-5 sm:p-7 md:p-8">
+        <CardHeader
+          compact={isStart}
+          icon={isStart ? <UserPlus className="h-5 w-5" /> : <LogIn className="h-5 w-5" />}
+          eyebrow={isStart ? "Sign up" : "Your account"}
+          title={isStart ? "Create your account" : "Sign in"}
+          sub={
+            isStart
+              ? offer ?? "Enter your email and we\u2019ll send you a link."
+              : "New here? Just enter your email and we\u2019ll handle the rest."
+          }
+        />
 
         {/* Google, and where it sits.
             On /login it leads, because a returning customer who used Google
@@ -575,40 +651,24 @@ export default function LoginForm({
 
             {linkStep === "details" && (
               <form onSubmit={handleLinkDetailsSubmit} className="grid gap-4">
-                <div className="rounded-cf border border-blue/20 bg-blue/8 px-4 py-3 text-xs text-blue">
-                  No account found for <strong className="break-all">{linkEmail}</strong>. Fill in your details below and we&apos;ll create one.
+                <div className="cf-glass-inset border-l-2 border-l-blue px-4 py-3 text-sm leading-6 text-ink-2">
+                  No account found for <strong className="break-all font-medium text-ink">{linkEmail}</strong>. Fill in your details below and we&apos;ll create one.
                 </div>
 
                 <Field label="What kind of account is this?">
-                  <div className="grid gap-4 sm:grid-cols-2 sm:gap-3">
-                    <button
-                      type="button"
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <TypeCard
+                      active={linkAccountType === "b2c"}
                       onClick={() => { setLinkAccountType("b2c"); setError(""); }}
-                      className={`rounded-cf border px-4 py-3 text-left transition-colors ${
-                        linkAccountType === "b2c"
-                          ? "border-blue/50 bg-blue/10"
-                          : "border-rule bg-paper-2 hover:border-rule-strong"
-                      }`}
-                    >
-                      <span className="block text-sm font-medium text-ink">Individual</span>
-                      <span className="mt-0.5 block text-xs text-ink-2">
-                        Freelancer or personal use
-                      </span>
-                    </button>
-                    <button
-                      type="button"
+                      title="Individual"
+                      sub="Freelancer or personal use"
+                    />
+                    <TypeCard
+                      active={linkAccountType === "b2b"}
                       onClick={() => { setLinkAccountType("b2b"); setError(""); }}
-                      className={`rounded-cf border px-4 py-3 text-left transition-colors ${
-                        linkAccountType === "b2b"
-                          ? "border-blue/50 bg-blue/10"
-                          : "border-rule bg-paper-2 hover:border-rule-strong"
-                      }`}
-                    >
-                      <span className="block text-sm font-medium text-ink">Business</span>
-                      <span className="mt-0.5 block text-xs text-ink-2">
-                        GST-registered, needs invoices
-                      </span>
-                    </button>
+                      title="Business"
+                      sub="GST-registered, needs invoices"
+                    />
                   </div>
                 </Field>
 
@@ -622,7 +682,7 @@ export default function LoginForm({
                       maxLength={15}
                       required
                     />
-                    <p className="mt-1 text-xs text-ink-3">
+                    <p className="mt-0.5 text-xs leading-5 text-ink-3">
                       We check this against the GST register. It has to be active, and
                       we read the registered name back from it. It also sets your place
                       of supply on every invoice.
@@ -632,7 +692,7 @@ export default function LoginForm({
                 <div className="grid gap-4 sm:grid-cols-2 sm:gap-3">
                   <Field label="Full name">
                     <Input value={linkName} onChange={(e) => { setLinkName(e.target.value); setError(""); }} className={inputCls} placeholder="Rahul Sharma" required />
-                    <p className="mt-1 text-xs text-ink-3">
+                    <p className="mt-0.5 text-xs leading-5 text-ink-3">
                       Printed on your invoices.
                     </p>
                   </Field>
@@ -647,7 +707,7 @@ export default function LoginForm({
                       required={linkAccountType === "b2b"}
                     />
                     {linkAccountType === "b2b" && (
-                      <p className="mt-1 text-xs text-ink-3">
+                      <p className="mt-0.5 text-xs leading-5 text-ink-3">
                         Exactly as it appears on your GST certificate. We match it
                         against the registered name on the GST register.
                       </p>
@@ -674,7 +734,7 @@ export default function LoginForm({
                         }
                         setError("");
                       }}
-                      className={`${inputCls} cursor-pointer`}
+                      className={selectCls}
                       aria-label="Country"
                       required
                     >
@@ -690,7 +750,7 @@ export default function LoginForm({
                       <select
                         value={homeState}
                         onChange={(e) => { setHomeState(e.target.value); setError(""); }}
-                        className={`${inputCls} cursor-pointer`}
+                        className={selectCls}
                         aria-label="State"
                         required
                       >
@@ -713,7 +773,7 @@ export default function LoginForm({
                         if (next) setPhoneCountry(next);
                         setError("");
                       }}
-                      className={`${inputCls} w-[112px] shrink-0 cursor-pointer sm:w-36`}
+                      className={`${fieldBase} w-[112px] shrink-0 cursor-pointer sm:w-36`}
                       aria-label="Country dialling code"
                     >
                       {countries.map((c) => (
@@ -742,7 +802,7 @@ export default function LoginForm({
                       required
                     />
                   </div>
-                  <p className="mt-1 text-xs text-ink-3">
+                  <p className="mt-0.5 text-xs leading-5 text-ink-3">
                     We&apos;ll send a code on WhatsApp, because Indian regulations
                     require us to hold a verified contact number for compute rental.
                   </p>
