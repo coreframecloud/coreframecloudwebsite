@@ -23,6 +23,8 @@ import {
   minFirstTopup,
   planTiers,
   billingSentence,
+  cpuSpec,
+  storageSpec,
   type RateCard,
 } from "@/lib/rate-card";
 import { SOFTWARE_PAGES } from "@/lib/software-pages";
@@ -189,7 +191,8 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
       const rate = gpu.quote_on_request ? "on request" : money(gpu.hourly_rate_rupees);
       out.push(
         `- **${gpu.name}**: ${gpu.gpu_count}× ${gpu.gpu_model}, ${gpu.vram_gb} GB VRAM, ` +
-          `${gpu.vcpu} vCPU, ${gpu.ram_gb} GB RAM${rate ? `, ${rate} per GPU-hour` : ""}.`,
+          `${cpuSpec(gpu)}, ${gpu.ram_gb} GB RAM, ${storageSpec(gpu.storage_gb)} NVMe` +
+          `${rate ? `, ${rate} per GPU-hour` : ""}.`,
       );
     }
     out.push("");

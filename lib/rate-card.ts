@@ -47,7 +47,17 @@ export type RateCardGpu = {
   gpu_model: string;
   gpu_count: number;
   vram_gb: number;
+  /**
+   * Legacy key: the same number as `cpu_cores`. It was labelled "vCPU", but a
+   * Coreframe rental is a whole machine with dedicated physical cores (owner,
+   * 12 Oct 2026). Print it through `cpuSpec()`, never as "vCPU" by hand.
+   */
   vcpu: number;
+  /** Added 12 Oct 2026. Absent on an older API; `cpuSpec()` falls back. */
+  cpu_cores?: number;
+  cpu_kind?: string;
+  /** e.g. "CPU cores". */
+  cpu_label?: string;
   ram_gb: number;
   storage_gb: number;
   pricing_type: string;
@@ -616,4 +626,18 @@ export function planStorageIsFree(plan: RateCardPlan): boolean {
     return plan.overage_hourly_rate_rupees * hours >= fee - TOLERANCE;
   }
   return false;
+}
+
+/**
+ * "8 CPU cores" from the rate card. Uses the label the API publishes; an older
+ * API without `cpu_label` gets the old "vCPU" wording rather than a made-up one.
+ */
+export function cpuSpec(gpu: Pick<RateCardGpu, "vcpu" | "cpu_cores" | "cpu_label">): string {
+  const count = gpu.cpu_cores ?? gpu.vcpu;
+  return gpu.cpu_label ? `${count} ${gpu.cpu_label}` : `${count} vCPU`;
+}
+
+/** "1 TB" / "500 GB" from `storage_gb` (decimal TB, as drives are sold). */
+export function storageSpec(storageGb: number): string {
+  return storageGb >= 1000 && storageGb % 1000 === 0 ? `${storageGb / 1000} TB` : `${storageGb} GB`;
 }
