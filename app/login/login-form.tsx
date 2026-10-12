@@ -41,7 +41,9 @@ function GoogleIcon() {
 // ── Shared field ───────────────────────────────────────────────────────────────
 function Field({ label, children }: { label: React.ReactNode; children: React.ReactNode }) {
   return (
-    <div className="grid gap-1.5">
+    // content-start: in a two-column row the taller cell (help text) must not
+    // stretch this grid, or the shorter cell's input slides down out of line.
+    <div className="grid content-start gap-1.5">
       <label className="text-[13px] font-medium text-ink">{label}</label>
       {children}
     </div>
@@ -68,7 +70,7 @@ function GoogleBlock({ api, below = false }: { api: string; below?: boolean }) {
 }
 
 const inputCls =
-  "h-11 w-full rounded-cf border-rule bg-paper text-base text-ink placeholder:text-ink-3 focus:border-blue focus:ring-0 md:text-sm";
+  "h-11 w-full rounded-cf border border-rule bg-paper px-3 shadow-sm text-base text-ink placeholder:text-ink-3 focus:border-blue focus:ring-0 md:text-sm";
 
 // ── Tab button ─────────────────────────────────────────────────────────────────
 function TabBtn({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
