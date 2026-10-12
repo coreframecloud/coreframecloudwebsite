@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { ViewContent } from "@/components/analytics/view-content";
 import { JsonLd } from "@/components/seo/json-ld";
 import { breadcrumbList } from "@/lib/seo";
 import { PricingSection } from "@/components/home/pricing-section";
@@ -74,6 +75,7 @@ export default async function PricingPage() {
 
   return (
     <main className="text-ink">
+      <ViewContent name="Pricing" category="pricing" />
       <JsonLd data={breadcrumbList([{ name: "Pricing", path: "/pricing" }])} />
       <section className="cf-section px-5 pb-0 cf-pagehero">
         <div className="cf-col">

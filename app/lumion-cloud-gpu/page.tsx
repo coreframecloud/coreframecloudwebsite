@@ -1,4 +1,5 @@
 import { StreamDiagram } from "@/components/visuals/diagrams";
+import { ViewContent } from "@/components/analytics/view-content";
 import { GenImage } from "@/components/visuals/media";
 import type { Metadata } from "next";
 import { JsonLd } from "@/components/seo/json-ld";
@@ -89,6 +90,7 @@ export default async function LumionPage() {
 
   return (
     <div className="relative min-h-screen text-ink">
+      <ViewContent name="Lumion cloud GPU workstation" category="workstation" />
       <JsonLd data={breadcrumbList([{ name: "Lumion cloud GPU workstation", path: "/lumion-cloud-gpu" }])} />
       <BackgroundGlow />
       <script

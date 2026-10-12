@@ -44,15 +44,21 @@ never commit values (`.env*` is gitignored).
 
 | Variable | What it turns on |
 |---|---|
+| `NEXT_PUBLIC_GA4_ID` | GA4 measurement id, `G-…`. Unset = the existing property `G-BX4WY4GBSZ`; `off` = no GA4. |
 | `NEXT_PUBLIC_META_PIXEL_ID` | Meta pixel (digits only). Unset = no pixel loaded. |
 | `NEXT_PUBLIC_GOOGLE_ADS_ID` | Google Ads tag, e.g. `AW-…`. Unset = no Ads tag. |
 | `NEXT_PUBLIC_GOOGLE_ADS_LABEL_SIGNUP` | Ads conversion label sent on `sign_up` |
 | `NEXT_PUBLIC_GOOGLE_ADS_LABEL_LEAD` | Ads conversion label sent on WhatsApp `generate_lead` |
 | `NEXT_PUBLIC_GOOGLE_ADS_LABEL_PURCHASE` | Ads conversion label sent on wallet `purchase` |
+| `NEXT_PUBLIC_GOOGLE_ADS_LABEL_FIRST_TOPUP` | Ads conversion label sent on the first paid top-up (`first_topup`, the intro offer). Make this the primary bid conversion. |
 
 The labels are optional: without them, mark the GA4 events `sign_up`,
-`generate_lead` and `purchase` as key events and import them into Google Ads.
-Conversions are sent from `trackConversion` in `lib/analytics.ts`.
+`generate_lead`, `purchase` and `first_topup` as key events and import them
+into Google Ads. Conversions are sent from `trackConversion` in
+`lib/analytics.ts`, which also pushes `cf_<name>` events to `dataLayer` for a
+future Tag Manager container. Consent Mode v2 defaults (denied in the EEA, UK
+and Switzerland, granted elsewhere) are set in `app/layout.tsx` before any
+`config` call.
 
 ## Control-plane API base
 

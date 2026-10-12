@@ -207,7 +207,23 @@ const nextConfig: NextConfig = {
     qualities: [75, 90],
   },
   async headers() {
-    return [{ source: "/:path*", headers: securityHeaders }];
+    return [
+      { source: "/:path*", headers: securityHeaders },
+      /**
+       * Only www.coreframecloud.com may be indexed (12 Oct 2026). Vercel marks
+       * per-commit PREVIEW deployments noindex by itself, but the production
+       * aliases on vercel.app (coreframecloudwebsite.vercel.app,
+       * coreframe-site.vercel.app) served the whole live site with no
+       * X-Robots-Tag at all. The canonical tags point at www, which mostly
+       * saves us, but a canonical is a hint and a header is an instruction.
+       * The apex is listed so its redirect is never tagged.
+       */
+      {
+        source: "/:path*",
+        missing: [{ type: "host", value: "(www\\.)?coreframecloud\\.com" }],
+        headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }],
+      },
+    ];
   },
   async rewrites() {
     return [

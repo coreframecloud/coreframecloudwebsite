@@ -975,6 +975,7 @@ export default function MyActivityPage() {
         user={user}
         minTopupNow={wallet?.min_topup_rupees_now ?? null}
         introOffer={wallet?.intro_offer_available ? introOffer : null}
+        isFirstTopup={wallet?.intro_offer_available === true}
         presetAmount={topUpPreset ?? (wallet?.intro_offer_available ? introOffer?.priceRupees ?? null : null)}
         defaultCountry={wallet?.country_code ?? null}
       />

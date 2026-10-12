@@ -1,4 +1,5 @@
 import { StreamDiagram } from "@/components/visuals/diagrams";
+import { ViewContent } from "@/components/analytics/view-content";
 import { GenImage } from "@/components/visuals/media";
 import type { Metadata } from "next";
 import { JsonLd } from "@/components/seo/json-ld";
@@ -122,6 +123,7 @@ export default async function D5Page() {
 
   return (
     <div className="relative min-h-screen text-ink">
+      <ViewContent name="D5 Render cloud workstation" category="workstation" />
       <JsonLd data={breadcrumbList([{ name: "D5 Render cloud workstation", path: "/d5-render-cloud-workstation" }])} />
       <BackgroundGlow />
       <script

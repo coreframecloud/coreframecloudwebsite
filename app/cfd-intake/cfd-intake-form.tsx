@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from "react";
 import { API_BASE } from "@/lib/api-base";
+import { trackConversion } from "@/lib/analytics";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -378,6 +379,8 @@ export default function CfdIntakeForm() {
       const data = await res.json();
       setRefId(data.ref_id);
       setSubmitted(true);
+      // A submitted CFD brief is a lead (Meta "Lead"). No form fields go with it.
+      trackConversion("generate_lead", { method: "cfd_intake_form", location: "cfd_intake" });
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (err: unknown) {
       setSubmitError(

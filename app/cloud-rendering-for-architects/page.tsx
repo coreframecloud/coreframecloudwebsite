@@ -1,4 +1,5 @@
 import { StreamDiagram } from "@/components/visuals/diagrams";
+import { ViewContent } from "@/components/analytics/view-content";
 import { Fold } from "@/components/visuals/fold";
 import { GenImage } from "@/components/visuals/media";
 import type { Metadata } from "next";
@@ -168,6 +169,7 @@ export default async function ArchitectsPage() {
 
   return (
     <div className="relative min-h-screen text-ink">
+      <ViewContent name="Cloud rendering for architects" category="workstation" />
       <JsonLd data={breadcrumbList([{ name: "Cloud rendering for architects", path: "/cloud-rendering-for-architects" }])} />
       <BackgroundGlow />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />

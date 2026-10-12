@@ -42,12 +42,22 @@ export function trackClarityEvent(tag: string): void {
  * up by a computed key.
  * ────────────────────────────────────────────────────────────────────────── */
 
-export type ConversionName = "sign_up" | "generate_lead" | "purchase";
+/**
+ * first_topup (12 Oct 2026): the FIRST paid wallet top-up (the intro offer).
+ * It fires alongside `purchase`, never instead of it, so revenue is not double
+ * counted in GA4 (first_topup carries no value there). It is the conversion a
+ * Google Ads search campaign should bid on: a sign-up costs nothing to make,
+ * the first top-up is the moment someone became a customer.
+ */
+export type ConversionName = "sign_up" | "generate_lead" | "purchase" | "first_topup";
 
-const META_EVENT: Record<ConversionName, string> = {
+// first_topup has no Meta standard event; the Purchase that fires with it
+// already reaches Meta.
+const META_EVENT: Record<ConversionName, string | null> = {
   sign_up: "CompleteRegistration",
   generate_lead: "Contact",
   purchase: "Purchase",
+  first_topup: null,
 };
 
 const GOOGLE_ADS_ID = process.env.NEXT_PUBLIC_GOOGLE_ADS_ID;
@@ -55,6 +65,7 @@ const GOOGLE_ADS_LABEL: Record<ConversionName, string | undefined> = {
   sign_up: process.env.NEXT_PUBLIC_GOOGLE_ADS_LABEL_SIGNUP,
   generate_lead: process.env.NEXT_PUBLIC_GOOGLE_ADS_LABEL_LEAD,
   purchase: process.env.NEXT_PUBLIC_GOOGLE_ADS_LABEL_PURCHASE,
+  first_topup: process.env.NEXT_PUBLIC_GOOGLE_ADS_LABEL_FIRST_TOPUP,
 };
 
 export interface ConversionParams {
@@ -69,6 +80,10 @@ export interface ConversionParams {
   method?: string;
   /** Where on the site it happened. GA4 only; Meta has no use for it. */
   location?: string;
+  /** Meta eventID, when the conversion has no payment id. The server-side
+   *  Conversions API must send the SAME id for Meta to deduplicate:
+   *  sign-up = `signup_<user id>`, purchase = the Razorpay payment id. */
+  event_id?: string;
 }
 
 export function trackConversion(name: ConversionName, params: ConversionParams = {}): void {
@@ -80,12 +95,32 @@ export function trackConversion(name: ConversionName, params: ConversionParams =
       : {};
 
   // GA4 — recommended event names, so GA reports and Ads imports know them.
+  // first_topup goes to GA4 without a value: the purchase beside it carries
+  // the revenue, and GA4 would otherwise count the same rupees twice.
+  const ga4Money = name === "first_topup" ? {} : money;
   trackEvent(name, {
-    ...money,
+    ...ga4Money,
     transaction_id: params.transaction_id,
     method: params.method,
     location: params.location,
   });
+
+  // A plain dataLayer event as well, for a Google Tag Manager container if
+  // one is ever added (GTM triggers listen for `event` keys, not gtag calls).
+  // No PII: the only identifier is the payment id.
+  try {
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      event: `cf_${name}`,
+      cf_conversion: name,
+      ...money,
+      transaction_id: params.transaction_id,
+      method: params.method,
+      location: params.location,
+    });
+  } catch {
+    // never let analytics break the page
+  }
 
   // Google Ads — only when an AW- id AND a label for this conversion exist.
   // Without a label, import the GA4 key event in Google Ads instead.
@@ -100,7 +135,13 @@ export function trackConversion(name: ConversionName, params: ConversionParams =
 
   // Meta pixel — standard events. eventID lets Meta dedupe a later
   // server-side (Conversions API) copy of the same purchase.
-  if (typeof window.fbq === "function") {
+  // A WhatsApp tap stays Meta "Contact" (the event existing custom
+  // conversions are built on); a submitted form is a "Lead".
+  const metaEvent =
+    name === "generate_lead" && params.method && params.method !== "whatsapp"
+      ? "Lead"
+      : META_EVENT[name];
+  if (metaEvent && typeof window.fbq === "function") {
     const metaParams: Record<string, string | number> = {};
     if (money.value !== undefined) {
       metaParams.value = money.value;
@@ -109,9 +150,11 @@ export function trackConversion(name: ConversionName, params: ConversionParams =
     if (name === "sign_up") metaParams.status = "registered";
     window.fbq(
       "track",
-      META_EVENT[name],
+      metaEvent,
       metaParams,
-      params.transaction_id ? { eventID: params.transaction_id } : undefined,
+      params.event_id ?? params.transaction_id
+        ? { eventID: params.event_id ?? params.transaction_id }
+        : undefined,
     );
   }
 
@@ -182,8 +225,28 @@ export function trackSignupIfNew(
     if (localStorage.getItem(TRACKED_SIGNUP_KEY) === id) return;
     localStorage.setItem(TRACKED_SIGNUP_KEY, id);
 
-    trackConversion("sign_up", { method });
+    trackConversion("sign_up", {
+      method,
+      // Only a numeric/opaque account id, never the email (the fallback id).
+      event_id: data.user?.id != null ? `signup_${data.user.id}` : undefined,
+    });
   } catch {
     // never let analytics break a sign-in
+  }
+}
+
+/* ── ViewContent ────────────────────────────────────────────────────────────
+ * One per product landing page view, so Meta can build "viewed the D5 page"
+ * audiences and optimise toward people who read a product page, and GA4 gets
+ * the matching recommended `view_item`. No value: viewing is not revenue. */
+export function trackViewContent(contentName: string, contentCategory: string): void {
+  if (typeof window === "undefined") return;
+  trackEvent("view_item", { item_name: contentName, item_category: contentCategory });
+  if (typeof window.fbq === "function") {
+    window.fbq("track", "ViewContent", {
+      content_name: contentName,
+      content_category: contentCategory,
+      content_type: "product",
+    });
   }
 }

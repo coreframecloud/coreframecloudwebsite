@@ -45,9 +45,38 @@ export type Attribution = {
   landing_path: string | null;
   referrer: string | null;
   first_seen_at: string | null;
+  // Added 12 Oct 2026. The API ignores unknown fields (pydantic default), so
+  // these ride along harmlessly until AttributionIn learns them.
+  /** utm_id: the ad platform's numeric campaign id ({{campaign.id}} on Meta,
+   *  {campaignid} on Google), which survives a campaign being renamed. */
+  utm_id: string | null;
+  /** The most recent campaign touch. First touch says who introduced them;
+   *  this says which ad brought them back to sign up, which is what a 20-day
+   *  test is judged on. Rewritten on every visit that carries campaign params. */
+  last_touch: LastTouch | null;
+  /** Meta's browser ids (_fbp / _fbc cookies), read at sign-up. Not personal
+   *  data on their own; the Conversions API matches on them. */
+  fbp?: string | null;
+  fbc?: string | null;
+};
+
+export type LastTouch = {
+  utm_source: string | null;
+  utm_medium: string | null;
+  utm_campaign: string | null;
+  utm_content: string | null;
+  utm_term: string | null;
+  utm_id: string | null;
+  gclid: string | null;
+  fbclid: string | null;
+  at: string;
 };
 
 const KEY = "cf_attribution";
+/** First-party cookie mirror of KEY, shared by every *.coreframecloud.com host
+ *  (the Studio app lives on a subdomain) and kept when localStorage is not. */
+const COOKIE = "cf_attr";
+const COOKIE_MAX_AGE_S = 90 * 24 * 60 * 60;
 
 // Comfortably under the narrowest plausible column. A utm_content longer than
 // this is a tracking macro that did not expand, not information.
@@ -55,7 +84,7 @@ const MAX = 255;
 
 const CAMPAIGN_KEYS = [
   "utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term",
-  "fbclid", "gclid", "gbraid", "wbraid",
+  "fbclid", "gclid", "gbraid", "wbraid", "utm_id",
 ] as const;
 
 function clean(v: string | null | undefined): string | null {
@@ -71,12 +100,38 @@ function empty(): Attribution {
     utm_content: null, utm_term: null, fbclid: null,
     gclid: null, gbraid: null, wbraid: null,
     landing_path: null, referrer: null, first_seen_at: null,
+    utm_id: null, last_touch: null,
   };
+}
+
+function readCookie(name: string): string | null {
+  try {
+    const hit = document.cookie.split("; ").find((c) => c.startsWith(`${name}=`));
+    return hit ? decodeURIComponent(hit.slice(name.length + 1)) : null;
+  } catch {
+    return null;
+  }
+}
+
+function writeCookie(value: string): void {
+  try {
+    const host = window.location.hostname;
+    const domain = host === "coreframecloud.com" || host.endsWith(".coreframecloud.com")
+      ? "; domain=.coreframecloud.com"
+      : "";
+    const secure = window.location.protocol === "https:" ? "; Secure" : "";
+    document.cookie =
+      `${COOKIE}=${encodeURIComponent(value)}; path=/; max-age=${COOKIE_MAX_AGE_S}; SameSite=Lax${domain}${secure}`;
+  } catch {
+    /* cookies disabled */
+  }
 }
 
 function load(): Attribution | null {
   try {
-    const raw = window.localStorage.getItem(KEY);
+    let raw: string | null = null;
+    try { raw = window.localStorage.getItem(KEY); } catch { /* blocked */ }
+    if (!raw) raw = readCookie(COOKIE);
     if (!raw) return null;
     const parsed = JSON.parse(raw) as Partial<Attribution>;
     if (!parsed || typeof parsed !== "object") return null;
@@ -87,11 +142,13 @@ function load(): Attribution | null {
 }
 
 function save(a: Attribution): void {
+  const json = JSON.stringify(a);
   try {
-    window.localStorage.setItem(KEY, JSON.stringify(a));
+    window.localStorage.setItem(KEY, json);
   } catch {
     /* private window, or storage disabled. Not worth a single line of UI. */
   }
+  writeCookie(json);
 }
 
 /**
@@ -126,6 +183,19 @@ export function captureAttribution(): void {
       if (v) { a[k] = v; touched = true; }
     }
 
+    // Last touch: any visit that arrives with campaign params replaces it.
+    const p = (k: string) => clean(params.get(k));
+    if (CAMPAIGN_KEYS.some((k) => params.get(k))) {
+      a.last_touch = {
+        utm_source: p("utm_source"), utm_medium: p("utm_medium"),
+        utm_campaign: p("utm_campaign"), utm_content: p("utm_content"),
+        utm_term: p("utm_term"), utm_id: p("utm_id"),
+        gclid: p("gclid"), fbclid: p("fbclid"),
+        at: new Date().toISOString(),
+      };
+      touched = true;
+    }
+
     if (touched) save(a);
   } catch {
     /* Never let analytics break a page. */
@@ -140,6 +210,10 @@ export function readAttribution(): Attribution | null {
   if (typeof window === "undefined") return null;
   const a = load();
   if (!a) return null;
+  // Meta's own first-party ids, set by the pixel. Read now, not at landing:
+  // the pixel loads lazily and may not have written them on the first page.
+  a.fbp = clean(readCookie("_fbp"));
+  a.fbc = clean(readCookie("_fbc"));
   const hasAnything = Object.values(a).some((v) => v !== null && v !== "");
   return hasAnything ? a : null;
 }

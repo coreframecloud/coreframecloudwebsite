@@ -89,6 +89,7 @@ export default function TopUpDialog({
   introOffer,
   presetAmount,
   defaultCountry,
+  isFirstTopup,
 }: {
   open: boolean;
   onClose: () => void;
@@ -103,6 +104,9 @@ export default function TopUpDialog({
   presetAmount?: number | null;
   /** ISO-3166 alpha-2 from sign-up, when the API reports it. */
   defaultCountry?: string | null;
+  /** True when this customer has never topped up (the wallet still offers the
+   *  intro). A successful payment then also fires the first_topup conversion. */
+  isFirstTopup?: boolean;
 }) {
   const [config, setConfig] = useState<PaymentsConfig | null>(null);
   const [states, setStates] = useState<GstState[]>([]);
@@ -246,6 +250,14 @@ export default function TopUpDialog({
                 transaction_id: resp.razorpay_payment_id,
                 location: "wallet_topup",
               });
+              if (isFirstTopup) {
+                trackConversion("first_topup", {
+                  value: rupees,
+                  currency: order.currency ?? "INR",
+                  transaction_id: resp.razorpay_payment_id,
+                  location: "wallet_topup",
+                });
+              }
               setDone({
                 credited: v.net_wallet_credit_rupees ?? rupees,
                 balance: v.wallet_balance_rupees ?? 0,
@@ -277,7 +289,7 @@ export default function TopUpDialog({
     } finally {
       setBusy(false);
     }
-  }, [amount, city, config, countryIso, isIndia, name, onCredited, pincode, stateCode, user]);
+  }, [amount, city, config, countryIso, isFirstTopup, isIndia, name, onCredited, pincode, stateCode, user]);
 
   if (!open) return null;
 

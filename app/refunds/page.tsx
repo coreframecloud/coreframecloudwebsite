@@ -1,4 +1,4 @@
-import { redirect } from "next/navigation";
+import { permanentRedirect } from "next/navigation";
 
 /**
  * `/refunds` used to be a second, contradictory refund policy — it promised a
@@ -12,5 +12,6 @@ import { redirect } from "next/navigation";
  * payment-gateway dashboard entry pointing at the live terms.
  */
 export default function RefundsRedirect() {
-  redirect("/refund-policy");
+  // Permanent (308): a 307 tells search engines to keep the old URL indexed.
+  permanentRedirect("/refund-policy");
 }

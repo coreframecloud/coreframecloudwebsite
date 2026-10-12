@@ -59,6 +59,33 @@ const META_PIXEL_ID = /^\d{5,20}$/.test(process.env.NEXT_PUBLIC_META_PIXEL_ID ??
 const GOOGLE_ADS_ID = /^AW-\d{5,20}$/.test(process.env.NEXT_PUBLIC_GOOGLE_ADS_ID ?? "")
   ? process.env.NEXT_PUBLIC_GOOGLE_ADS_ID
   : undefined;
+/**
+ * GA4 measurement id. Env-driven since 12 Oct 2026 so a new GA4 property can be
+ * swapped in from Vercel without a code change; falls back to the property the
+ * site has reported to since launch, so an unset variable never silently
+ * switches analytics off. Set NEXT_PUBLIC_GA4_ID="off" to disable GA4 (Google
+ * Ads still loads through gtag.js when NEXT_PUBLIC_GOOGLE_ADS_ID is set).
+ */
+const GA4_ENV = process.env.NEXT_PUBLIC_GA4_ID ?? "G-BX4WY4GBSZ";
+const GA4_ID = /^G-[A-Z0-9]{6,16}$/.test(GA4_ENV) ? GA4_ENV : undefined;
+/** The id gtag.js is loaded with: GA4 if present, else the Ads tag. */
+const GTAG_LOADER_ID = GA4_ID ?? GOOGLE_ADS_ID;
+
+/**
+ * Google Consent Mode v2 defaults, set BEFORE any `config` call.
+ *
+ * Visitors in the EEA, the UK and Switzerland start with every storage type
+ * denied: Google then sends cookieless pings only, which is what Google Ads
+ * requires for traffic from those regions. Everyone else (India first) starts
+ * granted -- India's DPDP Act asks for notice and purpose limitation, which the
+ * privacy policy covers, and does not require a cookie-consent banner for
+ * analytics. If a consent banner is added later it calls
+ * gtag('consent','update',{...}) and nothing here changes.
+ */
+const CONSENT_DENIED_REGIONS = [
+  "AT","BE","BG","HR","CY","CZ","DK","EE","FI","FR","DE","GR","HU","IE","IT","LV",
+  "LT","LU","MT","NL","PL","PT","RO","SK","SI","ES","SE","IS","LI","NO","GB","CH",
+];
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.coreframecloud.com"),
@@ -219,25 +246,47 @@ export default async function RootLayout({
       className={`${inter.variable} ${plexMono.variable} ${poppins.variable}`}
     >
       <body className="bg-paper text-ink antialiased">
-        {/* Google Analytics */}
-        <Script
-          src="https://www.googletagmanager.com/gtag/js?id=G-BX4WY4GBSZ"
-          strategy="afterInteractive"
-        />
-        <Script id="google-analytics" strategy="afterInteractive">
-          {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){window.dataLayer.push(arguments);}
-            window.gtag = gtag;
-            gtag('js', new Date());
-            gtag('config', 'G-BX4WY4GBSZ');${GOOGLE_ADS_ID ? `
-            gtag('config', '${GOOGLE_ADS_ID}');` : ""}
-          `}
-        </Script>
+        {/* Google tag (GA4 + Google Ads), with Consent Mode v2 defaults.
+            The consent defaults and the dataLayer shim run first, in the same
+            inline script, so they precede every config and event call. */}
+        {GTAG_LOADER_ID ? (
+          <>
+            <Script id="google-consent-and-tag" strategy="afterInteractive">
+              {`
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){window.dataLayer.push(arguments);}
+                window.gtag = gtag;
+                gtag('consent', 'default', {
+                  ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied',
+                  analytics_storage: 'denied', wait_for_update: 500,
+                  region: ${JSON.stringify(CONSENT_DENIED_REGIONS)}
+                });
+                gtag('consent', 'default', {
+                  ad_storage: 'granted', ad_user_data: 'granted', ad_personalization: 'granted',
+                  analytics_storage: 'granted'
+                });
+                gtag('set', 'url_passthrough', true);
+                gtag('js', new Date());${GA4_ID ? `
+                gtag('config', '${GA4_ID}');` : ""}${GOOGLE_ADS_ID ? `
+                gtag('config', '${GOOGLE_ADS_ID}');` : ""}
+              `}
+            </Script>
+            <Script
+              src={`https://www.googletagmanager.com/gtag/js?id=${GTAG_LOADER_ID}`}
+              strategy="afterInteractive"
+            />
+          </>
+        ) : null}
 
-        {/* Meta pixel — only when NEXT_PUBLIC_META_PIXEL_ID is set. */}
+        {/* Meta pixel — only when NEXT_PUBLIC_META_PIXEL_ID is set.
+            lazyOnload (12 Oct 2026): Lighthouse on mobile measured fbevents.js
+            blocking the main thread for ~3.2 s on /pricing, the largest single
+            cost on the page. Its conversions (sign-up, purchase) fire long
+            after load, so waiting for onload loses nothing that matters. The
+            Google tag stays afterInteractive: Ads attribution needs the gclid
+            read on the landing page view. */}
         {META_PIXEL_ID ? (
-          <Script id="meta-pixel" strategy="afterInteractive">
+          <Script id="meta-pixel" strategy="lazyOnload">
             {`
               !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
               n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
@@ -251,7 +300,7 @@ export default async function RootLayout({
         ) : null}
 
         {/* Microsoft Clarity */}
-        <Script id="microsoft-clarity" strategy="afterInteractive">
+        <Script id="microsoft-clarity" strategy="lazyOnload">
           {`
             (function(c,l,a,r,i,t,y){
               c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};

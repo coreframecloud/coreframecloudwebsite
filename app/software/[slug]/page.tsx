@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { ViewContent } from "@/components/analytics/view-content";
 import Link from "next/link";
 import { GenImage, OwnImage } from "@/components/visuals/media";
 import { StreamDiagram, FileSyncDiagram } from "@/components/visuals/diagrams";
@@ -147,6 +148,7 @@ export default async function SoftwareLandingPage({
       </div>
     </section>
     <main className="cf-section px-5">
+      <ViewContent name={page.metaTitle ?? page.title} category="workstation" />
       <JsonLd data={faqPage(faqs)} />
       <JsonLd data={breadcrumbList([{ name: page.metaTitle ?? page.title, path: `/software/${page.slug}` }])} />
 

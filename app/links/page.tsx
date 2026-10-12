@@ -36,6 +36,9 @@ export const metadata: Metadata = {
   description:
     `${NODE.gpu} GPU workstations for architects and creative studios. Billed per minute, GST included. Hosted in ${NODE.location}.`,
   alternates: { canonical: "/links" },
+  // The Instagram link-in-bio page: a list of links to pages that are indexed
+  // in their own right. Indexing it only gives Google a thin duplicate.
+  robots: { index: false, follow: true },
   openGraph: {
     title: "Coreframe Cloud",
     description: `GPU workstations for architects. ${NODE.gpu}, billed per minute, hosted in ${NODE.location}.`,
