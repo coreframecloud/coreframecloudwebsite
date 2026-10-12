@@ -68,7 +68,7 @@ const FAQS = [
   },
   {
     q: "Do I need my own software licences?",
-    a: "For commercial applications, yes. D5 Render, Lumion, Enscape, V-Ray, Revit, AutoCAD, 3ds Max and the like are licensed to you, not the machine, so you install them and sign in with your own subscription. Free software is already installed: Blender, Twinmotion, Unreal Engine, the Autodesk viewers and the usual utilities.",
+    a: "For commercial applications, yes. Lumion, Enscape, V-Ray, Revit, AutoCAD, 3ds Max and the like are licensed to you, not the machine, so we set them up with you once and you sign in with your own subscription. Already installed: D5 Render (you sign in with your own D5 account), Blender, Twinmotion, Unreal Engine, the Autodesk viewers and the usual utilities.",
   },
   {
     q: "Can I install my own software on the workstation?",

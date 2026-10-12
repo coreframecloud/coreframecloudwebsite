@@ -15,6 +15,7 @@ import {
   COMPANY_INSTAGRAM_HANDLE,
 } from "@/lib/company";
 import { visiblePosts } from "@/lib/blog";
+import { NODE } from "@/lib/node-spec";
 
 export function SiteFooter() {
   return (
@@ -26,7 +27,7 @@ export function SiteFooter() {
       <div className="mx-auto max-w-7xl px-4 pt-16 pb-28 sm:px-6 lg:px-8">
 
         {/* Main row */}
-        <div className="grid gap-8 lg:grid-cols-[1fr_auto_auto_auto]">
+        <div className="grid gap-8 lg:grid-cols-[1fr_auto_auto_auto_auto]">
 
           {/* Brand + tagline */}
           <div>
@@ -62,6 +63,28 @@ export function SiteFooter() {
                 // live site, drafts too on a preview. A link to a page that
                 // 404s in production is worse than no link.
                 ...(visiblePosts().length ? [{ label: "Blog", href: "/blog" }] : []),
+              ].map((l) => (
+                <Link key={l.href} href={l.href} className="flex min-h-11 items-center text-[13.5px] text-ink-2 transition hover:text-ink">{l.label}</Link>
+              ))}
+            </div>
+          </div>
+
+          {/* Guides. The pages that answer a specific search but had few or no
+              links pointing at them (GEO/SEO audit, 13 Oct 2026). Anchor text
+              says what the page is, so the link itself describes it. */}
+          <div>
+            <h3 className="cf-eyebrow">Guides</h3>
+            <div className="mt-3 flex flex-col gap-0">
+              {[
+                { label: "Cloud rendering for architects", href: "/cloud-rendering-for-architects" },
+                { label: `Rent an ${NODE.gpu} in India`, href: "/software/gpu-workstation-rental-india" },
+                { label: "GPU workstations for CFD", href: "/ansys-cfd-gpu" },
+                { label: "Workstations and storage for studios", href: "/solutions" },
+                { label: "Is 8 GB of VRAM enough?", href: "/vram-for-architectural-rendering" },
+                { label: "Coreframe vs iRender", href: "/coreframe-vs-irender" },
+                { label: "Workstation specs", href: "/compute-nodes" },
+                { label: "Free DWG dimension check", href: "/dwg-check" },
+                { label: "Book a demo or talk to us", href: "/request-demo" },
               ].map((l) => (
                 <Link key={l.href} href={l.href} className="flex min-h-11 items-center text-[13.5px] text-ink-2 transition hover:text-ink">{l.label}</Link>
               ))}

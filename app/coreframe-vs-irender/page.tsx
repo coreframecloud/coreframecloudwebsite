@@ -123,7 +123,7 @@ export default async function Page() {
       : "The published rate is what leaves your account.",
     "An Indian GST invoice for every payment, under SAC 998315. A business importing the same service from abroad generally has to account for IGST itself under reverse charge. Ask your accountant what that costs you, because the sticker price abroad isn't the landed price.",
     "Your files stay on storage in India.",
-    "The software is already installed. D5, Lumion, Enscape and Twinmotion are on the machine when it starts.",
+    "D5 Render, Twinmotion and Blender are already installed when the machine starts. Lumion, Enscape, 3ds Max and Revit run on your own licence: we set them up with you once, and after that they're on every workstation you launch.",
     intro
       ? `A first top-up of ${rupees(intro.priceRupees)} buys ${hoursLabel(intro.hours)}${intro.gpuName ? ` on an ${intro.gpuName}` : ""}, so you can judge it on your own project. (Theirs: ${IRENDER.firstChargeBonus}.)`
       : "Billed per minute, so trying it on your own project costs you minutes instead of a month.",

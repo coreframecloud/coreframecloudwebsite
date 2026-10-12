@@ -62,7 +62,7 @@ export function Bento({ youtubeId }: { youtubeId: string }) {
                 image from it.
               </p>
               <Link href="/floor-plan-to-render" className="cfh-link mt-5 text-ink">
-                Try Studio <span aria-hidden>↗</span>
+                Studio — opening soon <span aria-hidden>→</span>
               </Link>
             </div>
             <div className="grid min-w-0 grid-cols-1 gap-3">

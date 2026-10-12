@@ -31,8 +31,17 @@ import { SOFTWARE_PAGES } from "@/lib/software-pages";
 import { publishedPosts } from "@/lib/blog";
 import { STREAM_BANDWIDTH } from "@/lib/streaming-terms";
 import { NODE, WORKSTATION_REPLACEMENT_COST } from "@/lib/node-spec";
+import { COMPANY, COMPANY_VISITING_ADDRESS_LINE } from "@/lib/company";
 
 export const SITE = "https://www.coreframecloud.com";
+
+/**
+ * The date this brief's wording was last reviewed. A content date, not a build
+ * timestamp: the route revalidates hourly, and a date that moves every hour
+ * tells an answer engine nothing. Bump it whenever the text below changes.
+ * Prices are not covered by it; they are read live from the rate card.
+ */
+export const LLMS_LAST_UPDATED = "13 October 2026";
 
 function money(n: number | null | undefined): string | null {
   if (n == null) return null;
@@ -44,14 +53,14 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
 
   out.push("# Coreframe Cloud");
   out.push("");
+  // Kept under 200 characters: the blockquote is the one line an answer engine
+  // is most likely to lift whole. The detail lives in the sections below.
   out.push(
-    "> On-demand Windows GPU workstations for 3D rendering, CAD and video, hosted in " +
-      "Bengaluru, India. Architects, interior designers, 3D artists and video editors stream " +
-      `a full ${NODE.os} desktop with an NVIDIA ${NODE.gpu} (${NODE.vram}) and ${NODE.ram} ` +
-      "of RAM to the laptop they already own, pay by the minute for the time they actually " +
-      "use, and keep their project files on persistent storage between sessions. There is " +
-      "no hardware to buy and no GPU upgrade to fund. Customers outside India are welcome.",
+    `> On-demand Windows ${NODE.gpu} workstations from Bengaluru for architects, designers ` +
+      "and 3D artists, streamed to your laptop and billed per minute in INR.",
   );
+  out.push("");
+  out.push(`Last updated: ${LLMS_LAST_UPDATED}. Prices on this page are read live from our rate card.`);
   out.push("");
 
   /**
@@ -86,6 +95,20 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
     );
   } else {
     out.push(`- **How much does it cost?** Live prices: ${SITE}/pricing.`);
+  }
+  const firstTopup = minFirstTopup(card);
+  const laterTopup = card?.wallet?.min_topup_rupees ?? null;
+  if (firstTopup) {
+    const buys =
+      introQ && introQ.priceRupees === firstTopup
+        ? `, which buys ${hoursLabel(introQ.hours)}${introQ.gpuName ? ` of ${introQ.gpuName}` : ""}` +
+          `${introQ.validityDays ? ` to use within ${introQ.validityDays} days` : ""}` +
+          `${introQ.onePerCustomer ? " (one per customer)" : ""}`
+        : "";
+    out.push(
+      `- **What is the least I can start with?** The first top-up is ${money(firstTopup)}${buys}.` +
+        (laterTopup && laterTopup !== firstTopup ? ` Top-ups after that start at ${money(laterTopup)}.` : ""),
+    );
   }
   out.push(
     "- **Is it a render farm?** No. A render farm renders a finished scene on many " +
@@ -196,10 +219,15 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
       );
     }
     out.push("");
+    const first = money(minFirstTopup(card));
     const min = money(card.wallet?.min_topup_rupees);
-    if (min) {
+    if (first || min) {
+      const topups =
+        first && min && first !== min
+          ? `first top-up ${first}, then top-ups from ${min}`
+          : `minimum top-up ${first ?? min}`;
       out.push(
-        `Prepaid wallet: minimum top-up ${min}. There is no setup fee and no monthly minimum ` +
+        `Prepaid wallet: ${topups}. There is no setup fee and no monthly minimum ` +
           "for pay-as-you-go. Business accounts can be invoiced monthly instead.",
       );
       out.push("");
@@ -258,7 +286,13 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
     );
   }
   const minFirst = minFirstTopup(card);
-  if (minFirst) out.push(`- Smallest first top-up: ${money(minFirst)}.`);
+  const minLater = card?.wallet?.min_topup_rupees ?? null;
+  if (minFirst) {
+    out.push(
+      `- Smallest first top-up: ${money(minFirst)}` +
+        (minLater && minLater !== minFirst ? `; after that, top-ups start at ${money(minLater)}.` : "."),
+    );
+  }
   out.push("");
 
   out.push("## Software");
@@ -440,8 +474,10 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
   out.push(`- [Coreframe vs iRender](${SITE}/coreframe-vs-irender): dated, sourced price comparison.`);
   out.push(`- [Is 8 GB of VRAM enough?](${SITE}/vram-for-architectural-rendering)`);
   out.push(`- [Cloud rendering for architects](${SITE}/cloud-rendering-for-architects)`);
-  out.push(`- [Coreframe Studio: floor plan to interior render](${SITE}/floor-plan-to-render): a browser tool that turns a DXF floor plan into an interior image, paid per export in credits.`);
+  out.push(`- [Coreframe Studio: floor plan to interior render](${SITE}/floor-plan-to-render): opening soon. It is in private testing and not yet open to the public. When it opens, it will turn a DXF floor plan into an interior image in the browser, paid per export in credits.`);
   out.push(`- [Download Coreframe Connect](${SITE}/download): Windows 10/11 client.`);
+  out.push(`- [Workstation specs](${SITE}/compute-nodes): the hardware in each machine.`);
+  out.push(`- [GPU workstations and storage for studios](${SITE}/solutions): a workstation per person and shared project storage.`);
   out.push(`- [Renting vs buying a workstation](${SITE}/d5-render-vs-local-gpu): the break-even, both ways.`);
   out.push(`- [Preinstalled software](${SITE}/apps): what is on the machine before you start.`);
   out.push(`- [How to use Coreframe](${SITE}/how-to-use): setup, sessions, files, licences.`);
@@ -471,6 +507,14 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
     for (const p of posts) out.push(`- [${p.title}](${SITE}/blog/${p.slug}): ${p.description}`);
     out.push("");
   }
+
+  out.push("## Contact");
+  out.push("");
+  out.push(`- Email: ${COMPANY.email}`);
+  out.push(`- WhatsApp or phone: ${COMPANY.phone} (${COMPANY.whatsapp})`);
+  out.push(`- Office: ${COMPANY_VISITING_ADDRESS_LINE}`);
+  out.push(`- Contact form, monthly plans or a demo: ${SITE}/request-demo`);
+  out.push("");
 
   out.push("## Facts worth quoting accurately");
   out.push("");

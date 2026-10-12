@@ -43,7 +43,7 @@ import { NODE } from "@/lib/node-spec";
 export const metadata: Metadata = {
   title: "Floor Plan to Interior Render from a DXF",
   description:
-    "Coreframe Studio turns a 2D DXF floor plan into an interior render in the browser: it reads walls, doors and windows, you pick a room, export at 2K or 4K.",
+    "Coreframe Studio (opening soon, in private testing) turns a 2D DXF floor plan into an interior render in the browser: it reads walls, doors and windows, you pick a room, export at 2K or 4K.",
   keywords: [
     "floor plan to 3d render",
     "DXF to interior render",
@@ -54,8 +54,6 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: "/floor-plan-to-render" },
 };
-
-const STUDIO = "https://studio.coreframecloud.com/studio";
 
 const steps = [
   { n: "1", title: "Upload your DXF.", body: "We find the walls and rooms. Free." },
@@ -204,7 +202,7 @@ export default function Page() {
                 </Link>
                 .
               </p>
-              <a href={STUDIO} className="cfh-pill-light mt-7">Open Studio</a>
+              <a href="/studio/guide.pdf" target="_blank" rel="noopener" className="cfh-pill-light mt-7">Studio — opening soon: read the guide</a>
             </div>
           </div>
         </section>
