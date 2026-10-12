@@ -141,24 +141,42 @@ export function trackConversion(name: ConversionName, params: ConversionParams =
     name === "generate_lead" && params.method && params.method !== "whatsapp"
       ? "Lead"
       : META_EVENT[name];
-  if (metaEvent && typeof window.fbq === "function") {
+  if (metaEvent) {
     const metaParams: Record<string, string | number> = {};
     if (money.value !== undefined) {
       metaParams.value = money.value;
       metaParams.currency = money.currency ?? "INR";
     }
     if (name === "sign_up") metaParams.status = "registered";
-    window.fbq(
-      "track",
-      metaEvent,
-      metaParams,
-      params.event_id ?? params.transaction_id
-        ? { eventID: params.event_id ?? params.transaction_id }
-        : undefined,
-    );
+    const eventID = params.event_id ?? params.transaction_id;
+    if (typeof window.fbq === "function") {
+      window.fbq("track", metaEvent, metaParams, eventID ? { eventID } : undefined);
+    } else {
+      // The pixel loads lazyOnload, so a conversion that fires early (the
+      // magic-link page verifies and redirects within ~1 s) used to find no
+      // fbq and was silently lost - the 12 Oct test sign-up never reached
+      // Meta. Park it; the pixel snippet in app/layout.tsx replays it right
+      // after init, on this page or the next one.
+      queueMetaEvent(metaEvent, metaParams, eventID);
+    }
   }
 
   trackClarityEvent(`conversion_${name}`);
+}
+
+const META_QUEUE_KEY = "cf_meta_queue";
+
+/** Meta events that fired before the pixel existed. Replayed (and cleared) by
+ *  the pixel snippet in app/layout.tsx. eventID keeps a replay from counting
+ *  twice. Kept for a day at most. */
+function queueMetaEvent(event: string, params: Record<string, string | number>, eventID?: string): void {
+  try {
+    const list = JSON.parse(localStorage.getItem(META_QUEUE_KEY) || "[]") as unknown[];
+    list.push({ event, params, eventID, at: Date.now() });
+    localStorage.setItem(META_QUEUE_KEY, JSON.stringify(list.slice(-10)));
+  } catch {
+    // storage blocked: nothing more we can do in the browser
+  }
 }
 
 /* ── WhatsApp leads ─────────────────────────────────────────────────────────

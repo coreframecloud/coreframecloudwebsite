@@ -300,6 +300,14 @@ export default async function RootLayout({
               document,'script','https://connect.facebook.net/en_US/fbevents.js');
               fbq('init', '${META_PIXEL_ID}');
               fbq('track', 'PageView');
+              try {
+                var q = JSON.parse(localStorage.getItem('cf_meta_queue') || '[]');
+                localStorage.removeItem('cf_meta_queue');
+                q.forEach(function (e) {
+                  if (e && e.event && Date.now() - e.at < 864e5)
+                    fbq('track', e.event, e.params || {}, e.eventID ? { eventID: e.eventID } : undefined);
+                });
+              } catch (err) {}
             `}
           </Script>
         ) : null}
