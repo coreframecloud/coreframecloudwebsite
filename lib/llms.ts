@@ -487,7 +487,7 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
   out.push(`- [Ansys CFD on GPU](${SITE}/ansys-cfd-gpu)`);
   out.push(`- [Free IFC pre-CFD check](${SITE}/tools): no account needed.`);
   out.push(`- [Free DWG dimension check](${SITE}/dwg-check): no account needed.`);
-  out.push(`- [Submit a CFD job](${SITE}/cfd-intake)`);
+  out.push(`- [CFD for ducts and pipes](${SITE}/cfd-intake): a managed, automatic OpenFOAM service. Upload one closed STL of the fluid volume; the geometry is checked automatically, the quote fee is Rs 499 + GST from the Coreframe wallet, the mesh is built on our machine and a quote is emailed. Accept it and get a PDF report with pressure drop and loss coefficient, a 3D results viewer and the data files. No CFD licence needed. Rooms and HVAC comfort: coming soon.`);
   out.push(`- [For teams and studios](${SITE}/enterprise)`);
   out.push("");
   out.push("### Per-application guides");

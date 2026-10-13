@@ -6,6 +6,7 @@ import { JsonLd } from "@/components/seo/json-ld";
 import { breadcrumbList } from "@/lib/seo";
 import { BackgroundGlow } from "@/components/home/background-glow";
 import Link from "next/link";
+import Image from "next/image";
 import { NODE, WORKSTATION_REPLACEMENT_COST } from "@/lib/node-spec";
 
 export const metadata: Metadata = {
@@ -67,29 +68,6 @@ const useCases = [
   { label: "Electronics cooling", desc: "PCB thermal management, server rack CFD, junction temperature prediction" },
 ];
 
-const pricingTiers = [
-  {
-    label: "Validation",
-    elements: "Up to 2 M elements",
-    useFor: "Concept checks, quick parameter sweeps",
-  },
-  {
-    label: "Engineering",
-    elements: "2 M to 20 M elements",
-    useFor: "Design validation, steady-state RANS",
-  },
-  {
-    label: "Industrial",
-    elements: "20 M to 80 M elements",
-    useFor: "Full-scale external aero, large HVAC, wind tunnel",
-  },
-  {
-    label: "Large scale",
-    elements: "80 M to 200 M elements",
-    useFor: "Complex multi-physics, LES, transient, parametric campaigns",
-  },
-];
-
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "FAQPage",
@@ -128,10 +106,18 @@ const jsonLd = {
     },
     {
       "@type": "Question",
+      name: "Can you run the simulation for me?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Yes, for internal flow in ducts and pipes. Upload one closed STL of the fluid volume at coreframecloud.com/cfd-intake. We check the geometry, build the mesh and email a quote; the quote fee is Rs 499 + GST. If you accept the quote, the case runs on OpenFOAM on our machine and you get a PDF report with the pressure drop and loss coefficient, a 3D results viewer and the data files. No CFD licence is needed for that service. Rooms and HVAC comfort studies are coming soon.",
+      },
+    },
+    {
+      "@type": "Question",
       name: "How is pricing calculated?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Hourly, for the workstation, billed in INR with a GST invoice. You're renting a machine and running your own solver on it, so the cost depends on how long you use it, not on your mesh size. Contact us for the current rate.",
+        text: "Workstation rental is hourly, billed in INR with a GST invoice. You're renting a machine and running your own solver on it, so the cost depends on how long you use it, not on your mesh size. Live rates are on the pricing page. The managed duct and pipe service is quoted per job instead, after a Rs 499 + GST quote fee.",
       },
     },
   ],
@@ -160,25 +146,29 @@ export default function AnsysCfdPage() {
             Run Ansys Fluent, OpenFOAM or your own solver on a rented RTX workstation. Your licence, our machine, billed in rupees with a GST invoice.
           </p>
             <p className="cf-section-copy mt-5">
-              We don&rsquo;t run your simulation, pick your turbulence model or
-              interpret your results. This is hardware rental, and the
-              engineering, along with responsibility for it, stays with you.
+              On a rented workstation the engineering is yours: you set up the
+              case, pick the turbulence model and interpret the results. If
+              you&rsquo;d rather we ran it, our{" "}
+              <Link href="/cfd-intake" className="underline underline-offset-4">
+                CFD service for ducts and pipes
+              </Link>{" "}
+              does exactly that.
             </p>
 
             <div className="mt-8 flex flex-wrap gap-3">
-              <a href="/cfd-intake" className="cf-btn-primary">
-                Submit a CFD job
+              <a
+                href={wa("Hi Coreframe, I'd like to rent a GPU workstation for CFD.")}
+                target="_blank"
+                rel="noreferrer"
+                className="cf-btn-primary"
+              >
+                Rent a workstation
+              </a>
+              <a href="/cfd-intake" className="cf-btn-secondary">
+                Or let us run it
               </a>
               <a href="/tools" className="cf-btn-secondary">
                 Check an IFC model
-              </a>
-              <a
-                href={wa("Hi Coreframe, I'd like to discuss GPU CFD simulation for my Ansys project.")}
-                target="_blank"
-                rel="noreferrer"
-                className="cf-btn-secondary"
-              >
-                WhatsApp us
               </a>
             </div>
 
@@ -205,6 +195,37 @@ export default function AnsysCfdPage() {
           <div className="min-w-0"><StreamDiagram /></div>
         </div>
       </section>
+
+        <section className="cf-section px-5">
+          <div className="cf-wide grid items-center gap-8 rounded-[28px] bg-night p-6 text-white sm:p-10 lg:grid-cols-[1.1fr_0.9fr]">
+            <div className="min-w-0">
+              <p className="cf-eyebrow !bg-white/10 !text-white">Or let us run it</p>
+              <h2 className="cf-section-title mt-4 !text-white">CFD for ducts and pipes, run for you.</h2>
+              <p className="mt-4 text-[16px] leading-[1.62] text-white/75">
+                No workstation, no licence, no case setup. Upload one closed STL of the fluid volume. We check
+                it, mesh it with wall-resolved layers and email you a quote; accept it and OpenFOAM runs on our
+                machine. You get a PDF report, a 3D results viewer and the data files, with the pressure drop and
+                the loss coefficient.
+              </p>
+              <p className="mt-4 text-[14px] leading-6 text-white/60">
+                Quote fee ₹499 + GST from your Coreframe wallet. Pay for the run only if you accept the quote.
+              </p>
+              <a href="/cfd-intake" className="cf-btn-primary mt-7 !bg-white !text-ink hover:!bg-[#e9ebef]">
+                CFD for ducts and pipes
+              </a>
+            </div>
+            <div className="min-w-0 overflow-hidden rounded-[20px] bg-white p-3">
+              <Image
+                src="/cfd/bend-slice-p-zoom.webp"
+                alt="Static pressure through a 90 degree pipe bend, from a Coreframe CFD run"
+                width={1316}
+                height={889}
+                sizes="(max-width: 1024px) 100vw, 400px"
+                className="h-auto w-full"
+              />
+            </div>
+          </div>
+        </section>
 
         <section className="cf-section px-5 pt-0">
           <div className="cf-wide">
@@ -305,8 +326,12 @@ export default function AnsysCfdPage() {
               we&rsquo;d rather you confirmed it than assumed.
             </p>
             <p className="mt-4 text-base leading-[1.62] text-ink-3">
-              We don&rsquo;t perform CFD analysis, and we don&rsquo;t review,
-              verify or sign off anything produced on our hardware.
+              We don&rsquo;t review, verify or sign off analysis you run on a
+              rented workstation. Our own managed service covers{" "}
+              <Link href="/cfd-intake" className="text-blue underline underline-offset-4">
+                ducts and pipes
+              </Link>
+              , with its own report.
             </p>
             <a
               href={wa("Hi Coreframe, I'd like to ask about hourly GPU workstations for CFD.")}
@@ -323,56 +348,27 @@ export default function AnsysCfdPage() {
         <section className="cf-section px-5 pt-0">
           <div className="cf-wide">
             <h2 className="cf-section-title">Pricing.</h2>
-            <p className="cf-section-copy mt-5">
-              We quote CFD per job, based on mesh element count, since that
-              drives both GPU memory and wall-clock time. Send us your .cas file
-              or your element count and we&rsquo;ll send back one figure rather
-              than a range.
-            </p>
-
-            {/* One row per tier, label stacked above the values on a phone: a
-                three-column table at 390px puts two words on each line and
-                stops being readable as a table. */}
-            <dl className="mt-9 overflow-hidden rounded-cf border border-rule bg-paper-2">
-              {pricingTiers.map((t, i) => (
-                <div
-                  key={t.label}
-                  className={`flex flex-col gap-1 px-5 py-4 sm:flex-row sm:gap-6 ${
-                    i > 0 ? "border-t border-rule" : ""
-                  }`}
-                >
-                  <dt className="text-sm font-semibold text-ink sm:w-40 sm:shrink-0">
-                    {t.label}
-                  </dt>
-                  <dd className="min-w-0">
-                    <span className="block text-sm break-words text-ink-2">
-                      {t.elements}
-                    </span>
-                    <span className="mt-1 block text-sm break-words text-ink-3">
-                      {t.useFor}
-                    </span>
-                  </dd>
-                </div>
-              ))}
-            </dl>
-
-            <p className="cf-section-copy mt-5">
-              The final figure depends on element count, solver type and estimated
-              wall-clock time.
-            </p>
-
-            <div className="mt-7 flex flex-wrap gap-3">
-              <a href="/cfd-intake" className="cf-btn-primary">
-                Submit a CFD job
-              </a>
-              <a
-                href={wa("Hi Coreframe, I'd like a quote for an Ansys CFD job. My mesh has approximately [X] million elements.")}
-                target="_blank"
-                rel="noreferrer"
-                className="cf-btn-secondary"
-              >
-                WhatsApp for a quote
-              </a>
+            <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2">
+              <div className="cf-card">
+                <p className="cf-card-label">Rent the workstation</p>
+                <p className="cf-section-copy">
+                  Billed by the hour for the {NODE.gpu} workstation, in rupees with a GST invoice. You run your own
+                  solver and licence on it, so the cost follows the hours you use, not your mesh size.
+                </p>
+                <Link href="/pricing" className="cf-btn-secondary mt-6">
+                  See live rates
+                </Link>
+              </div>
+              <div className="cf-card">
+                <p className="cf-card-label">Let us run a duct or pipe</p>
+                <p className="cf-section-copy">
+                  ₹499 + GST quote fee: we build the real mesh of your STL and email a quote. Pay for the run only if
+                  you accept it; the quote is held in your wallet and settled at what the run used.
+                </p>
+                <a href="/cfd-intake" className="cf-btn-primary mt-6">
+                  CFD for ducts and pipes
+                </a>
+              </div>
             </div>
           </div>
         </section>
