@@ -63,7 +63,7 @@ type BioLink = {
 /**
  * Every href is a route that exists. The draft pointed at /cfd and /pricing,
  * neither of which was a route at the time; /pricing is a real page now and
- * /cfd-intake is the CFD page (the old /ansys-cfd-gpu page was retired 13 Oct 2026). Two of the five links in the Instagram bio
+ * /cfd is the CFD page (the old /ansys-cfd-gpu page was retired 13 Oct 2026). Two of the five links in the Instagram bio
  * would have 404'd.
  *
  * /tools is real but is NOT a Next route — next.config.ts rewrites it to the
@@ -95,7 +95,7 @@ function bioLinks(rate: string | null, introHeadline: string | null): BioLink[] 
     {
       label: "CFD for your duct or pipe.",
       note: "Upload one STL. We mesh it, email a quote, and deliver the pressure drop and a PDF report.",
-      href: "https://www.coreframecloud.com/cfd-intake?utm_source=instagram&utm_medium=bio&utm_content=cfd",
+      href: "https://www.coreframecloud.com/cfd?utm_source=instagram&utm_medium=bio&utm_content=cfd",
     },
     {
       label: "Ask us something on WhatsApp.",

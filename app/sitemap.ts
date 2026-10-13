@@ -91,7 +91,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // The free IFC pre-CFD checker. Served from the control plane through a
     // rewrite in next.config.ts, so there is no page under app/ for Next to
     // discover -- it has to be listed by hand or it is never crawled at all.
-    // /cfd-intake is the conversion step behind it and was likewise missing.
+    // /cfd is the conversion step behind it and was likewise missing.
     { url: `${BASE}/tools`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
 
     // The free DWG dimension checker, added 2 Oct 2026. Same situation as
@@ -102,7 +102,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // engine can cite, rather than a landing page that describes a product.
     { url: `${BASE}/dwg-check`, lastModified: now, changeFrequency: "monthly", priority: 0.9 },
     // One of the three services (13 Oct 2026), so it ranks with the other two.
-    { url: `${BASE}/cfd-intake`, lastModified: now, changeFrequency: "weekly", priority: 0.9 },
+    { url: `${BASE}/cfd`, lastModified: now, changeFrequency: "weekly", priority: 0.9 },
 
     // /contact is NOT here: it is a redirect to /request-demo, and a sitemap
     // should list destinations, not hops.

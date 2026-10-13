@@ -13,7 +13,7 @@ import { Field, inputCls, textareaCls } from "./form-ui";
  * API takes them from the account the bearer token belongs to.
  *
  * Category-driven: the tabs come from lib/cfd-categories.ts and each live
- * category's inputs from app/cfd-intake/categories/. This shell owns what
+ * category's inputs from app/cfd/categories/. This shell owns what
  * every job has: job name, company, notes, submitting, the geometry upload
  * and the "job received" screen.
  *
@@ -147,7 +147,7 @@ export default function CfdJobForm({ token, accountEmail, onSignedOut }: {
         domainType: category.api.domainType,
         kpi: category.api.kpi,
         deadline: "",
-        description: notes.trim() || `${category.label}, submitted from /cfd-intake`,
+        description: notes.trim() || `${category.label}, submitted from /cfd`,
         ...fields.toPayload(catState),
       };
       const res = await fetch(`${API_BASE}/cfd-jobs`, {
@@ -235,7 +235,7 @@ export default function CfdJobForm({ token, accountEmail, onSignedOut }: {
           <p className="font-semibold text-ink">Next, on your job page:</p>
           <ol className="list-decimal space-y-1 pl-5">
             <li>Confirm which opening is the inlet (and the units, if we ask).</li>
-            <li>Pay the ₹499 + GST quote fee from your Coreframe wallet.</li>
+            <li>Pay the quote fee from your Coreframe wallet: ₹199 incl. GST for most models, ₹499 for very large models (over 5 million cells).</li>
             <li>We build the mesh and email you the quote.</li>
           </ol>
         </div>
@@ -328,8 +328,8 @@ export default function CfdJobForm({ token, accountEmail, onSignedOut }: {
 
             <div className="mt-7 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <p className="text-[13px] leading-5 text-ink-3">
-                Submitting as {accountEmail || "your Coreframe account"}. Nothing is charged when you submit. The ₹499 + GST
-                quote fee is paid later, on your job page, from your Coreframe wallet. By submitting you agree to our{" "}
+                Submitting as {accountEmail || "your Coreframe account"}. Nothing is charged when you submit. The quote fee
+                (₹199 incl. GST for most models, ₹499 over 5 million cells) is paid later, on your job page, from your Coreframe wallet. By submitting you agree to our{" "}
                 <a href="/terms-of-service" className="underline underline-offset-2">terms</a>.
               </p>
               <button type="submit" disabled={busy !== ""} className="cf-btn-primary shrink-0 disabled:opacity-60">

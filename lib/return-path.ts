@@ -5,7 +5,7 @@
  * but a NEW account does not come back that way: it signs in from the magic
  * link in its inbox (a new page load, often a new tab), then goes through
  * /verify for the WhatsApp code, and both of those used to end on
- * /my-activity. So the page that sent them (e.g. /cfd-intake) is remembered
+ * /my-activity. So the page that sent them (e.g. /cfd) is remembered
  * here, in this browser, and taken back at the end of whichever path they
  * finish on: the code sign-in, /auth/magic or /verify.
  *
@@ -21,6 +21,11 @@ export function safeReturnPath(path: string | null | undefined): string | null {
   if (!path || typeof path !== "string") return null;
   if (!path.startsWith("/") || path.startsWith("//") || path.startsWith("/\\")) return null;
   if (path.length > 300) return null;
+  // The CFD page moved from /cfd-intake to /cfd (13 Oct 2026). Sign-in links
+  // and remembered paths from before the move still say /cfd-intake: accept
+  // them, but store and return the new path so nobody bounces off the redirect.
+  const legacy = /^\/cfd-intake(?=$|[/?#])/;
+  if (legacy.test(path)) return path.replace(legacy, "/cfd");
   return path;
 }
 

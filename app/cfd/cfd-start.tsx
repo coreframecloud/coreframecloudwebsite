@@ -7,7 +7,7 @@ import { rememberReturnPath } from "@/lib/return-path";
 import CfdJobForm from "./cfd-job-form";
 
 /**
- * The "Start a job" area of /cfd-intake. Account first (owner, 13 Oct 2026):
+ * The "Start a job" area of /cfd. Account first (owner, 13 Oct 2026):
  * CFD customers register like every Coreframe customer, with a verified email
  * and a WhatsApp-verified mobile, and pay from the same wallet as GPU
  * workstations and Studio. POST /cfd-jobs refuses anything else.
@@ -24,7 +24,7 @@ import CfdJobForm from "./cfd-job-form";
 
 const TOKEN_KEY = "cf_customer_token";
 const USER_KEY = "cf_customer_user";
-const HERE = "/cfd-intake#start";
+const HERE = "/cfd#start";
 
 type Gate =
   | { kind: "loading" }
@@ -100,7 +100,7 @@ export default function CfdStart() {
   }
 
   if (gate.kind === "signed_out") {
-    const next = encodeURIComponent("/cfd-intake");
+    const next = encodeURIComponent("/cfd");
     return (
       <div className="rounded-[24px] border border-rule bg-paper-2 p-6 sm:p-8">
         <p className="cf-card-label">Account first</p>

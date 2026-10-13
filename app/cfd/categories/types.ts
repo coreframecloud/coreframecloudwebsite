@@ -1,7 +1,7 @@
 import type { ComponentType } from "react";
 
 /**
- * What a live CFD category plugs into the intake form (app/cfd-intake/cfd-job-form.tsx).
+ * What a live CFD category plugs into the intake form (app/cfd/cfd-job-form.tsx).
  *
  * The form owns what every job has (job name, company, notes, the account,
  * submitting, the upload and the "job received" screen). A category owns its

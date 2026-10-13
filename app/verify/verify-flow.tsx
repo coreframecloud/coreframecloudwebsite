@@ -148,7 +148,7 @@ export default function VerifyFlow() {
       setPhase(next);
       if (next === "done") {
         // A beat on the confirmation, then straight on to adding funds.
-        // Back to the page that sent them to sign up (e.g. /cfd-intake),
+        // Back to the page that sent them to sign up (e.g. /cfd),
         // otherwise on to adding funds.
         setTimeout(() => {
           window.location.href = takeReturnPath() ?? DONE_URL;

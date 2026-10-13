@@ -81,8 +81,9 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
       "Operated by Coreframe Compute Labs Private Limited, Bengaluru.",
   );
   out.push(
-    `- **Can Coreframe run CFD for me?** Yes, for ducts and pipes (${SITE}/cfd-intake). ` +
-      "Upload one closed STL of the fluid volume; the quote fee is Rs 499 + GST; we mesh it " +
+    `- **Can Coreframe run CFD for me?** Yes, for ducts and pipes (${SITE}/cfd). ` +
+      "Upload one closed STL of the fluid volume; " +
+      "the quote fee is Rs 199 incl. GST for most duct and pipe models (Rs 499 for very large models over 5 million cells); we mesh it " +
       "and email a quote; accept it and get pressure drop, loss coefficient, a PDF report, a " +
       "3D viewer and the OpenFOAM data. No CFD licence needed. It needs a Coreframe account " +
       "(the same account and wallet as GPU workstations and Studio). Rooms and HVAC airflow: coming soon.",
@@ -147,7 +148,7 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
   out.push("## The three services");
   out.push("");
   out.push(`1. **GPU workstations** (live): ${SITE}/pricing. Most of this page is about them.`);
-  out.push(`2. **CFD for ducts and pipes** (live, launched 13 October 2026): ${SITE}/cfd-intake.`);
+  out.push(`2. **CFD for ducts and pipes** (live, launched 13 October 2026): ${SITE}/cfd.`);
   out.push(`3. **Coreframe Studio** (opening soon): ${SITE}/floor-plan-to-render.`);
   out.push("");
   out.push("## GPU workstations: what it is");
@@ -507,7 +508,7 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
   out.push(`- [Enscape cloud workstations](${SITE}/enscape-cloud-gpu)`);
   out.push(`- [Free IFC pre-CFD check](${SITE}/tools): no account needed.`);
   out.push(`- [Free DWG dimension check](${SITE}/dwg-check): no account needed.`);
-  out.push(`- [CFD for ducts and pipes](${SITE}/cfd-intake): a managed, automatic OpenFOAM service. Upload one closed STL of the fluid volume; the geometry is checked automatically, the quote fee is Rs 499 + GST from the Coreframe wallet, the mesh is built on our machine and a quote is emailed. Accept it and get a PDF report with pressure drop and loss coefficient, a 3D results viewer and the data files. No CFD licence needed. Rooms and HVAC comfort: coming soon.`);
+  out.push(`- [CFD for ducts and pipes](${SITE}/cfd): a managed, automatic OpenFOAM service. Upload one closed STL of the fluid volume; the geometry is checked automatically, the quote fee is Rs 199 incl. GST for most duct and pipe models (Rs 499 for very large models over 5 million cells), from the Coreframe wallet, the mesh is built on our machine and a quote is emailed. Accept it and get a PDF report with pressure drop and loss coefficient, a 3D results viewer and the data files. No CFD licence needed. Rooms and HVAC comfort: coming soon.`);
   out.push(`- [For teams and studios](${SITE}/enterprise)`);
   out.push("");
   out.push("### Per-application guides");

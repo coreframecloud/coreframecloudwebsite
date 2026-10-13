@@ -1,17 +1,17 @@
 /**
- * CFD categories (verticals) offered on /cfd-intake.
+ * CFD categories (verticals) offered on /cfd.
  *
  * Owner, 13 Oct 2026: "as we add more verticals to CFD, the form input
  * changes". Each category is one entry here (what it is, whether it takes
  * jobs, the fixed values the API needs) plus its field component in
- * app/cfd-intake/categories/. Adding a vertical = add an entry here and
- * register its fields in app/cfd-intake/categories/index.ts. A category
+ * app/cfd/categories/. Adding a vertical = add an entry here and
+ * register its fields in app/cfd/categories/index.ts. A category
  * without registered fields is shown as "coming soon" and never submits.
  *
  * `api` values are sent as-is to POST /cfd-jobs (CfdJobCreate field names).
  * They are chosen to pass the API's scope rules (apps/api/app/services/
  * cfd_rules.py) and the runner's case generator: see the duct notes in
- * app/cfd-intake/categories/ducts.tsx before changing them.
+ * app/cfd/categories/ducts.tsx before changing them.
  */
 
 export type CfdCategoryId = "ducts" | "rooms";
