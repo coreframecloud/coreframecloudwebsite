@@ -105,6 +105,7 @@ export default function TopUpDialog({
   defaultCountry,
   isFirstTopup,
   bulkTiers,
+  studioStarter,
 }: {
   open: boolean;
   onClose: () => void;
@@ -126,6 +127,11 @@ export default function TopUpDialog({
    *  top-up of at least min_rupees earns percent extra, usable on GPU, CFD and
    *  Studio. Never on the same top-up as the intro offer. */
   bulkTiers?: BulkTier[] | null;
+  /** The Rs 99 Studio starter (13 Oct 2026): passed ONLY when the customer
+   *  came from Studio (?studio=1) and the account can still take it. Rs 99,
+   *  once per account, Rs 300 of Studio-only money; the only top-up below
+   *  the usual minimum. */
+  studioStarter?: { priceRupees: number; totalRupees: number } | null;
 }) {
   const [config, setConfig] = useState<PaymentsConfig | null>(null);
   const [states, setStates] = useState<GstState[]>([]);
@@ -142,6 +148,15 @@ export default function TopUpDialog({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [done, setDone] = useState<null | { credited: number; balance: number }>(null);
+  // Starter mode: the order is the Rs 99 Studio starter, not a free amount.
+  const [starterMode, setStarterMode] = useState(false);
+  useEffect(() => {
+    if (open && studioStarter) {
+      setStarterMode(true);
+      setAmount(String(studioStarter.priceRupees));
+    }
+    if (!studioStarter) setStarterMode(false);
+  }, [open, studioStarter]);
 
   useEffect(() => {
     if (!open) return;
@@ -189,9 +204,9 @@ export default function TopUpDialog({
   // press Pay and feel refused by a form that had not said anything. Text that
   // is present and unread is not a message; it is an alibi.
   const typedRupees = Number(amount);
-  const amountTooLow = Boolean(config) && amount.trim() !== "" &&
+  const amountTooLow = !starterMode && Boolean(config) && amount.trim() !== "" &&
     Number.isFinite(typedRupees) && typedRupees < (config?.min_topup_rupees ?? 500);
-  const amountTooHigh = Boolean(config) && amount.trim() !== "" &&
+  const amountTooHigh = !starterMode && Boolean(config) && amount.trim() !== "" &&
     Number.isFinite(typedRupees) && typedRupees > (config?.max_topup_rupees ?? 50000);
 
   const pay = useCallback(async () => {
@@ -200,8 +215,8 @@ export default function TopUpDialog({
     if (!token) return setError("Please sign in again.");
     if (!config?.enabled || !config.key_id) return setError("Online recharge is not available right now.");
 
-    const rupees = Number(amount);
-    if (!Number.isFinite(rupees) || rupees < config.min_topup_rupees || rupees > config.max_topup_rupees) {
+    const rupees = starterMode && studioStarter ? studioStarter.priceRupees : Number(amount);
+    if (!starterMode && (!Number.isFinite(rupees) || rupees < config.min_topup_rupees || rupees > config.max_topup_rupees)) {
       return setError(
         `Enter an amount between ₹${config.min_topup_rupees.toLocaleString("en-IN")} and ₹${config.max_topup_rupees.toLocaleString("en-IN")}.`,
       );
@@ -222,6 +237,7 @@ export default function TopUpDialog({
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({
           amount_rupees: rupees,
+          ...(starterMode ? { purpose: "studio_starter" } : {}),
           billing_address: {
             name: name.trim() || undefined,
             city: city.trim() || undefined,
@@ -233,7 +249,13 @@ export default function TopUpDialog({
         }),
       });
       const order = await orderRes.json();
-      if (!orderRes.ok) throw new Error(order?.detail ?? "Could not start the payment.");
+      if (!orderRes.ok) {
+        const d = order?.detail;
+        throw new Error(
+          typeof d === "string" ? d
+            : d?.message ?? (Array.isArray(d) ? d[0]?.msg : null) ?? "Could not start the payment.",
+        );
+      }
 
       await new Promise<void>((resolve, reject) => {
         const rzp = new window.Razorpay!({
@@ -308,7 +330,7 @@ export default function TopUpDialog({
     } finally {
       setBusy(false);
     }
-  }, [amount, city, config, countryIso, isFirstTopup, isIndia, name, onCredited, pincode, stateCode, user]);
+  }, [amount, city, config, countryIso, isFirstTopup, isIndia, name, onCredited, pincode, stateCode, user, starterMode, studioStarter]);
 
   if (!open) return null;
 
@@ -368,6 +390,30 @@ export default function TopUpDialog({
               </div>
             ) : (
               <>
+                {studioStarter && (
+                  <div className={`mt-5 rounded-cf border px-4 py-3 ${starterMode ? "border-blue bg-blue-soft" : "border-rule bg-paper-2"}`}>
+                    <p className="text-sm font-semibold text-ink">
+                      Start with ₹{studioStarter.priceRupees.toLocaleString("en-IN")} — get ₹
+                      {studioStarter.totalRupees.toLocaleString("en-IN")} of Studio renders (once per account)
+                    </p>
+                    <p className="mt-1 text-xs leading-5 text-ink-2">
+                      For Studio only: downloads, edits and ray-traced renders. ₹
+                      {(studioStarter.totalRupees - studioStarter.priceRupees).toLocaleString("en-IN")} of it is a
+                      bonus that lasts 30 days.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setStarterMode(!starterMode);
+                        setAmount(starterMode ? "" : String(studioStarter.priceRupees));
+                      }}
+                      className="mt-2 text-xs font-semibold text-blue underline"
+                    >
+                      {starterMode ? "Top up a different amount instead" : `Choose the ₹${studioStarter.priceRupees} starter`}
+                    </button>
+                  </div>
+                )}
+                {!starterMode && (<>
                 <div className="mt-5 flex flex-wrap gap-2">
                   {presets.map((p) => {
                     const intro = introOffer && p === introOffer.priceRupees;
@@ -419,6 +465,8 @@ export default function TopUpDialog({
                   </p>
                 )}
 
+                </>)}
+                {!starterMode && (<>
                 <label className="mt-4 block cf-eyebrow">
                   Amount (₹)
                 </label>
@@ -446,6 +494,7 @@ export default function TopUpDialog({
                     {config.max_topup_rupees.toLocaleString("en-IN")}. {isIndia ? "GST included; a tax invoice is issued automatically." : "An invoice is issued automatically."}
                   </p>
                 ) : null}
+                </>)}
 
                 <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
                   <div className="sm:col-span-2">

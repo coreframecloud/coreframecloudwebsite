@@ -78,6 +78,9 @@ interface WalletData {
   // the balance may be the intro bonus, which only GPU time can spend.
   spendable_everywhere_rupees?: number;
   gpu_only_bonus_rupees?: number;
+  // The Rs 99 Studio starter: the whole wallet and its Studio-only part.
+  wallet_total_rupees?: number;
+  studio_only_rupees?: number;
 }
 
 interface AuthState {
@@ -278,14 +281,20 @@ export function SiteHeader() {
   // ONE number everywhere (unified wallet, 13 Oct 2026): "Wallet ₹X", the
   // same wallet that pays for GPU time, CFD and Studio. The GPU-only welcome
   // bonus is inside X; the tooltip and /my-activity name it separately.
+  const inr0 = (x: number) => `₹${Math.floor(x).toLocaleString("en-IN")}`;
   const balance =
     auth?.wallet != null
-      ? `Wallet ₹${Math.floor(auth.wallet.wallet_balance_rupees).toLocaleString("en-IN")}`
+      ? `Wallet ${inr0(auth.wallet.wallet_total_rupees ?? auth.wallet.wallet_balance_rupees)}`
       : null;
   const gpuOnly = auth?.wallet?.gpu_only_bonus_rupees ?? 0;
+  const studioOnly = auth?.wallet?.studio_only_rupees ?? 0;
   const balanceTitle =
-    gpuOnly > 0 && auth?.wallet?.spendable_everywhere_rupees != null
-      ? `₹${Math.floor(auth.wallet.spendable_everywhere_rupees).toLocaleString("en-IN")} for GPU, CFD and Studio + ₹${Math.floor(gpuOnly).toLocaleString("en-IN")} welcome bonus for GPU time. Add funds`
+    (gpuOnly > 0 || studioOnly > 0) && auth?.wallet?.spendable_everywhere_rupees != null
+      ? [
+          `${inr0(auth.wallet.spendable_everywhere_rupees)} for GPU, CFD and Studio`,
+          gpuOnly > 0 ? `${inr0(gpuOnly)} welcome bonus for GPU time` : "",
+          studioOnly > 0 ? `Studio-only ${inr0(studioOnly)}` : "",
+        ].filter(Boolean).join(" + ") + ". Add funds"
       : "Your Coreframe wallet: GPU workstations, CFD and Studio. Add funds";
 
   const overHero = DARK_HERO.has(pathname) && !scrolled && !open;

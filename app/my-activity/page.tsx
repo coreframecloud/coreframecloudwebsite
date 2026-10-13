@@ -25,6 +25,14 @@ interface WalletData {
   gpu_only_bonus_rupees?: number;
   gpu_only_bonus_expires_at?: string | null;
   bulk_topup_tiers?: BulkTier[];
+  // The Rs 99 Studio starter (13 Oct 2026): the whole wallet, the Studio-only
+  // part of it, and whether the starter can still be bought.
+  wallet_total_rupees?: number;
+  studio_only_rupees?: number;
+  studio_only_bonus_expires_at?: string | null;
+  studio_starter_available?: boolean;
+  studio_starter_price_rupees?: number;
+  studio_starter_total_rupees?: number;
   // Per-customer override, NOT_NULL DEFAULT 99. Do not display it — since rates
   // moved to the rate card it is a number nobody is billed, and showing it as
   // "₹99/hr GPU rate" next to a real ₹399 charge is how billing disputes start.
@@ -464,6 +472,8 @@ export default function MyActivityPage() {
   // on a page and making them hunt for the button they just clicked.
   const [topUpOpen, setTopUpOpen] = useState(false);
   const [topUpPreset, setTopUpPreset] = useState<number | null>(null);
+  // Arrived from Studio (?studio=1): the top-up offers the Rs 99 Studio starter.
+  const [studioCtx, setStudioCtx] = useState(false);
   const [blocked, setBlocked] = useState<string | null>(null);
   const card = useRateCard();
   const introOffer = getIntroOffer(card);
@@ -491,6 +501,7 @@ export default function MyActivityPage() {
       if (window.location.hash === "#add-funds" || params.get("topup") === "1") {
         setTopUpOpen(true);
       }
+      if (params.get("studio") === "1") setStudioCtx(true);
     }
     const t = localStorage.getItem("cf_customer_token");
     const uRaw = localStorage.getItem("cf_customer_user");
@@ -793,7 +804,7 @@ export default function MyActivityPage() {
                 Wallet
               </h2>
               <p className="font-display text-3xl font-bold tabular-nums text-blue">
-                ₹{wallet ? wallet.wallet_balance_rupees.toFixed(2) : "0.00"}
+                ₹{wallet ? (wallet.wallet_total_rupees ?? wallet.wallet_balance_rupees).toFixed(2) : "0.00"}
               </p>
               {/* ONE WALLET (13 Oct 2026): the same money pays for all three
                   services. The intro bonus is the one part that is GPU-only,
@@ -810,6 +821,17 @@ export default function MyActivityPage() {
                       })}`
                     : ""}
                   . {formatRupees(wallet!.spendable_everywhere_rupees ?? 0)} is usable on CFD and Studio too.
+                </p>
+              )}
+              {(wallet?.studio_only_rupees ?? 0) > 0 && (
+                <p className="mt-2 text-xs tabular-nums text-ink-2">
+                  Includes Studio-only {formatRupees(wallet!.studio_only_rupees!)} from the Studio starter
+                  {wallet!.studio_only_bonus_expires_at
+                    ? `; its bonus lasts until ${new Date(wallet!.studio_only_bonus_expires_at).toLocaleDateString("en-IN", {
+                        day: "numeric", month: "short", year: "numeric",
+                      })}`
+                    : ""}
+                  .
                 </p>
               )}
               {/*
@@ -1102,6 +1124,14 @@ export default function MyActivityPage() {
         presetAmount={topUpPreset ?? (wallet?.intro_offer_available ? introOffer?.priceRupees ?? null : null)}
         defaultCountry={wallet?.country_code ?? null}
         bulkTiers={wallet?.bulk_topup_tiers ?? null}
+        studioStarter={
+          studioCtx && wallet?.studio_starter_available
+            ? {
+                priceRupees: wallet.studio_starter_price_rupees ?? 99,
+                totalRupees: wallet.studio_starter_total_rupees ?? 300,
+              }
+            : null
+        }
       />
     </main>
   );
