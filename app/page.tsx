@@ -4,6 +4,7 @@ import { RedesignHero } from "@/components/home/redesign/hero";
 import { Bento } from "@/components/home/redesign/bento";
 import { FactsBand, BuiltFor, OfferBand, HowItWorks } from "@/components/home/redesign/bands";
 import { Testimonials } from "@/components/home/redesign/testimonials";
+import { CfdSpotlight } from "@/components/home/redesign/cfd-spotlight";
 import {
   getRateCard,
   formatHourly,
@@ -48,6 +49,7 @@ export default async function Page() {
     <main className="text-ink">
       <RedesignHero introLabel={introLabel} />
       <div className="cfh-sheet">
+        <CfdSpotlight />
         <Bento youtubeId={WALKTHROUGH_YOUTUBE_ID} />
         <HowItWorks />
       </div>

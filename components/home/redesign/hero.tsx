@@ -23,6 +23,15 @@ export function RedesignHero({ introLabel }: { introLabel: string | null }) {
 
       <div className="cfh-wrap grid items-center gap-10 pt-32 pb-10 sm:pt-40 sm:pb-14 lg:grid-cols-[1.15fr_0.85fr]">
         <Reveal>
+          <Link
+            href="/cfd-intake"
+            className="mb-5 inline-flex max-w-full items-center gap-2 rounded-full border border-[#8fb3ff] bg-[rgba(47,107,224,0.85)] px-4 py-2 text-[13.5px] font-semibold text-white shadow-[0_10px_30px_rgba(47,107,224,0.45)] transition-colors hover:bg-[#2f6be0]"
+          >
+            <span className="rounded-full bg-white px-2 py-0.5 text-[11px] tracking-[0.08em] text-[#2f6be0] uppercase">New</span>
+            <span className="truncate">CFD for ducts and pipes: upload an STL, get a quote</span>
+            <span aria-hidden="true">→</span>
+          </Link>
+          <br />
           <p className="mb-6 inline-block rounded-md bg-white/12 px-3 py-1.5 text-[11.5px] font-semibold tracking-[0.12em] uppercase">
             GPU workstations · Bengaluru
           </p>

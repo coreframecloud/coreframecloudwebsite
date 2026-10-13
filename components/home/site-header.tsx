@@ -43,6 +43,7 @@ const DARK_HERO = new Set(["/"]);
 
 const navLinks = [
   { label: "Rent an RTX 5080 by the minute", href: "/" },
+  { label: "CFD for ducts & pipes", href: "/cfd-intake" },
   { label: "Pricing", href: "/pricing" },
   { label: "Enterprise", href: "/enterprise" },
 ];
