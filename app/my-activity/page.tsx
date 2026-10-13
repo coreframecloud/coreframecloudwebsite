@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import TopUpDialog from "@/components/wallet/top-up-dialog";
+import TopUpDialog, { type BulkTier } from "@/components/wallet/top-up-dialog";
 import { trackEvent } from "@/lib/analytics";
 import {
   getIntroOffer,
@@ -18,6 +18,13 @@ const API = API_BASE;
 
 interface WalletData {
   wallet_balance_rupees: number;
+  // Unified wallet (13 Oct 2026): one wallet for GPU, CFD and Studio. The
+  // intro bonus inside the balance is for GPU time only, so the part usable
+  // everywhere is sent too. Optional: an older control plane omits them.
+  spendable_everywhere_rupees?: number;
+  gpu_only_bonus_rupees?: number;
+  gpu_only_bonus_expires_at?: string | null;
+  bulk_topup_tiers?: BulkTier[];
   // Per-customer override, NOT_NULL DEFAULT 99. Do not display it — since rates
   // moved to the rate card it is a number nobody is billed, and showing it as
   // "₹99/hr GPU rate" next to a real ₹399 charge is how billing disputes start.
@@ -326,6 +333,46 @@ interface Session {
   billed_amount_rupees: number;
 }
 
+// One line of the wallet's history, tagged with the service it belongs to
+// (GET /me/wallet/ledger, 13 Oct 2026).
+interface LedgerRow {
+  id: number;
+  at: string;
+  service: string | null;
+  kind: string;
+  amount_rupees: number;
+  balance_after: number;
+  note: string | null;
+  ref: string | null;
+}
+
+const SERVICE_TAG: Record<string, { label: string; cls: string }> = {
+  gpu: { label: "GPU", cls: "bg-blue/10 text-blue border-blue/20" },
+  cfd: { label: "CFD", cls: "bg-[#e8f5ee] text-[#1d6b43] border-[#bfe3cf]" },
+  studio: { label: "Studio", cls: "bg-[#f3ecfb] text-[#5b2d91] border-[#dccbf1]" },
+  topup: { label: "Top-up", cls: "bg-paper-2 text-ink border-rule" },
+  bonus: { label: "Bonus", cls: "bg-[#fff1c7] text-[#6b4e00] border-[#f2dc96]" },
+  admin: { label: "Adjustment", cls: "bg-paper-2 text-ink-2 border-rule" },
+  expiry: { label: "Expired", cls: "bg-paper-2 text-ink-3 border-rule" },
+};
+
+function ServiceTag({ service }: { service: string | null }) {
+  const t = SERVICE_TAG[service ?? ""] ?? { label: "Wallet", cls: "bg-paper-2 text-ink-2 border-rule" };
+  return (
+    <span className={`inline-flex rounded-full border px-2 py-0.5 text-[11px] font-semibold whitespace-nowrap ${t.cls}`}>
+      {t.label}
+    </span>
+  );
+}
+
+function formatRupees(x: number): string {
+  const whole = Math.abs(x - Math.round(x)) < 0.005;
+  return `₹${Math.abs(x).toLocaleString("en-IN", {
+    minimumFractionDigits: whole ? 0 : 2,
+    maximumFractionDigits: whole ? 0 : 2,
+  })}`;
+}
+
 interface Payment {
   id: string;
   amount_rupees: number;
@@ -408,6 +455,8 @@ export default function MyActivityPage() {
   const [wallet, setWallet] = useState<WalletData | null>(null);
   const [sessions, setSessions] = useState<Session[]>([]);
   const [payments, setPayments] = useState<Payment[]>([]);
+  const [ledger, setLedger] = useState<LedgerRow[]>([]);
+  const [ledgerPooled, setLedgerPooled] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   // The header's wallet chip links to /my-activity#add-funds, so arriving with
@@ -488,11 +537,14 @@ export default function MyActivityPage() {
       authFetch(`${API}/me/wallet`),
       authFetch(`${API}/me/sessions`),
       authFetch(`${API}/payments/history`),
+      authFetch(`${API}/me/wallet/ledger?limit=100`),
     ])
-      .then(([w, s, p]) => {
+      .then(([w, s, p, l]) => {
         if (w) setWallet(w);
         setSessions(Array.isArray(s) ? s : []);
         setPayments(Array.isArray(p) ? p : []);
+        setLedger(Array.isArray(l?.rows) ? l.rows : []);
+        setLedgerPooled(l?.pooled === true);
       })
       .catch(async (err) => {
         if (err.message === "forbidden") {
@@ -738,11 +790,28 @@ export default function MyActivityPage() {
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div className="cf-glass border-l-2! border-l-blue! p-5 sm:p-6">
               <h2 className="cf-eyebrow mb-4">
-                Wallet balance
+                Wallet
               </h2>
               <p className="font-display text-3xl font-bold tabular-nums text-blue">
                 ₹{wallet ? wallet.wallet_balance_rupees.toFixed(2) : "0.00"}
               </p>
+              {/* ONE WALLET (13 Oct 2026): the same money pays for all three
+                  services. The intro bonus is the one part that is GPU-only,
+                  so it gets its own line rather than a footnote. */}
+              <p className="mt-1 text-xs text-ink-2">
+                Pays for GPU workstations, CFD and Studio.
+              </p>
+              {(wallet?.gpu_only_bonus_rupees ?? 0) > 0 && (
+                <p className="mt-2 text-xs tabular-nums text-ink-2">
+                  Includes a welcome bonus of {formatRupees(wallet!.gpu_only_bonus_rupees!)} for GPU time
+                  {wallet!.gpu_only_bonus_expires_at
+                    ? `, until ${new Date(wallet!.gpu_only_bonus_expires_at).toLocaleDateString("en-IN", {
+                        day: "numeric", month: "short", year: "numeric",
+                      })}`
+                    : ""}
+                  . {formatRupees(wallet!.spendable_everywhere_rupees ?? 0)} is usable on CFD and Studio too.
+                </p>
+              )}
               {/*
                 "from ₹X/hr", because there is no single rate any more — it
                 depends which workstation you launch. This reads the cheapest
@@ -791,6 +860,14 @@ export default function MyActivityPage() {
                 <p className="text-sm leading-6 text-ink-2">
                   Top up by card, UPI or netbanking. A GST invoice is issued automatically.
                 </p>
+                {(wallet?.bulk_topup_tiers?.length ?? 0) > 0 && (
+                  <p className="mt-2 text-sm leading-6 text-ink-2">
+                    {wallet!.bulk_topup_tiers!
+                      .map((t) => `₹${t.min_rupees.toLocaleString("en-IN")} → ₹${Math.round(t.bonus_rupees).toLocaleString("en-IN")} extra`)
+                      .join(" · ")}
+                    .
+                  </p>
+                )}
               </div>
               <button
                 type="button"
@@ -817,6 +894,52 @@ export default function MyActivityPage() {
         {/* Disk. Rendered for every segment: a B2B engineer on the org's
             pooled wallet still has their own storage. */}
         <UsageCards wallet={wallet} />
+
+        {/* Wallet history: every movement, tagged GPU / CFD / Studio. */}
+        <div className="cf-glass overflow-hidden">
+          <div className="border-b border-rule px-4 py-4 sm:px-6">
+            <h2 className="cf-section-title">Wallet history.</h2>
+          </div>
+          {ledgerPooled ? (
+            <p className="px-4 py-8 text-sm text-ink-3 sm:px-6">
+              Your organisation&rsquo;s wallet history is in the org portal.
+            </p>
+          ) : ledger.length === 0 ? (
+            <p className="px-4 py-8 text-sm text-ink-3 sm:px-6">Nothing yet.</p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[420px] text-sm">
+                <thead>
+                  <tr className="border-b border-rule">
+                    {["Date", "Service", "What", "Amount", "Balance"].map((h, i) => (
+                      <th
+                        key={h}
+                        className={`px-4 py-3 font-mono text-[11px] leading-none font-medium tracking-[0.14em] whitespace-nowrap text-ink-3 uppercase sm:px-6 ${i >= 3 ? "text-right" : "text-left"}`}
+                      >
+                        {h}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-rule">
+                  {ledger.map((r) => (
+                    <tr key={r.id} className="transition hover:bg-paper-2">
+                      <td className="px-4 py-3 whitespace-nowrap text-ink sm:px-6">{formatDate(r.at)}</td>
+                      <td className="px-4 py-3 sm:px-6"><ServiceTag service={r.service} /></td>
+                      <td className="px-4 py-3 text-ink-2 sm:px-6">{r.note || r.kind.replace(/_/g, " ")}</td>
+                      <td className={`px-4 py-3 text-right whitespace-nowrap tabular-nums sm:px-6 ${r.amount_rupees >= 0 ? "text-[#1d6b43]" : "text-ink"}`}>
+                        {r.amount_rupees >= 0 ? "+" : "−"}{formatRupees(r.amount_rupees)}
+                      </td>
+                      <td className="px-4 py-3 text-right whitespace-nowrap tabular-nums text-ink-3 sm:px-6">
+                        {formatRupees(r.balance_after)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
 
         {/* Recent Sessions */}
         <div className="cf-glass overflow-hidden">
@@ -978,6 +1101,7 @@ export default function MyActivityPage() {
         isFirstTopup={wallet?.intro_offer_available === true}
         presetAmount={topUpPreset ?? (wallet?.intro_offer_available ? introOffer?.priceRupees ?? null : null)}
         defaultCountry={wallet?.country_code ?? null}
+        bulkTiers={wallet?.bulk_topup_tiers ?? null}
       />
     </main>
   );

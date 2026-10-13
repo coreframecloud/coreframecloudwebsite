@@ -74,6 +74,10 @@ interface WalletData {
   paid_access?: boolean;
   intro_offer_available?: boolean;
   min_topup_rupees_now?: number;
+  // Unified wallet (13 Oct 2026): one wallet for GPU, CFD and Studio. Part of
+  // the balance may be the intro bonus, which only GPU time can spend.
+  spendable_everywhere_rupees?: number;
+  gpu_only_bonus_rupees?: number;
 }
 
 interface AuthState {
@@ -271,10 +275,18 @@ export function SiteHeader() {
     ? `Add ${rupees(topupAmount)}${intro && intro.priceRupees === topupAmount ? ` · ${hoursLabel(intro.hours, true)}` : ""}`
     : "Add funds to start";
 
+  // ONE number everywhere (unified wallet, 13 Oct 2026): "Wallet ₹X", the
+  // same wallet that pays for GPU time, CFD and Studio. The GPU-only welcome
+  // bonus is inside X; the tooltip and /my-activity name it separately.
   const balance =
     auth?.wallet != null
-      ? `₹${auth.wallet.wallet_balance_rupees.toFixed(0)}`
+      ? `Wallet ₹${Math.floor(auth.wallet.wallet_balance_rupees).toLocaleString("en-IN")}`
       : null;
+  const gpuOnly = auth?.wallet?.gpu_only_bonus_rupees ?? 0;
+  const balanceTitle =
+    gpuOnly > 0 && auth?.wallet?.spendable_everywhere_rupees != null
+      ? `₹${Math.floor(auth.wallet.spendable_everywhere_rupees).toLocaleString("en-IN")} for GPU, CFD and Studio + ₹${Math.floor(gpuOnly).toLocaleString("en-IN")} welcome bonus for GPU time. Add funds`
+      : "Your Coreframe wallet: GPU workstations, CFD and Studio. Add funds";
 
   const overHero = DARK_HERO.has(pathname) && !scrolled && !open;
   const linkTone = overHero ? "text-white/80 hover:text-white" : "text-ink-2 hover:text-ink";
@@ -329,7 +341,7 @@ export function SiteHeader() {
                    so it now goes where that happens. */
                 <Link
                   href="/my-activity#add-funds"
-                  title="Add funds"
+                  title={balanceTitle}
                   className="inline-flex items-center gap-1.5 text-xs font-semibold bg-blue/10 text-blue border border-blue/20 px-2.5 py-1 rounded-full transition hover:bg-blue/20 hover:text-blue"
                   onClick={() => trackEvent("wallet_chip_click", { location: "header" })}
                 >

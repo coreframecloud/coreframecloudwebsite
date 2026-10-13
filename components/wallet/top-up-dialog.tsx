@@ -80,6 +80,20 @@ function loadRazorpay(): Promise<boolean> {
 
 const PRESET_LADDER = [500, 1000, 2000, 5000, 10000, 20000];
 
+export type BulkTier = { min_rupees: number; percent: number; bonus_rupees: number };
+
+/** The bonus a top-up of `rupees` earns at the given tiers (0 below the first). */
+function typedRupeesForBonus(amount: string): number {
+  const v = Number(amount);
+  return Number.isFinite(v) && v > 0 ? v : 0;
+}
+
+export function bulkBonusFor(rupees: number, tiers: BulkTier[] | null | undefined): number {
+  let pct = 0;
+  for (const t of tiers ?? []) if (rupees >= t.min_rupees) pct = t.percent;
+  return Math.round(rupees * pct) / 100;
+}
+
 export default function TopUpDialog({
   open,
   onClose,
@@ -90,6 +104,7 @@ export default function TopUpDialog({
   presetAmount,
   defaultCountry,
   isFirstTopup,
+  bulkTiers,
 }: {
   open: boolean;
   onClose: () => void;
@@ -107,6 +122,10 @@ export default function TopUpDialog({
   /** True when this customer has never topped up (the wallet still offers the
    *  intro). A successful payment then also fires the first_topup conversion. */
   isFirstTopup?: boolean;
+  /** Bulk top-up bonus tiers from the wallet status (13 Oct 2026): a paid
+   *  top-up of at least min_rupees earns percent extra, usable on GPU, CFD and
+   *  Studio. Never on the same top-up as the intro offer. */
+  bulkTiers?: BulkTier[] | null;
 }) {
   const [config, setConfig] = useState<PaymentsConfig | null>(null);
   const [states, setStates] = useState<GstState[]>([]);
@@ -373,6 +392,24 @@ export default function TopUpDialog({
                     );
                   })}
                 </div>
+                {bulkTiers && bulkTiers.length > 0 && (
+                  <p className="mt-2 text-xs leading-5 text-ink-2">
+                    {bulkTiers
+                      .map((t, i) =>
+                        i === 0
+                          ? `Top up ₹${t.min_rupees.toLocaleString("en-IN")}, get ₹${Math.round(t.bonus_rupees).toLocaleString("en-IN")} extra`
+                          : `₹${t.min_rupees.toLocaleString("en-IN")}, get ₹${Math.round(t.bonus_rupees).toLocaleString("en-IN")} extra`,
+                      )
+                      .join(" · ")}
+                    {" "}({bulkTiers.map((t) => `${t.percent}%`).join(" / ")}), usable on GPU time, CFD and Studio
+                    {introOffer ? ", from your second top-up — the first earns the intro offer" : ""}.
+                    {!introOffer && bulkBonusFor(typedRupeesForBonus(amount), bulkTiers) > 0 && (
+                      <span className="font-semibold text-blue">
+                        {" "}This top-up adds ₹{bulkBonusFor(typedRupeesForBonus(amount), bulkTiers).toLocaleString("en-IN")} extra.
+                      </span>
+                    )}
+                  </p>
+                )}
                 {introOffer && (
                   <p className="mt-2 text-xs leading-5 text-ink-2">
                     Intro offer: your first top-up of ₹{introOffer.priceRupees.toLocaleString("en-IN")} buys{" "}
