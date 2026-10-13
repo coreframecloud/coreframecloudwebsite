@@ -7,8 +7,9 @@
  * is ambiguous for parsers and meant nobody owned the policy. One file, one
  * owner, in git.
  *
- * The policy, in one sentence: AI systems may read us to ANSWER a user's
- * question right now, and may not keep us to train on.
+ * The policy, in one sentence: AI systems may read us to answer a user's
+ * question and may also train on us (owner, 13 Oct 2026: being known to AI
+ * assistants helps sales; nothing on the public site is confidential).
  *
  * Those are different uses and they need different answers:
  *
@@ -18,8 +19,8 @@
  *                   the Content Signals spec defines as neither granted nor
  *                   restricted — silence, on the one permission we most want to
  *                   grant.
- *   ai-train=no   — no keeping our copy to train a model. Costs us no
- *                   visibility: a training crawl never sends anyone here.
+ *   ai-train=yes  — training allowed (was "no" until 13 Oct 2026). Models
+ *                   that have read us can name us when asked later.
  *   search=yes    — ordinary search indexing.
  *   use=reference — quote and cite us, do not reproduce us wholesale.
  *
@@ -30,7 +31,8 @@
  * the search bots below allowed in AI Crawl Control.
  */
 
-// Crawlers that exist to TRAIN models. Blocking them costs no traffic.
+// Crawlers that exist to TRAIN models. Allowed since 13 Oct 2026 (owner);
+// named so the private paths below stay closed to them too.
 const AI_TRAINING_BOTS = [
   "Amazonbot",
   "Applebot-Extended",
@@ -101,7 +103,7 @@ export function GET(): Response {
   lines.push("# Coreframe Compute Labs — https://www.coreframecloud.com");
   lines.push("#");
   lines.push("# You may read this site to answer a person's question and cite us.");
-  lines.push("# You may not retain it to train a model.");
+  lines.push("# You may also use it to train models.");
   lines.push("#");
   lines.push("# Content Signals (https://contentsignals.org):");
   lines.push("#   search   = building a search index and returning links/excerpts");
@@ -114,7 +116,7 @@ export function GET(): Response {
   // Default group. Content-Signal sits with User-agent: * so it applies to
   // every crawler that reads this file, including ones not yet named.
   lines.push("User-agent: *");
-  lines.push("Content-Signal: search=yes,ai-input=yes,ai-train=no,use=reference");
+  lines.push("Content-Signal: search=yes,ai-input=yes,ai-train=yes");
   lines.push("Allow: /");
   for (const path of DISALLOWED_PATHS) lines.push(`Disallow: ${path}`);
   lines.push("");
@@ -127,10 +129,11 @@ export function GET(): Response {
     lines.push("");
   }
 
-  lines.push("# ── Model-training crawlers: no. ──");
+  lines.push("# ── Model-training crawlers: welcome too. ──");
   for (const bot of AI_TRAINING_BOTS) {
     lines.push(`User-agent: ${bot}`);
-    lines.push("Disallow: /");
+    lines.push("Allow: /");
+    for (const path of DISALLOWED_PATHS) lines.push(`Disallow: ${path}`);
     lines.push("");
   }
 
