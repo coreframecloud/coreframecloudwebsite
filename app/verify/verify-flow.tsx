@@ -35,6 +35,7 @@ import {
   type Country,
 } from "@/lib/validation";
 import { API_BASE } from "@/lib/api-base";
+import { peekReturnPath, takeReturnPath } from "@/lib/return-path";
 
 const API = API_BASE;
 const DONE_URL = "/my-activity?topup=1";
@@ -114,6 +115,9 @@ export default function VerifyFlow() {
   const [otpSent, setOtpSent] = useState(false);
   const [otpCode, setOtpCode] = useState("");
   const [emailResent, setEmailResent] = useState(false);
+  // Where "done" goes: the page that sent them to sign up, if any. Only read
+  // once the done card renders, which is always after the status fetch.
+  const [returnTo] = useState<string | null>(() => (typeof window === "undefined" ? null : peekReturnPath()));
 
   const authHeaders = useCallback((): HeadersInit => {
     let tok: string | null = null;
@@ -144,8 +148,10 @@ export default function VerifyFlow() {
       setPhase(next);
       if (next === "done") {
         // A beat on the confirmation, then straight on to adding funds.
+        // Back to the page that sent them to sign up (e.g. /cfd),
+        // otherwise on to adding funds.
         setTimeout(() => {
-          window.location.href = DONE_URL;
+          window.location.href = takeReturnPath() ?? DONE_URL;
         }, 1200);
       }
     },
@@ -335,10 +341,10 @@ export default function VerifyFlow() {
         <Header
           icon={<CheckCircle2 className="h-5 w-5" />}
           title="You're all set."
-          sub="Taking you to add funds. Your first session starts from there."
+          sub={returnTo ? "Taking you back to where you were." : "Taking you to add funds. Your first session starts from there."}
         />
-        <a href={DONE_URL} className={btnPrimary}>
-          Add funds
+        <a href={returnTo ?? DONE_URL} className={btnPrimary}>
+          {returnTo ? "Continue" : "Add funds"}
         </a>
       </Card>
     );

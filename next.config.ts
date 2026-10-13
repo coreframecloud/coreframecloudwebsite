@@ -260,6 +260,33 @@ const nextConfig: NextConfig = {
   },
   async redirects() {
     return [
+      /**
+       * The bring-your-own-licence CFD page is retired (owner, 13 Oct 2026):
+       * CFD is the managed duct/pipe service now. Permanent, so its search
+       * signal goes to the page that replaced it.
+       */
+      {
+        source: "/ansys-cfd-gpu",
+        destination: "/cfd",
+        permanent: true,
+      },
+      /**
+       * The CFD page moved from /cfd-intake to /cfd (owner, 13 Oct 2026).
+       * Query strings (UTMs on the Instagram bio link, ads) pass through
+       * automatically and the browser keeps the #fragment on a 308, so
+       * /cfd-intake#sample lands on /cfd#sample. Old sign-in links carrying
+       * next=/cfd-intake are mapped to /cfd in lib/return-path.ts.
+       */
+      {
+        source: "/cfd-intake",
+        destination: "/cfd",
+        permanent: true,
+      },
+      {
+        source: "/cfd-intake/:path*",
+        destination: "/cfd/:path*",
+        permanent: true,
+      },
       {
         source: "/d5-render",
         destination: "/",

@@ -33,7 +33,7 @@ import { offering } from "@/lib/offerings";
 export const metadata: Metadata = {
   title: { absolute: "Pricing: RTX 5080 by the minute, CFD by quote | Coreframe Cloud" },
   description:
-    "What an RTX 5080 workstation costs per minute and per month with GST included, what a CFD job for a duct or pipe costs to start (₹499 + GST quote fee), and Studio, opening soon.",
+    "What an RTX 5080 workstation costs per minute and per month with GST included, what a CFD job for a duct or pipe costs to start (₹199 quote fee incl. GST for most models), and Studio, opening soon.",
   alternates: { canonical: "/pricing" },
 };
 
@@ -51,8 +51,8 @@ export const metadata: Metadata = {
  * about money and commitment, so this is where they belonged anyway.
  *
  * Every workstation figure comes from the control-plane rate card. The one
- * typed price is the CFD quote fee (₹499 + GST), which is the published fee on
- * /cfd-intake; how a CFD run is quoted is never described here.
+ * typed price is the CFD quote fee (₹199 incl. GST; ₹499 over 5 million cells), which is the published fee on
+ * /cfd; how a CFD run is quoted is never described here.
  *
  * 13 Oct 2026: the page covers all three services, in the site-wide order
  * (GPU workstations, CFD, Studio), with a summary row at the top.
@@ -112,8 +112,8 @@ export default async function PricingPage() {
             },
             {
               o: offering("cfd"),
-              price: "₹499 + GST quote fee",
-              note: "Quote by email; pay for the run only if you accept",
+              price: "₹199 quote fee (incl. GST)",
+              note: "Most models; ₹499 over 5 million cells. Pay for the run only if you accept",
               href: "#cfd",
               tint: "bg-tint-mint",
             },
@@ -167,21 +167,21 @@ export default async function PricingPage() {
         effectiveFrom={effectiveFrom}
       />
 
-      {/* CFD for ducts and pipes. Only the published facts from /cfd-intake. */}
+      {/* CFD for ducts and pipes. Only the published facts from /cfd. */}
       <section id="cfd" className="cf-section scroll-mt-20 px-5">
         <div className="cf-wide rounded-[28px] bg-tint-mint p-6 sm:p-10">
           <div className="flex flex-wrap items-center gap-2.5">
             <p className="text-[11.5px] font-semibold tracking-[0.12em] text-ink-2 uppercase">CFD for ducts and pipes</p>
             <StatusBadge status="New" />
           </div>
-          <h2 className="cf-section-title mt-4">₹499 + GST to mesh it and quote it.</h2>
+          <h2 className="cf-section-title mt-4">₹199 incl. GST to mesh it and quote it.</h2>
           <p className="cf-section-copy mt-3 max-w-[40rem]">
             Upload one STL of your duct or pipe. We check it, build the real mesh on our machine and email you a quote.
             OpenFOAM runs on our side, so you need no CFD licence.
           </p>
           <ul className="mt-7 grid grid-cols-1 gap-5 sm:grid-cols-2">
             {[
-              ["Quote fee", "₹499 + GST from your Coreframe wallet. For it we build the real mesh of your geometry."],
+              ["Quote fee", "₹199 incl. GST for most duct and pipe models; ₹499 for very large models (over 5 million cells). Paid from your Coreframe wallet. For it we build the real mesh of your geometry."],
               ["Quote by email", "Packages to choose from, each with its iteration budget and convergence targets."],
               ["Pay only if you accept", "Nothing runs, and nothing more is charged, until you pay the quote."],
               ["Held, then settled", "The quote is held in your wallet; you are charged for what the run used and the rest comes back."],
@@ -197,14 +197,14 @@ export default async function PricingPage() {
           </p>
           <div className="mt-7 flex flex-wrap gap-3">
             <TrackedLink
-              href="/cfd-intake#start"
+              href="/cfd#start"
               event="offering_cta_click"
               params={{ offering: "cfd", label: "Get a CFD quote", location: "pricing_cfd" }}
               className="cf-btn-primary"
             >
               Get a CFD quote
             </TrackedLink>
-            <Link href="/cfd-intake#sample" className="cf-btn-secondary">See a sample report</Link>
+            <Link href="/cfd#sample" className="cf-btn-secondary">See a sample report</Link>
           </div>
         </div>
       </section>

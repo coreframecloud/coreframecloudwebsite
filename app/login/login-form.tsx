@@ -1,5 +1,6 @@
 "use client";
 
+import { clearReturnPath, peekReturnPath, rememberReturnPath, safeReturnPath } from "@/lib/return-path";
 import { useState, useEffect } from "react";
 import {
   COUNTRIES,
@@ -261,6 +262,9 @@ export default function LoginForm({
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     if (params.get("source") === "connect") setTab("code");
+    // A new account finishes on /auth/magic or /verify, not here, so the
+    // `next` it was sent with is kept for those pages (lib/return-path.ts).
+    rememberReturnPath(params.get("next"));
     try {
       if (localStorage.getItem("cf_customer_token")) {
         const raw = localStorage.getItem("cf_customer_user");
@@ -344,19 +348,22 @@ export default function LoginForm({
     localStorage.setItem("cf_customer_token", data.access_token);
     localStorage.setItem("cf_customer_user", JSON.stringify(data.user));
     const params = new URLSearchParams(window.location.search);
-    const next = params.get("next");
+    const next = safeReturnPath(params.get("next")) ?? peekReturnPath();
 
     // pending_approval now means only that email or mobile is unconfirmed —
     // /verify asks for exactly the step that is left (usually the WhatsApp
-    // code) and then sends them on to add funds.
+    // code) and then sends them on: to `next` when there is one (kept in
+    // lib/return-path.ts), otherwise to add funds.
     const user = data.user as { status?: string } | null;
-    if (user?.status === "pending_approval" && !next) {
+    if (user?.status === "pending_approval") {
+      rememberReturnPath(next);
       window.location.href = "/verify";
       return;
     }
 
-    // Only allow relative paths (no open redirect)
-    window.location.href = next && next.startsWith("/") ? next : "/my-activity";
+    // Only relative paths (no open redirect)
+    clearReturnPath();
+    window.location.href = next ?? "/my-activity";
   }
 
   function switchTab(t: Tab) {

@@ -35,7 +35,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // find late or not at all, so these two lines are not optional.
     { url: `${BASE}/coreframe-vs-irender`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
     { url: `${BASE}/vram-for-architectural-rendering`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
-    { url: `${BASE}/ansys-cfd-gpu`, lastModified: now, changeFrequency: "monthly", priority: 0.9 },
     { url: `${BASE}/cloud-rendering-for-architects`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
     // Added 10 Oct 2026: answers "render farm vs cloud workstation", a query
     // every result for which was a competitor's blog.
@@ -92,8 +91,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // The free IFC pre-CFD checker. Served from the control plane through a
     // rewrite in next.config.ts, so there is no page under app/ for Next to
     // discover -- it has to be listed by hand or it is never crawled at all.
-    // /cfd-intake is the conversion step behind it and was likewise missing,
-    // while /ansys-cfd-gpu sat at priority 0.9 pointing into nothing indexed.
+    // /cfd is the conversion step behind it and was likewise missing.
     { url: `${BASE}/tools`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
 
     // The free DWG dimension checker, added 2 Oct 2026. Same situation as
@@ -104,7 +102,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // engine can cite, rather than a landing page that describes a product.
     { url: `${BASE}/dwg-check`, lastModified: now, changeFrequency: "monthly", priority: 0.9 },
     // One of the three services (13 Oct 2026), so it ranks with the other two.
-    { url: `${BASE}/cfd-intake`, lastModified: now, changeFrequency: "weekly", priority: 0.9 },
+    { url: `${BASE}/cfd`, lastModified: now, changeFrequency: "weekly", priority: 0.9 },
+    // Case study (13 Oct 2026): HVAC airflow on a real clinic floor.
+    { url: `${BASE}/cfd/projects/clinic-floor-hvac`, lastModified: new Date("2026-10-13"), changeFrequency: "monthly", priority: 0.7 },
 
     // /contact is NOT here: it is a redirect to /request-demo, and a sitemap
     // should list destinations, not hops.

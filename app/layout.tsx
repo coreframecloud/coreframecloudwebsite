@@ -98,7 +98,6 @@ export const metadata: Metadata = {
   keywords: [
     "faster D5 Render cloud India",
     "CFD simulation faster India",
-    "Ansys CFD cloud GPU India",
     "cloud GPU workstation India",
     "RTX rendering cloud India",
     "Lumion cloud GPU India",
@@ -486,7 +485,7 @@ export default async function RootLayout({
                   serviceType: "Computational fluid dynamics, internal flow pressure drop",
                   category: "Engineering simulation",
                   brand: { "@type": "Brand", name: "Coreframe Cloud" },
-                  url: "https://www.coreframecloud.com/cfd-intake",
+                  url: "https://www.coreframecloud.com/cfd",
                   provider: { "@id": "https://www.coreframecloud.com/#organization" },
                   description:
                     "Automatic OpenFOAM internal-flow runs for ducts, pipes, bends, reducers, valves and fittings from one closed STL: a quote by email, then pressure drop, loss coefficient, a PDF report, a 3D results viewer and the data files. No CFD licence needed.",
@@ -497,11 +496,11 @@ export default async function RootLayout({
                   offers: {
                     "@type": "Offer",
                     name: "Quote fee (mesh and quote)",
-                    price: "499",
+                    price: "199",
                     priceCurrency: "INR",
-                    valueAddedTaxIncluded: false,
-                    description: "Plus GST. The run is quoted by email and paid only if you accept.",
-                    url: "https://www.coreframecloud.com/cfd-intake",
+                    valueAddedTaxIncluded: true,
+                    description: "Including GST, for most duct and pipe models. Very large models (over 5 million cells): ₹499 including GST. The run is quoted by email and paid only if you accept.",
+                    url: "https://www.coreframecloud.com/cfd",
                   },
                 },
                 {

@@ -15,7 +15,7 @@
  *   - Studio images are "generated", and Studio is "Opening soon" until it
  *     opens: its CTA leads to /floor-plan-to-render, never to a sign-up;
  *   - the only typed price is the CFD quote fee, which is published on
- *     /cfd-intake. Workstation prices come from the live rate card.
+ *     /cfd. Workstation prices come from the live rate card.
  */
 
 export type OfferingId = "gpu" | "cfd" | "studio";
@@ -76,9 +76,9 @@ export const OFFERINGS: Offering[] = [
     status: "New",
     headline: "Slow CFD? Try us.",
     line: "Upload one STL of your duct or pipe and get a quote by email. OpenFOAM runs on our machines: no CFD licence, no workstation of your own tied up.",
-    href: "/cfd-intake",
-    cta: { label: "Get a CFD quote", href: "/cfd-intake#start" },
-    secondary: { label: "See a sample report", href: "/cfd-intake#sample" },
+    href: "/cfd",
+    cta: { label: "Get a CFD quote", href: "/cfd#start" },
+    secondary: { label: "See a sample report", href: "/cfd#sample" },
     image: {
       src: "/cfd/bend-slice-p-zoom.webp",
       alt: "Static pressure through a 90 degree pipe bend, from one of our own CFD test runs",

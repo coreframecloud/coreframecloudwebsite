@@ -17,9 +17,8 @@ import { STUDIO_NOTIFY_WHATSAPP } from "@/lib/offerings";
  *      A 301 tells a crawler "this URL is gone". So the site with all the
  *      authority had no Studio page at all -- it gave the URL away.
  *   2. app/sitemap.ts lists twenty-odd URLs and not one of them was Studio.
- *      The same file already carries a note about /tools and /cfd-intake being
- *      added because "/ansys-cfd-gpu sat at priority 0.9 pointing into nothing
- *      indexed". Same fault, newer product.
+ *      The same file already carries a note about /tools and /cfd being
+ *      missing from it. Same fault, newer product.
  *   3. studio.coreframecloud.com served no robots.txt. robots.txt is per-host,
  *      so the careful one here -- Content-Signals, the AI answer-engine
  *      allow-list -- never applied to it. (Now served by the control plane.)
