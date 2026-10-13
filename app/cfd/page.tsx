@@ -79,8 +79,9 @@ const CFD_SERVICES: {
   {
     name: "Rooms and HVAC airflow",
     status: "Coming soon",
-    body: "Room air movement and comfort for HVAC designers. We release it only once it passes our validation cases, so the numbers are ones you can hand on.",
-    cta: "Coming soon",
+    body: "Room air movement and comfort for HVAC designers. We release it only once it passes our validation cases, so the numbers are ones you can hand on. See a first pass on a real clinic floor: 90 diffusers, 100 rooms.",
+    href: "/cfd/projects/clinic-floor-hvac",
+    cta: "See it on a real building",
     tint: "bg-tint-blue",
   },
 ];
