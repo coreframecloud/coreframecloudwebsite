@@ -9,6 +9,7 @@ import { trackEvent } from "@/lib/analytics";
 import { getIntroOffer, hoursLabel, rupees } from "@/lib/rate-card";
 import { useRateCard } from "@/lib/use-rate-card";
 import { API_BASE } from "@/lib/api-base";
+import { OFFERINGS, type OfferingStatus } from "@/lib/offerings";
 
 // True on the client after hydration, false during SSR — without a setState
 // in an effect (react-hooks/set-state-in-effect).
@@ -18,20 +19,14 @@ function useMounted(): boolean {
 }
 
 /**
- * Three links. That is the whole nav, on purpose.
+ * The nav leads with the THREE services, as equals (owner, 13 Oct 2026: "Our
+ * 3 service offering must be on hero and highlighted"): GPU workstations, CFD
+ * and Studio, each with its status, then Pricing and Enterprise. Names,
+ * order, links and status come from lib/offerings.ts, the same list the
+ * homepage hero cards and the footer read.
  *
- * It was five — Studio, D5 Render, CFD on GPU, Pricing, Enterprise — which is
- * a menu that asks a first-time visitor to already know which of our products
- * they want. It also put two SEO landing pages in the primary nav, where they
- * competed with the thing we actually sell.
- *
- * Those pages all still exist and still rank; they are simply no longer the
- * first decision a stranger has to make. /floor-plan-to-render, the software
- * pages and /ansys-cfd-gpu are reached from the body of the landing page and
- * from search, which is where their traffic comes from anyway.
- *
- * The first link says what we sell in six words rather than naming a product
- * the visitor has never heard of.
+ * The per-application SEO pages (D5, Lumion, Enscape) stay out of the nav;
+ * they are reached from the body, the footer and search.
  */
 /**
  * Pages that open on a dark full-bleed hero. There the header starts
@@ -41,12 +36,35 @@ function useMounted(): boolean {
  */
 const DARK_HERO = new Set(["/"]);
 
-const navLinks = [
-  { label: "Rent an RTX 5080 by the minute", href: "/" },
-  { label: "CFD for ducts & pipes", href: "/cfd-intake" },
+type NavLink = { label: string; href: string; status?: OfferingStatus; blurb?: string };
+
+const serviceLinks: NavLink[] = OFFERINGS.map((o) => ({
+  label: o.name,
+  href: o.href,
+  // "Live" goes unsaid in the bar; the two newer services carry a tag.
+  status: o.status === "Live" ? undefined : o.status,
+  blurb: o.blurb,
+}));
+
+const navLinks: NavLink[] = [
+  ...serviceLinks,
   { label: "Pricing", href: "/pricing" },
   { label: "Enterprise", href: "/enterprise" },
 ];
+
+function NavTag({ status, overHero }: { status: OfferingStatus; overHero: boolean }) {
+  const tone =
+    status === "New"
+      ? "bg-[#2f6be0] text-white"
+      : overHero
+        ? "bg-white/15 text-white"
+        : "bg-[#fff1c7] text-[#6b4e00]";
+  return (
+    <span className={`rounded-full px-1.5 py-0.5 text-[9.5px] leading-none font-semibold tracking-[0.08em] uppercase ${tone}`}>
+      {status === "Opening soon" ? "Soon" : status}
+    </span>
+  );
+}
 
 interface WalletData {
   wallet_balance_rupees: number;
@@ -279,18 +297,24 @@ export function SiteHeader() {
         </Link>
 
         {/* Desktop nav */}
-        <nav className="hidden flex-1 items-center justify-center gap-8 xl:flex">
-          {navLinks.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`text-sm font-medium transition ${
-                overHero ? linkTone : pathname === item.href ? "text-ink" : "text-ink-2 hover:text-ink"
-              }`}
-              onClick={() => trackEvent("nav_click", { label: item.label, location: "header_nav" })}
-            >
-              {item.label}
-            </Link>
+        <nav aria-label="Main" className="hidden flex-1 items-center justify-center gap-7 xl:flex">
+          {navLinks.map((item, i) => (
+            <span key={item.href} className="flex items-center gap-7">
+              {/* A hairline between the three services and Pricing/Enterprise. */}
+              {i === serviceLinks.length ? (
+                <span aria-hidden className={`h-4 w-px ${overHero ? "bg-white/30" : "bg-rule-strong"}`} />
+              ) : null}
+              <Link
+                href={item.href}
+                className={`inline-flex items-center gap-1.5 text-sm font-medium whitespace-nowrap transition ${
+                  overHero ? linkTone : pathname === item.href ? "text-ink" : "text-ink-2 hover:text-ink"
+                }`}
+                onClick={() => trackEvent("nav_click", { label: item.label, location: "header_nav" })}
+              >
+                {item.label}
+                {item.status ? <NavTag status={item.status} overHero={overHero} /> : null}
+              </Link>
+            </span>
           ))}
         </nav>
 
@@ -399,7 +423,26 @@ export function SiteHeader() {
       {open && (
         <div className="border-t border-rule bg-paper-2 xl:hidden">
           <div className="mx-auto flex max-w-7xl flex-col gap-1 px-4 py-4 sm:px-6">
-            {navLinks.map((item) => (
+            <p className="px-3 pt-1 pb-1 text-[11px] font-semibold tracking-[0.12em] text-ink-3 uppercase">Services</p>
+            {serviceLinks.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={() => {
+                  setOpen(false);
+                  trackEvent("nav_click", { label: item.label, location: "mobile_menu" });
+                }}
+                className="flex flex-col rounded-cf px-3 py-2.5 transition hover:bg-paper"
+              >
+                <span className="flex items-center gap-2 text-[15px] font-semibold text-ink">
+                  {item.label}
+                  {item.status ? <NavTag status={item.status} overHero={false} /> : null}
+                </span>
+                <span className="text-[13px] text-ink-2">{item.blurb}</span>
+              </Link>
+            ))}
+            <div className="my-2 h-px bg-rule" aria-hidden />
+            {navLinks.slice(serviceLinks.length).map((item) => (
               <Link
                 key={item.href}
                 href={item.href}

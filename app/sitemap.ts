@@ -103,7 +103,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // ("find missing dimensions in DWG"), which is the kind of page an answer
     // engine can cite, rather than a landing page that describes a product.
     { url: `${BASE}/dwg-check`, lastModified: now, changeFrequency: "monthly", priority: 0.9 },
-    { url: `${BASE}/cfd-intake`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
+    // One of the three services (13 Oct 2026), so it ranks with the other two.
+    { url: `${BASE}/cfd-intake`, lastModified: now, changeFrequency: "weekly", priority: 0.9 },
 
     // /contact is NOT here: it is a redirect to /request-demo, and a sitemap
     // should list destinations, not hops.

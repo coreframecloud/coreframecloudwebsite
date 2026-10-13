@@ -4,19 +4,19 @@ import { NODE } from "@/lib/node-spec";
 import { Reveal } from "@/components/home/redesign/reveal";
 import { FrameStrip } from "@/components/home/redesign/frame-strip";
 import { Drift } from "@/components/home/redesign/depth";
-import { PlanImage, ShellFurnished } from "@/components/visuals/studio-compare";
 import { walkthroughVideoObject } from "@/components/home/landing/walkthrough-section";
 
 /**
- * The products as soft-tinted cards, each with a real screenshot or image
- * cropped inside (the SiteGround "bento"). Studio images are GENERATED, and
- * the card says so: only the empty shell is a render.
+ * The GPU workstation in detail, as soft-tinted cards with real screenshots
+ * cropped inside (the SiteGround "bento"). Studio left this grid on 13 Oct
+ * 2026: it has its own band above (components/home/redesign/offerings.tsx).
  */
 export function Bento({ youtubeId }: { youtubeId: string }) {
   return (
     <section className="cfh-wrap pt-20 pb-24 sm:pt-28">
       <Reveal className="mx-auto max-w-[44rem] text-center">
-        <h2 className="cfh-h2">
+        <p className="text-[11.5px] font-semibold tracking-[0.12em] text-ink-2 uppercase">GPU workstations, in detail</p>
+        <h2 className="cfh-h2 mt-3">
           A real workstation,
           <br className="hidden sm:block" /> without buying one
         </h2>
@@ -52,31 +52,7 @@ export function Bento({ youtubeId }: { youtubeId: string }) {
           </Drift>
         </Reveal>
 
-        {/* Studio */}
-        <Reveal tilt delay={0.08} className="cfh-card bg-tint-lilac">
-          <div className="grid gap-6 sm:grid-cols-[0.9fr_1.1fr] sm:items-center">
-            <div>
-              <h3 className="cfh-h3">Coreframe Studio</h3>
-              <p className="mt-3 text-[16px] leading-[1.6] text-ink-2">
-                Upload a DXF floor plan. We render the exact room shell, then generate a furnished
-                image from it.
-              </p>
-              <Link href="/floor-plan-to-render" className="cfh-link mt-5 text-ink">
-                Studio — opening soon <span aria-hidden>→</span>
-              </Link>
-            </div>
-            <div className="grid min-w-0 grid-cols-1 gap-3">
-              <Drift amount={10}>
-                <PlanImage caption="Your plan (real drawing)" />
-              </Drift>
-              <Drift amount={16}>
-                <ShellFurnished caption="Shell (rendered) · Furnished (generated)" />
-              </Drift>
-            </div>
-          </div>
-        </Reveal>
-
-        <div className="grid min-w-0 gap-5 sm:grid-cols-2">
+        <div className="grid min-w-0 gap-5 sm:grid-cols-2 lg:grid-cols-1">
           {/* Studio plans */}
           <Reveal tilt delay={0.16} className="cfh-card bg-tint-mint">
             <h3 className="cfh-h3">For studios</h3>

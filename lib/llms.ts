@@ -56,8 +56,8 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
   // Kept under 200 characters: the blockquote is the one line an answer engine
   // is most likely to lift whole. The detail lives in the sections below.
   out.push(
-    `> On-demand Windows ${NODE.gpu} workstations from Bengaluru for architects, designers ` +
-      "and 3D artists, streamed to your laptop and billed per minute in INR.",
+    `> Three services from Bengaluru: ${NODE.gpu} Windows workstations by the minute, CFD for ` +
+      "ducts and pipes from one STL, and Studio floor-plan concept images (opening soon).",
   );
   out.push("");
   out.push(`Last updated: ${LLMS_LAST_UPDATED}. Prices on this page are read live from our rate card.`);
@@ -73,9 +73,24 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
   out.push("## Short answers");
   out.push("");
   out.push(
-    "- **What is Coreframe Cloud?** A service that rents a whole Windows RTX 5080 " +
-      "workstation by the minute, streamed to your own computer through the Coreframe " +
-      "Connect app. Operated by Coreframe Compute Labs Private Limited, Bengaluru.",
+    "- **What is Coreframe Cloud?** A Bengaluru company with three services: (1) GPU " +
+      "workstations, a whole Windows RTX 5080 workstation rented by the minute and streamed " +
+      "to your own computer through the Coreframe Connect app; (2) CFD for ducts and pipes, " +
+      "an automatic OpenFOAM service where you upload one STL and get a quote by email; " +
+      "(3) Coreframe Studio, pre-sale concept images from a DXF floor plan, opening soon. " +
+      "Operated by Coreframe Compute Labs Private Limited, Bengaluru.",
+  );
+  out.push(
+    `- **Can Coreframe run CFD for me?** Yes, for ducts and pipes (${SITE}/cfd-intake). ` +
+      "Upload one closed STL of the fluid volume; the quote fee is Rs 499 + GST; we mesh it " +
+      "and email a quote; accept it and get pressure drop, loss coefficient, a PDF report, a " +
+      "3D viewer and the OpenFOAM data. No CFD licence needed. Rooms and HVAC airflow: coming " +
+      `soon. To run your own licensed solver instead, rent a workstation (${SITE}/ansys-cfd-gpu).`,
+  );
+  out.push(
+    `- **What is Coreframe Studio?** Opening soon, in private testing (${SITE}/floor-plan-to-render). ` +
+      "It turns a 2D DXF floor plan into generated interior concept images in the browser, " +
+      "for interior designers pitching a project. It is not open to the public yet.",
   );
   out.push(
     "- **Can I run D5 Render, Lumion or Enscape on it?** Yes. D5 Render, Twinmotion, " +
@@ -129,7 +144,13 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
   );
   out.push("");
 
-  out.push("## What it is");
+  out.push("## The three services");
+  out.push("");
+  out.push(`1. **GPU workstations** (live): ${SITE}/pricing. Most of this page is about them.`);
+  out.push(`2. **CFD for ducts and pipes** (live, launched 13 October 2026): ${SITE}/cfd-intake.`);
+  out.push(`3. **Coreframe Studio** (opening soon): ${SITE}/floor-plan-to-render.`);
+  out.push("");
+  out.push("## GPU workstations: what it is");
   out.push("");
   out.push(
     "- A real Windows desktop on an RTX GPU workstation, streamed to your own PC or laptop " +

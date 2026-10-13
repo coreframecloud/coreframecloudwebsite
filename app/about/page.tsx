@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { JsonLd } from "@/components/seo/json-ld";
 import { breadcrumbList, OG_IMAGE } from "@/lib/seo";
 import Link from "next/link";
+import { OfferingsStrip } from "@/components/home/redesign/offerings";
 import { Fold } from "@/components/visuals/fold";
 import { BackgroundGlow } from "@/components/home/background-glow";
 import { COMPANY_ADDRESS_FULL, COMPANY_VISITING_ADDRESS_LINE } from "@/lib/company";
@@ -44,13 +45,13 @@ import { BANDWIDTH_SENTENCE } from "@/lib/streaming-terms";
 export const metadata: Metadata = {
   title: { absolute: "What is Coreframe Cloud? Company, machines, prices" },
   description:
-    "Coreframe Cloud rents full Windows RTX 5080 desktops by the minute from Bengaluru, run by Coreframe Compute Labs Pvt Ltd. Company, hardware and limits.",
+    "Coreframe Cloud, run by Coreframe Compute Labs Pvt Ltd in Bengaluru: RTX 5080 workstations by the minute, CFD for ducts and pipes, and Studio (opening soon).",
   alternates: { canonical: "/about" },
   openGraph: {
     images: [OG_IMAGE],
     title: "What is Coreframe Cloud?",
     description:
-      "A cloud GPU workstation service operated from Bengaluru by Coreframe Compute Labs Private Limited. What it is, what it runs on, and what it is not.",
+      "GPU workstations, CFD for ducts and pipes, and Studio, from Bengaluru, by Coreframe Compute Labs Private Limited. What it is, what it runs on, and what it is not.",
     url: "https://www.coreframecloud.com/about",
     type: "article",
   },
@@ -106,7 +107,7 @@ export default async function AboutPage() {
   const faqs: { q: string; a: string }[] = [
     {
       q: "What is Coreframe Cloud?",
-      a: `Coreframe Cloud is a cloud GPU workstation service run by Coreframe Compute Labs Private Limited, a company registered in Bengaluru, Karnataka, India. It rents full ${NODE.os} desktops on NVIDIA ${NODE.gpu} graphics cards, streamed over the internet and billed by the minute. The people who use it are architects, interior designers, visualisation studios, 3D artists and engineers who need a GPU but don't want to buy a workstation.`,
+      a: `Coreframe Cloud is run by Coreframe Compute Labs Private Limited, a company registered in Bengaluru, Karnataka, India, and offers three services. GPU workstations: full ${NODE.os} desktops on NVIDIA ${NODE.gpu} graphics cards, streamed over the internet and billed by the minute, for architects, interior designers, visualisation studios, 3D artists and engineers who need a GPU but don't want to buy a workstation. CFD for ducts and pipes: upload one STL, get a quote by email, and get the pressure drop, a PDF report, a 3D viewer and the data files, with OpenFOAM running on our machines so you need no CFD licence. And Coreframe Studio, opening soon: pre-sale concept images generated from a DXF floor plan, for interior designers.`,
     },
     {
       q: "What makes Coreframe Cloud different from other cloud GPU services?",
@@ -212,15 +213,25 @@ export default async function AboutPage() {
               <h1 className="cf-display mt-3">What is Coreframe Cloud?</h1>
           
               <p className="cf-lead mt-6">
-                Windows workstations with an {NODE.gpu}, streamed to the laptop you own and billed by
-                the minute. Run by Coreframe Compute Labs Private Limited, Bengaluru.
+                Three services: {NODE.gpu} workstations streamed to the laptop you own and billed by the
+                minute, CFD for ducts and pipes, and Studio for floor-plan concept images (opening soon).
+                Run by Coreframe Compute Labs Private Limited, Bengaluru.
               </p>
         </div>
           <GenImage src="/visuals/gen-team-review-16x9.webp" alt="A small design studio team reviewing an interior image together" width={1600} height={914} sizes="(max-width: 1024px) 100vw, 480px" parallax priority />
         </div>
       </section>
+      <section className="cf-section px-5 pb-0">
+        <div className="cf-wide">
+          <h2 className="cf-section-title">What we do.</h2>
+          <div className="mt-6">
+            <OfferingsStrip location="about_services" />
+          </div>
+        </div>
+      </section>
       <main className="relative cf-section px-5">
         <div className="cf-col">
+          <h2 className="cf-section-title mb-6">The workstation, in one picture.</h2>
           <div className="rounded-[24px] bg-tint-blue p-6">
             <StreamDiagram />
           </div>

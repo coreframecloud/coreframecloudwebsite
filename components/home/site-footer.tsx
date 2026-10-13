@@ -16,6 +16,7 @@ import {
 } from "@/lib/company";
 import { visiblePosts } from "@/lib/blog";
 import { NODE } from "@/lib/node-spec";
+import { OFFERINGS } from "@/lib/offerings";
 
 export function SiteFooter() {
   return (
@@ -27,7 +28,7 @@ export function SiteFooter() {
       <div className="mx-auto max-w-7xl px-4 pt-16 pb-28 sm:px-6 lg:px-8">
 
         {/* Main row */}
-        <div className="grid gap-8 lg:grid-cols-[1fr_auto_auto_auto_auto]">
+        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-[minmax(170px,1fr)_auto_auto_auto_auto_auto]">
 
           {/* Brand + tagline */}
           <div>
@@ -35,7 +36,8 @@ export function SiteFooter() {
               <CoreframeWordmarkAtlas variant="light" iconSize={40} animated={false} />
             </Link>
             <p className="mt-3 max-w-xs text-xs leading-5 text-ink-2">
-              Managed workstations for 3D rendering and CFD analysis, hosted in Bengaluru, India.
+              RTX 5080 GPU workstations, CFD for ducts and pipes, and Studio for floor-plan concept
+              images. Hosted in Bengaluru, India.
             </p>
             <Link
               href={COMPANY.whatsapp}
@@ -47,18 +49,39 @@ export function SiteFooter() {
             </Link>
           </div>
 
-          {/* Navigation */}
+          {/* The three services first, as equals (13 Oct 2026), from the same
+              list as the header and the homepage hero. */}
           <div>
-            <h3 className="cf-eyebrow">Product</h3>
+            <h3 className="cf-eyebrow">Services</h3>
+            <div className="mt-3 flex flex-col gap-0">
+              {OFFERINGS.map((o) => (
+                <Link key={o.id} href={o.href} className="flex min-h-11 items-center gap-2 text-[13.5px] text-ink-2 transition hover:text-ink">
+                  {o.footerName}
+                  {o.status !== "Live" ? (
+                    <span className="rounded-full bg-white/10 px-1.5 py-0.5 text-[9.5px] leading-none font-semibold tracking-[0.08em] text-white uppercase">
+                      {o.status === "Opening soon" ? "Soon" : o.status}
+                    </span>
+                  ) : null}
+                </Link>
+              ))}
+              {[
+                { label: "Pricing", href: "/pricing" },
+                { label: "Enterprise plans", href: "/enterprise" },
+              ].map((l) => (
+                <Link key={l.href} href={l.href} className="flex min-h-11 items-center text-[13.5px] text-ink-2 transition hover:text-ink">{l.label}</Link>
+              ))}
+            </div>
+          </div>
+
+          {/* Software pages, free tools and the company. */}
+          <div>
+            <h3 className="cf-eyebrow">Explore</h3>
             <div className="mt-3 flex flex-col gap-0">
               {[
                 { label: "D5 Render", href: "/d5-render-cloud-workstation" },
                 { label: "Lumion", href: "/lumion-cloud-gpu" },
                 { label: "Enscape", href: "/enscape-cloud-gpu" },
-                { label: "CFD for ducts and pipes", href: "/cfd-intake" },
                 { label: "Free IFC check", href: "/tools" },
-                { label: "Pricing", href: "/pricing" },
-                { label: "Enterprise plans", href: "/enterprise" },
                 { label: "About Coreframe", href: "/about" },
                 // Only when /blog exists on this build: published posts on the
                 // live site, drafts too on a preview. A link to a page that

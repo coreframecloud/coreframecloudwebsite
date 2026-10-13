@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { JsonLd } from "@/components/seo/json-ld";
 import { breadcrumbList } from "@/lib/seo";
 import Link from "next/link";
+import { OfferingsStrip } from "@/components/home/redesign/offerings";
 import { NODE } from "@/lib/node-spec";
 import { HardDrive, MonitorSmartphone, ShieldCheck, Workflow } from "lucide-react";
 import { GenImage } from "@/components/visuals/media";
@@ -123,6 +124,17 @@ export default function SolutionsPage() {
                   <li key={x} className="rounded-full bg-tint-mint px-3.5 py-2 text-[14px] text-ink">{x}</li>
                 ))}
               </ul>
+            </div>
+          </div>
+        </section>
+
+        {/* The studio-team page sells the workstations; the other two services
+            are one line each, so a visitor here sees everything we do. */}
+        <section className="cf-section px-5 pt-0">
+          <div className="cf-wide">
+            <h2 className="cf-section-title">Everything Coreframe does.</h2>
+            <div className="mt-6">
+              <OfferingsStrip location="solutions_services" />
             </div>
           </div>
         </section>

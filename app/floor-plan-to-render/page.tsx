@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Fold } from "@/components/visuals/fold";
 import { PlanImage, ShellFurnished } from "@/components/visuals/studio-compare";
 import { NODE } from "@/lib/node-spec";
+import { STUDIO_NOTIFY_WHATSAPP } from "@/lib/offerings";
 
 /**
  * THE INDEXABLE PAGE FOR STUDIO. It did not exist, and that is why Studio is
@@ -43,7 +44,7 @@ import { NODE } from "@/lib/node-spec";
 export const metadata: Metadata = {
   title: "Floor Plan to Interior Render from a DXF",
   description:
-    "Coreframe Studio (opening soon, in private testing) turns a 2D DXF floor plan into an interior render in the browser: it reads walls, doors and windows, you pick a room, export at 2K or 4K.",
+    "Coreframe Studio (opening soon, in private testing): pre-sale concept images for interior designers. Upload a 2D DXF floor plan; it reads walls, doors and windows, you pick a room and get generated images in the browser.",
   keywords: [
     "floor plan to 3d render",
     "DXF to interior render",
@@ -109,17 +110,18 @@ export default function Page() {
         <section className="cf-section px-5 cf-pagehero">
           <div className="cf-wide grid items-center gap-10 lg:grid-cols-[1fr_1fr]">
             <div className="min-w-0">
-              <p className="cf-eyebrow mb-5">Coreframe Studio</p>
-              <h1 className="cf-display">Turn a floor plan into the room.</h1>
-              <p className="cf-lead mt-6">Upload a DXF. Get the room back as an image, ready for your client.</p>
-              {/* Studio is in private testing: say so plainly, and make the
-                  guide the real action until it opens. */}
+              <p className="cf-eyebrow mb-5">Studio · Pre-sale renders</p>
+              <h1 className="cf-display">Win the client before the project is signed.</h1>
+              <p className="cf-lead mt-6">Upload a 2D DXF floor plan. Get concept images of the room back, generated in the browser, ready to pitch with.</p>
+              {/* Studio is in private testing: say so plainly, and make "get
+                  notified" the real action until it opens. The guide PDF link
+                  was removed on 13 Oct 2026 (the PDF is being retired). */}
               <p className="mt-6 inline-flex items-center gap-2 rounded-full bg-white/10 px-3.5 py-1.5 text-[13px]">
                 <span className="h-2 w-2 rounded-full bg-[#ffd166]" /> Opening soon. Private testing for now.
               </p>
               <div className="mt-7 flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
-                <a href="/studio/guide.pdf" target="_blank" rel="noopener" className="cf-btn-primary w-full sm:w-auto">
-                  Read the guide
+                <a href="#notify" className="cf-btn-primary w-full sm:w-auto">
+                  Get notified
                 </a>
                 <a href="https://studio.coreframecloud.com/studio/demo.dxf" className="cf-btn-secondary w-full sm:w-auto">
                   Get the demo plan
@@ -193,8 +195,12 @@ export default function Page() {
 
         <section className="cf-section px-5 pt-0">
           <div className="cf-wide">
-            <div className="rounded-[32px] bg-night px-7 py-12 text-white sm:px-14">
-              <h2 className="font-heading text-[28px] font-medium sm:text-[36px]">Start with one room.</h2>
+            <div id="notify" className="scroll-mt-24 rounded-[32px] bg-night px-7 py-12 text-white sm:px-14">
+              <p className="text-[11.5px] font-semibold tracking-[0.12em] text-white/75 uppercase">Opening soon</p>
+              <h2 className="mt-3 font-heading text-[28px] font-medium sm:text-[36px]">Be first in when Studio opens.</h2>
+              <p className="mt-3 text-white/80">
+                Studio is in private testing. Tell us and we&rsquo;ll message you the day it opens.
+              </p>
               <p className="mt-3 text-white/70">
                 Need a whole machine for your own software instead?{" "}
                 <Link href="/" className="text-[#a9c4ff] underline underline-offset-4">
@@ -202,7 +208,17 @@ export default function Page() {
                 </Link>
                 .
               </p>
-              <a href="/studio/guide.pdf" target="_blank" rel="noopener" className="cfh-pill-light mt-7">Studio — opening soon: read the guide</a>
+              <div className="mt-7 flex flex-wrap gap-3">
+                <a href={STUDIO_NOTIFY_WHATSAPP} target="_blank" rel="noreferrer" className="cfh-pill-light">
+                  Notify me on WhatsApp
+                </a>
+                <a
+                  href={`mailto:admin@coreframecloud.com?subject=${encodeURIComponent("Tell me when Coreframe Studio opens")}`}
+                  className="cfh-pill-ghost"
+                >
+                  Or by email
+                </a>
+              </div>
             </div>
           </div>
         </section>

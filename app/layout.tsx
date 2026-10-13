@@ -90,11 +90,11 @@ const CONSENT_DENIED_REGIONS = [
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.coreframecloud.com"),
   title: {
-    default: "Coreframe Cloud — RTX 5080 cloud workstations, India",
+    default: "Coreframe Cloud — RTX 5080 workstations, CFD and Studio, India",
     template: "%s | Coreframe Cloud",
   },
   description:
-    "Rent a full Windows RTX 5080 workstation by the minute from Bengaluru for D5 Render, Lumion, Enscape, 3ds Max and Blender. GST included, files persist.",
+    "Three services from Bengaluru: RTX 5080 Windows workstations by the minute, CFD for ducts and pipes from one STL with no licence, and Studio for pre-sale concept images from a floor plan (opening soon).",
   keywords: [
     "faster D5 Render cloud India",
     "CFD simulation faster India",
@@ -107,6 +107,9 @@ export const metadata: Metadata = {
     "cloud render farm India",
     "fast CFD analysis India",
     "GPU accelerated CFD India",
+    "CFD pressure drop duct",
+    "pipe pressure drop CFD India",
+    "floor plan to interior render",
   ],
   // Meta Business domain verification (business 1473783351254331, domain id 883377961527807,
   // 12 Oct 2026). Must stay in the server-rendered <head>; removing it un-verifies the domain.
@@ -129,9 +132,9 @@ export const metadata: Metadata = {
   // their own `openGraph` object, which used to replace this one and leave
   // them with no image at all.
   openGraph: {
-    title: "Coreframe Cloud — RTX GPU Workstations for Design Studios, India",
+    title: "Coreframe Cloud — GPU workstations, CFD and Studio, India",
     description:
-      "RTX 5080 GPU workstations on demand for D5 Render, Lumion, Enscape. Pay-as-you-go or committed plans. Hosted in Bengaluru.",
+      "Rent an RTX 5080 workstation by the minute, get CFD for your duct or pipe from one STL, and Studio for pre-sale concept images (opening soon). Hosted in Bengaluru.",
     url: "https://www.coreframecloud.com",
     siteName: "Coreframe Cloud",
     locale: "en_IN",
@@ -144,7 +147,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Coreframe Cloud",
     description:
-      "Windows RTX 5080 workstations rented by the minute, streamed to the laptop you already own. Hosted in Bengaluru, India.",
+      "RTX 5080 workstations by the minute, CFD for ducts and pipes with no licence, and Studio for floor-plan concept images (opening soon). Hosted in Bengaluru, India.",
   },
   other: {
     "contact:email": "admin@coreframecloud.com",
@@ -350,7 +353,7 @@ export default async function RootLayout({
                   legalName: "Coreframe Compute Labs Private Limited",
                   alternateName: ["Coreframe", "Coreframe Compute Labs"],
                   disambiguatingDescription:
-                    "Coreframe Cloud is the cloud GPU workstation service operated by Coreframe Compute Labs Private Limited of Bengaluru, India (CIN U63119KA2026PTC220789). It is unrelated to CloudFrame, Coreframe Technologies, Coreframe Solutions, CoreFrame Studio, or the coreframe package on PyPI.",
+                    "Coreframe Cloud is the cloud GPU workstation, CFD and floor-plan rendering service operated by Coreframe Compute Labs Private Limited of Bengaluru, India (CIN U63119KA2026PTC220789). It is unrelated to CloudFrame, Coreframe Technologies, Coreframe Solutions, CoreFrame Studio, or the coreframe package on PyPI.",
                   url: "https://www.coreframecloud.com",
                   logo: "https://www.coreframecloud.com/icon.png",
                   /**
@@ -368,7 +371,7 @@ export default async function RootLayout({
                    */
                   hasMap: COMPANY_MAPS_URL,
                   description:
-                    "RTX 5080 GPU workstations on demand for D5 Render, Lumion, Enscape, and 3D visualisation studios. Hosted in Bengaluru, India.",
+                    "Three services from Bengaluru, India: RTX 5080 GPU workstations on demand for D5 Render, Lumion, Enscape, Blender and Unreal Engine; CFD for ducts and pipes (OpenFOAM, quote by email, no licence needed); and Coreframe Studio, pre-sale concept images from a DXF floor plan (opening soon).",
                   telephone: "+916366889488",
                   email: "admin@coreframecloud.com",
                   address: {
@@ -403,8 +406,25 @@ export default async function RootLayout({
                     "architectural visualisation",
                     "real-time rendering",
                     "GPU-accelerated CFD",
+                    "computational fluid dynamics",
+                    "OpenFOAM",
+                    "duct and pipe pressure drop",
+                    "interior concept rendering from floor plans",
                     "NVIDIA RTX 5080",
                   ],
+                  /**
+                   * The three services, in the site-wide order. Studio is
+                   * listed as a service but carries no Offer until it opens.
+                   */
+                  hasOfferCatalog: {
+                    "@type": "OfferCatalog",
+                    name: "Coreframe Cloud services",
+                    itemListElement: [
+                      { "@id": "https://www.coreframecloud.com/#gpu-workstation-service" },
+                      { "@id": "https://www.coreframecloud.com/#cfd-service" },
+                      { "@id": "https://www.coreframecloud.com/#studio-service" },
+                    ],
+                  },
                   /**
                    * Add a profile here only once it exists and resolves. An
                    * URL to a page that 404s is a broken identity claim, which
@@ -458,6 +478,43 @@ export default async function RootLayout({
                     { "@type": "Place", name: "Worldwide" },
                   ],
                   ...(offers.length ? { offers } : {}),
+                },
+                {
+                  "@type": "Service",
+                  "@id": "https://www.coreframecloud.com/#cfd-service",
+                  name: "CFD for ducts and pipes",
+                  serviceType: "Computational fluid dynamics, internal flow pressure drop",
+                  category: "Engineering simulation",
+                  brand: { "@type": "Brand", name: "Coreframe Cloud" },
+                  url: "https://www.coreframecloud.com/cfd-intake",
+                  provider: { "@id": "https://www.coreframecloud.com/#organization" },
+                  description:
+                    "Automatic OpenFOAM internal-flow runs for ducts, pipes, bends, reducers, valves and fittings from one closed STL: a quote by email, then pressure drop, loss coefficient, a PDF report, a 3D results viewer and the data files. No CFD licence needed.",
+                  areaServed: [
+                    { "@type": "Country", name: "India" },
+                    { "@type": "Place", name: "Worldwide" },
+                  ],
+                  offers: {
+                    "@type": "Offer",
+                    name: "Quote fee (mesh and quote)",
+                    price: "499",
+                    priceCurrency: "INR",
+                    valueAddedTaxIncluded: false,
+                    description: "Plus GST. The run is quoted by email and paid only if you accept.",
+                    url: "https://www.coreframecloud.com/cfd-intake",
+                  },
+                },
+                {
+                  "@type": "Service",
+                  "@id": "https://www.coreframecloud.com/#studio-service",
+                  name: "Coreframe Studio: floor plan to concept images",
+                  serviceType: "Interior concept images from a 2D floor plan",
+                  category: "Architectural visualisation",
+                  brand: { "@type": "Brand", name: "Coreframe Cloud" },
+                  url: "https://www.coreframecloud.com/floor-plan-to-render",
+                  provider: { "@id": "https://www.coreframecloud.com/#organization" },
+                  description:
+                    "Opening soon, in private testing. Pre-sale concept images for interior designers: upload a 2D DXF floor plan and get generated room images in the browser.",
                 },
               ],
             }),

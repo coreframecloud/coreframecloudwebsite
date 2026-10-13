@@ -5,6 +5,7 @@ import { OG_IMAGE, breadcrumbList } from "@/lib/seo";
 import { JsonLd } from "@/components/seo/json-ld";
 import { Fold } from "@/components/visuals/fold";
 import CfdDuctForm from "./cfd-duct-form";
+import { StatusBadge } from "@/components/home/redesign/offerings";
 
 /**
  * /cfd-intake — CFD for ducts and pipes (managed, automatic). Live 13 Oct 2026.
@@ -52,6 +53,39 @@ export const metadata: Metadata = {
     url: "https://www.coreframecloud.com/cfd-intake",
   },
 };
+
+const CFD_SERVICES: {
+  name: string;
+  status: "Live" | "Coming soon";
+  body: string;
+  href?: string;
+  cta: string;
+  tint: string;
+}[] = [
+  {
+    name: "Ducts and pipes",
+    status: "Live",
+    body: "Bends, reducers, transitions, valves, fittings and manifolds. Upload one STL; we mesh it, email a quote, and deliver pressure drop, loss coefficient, a PDF report, a 3D viewer and the data files.",
+    href: "#start",
+    cta: "Start a job",
+    tint: "bg-tint-mint",
+  },
+  {
+    name: "Rooms and HVAC airflow",
+    status: "Coming soon",
+    body: "Room air movement and comfort for HVAC designers. We release it only once it passes our validation cases, so the numbers are ones you can hand on.",
+    cta: "Coming soon",
+    tint: "bg-tint-blue",
+  },
+  {
+    name: "Your own solver, our GPU",
+    status: "Live",
+    body: "Already licensed for Ansys or another solver? Rent an RTX 5080 workstation by the minute and run it yourself.",
+    href: "/ansys-cfd-gpu",
+    cta: "GPU workstations for CFD",
+    tint: "bg-tint-lilac",
+  },
+];
 
 const AUDIENCE = [
   {
@@ -155,6 +189,7 @@ const faqLd = {
 const serviceLd = {
   "@context": "https://schema.org",
   "@type": "Service",
+  "@id": "https://www.coreframecloud.com/#cfd-service",
   name: "CFD for ducts and pipes",
   serviceType: "Computational fluid dynamics, internal flow pressure drop",
   provider: { "@type": "Organization", name: "Coreframe Cloud", url: "https://www.coreframecloud.com" },
@@ -182,7 +217,8 @@ export default function CfdIntakePage() {
           <div className="cf-wide grid items-center gap-10 lg:grid-cols-[1.05fr_1fr]">
             <div className="min-w-0">
               <p className="cf-eyebrow">CFD for ducts and pipes · Live</p>
-              <h1 className="cf-display mt-4">Pressure drop for your duct or pipe, from one STL.</h1>
+              <p className="mt-5 font-heading text-[22px] leading-tight font-medium sm:text-[26px]">Slow CFD? Try us.</p>
+              <h1 className="cf-display mt-3">Pressure drop for your duct or pipe, from one STL.</h1>
               <p className="cf-lead mt-5">
                 Upload the geometry. We check it, mesh it on our machine and email you a quote. Accept it and you get a
                 PDF report, a 3D results viewer and the data files, with the pressure drop and the loss coefficient.
@@ -210,6 +246,36 @@ export default function CfdIntakePage() {
                 Velocity through a 90° bend, water at 4 m/s, from one of our own test runs.
               </figcaption>
             </figure>
+          </div>
+        </section>
+
+        {/* ── CFD services (sub-categories) ────────────────────────────────
+            Owner, 13 Oct 2026: the sub-categories live here, not in the
+            homepage hero. Only real ones: ducts and pipes is live, rooms and
+            HVAC airflow is the next physics case (not sold until it passes
+            validation), and the bring-your-own-solver workstation is live. */}
+        <section id="services" className="cf-section scroll-mt-20 px-5">
+          <div className="cf-wide">
+            <p className="cf-eyebrow">CFD services</p>
+            <h2 className="cf-section-title mt-4">Pick what you need to run.</h2>
+            <div className="mt-9 grid grid-cols-1 gap-5 md:grid-cols-3">
+              {CFD_SERVICES.map((c) => (
+                <div key={c.name} className={`flex min-w-0 flex-col rounded-[24px] p-6 sm:p-7 ${c.tint}`}>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <h3 className="font-heading text-[20px] leading-[1.25] font-medium text-ink">{c.name}</h3>
+                    <StatusBadge status={c.status} />
+                  </div>
+                  <p className="mt-3 text-[15px] leading-6 text-ink-2">{c.body}</p>
+                  {c.href ? (
+                    <Link href={c.href} className="cfh-link mt-auto pt-5 text-ink">
+                      {c.cta} <span aria-hidden>→</span>
+                    </Link>
+                  ) : (
+                    <p className="mt-auto pt-5 text-[13px] font-semibold tracking-[0.04em] text-ink-3 uppercase">{c.cta}</p>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
         </section>
 
