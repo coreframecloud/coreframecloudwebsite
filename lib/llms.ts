@@ -84,8 +84,8 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
     `- **Can Coreframe run CFD for me?** Yes, for ducts and pipes (${SITE}/cfd-intake). ` +
       "Upload one closed STL of the fluid volume; the quote fee is Rs 499 + GST; we mesh it " +
       "and email a quote; accept it and get pressure drop, loss coefficient, a PDF report, a " +
-      "3D viewer and the OpenFOAM data. No CFD licence needed. Rooms and HVAC airflow: coming " +
-      `soon. To run your own licensed solver instead, rent a workstation (${SITE}/ansys-cfd-gpu).`,
+      "3D viewer and the OpenFOAM data. No CFD licence needed. It needs a Coreframe account " +
+      "(the same account and wallet as GPU workstations and Studio). Rooms and HVAC airflow: coming soon.",
   );
   out.push(
     `- **What is Coreframe Studio?** Opening soon, in private testing (${SITE}/floor-plan-to-render). ` +
@@ -505,7 +505,6 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
   out.push(`- [D5 Render workstations](${SITE}/d5-render-cloud-workstation)`);
   out.push(`- [Lumion cloud workstations](${SITE}/lumion-cloud-gpu)`);
   out.push(`- [Enscape cloud workstations](${SITE}/enscape-cloud-gpu)`);
-  out.push(`- [Ansys CFD on GPU](${SITE}/ansys-cfd-gpu)`);
   out.push(`- [Free IFC pre-CFD check](${SITE}/tools): no account needed.`);
   out.push(`- [Free DWG dimension check](${SITE}/dwg-check): no account needed.`);
   out.push(`- [CFD for ducts and pipes](${SITE}/cfd-intake): a managed, automatic OpenFOAM service. Upload one closed STL of the fluid volume; the geometry is checked automatically, the quote fee is Rs 499 + GST from the Coreframe wallet, the mesh is built on our machine and a quote is emailed. Accept it and get a PDF report with pressure drop and loss coefficient, a 3D results viewer and the data files. No CFD licence needed. Rooms and HVAC comfort: coming soon.`);

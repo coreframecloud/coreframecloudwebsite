@@ -4,7 +4,7 @@ import Link from "next/link";
 import { OG_IMAGE, breadcrumbList } from "@/lib/seo";
 import { JsonLd } from "@/components/seo/json-ld";
 import { Fold } from "@/components/visuals/fold";
-import CfdDuctForm from "./cfd-duct-form";
+import CfdStart from "./cfd-start";
 import { StatusBadge } from "@/components/home/redesign/offerings";
 
 /**
@@ -27,8 +27,14 @@ import { StatusBadge } from "@/components/home/redesign/offerings";
  *
  * Images in /public/cfd are real outputs of overnight end-to-end runs on our
  * own test geometry (12 Oct 2026, 50 mm pipes, water at 4 m/s): a 90 degree
- * bend (0.91 M cells) and a reducer (1.49 M cells). The report subtitle with
- * the internal test job name is blanked; nothing else is edited.
+ * bend (0.91 M cells) and a reducer (1.49 M cells). The report pages and
+ * /cfd/sample-report.pdf are the bend run re-rendered (13 Oct 2026) with the
+ * current letterhead report (cfd-runner/report.py), titled "Sample: 90° water
+ * bend" in place of the internal test job name; the numbers are the run's.
+ *
+ * ACCOUNT FIRST (owner, 13 Oct 2026): the form is only for a signed-in account
+ * that finished sign-up (cfd-start.tsx); the API refuses anything else. The
+ * form itself is driven by lib/cfd-categories.ts (one tab per CFD vertical).
  */
 
 export const metadata: Metadata = {
@@ -77,14 +83,6 @@ const CFD_SERVICES: {
     cta: "Coming soon",
     tint: "bg-tint-blue",
   },
-  {
-    name: "Your own solver, our GPU",
-    status: "Live",
-    body: "Already licensed for Ansys or another solver? Rent an RTX 5080 workstation by the minute and run it yourself.",
-    href: "/ansys-cfd-gpu",
-    cta: "GPU workstations for CFD",
-    tint: "bg-tint-lilac",
-  },
 ];
 
 const AUDIENCE = [
@@ -104,8 +102,8 @@ const AUDIENCE = [
 
 const STEPS = [
   {
-    title: "Submit the job and upload one STL",
-    body: "The fluid volume of your duct or pipe as one closed binary STL, the units, the fluid and the inlet flow.",
+    title: "Sign in, submit the job and upload one STL",
+    body: "With your Coreframe account: the fluid volume of your duct or pipe as one closed binary STL, the units, the fluid and the inlet flow.",
   },
   {
     title: "We check the geometry automatically",
@@ -143,8 +141,12 @@ const FAQ = [
     a: "One closed binary STL of the fluid volume, which is the air or water inside the duct or pipe, not the metal around it. Close each opening with a flat face at the end of a short straight section. Tell us the units, because STL files do not store them. STEP, IGES, Parasolid and IFC are not accepted yet: export an STL from your CAD tool.",
   },
   {
-    q: "Do I need an Ansys or other CFD licence?",
+    q: "Do I need a CFD licence?",
     a: "No. The case runs on OpenFOAM on our machine. You need a browser and a Coreframe account with wallet balance.",
+  },
+  {
+    q: "Do I need a Coreframe account?",
+    a: "Yes. Sign up with your email and a WhatsApp code to your mobile, the same account and wallet as GPU workstations and Studio. Your name, email and number come from the account, so the form does not ask for them again.",
   },
   {
     q: "What does it cost to start?",
@@ -172,7 +174,7 @@ const FAQ = [
   },
   {
     q: "Is my geometry kept private?",
-    a: "Your job page and results open only with the private link we email you.",
+    a: "Your job belongs to your Coreframe account. Its page and results open only with the private link we email you.",
   },
 ];
 
@@ -251,14 +253,14 @@ export default function CfdIntakePage() {
 
         {/* ── CFD services (sub-categories) ────────────────────────────────
             Owner, 13 Oct 2026: the sub-categories live here, not in the
-            homepage hero. Only real ones: ducts and pipes is live, rooms and
+            homepage hero. Only real ones: ducts and pipes is live, and rooms and
             HVAC airflow is the next physics case (not sold until it passes
-            validation), and the bring-your-own-solver workstation is live. */}
+            validation). The bring-your-own-solver page was retired 13 Oct 2026. */}
         <section id="services" className="cf-section scroll-mt-20 px-5">
           <div className="cf-wide">
             <p className="cf-eyebrow">CFD services</p>
             <h2 className="cf-section-title mt-4">Pick what you need to run.</h2>
-            <div className="mt-9 grid grid-cols-1 gap-5 md:grid-cols-3">
+            <div className="mt-9 grid grid-cols-1 gap-5 md:grid-cols-2">
               {CFD_SERVICES.map((c) => (
                 <div key={c.name} className={`flex min-w-0 flex-col rounded-[24px] p-6 sm:p-7 ${c.tint}`}>
                   <div className="flex flex-wrap items-center gap-2">
@@ -370,17 +372,22 @@ export default function CfdIntakePage() {
 
             <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2">
               {[
-                { src: "/cfd/report-bend-p1.webp", alt: "Page 1 of a Coreframe CFD results report: convergence verdict, pressure drop, loss coefficient and inputs", cap: "Report page 1: the verdict and the headline numbers." },
-                { src: "/cfd/report-bend-p2.webp", alt: "Page 2 of a Coreframe CFD results report: mesh quality, y+ on the walls, residual history and the monitored pressure drop", cap: "Report page 2: mesh, y+ and how the run converged." },
+                { src: "/cfd/report-bend-p1.webp", alt: "Page 1 of a Coreframe CFD results report on the company letterhead: plain-language summary, convergence verdict, pressure drop and loss coefficient", cap: "Report page 1: the summary, the verdict and the headline numbers." },
+                { src: "/cfd/report-bend-p2.webp", alt: "Page 2 of a Coreframe CFD results report: job inputs, boundary conditions, assumptions and mesh quality", cap: "Report page 2: the inputs, the assumptions and the mesh." },
               ].map((p) => (
                 <figure key={p.src} className="min-w-0">
                   <div className="overflow-hidden rounded-[20px] border border-rule bg-white shadow-[0_20px_60px_-24px_rgba(16,17,19,0.35)]">
-                    <Image src={p.src} alt={p.alt} width={1406} height={1988} sizes="(max-width: 768px) 100vw, 470px" className="h-auto w-full" />
+                    <Image src={p.src} alt={p.alt} width={1600} height={2263} sizes="(max-width: 768px) 100vw, 470px" className="h-auto w-full" />
                   </div>
                   <figcaption className="mt-2.5 text-[13px] text-ink-3">{p.cap}</figcaption>
                 </figure>
               ))}
             </div>
+            <p className="mt-6">
+              <a href="/cfd/sample-report.pdf" target="_blank" rel="noopener" className="cf-btn-secondary">
+                Download the full sample report (PDF, 6 pages)
+              </a>
+            </p>
 
             <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2">
               {GALLERY.map((g) => (
@@ -447,10 +454,11 @@ export default function CfdIntakePage() {
               <p className="cf-eyebrow">Start a job</p>
               <h2 className="cf-section-title mt-4">Tell us the flow, then upload the STL.</h2>
               <p className="cf-section-copy mt-3">
-                Six fields and a file. You will pay the quote fee on your job page, signed in to your Coreframe account.
+                A few fields and a file, from your Coreframe account. Your name, email and WhatsApp number come from the
+                account, and the quote fee is paid from its wallet on your job page.
               </p>
               <div className="mt-8">
-                <CfdDuctForm />
+                <CfdStart />
               </div>
             </div>
           </div>
@@ -465,15 +473,6 @@ export default function CfdIntakePage() {
                 <p className="mt-3 text-[15px] leading-6 break-words text-ink-2">{f.a}</p>
               </Fold>
             ))}
-            <div className="cf-note mt-10">
-              <p className="text-[15px] leading-6 text-ink">
-                <span className="font-semibold">Prefer to run your own solver?</span> Rent an RTX 5080 workstation by
-                the hour and bring your own licence.{" "}
-                <Link href="/ansys-cfd-gpu" className="text-blue underline underline-offset-4">
-                  GPU workstations for CFD
-                </Link>
-              </p>
-            </div>
           </div>
         </section>
       </main>

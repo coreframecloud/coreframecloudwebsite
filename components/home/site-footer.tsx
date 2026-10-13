@@ -102,7 +102,6 @@ export function SiteFooter() {
               {[
                 { label: "Cloud rendering for architects", href: "/cloud-rendering-for-architects" },
                 { label: `Rent an ${NODE.gpu} in India`, href: "/software/gpu-workstation-rental-india" },
-                { label: "GPU workstations for CFD", href: "/ansys-cfd-gpu" },
                 { label: "Workstations and storage for studios", href: "/solutions" },
                 { label: "Is 8 GB of VRAM enough?", href: "/vram-for-architectural-rendering" },
                 { label: "Coreframe vs iRender", href: "/coreframe-vs-irender" },

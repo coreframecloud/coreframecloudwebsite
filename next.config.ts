@@ -260,6 +260,16 @@ const nextConfig: NextConfig = {
   },
   async redirects() {
     return [
+      /**
+       * The bring-your-own-licence CFD page is retired (owner, 13 Oct 2026):
+       * CFD is the managed duct/pipe service now. Permanent, so its search
+       * signal goes to the page that replaced it.
+       */
+      {
+        source: "/ansys-cfd-gpu",
+        destination: "/cfd-intake",
+        permanent: true,
+      },
       {
         source: "/d5-render",
         destination: "/",

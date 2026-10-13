@@ -1,5 +1,6 @@
 "use client";
 
+import { takeReturnPath } from "@/lib/return-path";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -53,7 +54,9 @@ function MagicLinkVerifier() {
         setStatus("success");
         // pending_approval now means only that the email or mobile is not
         // confirmed yet — /verify asks for that one step, then on to add funds.
-        const next = data.user?.status === "pending_approval" ? "/verify" : "/my-activity";
+        // Back to the page that sent them to sign up (lib/return-path.ts),
+        // once there is nothing left to verify.
+        const next = data.user?.status === "pending_approval" ? "/verify" : (takeReturnPath() ?? "/my-activity");
         setTimeout(() => {
           window.location.href = next;
         }, 1200);

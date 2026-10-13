@@ -98,7 +98,6 @@ export const metadata: Metadata = {
   keywords: [
     "faster D5 Render cloud India",
     "CFD simulation faster India",
-    "Ansys CFD cloud GPU India",
     "cloud GPU workstation India",
     "RTX rendering cloud India",
     "Lumion cloud GPU India",
