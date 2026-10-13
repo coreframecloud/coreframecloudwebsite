@@ -244,8 +244,10 @@ export default function CfdDuctForm() {
       if (data.access_token) {
         setJobUrl(`${API_BASE}/cfd-jobs/${data.ref_id}/view?token=${encodeURIComponent(data.access_token)}`);
       }
-      // A submitted CFD job is a lead (Meta "Contact"). No form fields go with it.
+      // A submitted CFD job is a lead (Meta "Lead"). No form fields go with it.
       trackConversion("generate_lead", { method: "cfd_duct_job", location: "cfd_intake" });
+      // Its own GA4 key event too, so Google Ads can bid on CFD jobs apart from WhatsApp taps.
+      trackEvent("cfd_job_submit", { location: "cfd_intake" });
       setBusy("");
       if (noStl || !file) {
         setUploadState("skipped");
