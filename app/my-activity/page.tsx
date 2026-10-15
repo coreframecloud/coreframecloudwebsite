@@ -13,6 +13,7 @@ import {
 } from "@/lib/rate-card";
 import { useRateCard } from "@/lib/use-rate-card";
 import { API_BASE } from "@/lib/api-base";
+import { formatMoney, parseCurrency, type Currency } from "@/lib/money";
 
 const API = API_BASE;
 
@@ -74,6 +75,10 @@ interface WalletData {
   min_topup_rupees_now?: number;
   /** ISO-3166 alpha-2 from sign-up; preselects the billing country. */
   country_code?: string | null;
+  /** 15 Oct 2026: "INR" | "USD" (null: no country yet). Every `*_rupees`
+   *  money field here is in THIS currency, whatever its name says. Absent on
+   *  an older control plane, which is INR-only. */
+  wallet_currency?: string | null;
 }
 
 function formatBytes(bytes: number): string {
@@ -140,12 +145,15 @@ function StartCard({
     );
   }
 
-  const min = wallet.min_topup_rupees_now ?? fallbackMin;
+  // fallbackMin is the rate card's rupee minimum: no use to a USD account.
+  const cur: Currency = parseCurrency(wallet.wallet_currency) ?? "INR";
+  const min = wallet.min_topup_rupees_now ?? (cur === "USD" ? null : fallbackMin);
+  const fmt = (v: number) => (cur === "USD" ? formatMoney(v, "USD") : rupees(v));
   return (
     <section className="cf-glass border-l-2! border-l-blue! p-5 sm:p-6">
       <h2 className="cf-eyebrow">Ready when you are</h2>
       <p className="mt-3 font-display text-2xl leading-tight font-bold text-ink">
-        {min ? `Add ${rupees(min)} to start.` : "Add funds to start."}
+        {min ? `Add ${fmt(min)} to start.` : "Add funds to start."}
       </p>
       <p className="mt-2 text-sm leading-6 text-ink-2">
         Your account is set up. Sessions start once your wallet has its first top-up, and
@@ -156,7 +164,7 @@ function StartCard({
         onClick={() => onAdd(min, "first_topup")}
         className="cf-btn-primary mt-5 w-full sm:w-auto"
       >
-        {min ? `Add ${rupees(min)}` : "Add funds"}
+        {min ? `Add ${fmt(min)}` : "Add funds"}
       </button>
     </section>
   );
@@ -373,7 +381,8 @@ function ServiceTag({ service }: { service: string | null }) {
   );
 }
 
-function formatRupees(x: number): string {
+function formatRupees(x: number, currency: Currency = "INR"): string {
+  if (currency === "USD") return formatMoney(Math.abs(x), "USD");
   const whole = Math.abs(x - Math.round(x)) < 0.005;
   return `₹${Math.abs(x).toLocaleString("en-IN", {
     minimumFractionDigits: whole ? 0 : 2,
@@ -461,6 +470,9 @@ export default function MyActivityPage() {
   const [token, setToken] = useState<string | null>(null);
   const [user, setUser] = useState<UserInfo | null>(null);
   const [wallet, setWallet] = useState<WalletData | null>(null);
+  // The account's currency (wallet_currency); every wallet amount is in it.
+  const cur: Currency = parseCurrency(wallet?.wallet_currency) ?? "INR";
+  const sym = cur === "USD" ? "$" : "₹";
   const [sessions, setSessions] = useState<Session[]>([]);
   const [payments, setPayments] = useState<Payment[]>([]);
   const [ledger, setLedger] = useState<LedgerRow[]>([]);
@@ -773,7 +785,7 @@ export default function MyActivityPage() {
                 Org wallet balance
               </h2>
               <p className="font-display text-3xl font-bold tabular-nums text-blue">
-                ₹{wallet ? wallet.wallet_balance_rupees.toFixed(2) : "0.00"}
+                {sym}{wallet ? wallet.wallet_balance_rupees.toFixed(2) : "0.00"}
               </p>
               <p className="mt-1 text-xs text-ink-2">Shared across your organisation</p>
             </div>
@@ -804,7 +816,7 @@ export default function MyActivityPage() {
                 Wallet
               </h2>
               <p className="font-display text-3xl font-bold tabular-nums text-blue">
-                ₹{wallet ? (wallet.wallet_total_rupees ?? wallet.wallet_balance_rupees).toFixed(2) : "0.00"}
+                {sym}{wallet ? (wallet.wallet_total_rupees ?? wallet.wallet_balance_rupees).toFixed(2) : "0.00"}
               </p>
               {/* ONE WALLET (13 Oct 2026): the same money pays for all three
                   services. The intro bonus is the one part that is GPU-only,
@@ -814,18 +826,18 @@ export default function MyActivityPage() {
               </p>
               {(wallet?.gpu_only_bonus_rupees ?? 0) > 0 && (
                 <p className="mt-2 text-xs tabular-nums text-ink-2">
-                  Includes a welcome bonus of {formatRupees(wallet!.gpu_only_bonus_rupees!)} for GPU time
+                  Includes a welcome bonus of {formatRupees(wallet!.gpu_only_bonus_rupees!, cur)} for GPU time
                   {wallet!.gpu_only_bonus_expires_at
                     ? `, until ${new Date(wallet!.gpu_only_bonus_expires_at).toLocaleDateString("en-IN", {
                         day: "numeric", month: "short", year: "numeric",
                       })}`
                     : ""}
-                  . {formatRupees(wallet!.spendable_everywhere_rupees ?? 0)} is usable on CFD and Studio too.
+                  . {formatRupees(wallet!.spendable_everywhere_rupees ?? 0, cur)} is usable on CFD and Studio too.
                 </p>
               )}
               {(wallet?.studio_only_rupees ?? 0) > 0 && (
                 <p className="mt-2 text-xs tabular-nums text-ink-2">
-                  Includes Studio-only {formatRupees(wallet!.studio_only_rupees!)} from the Studio starter
+                  Includes Studio-only {formatRupees(wallet!.studio_only_rupees!, cur)} from the Studio starter
                   {wallet!.studio_only_bonus_expires_at
                     ? `; its bonus lasts until ${new Date(wallet!.studio_only_bonus_expires_at).toLocaleDateString("en-IN", {
                         day: "numeric", month: "short", year: "numeric",
@@ -848,7 +860,9 @@ export default function MyActivityPage() {
               */}
               <p className="mt-1 text-xs text-ink-2">
                 {wallet?.gpu_rate_from_rupees != null
-                  ? `GPU time from ₹${Math.round(wallet.gpu_rate_from_rupees)}/hr · GST included`
+                  ? cur === "USD"
+                    ? `GPU time from ${formatMoney(wallet.gpu_rate_from_rupees, "USD")}/hr · no GST`
+                    : `GPU time from ₹${Math.round(wallet.gpu_rate_from_rupees)}/hr · GST included`
                   : "Rates unavailable right now"}
               </p>
               {/* Minutes granted before the trial was retired (10 Oct 2026)
@@ -861,7 +875,9 @@ export default function MyActivityPage() {
               )}
               {wallet?.next_expiry && (
                 <p className="mt-2 text-xs tabular-nums text-ink-2">
-                  ₹{Math.round(wallet.next_expiry.amount_rupees).toLocaleString("en-IN")} expires on{" "}
+                  {cur === "USD"
+                    ? formatMoney(wallet.next_expiry.amount_rupees, "USD")
+                    : `₹${Math.round(wallet.next_expiry.amount_rupees).toLocaleString("en-IN")}`} expires on{" "}
                   {new Date(wallet.next_expiry.expires_at).toLocaleDateString("en-IN", {
                     day: "numeric", month: "short", year: "numeric",
                   })}
@@ -880,12 +896,18 @@ export default function MyActivityPage() {
                     server whether recharge is configured and falls back to the
                     contact route only if it says no. */}
                 <p className="text-sm leading-6 text-ink-2">
-                  Top up by card, UPI or netbanking. A GST invoice is issued automatically.
+                  {cur === "USD"
+                    ? "Top up by card, in US dollars. No GST (export of services); an invoice is issued automatically."
+                    : "Top up by card, UPI or netbanking. A GST invoice is issued automatically."}
                 </p>
                 {(wallet?.bulk_topup_tiers?.length ?? 0) > 0 && (
                   <p className="mt-2 text-sm leading-6 text-ink-2">
                     {wallet!.bulk_topup_tiers!
-                      .map((t) => `₹${t.min_rupees.toLocaleString("en-IN")} → ₹${Math.round(t.bonus_rupees).toLocaleString("en-IN")} extra`)
+                      .map((t) =>
+                        cur === "USD"
+                          ? `${formatMoney(t.min ?? t.min_rupees, "USD")} → ${formatMoney(t.bonus ?? t.bonus_rupees, "USD")} extra`
+                          : `₹${t.min_rupees.toLocaleString("en-IN")} → ₹${Math.round(t.bonus_rupees).toLocaleString("en-IN")} extra`,
+                      )
                       .join(" · ")}
                     .
                   </p>
@@ -907,7 +929,7 @@ export default function MyActivityPage() {
               Wallet balance
             </h2>
             <p className="font-display text-3xl font-bold tabular-nums text-blue">
-              ₹{wallet ? wallet.wallet_balance_rupees.toFixed(2) : "0.00"}
+              {sym}{wallet ? wallet.wallet_balance_rupees.toFixed(2) : "0.00"}
             </p>
             <p className="mt-1 text-xs text-ink-2">Managed by your org admin</p>
           </div>
@@ -950,10 +972,10 @@ export default function MyActivityPage() {
                       <td className="px-4 py-3 sm:px-6"><ServiceTag service={r.service} /></td>
                       <td className="px-4 py-3 text-ink-2 sm:px-6">{r.note || r.kind.replace(/_/g, " ")}</td>
                       <td className={`px-4 py-3 text-right whitespace-nowrap tabular-nums sm:px-6 ${r.amount_rupees >= 0 ? "text-[#1d6b43]" : "text-ink"}`}>
-                        {r.amount_rupees >= 0 ? "+" : "−"}{formatRupees(r.amount_rupees)}
+                        {r.amount_rupees >= 0 ? "+" : "−"}{formatRupees(r.amount_rupees, cur)}
                       </td>
                       <td className="px-4 py-3 text-right whitespace-nowrap tabular-nums text-ink-3 sm:px-6">
-                        {formatRupees(r.balance_after)}
+                        {formatRupees(r.balance_after, cur)}
                       </td>
                     </tr>
                   ))}
@@ -999,7 +1021,7 @@ export default function MyActivityPage() {
                         {formatDuration(s.billable_minutes)}
                       </td>
                       <td className="px-4 py-3.5 whitespace-nowrap tabular-nums text-ink sm:px-6">
-                        ₹{s.billed_amount_rupees.toFixed(2)}
+                        {sym}{s.billed_amount_rupees.toFixed(2)}
                       </td>
                       <td className="px-4 py-3.5 sm:px-6">
                         {statusBadge(s.status)}
@@ -1045,7 +1067,7 @@ export default function MyActivityPage() {
                         {formatDate(p.paid_at ?? p.created_at)}
                       </td>
                       <td className="px-4 py-3.5 whitespace-nowrap tabular-nums text-ink sm:px-6">
-                        ₹{p.amount_rupees.toFixed(2)}
+                        {sym}{p.amount_rupees.toFixed(2)}
                       </td>
                       <td className="px-4 py-3.5 sm:px-6">
                         {statusBadge(p.status)}
@@ -1124,6 +1146,7 @@ export default function MyActivityPage() {
         presetAmount={topUpPreset ?? (wallet?.intro_offer_available ? introOffer?.priceRupees ?? null : null)}
         defaultCountry={wallet?.country_code ?? null}
         bulkTiers={wallet?.bulk_topup_tiers ?? null}
+        walletCurrency={wallet?.wallet_currency ?? null}
         studioStarter={
           studioCtx && wallet?.studio_starter_available
             ? {
