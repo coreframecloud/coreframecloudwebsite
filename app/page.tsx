@@ -16,7 +16,7 @@ import {
 export const metadata: Metadata = {
   title: "RTX 5080 Workstations, CFD and Studio, India — Coreframe Cloud",
   description:
-    "Three services from Bengaluru: rent a Windows RTX 5080 workstation by the minute, get CFD for your duct or pipe from one STL with no licence, and Studio for pre-sale concept images (opening soon).",
+    "Rent a Windows RTX 5080 workstation by the minute, get CFD for your duct or pipe from one STL with no licence, and Studio concept images. From Bengaluru.",
   alternates: { canonical: "/" },
   other: { "contact:email": "admin@coreframecloud.com" },
 };

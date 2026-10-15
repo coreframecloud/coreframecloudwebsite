@@ -28,9 +28,9 @@ import { JsonLd } from "@/components/seo/json-ld";
 
 const PATH = "/cfd/projects/clinic-floor-hvac";
 const IMG = "/cfd/projects/clinic-floor-hvac";
-const TITLE = "HVAC CFD on a Real Clinic Floor: 90 Diffusers, 100 Rooms";
+const TITLE = "HVAC CFD on a Real Clinic Floor: 90 Diffusers";
 const DESCRIPTION =
-  "We ran the whole second floor of a real two-storey clinic, with its 90 ceiling diffusers at their design airflows. Rooms held 23.0 °C and ADPI was 93 %, but 15 % of the floor had draught at ankle height.";
+  "A real clinic floor, 90 ceiling diffusers at design airflow: rooms held 23.0 °C and ADPI was 93 %, but 15 % of the floor had draught at ankle height.";
 
 const OG = {
   url: `${IMG}/og-ankle-air-speed.jpg`,

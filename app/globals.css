@@ -736,7 +736,7 @@ body {
 }
 
 /* ── Footer: dark band (unlayered for the same reason as .cf-pagehero) ── */
-.cf-footer :is(.text-ink, h3) { color: #fff; }
+.cf-footer :is(.text-ink, h2, h3) { color: #fff; }
 .cf-footer :is(.text-ink-2, .text-ink-3, p) { color: rgb(255 255 255 / 0.62); }
 .cf-footer a.text-ink-2:hover { color: #fff; }
 .cf-footer .cf-eyebrow { background: transparent; padding: 0; color: rgb(255 255 255 / 0.45); }

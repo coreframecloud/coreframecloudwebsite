@@ -52,7 +52,7 @@ export function SiteFooter() {
           {/* The three services first, as equals (13 Oct 2026), from the same
               list as the header and the homepage hero. */}
           <div>
-            <h3 className="cf-eyebrow">Services</h3>
+            <h2 className="cf-eyebrow">Services</h2>
             <div className="mt-3 flex flex-col gap-0">
               {OFFERINGS.map((o) => (
                 <Link key={o.id} href={o.href} className="flex min-h-11 items-center gap-2 text-[13.5px] text-ink-2 transition hover:text-ink">
@@ -75,7 +75,7 @@ export function SiteFooter() {
 
           {/* Software pages, free tools and the company. */}
           <div>
-            <h3 className="cf-eyebrow">Explore</h3>
+            <h2 className="cf-eyebrow">Explore</h2>
             <div className="mt-3 flex flex-col gap-0">
               {[
                 { label: "D5 Render", href: "/d5-render-cloud-workstation" },
@@ -97,7 +97,7 @@ export function SiteFooter() {
               links pointing at them (GEO/SEO audit, 13 Oct 2026). Anchor text
               says what the page is, so the link itself describes it. */}
           <div>
-            <h3 className="cf-eyebrow">Guides</h3>
+            <h2 className="cf-eyebrow">Guides</h2>
             <div className="mt-3 flex flex-col gap-0">
               {[
                 { label: "Cloud rendering for architects", href: "/cloud-rendering-for-architects" },
@@ -116,7 +116,7 @@ export function SiteFooter() {
 
           {/* Legal */}
           <div>
-            <h3 className="cf-eyebrow">Legal</h3>
+            <h2 className="cf-eyebrow">Legal</h2>
             <div className="mt-3 flex flex-col gap-0">
               {[
                 { label: "Privacy Policy", href: "/privacy-policy" },
@@ -130,7 +130,7 @@ export function SiteFooter() {
 
           {/* Contact */}
           <div>
-            <h3 className="cf-eyebrow">Contact</h3>
+            <h2 className="cf-eyebrow">Contact</h2>
             <div className="mt-3 flex flex-col gap-0">
               {/* Each mark sits beside its own visible label and is aria-hidden,
                   so a screen reader reads the contact once rather than twice.

@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     // engines and quoted by answer engines long after a rate changes, and it is
     // the one string on the page that cannot read the live rate card without
     // making metadata generation depend on a network call.
-    "Studio plans for architecture and design firms: one shared pool of RTX 5080 hours, shared cloud storage for the whole team, a login for each person and one bill. GST included, Bengaluru.",
+    "Monthly plans for design firms: one shared pool of RTX 5080 hours, cloud storage for the whole team, a login for each person and one bill. GST included.",
   keywords: [
     "cloud GPU plan India",
     "GPU workstation monthly plan India",

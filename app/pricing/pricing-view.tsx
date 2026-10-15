@@ -36,7 +36,7 @@ import { cellsLabel, formatMoney, usdRates, type Currency } from "@/lib/money";
 export const pricingMetadata: Metadata = {
   title: { absolute: "Pricing: RTX 5080 by the minute, CFD by quote | Coreframe Cloud" },
   description:
-    "What an RTX 5080 workstation costs per minute and per month with GST included, what a CFD job for a duct or pipe costs to start (₹599 quote fee incl. GST for most models), and Studio, opening soon.",
+    "RTX 5080 workstation prices per minute and per month, GST included, and what a duct or pipe CFD job costs to start (₹599 quote fee for most models).",
   alternates: { canonical: "/pricing" },
 };
 
@@ -45,7 +45,7 @@ export const pricingMetadata: Metadata = {
 export const pricingMetadataUsd: Metadata = {
   ...pricingMetadata,
   description:
-    "What an RTX 5080 workstation costs per minute in US dollars, what a CFD job for a duct or pipe costs to start ($15 quote fee for most models, no GST on exports), and Studio, opening soon.",
+    "RTX 5080 workstation prices per minute in US dollars, and what a duct or pipe CFD job costs to start ($15 quote fee for most models, no GST on exports).",
 };
 
 /**

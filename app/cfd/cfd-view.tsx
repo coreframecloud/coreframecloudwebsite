@@ -45,9 +45,9 @@ import { cellsLabel, formatMoney, usdRates, type Currency, type UsdRateCard } fr
  */
 
 export const cfdMetadata: Metadata = {
-  title: "CFD for Ducts and Pipes: Pressure Drop Report from One STL",
+  title: "Duct and Pipe CFD: Pressure Drop from One STL",
   description:
-    "Upload one STL of your duct or pipe. We check it, mesh it with wall-resolved layers and email a quote. Pay from your wallet and get a PDF report, a 3D results viewer and the OpenFOAM data. No CFD licence needed.",
+    "Upload one STL of your duct or pipe and get a quote by email. Then a PDF report, a 3D results viewer and the OpenFOAM data. No CFD licence needed.",
   keywords: [
     "CFD pressure drop duct",
     "pipe pressure drop CFD India",

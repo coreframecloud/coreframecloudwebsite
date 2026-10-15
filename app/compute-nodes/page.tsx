@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   // and quoted by answer engines for months after a rate changes.
   title: "RTX 5080 Workstation Specs — Compute Nodes",
   description:
-    "One node, one GPU: RTX 5080 with 16 GB GDDR7, 64 GB RAM and an 8-core, 16-thread high-performance CPU. Billed per minute from stream start, GST included. Hosted in Bengaluru.",
+    "One node, one GPU: RTX 5080 with 16 GB GDDR7, 64 GB RAM and an 8-core, 16-thread CPU. Billed per minute from stream start, GST included. Bengaluru.",
   alternates: { canonical: "/compute-nodes" },
 };
 

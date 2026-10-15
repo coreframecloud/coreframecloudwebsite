@@ -43,7 +43,7 @@ import { STUDIO_NOTIFY_WHATSAPP } from "@/lib/offerings";
 export const metadata: Metadata = {
   title: "Floor Plan to Interior Render from a DXF",
   description:
-    "Coreframe Studio (opening soon, in private testing): pre-sale concept images for interior designers. Upload a 2D DXF floor plan; it reads walls, doors and windows, you pick a room and get generated images in the browser.",
+    "Coreframe Studio (opening soon): upload a 2D DXF floor plan, pick a room and get pre-sale concept images. Walls, doors and windows come from your drawing.",
   keywords: [
     "floor plan to 3d render",
     "DXF to interior render",
