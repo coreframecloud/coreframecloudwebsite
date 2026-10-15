@@ -418,6 +418,13 @@ export default function TopUpDialog({
               });
               const v = await vr.json();
               if (!vr.ok) throw new Error(v?.detail ?? "We could not confirm that payment.");
+              // Since the money guard (15 Oct 2026) the server credits only a
+              // payment whose currency and amount it has confirmed with
+              // Razorpay. "pending" (not confirmed yet; the webhook credits it)
+              // and "held_for_review" come back 200 with a message to show.
+              if (v?.status && v.status !== "success") {
+                throw new Error(v?.message ?? "Payment received; your wallet updates within a few minutes.");
+              }
               // Server-confirmed payment, so this is a real purchase. Value is
               // what the customer paid (GST included), not the net credit; the
               // payment id deduplicates across GA4, Google Ads and Meta.
