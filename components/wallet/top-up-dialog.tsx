@@ -31,11 +31,23 @@
  * Paid-first onboarding (10 Oct 2026): the first top-up has a higher minimum
  * (`min_topup_rupees_now` from the wallet status) and may carry the intro
  * offer, badged on its preset with numbers from the rate card.
+ *
+ * Two currencies (owner, 15 Oct 2026). The ACCOUNT's currency, from
+ * /payments/config, decides everything here -- never the visitor's IP. INR is
+ * India (GST included); USD is every other billing country (no GST, export of
+ * services; the address is always state 96 in the account's country, so no
+ * Indian states are offered; no intro offer, no Studio starter). An account
+ * with no country yet (`country_required`) chooses it FIRST, which fixes the
+ * currency for good (POST /verification/location). The order carries `amount`
+ * and `currency`; the server refuses a mismatch with 409 currency_mismatch.
+ * Every legacy `*_rupees` field is in the account's currency.
  */
 
 import { useCallback, useEffect, useState } from "react";
 import { trackConversion } from "@/lib/analytics";
 import { hoursLabel, type IntroOffer } from "@/lib/rate-card";
+import { useRateCard } from "@/lib/use-rate-card";
+import { formatMoney, parseCurrency, usdRates, type Currency } from "@/lib/money";
 import {
   COUNTRIES,
   FOREIGN_STATE_CODE,
@@ -54,8 +66,16 @@ const API = API_BASE;
 type PaymentsConfig = {
   enabled: boolean;
   key_id: string | null;
+  /** In the ACCOUNT's currency, whatever the name says. */
   min_topup_rupees: number;
   max_topup_rupees: number;
+  min_topup_rupees_now?: number | null;
+  // 15 Oct 2026; absent on an older control plane, which is INR-only.
+  currency?: string | null;
+  country_required?: boolean;
+  min_topup?: number | null;
+  max_topup?: number | null;
+  min_topup_now?: number | null;
 };
 
 // Razorpay attaches itself to window; typed loosely because we only ever call
@@ -79,8 +99,14 @@ function loadRazorpay(): Promise<boolean> {
 }
 
 const PRESET_LADDER = [500, 1000, 2000, 5000, 10000, 20000];
+const PRESET_LADDER_USD = [20, 50, 100, 200, 500, 1000];
 
-export type BulkTier = { min_rupees: number; percent: number; bonus_rupees: number };
+/** In the account's currency: `min`/`bonus` from 15 Oct 2026, the `_rupees`
+ *  names kept for an older control plane. */
+export type BulkTier = { min_rupees: number; percent: number; bonus_rupees: number; min?: number; bonus?: number };
+
+const tierMin = (t: BulkTier) => t.min ?? t.min_rupees;
+const tierBonus = (t: BulkTier) => t.bonus ?? t.bonus_rupees;
 
 /** The bonus a top-up of `rupees` earns at the given tiers (0 below the first). */
 function typedRupeesForBonus(amount: string): number {
@@ -90,7 +116,7 @@ function typedRupeesForBonus(amount: string): number {
 
 export function bulkBonusFor(rupees: number, tiers: BulkTier[] | null | undefined): number {
   let pct = 0;
-  for (const t of tiers ?? []) if (rupees >= t.min_rupees) pct = t.percent;
+  for (const t of tiers ?? []) if (rupees >= tierMin(t)) pct = t.percent;
   return Math.round(rupees * pct) / 100;
 }
 
@@ -105,6 +131,7 @@ export default function TopUpDialog({
   defaultCountry,
   isFirstTopup,
   bulkTiers,
+  walletCurrency,
   studioStarter,
 }: {
   open: boolean;
@@ -127,6 +154,10 @@ export default function TopUpDialog({
    *  top-up of at least min_rupees earns percent extra, usable on GPU, CFD and
    *  Studio. Never on the same top-up as the intro offer. */
   bulkTiers?: BulkTier[] | null;
+  /** `wallet_currency` from the wallet status the tiers above came from. When
+   *  it differs from the account currency /payments/config reports (the
+   *  customer has just chosen a country here), those tiers are stale. */
+  walletCurrency?: string | null;
   /** The Rs 99 Studio starter (13 Oct 2026): passed ONLY when the customer
    *  came from Studio (?studio=1) and the account can still take it. Rs 99,
    *  once per account, Rs 300 of Studio-only money; the only top-up below
@@ -134,6 +165,20 @@ export default function TopUpDialog({
   studioStarter?: { priceRupees: number; totalRupees: number } | null;
 }) {
   const [config, setConfig] = useState<PaymentsConfig | null>(null);
+  // The account's currency once /payments/config has answered. An older
+  // control plane does not report one and is INR-only.
+  const currency: Currency = parseCurrency(config?.currency) ?? "INR";
+  const isUsd = currency === "USD";
+  const money = (v: number) => formatMoney(v, currency);
+  const countryRequired = Boolean(config?.country_required);
+  // "Your account is billed in US dollars." -- shown once, right after the
+  // customer's country choice fixed it.
+  const [justFixedUsd, setJustFixedUsd] = useState(false);
+  const [savingCountry, setSavingCountry] = useState(false);
+  // Never offered to a USD account; the API should not send them, and this
+  // makes sure.
+  const starterOffer = isUsd ? null : studioStarter ?? null;
+  const intro = isUsd ? null : introOffer ?? null;
   const [states, setStates] = useState<GstState[]>([]);
   const [amount, setAmount] = useState<string>("");
   const [name, setName] = useState(user?.full_name ?? "");
@@ -151,35 +196,49 @@ export default function TopUpDialog({
   // Starter mode: the order is the Rs 99 Studio starter, not a free amount.
   const [starterMode, setStarterMode] = useState(false);
   useEffect(() => {
-    if (open && studioStarter) {
+    if (open && starterOffer) {
       setStarterMode(true);
-      setAmount(String(studioStarter.priceRupees));
+      setAmount(String(starterOffer.priceRupees));
     }
-    if (!studioStarter) setStarterMode(false);
-  }, [open, studioStarter]);
+    if (!starterOffer) setStarterMode(false);
+  }, [open, starterOffer]);
+
+  const loadConfig = useCallback(async (): Promise<PaymentsConfig | null> => {
+    const token = localStorage.getItem("cf_customer_token");
+    if (!token) return null;
+    try {
+      const r = await fetch(`${API}/payments/config`, { headers: { Authorization: `Bearer ${token}` } });
+      const c: PaymentsConfig | null = r.ok ? await r.json() : null;
+      if (!c) return null;
+      // The effective floor is the higher of the gateway's minimum and this
+      // customer's own (a first top-up starts at the intro price). The new
+      // fields win; the wallet-status prop is for an older control plane.
+      const min = c.min_topup ?? c.min_topup_rupees;
+      const max = c.max_topup ?? c.max_topup_rupees;
+      const now = c.min_topup_now ?? c.min_topup_rupees_now ?? minTopupNow ?? 0;
+      const floor = Math.max(min, now);
+      const fixed = { ...c, min_topup_rupees: floor, max_topup_rupees: max };
+      setConfig(fixed);
+      setAmount(String(presetAmount && presetAmount >= floor && presetAmount <= max ? presetAmount : floor));
+      return fixed;
+    } catch {
+      setConfig({ enabled: false, key_id: null, min_topup_rupees: 500, max_topup_rupees: 50000 });
+      return null;
+    }
+  }, [minTopupNow, presetAmount]);
 
   useEffect(() => {
     if (!open) return;
     const token = localStorage.getItem("cf_customer_token");
     if (!token) return;
 
-    fetch(`${API}/payments/config`, { headers: { Authorization: `Bearer ${token}` } })
-      .then((r) => (r.ok ? r.json() : null))
-      .then((c: PaymentsConfig | null) => {
-        if (!c) return;
-        // The effective floor is the higher of the gateway's minimum and this
-        // customer's own (a first top-up starts at the intro price).
-        const floor = Math.max(c.min_topup_rupees, minTopupNow ?? 0);
-        setConfig({ ...c, min_topup_rupees: floor });
-        setAmount(String(presetAmount && presetAmount >= floor ? presetAmount : floor));
-      })
-      .catch(() => setConfig({ enabled: false, key_id: null, min_topup_rupees: 500, max_topup_rupees: 50000 }));
+    loadConfig();
 
     fetchIndianGstStates(API).then(setStates);
     fetchCountries(API).then((list) => setCountries(withBundledCountries(list)));
 
     loadRazorpay();
-  }, [open, minTopupNow, presetAmount]);
+  }, [open, loadConfig]);
 
   // The sign-up country arrives with the wallet status, possibly after the
   // dialog mounted; adopt it until the customer picks one themselves.
@@ -190,12 +249,76 @@ export default function TopUpDialog({
     if (iso && !countryTouched) setCountryIso(iso);
   }, [defaultCountry, countryTouched, countries]);
 
+  // A USD account bills to its own (foreign) country: India is not offered,
+  // and the Indian default is dropped until the customer picks.
+  const countryOptions = isUsd ? countries.filter((c) => c.iso !== INDIA.iso) : countries;
+  useEffect(() => {
+    if (isUsd && countryIso === INDIA.iso) {
+      const own = defaultCountry?.toUpperCase();
+      setCountryIso(own && own !== INDIA.iso ? own : "");
+    }
+  }, [isUsd, countryIso, defaultCountry]);
+
+  // Bonus tiers in the account's currency. The wallet's are used while they
+  // are in the same currency; otherwise (a USD account whose wallet status
+  // predates its country choice) the USD ladder from the rate card.
+  const rateCard = useRateCard(open && isUsd);
+  const tiersMatch = (parseCurrency(walletCurrency) ?? "INR") === currency;
+  const tiers: BulkTier[] | null =
+    bulkTiers && bulkTiers.length && tiersMatch
+      ? bulkTiers
+      : isUsd
+        ? usdRates(rateCard).bulk_topup_tiers.map((t) => ({
+            min: t.min,
+            bonus: t.bonus,
+            percent: t.percent,
+            min_rupees: t.min,
+            bonus_rupees: t.bonus,
+          }))
+        : tiersMatch ? bulkTiers ?? null : null;
+
   const presets = (() => {
     const floor = config?.min_topup_rupees ?? minTopupNow ?? 500;
     const max = config?.max_topup_rupees ?? 50000;
-    const ladder = PRESET_LADDER.filter((p) => p > floor && p <= max);
+    const ladder = (isUsd ? PRESET_LADDER_USD : PRESET_LADDER).filter((p) => p > floor && p <= max);
     return [floor, ...ladder].slice(0, 4);
   })();
+
+  // First top-up of an account with no country yet: the country (and, in
+  // India, the state) is saved first, which fixes the account's currency.
+  const saveCountry = useCallback(async () => {
+    setError("");
+    const token = localStorage.getItem("cf_customer_token");
+    if (!token) return setError("Please sign in again.");
+    if (!countryIso) return setError("Select your country.");
+    if (countryIso === INDIA.iso && !stateCode) {
+      return setError("Select your state. It decides the GST split on your invoice.");
+    }
+    setSavingCountry(true);
+    try {
+      const r = await fetch(`${API}/verification/location`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({
+          country_code: countryIso,
+          state_code: countryIso === INDIA.iso ? stateCode : FOREIGN_STATE_CODE,
+        }),
+      });
+      if (!r.ok) {
+        const body = await r.json().catch(() => null);
+        const d = body?.detail;
+        throw new Error(typeof d === "string" ? d : d?.message ?? "We could not save your country. Try again.");
+      }
+      const c = await loadConfig();
+      if (!c) throw new Error("We could not load your billing details. Reload the page and try again.");
+      if (c.country_required) throw new Error("We could not save your country. Try again.");
+      if (parseCurrency(c.currency) === "USD") setJustFixedUsd(true);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Something went wrong.");
+    } finally {
+      setSavingCountry(false);
+    }
+  }, [countryIso, stateCode, loadConfig]);
 
   // THE LIMIT HAS TO ARRIVE WHILE THEY TYPE, NOT AFTER THEY COMMIT.
   //
@@ -215,13 +338,16 @@ export default function TopUpDialog({
     if (!token) return setError("Please sign in again.");
     if (!config?.enabled || !config.key_id) return setError("Online recharge is not available right now.");
 
-    const rupees = starterMode && studioStarter ? studioStarter.priceRupees : Number(amount);
+    if (config.country_required) return setError("Choose your country first.");
+
+    const rupees = starterMode && starterOffer ? starterOffer.priceRupees : Number(amount);
     if (!starterMode && (!Number.isFinite(rupees) || rupees < config.min_topup_rupees || rupees > config.max_topup_rupees)) {
       return setError(
-        `Enter an amount between ₹${config.min_topup_rupees.toLocaleString("en-IN")} and ₹${config.max_topup_rupees.toLocaleString("en-IN")}.`,
+        `Enter an amount between ${formatMoney(config.min_topup_rupees, currency)} and ${formatMoney(config.max_topup_rupees, currency)}.`,
       );
     }
     if (!countryIso) return setError("Select your country.");
+    if (isUsd && isIndia) return setError("Your account is billed in US dollars. Select your country outside India.");
     if (isIndia) {
       if (!stateCode) return setError("Select your state. It decides the GST split on your invoice.");
       if (!/^\d{6}$/.test(pincode.trim())) return setError("Enter your 6-digit PIN code.");
@@ -236,6 +362,10 @@ export default function TopUpDialog({
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({
+          // `amount` and `currency` from 15 Oct 2026; `amount_rupees` (the same
+          // number, in the account's currency) for an older server.
+          amount: rupees,
+          currency,
           amount_rupees: rupees,
           ...(starterMode ? { purpose: "studio_starter" } : {}),
           billing_address: {
@@ -249,6 +379,11 @@ export default function TopUpDialog({
         }),
       });
       const order = await orderRes.json();
+      if (orderRes.status === 409 && order?.detail?.code === "currency_mismatch") {
+        throw new Error(
+          "Your account's billing currency has changed since this page loaded. Reload the page and try again.",
+        );
+      }
       if (!orderRes.ok) {
         const d = order?.detail;
         throw new Error(
@@ -261,10 +396,11 @@ export default function TopUpDialog({
         const rzp = new window.Razorpay!({
           key: order.key_id,
           order_id: order.order_id,
-          amount: order.amount_paise,
-          currency: order.currency ?? "INR",
+          // Minor units of the order's currency: paise or cents.
+          amount: order.amount_minor ?? order.amount_paise,
+          currency: order.currency ?? currency,
           name: "Coreframe Cloud",
-          description: `Wallet top-up ₹${rupees.toLocaleString("en-IN")}`,
+          description: `Wallet top-up ${formatMoney(rupees, currency)}`,
           prefill: { name: name || user?.full_name || "", email: user?.email || "" },
           theme: { color: "#22d3ee" },
           // Razorpay hands us three fields; the SERVER decides whether they
@@ -287,14 +423,14 @@ export default function TopUpDialog({
               // payment id deduplicates across GA4, Google Ads and Meta.
               trackConversion("purchase", {
                 value: rupees,
-                currency: order.currency ?? "INR",
+                currency: order.currency ?? currency,
                 transaction_id: resp.razorpay_payment_id,
                 location: "wallet_topup",
               });
               if (isFirstTopup) {
                 trackConversion("first_topup", {
                   value: rupees,
-                  currency: order.currency ?? "INR",
+                  currency: order.currency ?? currency,
                   transaction_id: resp.razorpay_payment_id,
                   location: "wallet_topup",
                 });
@@ -330,7 +466,7 @@ export default function TopUpDialog({
     } finally {
       setBusy(false);
     }
-  }, [amount, city, config, countryIso, isFirstTopup, isIndia, name, onCredited, pincode, stateCode, user, starterMode, studioStarter]);
+  }, [amount, city, config, countryIso, currency, isFirstTopup, isIndia, isUsd, name, onCredited, pincode, stateCode, user, starterMode, starterOffer]);
 
   if (!open) return null;
 
@@ -351,10 +487,10 @@ export default function TopUpDialog({
             <p className="cf-eyebrow">Paid</p>
             <p className="mt-2 font-display text-lg font-semibold text-ink">Wallet topped up.</p>
             <p className="mt-2 font-display text-3xl font-bold tabular-nums text-blue">
-              ₹{done.credited.toLocaleString("en-IN")}
+              {money(done.credited)}
             </p>
             <p className="mt-2 text-[15px] leading-6 text-ink-2">
-              New balance ₹{done.balance.toLocaleString("en-IN")}. Your invoice is in Payments below.
+              New balance {money(done.balance)}. Your invoice is in Payments below.
             </p>
 
             <button onClick={onClose} className="cf-btn-primary mt-6 w-full">
@@ -388,35 +524,106 @@ export default function TopUpDialog({
                   and we will credit your wallet within one business day.
                 </p>
               </div>
+            ) : countryRequired ? (
+              // No billing country on the account yet. It is chosen once, here,
+              // before the first top-up, and it fixes the account's currency:
+              // India is billed in rupees with GST, anywhere else in US dollars.
+              <>
+                <p className="mt-4 text-[15px] leading-6 text-ink-2">
+                  First, where are you billed? This sets your account&apos;s currency for good: Indian rupees (GST
+                  included) for India, US dollars (no GST) for every other country.
+                </p>
+                <div className="mt-5 grid grid-cols-1 gap-3">
+                  <div>
+                    <label className="block cf-eyebrow">
+                      Country <span className="text-blue">(required)</span>
+                    </label>
+                    <select
+                      value={countryIso}
+                      onChange={(e) => { setCountryIso(e.target.value); setCountryTouched(true); setError(""); }}
+                      className="mt-1.5 h-11 w-full cursor-pointer rounded-cf border border-rule bg-paper px-3 text-base text-ink outline-none focus:border-blue md:h-10 md:text-sm"
+                    >
+                      {countryIso === "" && (
+                        <option value="" className="bg-paper text-ink">
+                          Select your country
+                        </option>
+                      )}
+                      {countries.map((c) => (
+                        <option key={c.iso} value={c.iso} className="bg-paper text-ink">
+                          {c.country}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  {isIndia && (
+                    <div>
+                      <label className="block cf-eyebrow">
+                        State <span className="text-blue">(required)</span>
+                      </label>
+                      <select
+                        value={stateCode}
+                        onChange={(e) => { setStateCode(e.target.value); setError(""); }}
+                        className="mt-1.5 h-11 w-full cursor-pointer rounded-cf border border-rule bg-paper px-3 text-base text-ink outline-none focus:border-blue md:h-10 md:text-sm"
+                      >
+                        <option value="" className="bg-paper text-ink">
+                          Select your state
+                        </option>
+                        {states.map((s) => (
+                          <option key={s.code} value={s.code} className="bg-paper text-ink">
+                            {s.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                </div>
+                {error && (
+                  <p className="mt-4 rounded-cf border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm leading-6 break-words text-destructive">
+                    {error}
+                  </p>
+                )}
+                <button
+                  onClick={saveCountry}
+                  disabled={savingCountry || !countryIso || (isIndia && !stateCode)}
+                  className="cf-btn-primary mt-5 w-full disabled:opacity-50"
+                >
+                  {savingCountry ? "Saving…" : "Continue"}
+                </button>
+              </>
             ) : (
               <>
-                {studioStarter && (
+                {justFixedUsd && (
+                  <p className="mt-4 rounded-cf border border-blue/30 bg-blue-soft px-4 py-3 text-sm leading-6 text-ink">
+                    Your account is billed in US dollars.
+                  </p>
+                )}
+                {starterOffer && (
                   <div className={`mt-5 rounded-cf border px-4 py-3 ${starterMode ? "border-blue bg-blue-soft" : "border-rule bg-paper-2"}`}>
                     <p className="text-sm font-semibold text-ink">
-                      Start with ₹{studioStarter.priceRupees.toLocaleString("en-IN")} — get ₹
-                      {studioStarter.totalRupees.toLocaleString("en-IN")} of Studio renders (once per account)
+                      Start with ₹{starterOffer.priceRupees.toLocaleString("en-IN")} — get ₹
+                      {starterOffer.totalRupees.toLocaleString("en-IN")} of Studio renders (once per account)
                     </p>
                     <p className="mt-1 text-xs leading-5 text-ink-2">
                       For Studio only: downloads, edits and ray-traced renders. ₹
-                      {(studioStarter.totalRupees - studioStarter.priceRupees).toLocaleString("en-IN")} of it is a
+                      {(starterOffer.totalRupees - starterOffer.priceRupees).toLocaleString("en-IN")} of it is a
                       bonus that lasts 30 days.
                     </p>
                     <button
                       type="button"
                       onClick={() => {
                         setStarterMode(!starterMode);
-                        setAmount(starterMode ? "" : String(studioStarter.priceRupees));
+                        setAmount(starterMode ? "" : String(starterOffer.priceRupees));
                       }}
                       className="mt-2 text-xs font-semibold text-blue underline"
                     >
-                      {starterMode ? "Top up a different amount instead" : `Choose the ₹${studioStarter.priceRupees} starter`}
+                      {starterMode ? "Top up a different amount instead" : `Choose the ₹${starterOffer.priceRupees} starter`}
                     </button>
                   </div>
                 )}
                 {!starterMode && (<>
                 <div className="mt-5 flex flex-wrap gap-2">
                   {presets.map((p) => {
-                    const intro = introOffer && p === introOffer.priceRupees;
+                    const isIntro = intro && p === intro.priceRupees;
                     return (
                       <button
                         key={p}
@@ -428,51 +635,54 @@ export default function TopUpDialog({
                             : "border-rule bg-paper-2 text-ink-2 hover:text-ink"
                         }`}
                       >
-                        ₹{p.toLocaleString("en-IN")}
-                        {intro && (
+                        {money(p)}
+                        {isIntro && (
                           <span className="text-[11px] font-medium leading-4 text-blue">
-                            Intro: {hoursLabel(introOffer.hours)}
+                            Intro: {hoursLabel(intro.hours)}
                           </span>
                         )}
                       </button>
                     );
                   })}
                 </div>
-                {bulkTiers && bulkTiers.length > 0 && (
+                {tiers && tiers.length > 0 && (
                   <p className="mt-2 text-xs leading-5 text-ink-2">
-                    {bulkTiers
-                      .map((t, i) =>
-                        i === 0
-                          ? `Top up ₹${t.min_rupees.toLocaleString("en-IN")}, get ₹${Math.round(t.bonus_rupees).toLocaleString("en-IN")} extra`
-                          : `₹${t.min_rupees.toLocaleString("en-IN")}, get ₹${Math.round(t.bonus_rupees).toLocaleString("en-IN")} extra`,
-                      )
+                    {tiers
+                      .map((t, i) => {
+                        // Whole rupees as before; cents kept for dollars ($2.50).
+                        const bonus = money(isUsd ? tierBonus(t) : Math.round(tierBonus(t)));
+                        return i === 0
+                          ? `Top up ${money(tierMin(t))}, get ${bonus} extra`
+                          : `${money(tierMin(t))}, get ${bonus} extra`;
+                      })
                       .join(" · ")}
-                    {" "}({bulkTiers.map((t) => `${t.percent}%`).join(" / ")}), usable on GPU time, CFD and Studio
-                    {introOffer ? ", from your second top-up — the first earns the intro offer" : ""}.
-                    {!introOffer && bulkBonusFor(typedRupeesForBonus(amount), bulkTiers) > 0 && (
+                    {" "}({tiers.map((t) => `${t.percent}%`).join(" / ")}), usable on GPU time, CFD{isUsd ? "" : " and Studio"}
+                    {intro ? ", from your second top-up — the first earns the intro offer" : ""}.
+                    {!intro && bulkBonusFor(typedRupeesForBonus(amount), tiers) > 0 && (
                       <span className="font-semibold text-blue">
-                        {" "}This top-up adds ₹{bulkBonusFor(typedRupeesForBonus(amount), bulkTiers).toLocaleString("en-IN")} extra.
+                        {" "}This top-up adds {money(bulkBonusFor(typedRupeesForBonus(amount), tiers))} extra.
                       </span>
                     )}
                   </p>
                 )}
-                {introOffer && (
+                {intro && (
                   <p className="mt-2 text-xs leading-5 text-ink-2">
-                    Intro offer: your first top-up of ₹{introOffer.priceRupees.toLocaleString("en-IN")} buys{" "}
-                    {hoursLabel(introOffer.hours)}
-                    {introOffer.gpuName ? ` of ${introOffer.gpuName}` : ""}
-                    {introOffer.validityDays ? `, to use within ${introOffer.validityDays} days` : ""}.
+                    Intro offer: your first top-up of ₹{intro.priceRupees.toLocaleString("en-IN")} buys{" "}
+                    {hoursLabel(intro.hours)}
+                    {intro.gpuName ? ` of ${intro.gpuName}` : ""}
+                    {intro.validityDays ? `, to use within ${intro.validityDays} days` : ""}.
                   </p>
                 )}
 
                 </>)}
                 {!starterMode && (<>
                 <label className="mt-4 block cf-eyebrow">
-                  Amount (₹)
+                  Amount ({isUsd ? "$" : "₹"})
                 </label>
                 <input
                   type="number"
-                  inputMode="numeric"
+                  inputMode={isUsd ? "decimal" : "numeric"}
+                  step={isUsd ? "0.01" : undefined}
                   value={amount}
                   onChange={(e) => { setAmount(e.target.value); setError(""); }}
                   min={config?.min_topup_rupees ?? 500}
@@ -484,14 +694,16 @@ export default function TopUpDialog({
                     <p className="mb-1.5 font-mono text-[11.5px] leading-none font-medium tracking-[0.2em] uppercase text-ink-2">Change the amount</p>
                     <p className="text-xs leading-5 text-ink">
                       {amountTooLow
-                        ? `The smallest top-up is ₹${config.min_topup_rupees.toLocaleString("en-IN")}.`
-                        : `The largest top-up is ₹${config.max_topup_rupees.toLocaleString("en-IN")}.`}
+                        ? `The smallest top-up is ${money(config.min_topup_rupees)}.`
+                        : `The largest top-up is ${money(config.max_topup_rupees)}.`}
                     </p>
                   </div>
                 ) : config ? (
                   <p className="mt-1.5 text-xs leading-5 text-ink-2">
-                    Minimum ₹{config.min_topup_rupees.toLocaleString("en-IN")}, maximum ₹
-                    {config.max_topup_rupees.toLocaleString("en-IN")}. {isIndia ? "GST included; a tax invoice is issued automatically." : "An invoice is issued automatically."}
+                    Minimum {money(config.min_topup_rupees)}, maximum {money(config.max_topup_rupees)}.{" "}
+                    {isUsd
+                      ? "No GST (export of services). An invoice in US dollars is issued automatically."
+                      : isIndia ? "GST included; a tax invoice is issued automatically." : "An invoice is issued automatically."}
                   </p>
                 ) : null}
                 </>)}
@@ -516,7 +728,12 @@ export default function TopUpDialog({
                       onChange={(e) => { setCountryIso(e.target.value); setCountryTouched(true); setError(""); }}
                       className="mt-1.5 h-11 w-full cursor-pointer rounded-cf border border-rule bg-paper px-3 text-base text-ink outline-none focus:border-blue md:h-10 md:text-sm"
                     >
-                      {countries.map((c) => (
+                      {countryIso === "" && (
+                        <option value="" className="bg-paper text-ink">
+                          Select your country
+                        </option>
+                      )}
+                      {countryOptions.map((c) => (
                         <option key={c.iso} value={c.iso} className="bg-paper text-ink">
                           {c.country}
                         </option>
@@ -589,13 +806,15 @@ export default function TopUpDialog({
                   disabled={busy || !config || amountTooLow || amountTooHigh}
                   className="cf-btn-primary mt-5 w-full tabular-nums disabled:opacity-50"
                 >
-                  {busy ? "Opening payment…" : `Pay ₹${Number(amount || 0).toLocaleString("en-IN")}`}
+                  {busy ? "Opening payment…" : `Pay ${money(Number(amount || 0) || 0)}`}
                 </button>
                 <p className="mt-3 text-center text-xs leading-5 text-ink-2">
                   {/* Owner decision 10 Oct 2026: a customer billed outside India
                       is an export of services under LUT — zero-rated, no GST —
                       for the same rupee amount. */}
-                  {isIndia
+                  {isUsd
+                    ? "International cards accepted. No GST (export of services). An invoice in US dollars is issued automatically."
+                    : isIndia
                     ? "International cards accepted. Prices include 18% GST."
                     : "International cards accepted. International customers: no GST (export of services)."}
                   <br />
