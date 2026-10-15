@@ -1,7 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { API_BASE } from "@/lib/api-base";
+import { useRateCard } from "@/lib/use-rate-card";
+import { cellsLabel, formatMoney, parseCurrency, usdRates, type Currency } from "@/lib/money";
 import { trackConversion, trackEvent } from "@/lib/analytics";
 import { CFD_CATEGORIES, DEFAULT_CFD_CATEGORY, cfdCategory, type CfdCategoryId } from "@/lib/cfd-categories";
 import { CATEGORY_FIELDS } from "./categories";
@@ -36,12 +38,40 @@ function detailMessage(body: unknown): string | null {
   return null;
 }
 
-export default function CfdJobForm({ token, accountEmail, onSignedOut }: {
+export default function CfdJobForm({ token, accountEmail, onSignedOut, currency = "INR" }: {
   token: string;
   accountEmail: string | null;
   /** The API no longer accepts the session (expired, revoked, or the account is not complete). */
   onSignedOut: (reason: "signed_out" | "incomplete") => void;
+  /** The page's display currency (visitor country, see proxy.ts). The
+   *  ACCOUNT's wallet currency, once known, wins: it is what the fee is
+   *  actually charged in. */
+  currency?: Currency;
 }) {
+  const [walletCurrency, setWalletCurrency] = useState<Currency | null>(null);
+  useEffect(() => {
+    let live = true;
+    fetch(`${API_BASE}/customer/me/wallet`, { headers: { Authorization: `Bearer ${token}` } })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((w: { wallet_currency?: string | null } | null) => {
+        if (live) setWalletCurrency(parseCurrency(w?.wallet_currency));
+      })
+      .catch(() => {});
+    return () => {
+      live = false;
+    };
+  }, [token]);
+  const feeCurrency = walletCurrency ?? currency;
+  const rateCard = useRateCard(feeCurrency === "USD");
+  const usd = usdRates(rateCard);
+  const usdFee =
+    feeCurrency === "USD"
+      ? {
+          small: formatMoney(usd.cfd_quote_fee_small, "USD"),
+          large: formatMoney(usd.cfd_quote_fee_large, "USD"),
+          cells: cellsLabel(usd.cfd_quote_fee_small_max_cells),
+        }
+      : null;
   const [categoryId, setCategoryId] = useState<CfdCategoryId>(DEFAULT_CFD_CATEGORY);
   const category = cfdCategory(categoryId);
   const fields = category.status === "live" ? CATEGORY_FIELDS[categoryId] : undefined;
@@ -235,7 +265,11 @@ export default function CfdJobForm({ token, accountEmail, onSignedOut }: {
           <p className="font-semibold text-ink">Next, on your job page:</p>
           <ol className="list-decimal space-y-1 pl-5">
             <li>Confirm which opening is the inlet (and the units, if we ask).</li>
+            {usdFee ? (
+              <li>Pay the quote fee from your Coreframe wallet: {usdFee.small} for most models, {usdFee.large} for very large models (over {usdFee.cells} cells), no GST.</li>
+            ) : (
             <li>Pay the quote fee from your Coreframe wallet: ₹599 incl. GST for most models, ₹1,499 for very large models (over 5 million cells).</li>
+            )}
             <li>We build the mesh and email you the quote.</li>
           </ol>
         </div>
@@ -329,7 +363,9 @@ export default function CfdJobForm({ token, accountEmail, onSignedOut }: {
             <div className="mt-7 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <p className="text-[13px] leading-5 text-ink-3">
                 Submitting as {accountEmail || "your Coreframe account"}. Nothing is charged when you submit. The quote fee
-                (₹599 incl. GST for most models, ₹1,499 over 5 million cells) is paid later, on your job page, from your Coreframe wallet. By submitting you agree to our{" "}
+                {usdFee
+                  ? ` (${usdFee.small} for most models, ${usdFee.large} over ${usdFee.cells} cells, no GST)`
+                  : " (₹599 incl. GST for most models, ₹1,499 over 5 million cells)"} is paid later, on your job page, from your Coreframe wallet. By submitting you agree to our{" "}
                 <a href="/terms-of-service" className="underline underline-offset-2">terms</a>.
               </p>
               <button type="submit" disabled={busy !== ""} className="cf-btn-primary shrink-0 disabled:opacity-60">

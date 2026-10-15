@@ -5,6 +5,7 @@ import { API_BASE } from "@/lib/api-base";
 import { trackEvent } from "@/lib/analytics";
 import { rememberReturnPath } from "@/lib/return-path";
 import CfdJobForm from "./cfd-job-form";
+import type { Currency } from "@/lib/money";
 
 /**
  * The "Start a job" area of /cfd. Account first (owner, 13 Oct 2026):
@@ -50,7 +51,7 @@ function storedEmail(): string | null {
   }
 }
 
-export default function CfdStart() {
+export default function CfdStart({ currency = "INR" }: { currency?: Currency } = {}) {
   const [gate, setGate] = useState<Gate>({ kind: "loading" });
 
   const check = useCallback(async () => {
@@ -161,6 +162,7 @@ export default function CfdStart() {
     <CfdJobForm
       token={gate.token}
       accountEmail={gate.email}
+      currency={currency}
       onSignedOut={(reason) =>
         setGate(reason === "incomplete" ? { kind: "incomplete", step: "verify" } : { kind: "signed_out", note: "Your sign-in has ended. Sign in again to submit." })
       }
