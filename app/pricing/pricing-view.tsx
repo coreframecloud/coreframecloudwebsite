@@ -102,7 +102,7 @@ export default async function PricingView({ currency }: { currency: Currency }) 
       : [];
 
   return (
-    <main className="text-ink">
+    <main className="text-ink" data-usd-view={usdView ? "" : undefined}>
       <ViewContent name="Pricing" category="pricing" />
       <JsonLd data={breadcrumbList([{ name: "Pricing", path: "/pricing" }])} />
       <section className="cf-section px-5 pb-0 cf-pagehero">

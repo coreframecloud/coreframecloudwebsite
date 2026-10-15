@@ -777,3 +777,11 @@ body {
   border-color: rgb(255 255 255 / 0.14);
   box-shadow: none;
 }
+
+/* The USD copy of /pricing and /cfd (visitors outside India, see proxy.ts)
+   hides the site-wide intro-offer ticker: that offer is rupees-only and never
+   available to a USD account. The layout cannot know the currency without
+   making every page dynamic; the page marks itself instead. */
+body:has([data-usd-view]) .cf-ticker {
+  display: none;
+}

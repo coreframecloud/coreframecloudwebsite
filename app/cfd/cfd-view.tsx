@@ -273,7 +273,7 @@ export default async function CfdView({ currency }: { currency: Currency }) {
   const steps = usd ? usdSteps(usd) : STEPS;
   const faq = usd ? usdFaq(usd) : FAQ;
   return (
-    <div className="relative min-h-screen text-ink">
+    <div className="relative min-h-screen text-ink" data-usd-view={usdView ? "" : undefined}>
       <JsonLd data={breadcrumbList([{ name: "CFD for ducts and pipes", path: "/cfd" }])} />
       <JsonLd
         data={
