@@ -71,7 +71,7 @@ export function PricingSection({
   usdTopup = null,
 }: {
   /** "USD" for a visitor outside India (display only, see proxy.ts): no GST,
-   *  and team plans and storage add-ons shown as India-only for now. */
+   *  dollar prices for plans and storage (everything is global, 15 Oct 2026). */
   currency?: Currency;
   /** Wallet top-up terms for the USD view, from the rate card's `usd` block. */
   usdTopup?: Pick<UsdRateCard, "topup_min_first" | "topup_max" | "bulk_topup_tiers"> | null;
@@ -153,10 +153,13 @@ export function PricingSection({
               Committed monthly plans
             </div>
             {usdView ? (
-              <p className="mt-4 text-sm leading-6 text-ink-2">
-                Available to India-billed accounts for now. Outside India, every account is pay as you go
-                {adhocRate ? ` at ${adhocRate}/hr` : ""}.
-              </p>
+              bestOverage ? (
+                <Price value={bestOverage} unit="/ GPU-hour" />
+              ) : (
+                <p className="mt-4 text-sm leading-6 text-ink-2">
+                  Billed in US dollars, with no GST. Ask us for the plan prices.
+                </p>
+              )
             ) : effectiveFrom ? (
               <Price value={`≈ ₹${Math.round(effectiveFrom.rupees).toLocaleString("en-IN")}`} unit="/ hour" />
             ) : (
@@ -205,21 +208,13 @@ export function PricingSection({
               Add-on · More storage
             </div>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-ink-2">
-              {usdView
-                ? "Add storage to your account. Your files stay while the subscription is active."
-                : "Add storage to any account. Your files stay while the subscription is active."}
+              Add storage to any account. Your files stay while the subscription is active.
             </p>
           </div>
-          {usdView ? (
-            <p className="mt-4 shrink-0 text-sm leading-6 text-ink-2 sm:mt-0 sm:max-w-[16rem] sm:text-right">
-              Available to India-billed accounts for now.
-            </p>
-          ) : (
           <div className="mt-4 shrink-0 sm:mt-0 sm:text-right">
             <div className="text-3xl font-bold text-ink">{storageRate ?? "—"}</div>
-            <div className="text-sm text-ink-2">/ TB / month</div>
+            <div className="text-sm text-ink-2">/ TB / month{usdView ? ", no GST" : ""}</div>
           </div>
-          )}
         </div>
 
         {/* Licences and GST, as chips */}

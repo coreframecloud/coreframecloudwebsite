@@ -13,6 +13,8 @@ import {
   getIntroOffer,
   billingSentence,
   bestOverageRate,
+  bestOverageRateUsd,
+  entryPlanFeeUsd,
   entryPlanFee,
   storageRatePerTb,
   perMinuteRate,
@@ -39,7 +41,7 @@ export const pricingMetadata: Metadata = {
 };
 
 /** The same page for a visitor outside India (see proxy.ts): US dollars, no
- *  GST, and the India-only products marked as such. Canonical stays /pricing. */
+ *  GST; every product in dollars. Canonical stays /pricing. */
 export const pricingMetadataUsd: Metadata = {
   ...pricingMetadata,
   description:
@@ -69,8 +71,8 @@ export const pricingMetadataUsd: Metadata = {
  * 15 Oct 2026: rendered twice, as /pricing (INR) and /usd/pricing (USD, for
  * visitors outside India; proxy.ts rewrites to it). The USD copy reads the
  * rate card's `usd` block (usdRates() falls back to the approved constants),
- * shows no GST, and marks Studio, team plans and storage add-ons as India-only
- * for now. The INR copy is unchanged.
+ * shows no GST. Everything is global (owner, 15 Oct 2026): team plans and the
+ * storage add-on show their dollar prices too. The INR copy is unchanged.
  */
 export default async function PricingView({ currency }: { currency: Currency }) {
   const usdView = currency === "USD";
@@ -88,7 +90,8 @@ export default async function PricingView({ currency }: { currency: Currency }) 
   const lowest = lowestPublishedHourly(rateCard);
   const lowestPlan = lowest ? (rateCard?.plans ?? []).find((pl) => pl.name === lowest.planName) : undefined;
   const effectiveFrom = lowest ? { ...lowest, storageFree: lowestPlan ? planStorageIsFree(lowestPlan) : false } : null;
-  // Plans are India-only for now, so a USD view has nothing to compare.
+  // The included-hour comparison is a rupee figure; the USD view lists the
+  // plans' dollar fee and overage rate instead.
   const rateBars =
     !usdView && adhocNum && effectiveFrom
       ? [
@@ -145,9 +148,7 @@ export default async function PricingView({ currency }: { currency: Currency }) 
             {
               o: offering("studio"),
               price: "Opening soon",
-              note: usdView
-                ? "In private testing; for India-billed accounts first"
-                : "In private testing; prices published when it opens",
+              note: "In private testing; prices published when it opens",
               href: "#studio",
               tint: "bg-tint-lilac",
             },
@@ -199,6 +200,9 @@ export default async function PricingView({ currency }: { currency: Currency }) 
               : null
           }
           usdTopup={usd}
+          bestOverage={bestOverageRateUsd(rateCard)}
+          entryPlanFee={entryPlanFeeUsd(rateCard)}
+          storageRate={formatMoney(usd.storage_rate_per_tb_month, "USD")}
         />
       ) : (
         <PricingSection
@@ -279,7 +283,6 @@ export default async function PricingView({ currency }: { currency: Currency }) 
           <p className="cf-section-copy mt-3 max-w-[40rem]">
             Studio turns a 2D DXF floor plan into generated room images in the browser. It is in private testing; its
             prices are published here when it opens.
-            {usdView ? " It opens to India-billed accounts first." : null}
           </p>
           <div className="mt-7">
             <TrackedLink

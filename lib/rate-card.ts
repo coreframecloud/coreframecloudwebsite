@@ -13,7 +13,7 @@
  */
 
 import { API_BASE } from "@/lib/api-base";
-import type { UsdRateCard } from "@/lib/money";
+import { formatMoney, type UsdRateCard } from "@/lib/money";
 
 const API = API_BASE;
 
@@ -129,6 +129,10 @@ export type RateCardPlan = {
   included_storage_gb: number;
   named_seats: number;
   overage_hourly_rate_rupees: number | null;
+  /** For organisations billed in US dollars, derived from the rupee figures
+   *  (INR / 96 x 1.5, up to .99; owner, 15 Oct 2026). Absent on an older API. */
+  usd_monthly_fee?: number | null;
+  usd_overage_hourly_rate?: number | null;
   file_retention_days: number | null;
   /** Priced per customer (Big Firm, 11 Oct 2026). Its fee and rates come back
    *  null; planTiers() leaves it out, quotePlans() returns it. Optional so an
@@ -474,6 +478,21 @@ export function bestOverageRate(card: RateCard | null): string | null {
     .filter((r): r is number => r != null);
   if (!rates.length) return null;
   return `₹${Math.round(Math.min(...rates)).toLocaleString("en-IN")}`;
+}
+
+/** "$239.99" — the entry monthly plan in US dollars, or null (older API). */
+export function entryPlanFeeUsd(card: RateCard | null): string | null {
+  const first = planTiers(card)[0];
+  const fee = first?.usd_monthly_fee;
+  return fee != null && fee > 0 ? formatMoney(fee, "USD") : null;
+}
+
+/** "$5.99" — the best overage rate across plans in US dollars, or null. */
+export function bestOverageRateUsd(card: RateCard | null): string | null {
+  const rates = planTiers(card)
+    .map((p) => p.usd_overage_hourly_rate)
+    .filter((r): r is number => r != null && r > 0);
+  return rates.length ? formatMoney(Math.min(...rates), "USD") : null;
 }
 
 /** "₹1,999" per TB per month, or null. */

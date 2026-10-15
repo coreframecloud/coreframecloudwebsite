@@ -67,6 +67,10 @@ export type UsdRateCard = {
   topup_min: number;
   topup_max: number;
   bulk_topup_tiers: UsdBulkTier[];
+  /** Storage above the allowance, per TB per month (approved 15 Oct 2026). */
+  storage_rate_per_tb_month: number;
+  /** Team per-seat fee per month, derived from the rupee fee (INR / 96 x 1.5, up to .99). */
+  b2b_per_user_monthly_fee: number;
   gst_included: boolean;
 };
 
@@ -89,6 +93,8 @@ export const USD_FALLBACK: UsdRateCard = {
     { min: 100, percent: 10, bonus: 10 },
     { min: 200, percent: 15, bonus: 30 },
   ],
+  storage_rate_per_tb_month: 15.99,
+  b2b_per_user_monthly_fee: 0.99,
   gst_included: false,
 };
 

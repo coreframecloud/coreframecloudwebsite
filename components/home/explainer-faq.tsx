@@ -26,7 +26,8 @@ type QA = { q: string; a: string };
 /**
  * The USD view (a visitor outside India, see proxy.ts) changes only the three
  * answers that are about money: dollar prices carry no GST, accounts billed
- * outside India pay in US dollars, and team accounts are India-only for now.
+ * outside India pay in US dollars, and a team billed in dollars gets a dollar
+ * invoice (everything is global, owner 15 Oct 2026).
  */
 function buildFaq(storage: StorageTerms, intro: IntroOffer | null, adhocRate?: string, currency: Currency = "INR"): QA[] {
   const usdView = currency === "USD";
@@ -68,7 +69,7 @@ function buildFaq(storage: StorageTerms, intro: IntroOffer | null, adhocRate?: s
     {
       q: "Can my whole team use one account?",
       a: usdView
-        ? "Team accounts, where one organisation pays for everyone's sessions, are available to India-billed accounts for now."
+        ? "Yes. You create an organisation and invite people to it with a join code. Everyone gets their own login and their own sessions, billed to the organisation in US dollars, with one invoice and no GST."
         : "You create an organisation and invite people to it with a join code. Everyone gets their own login and their own sessions, billed to the organisation, with one GST invoice.",
     },
   ];
