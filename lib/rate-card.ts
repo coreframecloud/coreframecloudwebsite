@@ -13,6 +13,7 @@
  */
 
 import { API_BASE } from "@/lib/api-base";
+import type { UsdRateCard } from "@/lib/money";
 
 const API = API_BASE;
 
@@ -172,6 +173,10 @@ export type RateCard = {
    *  False means the rate above is published but nobody is billed by it. */
   storage_billing_active?: boolean;
   gpus: RateCardGpu[];
+  /** USD prices for accounts billed outside India (15 Oct 2026). Optional:
+   *  an older control plane omits it and usdRates() in lib/money.ts falls back
+   *  to the approved constants. */
+  usd?: Partial<UsdRateCard>;
 };
 
 /**
