@@ -235,7 +235,7 @@ export default function CfdJobForm({ token, accountEmail, onSignedOut }: {
           <p className="font-semibold text-ink">Next, on your job page:</p>
           <ol className="list-decimal space-y-1 pl-5">
             <li>Confirm which opening is the inlet (and the units, if we ask).</li>
-            <li>Pay the quote fee from your Coreframe wallet: ₹199 incl. GST for most models, ₹499 for very large models (over 5 million cells).</li>
+            <li>Pay the quote fee from your Coreframe wallet: ₹599 incl. GST for most models, ₹1,499 for very large models (over 5 million cells).</li>
             <li>We build the mesh and email you the quote.</li>
           </ol>
         </div>
@@ -329,7 +329,7 @@ export default function CfdJobForm({ token, accountEmail, onSignedOut }: {
             <div className="mt-7 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <p className="text-[13px] leading-5 text-ink-3">
                 Submitting as {accountEmail || "your Coreframe account"}. Nothing is charged when you submit. The quote fee
-                (₹199 incl. GST for most models, ₹499 over 5 million cells) is paid later, on your job page, from your Coreframe wallet. By submitting you agree to our{" "}
+                (₹599 incl. GST for most models, ₹1,499 over 5 million cells) is paid later, on your job page, from your Coreframe wallet. By submitting you agree to our{" "}
                 <a href="/terms-of-service" className="underline underline-offset-2">terms</a>.
               </p>
               <button type="submit" disabled={busy !== ""} className="cf-btn-primary shrink-0 disabled:opacity-60">

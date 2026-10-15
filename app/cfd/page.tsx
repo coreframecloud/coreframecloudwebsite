@@ -111,7 +111,7 @@ const STEPS = [
     body: "Closed solid, units, and the flat end caps that become your inlet and outlets. You confirm which opening is the inlet on your job page.",
   },
   {
-    title: "Pay the quote fee (₹199 incl. GST for most models). We mesh it and email the quote",
+    title: "Pay the quote fee (₹599 incl. GST for most models). We mesh it and email the quote",
     body: "We build the real mesh on our machine, with wall layers, and email you a quote with packages to choose from.",
   },
   {
@@ -151,7 +151,7 @@ const FAQ = [
   },
   {
     q: "What does it cost to start?",
-    a: "The quote fee is ₹199 (incl. GST) for most duct and pipe models and ₹499 for very large models (over 5 million cells), paid from your Coreframe wallet. The size is estimated from your STL before you pay, so you see which fee applies on your job page. For that we build the real mesh of your geometry and email you a quote with packages. You pay for the run only if you accept the quote. The quoted amount is held in your wallet, you are charged for what the run actually used, and the rest goes back to your wallet.",
+    a: "The quote fee is ₹599 (incl. GST) for most duct and pipe models and ₹1,499 for very large models (over 5 million cells), paid from your Coreframe wallet. The size is estimated from your STL before you pay, so you see which fee applies on your job page. For that we build the real mesh of your geometry and email you a quote with packages. You pay for the run only if you accept the quote. The quoted amount is held in your wallet, you are charged for what the run actually used, and the rest goes back to your wallet.",
   },
   {
     q: "How accurate is it?",
@@ -202,10 +202,10 @@ const serviceLd = {
   offers: {
     "@type": "Offer",
     name: "Quote fee (mesh and quote)",
-    price: "199",
+    price: "599",
     priceCurrency: "INR",
     valueAddedTaxIncluded: true,
-    description: "Including GST, for most duct and pipe models. Very large models (over 5 million cells): ₹499 including GST. Paid from the Coreframe wallet. The run is quoted separately and paid only if you accept.",
+    description: "Including GST, for most duct and pipe models. Very large models (over 5 million cells): ₹1,499 including GST. Paid from the Coreframe wallet. The run is quoted separately and paid only if you accept.",
   },
 };
 
@@ -233,7 +233,7 @@ export default function CfdIntakePage() {
                 <a href="#sample" className="cf-btn-secondary">See a sample report</a>
               </div>
               <p className="mt-6 text-[14px]">
-                ₹199 quote fee (incl. GST) for most duct and pipe models; ₹499 for very large models (over 5 million cells). Pay for the run only if you accept the quote.
+                ₹599 quote fee (incl. GST) for most duct and pipe models; ₹1,499 for very large models (over 5 million cells). Pay for the run only if you accept the quote.
               </p>
             </div>
             <figure className="min-w-0 overflow-hidden rounded-[24px] bg-white p-3 sm:p-4">
@@ -428,10 +428,10 @@ export default function CfdIntakePage() {
         <section className="cf-section px-5 pt-0">
           <div className="cf-wide rounded-[28px] bg-night p-6 text-white sm:p-10">
             <p className="cf-eyebrow !bg-white/10 !text-white">What it costs to start</p>
-            <h2 className="cf-section-title mt-4 !text-white">₹199 incl. GST for the mesh and the quote.</h2>
+            <h2 className="cf-section-title mt-4 !text-white">₹599 incl. GST for the mesh and the quote.</h2>
             <ul className="mt-7 grid grid-cols-1 gap-5 sm:grid-cols-2">
               {[
-                ["Quote fee", "₹199 incl. GST for most duct and pipe models; ₹499 for very large models (over 5 million cells). Paid from your Coreframe wallet. For it we build the real mesh of your geometry."],
+                ["Quote fee", "₹599 incl. GST for most duct and pipe models; ₹1,499 for very large models (over 5 million cells). Paid from your Coreframe wallet. For it we build the real mesh of your geometry."],
                 ["Quote by email", "Packages to choose from, each with its iteration budget and convergence targets."],
                 ["Pay only if you accept", "Nothing runs, and nothing more is charged, until you pay the quote."],
                 ["Held, then settled", "The quote is held in your wallet; you are charged for what the run used and the rest comes back."],

@@ -496,10 +496,10 @@ export default async function RootLayout({
                   offers: {
                     "@type": "Offer",
                     name: "Quote fee (mesh and quote)",
-                    price: "199",
+                    price: "599",
                     priceCurrency: "INR",
                     valueAddedTaxIncluded: true,
-                    description: "Including GST, for most duct and pipe models. Very large models (over 5 million cells): ₹499 including GST. The run is quoted by email and paid only if you accept.",
+                    description: "Including GST, for most duct and pipe models. Very large models (over 5 million cells): ₹1,499 including GST. The run is quoted by email and paid only if you accept.",
                     url: "https://www.coreframecloud.com/cfd",
                   },
                 },
