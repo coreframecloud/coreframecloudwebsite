@@ -5,6 +5,7 @@ import { trackEvent } from "@/lib/analytics";
 import Link from "next/link";
 import { STORAGE, type StorageTerms } from "@/lib/storage-terms";
 import { hoursLabel, rupees, type IntroOffer } from "@/lib/rate-card";
+import { formatMoney, type Currency, type UsdRateCard } from "@/lib/money";
 
 /**
  * Every price on this section now comes from the control-plane rate card, via
@@ -66,7 +67,14 @@ export function PricingSection({
   commitmentCheaper = false,
   intro = null,
   effectiveFrom = null,
+  currency = "INR",
+  usdTopup = null,
 }: {
+  /** "USD" for a visitor outside India (display only, see proxy.ts): no GST,
+   *  and team plans and storage add-ons shown as India-only for now. */
+  currency?: Currency;
+  /** Wallet top-up terms for the USD view, from the rate card's `usd` block. */
+  usdTopup?: Pick<UsdRateCard, "topup_min_first" | "topup_max" | "bulk_topup_tiers"> | null;
   /** Lowest effective rate per included plan hour, from the rate card. */
   effectiveFrom?: { rupees: number; planName: string; storageFree?: boolean } | null;
   /** The first-top-up offer from the rate card, or null to say nothing. */
@@ -84,6 +92,7 @@ export function PricingSection({
    *  render whenever both numbers merely existed. */
   commitmentCheaper?: boolean;
 }) {
+  const usdView = currency === "USD";
   return (
     <section id="pricing" className="border-b border-rule">
       <div className="cf-wide px-5 py-10 lg:py-14">
@@ -116,6 +125,9 @@ export function PricingSection({
             <p className="mt-4 text-sm leading-6 text-ink-2">No contract. {billingNote}</p>
 
             <ul className="mt-6 space-y-2 text-sm text-ink-2">
+              {usdView && usdTopup && (
+                <li className="flex gap-2"><span className="text-blue">✓</span> <span><b className="text-ink">Top up from {formatMoney(usdTopup.topup_min_first, "USD")} to {formatMoney(usdTopup.topup_max, "USD")}</b>{usdTopup.bulk_topup_tiers.length ? ` · ${usdTopup.bulk_topup_tiers.map((t) => `${formatMoney(t.min, "USD")}+ adds ${t.percent}%`).join(", ")}` : ""}</span></li>
+              )}
               {intro && (
                 <li className="flex gap-2"><span className="text-blue">✓</span> <span><b className="text-ink">First top-up: {rupees(intro.priceRupees)} = {hoursLabel(intro.hours)}</b>{intro.validityDays ? ` · use within ${intro.validityDays} days` : ""}</span></li>
               )}
@@ -140,12 +152,17 @@ export function PricingSection({
             <div className="cf-eyebrow">
               Committed monthly plans
             </div>
-            {effectiveFrom ? (
+            {usdView ? (
+              <p className="mt-4 text-sm leading-6 text-ink-2">
+                Available to India-billed accounts for now. Outside India, every account is pay as you go
+                {adhocRate ? ` at ${adhocRate}/hr` : ""}.
+              </p>
+            ) : effectiveFrom ? (
               <Price value={`≈ ₹${Math.round(effectiveFrom.rupees).toLocaleString("en-IN")}`} unit="/ hour" />
             ) : (
               <Price value={bestOverage} unit="/ GPU-hour" />
             )}
-            {effectiveFrom ? (
+            {!usdView && effectiveFrom ? (
               <p className="mt-2 text-sm text-blue">
                 per included hour on {effectiveFrom.planName},{" "}
                 {effectiveFrom.storageFree ? "shared storage included, free" : "plus shared storage"}
@@ -158,7 +175,7 @@ export function PricingSection({
                   — the API refuses to publish those, and this refuses to assert
                   it. When it does not hold, the plans still have a real pitch;
                   it just is not "cheaper per hour". */}
-              {commitmentCheaper && adhocRate ? `Cheaper per hour than ${adhocRate} pay-as-you-go. ` : ""}
+              {!usdView && commitmentCheaper && adhocRate ? `Cheaper per hour than ${adhocRate} pay-as-you-go. ` : ""}
               For studios: shared hours, shared cloud storage and a login for each person.
             </p>
 
@@ -188,18 +205,29 @@ export function PricingSection({
               Add-on · More storage
             </div>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-ink-2">
-              Add storage to any account. Your files stay while the subscription is active.
+              {usdView
+                ? "Add storage to your account. Your files stay while the subscription is active."
+                : "Add storage to any account. Your files stay while the subscription is active."}
             </p>
           </div>
+          {usdView ? (
+            <p className="mt-4 shrink-0 text-sm leading-6 text-ink-2 sm:mt-0 sm:max-w-[16rem] sm:text-right">
+              Available to India-billed accounts for now.
+            </p>
+          ) : (
           <div className="mt-4 shrink-0 sm:mt-0 sm:text-right">
             <div className="text-3xl font-bold text-ink">{storageRate ?? "—"}</div>
             <div className="text-sm text-ink-2">/ TB / month</div>
           </div>
+          )}
         </div>
 
         {/* Licences and GST, as chips */}
         <div className="mt-6 flex flex-wrap gap-2.5 text-[13.5px]">
-          {["GST included in every price", "Tax invoice with the GST split", "D5, Blender, Twinmotion installed", "Your own licence for paid apps like Lumion"].map((c) => (
+          {(usdView
+            ? ["Prices in US dollars", "No GST: export of services", "Invoice in US dollars", "D5, Blender, Twinmotion installed", "Your own licence for paid apps like Lumion"]
+            : ["GST included in every price", "Tax invoice with the GST split", "D5, Blender, Twinmotion installed", "Your own licence for paid apps like Lumion"]
+          ).map((c) => (
             <span key={c} className="rounded-full bg-tint-blue px-3.5 py-2 text-ink-2">{c}</span>
           ))}
         </div>

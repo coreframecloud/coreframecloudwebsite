@@ -29,12 +29,21 @@ import Link from "next/link";
 import { StatusBadge } from "@/components/home/redesign/offerings";
 import { TrackedLink } from "@/components/analytics/tracked-link";
 import { offering } from "@/lib/offerings";
+import { cellsLabel, formatMoney, usdRates, type Currency } from "@/lib/money";
 
-export const metadata: Metadata = {
+export const pricingMetadata: Metadata = {
   title: { absolute: "Pricing: RTX 5080 by the minute, CFD by quote | Coreframe Cloud" },
   description:
     "What an RTX 5080 workstation costs per minute and per month with GST included, what a CFD job for a duct or pipe costs to start (₹599 quote fee incl. GST for most models), and Studio, opening soon.",
   alternates: { canonical: "/pricing" },
+};
+
+/** The same page for a visitor outside India (see proxy.ts): US dollars, no
+ *  GST, and the India-only products marked as such. Canonical stays /pricing. */
+export const pricingMetadataUsd: Metadata = {
+  ...pricingMetadata,
+  description:
+    "What an RTX 5080 workstation costs per minute in US dollars, what a CFD job for a duct or pipe costs to start ($15 quote fee for most models, no GST on exports), and Studio, opening soon.",
 };
 
 /**
@@ -56,22 +65,32 @@ export const metadata: Metadata = {
  *
  * 13 Oct 2026: the page covers all three services, in the site-wide order
  * (GPU workstations, CFD, Studio), with a summary row at the top.
+ *
+ * 15 Oct 2026: rendered twice, as /pricing (INR) and /usd/pricing (USD, for
+ * visitors outside India; proxy.ts rewrites to it). The USD copy reads the
+ * rate card's `usd` block (usdRates() falls back to the approved constants),
+ * shows no GST, and marks Studio, team plans and storage add-ons as India-only
+ * for now. The INR copy is unchanged.
  */
-export default async function PricingPage() {
+export default async function PricingView({ currency }: { currency: Currency }) {
+  const usdView = currency === "USD";
   const rateCard = await getRateCard();
+  const usd = usdRates(rateCard);
   const entry = rateCard?.gpus.find((g) => !g.quote_on_request);
-  const adhocRate = entry ? formatHourly(entry).replace("/hr", "") : undefined;
-  const intro = getIntroOffer(rateCard);
+  const adhocRate = usdView ? formatMoney(usd.gpu_hourly, "USD") : entry ? formatHourly(entry).replace("/hr", "") : undefined;
+  // The intro offer is never offered to a USD account.
+  const intro = usdView ? null : getIntroOffer(rateCard);
   const storage = storageTerms(rateCard);
   // Rate bars: pay-as-you-go against the lowest plan rate, both from the card.
-  const adhocNum = adhocRateValue(rateCard);
+  const adhocNum = usdView ? usd.gpu_hourly : adhocRateValue(rateCard);
   // Plans compared on what an included hour actually costs (the rate card's
   // effective_included_hourly_rupees), not the extra-hour rate.
   const lowest = lowestPublishedHourly(rateCard);
   const lowestPlan = lowest ? (rateCard?.plans ?? []).find((pl) => pl.name === lowest.planName) : undefined;
   const effectiveFrom = lowest ? { ...lowest, storageFree: lowestPlan ? planStorageIsFree(lowestPlan) : false } : null;
+  // Plans are India-only for now, so a USD view has nothing to compare.
   const rateBars =
-    adhocNum && effectiveFrom
+    !usdView && adhocNum && effectiveFrom
       ? [
           { label: "Pay as you go, per hour", value: rupees(adhocNum), ratio: 1 },
           {
@@ -94,7 +113,9 @@ export default async function PricingPage() {
               a max-w-7xl container, which is why it broke "16 GB" from "GDDR7"
               mid-line — a measure that long has no good break points. */}
           <p className="cf-lead mt-[22px]">
-            Workstations by the minute or a monthly plan, GST included. CFD by quote. Studio when it opens.
+            {usdView
+              ? "Workstations by the minute, in US dollars with no GST. CFD by quote. Studio when it opens."
+              : "Workstations by the minute or a monthly plan, GST included. CFD by quote. Studio when it opens."}
           </p>
         </div>
       </section>
@@ -106,21 +127,27 @@ export default async function PricingPage() {
             {
               o: offering("gpu"),
               price: adhocRate ? `${adhocRate} an hour` : "By the minute",
-              note: intro ? `First top-up: ${rupees(intro.priceRupees)} = ${hoursLabel(intro.hours)}` : "GST included, billed per minute",
+              note: usdView
+                ? "No GST (export of services), billed per minute"
+                : intro ? `First top-up: ${rupees(intro.priceRupees)} = ${hoursLabel(intro.hours)}` : "GST included, billed per minute",
               href: "#gpu-workstations",
               tint: "bg-tint-blue",
             },
             {
               o: offering("cfd"),
-              price: "₹599 quote fee (incl. GST)",
-              note: "Most models; ₹1,499 over 5 million cells. Pay for the run only if you accept",
+              price: usdView ? `${formatMoney(usd.cfd_quote_fee_small, "USD")} quote fee (no GST)` : "₹599 quote fee (incl. GST)",
+              note: usdView
+                ? `Most models; ${formatMoney(usd.cfd_quote_fee_large, "USD")} over ${cellsLabel(usd.cfd_quote_fee_small_max_cells)} cells. Pay for the run only if you accept`
+                : "Most models; ₹1,499 over 5 million cells. Pay for the run only if you accept",
               href: "#cfd",
               tint: "bg-tint-mint",
             },
             {
               o: offering("studio"),
               price: "Opening soon",
-              note: "In private testing; prices published when it opens",
+              note: usdView
+                ? "In private testing; for India-billed accounts first"
+                : "In private testing; prices published when it opens",
               href: "#studio",
               tint: "bg-tint-lilac",
             },
@@ -143,7 +170,7 @@ export default async function PricingPage() {
           live rate, the two rates side by side, and a generated scene. */}
       <section className="cf-section px-5">
         <div className="cf-wide grid items-center gap-8 lg:grid-cols-2">
-          <BillingMeter ratePerHour={adhocRateValue(rateCard)} />
+          <BillingMeter ratePerHour={adhocNum} currency={currency} />
           <div>
             <p className="text-[11.5px] font-semibold tracking-[0.12em] text-ink-2 uppercase">GPU workstations</p>
             <h2 className="cf-section-title mt-3">Pay for the minutes you use.</h2>
@@ -153,19 +180,41 @@ export default async function PricingPage() {
         </div>
       </section>
 
-      <PricingSection
-        adhocRate={adhocRate}
-        storage={storage}
-        billingNote={billingSentence(rateCard)}
-        bestOverage={bestOverageRate(rateCard)}
-        entryPlanFee={entryPlanFee(rateCard)}
-        storageRate={storageRatePerTb(rateCard)}
-        perMinute={perMinuteRate(rateCard)}
-        example={sessionCostExample(rateCard)}
-        commitmentCheaper={commitmentIsCheaper(rateCard)}
-        intro={intro}
-        effectiveFrom={effectiveFrom}
-      />
+      {usdView ? (
+        <PricingSection
+          currency="USD"
+          adhocRate={adhocRate}
+          storage={storage}
+          billingNote={
+            rateCard?.billing_granularity === "per_minute"
+              ? billingSentence(rateCard)
+              : "Billed for the time your session actually runs."
+          }
+          perMinute={
+            rateCard?.billing_granularity === "per_minute" ? formatMoney(usd.gpu_hourly / 60, "USD") : null
+          }
+          example={
+            rateCard?.billing_granularity === "per_minute"
+              ? { minutes: 20, cost: formatMoney((usd.gpu_hourly / 60) * 20, "USD") }
+              : null
+          }
+          usdTopup={usd}
+        />
+      ) : (
+        <PricingSection
+          adhocRate={adhocRate}
+          storage={storage}
+          billingNote={billingSentence(rateCard)}
+          bestOverage={bestOverageRate(rateCard)}
+          entryPlanFee={entryPlanFee(rateCard)}
+          storageRate={storageRatePerTb(rateCard)}
+          perMinute={perMinuteRate(rateCard)}
+          example={sessionCostExample(rateCard)}
+          commitmentCheaper={commitmentIsCheaper(rateCard)}
+          intro={intro}
+          effectiveFrom={effectiveFrom}
+        />
+      )}
 
       {/* CFD for ducts and pipes. Only the published facts from /cfd. */}
       <section id="cfd" className="cf-section scroll-mt-20 px-5">
@@ -174,15 +223,23 @@ export default async function PricingPage() {
             <p className="text-[11.5px] font-semibold tracking-[0.12em] text-ink-2 uppercase">CFD for ducts and pipes</p>
             <StatusBadge status="New" />
           </div>
-          <h2 className="cf-section-title mt-4">₹599 incl. GST to mesh it and quote it.</h2>
+          <h2 className="cf-section-title mt-4">
+            {usdView
+              ? `${formatMoney(usd.cfd_quote_fee_small, "USD")} to mesh it and quote it.`
+              : "₹599 incl. GST to mesh it and quote it."}
+          </h2>
           <p className="cf-section-copy mt-3 max-w-[40rem]">
             Upload one STL of your duct or pipe. We check it, build the real mesh on our machine and email you a quote.
             OpenFOAM runs on our side, so you need no CFD licence.
           </p>
           <ul className="mt-7 grid grid-cols-1 gap-5 sm:grid-cols-2">
             {[
-              ["Quote fee", "₹599 incl. GST for most duct and pipe models; ₹1,499 for very large models (over 5 million cells). Paid from your Coreframe wallet. For it we build the real mesh of your geometry."],
-              ["Quote by email", "Packages to choose from, each with its iteration budget and convergence targets."],
+              usdView
+                ? ["Quote fee", `${formatMoney(usd.cfd_quote_fee_small, "USD")} for most duct and pipe models; ${formatMoney(usd.cfd_quote_fee_large, "USD")} for very large models (over ${cellsLabel(usd.cfd_quote_fee_small_max_cells)} cells). No GST (export of services). Paid from your Coreframe wallet. For it we build the real mesh of your geometry.`]
+                : ["Quote fee", "₹599 incl. GST for most duct and pipe models; ₹1,499 for very large models (over 5 million cells). Paid from your Coreframe wallet. For it we build the real mesh of your geometry."],
+              usdView
+                ? ["Quote by email", "Runs are quoted in US dollars after the mesh is built: packages to choose from, each with its iteration budget and convergence targets."]
+                : ["Quote by email", "Packages to choose from, each with its iteration budget and convergence targets."],
               ["Pay only if you accept", "Nothing runs, and nothing more is charged, until you pay the quote."],
               ["Held, then settled", "The quote is held in your wallet; you are charged for what the run used and the rest comes back."],
             ].map(([t, b]) => (
@@ -193,7 +250,9 @@ export default async function PricingPage() {
             ))}
           </ul>
           <p className="mt-6 text-[14px] leading-6 text-ink-2">
-            Rejected before meshing: no charge. A GST invoice on every payment. Rooms and HVAC airflow: coming soon.
+            {usdView
+              ? "Rejected before meshing: no charge. An invoice in US dollars on every payment. Rooms and HVAC airflow: coming soon."
+              : "Rejected before meshing: no charge. A GST invoice on every payment. Rooms and HVAC airflow: coming soon."}
           </p>
           <div className="mt-7 flex flex-wrap gap-3">
             <TrackedLink
@@ -220,6 +279,7 @@ export default async function PricingPage() {
           <p className="cf-section-copy mt-3 max-w-[40rem]">
             Studio turns a 2D DXF floor plan into generated room images in the browser. It is in private testing; its
             prices are published here when it opens.
+            {usdView ? " It opens to India-billed accounts first." : null}
           </p>
           <div className="mt-7">
             <TrackedLink
@@ -249,7 +309,7 @@ export default async function PricingPage() {
         </div>
       </section>
 
-      <ExplainerFaq storage={storage} intro={intro} adhocRate={adhocRate} />
+      <ExplainerFaq storage={storage} intro={intro} adhocRate={adhocRate} currency={currency} />
     </main>
   );
 }

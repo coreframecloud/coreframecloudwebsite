@@ -19,10 +19,17 @@
 import type { StorageTerms } from "@/lib/storage-terms";
 import { hoursLabel, rupees, type IntroOffer } from "@/lib/rate-card";
 import { BANDWIDTH_SENTENCE } from "@/lib/streaming-terms";
+import type { Currency } from "@/lib/money";
 
 type QA = { q: string; a: string };
 
-function buildFaq(storage: StorageTerms, intro: IntroOffer | null, adhocRate?: string): QA[] {
+/**
+ * The USD view (a visitor outside India, see proxy.ts) changes only the three
+ * answers that are about money: dollar prices carry no GST, accounts billed
+ * outside India pay in US dollars, and team accounts are India-only for now.
+ */
+function buildFaq(storage: StorageTerms, intro: IntroOffer | null, adhocRate?: string, currency: Currency = "INR"): QA[] {
+  const usdView = currency === "USD";
   const items: QA[] = [
     {
       q: "Is this a render farm?",
@@ -42,7 +49,9 @@ function buildFaq(storage: StorageTerms, intro: IntroOffer | null, adhocRate?: s
     },
     {
       q: "How am I charged?",
-      a: adhocRate
+      a: usdView
+        ? `${adhocRate ? `${adhocRate} per hour, billed per minute, with no GST: work billed outside India is an export of services.` : "You're billed per minute of actual use, and accounts billed outside India pay no GST (export of services)."} You pay for the minutes the machine is actually running instead of rounding up to whole hours. Nothing is charged automatically: you add money to your wallet and sessions draw from it, with no subscription running in the background.`
+        : adhocRate
         ? `${adhocRate} per hour with GST included, billed per minute. You pay for the minutes the machine is actually running instead of rounding up to whole hours. Nothing is charged automatically: you add money to your wallet and sessions draw from it, with no subscription running in the background.`
         : "You're billed per minute of actual use, and GST is included in the published rate. Nothing is charged automatically: you add money to your wallet and sessions draw from it, with no subscription running in the background.",
     },
@@ -52,11 +61,15 @@ function buildFaq(storage: StorageTerms, intro: IntroOffer | null, adhocRate?: s
     },
     {
       q: "Can I pay from outside India?",
-      a: "Yes. International cards are accepted through Razorpay, alongside UPI, netbanking and Indian cards. Prices are in rupees, and every top-up comes with an invoice.",
+      a: usdView
+        ? "Yes. Your account's currency is set from your billing country when you sign up: accounts billed outside India pay in US dollars by international card through Razorpay, with no GST (export of services). Every top-up comes with an invoice in US dollars."
+        : "Yes. International cards are accepted through Razorpay, alongside UPI, netbanking and Indian cards. Prices are in rupees, and every top-up comes with an invoice.",
     },
     {
       q: "Can my whole team use one account?",
-      a: "You create an organisation and invite people to it with a join code. Everyone gets their own login and their own sessions, billed to the organisation, with one GST invoice.",
+      a: usdView
+        ? "Team accounts, where one organisation pays for everyone's sessions, are available to India-billed accounts for now."
+        : "You create an organisation and invite people to it with a join code. Everyone gets their own login and their own sessions, billed to the organisation, with one GST invoice.",
     },
   ];
 
@@ -74,12 +87,14 @@ export function ExplainerFaq({
   storage,
   intro,
   adhocRate,
+  currency = "INR",
 }: {
   storage: StorageTerms;
   intro: IntroOffer | null;
   adhocRate?: string;
+  currency?: Currency;
 }) {
-  const faq = buildFaq(storage, intro, adhocRate);
+  const faq = buildFaq(storage, intro, adhocRate, currency);
 
   return (
     <section id="faq" className="cf-wide scroll-mt-24 px-5 py-20">

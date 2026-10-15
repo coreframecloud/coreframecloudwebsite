@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { usePrefersReducedMotion } from "@/lib/use-reduced-motion";
+import type { Currency } from "@/lib/money";
 
 /**
  * A session meter that starts, runs and stops: one second on screen is one
@@ -12,7 +13,14 @@ import { usePrefersReducedMotion } from "@/lib/use-reduced-motion";
  */
 const RUN = 20; // minutes shown before the session closes
 
-export function BillingMeter({ ratePerHour }: { ratePerHour?: number | null }) {
+export function BillingMeter({
+  ratePerHour,
+  currency = "INR",
+}: {
+  ratePerHour?: number | null;
+  /** Display currency of the rate; "USD" on /pricing for a visitor outside India. */
+  currency?: Currency;
+}) {
   const reduce = usePrefersReducedMotion();
   const [t, setT] = useState(0); // minutes; RUN..RUN+3 = closed
 
@@ -40,7 +48,7 @@ export function BillingMeter({ ratePerHour }: { ratePerHour?: number | null }) {
         {cost !== null ? (
           <div className="text-right">
             <p className="text-[12px] text-white/55">Cost so far</p>
-            <p className="font-heading text-[40px] leading-none font-medium tabular-nums">₹{cost.toFixed(2)}</p>
+            <p className="font-heading text-[40px] leading-none font-medium tabular-nums">{currency === "USD" ? "$" : "₹"}{cost.toFixed(2)}</p>
           </div>
         ) : null}
       </div>
