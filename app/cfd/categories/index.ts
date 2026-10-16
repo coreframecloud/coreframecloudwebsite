@@ -1,5 +1,6 @@
 import type { CfdCategoryId } from "@/lib/cfd-categories";
 import { ductFields } from "./ducts";
+import { roomFields } from "./rooms";
 import type { CategoryFields } from "./types";
 
 /**
@@ -11,4 +12,5 @@ import type { CategoryFields } from "./types";
  */
 export const CATEGORY_FIELDS: Partial<Record<CfdCategoryId, CategoryFields<unknown>>> = {
   ducts: ductFields as unknown as CategoryFields<unknown>,
+  rooms: roomFields as unknown as CategoryFields<unknown>,
 };

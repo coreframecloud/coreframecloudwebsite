@@ -206,7 +206,7 @@ export default function CfdJobForm({ token, accountEmail, onSignedOut, currency 
         setJobUrl(`${API_BASE}/cfd-jobs/${data.ref_id}/view?token=${encodeURIComponent(data.access_token)}`);
       }
       // A submitted CFD job is a lead (Meta "Lead"). No form fields go with it.
-      trackConversion("generate_lead", { method: "cfd_duct_job", location: "cfd_intake" });
+      trackConversion("generate_lead", { method: categoryId === "rooms" ? "cfd_room_job" : "cfd_duct_job", location: "cfd_intake" });
       // Its own GA4 key event too, so Google Ads can bid on CFD jobs apart from WhatsApp taps.
       trackEvent("cfd_job_submit", { location: "cfd_intake" });
       setBusy("");
@@ -257,14 +257,14 @@ export default function CfdJobForm({ token, accountEmail, onSignedOut, currency 
         )}
         {uploadState === "skipped" && (
           <p className="mt-4 text-[15px] leading-6 text-ink-2">
-            On your job page, choose &ldquo;use my dimensions&rdquo; to mesh the straight duct you described.
+            {fields?.skippedNote ?? <>On your job page, choose &ldquo;use my dimensions&rdquo; to mesh the straight duct you described.</>}
           </p>
         )}
 
         <div className="mt-6 space-y-2 text-[15px] leading-6 text-ink-2">
           <p className="font-semibold text-ink">Next, on your job page:</p>
           <ol className="list-decimal space-y-1 pl-5">
-            <li>Confirm which opening is the inlet (and the units, if we ask).</li>
+            <li>{fields?.nextFirstStep ?? "Confirm which opening is the inlet (and the units, if we ask)."}</li>
             {usdFee ? (
               <li>Pay the quote fee from your Coreframe wallet: {usdFee.small} for most models, {usdFee.large} for very large models (over {usdFee.cells} cells), no GST.</li>
             ) : (

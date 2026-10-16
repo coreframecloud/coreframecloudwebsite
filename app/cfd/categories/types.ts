@@ -16,5 +16,9 @@ export type CategoryFields<S> = {
   toPayload: (state: S) => Record<string, unknown>;
   /** Geometry to upload once the job exists, or null (e.g. dimensions only). */
   file: (state: S) => File | null;
+  /** "Next, on your job page" first step, when it is not "confirm the inlet" (e.g. a described room). */
+  nextFirstStep?: string;
+  /** Shown after submitting when there was no file to upload (default: the straight-duct note). */
+  skippedNote?: string;
   Fields: ComponentType<{ state: S; set: (patch: Partial<S>) => void }>;
 };

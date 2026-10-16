@@ -49,16 +49,26 @@ export const CFD_CATEGORIES: CfdCategory[] = [
     },
   },
   {
+    // 16 Oct 2026: live for the steady analysis (validated on IEA Annex 20 and Betts & Bokhari). The
+    // transient (premium) tier is offered on the quote only once the API switches it on. To hide the
+    // tab again, set status "coming_soon" (futureInputs below is then shown instead of the form).
     id: "rooms",
     label: "Rooms / HVAC",
-    status: "coming_soon",
+    status: "live",
     summary:
-      "Room air movement and comfort for HVAC designers. Released once it passes our validation cases, so the numbers are ones you can hand on.",
+      "Room air movement and comfort for HVAC designers: air speed, temperature, PMV/PPD and ADPI for one box-shaped room you describe. No geometry file needed.",
+    api: {
+      // The quote is an HVAC room quote because the job carries an `hvac` block (the runner reports mode "hvac");
+      // this text is for people and emails. Tested: apps/api tests/test_cfd_cloud.py (SITE_ROOM_BODY).
+      applicationType: "HVAC / Indoor air (room comfort)",
+      domainType: "Internal flow (room)",
+      solverSoftware: "OpenFOAM (Coreframe)",
+      kpi: "Air speed, temperature, PMV/PPD, ADPI",
+    },
     futureInputs: [
-      "Room size (length, width and height), or the room's geometry",
+      "Room size (length, width and height)",
       "Supply and return diffusers: where they are, their size and the airflow through each",
-      "Heat loads: equipment, lighting and solar gains",
-      "Occupancy: how many people, and where",
+      "Heat loads: people, equipment and lighting",
     ],
   },
 ];

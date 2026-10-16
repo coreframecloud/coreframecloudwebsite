@@ -91,10 +91,10 @@ const CFD_SERVICES: {
   },
   {
     name: "Rooms and HVAC airflow",
-    status: "Coming soon",
-    body: "Room air movement and comfort for HVAC designers. We release it only once it passes our validation cases, so the numbers are ones you can hand on. See a first pass on a real clinic floor: 90 diffusers, 100 rooms.",
-    href: "/cfd/projects/clinic-floor-hvac",
-    cta: "See it on a real building",
+    status: "Live",
+    body: "Room air movement and comfort for HVAC designers: describe one room, its diffusers, returns and heat loads, and get air speed, temperature, PMV/PPD and ADPI in a PDF report. Validated on the IEA Annex 20 room and the Betts & Bokhari heated cavity.",
+    href: "#start",
+    cta: "Describe a room",
     tint: "bg-tint-blue",
   },
 ];
@@ -184,7 +184,7 @@ const FAQ = [
   },
   {
     q: "What can you not run yet?",
-    a: "Heat transfer, buoyancy, transient flow, multiphase, moving or rotating parts, compressible flow and more than one inlet. Air and water only. Rooms and HVAC comfort studies are coming soon.",
+    a: "For ducts and pipes: heat transfer, buoyancy, transient flow, multiphase, moving or rotating parts, compressible flow and more than one inlet. Air and water only. Rooms with heat loads and buoyancy are described on the Rooms / HVAC tab: one box-shaped room at a time, no geometry file, steady analysis.",
   },
   {
     q: "I have a straight duct but no CAD. Can I still submit?",
@@ -429,7 +429,7 @@ export default async function CfdView({ currency }: { currency: Currency }) {
                   ["Flow", "Steady, incompressible, isothermal; laminar or turbulent"],
                   ["Openings", "One inlet; one or more outlets at the outlet pressure"],
                   ["Not yet", "Heat transfer, transient, multiphase, moving parts, compressible flow"],
-                  ["Coming soon", "Rooms and HVAC comfort"],
+                  ["Rooms", "One box-shaped room with diffusers, returns and heat loads: the Rooms / HVAC tab"],
                 ].map(([k, v], i) => (
                   <div key={k} className={`flex flex-col gap-1 px-5 py-3.5 sm:flex-row sm:gap-6 ${i ? "border-t border-rule" : ""}`}>
                     <dt className="text-sm font-semibold text-ink sm:w-28 sm:shrink-0">{k}</dt>
