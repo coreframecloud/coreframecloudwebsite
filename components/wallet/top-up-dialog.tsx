@@ -143,6 +143,7 @@ export default function TopUpDialog({
   open,
   onClose,
   onCredited,
+  onPending,
   user,
   minTopupNow,
   introOffer,
@@ -156,6 +157,10 @@ export default function TopUpDialog({
   open: boolean;
   onClose: () => void;
   onCredited: (newBalanceRupees: number) => void;
+  /** The payment went through but the server has not credited it yet
+   *  ("pending" / "held_for_review"; the webhook settles it). The page uses
+   *  this to re-read the wallet a few times instead of waiting for a reload. */
+  onPending?: () => void;
   user: { full_name?: string; email?: string; id?: string } | null;
   /** The smallest top-up THIS customer may make right now — higher on a first
    *  top-up. From the wallet status; absent on an older control plane. */
@@ -459,6 +464,7 @@ export default function TopUpDialog({
               // Razorpay. "pending" (not confirmed yet; the webhook credits it)
               // and "held_for_review" come back 200 with a message to show.
               if (v?.status && v.status !== "success") {
+                onPending?.();
                 throw new Error(v?.message ?? "Payment received; your wallet updates within a few minutes.");
               }
               // Server-confirmed payment, so this is a real purchase. Value is
@@ -500,6 +506,7 @@ export default function TopUpDialog({
       if (msg === "__dismissed__") {
         setError("");
       } else if (msg.includes("confirm that payment")) {
+        onPending?.();
         setError(
           "Your payment went through, but we couldn't confirm it here. It'll be credited automatically within a few minutes. Refresh this page, and contact us if it hasn't appeared.",
         );
@@ -509,7 +516,7 @@ export default function TopUpDialog({
     } finally {
       setBusy(false);
     }
-  }, [amount, city, config, countryIso, currency, isFirstTopup, isIndia, isUsd, name, onCredited, pincode, stateCode, user, starterMode, starterOffer]);
+  }, [amount, city, config, countryIso, currency, isFirstTopup, isIndia, isUsd, name, onCredited, onPending, pincode, stateCode, user, starterMode, starterOffer]);
 
   if (!open) return null;
 
@@ -533,7 +540,7 @@ export default function TopUpDialog({
               {money(done.credited)}
             </p>
             <p className="mt-2 text-[15px] leading-6 text-ink-2">
-              New balance {money(done.balance)}. Your invoice is in Payments below.
+              New balance {money(done.balance)}. Your invoice is in Activity below.
             </p>
 
             <button onClick={onClose} className="cf-btn-primary mt-6 w-full">

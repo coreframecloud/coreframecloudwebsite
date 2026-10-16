@@ -10,6 +10,7 @@ import { getIntroOffer, hoursLabel, rupees } from "@/lib/rate-card";
 import { useRateCard } from "@/lib/use-rate-card";
 import { API_BASE } from "@/lib/api-base";
 import { OFFERINGS, type OfferingStatus } from "@/lib/offerings";
+import { WALLET_CHANGED_EVENT } from "@/components/wallet/wallet-events";
 
 // True on the client after hydration, false during SSR — without a setState
 // in an effect (react-hooks/set-state-in-effect).
@@ -179,6 +180,19 @@ export function SiteHeader() {
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  // A page that has just re-read the wallet (My activity, after a top-up or
+  // when the tab regains focus) hands the fresh status over, so the pill
+  // never shows the old balance next to a page showing the new one.
+  useEffect(() => {
+    const onWallet = (e: Event) => {
+      const w = (e as CustomEvent<WalletData | null>).detail;
+      if (!w) return;
+      setAuth((a) => (a ? { ...a, wallet: { ...(a.wallet ?? {}), ...w } } : a));
+    };
+    window.addEventListener(WALLET_CHANGED_EVENT, onWallet);
+    return () => window.removeEventListener(WALLET_CHANGED_EVENT, onWallet);
   }, []);
 
   useEffect(() => {

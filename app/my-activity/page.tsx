@@ -1,9 +1,15 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
 import TopUpDialog, { type BulkTier } from "@/components/wallet/top-up-dialog";
 import { BonusLadder } from "@/components/wallet/bonus-ladder";
+import ActivityList, {
+  type LedgerRow,
+  type PaymentRow,
+  type SessionRow,
+} from "@/components/wallet/activity-list";
+import { announceWallet } from "@/components/wallet/wallet-events";
 import { trackEvent } from "@/lib/analytics";
 import {
   getIntroOffer,
@@ -341,47 +347,6 @@ function UsageCards({ wallet }: { wallet: WalletData | null }) {
   );
 }
 
-interface Session {
-  id: string;
-  status: string;
-  login_time: string;
-  logout_time: string | null;
-  billable_minutes: number;
-  billed_amount_rupees: number;
-}
-
-// One line of the wallet's history, tagged with the service it belongs to
-// (GET /me/wallet/ledger, 13 Oct 2026).
-interface LedgerRow {
-  id: number;
-  at: string;
-  service: string | null;
-  kind: string;
-  amount_rupees: number;
-  balance_after: number;
-  note: string | null;
-  ref: string | null;
-}
-
-const SERVICE_TAG: Record<string, { label: string; cls: string }> = {
-  gpu: { label: "GPU", cls: "bg-blue/10 text-blue border-blue/20" },
-  cfd: { label: "CFD", cls: "bg-[#e8f5ee] text-[#1d6b43] border-[#bfe3cf]" },
-  studio: { label: "Studio", cls: "bg-[#f3ecfb] text-[#5b2d91] border-[#dccbf1]" },
-  topup: { label: "Top-up", cls: "bg-paper-2 text-ink border-rule" },
-  bonus: { label: "Bonus", cls: "bg-[#fff1c7] text-[#6b4e00] border-[#f2dc96]" },
-  admin: { label: "Adjustment", cls: "bg-paper-2 text-ink-2 border-rule" },
-  expiry: { label: "Expired", cls: "bg-paper-2 text-ink-3 border-rule" },
-};
-
-function ServiceTag({ service }: { service: string | null }) {
-  const t = SERVICE_TAG[service ?? ""] ?? { label: "Wallet", cls: "bg-paper-2 text-ink-2 border-rule" };
-  return (
-    <span className={`inline-flex rounded-full border px-2 py-0.5 text-[11px] font-semibold whitespace-nowrap ${t.cls}`}>
-      {t.label}
-    </span>
-  );
-}
-
 function formatRupees(x: number, currency: Currency = "INR"): string {
   if (currency === "USD") return formatMoney(Math.abs(x), "USD");
   const whole = Math.abs(x - Math.round(x)) < 0.005;
@@ -391,34 +356,12 @@ function formatRupees(x: number, currency: Currency = "INR"): string {
   })}`;
 }
 
-interface Payment {
-  id: string;
-  amount_rupees: number;
-  status: string;
-  paid_at: string | null;
-  // Razorpay's field, permanently null since we retired Razorpay invoicing —
-  // one company must have ONE consecutive invoice series. Kept for old rows.
-  invoice_short_url: string | null;
-  // Ours. This is the GST invoice, rendered on demand from the invoice row.
-  invoice_id: number | null;
-  invoice_number: string | null;
-  created_at: string;
-}
-
 interface UserInfo {
   full_name: string;
   email: string;
   id: string;
   role?: string;
   customer_type?: string;
-}
-
-function formatDuration(minutes: number): string {
-  const h = Math.floor(minutes / 60);
-  const m = minutes % 60;
-  if (h === 0) return `${m}m`;
-  if (m === 0) return `${h}h`;
-  return `${h}h ${m}m`;
 }
 
 function formatDate(dateStr: string): string {
@@ -431,6 +374,59 @@ function formatDate(dateStr: string): string {
   } catch {
     return dateStr;
   }
+}
+
+const LEDGER_FIRST = 100;
+const LEDGER_MAX = 500; // the API's own cap on `limit`
+
+interface ActivityData {
+  wallet: WalletData | null;
+  sessions: SessionRow[];
+  payments: PaymentRow[];
+  ledger: LedgerRow[] | null;
+  pooled: boolean;
+  limit: number;
+}
+
+/** Everything the page shows, in one go. Throws "auth_failed" on 401 and
+ *  "forbidden" on 403; anything else (network, a missing endpoint) reads as
+ *  empty, so one failing list never blanks the page. */
+async function fetchActivity(token: string, ledgerLimit: number): Promise<ActivityData> {
+  const headers = { Authorization: `Bearer ${token}` };
+  const authFetch = async (url: string) => {
+    try {
+      // no-store: the browser must never answer these from its cache, or a
+      // re-read after a top-up shows the balance from before it.
+      const r = await fetch(url, { headers, cache: "no-store" });
+      // 401 = the token is bad; sign them out.
+      // 403 = the token is fine but this account may not use the page. That
+      // USED to mean "not verified" and always went to /verify; now only a
+      // pending account belongs there (checked by the caller), and a suspended
+      // or otherwise refused one is told so instead of looping through /verify.
+      // 402 = paid access required; the page itself still renders.
+      if (r.status === 401) throw new Error("auth_failed");
+      if (r.status === 403) throw new Error("forbidden");
+      if (!r.ok) return null;
+      return r.json();
+    } catch (err: unknown) {
+      if (err instanceof Error && ["auth_failed", "forbidden"].includes(err.message)) throw err;
+      return null;
+    }
+  };
+  const [w, s, p, l] = await Promise.all([
+    authFetch(`${API}/me/wallet`),
+    authFetch(`${API}/me/sessions`),
+    authFetch(`${API}/payments/history`),
+    authFetch(`${API}/me/wallet/ledger?limit=${ledgerLimit}`),
+  ]);
+  return {
+    wallet: w ?? null,
+    sessions: Array.isArray(s) ? s : [],
+    payments: Array.isArray(p) ? p : [],
+    ledger: Array.isArray(l?.rows) ? l.rows : null,
+    pooled: l?.pooled === true,
+    limit: ledgerLimit,
+  };
 }
 
 /** The invoice PDF endpoint requires the bearer token, so it cannot be a link.
@@ -450,22 +446,6 @@ async function openInvoice(invoiceId: number) {
   setTimeout(() => URL.revokeObjectURL(url), 60_000);
 }
 
-function statusBadge(status: string) {
-  const s = status.toLowerCase();
-  let cls = "inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium whitespace-nowrap capitalize ";
-  // "paid" belongs here: a successful payment was rendering in the red
-  // failure style, which is an alarming way to confirm someone's money
-  // arrived. "created" is a top-up that never reached the gateway.
-  if (s === "ended" || s === "completed" || s === "paid" || s === "captured") {
-    cls += "bg-blue/10 text-blue border border-blue/20";
-  } else if (s === "active" || s === "provisioning" || s === "created" || s === "pending") {
-    cls += "bg-paper-2 text-ink-2 border border-rule-strong";
-  } else {
-    cls += "bg-destructive/5 text-destructive border border-destructive/30";
-  }
-  return <span className={cls}>{status}</span>;
-}
-
 export default function MyActivityPage() {
   const [mounted, setMounted] = useState(false);
   const [token, setToken] = useState<string | null>(null);
@@ -474,10 +454,18 @@ export default function MyActivityPage() {
   // The account's currency (wallet_currency); every wallet amount is in it.
   const cur: Currency = parseCurrency(wallet?.wallet_currency) ?? "INR";
   const sym = cur === "USD" ? "$" : "₹";
-  const [sessions, setSessions] = useState<Session[]>([]);
-  const [payments, setPayments] = useState<Payment[]>([]);
+  const [sessions, setSessions] = useState<SessionRow[]>([]);
+  const [payments, setPayments] = useState<PaymentRow[]>([]);
   const [ledger, setLedger] = useState<LedgerRow[]>([]);
   const [ledgerPooled, setLedgerPooled] = useState(false);
+  // The ledger has no offset or cursor (16 Oct 2026), only `limit` (max 500):
+  // "Show more" past what is loaded asks again with a bigger limit.
+  const ledgerLimit = useRef(LEDGER_FIRST);
+  const [ledgerMore, setLedgerMore] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const tokenRef = useRef<string | null>(null);
+  const lastRefresh = useRef(0);
+  const pendingTimers = useRef<ReturnType<typeof setTimeout>[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   // The header's wallet chip links to /my-activity#add-funds, so arriving with
@@ -490,6 +478,71 @@ export default function MyActivityPage() {
   const [blocked, setBlocked] = useState<string | null>(null);
   const card = useRateCard();
   const introOffer = getIntroOffer(card);
+
+  const apply = useCallback((d: ActivityData) => {
+    if (d.wallet) {
+      setWallet(d.wallet);
+      // The header's wallet pill reads the same status; hand it over.
+      announceWallet(d.wallet);
+    }
+    setSessions(d.sessions);
+    setPayments(d.payments);
+    if (d.ledger) {
+      setLedger(d.ledger);
+      setLedgerMore(d.ledger.length >= d.limit && d.limit < LEDGER_MAX);
+    }
+    setLedgerPooled(d.pooled);
+  }, []);
+
+  /** Re-read the wallet, its history, sessions and payments in place: after a
+   *  top-up, after the dialog closes, and when the tab comes back into view.
+   *  No skeleton: the page stays as it is and the numbers change. */
+  const refresh = useCallback(async () => {
+    const t = tokenRef.current;
+    if (!t) return;
+    lastRefresh.current = Date.now();
+    try {
+      apply(await fetchActivity(t, ledgerLimit.current));
+    } catch (err) {
+      if (err instanceof Error && err.message === "auth_failed") {
+        localStorage.removeItem("cf_customer_token");
+        localStorage.removeItem("cf_customer_user");
+        setToken(null);
+      }
+    }
+  }, [apply]);
+
+  const loadMoreLedger = useCallback(async () => {
+    const t = tokenRef.current;
+    if (!t || loadingMore) return;
+    ledgerLimit.current = Math.min(LEDGER_MAX, ledgerLimit.current + LEDGER_FIRST);
+    setLoadingMore(true);
+    try {
+      apply(await fetchActivity(t, ledgerLimit.current));
+    } catch {
+      /* keep what is on screen */
+    } finally {
+      setLoadingMore(false);
+    }
+  }, [apply, loadingMore]);
+
+  // Back on the tab (paid in another tab, used Connect, ran a CFD job): re-read,
+  // at most every 10 s so switching windows quickly does not hammer the API.
+  useEffect(() => {
+    const onBack = () => {
+      if (document.visibilityState !== "visible") return;
+      if (Date.now() - lastRefresh.current < 10_000) return;
+      void refresh();
+    };
+    document.addEventListener("visibilitychange", onBack);
+    window.addEventListener("focus", onBack);
+    const timers = pendingTimers.current;
+    return () => {
+      document.removeEventListener("visibilitychange", onBack);
+      window.removeEventListener("focus", onBack);
+      timers.forEach(clearTimeout);
+    };
+  }, [refresh]);
 
   function openTopUp(amount: number | null, source: "intro_offer" | "first_topup" | "add_funds") {
     setTopUpPreset(amount);
@@ -537,39 +590,10 @@ export default function MyActivityPage() {
     setUser(u);
 
     const headers = { Authorization: `Bearer ${t}` };
+    tokenRef.current = t;
 
-    const authFetch = async (url: string) => {
-      try {
-        const r = await fetch(url, { headers });
-        // 401 = the token is bad; sign them out.
-        // 403 = the token is fine but this account may not use the page. That
-        // USED to mean "not verified" and always went to /verify; now only a
-        // pending account belongs there (checked below), and a suspended or
-        // otherwise refused one is told so instead of looping through /verify.
-        // 402 = paid access required; the page itself still renders.
-        if (r.status === 401) throw new Error("auth_failed");
-        if (r.status === 403) throw new Error("forbidden");
-        if (!r.ok) return null;
-        return r.json();
-      } catch (err: unknown) {
-        if (err instanceof Error && ["auth_failed", "forbidden"].includes(err.message)) throw err;
-        return null; // network errors or missing endpoints → treat as empty
-      }
-    };
-
-    Promise.all([
-      authFetch(`${API}/me/wallet`),
-      authFetch(`${API}/me/sessions`),
-      authFetch(`${API}/payments/history`),
-      authFetch(`${API}/me/wallet/ledger?limit=100`),
-    ])
-      .then(([w, s, p, l]) => {
-        if (w) setWallet(w);
-        setSessions(Array.isArray(s) ? s : []);
-        setPayments(Array.isArray(p) ? p : []);
-        setLedger(Array.isArray(l?.rows) ? l.rows : []);
-        setLedgerPooled(l?.pooled === true);
-      })
+    fetchActivity(t, ledgerLimit.current)
+      .then(apply)
       .catch(async (err) => {
         if (err.message === "forbidden") {
           // Keep the session. Ask the one endpoint a scoped token may call
@@ -599,8 +623,11 @@ export default function MyActivityPage() {
         }
         // other errors: still render the page with whatever loaded
       })
-      .finally(() => setLoading(false));
-  }, []);
+      .finally(() => {
+        lastRefresh.current = Date.now();
+        setLoading(false);
+      });
+  }, [apply]);
 
   if (!mounted) return null;
 
@@ -817,7 +844,14 @@ export default function MyActivityPage() {
                 Wallet
               </h2>
               <p className="font-display text-3xl font-bold tabular-nums text-blue">
-                {sym}{wallet ? (wallet.wallet_total_rupees ?? wallet.wallet_balance_rupees).toFixed(2) : "0.00"}
+                {wallet
+                  ? cur === "USD"
+                    ? formatMoney(wallet.wallet_total_rupees ?? wallet.wallet_balance_rupees, "USD")
+                    : `₹${(wallet.wallet_total_rupees ?? wallet.wallet_balance_rupees).toLocaleString("en-IN", {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}`
+                  : `${sym}0.00`}
               </p>
               {/* ONE WALLET (13 Oct 2026): the same money pays for all three
                   services. The intro bonus is the one part that is GPU-only,
@@ -947,177 +981,20 @@ export default function MyActivityPage() {
             pooled wallet still has their own storage. */}
         <UsageCards wallet={wallet} />
 
-        {/* Wallet history: every movement, tagged GPU / CFD / Studio. */}
-        <div className="cf-glass overflow-hidden">
-          <div className="border-b border-rule px-4 py-4 sm:px-6">
-            <h2 className="cf-section-title">Wallet history.</h2>
-          </div>
-          {ledgerPooled ? (
-            <p className="px-4 py-8 text-sm text-ink-3 sm:px-6">
-              Your organisation&rsquo;s wallet history is in the org portal.
-            </p>
-          ) : ledger.length === 0 ? (
-            <p className="px-4 py-8 text-sm text-ink-3 sm:px-6">Nothing yet.</p>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[420px] text-sm">
-                <thead>
-                  <tr className="border-b border-rule">
-                    {["Date", "Service", "What", "Amount", "Balance"].map((h, i) => (
-                      <th
-                        key={h}
-                        className={`px-4 py-3 font-mono text-[11px] leading-none font-medium tracking-[0.14em] whitespace-nowrap text-ink-3 uppercase sm:px-6 ${i >= 3 ? "text-right" : "text-left"}`}
-                      >
-                        {h}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-rule">
-                  {ledger.map((r) => (
-                    <tr key={r.id} className="transition hover:bg-paper-2">
-                      <td className="px-4 py-3 whitespace-nowrap text-ink sm:px-6">{formatDate(r.at)}</td>
-                      <td className="px-4 py-3 sm:px-6"><ServiceTag service={r.service} /></td>
-                      <td className="px-4 py-3 text-ink-2 sm:px-6">{r.note || r.kind.replace(/_/g, " ")}</td>
-                      <td className={`px-4 py-3 text-right whitespace-nowrap tabular-nums sm:px-6 ${r.amount_rupees >= 0 ? "text-[#1d6b43]" : "text-ink"}`}>
-                        {r.amount_rupees >= 0 ? "+" : "−"}{formatRupees(r.amount_rupees, cur)}
-                      </td>
-                      <td className="px-4 py-3 text-right whitespace-nowrap tabular-nums text-ink-3 sm:px-6">
-                        {formatRupees(r.balance_after, cur)}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </div>
-
-        {/* Recent Sessions */}
-        <div className="cf-glass overflow-hidden">
-          <div className="border-b border-rule px-4 py-4 sm:px-6">
-            <h2 className="cf-section-title">Recent sessions.</h2>
-          </div>
-          {sessions.length === 0 ? (
-            <p className="px-4 py-8 text-sm text-ink-3 sm:px-6">No sessions yet.</p>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[360px] text-sm">
-                <thead>
-                  <tr className="border-b border-rule">
-                    <th className="px-4 py-3 text-left font-mono text-[11px] leading-none font-medium tracking-[0.14em] whitespace-nowrap text-ink-3 uppercase sm:px-6">
-                      Date
-                    </th>
-                    <th className="px-4 py-3 text-left font-mono text-[11px] leading-none font-medium tracking-[0.14em] whitespace-nowrap text-ink-3 uppercase sm:px-6">
-                      Duration
-                    </th>
-                    <th className="px-4 py-3 text-left font-mono text-[11px] leading-none font-medium tracking-[0.14em] whitespace-nowrap text-ink-3 uppercase sm:px-6">
-                      Cost
-                    </th>
-                    <th className="px-4 py-3 text-left font-mono text-[11px] leading-none font-medium tracking-[0.14em] whitespace-nowrap text-ink-3 uppercase sm:px-6">
-                      Status
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-rule">
-                  {sessions.map((s) => (
-                    <tr key={s.id} className="transition hover:bg-paper-2">
-                      <td className="px-4 py-3.5 whitespace-nowrap text-ink sm:px-6">
-                        {formatDate(s.login_time)}
-                      </td>
-                      <td className="px-4 py-3.5 whitespace-nowrap tabular-nums text-ink sm:px-6">
-                        {formatDuration(s.billable_minutes)}
-                      </td>
-                      <td className="px-4 py-3.5 whitespace-nowrap tabular-nums text-ink sm:px-6">
-                        {sym}{s.billed_amount_rupees.toFixed(2)}
-                      </td>
-                      <td className="px-4 py-3.5 sm:px-6">
-                        {statusBadge(s.status)}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </div>
-
-        {/* Payment History */}
-        <div className="cf-glass overflow-hidden">
-          <div className="border-b border-rule px-4 py-4 sm:px-6">
-            <h2 className="cf-section-title">Payment history.</h2>
-          </div>
-          {payments.length === 0 ? (
-            <p className="px-4 py-8 text-sm text-ink-3 sm:px-6">No payments yet.</p>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[380px] text-sm">
-                <thead>
-                  <tr className="border-b border-rule">
-                    <th className="px-4 py-3 text-left font-mono text-[11px] leading-none font-medium tracking-[0.14em] whitespace-nowrap text-ink-3 uppercase sm:px-6">
-                      Date
-                    </th>
-                    <th className="px-4 py-3 text-left font-mono text-[11px] leading-none font-medium tracking-[0.14em] whitespace-nowrap text-ink-3 uppercase sm:px-6">
-                      Amount
-                    </th>
-                    <th className="px-4 py-3 text-left font-mono text-[11px] leading-none font-medium tracking-[0.14em] whitespace-nowrap text-ink-3 uppercase sm:px-6">
-                      Status
-                    </th>
-                    <th className="px-4 py-3 text-left font-mono text-[11px] leading-none font-medium tracking-[0.14em] whitespace-nowrap text-ink-3 uppercase sm:px-6">
-                      Invoice
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-rule">
-                  {payments.map((p) => (
-                    <tr key={p.id} className="transition hover:bg-paper-2">
-                      <td className="px-4 py-3.5 whitespace-nowrap text-ink sm:px-6">
-                        {formatDate(p.paid_at ?? p.created_at)}
-                      </td>
-                      <td className="px-4 py-3.5 whitespace-nowrap tabular-nums text-ink sm:px-6">
-                        {sym}{p.amount_rupees.toFixed(2)}
-                      </td>
-                      <td className="px-4 py-3.5 sm:px-6">
-                        {statusBadge(p.status)}
-                      </td>
-                      <td className="px-4 py-3.5 sm:px-6">
-                        {/* Our GST invoice. It cannot be a plain href: the PDF
-                            endpoint is authenticated, so it is fetched with the
-                            bearer token and opened as a blob. The old cell read
-                            `invoice_short_url`, a Razorpay field that has been
-                            null since we took invoicing in-house — so every
-                            paid row showed a dash while the invoice existed. */}
-                        {p.invoice_id ? (
-                          <button
-                            type="button"
-                            onClick={() => openInvoice(p.invoice_id!)}
-                            title={p.invoice_number ?? undefined}
-                            className="text-xs font-medium break-all text-blue transition hover:text-blue-ink"
-                          >
-                            {p.invoice_number ?? "Invoice"} ↗
-                          </button>
-                        ) : p.invoice_short_url ? (
-                          <a
-                            href={p.invoice_short_url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-xs font-medium text-blue transition hover:text-blue-ink"
-                          >
-                            Download ↗
-                          </a>
-                        ) : (
-                          <span className="text-xs text-ink-3">—</span>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </div>
-
-
+        {/* Activity: ONE list (owner, 16 Oct 2026). Wallet history, Recent
+            sessions and Payment history showed the same charges two or three
+            times, each in its own scrolling table. See activity-list.tsx. */}
+        <ActivityList
+          ledger={ledger}
+          sessions={sessions}
+          payments={payments}
+          pooled={ledgerPooled}
+          currency={cur}
+          moreOnServer={ledgerMore}
+          loadingMore={loadingMore}
+          onLoadMore={loadMoreLedger}
+          onOpenInvoice={openInvoice}
+        />
       </div>
 
       <TopUpDialog
@@ -1132,21 +1009,33 @@ export default function MyActivityPage() {
           ) {
             window.history.replaceState(null, "", window.location.pathname);
           }
+          // Whatever happened in the dialog, the page re-reads the wallet.
+          void refresh();
         }}
-        onCredited={(balance) =>
+        onCredited={() => {
+          // The verify response's balance is the GPU mirror, not the whole
+          // wallet the card shows (wallet_total_rupees), so it is not written
+          // into the card: that is how the card kept saying ₹399.63 after a
+          // ₹2,000 top-up. Flip the onboarding flags now, then re-read
+          // everything from the server.
           setWallet((w) =>
             w
               ? {
                   ...w,
-                  wallet_balance_rupees: balance,
-                  // Paid now. The server is authoritative on the next load;
-                  // this only stops the "add funds to start" card lingering.
                   paid_access: w.paid_access === undefined ? undefined : true,
                   intro_offer_available: false,
                 }
               : w,
-          )
-        }
+          );
+          void refresh();
+        }}
+        onPending={() => {
+          // Paid, not credited yet: the webhook usually lands within a minute.
+          pendingTimers.current.forEach(clearTimeout);
+          pendingTimers.current = [10_000, 30_000, 90_000].map((ms) =>
+            setTimeout(() => void refresh(), ms),
+          );
+        }}
         user={user}
         minTopupNow={wallet?.min_topup_rupees_now ?? null}
         introOffer={wallet?.intro_offer_available ? introOffer : null}
