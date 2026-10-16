@@ -37,6 +37,7 @@ import {
 } from "@/lib/validation";
 import { API_BASE } from "@/lib/api-base";
 import { peekReturnPath, takeReturnPath } from "@/lib/return-path";
+import { goAfterSignIn, syncSessionCookie } from "@/lib/session-cookie";
 
 const API = API_BASE;
 const DONE_URL = "/my-activity?topup=1";
@@ -138,6 +139,9 @@ export default function VerifyFlow() {
     try {
       localStorage.setItem("cf_customer_token", data.access_token);
       if (data.user) localStorage.setItem("cf_customer_user", JSON.stringify(data.user));
+      // The full-access token replaces the verification one: the API's own
+      // pages (CFD job page) need the cookie to carry the new one too.
+      void syncSessionCookie(data.access_token);
     } catch {
       /* private mode: the next load retries */
     }
@@ -154,7 +158,7 @@ export default function VerifyFlow() {
         // Back to the page that sent them to sign up (e.g. /cfd),
         // otherwise on to adding funds.
         setTimeout(() => {
-          window.location.href = takeReturnPath() ?? DONE_URL;
+          void goAfterSignIn(takeReturnPath() ?? DONE_URL);
         }, 1200);
       }
     },

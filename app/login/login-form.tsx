@@ -1,6 +1,7 @@
 "use client";
 
 import { clearReturnPath, peekReturnPath, rememberReturnPath, safeReturnPath } from "@/lib/return-path";
+import { clearSessionCookie, goAfterSignIn } from "@/lib/session-cookie";
 import { useState, useEffect, useRef } from "react";
 import {
   COUNTRIES,
@@ -262,6 +263,8 @@ export default function LoginForm({
   // account, and bouncing them away would make that impossible without finding
   // a sign-out first. A banner offers the way on AND the way to switch.
   const [signedInAs, setSignedInAs] = useState<string | null>(null);
+  // Where "Continue" goes for someone already signed in who arrived with ?next=.
+  const [signedInNext, setSignedInNext] = useState<string | null>(null);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -274,6 +277,7 @@ export default function LoginForm({
         const raw = localStorage.getItem("cf_customer_user");
         const u = raw ? (JSON.parse(raw) as { email?: string }) : null;
         setSignedInAs(u?.email ?? "your account");
+        setSignedInNext(safeReturnPath(params.get("next")));
         // THE CODE HAS ALREADY BEEN SPENT. Coming back here after a successful
         // sign-in - Back from /verify, or the bfcache restoring this page -
         // used to show the code step with the consumed digits still in the
@@ -372,9 +376,9 @@ export default function LoginForm({
       return;
     }
 
-    // Only relative paths (no open redirect)
+    // Relative paths, or the API's CFD job page (lib/return-path.ts) — no open redirect.
     clearReturnPath();
-    window.location.href = next ?? "/my-activity";
+    void goAfterSignIn(next ?? "/my-activity");
   }
 
   function switchTab(t: Tab) {
@@ -534,6 +538,9 @@ export default function LoginForm({
     try {
       const res = await fetch(`${API}/auth/verify-login-code`, {
         method: "POST",
+        // So the browser KEEPS the HttpOnly cf_session cookie this sets on
+        // control: the CFD job page there signs in with nothing else.
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: codeEmail.trim(), code: codeValue.trim() }),
       });
@@ -560,7 +567,15 @@ export default function LoginForm({
           </p>
           <div className="mt-3 grid gap-2 sm:grid-cols-2">
             <a
-              href="/verify"
+              href={signedInNext ?? "/verify"}
+              onClick={(e) => {
+                // Back to the CFD job page that sent them: set the cookie for
+                // this session first (lib/session-cookie.ts), then go.
+                if (signedInNext && /^https?:\/\//.test(signedInNext)) {
+                  e.preventDefault();
+                  void goAfterSignIn(signedInNext);
+                }
+              }}
               className="flex h-11 w-full items-center justify-center rounded-cf bg-blue px-3 text-center text-sm font-semibold text-white transition hover:bg-blue"
             >
               Continue where you left off
@@ -568,6 +583,7 @@ export default function LoginForm({
             <button
               type="button"
               onClick={() => {
+                void clearSessionCookie();
                 try {
                   localStorage.removeItem("cf_customer_token");
                   localStorage.removeItem("cf_customer_user");

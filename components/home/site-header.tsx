@@ -9,6 +9,7 @@ import { trackEvent } from "@/lib/analytics";
 import { getIntroOffer, hoursLabel, rupees } from "@/lib/rate-card";
 import { useRateCard } from "@/lib/use-rate-card";
 import { API_BASE } from "@/lib/api-base";
+import { clearSessionCookie, syncSessionCookie } from "@/lib/session-cookie";
 import { OFFERINGS, type OfferingStatus } from "@/lib/offerings";
 import { WALLET_CHANGED_EVENT } from "@/components/wallet/wallet-events";
 
@@ -220,6 +221,10 @@ export function SiteHeader() {
       return;
     }
 
+    // Give the API's own pages (the CFD job page) this session too: sessions
+    // signed in before 16 Oct 2026 never got the cookie. Once per token per tab.
+    void syncSessionCookie(token);
+
     // Fetch wallet + fresh user info (so role/customer_type are always current)
     Promise.all([
       fetch(`${API_BASE}/me/wallet`, {
@@ -257,7 +262,10 @@ export function SiteHeader() {
       });
   }, []);
 
-  function handleSignOut() {
+  async function handleSignOut() {
+    // Before the reload, or the reload cancels it and the job page on control
+    // stays signed in as someone who believes they signed out.
+    await clearSessionCookie();
     localStorage.removeItem("cf_customer_token");
     localStorage.removeItem("cf_customer_user");
     setAuth(null);
