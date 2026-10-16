@@ -474,7 +474,7 @@ export const STEPS = [
   "Quote fee",
   "Mesh & quote",
   "Paid",
-  "Running",
+  "Queue & run",
   "Results",
 ] as const;
 
