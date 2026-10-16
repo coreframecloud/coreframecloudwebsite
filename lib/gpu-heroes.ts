@@ -22,16 +22,18 @@ const H = (name: string, alt: string, pos: string, posMobile = "50% 50%", strong
 });
 
 export const GPU_HEROES: Record<string, HeroImage> = {
-  "gpu-workstation-rental-india": H("hero-gpu-jet", "A sci-fi jet banking hard between night-lit towers at dusk, trailing sparks and light streaks", "60% 50%"),
+  // Main GPU page: the best of the family (graded 16 Oct 2026, grade.md). An
+  // invented manta-shaped craft, not a real aircraft; also the homepage GPU card.
+  "gpu-workstation-rental-india": H("hero-gpu-v3", "A pearl-white, manta-shaped craft banking between night-lit skyscrapers at dusk, trailing sparks and light streaks", "62% 50%", "66% 50%"),
   "blender-cloud-workstation": H("hero-anim-jet", "An animated-film style hover-jet racing past floating sky islands at sunset, with flame trails", "62% 50%"),
   "after-effects-premiere-cloud-workstation": H("hero-ae", "Two glowing neon racers speeding through a holographic tunnel", "65% 50%"),
   "revit-cloud-workstation": H("hero-revit", "A sleek craft gliding between towering night-lit skyscrapers in the mist", "70% 50%"),
   "3ds-max-cloud-workstation": H("hero-3dsmax", "A hover-speeder tearing through a red desert canyon, kicking up dust", "65% 50%"),
   "sketchup-cloud-workstation": H("hero-sketchup", "A floating island town and a small airship among pink clouds at dusk", "80% 50%", "50% 50%", true),
   "twinmotion-cloud-workstation": H("hero-twinmotion", "A VTOL craft skimming a river past open pavilions in a green valley at golden hour", "65% 50%"),
-  "vray-cloud-rendering": H("hero-vray", "A long starship skimming the rings of a giant planet", "70% 50%"),
+  "vray-cloud-rendering": H("hero-vray-v3", "A slender bronze, seed-pod-shaped spacecraft gliding past the dark side of a planet as the sun rises over its rim", "62% 50%", "60% 50%"),
   "rhino-cloud-workstation": H("hero-rhino", "A curved, sculpted aircraft flying low over the sea beside a long bridge at sunset", "55% 50%"),
   "d5-render-cloud-workstation": H("hero-d5", "Flying cars and light trails on a rain-soaked street between neon-lit towers at night", "72% 50%"),
-  "lumion-cloud-gpu": H("hero-lumion", "A small craft flying through mist past green, waterfall-covered towers in morning light", "60% 50%"),
+  "lumion-cloud-gpu": H("hero-lumion-v3", "A small white craft flying through morning mist between green, waterfall-covered towers", "60% 50%", "56% 50%"),
   "enscape-cloud-gpu": H("hero-enscape", "The glass atrium of a future building, with a craft passing the window outside", "65% 50%"),
 };

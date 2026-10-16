@@ -4,7 +4,8 @@ import { HeroOfferingCards } from "@/components/home/redesign/offerings";
 
 /**
  * Full-bleed hero on a living room rendered on our own machine (a RenderGrid
- * test render, 7 Oct 2026), darkened so the type reads. Until 16 Oct 2026 it
+ * test render, 7 Oct 2026), darkened so the type reads. Only here since
+ * 16 Oct 2026: /floor-plan-to-render has its own Studio export. Until 16 Oct 2026 it
  * was the Blender 4.1 splash scene, swapped out because its licence for
  * marketing use was never confirmed.
  *
