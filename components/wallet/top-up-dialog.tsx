@@ -57,6 +57,8 @@ import {
   INDIA,
   countryByIso,
   fetchCountries,
+  fetchIpCountry,
+  ipMismatchMessage,
   withBundledCountries,
   type Country,
   fetchIndianGstStates,
@@ -192,6 +194,14 @@ export default function TopUpDialog({
   // customer's country choice fixed it.
   const [justFixedUsd, setJustFixedUsd] = useState(false);
   const [savingCountry, setSavingCountry] = useState(false);
+  // India chosen (which fixes rupees for good) from a connection Cloudflare
+  // places elsewhere: ask once, "Are you in India?" (owner, 16 Oct 2026).
+  // Never a block; the API alerts the owner either way.
+  const [ipCountry, setIpCountry] = useState<string | null>(null);
+  const [askIndia, setAskIndia] = useState(false);
+  useEffect(() => {
+    if (open && countryRequired) fetchIpCountry(API).then(setIpCountry);
+  }, [open, countryRequired]);
   // Never offered to a USD account; the API should not send them, and this
   // makes sure.
   const starterOffer = isUsd ? null : studioStarter ?? null;
@@ -305,7 +315,7 @@ export default function TopUpDialog({
 
   // First top-up of an account with no country yet: the country (and, in
   // India, the state) is saved first, which fixes the account's currency.
-  const saveCountry = useCallback(async () => {
+  const saveCountry = useCallback(async (confirmedIndia = false) => {
     setError("");
     const token = localStorage.getItem("cf_customer_token");
     if (!token) return setError("Please sign in again.");
@@ -313,6 +323,10 @@ export default function TopUpDialog({
     if (countryIso === INDIA.iso && !stateCode) {
       return setError("Select your state. It decides the GST split on your invoice.");
     }
+    if (countryIso === INDIA.iso && ipCountry && ipCountry !== INDIA.iso && !confirmedIndia) {
+      return setAskIndia(true);
+    }
+    setAskIndia(false);
     setSavingCountry(true);
     try {
       const r = await fetch(`${API}/verification/location`, {
@@ -337,7 +351,7 @@ export default function TopUpDialog({
     } finally {
       setSavingCountry(false);
     }
-  }, [countryIso, stateCode, loadConfig]);
+  }, [countryIso, stateCode, loadConfig, ipCountry]);
 
   // THE LIMIT HAS TO ARRIVE WHILE THEY TYPE, NOT AFTER THEY COMMIT.
   //
@@ -611,13 +625,34 @@ export default function TopUpDialog({
                     {error}
                   </p>
                 )}
+                {askIndia && ipCountry ? (
+                  <div className="mt-5 rounded-cf border border-rule px-4 py-3">
+                    <p className="text-sm leading-6 text-ink">{ipMismatchMessage(ipCountry)}</p>
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      <button
+                        onClick={() => saveCountry(true)}
+                        disabled={savingCountry}
+                        className="cf-btn-primary disabled:opacity-50"
+                      >
+                        {savingCountry ? "Saving…" : "Yes, I'm in India"}
+                      </button>
+                      <button
+                        onClick={() => { setAskIndia(false); setCountryIso(""); setCountryTouched(true); }}
+                        className="min-h-11 px-3 text-[13px] text-ink-2 hover:text-ink"
+                      >
+                        No, change my country
+                      </button>
+                    </div>
+                  </div>
+                ) : (
                 <button
-                  onClick={saveCountry}
+                  onClick={() => saveCountry()}
                   disabled={savingCountry || !countryIso || (isIndia && !stateCode)}
                   className="cf-btn-primary mt-5 w-full disabled:opacity-50"
                 >
                   {savingCountry ? "Saving…" : "Continue"}
                 </button>
+                )}
               </>
             ) : (
               <>
@@ -852,14 +887,15 @@ export default function TopUpDialog({
                   {busy ? "Opening payment…" : `Pay ${money(Number(amount || 0) || 0)}`}
                 </button>
                 <p className="mt-3 text-center text-xs leading-5 text-ink-2">
-                  {/* Owner decision 10 Oct 2026: a customer billed outside India
-                      is an export of services under LUT — zero-rated, no GST —
-                      for the same rupee amount. */}
+                  {/* Owner decision 16 Oct 2026: on a rupee account, a billing
+                      country outside India is an export (no GST) only when the
+                      card was issued outside India; otherwise GST is included
+                      in the same rupee amount. */}
                   {isUsd
                     ? "International cards accepted. No GST (export of services). An invoice in US dollars is issued automatically."
                     : isIndia
                     ? "International cards accepted. Prices include 18% GST."
-                    : "International cards accepted. International customers: no GST (export of services)."}
+                    : "International cards accepted. No GST (export of services) only when your card was issued outside India; otherwise GST is included in the same amount."}
                   <br />
                   Payments are processed by Razorpay. We never see your card details.
                 </p>

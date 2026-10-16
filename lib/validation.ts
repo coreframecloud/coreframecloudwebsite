@@ -317,3 +317,31 @@ export async function fetchIndianGstStates(apiBase: string): Promise<GstState[]>
     return [];
   }
 }
+
+// ── Billing-country guard (owner, 16 Oct 2026) ──────────────────────────────
+// The API refuses a non-+91 number on an Indian (rupee) account with this
+// exact sentence; the forms say it before the customer submits.
+export const INDIAN_MOBILE_HINT =
+  "Indian accounts need an Indian (+91) mobile number. Outside India? Choose your country and you'll be billed in US dollars.";
+
+/**
+ * Cloudflare's country for this connection (GET /auth/ip-country), or null.
+ * A hint for the "Are you in India?" confirm step only; never a gate.
+ */
+export async function fetchIpCountry(apiBase: string): Promise<string | null> {
+  try {
+    const res = await fetch(`${apiBase}/auth/ip-country`, { cache: "no-store" });
+    if (!res.ok) return null;
+    const data = await res.json();
+    const code = typeof data?.country_code === "string" ? data.country_code.toUpperCase() : "";
+    return /^[A-Z0-9]{2}$/.test(code) ? code : null;
+  } catch {
+    return null;
+  }
+}
+
+/** "Your connection looks like it's from <country>..." for India chosen from elsewhere. */
+export function ipMismatchMessage(ipCountry: string): string {
+  const name = ipCountry === "T1" ? "the Tor network" : countryByIso(ipCountry)?.country ?? ipCountry;
+  return `Your connection looks like it's from ${name}. Accounts outside India are billed in US dollars. Are you in India?`;
+}

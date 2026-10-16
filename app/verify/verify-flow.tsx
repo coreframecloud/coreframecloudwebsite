@@ -30,6 +30,7 @@ import { CheckCircle2, Clock, Loader2, Mail, MessageCircle, Phone } from "lucide
 import {
   COUNTRIES,
   INDIA,
+  INDIAN_MOBILE_HINT,
   fetchCountries,
   validatePhone,
   type Country,
@@ -59,6 +60,8 @@ interface VerificationStatus {
   needs_mobile_otp?: boolean;
   has_phone_number: boolean;
   phone_masked?: string | null;
+  // The declared country (null for a Google sign-up that has not chosen one).
+  country_code?: string | null;
   access_token?: string;
   user?: unknown;
 }
@@ -206,6 +209,10 @@ export default function VerifyFlow() {
     setError("");
     const check = validatePhone(phone, phoneCountry);
     if (!check.ok) return setError(check.error);
+    // Indian (rupee) accounts verify a +91 number; the API says the same.
+    if (status?.country_code === "IN" && phoneCountry.dial_code !== "91") {
+      return setError(INDIAN_MOBILE_HINT);
+    }
     setBusy(true);
     try {
       const res = await fetch(`${API}/verification/phone`, {
@@ -405,7 +412,11 @@ export default function VerifyFlow() {
         <Header
           icon={<Phone className="h-5 w-5" />}
           title="Add your mobile number."
-          sub="We'll send a code on WhatsApp, because Indian regulations (CERT-In) require a verified contact number for compute rental. Any country code works."
+          sub={
+            status?.country_code === "IN"
+              ? `We'll send a code on WhatsApp, because Indian regulations (CERT-In) require a verified contact number for compute rental. ${INDIAN_MOBILE_HINT}`
+              : "We'll send a code on WhatsApp, because Indian regulations (CERT-In) require a verified contact number for compute rental. Any country code works."
+          }
         />
         <form onSubmit={submitPhone} className="grid gap-4">
           <div className="flex gap-2">
