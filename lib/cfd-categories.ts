@@ -49,12 +49,12 @@ export const CFD_CATEGORIES: CfdCategory[] = [
     },
   },
   {
-    // 16 Oct 2026: live for the steady analysis (validated on IEA Annex 20 and Betts & Bokhari). The
-    // transient (premium) tier is offered on the quote only once the API switches it on. To hide the
-    // tab again, set status "coming_soon" (futureInputs below is then shown instead of the form).
+    // 16 Oct 2026: hidden again (owner) after the Blay 1992 heated-floor benchmark: near-wall
+    // temperatures failed and a steady run could settle in the wrong flow pattern unnoticed. Set
+    // status "live" only after the follow-up validation passes. "coming_soon" shows futureInputs.
     id: "rooms",
     label: "Rooms / HVAC",
-    status: "live",
+    status: "coming_soon",
     summary:
       "Room air movement and comfort for HVAC designers: air speed, temperature, PMV/PPD and ADPI for one box-shaped room you describe. No geometry file needed.",
     api: {
