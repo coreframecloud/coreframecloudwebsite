@@ -210,6 +210,21 @@ const nextConfig: NextConfig = {
     return [
       { source: "/:path*", headers: securityHeaders },
       /**
+       * The CFD job page (16 Oct 2026): private to whoever holds the job's link.
+       * Never cached, never indexed, and no Referer leaves it (the job token is
+       * in the #fragment, which browsers do not send anyway; this is belt and
+       * braces for the path). Listed after the catch-all so its Referrer-Policy
+       * wins.
+       */
+      {
+        source: "/cfd/jobs/:path*",
+        headers: [
+          { key: "Cache-Control", value: "private, no-store, max-age=0" },
+          { key: "Referrer-Policy", value: "no-referrer" },
+          { key: "X-Robots-Tag", value: "noindex, nofollow, noarchive" },
+        ],
+      },
+      /**
        * Only www.coreframecloud.com may be indexed (12 Oct 2026). Vercel marks
        * per-commit PREVIEW deployments noindex by itself, but the production
        * aliases on vercel.app (coreframecloudwebsite.vercel.app,

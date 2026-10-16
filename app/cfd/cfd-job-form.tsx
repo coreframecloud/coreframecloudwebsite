@@ -203,7 +203,9 @@ export default function CfdJobForm({ token, accountEmail, onSignedOut, currency 
       const data = (await res.json()) as { ref_id: string; access_token?: string };
       setRefId(data.ref_id);
       if (data.access_token) {
-        setJobUrl(`${API_BASE}/cfd-jobs/${data.ref_id}/view?token=${encodeURIComponent(data.access_token)}`);
+        // The job page on this site (16 Oct 2026); the token rides in the #fragment
+        // (never sent to a server; app/cfd/jobs/[ref]/page.tsx strips it on arrival).
+        setJobUrl(`/cfd/jobs/${encodeURIComponent(data.ref_id)}#t=${encodeURIComponent(data.access_token)}`);
       }
       // A submitted CFD job is a lead (Meta "Lead"). No form fields go with it.
       trackConversion("generate_lead", { method: categoryId === "rooms" ? "cfd_room_job" : "cfd_duct_job", location: "cfd_intake" });
