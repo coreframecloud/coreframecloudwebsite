@@ -138,6 +138,18 @@ export function QuotePanel({
         const b = p.breakdown;
         if (!b) return m(p.compute_ex_gst);
         const f = b.compute_formula;
+        if (p.levels_text) {
+          // Validated: priced per mesh, shown as the three meshes' cells
+          return (
+            <>
+              {m(b.compute)}
+              <span className="mt-0.5 block text-[12px] leading-[1.45] text-ink-3">
+                {p.levels_text}
+                {f.rate_per_mcell_per_kiter ? ` × iterations at ${m(f.rate_per_mcell_per_kiter)}` : ""}
+              </span>
+            </>
+          );
+        }
         return (
           <>
             {m(b.compute)}
@@ -289,6 +301,11 @@ export function QuotePanel({
                     {p.package === quote.default_package && pkgs.length > 1 ? (
                       <span className="mt-1 block font-mono text-[11px] tracking-[0.12em] text-ink-3 uppercase">Suggested</span>
                     ) : null}
+                    {p.adds ? (
+                      <span className="mt-1 block max-w-[16rem] text-[12px] leading-[1.45] font-normal text-ink-3 sm:ml-auto">
+                        {p.adds}
+                      </span>
+                    ) : null}
                   </th>
                 );
               })}
@@ -354,6 +371,14 @@ export function QuotePanel({
           </Fine>
         ) : null}
         {dv.express && !dv.express.available && dv.express.unavailable ? <Fine>{dv.express.unavailable}</Fine> : null}
+        {quote.validated_unavailable ? <Fine>{quote.validated_unavailable}</Fine> : null}
+        {pkgs.some((p) => p.levels_text) ? (
+          <Fine>
+            Validated runs your case on three meshes: a coarser one, the quoted one and a finer one (coarser and finer
+            sizes are estimates; you pay for the cells and iterations actually run, never more than the total held).
+            Not offered as express.
+          </Fine>
+        ) : null}
       </div>
 
       {ex && exPkg ? (

@@ -76,6 +76,55 @@ export interface QuotePackage {
   convergence_short?: string;
   /** The full calculation, from the API (never recomputed here). */
   breakdown?: PriceBreakdown;
+  /** Validated (mesh-independence study, 16 Oct 2026): what it adds, and the three meshes it is priced on. */
+  adds?: string;
+  levels_text?: string;
+  levels?: ValidatedLevelQuote[];
+  gci_threshold_pct?: number;
+}
+
+/** One mesh of the Validated study on the quote (cfd_validated.quote_view_extra). */
+export interface ValidatedLevelQuote {
+  level: "coarse" | "medium" | "fine" | string;
+  cells: number;
+  mcells: number;
+  iterations: number;
+  /** true: the coarse / fine size is estimated from the quoted (medium) mesh */
+  estimate: boolean;
+  compute: Money;
+}
+
+/** The job page's mesh-independence block (cfd_validated.results_view). */
+export interface ValidatedResults {
+  verdict?: string | null;
+  independent: boolean;
+  computed: boolean;
+  status?: string | null;
+  threshold_pct?: number | null;
+  delivered_level?: string | null;
+  levels: {
+    level: string;
+    status?: string | null;
+    cells?: number | null;
+    pressure_drop_pa?: number | null;
+    total_pressure_drop_pa?: number | null;
+    loss_coefficient_k?: number | null;
+    iterations?: number | null;
+    reason?: string | null;
+  }[];
+  quantities: Record<
+    string,
+    {
+      apparent_order: number | null;
+      order_used: number | null;
+      extrapolated: number | null;
+      gci_fine_pct: number | null;
+      gci_fine_celik_pct: number | null;
+      convergence?: string | null;
+      fine: number | null;
+    }
+  >;
+  refinement_ratios?: { r21?: number | null; r32?: number | null };
 }
 
 /** cfd_jobs.py _price_breakdown: base + compute (+ adjustment) = subtotal − discount = price before GST. */
@@ -160,6 +209,8 @@ export interface Quote {
   gst_rate_percent?: number;
   currency?: string;
   packages: QuotePackage[];
+  /** Why the Validated study is not offered for this model (null when it is, or when it is switched off). */
+  validated_unavailable?: string | null;
   default_package?: string;
   settle_option?: { default?: boolean; text: string; detail?: string } | null;
   pay_line?: string;
@@ -216,6 +267,8 @@ export interface CfdJob {
     express?: { text: string; multiplier?: number } | null;
   } | null;
   headline?: Record<string, number | string>;
+  /** Validated package: the mesh-independence (GCI) result. */
+  validated?: ValidatedResults | null;
   stop_basis?: string;
   report_url?: string;
   view3d_url?: string;

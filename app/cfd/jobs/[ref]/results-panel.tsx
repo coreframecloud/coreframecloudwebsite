@@ -9,7 +9,15 @@
 import dynamic from "next/dynamic";
 import { useState } from "react";
 import { type Currency } from "@/lib/money";
-import { HEADLINE_LABELS, LEAD_HEADLINE, fmtNumber, money, type CfdJob, type WalletLine } from "@/lib/cfd-job";
+import {
+  HEADLINE_LABELS,
+  LEAD_HEADLINE,
+  fmtNumber,
+  money,
+  type CfdJob,
+  type ValidatedResults,
+  type WalletLine,
+} from "@/lib/cfd-job";
 import { ActionErrorView, Card, Fine, QuietButton, WalletRow, signInHref, type ActionError } from "./parts";
 import Link from "next/link";
 
@@ -61,6 +69,7 @@ export function ResultsPanel({ job }: { job: CfdJob }) {
           ))}
         </dl>
       ) : null}
+      {job.validated ? <MeshIndependence v={job.validated} /> : null}
       {job.stop_basis ? <Fine className="mt-4">How the run ended: {job.stop_basis}</Fine> : null}
       <div className="mt-6 flex flex-col gap-3 sm:flex-row">
         {job.report_url ? (
@@ -184,5 +193,68 @@ export function BillingLine({ job, cur }: { job: CfdJob; cur: Currency }) {
         ))}
       </dl>
     </div>
+  );
+}
+
+/** Validated package: the three meshes and the GCI verdict (cfd_validated.results_view). */
+function MeshIndependence({ v }: { v: ValidatedResults }) {
+  const q = v.quantities?.pressure_drop_pa;
+  const n = (x: number | null | undefined, sig = 4) => (x == null ? "–" : fmtNumber(Number(x.toPrecision(sig))));
+  const solved = (s?: string | null) => s === "completed" || s === "not_converged";
+  return (
+    <section className="mt-6 rounded-[16px] bg-paper-2 px-4 py-4 sm:px-5" aria-label="Mesh independence">
+      <p className="font-mono text-[12px] tracking-[0.14em] text-ink-3 uppercase">Mesh independence (GCI)</p>
+      {v.verdict ? <p className="mt-2 text-[15px] leading-[1.55] font-medium text-ink">{v.verdict}</p> : null}
+      <table className="mt-3 w-full border-collapse text-[13px] text-ink-2">
+        <thead>
+          <tr className="text-left text-[12px] text-ink-3">
+            <th scope="col" className="py-1 pr-2 font-normal">Mesh</th>
+            <th scope="col" className="py-1 pr-2 text-right font-normal">Cells</th>
+            <th scope="col" className="py-1 pr-2 text-right font-normal">Static ΔP (Pa)</th>
+            <th scope="col" className="hidden py-1 pr-2 text-right font-normal sm:table-cell">Total ΔP (Pa)</th>
+            <th scope="col" className="py-1 text-right font-normal">K</th>
+          </tr>
+        </thead>
+        <tbody>
+          {v.levels.map((l) => (
+            <tr key={l.level} className="border-t border-rule">
+              <th scope="row" className="py-1.5 pr-2 text-left font-normal text-ink capitalize">
+                {l.level}
+                {l.level === v.delivered_level ? <span className="text-ink-3"> · report</span> : null}
+              </th>
+              <td className="py-1.5 pr-2 text-right">{l.cells ? fmtNumber(l.cells) : "–"}</td>
+              {solved(l.status) ? (
+                <>
+                  <td className="py-1.5 pr-2 text-right">{n(l.pressure_drop_pa)}</td>
+                  <td className="hidden py-1.5 pr-2 text-right sm:table-cell">{n(l.total_pressure_drop_pa)}</td>
+                  <td className="py-1.5 text-right">{n(l.loss_coefficient_k)}</td>
+                </>
+              ) : (
+                <td colSpan={3} className="py-1.5 text-right text-ink-3">
+                  not solved
+                </td>
+              )}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      {v.computed && q ? (
+        <Fine className="mt-3">
+          Apparent order p = {n(q.apparent_order, 3)}
+          {q.order_used != null && q.apparent_order != null && q.order_used < q.apparent_order
+            ? ` (limited to ${n(q.order_used, 2)} for the band)`
+            : ""}
+          ; extrapolated ΔP {n(q.extrapolated)} Pa; GCI on the fine mesh {n(q.gci_fine_pct, 2)} %
+          {v.threshold_pct != null ? ` (limit ${v.threshold_pct} %)` : ""}. The method and the plot are in the PDF report.
+        </Fine>
+      ) : null}
+      {v.levels
+        .filter((l) => !solved(l.status) && l.reason)
+        .map((l) => (
+          <Fine key={l.level} className="mt-2">
+            <span className="capitalize">{l.level}</span> mesh: {l.reason}. Not charged.
+          </Fine>
+        ))}
+    </section>
   );
 }
