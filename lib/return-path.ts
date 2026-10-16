@@ -13,12 +13,38 @@
  * abandoned today does not hijack an unrelated sign-in next week.
  */
 
+import { API_BASE } from "@/lib/api-base";
+
 const KEY = "cf_return_to";
+
+/**
+ * The ONE absolute destination allowed: the CFD job page the API serves
+ * (control.coreframecloud.com/api/cfd-jobs/<ref>/view). Its "Sign in" link
+ * sends people here with next=<that URL>, and they must land back on it with
+ * the session cookie set (16 Oct 2026). Exact origin and path shape only, and
+ * never a query: the job token stays out of www URLs (the job page keeps it).
+ */
+function apiJobPage(path: string): string | null {
+  let u: URL;
+  let api: URL;
+  try {
+    u = new URL(path);
+    api = new URL(API_BASE);
+  } catch {
+    return null;
+  }
+  if (u.origin !== api.origin || u.username || u.password) return null;
+  const prefix = api.pathname.replace(/\/+$/, "");
+  const m = u.pathname.slice(prefix.length);
+  if (!u.pathname.startsWith(prefix + "/") || !/^\/cfd-jobs\/[A-Za-z0-9_-]{1,64}\/view$/.test(m)) return null;
+  return u.origin + u.pathname;
+}
 const TTL_MS = 6 * 60 * 60 * 1000;
 
-/** A same-site path, or null. Rejects "//host" and "/\host", which browsers treat as another origin. */
+/** A same-site path (or the API's CFD job page), or null. Rejects "//host" and "/\host", which browsers treat as another origin. */
 export function safeReturnPath(path: string | null | undefined): string | null {
   if (!path || typeof path !== "string") return null;
+  if (/^https:\/\//.test(path) || /^http:\/\/(localhost|127\.0\.0\.1)[:/]/.test(path)) return apiJobPage(path);
   if (!path.startsWith("/") || path.startsWith("//") || path.startsWith("/\\")) return null;
   if (path.length > 300) return null;
   // The CFD page moved from /cfd-intake to /cfd (13 Oct 2026). Sign-in links

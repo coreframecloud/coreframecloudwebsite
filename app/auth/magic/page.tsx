@@ -8,6 +8,7 @@ import { CheckCircle, XCircle, Loader2 } from "lucide-react";
 import { Suspense } from "react";
 import { trackSignupIfNew } from "@/lib/analytics";
 import { API_BASE } from "@/lib/api-base";
+import { goAfterSignIn } from "@/lib/session-cookie";
 
 const API = API_BASE;
 
@@ -35,6 +36,9 @@ function MagicLinkVerifier() {
 
     fetch(`${API}/auth/verify-magic-link`, {
       method: "POST",
+      // Keep the HttpOnly cf_session cookie this sets on control (the CFD job
+      // page signs in with nothing else). Google sign-in also ends here.
+      credentials: "include",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ token }),
     })
@@ -58,7 +62,7 @@ function MagicLinkVerifier() {
         // once there is nothing left to verify.
         const next = data.user?.status === "pending_approval" ? "/verify" : (takeReturnPath() ?? "/my-activity");
         setTimeout(() => {
-          window.location.href = next;
+          void goAfterSignIn(next);
         }, 1200);
       })
       .catch(() => {
