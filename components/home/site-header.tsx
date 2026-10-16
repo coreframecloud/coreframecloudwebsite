@@ -156,6 +156,13 @@ function UserAvatar({ initials, accountNumber, onSignOut }: { initials: string; 
               </div>
             </div>
           ) : null}
+          <Link
+            href="/my-activity#cfd-jobs"
+            onClick={() => setDropdownOpen(false)}
+            className="flex w-full items-center px-4 py-2.5 text-sm text-ink-2 transition hover:bg-paper-2 hover:text-ink"
+          >
+            CFD jobs
+          </Link>
           <button
             type="button"
             onClick={onSignOut}
@@ -532,6 +539,15 @@ export function SiteHeader() {
                 >
                   {pending ? "Finish sign-up" : "My Activity"}
                 </Link>
+                {!pending && (
+                  <Link
+                    href="/my-activity#cfd-jobs"
+                    onClick={() => setOpen(false)}
+                    className="rounded-cf px-3 py-2.5 text-sm font-medium text-ink transition hover:bg-paper-2 hover:text-ink"
+                  >
+                    CFD jobs
+                  </Link>
+                )}
                 {auth.user?.role === "org_admin" && (
                   <Link
                     href="/org-admin"

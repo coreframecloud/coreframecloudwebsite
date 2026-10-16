@@ -37,6 +37,8 @@ import {
   type WalletLine,
 } from "@/lib/cfd-job";
 import { ActionErrorView, Body, Card, ErrorLine, Fine, More, PrimaryButton, QuietButton, UploadBox, WalletRow, signInHref, type ActionError } from "./parts";
+import { isAccountAccess } from "@/lib/cfd-my-jobs";
+import { MissingSignedIn } from "@/components/cfd/my-cfd-jobs";
 import { QuoteDetails, QuotePanel } from "./quote-panel";
 import { BillingLine, ContinuePanel, ResultsPanel } from "./results-panel";
 
@@ -146,7 +148,7 @@ export default function CfdJobPage({ refId }: { refId: string }) {
             reload={() => void refresh(token)}
           />
         ) : null}
-        {job && token ? <PrivateLink refId={refId} token={token} /> : null}
+        {job && token && !isAccountAccess(token) ? <PrivateLink refId={refId} token={token} /> : null}
       </div>
     </main>
   );
@@ -242,6 +244,7 @@ function Missing({ refId }: { refId: string }) {
       <Fine className="mt-3">
         Lost the email? Reply to any email from us, or write to admin@coreframecloud.com with the job number.
       </Fine>
+      <MissingSignedIn refId={refId} />
     </Card>
   );
 }

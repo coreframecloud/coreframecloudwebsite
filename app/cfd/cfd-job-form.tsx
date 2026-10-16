@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { API_BASE } from "@/lib/api-base";
 import { useRateCard } from "@/lib/use-rate-card";
@@ -276,11 +277,23 @@ export default function CfdJobForm({ token, accountEmail, onSignedOut, currency 
           </ol>
         </div>
 
-        {jobUrl ? (
-          <a href={jobUrl} target="_blank" rel="noreferrer" className="cf-btn-primary mt-7">
-            Open your job page
-          </a>
-        ) : null}
+        {/* Signed in (every submission is, since 13 Oct 2026): the job page also opens with the
+            session, so the link works even when the API sent no token. */}
+        <a
+          href={jobUrl || `/cfd/jobs/${encodeURIComponent(refId)}`}
+          target="_blank"
+          rel="noreferrer"
+          className="cf-btn-primary mt-7"
+        >
+          Open your job page
+        </a>
+        <p className="mt-3 text-[13.5px] leading-5 text-ink-3">
+          It is also listed under{" "}
+          <Link href="/my-activity#cfd-jobs" className="font-medium text-ink-2 underline underline-offset-2">
+            CFD jobs
+          </Link>{" "}
+          in your account.
+        </p>
         <p className="mt-4 text-[13.5px] leading-5 text-ink-3">
           The same link is on its way to {accountEmail || "your account's email"}. Keep it private: it also opens your results.
         </p>
