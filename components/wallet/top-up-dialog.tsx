@@ -21,7 +21,10 @@
  *
  * Billing COUNTRY is mandatory, and for India so is the STATE: the state code
  * decides CGST+SGST versus IGST on the tax invoice this payment raises, and an
- * invoice taxed wrongly can only be corrected by credit note. The list is
+ * invoice taxed wrongly can only be corrected by credit note. The PIN code is
+ * optional (owner, 16 Oct 2026): it decides no tax, the API has always taken
+ * it as optional, and the invoice omits it cleanly; if one is typed it must be
+ * six digits. The list is
  * fetched from /public/gst-states rather than hardcoded, so three clients
  * cannot drift. Any other country is sent as GST state code 96 ("Outside
  * India (Foreign Country)") with a free-form postal code; per the owner
@@ -60,6 +63,16 @@ import {
   type GstState,
 } from "@/lib/validation";
 import { API_BASE } from "@/lib/api-base";
+import {
+  BonusLadder,
+  YouGetBar,
+  bonusMoney,
+  bulkBonusFor,
+  tierMin,
+  type BulkTier,
+} from "@/components/wallet/bonus-ladder";
+
+export { bulkBonusFor, type BulkTier };
 
 const API = API_BASE;
 
@@ -76,6 +89,9 @@ type PaymentsConfig = {
   min_topup?: number | null;
   max_topup?: number | null;
   min_topup_now?: number | null;
+  /** The bonus ladder in the account's currency, straight from the server
+   *  (topup_bonus.public_tiers); empty when the bonus is switched off. */
+  bulk_topup_tiers?: BulkTier[] | null;
 };
 
 // Razorpay attaches itself to window; typed loosely because we only ever call
@@ -100,24 +116,25 @@ function loadRazorpay(): Promise<boolean> {
 
 const PRESET_LADDER = [500, 1000, 2000, 5000, 10000, 20000];
 const PRESET_LADDER_USD = [20, 50, 100, 200, 500, 1000];
+const MAX_PRESETS = 5;
 
-/** In the account's currency: `min`/`bonus` from 15 Oct 2026, the `_rupees`
- *  names kept for an older control plane. */
-export type BulkTier = { min_rupees: number; percent: number; bonus_rupees: number; min?: number; bonus?: number };
-
-const tierMin = (t: BulkTier) => t.min ?? t.min_rupees;
-const tierBonus = (t: BulkTier) => t.bonus ?? t.bonus_rupees;
-
-/** The bonus a top-up of `rupees` earns at the given tiers (0 below the first). */
+/** The typed amount as a number, 0 while empty or not a number. */
 function typedRupeesForBonus(amount: string): number {
   const v = Number(amount);
   return Number.isFinite(v) && v > 0 ? v : 0;
 }
 
-export function bulkBonusFor(rupees: number, tiers: BulkTier[] | null | undefined): number {
-  let pct = 0;
-  for (const t of tiers ?? []) if (rupees >= tierMin(t)) pct = t.percent;
-  return Math.round(rupees * pct) / 100;
+/** The preset buttons: the customer's floor, every bonus tier in range (so each
+ *  tier is one tap away and can carry its "+₹500" badge), then the usual
+ *  ladder until there are five. */
+function presetAmounts(floor: number, max: number, ladder: number[], tierMins: number[]): number[] {
+  const inRange = (p: number) => p > floor && p <= max;
+  const out = new Set<number>([floor, ...tierMins.filter(inRange)]);
+  for (const p of ladder.filter(inRange)) {
+    if (out.size >= MAX_PRESETS) break;
+    out.add(p);
+  }
+  return [...out].sort((a, b) => a - b).slice(0, MAX_PRESETS);
 }
 
 export default function TopUpDialog({
@@ -265,7 +282,9 @@ export default function TopUpDialog({
   const rateCard = useRateCard(open && isUsd);
   const tiersMatch = (parseCurrency(walletCurrency) ?? "INR") === currency;
   const tiers: BulkTier[] | null =
-    bulkTiers && bulkTiers.length && tiersMatch
+    config?.bulk_topup_tiers
+      ? config.bulk_topup_tiers
+      : bulkTiers && bulkTiers.length && tiersMatch
       ? bulkTiers
       : isUsd
         ? usdRates(rateCard).bulk_topup_tiers.map((t) => ({
@@ -277,12 +296,12 @@ export default function TopUpDialog({
           }))
         : tiersMatch ? bulkTiers ?? null : null;
 
-  const presets = (() => {
-    const floor = config?.min_topup_rupees ?? minTopupNow ?? 500;
-    const max = config?.max_topup_rupees ?? 50000;
-    const ladder = (isUsd ? PRESET_LADDER_USD : PRESET_LADDER).filter((p) => p > floor && p <= max);
-    return [floor, ...ladder].slice(0, 4);
-  })();
+  const presets = presetAmounts(
+    config?.min_topup_rupees ?? minTopupNow ?? 500,
+    config?.max_topup_rupees ?? 50000,
+    isUsd ? PRESET_LADDER_USD : PRESET_LADDER,
+    (tiers ?? []).map(tierMin),
+  );
 
   // First top-up of an account with no country yet: the country (and, in
   // India, the state) is saved first, which fixes the account's currency.
@@ -350,7 +369,10 @@ export default function TopUpDialog({
     if (isUsd && isIndia) return setError("Your account is billed in US dollars. Select your country outside India.");
     if (isIndia) {
       if (!stateCode) return setError("Select your state. It decides the GST split on your invoice.");
-      if (!/^\d{6}$/.test(pincode.trim())) return setError("Enter your 6-digit PIN code.");
+      // Optional (owner, 16 Oct 2026): checked only when one is typed.
+      if (pincode.trim() && !/^\d{6}$/.test(pincode.trim())) {
+        return setError("A PIN code has 6 digits. Correct it, or leave it empty.");
+      }
     }
 
     setBusy(true);
@@ -628,15 +650,41 @@ export default function TopUpDialog({
                   </div>
                 )}
                 {!starterMode && (<>
-                <div className="mt-5 flex flex-wrap gap-2">
+                {tiers && tiers.length > 0 && (
+                  // The bonus, drawn: three tiles, the best one's bonus the
+                  // view's single yellow. A tap sets the amount to that tier.
+                  <div className="mt-5">
+                    <div className="mb-2 flex flex-col gap-0.5 sm:flex-row sm:items-baseline sm:justify-between sm:gap-2">
+                      <p className="text-sm leading-5 font-semibold text-ink">Top up more, get more.</p>
+                      <p className="text-[12px] leading-4 text-ink-2">
+                        {intro ? "From your second top-up" : isUsd ? "Bonus on GPU time and CFD" : "Bonus on GPU time, CFD and Studio"}
+                      </p>
+                    </div>
+                    <BonusLadder
+                      tiers={tiers}
+                      currency={currency}
+                      amount={typedRupeesForBonus(amount)}
+                      dimmed={Boolean(intro)}
+                      onPick={(v) => { setAmount(String(v)); setError(""); }}
+                    />
+                    {intro && (
+                      <p className="mt-2 text-xs leading-5 text-ink-2">
+                        Your first top-up earns the intro offer instead; the bonus applies from the next one, on GPU
+                        time, CFD and Studio.
+                      </p>
+                    )}
+                  </div>
+                )}
+                <div className="mt-4 flex flex-wrap gap-2">
                   {presets.map((p) => {
                     const isIntro = intro && p === intro.priceRupees;
+                    const presetBonus = intro ? 0 : bulkBonusFor(p, tiers);
                     return (
                       <button
                         key={p}
                         type="button"
-                        onClick={() => setAmount(String(p))}
-                        className={`inline-flex min-h-11 flex-col items-center justify-center rounded-cf border px-4 py-1 text-sm font-semibold tabular-nums transition ${
+                        onClick={() => { setAmount(String(p)); setError(""); }}
+                        className={`inline-flex min-h-11 flex-col items-center justify-center rounded-cf border px-3.5 py-1 text-sm font-semibold tabular-nums transition sm:px-4 ${
                           amount === String(p)
                             ? "border-blue bg-blue-soft text-blue"
                             : "border-rule bg-paper-2 text-ink-2 hover:text-ink"
@@ -648,30 +696,15 @@ export default function TopUpDialog({
                             Intro: {hoursLabel(intro.hours)}
                           </span>
                         )}
+                        {presetBonus > 0 && (
+                          <span className="text-[11px] font-semibold leading-4 text-blue">
+                            +{bonusMoney(presetBonus, currency)}
+                          </span>
+                        )}
                       </button>
                     );
                   })}
                 </div>
-                {tiers && tiers.length > 0 && (
-                  <p className="mt-2 text-xs leading-5 text-ink-2">
-                    {tiers
-                      .map((t, i) => {
-                        // Whole rupees as before; cents kept for dollars ($2.50).
-                        const bonus = money(isUsd ? tierBonus(t) : Math.round(tierBonus(t)));
-                        return i === 0
-                          ? `Top up ${money(tierMin(t))}, get ${bonus} extra`
-                          : `${money(tierMin(t))}, get ${bonus} extra`;
-                      })
-                      .join(" · ")}
-                    {" "}({tiers.map((t) => `${t.percent}%`).join(" / ")}), usable on GPU time, CFD{isUsd ? "" : " and Studio"}
-                    {intro ? ", from your second top-up — the first earns the intro offer" : ""}.
-                    {!intro && bulkBonusFor(typedRupeesForBonus(amount), tiers) > 0 && (
-                      <span className="font-semibold text-blue">
-                        {" "}This top-up adds {money(bulkBonusFor(typedRupeesForBonus(amount), tiers))} extra.
-                      </span>
-                    )}
-                  </p>
-                )}
                 {intro && (
                   <p className="mt-2 text-xs leading-5 text-ink-2">
                     Intro offer: your first top-up of ₹{intro.priceRupees.toLocaleString("en-IN")} buys{" "}
@@ -713,6 +746,9 @@ export default function TopUpDialog({
                       : isIndia ? "GST included; a tax invoice is issued automatically." : "An invoice is issued automatically."}
                   </p>
                 ) : null}
+                {!intro && tiers && tiers.length > 0 && !amountTooLow && !amountTooHigh && (
+                  <YouGetBar amount={typedRupeesForBonus(amount)} tiers={tiers} currency={currency} />
+                )}
                 </>)}
 
                 <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -787,7 +823,7 @@ export default function TopUpDialog({
                   <div>
                     <label className="block cf-eyebrow">
                       {isIndia ? (
-                        <>PIN code <span className="text-blue">(required)</span></>
+                        <>PIN code <span className="normal-case tracking-normal">(optional)</span></>
                       ) : (
                         "Postal code"
                       )}

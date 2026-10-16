@@ -41,6 +41,9 @@
   --color-blue: #2f6be0;
   --color-blue-ink: #24549f;
   --color-blue-soft: #2f6be00f;
+  /* The owner's highlight yellow (15 Oct 2026): ONE phrase per view, behind
+     ink text, never as text on paper. Used by the top-up bonus ladder. */
+  --color-hl: #ffd43b;
 
   /* The dark monospace panel. Deliberately near-black rather than the page
      inverted: it has to read as a terminal, not as a dark card. */

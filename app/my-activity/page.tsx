@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import TopUpDialog, { type BulkTier } from "@/components/wallet/top-up-dialog";
+import { BonusLadder } from "@/components/wallet/bonus-ladder";
 import { trackEvent } from "@/lib/analytics";
 import {
   getIntroOffer,
@@ -895,23 +896,30 @@ export default function MyActivityPage() {
                     and the Connect client already had. The dialog asks the
                     server whether recharge is configured and falls back to the
                     contact route only if it says no. */}
-                <p className="text-sm leading-6 text-ink-2">
+                {/* The bulk bonus, drawn (owner, 16 Oct 2026). Tiers from the
+                    wallet status, in the account's currency; a tile opens the
+                    dialog with that amount. */}
+                {(wallet?.bulk_topup_tiers?.length ?? 0) > 0 && (
+                  <>
+                    <p className="mb-3 font-display text-xl leading-7 font-semibold text-ink">
+                      Top up more, get more.
+                    </p>
+                    <BonusLadder
+                      tiers={wallet!.bulk_topup_tiers!}
+                      currency={cur}
+                      onPick={(v) => openTopUp(v, "add_funds")}
+                    />
+                    <p className="mt-3 text-xs leading-5 text-ink-2">
+                      Bonus credit on top of what you pay, for GPU time{cur === "USD" ? " and CFD" : ", CFD and Studio"}
+                      {wallet?.intro_offer_available ? ", from your second top-up" : ""}.
+                    </p>
+                  </>
+                )}
+                <p className={`text-sm leading-6 text-ink-2 ${(wallet?.bulk_topup_tiers?.length ?? 0) > 0 ? "mt-2" : ""}`}>
                   {cur === "USD"
                     ? "Top up by card, in US dollars. No GST (export of services); an invoice is issued automatically."
                     : "Top up by card, UPI or netbanking. A GST invoice is issued automatically."}
                 </p>
-                {(wallet?.bulk_topup_tiers?.length ?? 0) > 0 && (
-                  <p className="mt-2 text-sm leading-6 text-ink-2">
-                    {wallet!.bulk_topup_tiers!
-                      .map((t) =>
-                        cur === "USD"
-                          ? `${formatMoney(t.min ?? t.min_rupees, "USD")} → ${formatMoney(t.bonus ?? t.bonus_rupees, "USD")} extra`
-                          : `₹${t.min_rupees.toLocaleString("en-IN")} → ₹${Math.round(t.bonus_rupees).toLocaleString("en-IN")} extra`,
-                      )
-                      .join(" · ")}
-                    .
-                  </p>
-                )}
               </div>
               <button
                 type="button"
