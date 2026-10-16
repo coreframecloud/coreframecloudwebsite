@@ -1,12 +1,15 @@
 "use client";
 
 import { clearReturnPath, peekReturnPath, rememberReturnPath, safeReturnPath } from "@/lib/return-path";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   COUNTRIES,
   INDIA,
+  INDIAN_MOBILE_HINT,
   fetchCountries,
   fetchIndianGstStates,
+  fetchIpCountry,
+  ipMismatchMessage,
   validateGstin,
   validatePhone,
   type Country,
@@ -296,6 +299,7 @@ export default function LoginForm({
       }
     });
     fetchIndianGstStates(API).then(setGstStates);
+    fetchIpCountry(API).then(setIpCountry);
   }, []);
 
   // Safari and Chrome restore this page from the back/forward cache without
@@ -336,6 +340,12 @@ export default function LoginForm({
   // invoices carry it and the place of supply is right; nothing else differs.
   const [linkAccountType, setLinkAccountType] = useState<"b2c" | "b2b">("b2c");
   const [linkGstin, setLinkGstin] = useState("");
+  // Cloudflare's country for this connection. India chosen from elsewhere gets
+  // one "Are you in India?" step (owner, 16 Oct 2026); never a block.
+  const [ipCountry, setIpCountry] = useState<string | null>(null);
+  const [askIndia, setAskIndia] = useState(false);
+  // A ref, not state: the "Yes" button sets it and submits in the same click.
+  const indiaConfirmed = useRef(false);
   const [linkLoading, setLinkLoading] = useState(false);
 
   // ── Email Code state ────────────────────────────────────────────────────────
@@ -429,6 +439,14 @@ export default function LoginForm({
     }
     const phoneCheck = validatePhone(linkPhone, phoneCountry);
     if (!phoneCheck.ok) return setError(phoneCheck.error);
+    if (homeCountry.iso === "IN" && phoneCountry.dial_code !== "91") {
+      return setError(INDIAN_MOBILE_HINT);
+    }
+    if (homeCountry.iso === "IN" && ipCountry && ipCountry !== "IN" && !indiaConfirmed.current) {
+      setAskIndia(true);
+      return;
+    }
+    setAskIndia(false);
 
     // A business is an entity on an invoice; its registered name is not
     // optional. For an individual the studio name stays a nicety.
@@ -747,6 +765,7 @@ export default function LoginForm({
                           // be changed on its own for a number from elsewhere.
                           setPhoneCountry(next);
                         }
+                        setAskIndia(false);
                         setError("");
                       }}
                       className={selectCls}
@@ -820,8 +839,30 @@ export default function LoginForm({
                   <p className="mt-0.5 text-xs leading-5 text-ink-3">
                     We&apos;ll send a code on WhatsApp, because Indian regulations
                     require us to hold a verified contact number for compute rental.
+                    {homeCountry.iso === "IN" && <> {INDIAN_MOBILE_HINT}</>}
                   </p>
                 </Field>
+                {askIndia && ipCountry && (
+                  <div className="grid gap-3 rounded-cf border border-rule px-4 py-3">
+                    <p className="text-sm leading-6 text-ink">{ipMismatchMessage(ipCountry)}</p>
+                    <div className="flex flex-wrap gap-2">
+                      <Button
+                        type="submit"
+                        className="cf-btn-primary min-h-11"
+                        onClick={() => { indiaConfirmed.current = true; }}
+                      >
+                        Yes, I&apos;m in India
+                      </Button>
+                      <button
+                        type="button"
+                        className="inline-flex min-h-11 items-center text-[13px] text-ink-2 hover:text-ink"
+                        onClick={() => { setAskIndia(false); setError("Choose the country you're in."); }}
+                      >
+                        No, change my country
+                      </button>
+                    </div>
+                  </div>
+                )}
                 {error && <ErrorBox msg={error} />}
                 <Button type="submit" disabled={linkLoading} className="cf-btn-primary min-h-11 w-full disabled:opacity-60">
                   {linkLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ArrowRight className="mr-2 h-4 w-4" />}
