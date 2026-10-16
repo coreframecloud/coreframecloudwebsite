@@ -49,7 +49,7 @@ export function RedesignHero({ introLabel }: { introLabel: string | null }) {
         </div>
       </div>
       <p className="cfh-wrap pb-20 text-[11.5px] text-white/70 sm:pb-28">
-        Background: a living room rendered on Coreframe.
+        Background: a living room created with Coreframe RenderGrid.
       </p>
     </section>
   );

@@ -36,7 +36,7 @@ export const blenderInteriorRender: BlogPost = {
     alt: "A calm living room with a white sofa, a woven leather chair, an olive tree and a garden through the windows.",
     width: 1152,
     height: 648,
-    caption: "A living room rendered on Coreframe's RTX 5080.",
+    caption: "A living room created with Coreframe RenderGrid.",
   },
   answer: () =>
     `To render a Blender scene on a cloud RTX 5080, you upload the .blend to your Coreframe drive, launch a workstation from the Connect app, open Blender on the remote Windows desktop, set Cycles to use the GPU through OptiX, render, save the image back to the same drive and download it. Blender is already installed, so there is nothing to license. The recording below shows one complete session, from signing in to the bill, and this article goes through it step by step with the exact settings we used.`,
