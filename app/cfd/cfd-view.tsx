@@ -24,8 +24,14 @@ import { cellsLabel, formatMoney, usdRates, type Currency, type UsdRateCard } fr
  *   - wall layers at y+ ~ 1 by default;
  *   - every run is judged against residual targets, and a run that did not
  *     converge is delivered marked provisional.
- * Do NOT add a bend / fitting K accuracy figure (about +-25 % today), a
- * turnaround time, package prices or anything about how quotes are priced.
+ * Do NOT add a bend / fitting K accuracy figure (about +-25 % today), package
+ * prices or anything about how quotes are priced.
+ *
+ * DELIVERY SPEEDS (owner, 14 Oct 2026; control plane branch cfd-express-20261014,
+ * merged into cfd-cloudpe-20261016): Normal = "results within 24 hours" of payment;
+ * Express = "results in 1–2 hours", 3x the price, offered on the quote only for
+ * models that fit (smaller steady runs). Keep the provider, our costs and how the
+ * 3x is derived off this page.
  *
  * Images in /public/cfd are real outputs of overnight end-to-end runs on our
  * own test geometry (12 Oct 2026, 50 mm pipes, water at 4 m/s): a 90 degree
@@ -123,7 +129,7 @@ const STEPS = [
   },
   {
     title: "Accept, pay from your wallet, get the results",
-    body: "The case runs on OpenFOAM. You get a PDF report, a 3D results viewer and the data files.",
+    body: "Normal: results within 24 hours. Express: results in 1–2 hours at 3x the price, where your quote offers it. You get a PDF report, a 3D results viewer and the data files.",
   },
 ];
 
@@ -159,6 +165,10 @@ const FAQ = [
   {
     q: "What does it cost to start?",
     a: "The quote fee is ₹599 (incl. GST) for most duct and pipe models and ₹1,499 for very large models (over 5 million cells), paid from your Coreframe wallet. The size is estimated from your STL before you pay, so you see which fee applies on your job page. For that we build the real mesh of your geometry and email you a quote with packages. You pay for the run only if you accept the quote. The quoted amount is held in your wallet, you are charged for what the run actually used, and the rest goes back to your wallet.",
+  },
+  {
+    q: "How fast do I get results?",
+    a: "Normal runs deliver results within 24 hours of payment. Express delivers results in 1–2 hours of payment at 3x the price of the same package. Express is offered for smaller models whose run fits that window, and your quote shows whether it is offered for yours. Both follow the same rules: you pay for the iterations run, and the rest of the hold comes back to your wallet.",
   },
   {
     q: "How accurate is it?",
@@ -516,6 +526,7 @@ export default async function CfdView({ currency }: { currency: Currency }) {
                   ? ["Quote by email", "Runs are quoted in US dollars after the mesh is built: packages to choose from, each with its iteration budget and convergence targets."]
                   : ["Quote by email", "Packages to choose from, each with its iteration budget and convergence targets."],
                 ["Pay only if you accept", "Nothing runs, and nothing more is charged, until you pay the quote."],
+                ["Normal or express", "Normal: results within 24 hours. Express: results in 1–2 hours at 3x the price, where the quote offers it."],
                 ["Held, then settled", "The quote is held in your wallet; you are charged for what the run used and the rest comes back."],
               ].map(([t, b]) => (
                 <li key={t} className="min-w-0 border-t border-white/15 pt-4">
