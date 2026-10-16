@@ -125,9 +125,6 @@ export default function Page() {
                 <a href="/studio" className="cf-btn-primary w-full sm:w-auto">
                   Try it with your plan
                 </a>
-                <a href="/studio/demo.dxf" className="cf-btn-secondary w-full sm:w-auto">
-                  Get the demo plan
-                </a>
               </div>
               <p className="mt-4 text-[13.5px] text-ink-3">
                 DXF floor plans only, up to 30 MB. Working in DWG or Revit?{" "}
@@ -217,9 +214,6 @@ export default function Page() {
               <div className="mt-7 flex flex-wrap gap-3">
                 <a href="/studio" className="cfh-pill-light">
                   Open Studio
-                </a>
-                <a href="/studio/demo.dxf" className="cfh-pill-ghost">
-                  Get the demo plan
                 </a>
               </div>
             </div>
