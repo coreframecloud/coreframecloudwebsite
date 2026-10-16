@@ -9,6 +9,7 @@
  * The list never carries a job token.
  */
 import { API_BASE } from "@/lib/api-base";
+import { customerWords } from "@/lib/cfd-words";
 
 /**
  * Stands in for the job token when the page is opened by its signed-in owner.
@@ -62,7 +63,7 @@ export async function fetchMyCfdJobs(
     });
     if (res.status === 401) return "signed_out";
     if (!res.ok) return null;
-    return (await res.json()) as MyCfdJobsPage;
+    return customerWords((await res.json()) as MyCfdJobsPage);
   } catch {
     return null;
   }

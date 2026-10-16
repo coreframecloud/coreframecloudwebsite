@@ -11,6 +11,8 @@ import CfdStart from "./cfd-start";
 import { StatusBadge } from "@/components/home/redesign/offerings";
 import { getRateCard } from "@/lib/rate-card";
 import { cellsLabel, formatMoney, usdRates, type Currency, type UsdRateCard } from "@/lib/money";
+import { VerifiedCard } from "@/components/cfd-explainer/verified-card";
+import { VERIFIED, verifiedFrom } from "@/lib/cfd-verified";
 
 /**
  * /cfd — CFD for ducts and pipes (managed, automatic). Live 13 Oct 2026.
@@ -27,8 +29,14 @@ import { cellsLabel, formatMoney, usdRates, type Currency, type UsdRateCard } fr
  *   - wall layers at y+ ~ 1 by default;
  *   - every run is judged against residual targets, and a run that did not
  *     converge is delivered marked provisional.
- * Do NOT add a bend / fitting K accuracy figure (about +-25 % today), package
- * prices or anything about how quotes are priced.
+ * Do NOT add a bend / fitting K accuracy figure (about +-25 % today), the
+ * Quick / Standard package prices or anything about how quotes are priced.
+ *
+ * VERIFIED (owner, 16 Oct 2026): the mesh-independence study (GCI), built as
+ * the API's "validated" package, is on sale and is the one package whose
+ * starting price is published (lib/cfd-verified.ts: from ₹2,499 + GST, from $99
+ * outside India). Never call it "Validated" here: a GCI study is verification,
+ * not validation. Landing page: /cfd/mesh-independence-study.
  *
  * DELIVERY SPEEDS (owner, 14 Oct 2026; control plane branch cfd-express-20261014,
  * merged into cfd-cloudpe-20261016): Normal = "results within 24 hours" of payment;
@@ -79,6 +87,7 @@ export const cfdMetadata: Metadata = {
     "loss coefficient CFD",
     "OpenFOAM CFD service India",
     "CFD for final year project",
+    "mesh independence study",
     "HVAC duct CFD consultant",
   ],
   alternates: { canonical: "/cfd" },
@@ -170,7 +179,7 @@ const STEPS = [
   },
   {
     title: "Accept, pay from your wallet, get the results",
-    body: "Normal: results within 24 hours. Express: results in 1–2 hours at 3x the price, where your quote offers it. You get a PDF report, a 3D results viewer and the data files.",
+    body: "Normal: results within 24 hours. Express: results in 1–2 hours at 3x the price, where your quote offers it (not for Verified). You get a PDF report, a 3D results viewer and the data files.",
   },
 ];
 
@@ -213,7 +222,7 @@ const FAQ = [
   },
   {
     q: "Do you check mesh independence?",
-    a: "Not in the standard packages yet. Every run uses one wall-resolved mesh that has passed our mesh quality check, and the Mesh report shows its numbers. A mesh independence study, the same case on several meshes with a grid convergence index, is not part of the Quick or Standard packages yet.",
+    a: verifiedFaq("INR"),
   },
   {
     q: "How fast do I get results?",
@@ -244,6 +253,11 @@ const FAQ = [
     a: "Your job belongs to your Coreframe account. Its page and results open only with the private link we email you.",
   },
 ];
+
+/** The mesh-independence answer; only the price differs by currency. */
+function verifiedFaq(cur: Currency): string {
+  return `Yes, with the Verified package (${verifiedFrom(cur)}${cur === "USD" ? ", no GST" : ""}): a mesh-independence study that runs your case on three meshes, coarse, medium and fine, and reports the grid convergence index (GCI) on the pressure drop, for example "Mesh-independent: static pressure drop = 12.20 Pa ± 0.85 % (GCI, fine mesh)". Internal flow up to about ${VERIFIED.maxMcells} million cells, results within ${VERIFIED.deliveryHours} hours. ${VERIFIED.meaning} The Quick and Standard packages run one wall-resolved mesh that has passed our mesh quality check.`;
+}
 
 const faqLd = {
   "@context": "https://schema.org",
@@ -299,7 +313,9 @@ function usdSteps(u: UsdRateCard) {
 function usdFaq(u: UsdRateCard) {
   const { small, large, cells } = usdCopy(u);
   return FAQ.map((f) =>
-    f.q === "Do you offer CFD meshing as a service?"
+    f.q === "Do you check mesh independence?"
+      ? { q: f.q, a: verifiedFaq("USD") }
+      : f.q === "Do you offer CFD meshing as a service?"
       ? { q: f.q, a: f.a.replace("₹599 incl. GST for most models", `${small} for most models, no GST`) }
       : f.q === "What does it cost to start?"
       ? {
@@ -572,7 +588,7 @@ export default async function CfdView({ currency }: { currency: Currency }) {
             residual targets + CONVERGED/provisional, wall layers at y+ ≈ 1
             with the wall-function fallback, and 1–5 % against
             Haaland/Colebrook in a straight pipe. Mesh independence (GCI) is
-            NOT in the packages yet, so it is marked coming soon. */}
+            the Verified package (on sale 16 Oct 2026), with its card below. */}
         <section id="right" className="cf-section scroll-mt-20 px-5 pt-0">
           <div className="cf-wide">
             <SectionHead n={2} tint="blue" eyebrow="Trusting the result" title="How we know your answer is right.">
@@ -652,9 +668,18 @@ export default async function CfdView({ currency }: { currency: Currency }) {
                 longer part of the answer. The grid convergence index (GCI) puts a number on what is left.
               </p>
               <p>
-                <span className="cfx-chip">Validated package · coming soon</span>
+                On our own 90° bend test, three meshes from 0.25 to 1.21 million cells gave 12.247, 12.240 and 12.205 Pa:
+                mesh-independent to ± 0.85 %.
+              </p>
+              <p>
+                <a href="#verified" className="cfx-chip no-underline">
+                  Verified package · {verifiedFrom(currency)}
+                </a>
               </p>
             </CheckRow>
+            <div className="mt-10">
+              <VerifiedCard currency={currency} id="verified" startHref="#start" />
+            </div>
           </div>
         </section>
 
@@ -698,7 +723,7 @@ export default async function CfdView({ currency }: { currency: Currency }) {
               <dl className="grid gap-4">
                 {[
                   ["Normal", "Results within 24 hours of payment."],
-                  ["Express", "Results in 1–2 hours at 3x the price of the same package, where your quote offers it (smaller steady runs)."],
+                  ["Express", "Results in 1–2 hours at 3x the price of the same package, where your quote offers it (smaller steady runs; not Verified)."],
                   ["Either way", "The quote is held in your wallet, you pay for the iterations run, and the rest comes back."],
                 ].map(([k, v]) => (
                   <div key={k} className="min-w-0 rounded-[6px] border-[1.5px] border-ink bg-paper px-6 py-4">

@@ -139,7 +139,7 @@ export function QuotePanel({
         if (!b) return m(p.compute_ex_gst);
         const f = b.compute_formula;
         if (p.levels_text) {
-          // Validated: priced per mesh, shown as the three meshes' cells
+          // Verified (API: validated): priced per mesh, shown as the three meshes' cells
           return (
             <>
               {m(b.compute)}
@@ -374,9 +374,10 @@ export function QuotePanel({
         {quote.validated_unavailable ? <Fine>{quote.validated_unavailable}</Fine> : null}
         {pkgs.some((p) => p.levels_text) ? (
           <Fine>
-            Validated runs your case on three meshes: a coarser one, the quoted one and a finer one (coarser and finer
-            sizes are estimates; you pay for the cells and iterations actually run, never more than the total held).
-            Not offered as express.
+            Verified is a mesh-independence study (GCI): your case on three meshes, a coarser one, the quoted one and a
+            finer one (coarser and finer sizes are estimates; you pay for the cells and iterations actually run, never
+            more than the total held). Mesh-independent means the mesh error is small; it does not mean the result
+            matches experiments. Not offered as express.
           </Fine>
         ) : null}
       </div>
@@ -472,7 +473,7 @@ export function QuoteDetails({ job, quote }: { job: CfdJob; quote: Quote; cur?: 
     <More summary="How billing works">
       <ul className="list-disc space-y-1 pl-5 text-[13px] leading-[1.6] text-ink-2">
         {quote.pay_line ? <li>{rupeeWords(quote.pay_line)}</li> : null}
-        {[o.converged, o.not_converged, o.diverged_or_failed, o.cancelled].filter(Boolean).map((t) => (
+        {[o.converged, o.not_converged, o.diverged_or_failed, o.cancelled, o.validated].filter(Boolean).map((t) => (
           <li key={t}>{rupeeWords(t)}</li>
         ))}
         {quote.delivery?.express?.available && quote.delivery.express.text ? (

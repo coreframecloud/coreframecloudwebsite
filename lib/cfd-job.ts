@@ -18,6 +18,9 @@
 import { API_BASE } from "@/lib/api-base";
 import { type Currency } from "@/lib/money";
 import { ACCOUNT_ACCESS, tokenQuery } from "@/lib/cfd-my-jobs";
+import { customerWords } from "@/lib/cfd-words";
+
+export { customerWords };
 
 export const JOB_TOKEN_PREFIX = "cf_cfd_job_token:";
 const JOB_TOKEN_TTL_MS = 30 * 24 * 3600 * 1000;
@@ -76,14 +79,14 @@ export interface QuotePackage {
   convergence_short?: string;
   /** The full calculation, from the API (never recomputed here). */
   breakdown?: PriceBreakdown;
-  /** Validated (mesh-independence study, 16 Oct 2026): what it adds, and the three meshes it is priced on. */
+  /** Verified, API key "validated" (mesh-independence study, 16 Oct 2026): what it adds, and the three meshes it is priced on. */
   adds?: string;
   levels_text?: string;
   levels?: ValidatedLevelQuote[];
   gci_threshold_pct?: number;
 }
 
-/** One mesh of the Validated study on the quote (cfd_validated.quote_view_extra). */
+/** One mesh of the Verified study on the quote (cfd_validated.quote_view_extra). */
 export interface ValidatedLevelQuote {
   level: "coarse" | "medium" | "fine" | string;
   cells: number;
@@ -209,7 +212,7 @@ export interface Quote {
   gst_rate_percent?: number;
   currency?: string;
   packages: QuotePackage[];
-  /** Why the Validated study is not offered for this model (null when it is, or when it is switched off). */
+  /** Why the Verified study (API: validated) is not offered for this model (null when it is, or when it is switched off). */
   validated_unavailable?: string | null;
   default_package?: string;
   settle_option?: { default?: boolean; text: string; detail?: string } | null;
@@ -267,7 +270,7 @@ export interface CfdJob {
     express?: { text: string; multiplier?: number } | null;
   } | null;
   headline?: Record<string, number | string>;
-  /** Validated package: the mesh-independence (GCI) result. */
+  /** Verified package (API key "validated"): the mesh-independence (GCI) result. */
   validated?: ValidatedResults | null;
   stop_basis?: string;
   report_url?: string;
@@ -442,6 +445,7 @@ export function sessionToken(): string | null {
 
 // ─── API calls ───────────────────────────────────────────────────────────────
 
+
 export interface ApiResult<T = unknown> {
   status: number;
   body: T;
@@ -460,7 +464,7 @@ export async function fetchJob(ref: string, jobToken: string): Promise<ApiResult
     cache: "no-store",
     headers: bearer ? { Authorization: `Bearer ${bearer}` } : undefined,
   });
-  const body = res.ok ? ((await res.json()) as CfdJob) : null;
+  const body = res.ok ? customerWords((await res.json()) as CfdJob) : null;
   return { status: res.status, body };
 }
 
@@ -481,7 +485,7 @@ export async function postJob(
       body: JSON.stringify(body ?? {}),
     });
     const json = await res.json().catch(() => ({}));
-    return { status: res.status, body: json };
+    return { status: res.status, body: customerWords(json) };
   } catch {
     return { status: 0, body: { detail: "We could not reach Coreframe. Check your connection and try again." } as never };
   }

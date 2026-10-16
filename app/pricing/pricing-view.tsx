@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { VERIFIED, verifiedPriceLine } from "@/lib/cfd-verified";
 import type { Metadata } from "next";
 import { ViewContent } from "@/components/analytics/view-content";
 import { JsonLd } from "@/components/seo/json-ld";
@@ -64,7 +65,9 @@ export const pricingMetadataUsd: Metadata = {
  *
  * Every workstation figure comes from the control-plane rate card. The one
  * typed price is the CFD pre-processing charge (quote_fee, ₹599 incl. GST; ₹1,499 over 5 million cells), which is the published fee on
- * /cfd; how a CFD run is quoted is never described here.
+ * /cfd; how a CFD run is quoted is never described here. The exception is the
+ * Verified package's published starting price (lib/cfd-verified.ts, owner
+ * 16 Oct 2026).
  *
  * 13 Oct 2026: the page covers all three services, in the site-wide order
  * (GPU workstations, CFD, Studio), with a summary row at the top.
@@ -256,6 +259,10 @@ export default async function PricingView({ currency }: { currency: Currency }) 
                 : ["Mesh report and quote by email", "Packages to choose from, each with its iteration budget and convergence targets."],
               ["Pay only if you accept", "Nothing runs, and nothing more is charged, until you pay the quote."],
               ["Held, then settled", "The quote is held in your wallet; you are charged for what the run used and the rest comes back."],
+              [
+                "Verified: mesh-independence study (GCI)",
+                `${verifiedPriceLine(usdView ? "USD" : "INR")} Your case on three meshes with the grid convergence index, for internal flow up to about ${VERIFIED.maxMcells} million cells; results within ${VERIFIED.deliveryHours} hours.`,
+              ],
             ].map(([t, b]) => (
               <li key={t} className="min-w-0 border-t border-ink/10 pt-4">
                 <p className="font-semibold text-ink">{t}</p>
@@ -278,6 +285,7 @@ export default async function PricingView({ currency }: { currency: Currency }) 
               Get a CFD quote
             </TrackedLink>
             <Link href="/cfd#sample" className="cf-btn-secondary">See a sample report</Link>
+            <Link href={VERIFIED.path} className="cf-btn-secondary">Mesh independence study</Link>
           </div>
         </div>
       </section>

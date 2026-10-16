@@ -196,7 +196,7 @@ export function BillingLine({ job, cur }: { job: CfdJob; cur: Currency }) {
   );
 }
 
-/** Validated package: the three meshes and the GCI verdict (cfd_validated.results_view). */
+/** Verified package (API key "validated"): the three meshes and the GCI verdict (cfd_validated.results_view). */
 function MeshIndependence({ v }: { v: ValidatedResults }) {
   const q = v.quantities?.pressure_drop_pa;
   const n = (x: number | null | undefined, sig = 4) => (x == null ? "–" : fmtNumber(Number(x.toPrecision(sig))));
@@ -248,6 +248,10 @@ function MeshIndependence({ v }: { v: ValidatedResults }) {
           {v.threshold_pct != null ? ` (limit ${v.threshold_pct} %)` : ""}. The method and the plot are in the PDF report.
         </Fine>
       ) : null}
+      <Fine className="mt-2">
+        Mesh-independent means the mesh error is small; it does not mean the result matches experiments.{" "}
+        <a href="/cfd/mesh-independence-study#verification" className="underline underline-offset-2">Verification and validation</a>
+      </Fine>
       {v.levels
         .filter((l) => !solved(l.status) && l.reason)
         .map((l) => (
