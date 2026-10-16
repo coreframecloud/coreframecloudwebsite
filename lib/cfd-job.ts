@@ -271,6 +271,8 @@ export interface CfdJob {
   validated?: ValidatedResults | null;
   stop_basis?: string;
   report_url?: string;
+  /** One-page Mesh report (PDF) of pre-processing / mesh validation, once the quote exists. */
+  mesh_report_url?: string;
   view3d_url?: string;
   results_url?: string;
   results_available?: boolean;
@@ -534,7 +536,7 @@ export async function fetchWallet(): Promise<WalletLine | null | "signed_out"> {
 export const STEPS = [
   "Submitted",
   "Geometry checked",
-  "Quote fee",
+  "Pre-processing",
   "Mesh & quote",
   "Paid",
   "Queue & run",

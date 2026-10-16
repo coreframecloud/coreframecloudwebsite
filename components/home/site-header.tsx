@@ -163,6 +163,21 @@ function UserAvatar({ initials, accountNumber, onSignOut }: { initials: string; 
           >
             CFD jobs
           </Link>
+          <Link
+            href="/my-activity#studio-projects"
+            onClick={() => setDropdownOpen(false)}
+            className="flex w-full items-center px-4 py-2.5 text-sm text-ink-2 transition hover:bg-paper-2 hover:text-ink"
+          >
+            Studio projects
+          </Link>
+          {/* /studio is the app, rewritten from the control plane: a plain <a>. */}
+          <a
+            href="/studio"
+            onClick={() => setDropdownOpen(false)}
+            className="flex w-full items-center px-4 py-2.5 text-sm text-ink-2 transition hover:bg-paper-2 hover:text-ink"
+          >
+            Open Studio
+          </a>
           <button
             type="button"
             onClick={onSignOut}
@@ -546,6 +561,15 @@ export function SiteHeader() {
                     className="rounded-cf px-3 py-2.5 text-sm font-medium text-ink transition hover:bg-paper-2 hover:text-ink"
                   >
                     CFD jobs
+                  </Link>
+                )}
+                {!pending && (
+                  <Link
+                    href="/my-activity#studio-projects"
+                    onClick={() => setOpen(false)}
+                    className="rounded-cf px-3 py-2.5 text-sm font-medium text-ink transition hover:bg-paper-2 hover:text-ink"
+                  >
+                    Studio projects
                   </Link>
                 )}
                 {auth.user?.role === "org_admin" && (

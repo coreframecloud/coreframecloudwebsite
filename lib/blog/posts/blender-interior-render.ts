@@ -28,15 +28,15 @@ export const blenderInteriorRender: BlogPost = {
   ],
   datePublished: "2026-10-10",
   draft: false,
-  credit: "Scene: Blender 4.1 splash, from the blender.org demo files.",
   eyebrow: "Walkthrough · Blender",
+  // Hero swapped 16 Oct 2026 (owner): the Blender 4.1 splash frame's licence
+  // for marketing use is unconfirmed, so the post opens on our own render.
   hero: {
-    src: `${IMG}/finished-render.webp`,
-    alt: "A Cycles render of a grey living room with a floating staircase, two sofas and large abstract artworks.",
+    src: `${IMG}/hero-living-room.webp`,
+    alt: "A calm living room with a white sofa, a woven leather chair, an olive tree and a garden through the windows.",
     width: 1152,
-    height: 645,
-    caption:
-      "The finished frame, rendered in Cycles on the RTX 5080 workstation and opened on the laptop it was downloaded to. Scene: the Blender 4.1 splash-screen demo file.",
+    height: 648,
+    caption: "A living room rendered on Coreframe's RTX 5080.",
   },
   answer: () =>
     `To render a Blender scene on a cloud RTX 5080, you upload the .blend to your Coreframe drive, launch a workstation from the Connect app, open Blender on the remote Windows desktop, set Cycles to use the GPU through OptiX, render, save the image back to the same drive and download it. Blender is already installed, so there is nothing to license. The recording below shows one complete session, from signing in to the bill, and this article goes through it step by step with the exact settings we used.`,

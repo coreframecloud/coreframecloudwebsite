@@ -3,6 +3,20 @@ import type { Block, MaybeBlock } from "@/lib/blog/types";
 import { walkthroughVideoObject } from "@/components/home/landing/walkthrough-section";
 import { JsonLd } from "@/components/seo/json-ld";
 import { RichText } from "./rich-text";
+import { Callout, ExplainFigure, Hl, SectionHead, Stamp, Statement } from "@/components/cfd-explainer";
+
+/** Rich text with one phrase wrapped in the highlighter. */
+function WithHl({ text, hl }: { text: string; hl?: string }) {
+  const at = hl ? text.indexOf(hl) : -1;
+  if (!hl || at < 0) return <RichText text={text} />;
+  return (
+    <>
+      <RichText text={text.slice(0, at)} />
+      <Hl>{hl}</Hl>
+      <RichText text={text.slice(at + hl.length)} />
+    </>
+  );
+}
 
 /** Heading ids, so a section can be linked to directly. */
 export function slugify(text: string): string {
@@ -114,6 +128,44 @@ function renderBlock(b: Block, i: number) {
         </div>
       );
     }
+    case "sectionHead":
+      return (
+        <div key={i} id={slugify(b.title)} className="mt-14 scroll-mt-24">
+          <SectionHead n={b.n} tint={b.tint} eyebrow={b.eyebrow} title={b.title}>
+            {b.text ? <RichText text={b.text} /> : null}
+          </SectionHead>
+        </div>
+      );
+    case "callout":
+      return (
+        <div key={i} className="mt-8">
+          <Callout source={b.source}>
+            <WithHl text={b.text} hl={b.hl} />
+          </Callout>
+        </div>
+      );
+    case "statement":
+      return (
+        <div key={i} className="mt-8">
+          <Statement big={b.big} caption={b.caption} />
+        </div>
+      );
+    case "explainFigure":
+      return (
+        <div key={i} className="mt-8">
+          <ExplainFigure
+            src={b.src}
+            alt={b.alt}
+            width={b.width}
+            height={b.height}
+            maxWidth={b.maxWidth}
+            sizes="(max-width: 720px) 100vw, 680px"
+            stamp={b.stamp ? <Stamp decorative>{b.stamp}</Stamp> : undefined}
+            labels={b.labels}
+            caption={b.caption}
+          />
+        </div>
+      );
     case "table":
       return (
         <div key={i} className="mt-7 overflow-x-auto rounded-cf border border-rule bg-paper-2">

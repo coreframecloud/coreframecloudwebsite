@@ -1,3 +1,4 @@
+import Image from "next/image";
 import type { Metadata } from "next";
 import { ViewContent } from "@/components/analytics/view-content";
 import { JsonLd } from "@/components/seo/json-ld";
@@ -36,7 +37,7 @@ import { cellsLabel, formatMoney, usdRates, type Currency } from "@/lib/money";
 export const pricingMetadata: Metadata = {
   title: { absolute: "Pricing: RTX 5080 by the minute, CFD by quote | Coreframe Cloud" },
   description:
-    "RTX 5080 workstation prices per minute and per month, GST included, and what a duct or pipe CFD job costs to start (₹599 quote fee for most models).",
+    "RTX 5080 workstation prices per minute and per month, GST included, and what a duct or pipe CFD job costs to start (₹599 for pre-processing / mesh validation for most models).",
   alternates: { canonical: "/pricing" },
 };
 
@@ -45,7 +46,7 @@ export const pricingMetadata: Metadata = {
 export const pricingMetadataUsd: Metadata = {
   ...pricingMetadata,
   description:
-    "RTX 5080 workstation prices per minute in US dollars, and what a duct or pipe CFD job costs to start ($15 quote fee for most models, no GST on exports).",
+    "RTX 5080 workstation prices per minute in US dollars, and what a duct or pipe CFD job costs to start ($15 for pre-processing / mesh validation for most models, no GST on exports).",
 };
 
 /**
@@ -62,7 +63,7 @@ export const pricingMetadataUsd: Metadata = {
  * about money and commitment, so this is where they belonged anyway.
  *
  * Every workstation figure comes from the control-plane rate card. The one
- * typed price is the CFD quote fee (₹599 incl. GST; ₹1,499 over 5 million cells), which is the published fee on
+ * typed price is the CFD pre-processing charge (quote_fee, ₹599 incl. GST; ₹1,499 over 5 million cells), which is the published fee on
  * /cfd; how a CFD run is quoted is never described here.
  *
  * 13 Oct 2026: the page covers all three services, in the site-wide order
@@ -117,8 +118,8 @@ export default async function PricingView({ currency }: { currency: Currency }) 
               mid-line — a measure that long has no good break points. */}
           <p className="cf-lead mt-[22px]">
             {usdView
-              ? "Workstations by the minute, in US dollars with no GST. CFD by quote. Studio when it opens."
-              : "Workstations by the minute or a monthly plan, GST included. CFD by quote. Studio when it opens."}
+              ? "Workstations by the minute, in US dollars with no GST. CFD by quote. Studio previews free."
+              : "Workstations by the minute or a monthly plan, GST included. CFD by quote. Studio previews free."}
           </p>
         </div>
       </section>
@@ -134,23 +135,23 @@ export default async function PricingView({ currency }: { currency: Currency }) 
                 ? "No GST (export of services), billed per minute"
                 : intro ? `First top-up: ${rupees(intro.priceRupees)} = ${hoursLabel(intro.hours)}` : "GST included, billed per minute",
               href: "#gpu-workstations",
-              tint: "bg-tint-blue",
+              tint: "cf-cine",
             },
             {
               o: offering("cfd"),
-              price: usdView ? `${formatMoney(usd.cfd_quote_fee_small, "USD")} quote fee (no GST)` : "₹599 quote fee (incl. GST)",
+              price: usdView ? `${formatMoney(usd.cfd_quote_fee_small, "USD")} pre-processing (no GST)` : "₹599 pre-processing (incl. GST)",
               note: usdView
                 ? `Most models; ${formatMoney(usd.cfd_quote_fee_large, "USD")} over ${cellsLabel(usd.cfd_quote_fee_small_max_cells)} cells. Pay for the run only if you accept`
                 : "Most models; ₹1,499 over 5 million cells. Pay for the run only if you accept",
               href: "#cfd",
-              tint: "bg-tint-mint",
+              tint: "cfx-panel",
             },
             {
               o: offering("studio"),
-              price: "Opening soon",
-              note: "In private testing; prices published when it opens",
+              price: usdView ? "Free previews; 2K download $0.99" : "Free previews; 2K download ₹30",
+              note: usdView ? "Edit $0.49, 4K $1.49, no GST" : "Edit ₹20, 4K ₹50, GST included",
               href: "#studio",
-              tint: "bg-tint-lilac",
+              tint: "cf-warm",
             },
           ].map(({ o, price, note, href, tint }) => (
             <a key={o.id} href={href} className={`flex min-w-0 flex-col rounded-[24px] p-6 transition hover:shadow-[0_12px_40px_-18px_rgba(16,17,19,0.35)] ${tint}`}>
@@ -222,15 +223,24 @@ export default async function PricingView({ currency }: { currency: Currency }) 
 
       {/* CFD for ducts and pipes. Only the published facts from /cfd. */}
       <section id="cfd" className="cf-section scroll-mt-20 px-5">
-        <div className="cf-wide rounded-[28px] bg-tint-mint p-6 sm:p-10">
+        <div className="cfx-panel cf-wide relative overflow-hidden rounded-[28px] p-6 sm:p-10">
+          {/* The CFD explainer sketch, as on /cfd (16 Oct 2026). */}
+          <Image
+            src="/cfd/explainer/j-pressure-drop-gauges.webp"
+            alt=""
+            width={1536}
+            height={864}
+            sizes="320px"
+            className="cfx-art pointer-events-none absolute -top-4 right-0 hidden w-[320px] lg:block"
+          />
           <div className="flex flex-wrap items-center gap-2.5">
             <p className="text-[11.5px] font-semibold tracking-[0.12em] text-ink-2 uppercase">CFD for ducts and pipes</p>
             <StatusBadge status="New" />
           </div>
-          <h2 className="cf-section-title mt-4">
+          <h2 className="cf-section-title mt-4 max-w-[36rem]">
             {usdView
-              ? `${formatMoney(usd.cfd_quote_fee_small, "USD")} to mesh it and quote it.`
-              : "₹599 incl. GST to mesh it and quote it."}
+              ? `${formatMoney(usd.cfd_quote_fee_small, "USD")} for pre-processing / mesh validation.`
+              : "₹599 incl. GST for pre-processing / mesh validation."}
           </h2>
           <p className="cf-section-copy mt-3 max-w-[40rem]">
             Upload one STL of your duct or pipe. We check it, build the real mesh on our machine and email you a quote.
@@ -239,11 +249,11 @@ export default async function PricingView({ currency }: { currency: Currency }) 
           <ul className="mt-7 grid grid-cols-1 gap-5 sm:grid-cols-2">
             {[
               usdView
-                ? ["Quote fee", `${formatMoney(usd.cfd_quote_fee_small, "USD")} for most duct and pipe models; ${formatMoney(usd.cfd_quote_fee_large, "USD")} for very large models (over ${cellsLabel(usd.cfd_quote_fee_small_max_cells)} cells). No GST (export of services). Paid from your Coreframe wallet. For it we build the real mesh of your geometry.`]
-                : ["Quote fee", "₹599 incl. GST for most duct and pipe models; ₹1,499 for very large models (over 5 million cells). Paid from your Coreframe wallet. For it we build the real mesh of your geometry."],
+                ? ["Pre-processing / mesh validation", `${formatMoney(usd.cfd_quote_fee_small, "USD")} for most duct and pipe models; ${formatMoney(usd.cfd_quote_fee_large, "USD")} for very large models (over ${cellsLabel(usd.cfd_quote_fee_small_max_cells)} cells). No GST (export of services). Paid from your Coreframe wallet. We check your geometry, build a wall-resolved mesh and verify its quality; your exact run price comes with it. A separate charge, not deducted from the run.`]
+                : ["Pre-processing / mesh validation", "₹599 incl. GST for most duct and pipe models; ₹1,499 for very large models (over 5 million cells). Paid from your Coreframe wallet. We check your geometry, build a wall-resolved mesh and verify its quality; your exact run price comes with it. A separate charge, not deducted from the run."],
               usdView
-                ? ["Quote by email", "Runs are quoted in US dollars after the mesh is built: packages to choose from, each with its iteration budget and convergence targets."]
-                : ["Quote by email", "Packages to choose from, each with its iteration budget and convergence targets."],
+                ? ["Mesh report and quote by email", "Runs are quoted in US dollars after the mesh is built: packages to choose from, each with its iteration budget and convergence targets."]
+                : ["Mesh report and quote by email", "Packages to choose from, each with its iteration budget and convergence targets."],
               ["Pay only if you accept", "Nothing runs, and nothing more is charged, until you pay the quote."],
               ["Held, then settled", "The quote is held in your wallet; you are charged for what the run used and the rest comes back."],
             ].map(([t, b]) => (
@@ -272,28 +282,50 @@ export default async function PricingView({ currency }: { currency: Currency }) 
         </div>
       </section>
 
-      {/* Studio: no price until it opens. */}
+      {/* Studio: open since 16 Oct 2026. Prices are apps/tools' live defaults
+          (CF_STUDIO_PRICE_*): INR 20 / 30 / 50, USD 0.49 / 0.99 / 1.49. */}
       <section id="studio" className="cf-section scroll-mt-20 px-5 pt-0">
-        <div className="cf-wide rounded-[28px] bg-tint-lilac p-6 sm:p-10">
+        <div className="cf-warm cf-wide grid items-center gap-8 rounded-[28px] p-6 sm:p-10 lg:grid-cols-[1.2fr_0.8fr]">
+          <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2.5">
             <p className="text-[11.5px] font-semibold tracking-[0.12em] text-ink-2 uppercase">Studio</p>
-            <StatusBadge status="Opening soon" />
+            <StatusBadge status={offering("studio").status} />
           </div>
           <h2 className="cf-section-title mt-4">Pre-sale concept images from a floor plan.</h2>
           <p className="cf-section-copy mt-3 max-w-[40rem]">
-            Studio turns a 2D DXF floor plan into generated room images in the browser. It is in private testing; its
-            prices are published here when it opens.
+            Studio turns a 2D DXF floor plan into generated room images in the browser. Previews are free, up to 5 a
+            day; you pay only for what you keep, from the same wallet as your workstation hours.
           </p>
-          <div className="mt-7">
+          <ul className="mt-5 space-y-1.5 text-[15px] text-ink">
+            <li>Preview (three camera angles): free</li>
+            <li>Edit a preview: {usdView ? "$0.49" : "₹20"}</li>
+            <li>2K download: {usdView ? "$0.99" : "₹30"}</li>
+            <li>4K download: {usdView ? "$1.49" : "₹50"}</li>
+          </ul>
+          <p className="mt-2 text-[13px] text-ink-3">{usdView ? "No GST (export of services)." : "GST included."}</p>
+          <div className="mt-7 flex flex-wrap gap-3">
             <TrackedLink
-              href="/floor-plan-to-render#notify"
+              href="/studio"
               event="offering_cta_click"
-              params={{ offering: "studio", label: "Get notified", location: "pricing_studio" }}
+              params={{ offering: "studio", label: "Open Studio", location: "pricing_studio" }}
+              className="cf-btn-primary"
+            >
+              Open Studio
+            </TrackedLink>
+            <TrackedLink
+              href="/floor-plan-to-render"
+              event="offering_cta_click"
+              params={{ offering: "studio", label: "How Studio works", location: "pricing_studio_more" }}
               className="cf-btn-secondary"
             >
-              Get notified
+              How Studio works
             </TrackedLink>
           </div>
+          </div>
+          <figure className="relative min-w-0 overflow-hidden rounded-[20px]">
+            <Image src="/studio-renders/studio-masterbed-2048.webp" alt="A bedroom generated by Coreframe Studio from a floor plan: a teak bed, a louvred wardrobe and a patterned rug (generated image)" width={2048} height={1536} sizes="(max-width: 1024px) 100vw, 360px" className="h-auto w-full" />
+            <span className="absolute right-2.5 bottom-2.5 rounded-md bg-black/60 px-2 py-1 text-[11px] font-semibold text-white">Generated image</span>
+          </figure>
         </div>
       </section>
 

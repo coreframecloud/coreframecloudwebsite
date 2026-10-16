@@ -3,9 +3,10 @@ import { JsonLd } from "@/components/seo/json-ld";
 import { breadcrumbList } from "@/lib/seo";
 import Link from "next/link";
 import { Fold } from "@/components/visuals/fold";
+import Image from "next/image";
 import { PlanImage, ShellFurnished } from "@/components/visuals/studio-compare";
+import { PageHeroBg, type HeroImage } from "@/components/page-hero-bg";
 import { NODE } from "@/lib/node-spec";
-import { STUDIO_NOTIFY_WHATSAPP } from "@/lib/offerings";
 
 /**
  * THE INDEXABLE PAGE FOR STUDIO. It did not exist, and that is why Studio is
@@ -31,6 +32,11 @@ import { STUDIO_NOTIFY_WHATSAPP } from "@/lib/offerings";
  * This is a separate URL, aimed at what people actually type, and the app now
  * carries a canonical link back to it.
  *
+ * PRICES (16 Oct 2026, Studio open): the rupee prices below are the live
+ * defaults in apps/tools (CF_STUDIO_PRICE_*_INR: edit 20, 2K 30, 4K 50). If
+ * they change there, change them here and in components/home/redesign/
+ * offerings.tsx. The note that follows is history.
+ *
  * NO RUPEE FIGURE ON THIS PAGE. It carried "Credits from Rs 99" in the meta
  * description, the hero, the FAQ and the closing CTA, for a product that is
  * still in private testing -- four hand-typed copies of a price with no
@@ -43,7 +49,7 @@ import { STUDIO_NOTIFY_WHATSAPP } from "@/lib/offerings";
 export const metadata: Metadata = {
   title: "Floor Plan to Interior Render from a DXF",
   description:
-    "Coreframe Studio (opening soon): upload a 2D DXF floor plan, pick a room and get pre-sale concept images. Walls, doors and windows come from your drawing.",
+    "Coreframe Studio: upload a 2D DXF floor plan, pick a room and get pre-sale concept images. Free previews; 2K download ₹30. Walls, doors and windows come from your drawing.",
   keywords: [
     "floor plan to 3d render",
     "DXF to interior render",
@@ -55,17 +61,42 @@ export const metadata: Metadata = {
   alternates: { canonical: "/floor-plan-to-render" },
 };
 
+/**
+ * Hero picture (owner, 16 Oct 2026: "the subtle interior"). It is the warm
+ * living room from a RenderGrid test render on our RTX 5080 -- NOT a Studio
+ * output -- so it carries "Rendered on Coreframe" and no "Generated image"
+ * label, and the plan card moved out of the hero to sit next to a real
+ * Studio export further down.
+ */
+const HERO: HeroImage = {
+  src: "/heroes/interior-rendergrid-2560.webp",
+  w: 2560,
+  h: 1440,
+  mobile: { src: "/heroes/interior-rendergrid-m780.webp", w: 780, h: 1040 },
+  alt: "A calm living room with a white sofa, a woven leather chair, an olive tree and a garden through the windows",
+  pos: "70% 50%",
+  posMobile: "50% 50%",
+  credit: "Rendered on Coreframe",
+};
+
+/** More rooms from the same sample plan, each a Studio 4K export (16 Oct 2026). */
+const STUDIO_ROOMS = [
+  { src: "/studio-renders/studio-kitchen-2048.webp", cap: "The kitchen.", alt: "The kitchen from our sample plan: sage-green cabinets, a stone-topped island with a fruit bowl, open shelves with copper jars and brass taps" },
+  { src: "/studio-renders/studio-masterbed-2048.webp", cap: "The master bedroom.", alt: "The master bedroom from our sample plan: a teak bed with a rust throw, a tall louvred wardrobe, a patterned rug, a palm and sheer curtains" },
+  { src: "/studio-renders/studio-balcony-2048.webp", cap: "The balcony, looking back into a bedroom.", alt: "The balcony from our sample plan at dusk: potted plants, a cane chair and a railing over trees, with a lit bedroom through the door" },
+];
+
 const steps = [
   { n: "1", title: "Upload your DXF.", body: "We find the walls and rooms. Free." },
   { n: "2", title: "Pick a room.", body: "Tell us it's a bedroom or a kitchen. Free." },
-  { n: "3", title: "Say how it should feel.", body: "One sentence. You get three angles to compare. Free." },
-  { n: "4", title: "Export the one you like.", body: "2K for email, 4K for print. Only this step uses credits." },
+  { n: "3", title: "Say how it should feel.", body: "One sentence. You get three angles to compare. Free, up to 5 previews a day." },
+  { n: "4", title: "Download the one you like.", body: "2K for email (₹30), 4K for print (₹50). Only this step is paid." },
 ];
 
 const faqs = [
   {
     q: "What file does Coreframe Studio need?",
-    a: "A DXF. If you work in DWG, Revit or ArchiCAD, exporting a DXF is a Save As. There's a three-click guide inside Studio, and a demo 3BHK plan you can download and try if you don't have a drawing to hand.",
+    a: "A DXF floor plan (up to 30 MB). Studio reads the walls, doors and windows from the drawing's lines, so a PDF, JPG or PNG of a plan can't be read yet, and neither can a DWG. If you work in AutoCAD, Revit or ArchiCAD, exporting a DXF is a Save As; the three-click guide is at coreframecloud.com/studio/learn, and there's a demo 3BHK plan to try if you don't have a drawing to hand.",
   },
   {
     q: "Does it invent rooms or windows that are not on my plan?",
@@ -73,11 +104,11 @@ const faqs = [
   },
   {
     q: "What does it cost?",
-    a: "Reading the drawing, browsing the rooms and comparing the three camera angles are free. You pay only when you ask for an image: a 2K export is 30 credits and a 4K export is 42. What a credit costs is shown in Studio before you spend one.",
+    a: "Reading the drawing, browsing the rooms and previewing the three camera angles are free, up to 5 previews a day. You pay only for what you keep: an edit of a preview is ₹20, a 2K download ₹30 and a 4K download ₹50, GST included (US$0.49, $0.99 and $1.49 for accounts billed in dollars). It comes out of the same Coreframe wallet as GPU workstation hours and CFD, and Studio shows the price before you confirm.",
   },
   {
     q: "Do I have to install anything?",
-    a: "No. Studio runs in the browser, and you start with an email and a code. Coreframe's GPU workstation product is different: it hands you a real machine, so it needs a small client app and a confirmed mobile number.",
+    a: "No. Studio runs in the browser with your Coreframe account: the same sign-in, wallet and My activity page as GPU workstations and CFD. New here? Sign up with your email and a WhatsApp code and you land in Studio. GPU workstations additionally need a small client app.",
   },
   {
     q: "What happens to my client's drawing?",
@@ -87,7 +118,7 @@ const faqs = [
 
 export default function Page() {
   return (
-    <div className="min-h-screen text-ink">
+    <div className="cf-warm-page min-h-screen text-ink">
       <JsonLd data={breadcrumbList([{ name: "Floor plan to render", path: "/floor-plan-to-render" }])} />
 
       <script
@@ -107,31 +138,73 @@ export default function Page() {
 
       <main className="relative">
         <section className="cf-section px-5 cf-pagehero">
-          <div className="cf-wide grid items-center gap-10 lg:grid-cols-[1fr_1fr]">
-            <div className="min-w-0">
+          <PageHeroBg image={HERO} />
+          <div className="cf-wide">
+            <div className="min-w-0 max-w-[600px]">
               <p className="cf-eyebrow mb-5">Studio · Pre-sale renders</p>
               <h1 className="cf-display">Win the client before the project is signed.</h1>
               <p className="cf-lead mt-6">Upload a 2D DXF floor plan. Get concept images of the room back, generated in the browser, ready to pitch with.</p>
-              {/* Studio is in private testing: say so plainly, and make "get
-                  notified" the real action until it opens. The guide PDF link
-                  was removed on 13 Oct 2026 (the PDF is being retired). */}
+              {/* Studio is open (16 Oct 2026). /studio is the app itself, on
+                  this site, signed in with the same Coreframe account. */}
               <p className="mt-6 inline-flex items-center gap-2 rounded-full bg-white/10 px-3.5 py-1.5 text-[13px]">
-                <span className="h-2 w-2 rounded-full bg-[#ffd166]" /> Opening soon. Private testing for now.
+                <span className="h-2 w-2 rounded-full bg-[#15803d]" /> Live. Free previews, 2K download ₹30.
               </p>
               <div className="mt-7 flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
-                <a href="#notify" className="cf-btn-primary w-full sm:w-auto">
-                  Get notified
-                </a>
-                <a href="https://studio.coreframecloud.com/studio/demo.dxf" className="cf-btn-secondary w-full sm:w-auto">
-                  Get the demo plan
+                <a href="/studio" className="cf-btn-primary w-full sm:w-auto">
+                  Try it with your plan
                 </a>
               </div>
+              <p className="mt-4 text-[13.5px] text-ink-3">
+                DXF floor plans only, up to 30 MB. Working in DWG or Revit?{" "}
+                <a href="/studio/learn" className="underline underline-offset-4">Export a DXF in three clicks</a>.
+              </p>
             </div>
-            <PlanImage />
           </div>
         </section>
 
+        {/* Real Studio exports (16 Oct 2026): rooms of our sample plan through the
+            live Studio code path (plan preset, 4K) on our node; prompts and seeds
+            in marketing-20261016-site-explainer/gen/runs.jsonl. Labelled
+            "Generated image", as Studio labels it. Shown smaller than the
+            3840 x 2880 files. */}
         <section className="cf-section px-5">
+          <div className="cf-wide">
+            <h2 className="cf-section-title">One plan, every room.</h2>
+            <p className="cf-section-copy mt-3">The demo 3BHK plan and its rooms, each exported at 4K from Studio.</p>
+            <div className="mt-8 grid items-start gap-6 lg:grid-cols-[0.75fr_1.25fr]">
+              <PlanImage caption="Our sample 3BHK plan (a real drawing)" />
+              <figure className="min-w-0">
+                <div className="relative overflow-hidden rounded-[20px] bg-paper-2">
+                  <Image
+                    src="/studio-renders/studio-living2-2048.webp"
+                    alt="The living room from our sample plan, furnished: a sofa with cushions, a carved wooden cabinet, a floor lamp, plants and a rug on a stone floor, with the doors and window as drawn"
+                    width={2048}
+                    height={1536}
+                    sizes="(max-width: 1024px) 100vw, 600px"
+                    className="h-auto w-full"
+                  />
+                  <span className="absolute right-3 bottom-3 rounded-md bg-black/60 px-2 py-1 text-[11px] font-semibold text-white">Generated image</span>
+                </div>
+                <figcaption className="mt-2 text-[12.5px] text-ink-3">
+                  A 4K export (3840 × 2880) from Studio, shown smaller. Walls, doors and windows from the drawing; the furniture is generated.
+                </figcaption>
+              </figure>
+            </div>
+            <div className="mt-10 grid gap-6 sm:grid-cols-3">
+              {STUDIO_ROOMS.map((r) => (
+                <figure key={r.src} className="min-w-0">
+                  <div className="relative overflow-hidden rounded-[20px] bg-paper-2 shadow-[0_18px_40px_-26px_rgb(90_60_30/0.45)]">
+                    <Image src={r.src} alt={r.alt} width={2048} height={1536} sizes="(max-width: 640px) 100vw, 310px" className="h-auto w-full" />
+                    <span className="absolute right-2.5 bottom-2.5 rounded-md bg-black/60 px-2 py-1 text-[11px] font-semibold text-white">Generated image</span>
+                  </div>
+                  <figcaption className="mt-2 text-[12.5px] text-ink-3">{r.cap}</figcaption>
+                </figure>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="cf-section px-5 pt-0">
           <div className="cf-wide grid items-center gap-10 lg:grid-cols-[0.8fr_1.2fr]">
             <div>
               <h2 className="cf-section-title">From your drawing to the room.</h2>
@@ -194,11 +267,11 @@ export default function Page() {
 
         <section className="cf-section px-5 pt-0">
           <div className="cf-wide">
-            <div id="notify" className="scroll-mt-24 rounded-[32px] bg-night px-7 py-12 text-white sm:px-14">
-              <p className="text-[11.5px] font-semibold tracking-[0.12em] text-white/75 uppercase">Opening soon</p>
-              <h2 className="mt-3 font-heading text-[28px] font-medium sm:text-[36px]">Be first in when Studio opens.</h2>
+            <div id="start" className="scroll-mt-24 rounded-[32px] bg-[#2a1f17] px-7 py-12 text-white sm:px-14">
+              <p className="text-[11.5px] font-semibold tracking-[0.12em] text-white/75 uppercase">Studio is live</p>
+              <h2 className="mt-3 font-heading text-[28px] font-medium sm:text-[36px]">Try it with your own plan.</h2>
               <p className="mt-3 text-white/80">
-                Studio is in private testing. Tell us and we&rsquo;ll message you the day it opens.
+                Previews are free, up to 5 a day. Edits ₹20, 2K download ₹30, 4K ₹50, from your Coreframe wallet.
               </p>
               <p className="mt-3 text-white/70">
                 Need a whole machine for your own software instead?{" "}
@@ -208,14 +281,8 @@ export default function Page() {
                 .
               </p>
               <div className="mt-7 flex flex-wrap gap-3">
-                <a href={STUDIO_NOTIFY_WHATSAPP} target="_blank" rel="noreferrer" className="cfh-pill-light">
-                  Notify me on WhatsApp
-                </a>
-                <a
-                  href={`mailto:admin@coreframecloud.com?subject=${encodeURIComponent("Tell me when Coreframe Studio opens")}`}
-                  className="cfh-pill-ghost"
-                >
-                  Or by email
+                <a href="/studio" className="cfh-pill-light">
+                  Open Studio
                 </a>
               </div>
             </div>

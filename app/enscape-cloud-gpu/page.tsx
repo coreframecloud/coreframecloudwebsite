@@ -1,6 +1,8 @@
 import { StreamDiagram } from "@/components/visuals/diagrams";
 import { ViewContent } from "@/components/analytics/view-content";
-import { GenImage } from "@/components/visuals/media";
+import { PageHeroBg } from "@/components/page-hero-bg";
+import { GpuCineBand } from "@/components/gpu-cine-band";
+import { GPU_HEROES } from "@/lib/gpu-heroes";
 import type { Metadata } from "next";
 import { JsonLd } from "@/components/seo/json-ld";
 import { breadcrumbList } from "@/lib/seo";
@@ -93,10 +95,11 @@ export default async function EnscapePage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <main className="relative">
+      <main className="cf-gpu-page relative">
         <section className="cf-section px-5 cf-pagehero">
-          <div className="cf-wide grid items-center gap-10 lg:grid-cols-[1.05fr_1fr]">
-          <div className="min-w-0">
+          <PageHeroBg image={GPU_HEROES["enscape-cloud-gpu"]} />
+          <div className="cf-wide">
+          <div className="min-w-0 max-w-[620px]">
             <p className="cf-eyebrow mb-5">Enscape · Cloud GPU · Bengaluru</p>
             <h1 className="cf-display">
               Run Enscape on an RTX 5080.
@@ -120,17 +123,17 @@ export default async function EnscapePage() {
               </Link>
             </div>
           </div>
-          <GenImage src="/visuals/gen-architect-monitor-walk-16x9.webp" alt="An architect walking through a building model on a large monitor" width={1600} height={914} sizes="(max-width: 1024px) 100vw, 480px" parallax priority />
         </div>
         </section>
       <section className="cf-section px-5 pb-0">
-        <div className="cf-wide grid items-center gap-8 rounded-[28px] bg-tint-blue p-6 sm:p-10 lg:grid-cols-[0.8fr_1.2fr]">
+        <div className="cf-wide grid items-center gap-8 cf-cine cf-cine--panel p-6 sm:p-10 lg:grid-cols-[0.8fr_1.2fr]">
           <h2 className="cf-section-title">Enscape runs here. You see it there.</h2>
           <div className="min-w-0"><StreamDiagram /></div>
         </div>
       </section>
 
-        <section className="cf-section px-5 pt-0">
+        {/* Cinema band (owner, 16 Oct 2026): the hero's look carried down the page. */}
+        <GpuCineBand className="mb-16 sm:mb-20" page="enscape-cloud-gpu">
           <div className="cf-wide">
             <h2 className="cf-section-title">Why this card for Enscape.</h2>
             <div className="mt-9 grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3">
@@ -155,7 +158,7 @@ export default async function EnscapePage() {
               ))}
             </div>
           </div>
-        </section>
+        </GpuCineBand>
 
         <section className="cf-section px-5 pt-0">
           <div className="cf-wide">

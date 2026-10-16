@@ -26,27 +26,37 @@ const GAP = 20; // px, must match gap-5
  * Reduced motion: no drift, one card at a time, crossfading every 6 s.
  * Renders NOTHING while lib/testimonials.ts is empty.
  */
-export function Testimonials() {
+export function Testimonials({
+  items = TESTIMONIALS,
+  title = "What freelancers and studio owners say",
+  className = "py-24 sm:py-28",
+}: {
+  /** The approved quotes in the order to show them (lib/testimonials.ts,
+   *  testimonialsFor). Never a new or edited quote. */
+  items?: Testimonial[];
+  title?: string;
+  className?: string;
+} = {}) {
   const reduce = usePrefersReducedMotion();
-  if (TESTIMONIALS.length === 0) return null;
+  if (items.length === 0) return null;
   return (
-    <section className="overflow-hidden py-24 sm:py-28" role="region" aria-roledescription="carousel" aria-label="What customers say">
+    <section className={`overflow-hidden ${className}`} role="region" aria-roledescription="carousel" aria-label="What customers say">
       <div className="cfh-wrap">
         <Reveal>
-          <h2 className="cfh-h2">What freelancers and studio owners say</h2>
+          <h2 className="cfh-h2">{title}</h2>
         </Reveal>
       </div>
-      {reduce ? <FadeCarousel /> : <DriftCarousel />}
+      {reduce ? <FadeCarousel items={items} /> : <DriftCarousel items={items} />}
     </section>
   );
 }
 
-function Card({ t, i, hidden = false }: { t: Testimonial; i: number; hidden?: boolean }) {
+function Card({ t, i, n, hidden = false }: { t: Testimonial; i: number; n: number; hidden?: boolean }) {
   return (
     <figure
       aria-hidden={hidden || undefined}
       aria-roledescription="slide"
-      aria-label={hidden ? undefined : `${i + 1} of ${TESTIMONIALS.length}`}
+      aria-label={hidden ? undefined : `${i + 1} of ${n}`}
       className={`cfh-card grid w-[84vw] shrink-0 gap-6 select-none sm:w-[520px] ${t.photo ? "md:grid-cols-[1.2fr_0.8fr]" : ""} ${
         TINTS[t.tint ?? CYCLE[i % CYCLE.length]]
       }`}
@@ -71,10 +81,10 @@ function Card({ t, i, hidden = false }: { t: Testimonial; i: number; hidden?: bo
   );
 }
 
-function Controls({ active, onDot, paused, onToggle }: { active: number; onDot: (i: number) => void; paused?: boolean; onToggle?: () => void }) {
+function Controls({ items, active, onDot, paused, onToggle }: { items: Testimonial[]; active: number; onDot: (i: number) => void; paused?: boolean; onToggle?: () => void }) {
   return (
     <div className="cfh-wrap mt-6 flex items-center gap-2">
-      {TESTIMONIALS.map((t, i) => (
+      {items.map((t, i) => (
         <button
           key={t.name + i}
           type="button"
@@ -98,8 +108,8 @@ function Controls({ active, onDot, paused, onToggle }: { active: number; onDot: 
 }
 
 /** The continuous version: a doubled track moved with transforms, wrapping seamlessly. */
-function DriftCarousel() {
-  const n = TESTIMONIALS.length;
+function DriftCarousel({ items }: { items: Testimonial[] }) {
+  const n = items.length;
   const viewport = useRef<HTMLDivElement>(null);
   const track = useRef<HTMLDivElement>(null);
   const x = useRef(0); // current offset in px (positive = scrolled left)
@@ -200,7 +210,7 @@ function DriftCarousel() {
     drag.current = null;
   };
 
-  const cards = [...TESTIMONIALS, ...TESTIMONIALS];
+  const cards = [...items, ...items];
   return (
     <>
       <div
@@ -219,11 +229,12 @@ function DriftCarousel() {
       >
         <div ref={track} className="cfh-track flex gap-5 pb-2 will-change-transform">
           {cards.map((t, i) => (
-            <Card key={i} t={t} i={i % n} hidden={i >= n} />
+            <Card key={i} t={t} i={i % n} n={n} hidden={i >= n} />
           ))}
         </div>
       </div>
       <Controls
+        items={items}
         active={active}
         onDot={(i) => {
           const W = setW.current;
@@ -242,8 +253,8 @@ function DriftCarousel() {
 }
 
 /** Reduced motion: one card at a time, a gentle 6 s crossfade, same dots. */
-function FadeCarousel() {
-  const n = TESTIMONIALS.length;
+function FadeCarousel({ items }: { items: Testimonial[] }) {
+  const n = items.length;
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
   useEffect(() => {
@@ -255,17 +266,17 @@ function FadeCarousel() {
     <>
       <div className="cfh-wrap mt-12">
         <div className="relative grid" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)}>
-          {TESTIMONIALS.map((t, i) => (
+          {items.map((t, i) => (
             <div
               key={t.name + i}
               className={`[grid-area:1/1] transition-opacity duration-1000 ${i === active ? "opacity-100" : "pointer-events-none opacity-0"}`}
             >
-              <Card t={t} i={i} hidden={i !== active} />
+              <Card t={t} i={i} n={n} hidden={i !== active} />
             </div>
           ))}
         </div>
       </div>
-      <Controls active={active} onDot={setActive} />
+      <Controls items={items} active={active} onDot={setActive} />
     </>
   );
 }

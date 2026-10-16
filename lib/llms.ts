@@ -57,7 +57,7 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
   // is most likely to lift whole. The detail lives in the sections below.
   out.push(
     `> Three services from Bengaluru: ${NODE.gpu} Windows workstations by the minute, CFD for ` +
-      "ducts and pipes from one STL, and Studio floor-plan concept images (opening soon).",
+      "ducts and pipes from one STL, and Studio floor-plan concept images (free previews).",
   );
   out.push("");
   out.push(`Last updated: ${LLMS_LAST_UPDATED}. Prices on this page are read live from our rate card.`);
@@ -77,21 +77,21 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
       "workstations, a whole Windows RTX 5080 workstation rented by the minute and streamed " +
       "to your own computer through the Coreframe Connect app; (2) CFD for ducts and pipes, " +
       "an automatic OpenFOAM service where you upload one STL and get a quote by email; " +
-      "(3) Coreframe Studio, pre-sale concept images from a DXF floor plan, opening soon. " +
+      "(3) Coreframe Studio, pre-sale concept images from a DXF floor plan (open; free previews). " +
       "Operated by Coreframe Compute Labs Private Limited, Bengaluru.",
   );
   out.push(
     `- **Can Coreframe run CFD for me?** Yes, for ducts and pipes (${SITE}/cfd). ` +
       "Upload one closed STL of the fluid volume; " +
-      "the quote fee is Rs 599 incl. GST for most duct and pipe models (Rs 1,499 for very large models over 5 million cells); we mesh it " +
+      "pre-processing / mesh validation is Rs 599 incl. GST for most duct and pipe models (Rs 1,499 for very large models over 5 million cells); we mesh it " +
       "and email a quote; accept it and get pressure drop, loss coefficient, a PDF report, a " +
       "3D viewer and the OpenFOAM data. No CFD licence needed. It needs a Coreframe account " +
       "(the same account and wallet as GPU workstations and Studio). Rooms and HVAC airflow: coming soon.",
   );
   out.push(
-    `- **What is Coreframe Studio?** Opening soon, in private testing (${SITE}/floor-plan-to-render). ` +
-      "It turns a 2D DXF floor plan into generated interior concept images in the browser, " +
-      "for interior designers pitching a project. It is not open to the public yet.",
+    `- **What is Coreframe Studio?** A browser app (${SITE}/studio; overview at ${SITE}/floor-plan-to-render). ` +
+      "It turns a 2D DXF floor plan into generated interior concept images, " +
+      "for interior designers pitching a project. Previews are free; a 2K download is ₹30.",
   );
   out.push(
     "- **Can I run D5 Render, Lumion or Enscape on it?** Yes. D5 Render, Twinmotion, " +
@@ -149,7 +149,7 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
   out.push("");
   out.push(`1. **GPU workstations** (live): ${SITE}/pricing. Most of this page is about them.`);
   out.push(`2. **CFD for ducts and pipes** (live, launched 13 October 2026): ${SITE}/cfd.`);
-  out.push(`3. **Coreframe Studio** (opening soon): ${SITE}/floor-plan-to-render.`);
+  out.push(`3. **Coreframe Studio**: ${SITE}/floor-plan-to-render (app at ${SITE}/studio).`);
   out.push("");
   out.push("## GPU workstations: what it is");
   out.push("");
@@ -496,7 +496,7 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
   out.push(`- [Coreframe vs iRender](${SITE}/coreframe-vs-irender): dated, sourced price comparison.`);
   out.push(`- [Is 8 GB of VRAM enough?](${SITE}/vram-for-architectural-rendering)`);
   out.push(`- [Cloud rendering for architects](${SITE}/cloud-rendering-for-architects)`);
-  out.push(`- [Coreframe Studio: floor plan to interior render](${SITE}/floor-plan-to-render): opening soon. It is in private testing and not yet open to the public. When it opens, it will turn a DXF floor plan into an interior image in the browser, paid per export in credits.`);
+  out.push(`- [Coreframe Studio: floor plan to interior render](${SITE}/floor-plan-to-render): turns a DXF floor plan into interior concept images in the browser, at ${SITE}/studio with a Coreframe account. Previews are free (up to 5 a day); edits ₹20, 2K download ₹30, 4K ₹50, GST included, from the Coreframe wallet. DXF only (no PDF, image or DWG plans yet).`);
   out.push(`- [Download Coreframe Connect](${SITE}/download): Windows 10/11 client.`);
   out.push(`- [Workstation specs](${SITE}/compute-nodes): the hardware in each machine.`);
   out.push(`- [GPU workstations and storage for studios](${SITE}/solutions): a workstation per person and shared project storage.`);
@@ -508,7 +508,7 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
   out.push(`- [Enscape cloud workstations](${SITE}/enscape-cloud-gpu)`);
   out.push(`- [Free IFC pre-CFD check](${SITE}/tools): no account needed.`);
   out.push(`- [Free DWG dimension check](${SITE}/dwg-check): no account needed.`);
-  out.push(`- [CFD for ducts and pipes](${SITE}/cfd): a managed, automatic OpenFOAM service. Upload one closed STL of the fluid volume; the geometry is checked automatically, the quote fee is Rs 599 incl. GST for most duct and pipe models (Rs 1,499 for very large models over 5 million cells), from the Coreframe wallet, the mesh is built on our machine and a quote is emailed. Accept it and get a PDF report with pressure drop and loss coefficient, a 3D results viewer and the data files. No CFD licence needed. Rooms and HVAC comfort: coming soon.`);
+  out.push(`- [CFD for ducts and pipes](${SITE}/cfd): a managed, automatic OpenFOAM service. Upload one closed STL of the fluid volume; the geometry is checked automatically, pre-processing / mesh validation is Rs 599 incl. GST for most duct and pipe models (Rs 1,499 for very large models over 5 million cells), from the Coreframe wallet: a wall-resolved mesh is built and quality-checked on our machine, and a mesh report and quote are emailed. Accept it and get a PDF report with pressure drop and loss coefficient, a 3D results viewer and the data files. No CFD licence needed. Rooms and HVAC comfort: coming soon.`);
   out.push(`- [HVAC CFD on a real clinic floor](${SITE}/cfd/projects/clinic-floor-hvac): case study. An indicative, automated first-pass airflow run on the second floor of a real two-storey clinic (buildingSMART Medical-Dental Clinic, CC BY 4.0): 18,500 sq ft, 100 rooms and corridors, 90 real ceiling diffusers at their design flows, 80 return/exhaust grilles; 1.9 M cells, 3,000 iterations, 5.1 hours. Occupied rooms averaged 23.0 °C, ADPI (ASHRAE 113) 93 % with 56 of 59 rooms at 80 % or more, PMV (ISO 7730) -0.28; 15 % of the floor area had air above 0.25 m/s at ankle height, because in the small 3 x 3.5 m treatment rooms the ceiling jets hit the wall, drop and run back across the floor. Not a validated or engineering-grade result; rooms and HVAC airflow is not on sale yet.`);
   out.push(`- [For teams and studios](${SITE}/enterprise)`);
   out.push("");

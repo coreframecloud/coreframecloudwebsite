@@ -11,6 +11,7 @@ import ActivityList, {
 } from "@/components/wallet/activity-list";
 import { announceWallet } from "@/components/wallet/wallet-events";
 import MyCfdJobs from "@/components/cfd/my-cfd-jobs";
+import MyStudioProjects from "@/components/studio/my-studio-projects";
 import { trackEvent } from "@/lib/analytics";
 import {
   getIntroOffer,
@@ -986,6 +987,10 @@ export default function MyActivityPage() {
             job page with the session. Above Activity: a job waiting on the
             customer matters more than a ledger line. */}
         <MyCfdJobs token={token} />
+
+        {/* Studio projects (16 Oct 2026): the same account's floor plans in
+            Studio, each opening the project at /studio. */}
+        <MyStudioProjects token={token} />
 
         {/* Activity: ONE list (owner, 16 Oct 2026). Wallet history, Recent
             sessions and Payment history showed the same charges two or three

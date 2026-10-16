@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { ViewContent } from "@/components/analytics/view-content";
 import Link from "next/link";
 import { GenImage, OwnImage } from "@/components/visuals/media";
+import { PageHeroBg } from "@/components/page-hero-bg";
 import { StreamDiagram, FileSyncDiagram } from "@/components/visuals/diagrams";
 import { notFound } from "next/navigation";
 import {
@@ -12,6 +13,8 @@ import {
 import { getRateCard, introOfferFaq, pricingFaqAnswer } from "@/lib/rate-card";
 import { JsonLd } from "@/components/seo/json-ld";
 import { breadcrumbList, faqPage, OG_IMAGE } from "@/lib/seo";
+import { GpuCineBand } from "@/components/gpu-cine-band";
+import { GPU_HEROES } from "@/lib/gpu-heroes";
 
 /**
  * `related` may name a top-level landing page as well as a /software slug.
@@ -75,22 +78,18 @@ export async function generateMetadata({
 
 /**
  * One picture per software page. Generated images (Gemini) are labelled by
- * GenImage; the Blender page uses our own Cycles render instead.
+ * GenImage.
  */
+/** Side picture for a page without its own sci-fi hero (lib/gpu-heroes.ts
+ *  covers every slug today; this stays as the fallback). */
 type Hero = { src: string; alt: string; w: number; h: number; generated: boolean; caption?: string };
 const G = (src: string, alt: string): Hero => ({ src: `/visuals/${src}`, alt, w: 1600, h: 914, generated: true });
+
 const HERO_BY_SLUG: Record<string, Hero> = {
   "revit-cloud-workstation": G("gen-architect-client-walkthrough-16x9.webp", "An architect walking clients through a 3D model"),
   "3ds-max-cloud-workstation": G("gen-visualiser-home-16x9.webp", "A 3D visualiser working on a laptop at home"),
   "sketchup-cloud-workstation": G("gen-designer-cafe-laptop-16x9.webp", "An interior designer working on a laptop in a cafe"),
-  "blender-cloud-workstation": {
-    src: "/home/hero-interior.webp",
-    alt: "The Blender 4.1 splash interior rendered in Cycles on a Coreframe RTX 5080",
-    w: 2560,
-    h: 1440,
-    generated: false,
-    caption: "Rendered in Blender Cycles on our RTX 5080. Scene: Blender 4.1 splash, blender.org demo files.",
-  },
+  "blender-cloud-workstation": G("gen-motion-designer-desk-16x9.webp", "A motion designer at his desk"),
   "twinmotion-cloud-workstation": G("gen-architects-big-screen-16x9.webp", "Two architects discussing a building walkthrough on a wall screen"),
   "vray-cloud-rendering": G("gen-visualisers-review-16x9.webp", "Two visualisers reviewing stills together at a studio desk"),
   "rhino-cloud-workstation": { src: "/visuals/gen-student-architecture-4x5.webp", alt: "An architecture student with a laptop and models", w: 1000, h: 1286, generated: true },
@@ -128,11 +127,13 @@ export default async function SoftwareLandingPage({
   ];
 
   const hero = HERO_BY_SLUG[page.slug] ?? HERO_BY_SLUG.default;
+  const heroBg = GPU_HEROES[page.slug];
   return (
     <>
     <section className="cf-section cf-pagehero px-5">
-      <div className="cf-wide grid items-center gap-10 lg:grid-cols-[1.05fr_1fr]">
-        <div className="min-w-0">
+      {heroBg ? <PageHeroBg image={heroBg} /> : null}
+      <div className={heroBg ? "cf-wide" : "cf-wide grid items-center gap-10 lg:grid-cols-[1.05fr_1fr]"}>
+        <div className={heroBg ? "min-w-0 max-w-[620px]" : "min-w-0"}>
           <h1 className="cf-display">{page.title}</h1>
           <p className="cf-lead mt-[22px]">{page.intro}</p>
           <div className="mt-8 flex flex-wrap gap-3">
@@ -140,18 +141,16 @@ export default async function SoftwareLandingPage({
             <Link href="/pricing" className="cf-btn-secondary">Pricing</Link>
           </div>
         </div>
-        {hero.generated ? (
+        {heroBg ? null : hero.generated ? (
           <GenImage src={hero.src} alt={hero.alt} width={hero.w} height={hero.h} sizes="(max-width: 1024px) 100vw, 480px" parallax priority />
         ) : (
           <OwnImage src={hero.src} alt={hero.alt} width={hero.w} height={hero.h} caption={hero.caption} sizes="(max-width: 1024px) 100vw, 480px" />
         )}
       </div>
     </section>
-    <main className="cf-section px-5">
-      <ViewContent name={page.metaTitle ?? page.title} category="workstation" />
-      <JsonLd data={faqPage(faqs)} />
-      <JsonLd data={breadcrumbList([{ name: page.metaTitle ?? page.title, path: `/software/${page.slug}` }])} />
-
+    {/* The cinema band (owner, 16 Oct 2026): the sci-fi hero's look carried
+        down the page. Details and FAQ below stay light. */}
+    <GpuCineBand page={page.slug}>
       <section className="cf-wide">
         <h2 className="cf-section-title">Why rent a GPU for this.</h2>
         <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -164,7 +163,7 @@ export default async function SoftwareLandingPage({
       </section>
 
       {/* How it works, as two animated diagrams instead of paragraphs. */}
-      <section className="cf-wide mt-16 grid gap-6 lg:grid-cols-2">
+      <section className="cf-wide mt-14 grid gap-6 lg:grid-cols-2">
         <div className="rounded-[24px] bg-tint-blue p-6">
           <p className="mb-3 text-[13px] font-semibold tracking-[0.06em] text-ink-2 uppercase">Your laptop, our workstation</p>
           <StreamDiagram />
@@ -174,6 +173,12 @@ export default async function SoftwareLandingPage({
           <FileSyncDiagram />
         </div>
       </section>
+
+    </GpuCineBand>
+    <main className="cf-gpu-page cf-section px-5">
+      <ViewContent name={page.metaTitle ?? page.title} category="workstation" />
+      <JsonLd data={faqPage(faqs)} />
+      <JsonLd data={breadcrumbList([{ name: page.metaTitle ?? page.title, path: `/software/${page.slug}` }])} />
 
       {page.sections?.length ? (
         <section className="cf-col mt-16">

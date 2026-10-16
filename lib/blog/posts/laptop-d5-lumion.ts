@@ -142,7 +142,7 @@ export const laptopD5Lumion: BlogPost = {
     { type: "h3", text: "4. Skip the renderer for early concepts" },
     {
       type: "p",
-      text: `For a first look at a furnished room from a floor plan, before anyone has modelled anything, an AI tool can be enough. Our own [Coreframe Studio](/floor-plan-to-render), opening soon and in private testing for now, reads a DXF plan and produces an interior image in the browser, with no GPU on your side. It's a concept tool. It won't replace a D5 or Lumion scene for client presentation, where every material and fitting has to be the one you specified.`,
+      text: `For a first look at a furnished room from a floor plan, before anyone has modelled anything, an AI tool can be enough. Our own [Coreframe Studio](/floor-plan-to-render) reads a DXF plan and produces an interior image in the browser, with no GPU on your side. It's a concept tool. It won't replace a D5 or Lumion scene for client presentation, where every material and fitting has to be the one you specified.`,
     },
     {
       type: "figure",

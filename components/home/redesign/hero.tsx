@@ -3,8 +3,10 @@ import { HeroBackdrop } from "@/components/home/redesign/depth";
 import { HeroOfferingCards } from "@/components/home/redesign/offerings";
 
 /**
- * Full-bleed hero on a real Cycles render from our own machine (the interior
- * from the Blender walkthrough), darkened so the type reads.
+ * Full-bleed hero on a living room rendered on our own machine (a RenderGrid
+ * test render, 7 Oct 2026), darkened so the type reads. Until 16 Oct 2026 it
+ * was the Blender 4.1 splash scene, swapped out because its licence for
+ * marketing use was never confirmed.
  *
  * 13 Oct 2026 (owner): the three services sit in the hero as equals: a line
  * about the company, then one card each for GPU workstations, CFD and Studio,
@@ -20,8 +22,8 @@ export function RedesignHero({ introLabel }: { introLabel: string | null }) {
   return (
     <section className="relative isolate overflow-hidden bg-night text-white">
       <HeroBackdrop
-        src="/home/hero-interior.webp"
-        alt="The Blender 4.1 splash interior, rendered in Cycles on a Coreframe RTX 5080"
+        src="/heroes/interior-rendergrid-2560.webp"
+        alt="A calm living room with a white sofa, a woven leather chair, an olive tree and a garden through the windows"
       />
       <div className="absolute inset-0 -z-10 bg-gradient-to-r from-[#0b0d11]/92 via-[#0b0d11]/70 to-[#0b0d11]/35" />
       <div className="absolute inset-x-0 bottom-0 -z-10 h-2/3 bg-gradient-to-t from-[#0b0d11]/85 to-transparent" />
@@ -46,7 +48,7 @@ export function RedesignHero({ introLabel }: { introLabel: string | null }) {
         </div>
       </div>
       <p className="cfh-wrap pb-20 text-[11.5px] text-white/70 sm:pb-28">
-        Background: Blender 4.1 splash scene, from the blender.org demo files, rendered on our RTX&nbsp;5080.
+        Background: a living room rendered on Coreframe.
       </p>
     </section>
   );

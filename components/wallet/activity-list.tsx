@@ -135,6 +135,8 @@ function titleOf(r: LedgerRow, cat: Cat): string {
   if (cat === "gpu") return "GPU session";
   if (cat === "payments") return "Top-up";
   if (cat === "bonus") return "Bonus credit";
+  if (cat === "cfd" && r.kind.startsWith("cfd_quote_fee"))
+    return r.amount_rupees >= 0 ? "CFD pre-processing refund" : "CFD pre-processing";
   if (cat === "cfd") return r.amount_rupees >= 0 ? "CFD refund" : "CFD";
   if (cat === "studio") return r.amount_rupees >= 0 ? "Studio credit" : "Studio";
   if (r.service === "expiry" || r.kind === "expiry") return "Credit expired";

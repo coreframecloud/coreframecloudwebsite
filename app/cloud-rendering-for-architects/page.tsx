@@ -323,7 +323,7 @@ export default async function ArchitectsPage() {
               ["/lumion-cloud-gpu", "Lumion"],
               ["/enscape-cloud-gpu", "Enscape"],
               ["/cloud-workstation-vs-render-farm", "Cloud workstation vs render farm"],
-              ["/floor-plan-to-render", "Floor plan to interior render (Studio, opening soon)"],
+              ["/floor-plan-to-render", "Floor plan to interior render (Studio)"],
             ].map(([href, label]) => (
               <Link
                 key={href}
