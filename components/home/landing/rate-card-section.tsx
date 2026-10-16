@@ -59,7 +59,7 @@ export function RateCardSection({
             {intro ? `Get started: ${rupees(intro.priceRupees)} for ${hoursLabel(intro.hours)}` : "Create an account"}
           </Link>
           <Link href="/floor-plan-to-render" className="cf-btn-secondary">
-            Studio — opening soon
+            Studio: floor plan to render
           </Link>
         </div>
       </div>

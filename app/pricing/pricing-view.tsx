@@ -117,8 +117,8 @@ export default async function PricingView({ currency }: { currency: Currency }) 
               mid-line — a measure that long has no good break points. */}
           <p className="cf-lead mt-[22px]">
             {usdView
-              ? "Workstations by the minute, in US dollars with no GST. CFD by quote. Studio when it opens."
-              : "Workstations by the minute or a monthly plan, GST included. CFD by quote. Studio when it opens."}
+              ? "Workstations by the minute, in US dollars with no GST. CFD by quote. Studio previews free."
+              : "Workstations by the minute or a monthly plan, GST included. CFD by quote. Studio previews free."}
           </p>
         </div>
       </section>
@@ -147,8 +147,8 @@ export default async function PricingView({ currency }: { currency: Currency }) 
             },
             {
               o: offering("studio"),
-              price: "Opening soon",
-              note: "In private testing; prices published when it opens",
+              price: usdView ? "Free previews; 2K download $0.99" : "Free previews; 2K download ₹30",
+              note: usdView ? "Edit $0.49, 4K $1.49, no GST" : "Edit ₹20, 4K ₹50, GST included",
               href: "#studio",
               tint: "bg-tint-lilac",
             },
@@ -272,26 +272,42 @@ export default async function PricingView({ currency }: { currency: Currency }) 
         </div>
       </section>
 
-      {/* Studio: no price until it opens. */}
+      {/* Studio: open since 16 Oct 2026. Prices are apps/tools' live defaults
+          (CF_STUDIO_PRICE_*): INR 20 / 30 / 50, USD 0.49 / 0.99 / 1.49. */}
       <section id="studio" className="cf-section scroll-mt-20 px-5 pt-0">
         <div className="cf-wide rounded-[28px] bg-tint-lilac p-6 sm:p-10">
           <div className="flex flex-wrap items-center gap-2.5">
             <p className="text-[11.5px] font-semibold tracking-[0.12em] text-ink-2 uppercase">Studio</p>
-            <StatusBadge status="Opening soon" />
+            <StatusBadge status={offering("studio").status} />
           </div>
           <h2 className="cf-section-title mt-4">Pre-sale concept images from a floor plan.</h2>
           <p className="cf-section-copy mt-3 max-w-[40rem]">
-            Studio turns a 2D DXF floor plan into generated room images in the browser. It is in private testing; its
-            prices are published here when it opens.
+            Studio turns a 2D DXF floor plan into generated room images in the browser. Previews are free, up to 5 a
+            day; you pay only for what you keep, from the same wallet as your workstation hours.
           </p>
-          <div className="mt-7">
+          <ul className="mt-5 space-y-1.5 text-[15px] text-ink">
+            <li>Preview (three camera angles): free</li>
+            <li>Edit a preview: {usdView ? "$0.49" : "₹20"}</li>
+            <li>2K download: {usdView ? "$0.99" : "₹30"}</li>
+            <li>4K download: {usdView ? "$1.49" : "₹50"}</li>
+          </ul>
+          <p className="mt-2 text-[13px] text-ink-3">{usdView ? "No GST (export of services)." : "GST included."}</p>
+          <div className="mt-7 flex flex-wrap gap-3">
             <TrackedLink
-              href="/floor-plan-to-render#notify"
+              href="/studio"
               event="offering_cta_click"
-              params={{ offering: "studio", label: "Get notified", location: "pricing_studio" }}
+              params={{ offering: "studio", label: "Open Studio", location: "pricing_studio" }}
+              className="cf-btn-primary"
+            >
+              Open Studio
+            </TrackedLink>
+            <TrackedLink
+              href="/floor-plan-to-render"
+              event="offering_cta_click"
+              params={{ offering: "studio", label: "How Studio works", location: "pricing_studio_more" }}
               className="cf-btn-secondary"
             >
-              Get notified
+              How Studio works
             </TrackedLink>
           </div>
         </div>
