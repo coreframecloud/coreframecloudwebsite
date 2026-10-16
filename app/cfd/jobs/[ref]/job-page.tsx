@@ -156,12 +156,14 @@ export default function CfdJobPage({ refId }: { refId: string }) {
   );
 }
 
-/** The /cfd "what is CFD" sketch, decorative here (alt ""), hidden below
- *  900px so a phone gets straight to the job (explainer style, 16 Oct 2026). */
+/** An explainer sketch (residuals falling as a run converges), decorative
+ *  here (alt ""), hidden below 900px so a phone gets straight to the job.
+ *  Not the /cfd hero: a sub-page never reuses the main page's picture
+ *  (owner, 16 Oct 2026). */
 const JOB_HERO_ART: HeroImage = {
-  src: "/cfd/explainer/hero-what-is-cfd-1440.webp",
-  w: 1440,
-  h: 624,
+  src: "/cfd/explainer/d-residuals-falling.webp",
+  w: 1536,
+  h: 864,
   alt: "",
   pos: "right 40%",
 };

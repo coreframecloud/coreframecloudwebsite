@@ -62,21 +62,22 @@ export const metadata: Metadata = {
 };
 
 /**
- * Hero picture (owner, 16 Oct 2026: "the subtle interior"). It is the warm
- * living room from a RenderGrid test render on our RTX 5080 -- NOT a Studio
- * output -- so it carries "Rendered on Coreframe" and no "Generated image"
- * label, and the plan card moved out of the hero to sit next to a real
- * Studio export further down.
+ * Hero picture (owner, 16 Oct 2026: "the hero image should be a very nice
+ * render"). A genuine Studio 4K export of the demo plan's living room, corner
+ * view, golden hour (seed 44; prompt in
+ * marketing-20261016-site-explainer/gen/runs.jsonl, grade in grade.md), so it
+ * carries Studio's own "Generated image" label. Different from the living-room
+ * export further down (wide view, evening).
  */
 const HERO: HeroImage = {
-  src: "/heroes/interior-rendergrid-2560.webp",
+  src: "/heroes/studio-hero-living-2560.webp",
   w: 2560,
   h: 1440,
-  mobile: { src: "/heroes/interior-rendergrid-m780.webp", w: 780, h: 1040 },
-  alt: "A calm living room with a white sofa, a woven leather chair, an olive tree and a garden through the windows",
-  pos: "70% 50%",
+  mobile: { src: "/heroes/studio-hero-living-m780.webp", w: 780, h: 1040 },
+  alt: "The living room from our sample plan at golden hour: a sand linen sofa with rust and indigo cushions, an olive tree, a carved teak cabinet and a garden through tall windows (generated image)",
+  pos: "60% 50%",
   posMobile: "50% 50%",
-  credit: "Rendered on Coreframe",
+  credit: "Generated image",
 };
 
 /** More rooms from the same sample plan, each a Studio 4K export (16 Oct 2026). */

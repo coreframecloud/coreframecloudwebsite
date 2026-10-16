@@ -61,8 +61,8 @@ export const OFFERINGS: Offering[] = [
     // The GPU family's cinematic look (owner, 16 Oct 2026). A generated
     // still: no caption, never called a render of ours.
     image: {
-      src: "/heroes/hero-gpu-jet-2560.webp",
-      alt: "A sci-fi jet banking hard between night-lit towers at dusk, trailing sparks and light streaks",
+      src: "/heroes/hero-gpu-v3-2560.webp",
+      alt: "A pearl-white, manta-shaped craft banking between night-lit skyscrapers at dusk, trailing sparks and light streaks",
       width: 2560,
       height: 1440,
       caption: "",
