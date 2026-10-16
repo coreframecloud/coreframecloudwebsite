@@ -17,6 +17,7 @@
  */
 import { API_BASE } from "@/lib/api-base";
 import { type Currency } from "@/lib/money";
+import { ACCOUNT_ACCESS, tokenQuery } from "@/lib/cfd-my-jobs";
 
 export const JOB_TOKEN_PREFIX = "cf_cfd_job_token:";
 const JOB_TOKEN_TTL_MS = 30 * 24 * 3600 * 1000;
@@ -359,7 +360,9 @@ export function readJobToken(ref: string): string | null {
   } catch {
     /* storage blocked: only the emailed link works */
   }
-  return null;
+  // No emailed key here, but signed in: the job's own account opens it with its
+  // session (16 Oct 2026). Another account gets the same "not found" as before.
+  return sessionToken() ? ACCOUNT_ACCESS : null;
 }
 
 // ─── the signed-in session (the site's usual bearer) ─────────────────────────
@@ -390,11 +393,18 @@ export interface ApiResult<T = unknown> {
 }
 
 export function jobUrl(ref: string, path: string, jobToken: string): string {
-  return `${API_BASE}/cfd-jobs/${encodeURIComponent(ref)}${path}?token=${encodeURIComponent(jobToken)}`;
+  const q = tokenQuery(jobToken);
+  return `${API_BASE}/cfd-jobs/${encodeURIComponent(ref)}${path}${q ? `?${q}` : ""}`;
 }
 
 export async function fetchJob(ref: string, jobToken: string): Promise<ApiResult<CfdJob | null>> {
-  const res = await fetch(jobUrl(ref, "/status", jobToken), { cache: "no-store" });
+  // Signed in: the bearer goes too, so the job's own account still gets in when
+  // the kept email key has been retired (the API accepts the token OR the owner).
+  const bearer = sessionToken();
+  const res = await fetch(jobUrl(ref, "/status", jobToken), {
+    cache: "no-store",
+    headers: bearer ? { Authorization: `Bearer ${bearer}` } : undefined,
+  });
   const body = res.ok ? ((await res.json()) as CfdJob) : null;
   return { status: res.status, body };
 }

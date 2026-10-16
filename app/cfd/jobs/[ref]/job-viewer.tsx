@@ -16,7 +16,7 @@
  */
 import { useEffect, useRef, useState } from "react";
 import type * as T from "three";
-import { fmtNumber } from "@/lib/cfd-job";
+import { fmtNumber, sessionToken } from "@/lib/cfd-job";
 
 type Field = { node: string; label: string; unit: string; min: number; max: number; colormap: string[] };
 type CapInfo = { id: string; role: string | null; area: string };
@@ -98,7 +98,11 @@ export default function JobViewer({
         renderer.domElement.remove();
       };
 
-      new GLTFLoader().load(
+      const loader = new GLTFLoader();
+      // Opened by the job's signed-in account: the file URL has no token, the bearer opens it.
+      const bearer = /[?&]token=/.test(url) ? null : sessionToken();
+      if (bearer) loader.setRequestHeader({ Authorization: `Bearer ${bearer}` });
+      loader.load(
         url,
         (gltf) => {
           if (stopped) return;

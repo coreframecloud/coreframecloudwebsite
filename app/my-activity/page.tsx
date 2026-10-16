@@ -10,6 +10,7 @@ import ActivityList, {
   type SessionRow,
 } from "@/components/wallet/activity-list";
 import { announceWallet } from "@/components/wallet/wallet-events";
+import MyCfdJobs from "@/components/cfd/my-cfd-jobs";
 import { trackEvent } from "@/lib/analytics";
 import {
   getIntroOffer,
@@ -980,6 +981,11 @@ export default function MyActivityPage() {
         {/* Disk. Rendered for every segment: a B2B engineer on the org's
             pooled wallet still has their own storage. */}
         <UsageCards wallet={wallet} />
+
+        {/* CFD jobs (16 Oct 2026): the account's simulations, each opening its
+            job page with the session. Above Activity: a job waiting on the
+            customer matters more than a ledger line. */}
+        <MyCfdJobs token={token} />
 
         {/* Activity: ONE list (owner, 16 Oct 2026). Wallet history, Recent
             sessions and Payment history showed the same charges two or three
