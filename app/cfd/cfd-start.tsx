@@ -111,7 +111,7 @@ export default function CfdStart({ currency = "INR" }: { currency?: Currency } =
         </p>
         <p className="mt-3 text-[15px] leading-6 text-ink-2">
           Sign-up is your email and a WhatsApp code to your mobile, no paperwork. You come straight back here to submit
-          your job, and the quote fee is paid from the same wallet.
+          your job, and pre-processing is paid from the same wallet.
         </p>
         {gate.note ? <p className="mt-3 text-[14px] leading-6 text-destructive">{gate.note}</p> : null}
         <div className="mt-6 flex flex-wrap gap-3">

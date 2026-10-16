@@ -107,9 +107,9 @@ function cancelWords(job: CfdJob, cur: Currency): string[] {
     out.push("The job is closed and nothing more is charged.");
   }
   if (c.quote_fee_refund && Number(c.quote_fee_refund) > 0) {
-    out.push(`The quote fee (${money(c.quote_fee_refund, cur)}) comes back too: the quote has not been delivered.`);
+    out.push(`The pre-processing charge (${money(c.quote_fee_refund, cur)}) comes back too: the mesh and quote have not been delivered.`);
   } else if (c.quote_fee_kept && Number(c.quote_fee_kept) > 0) {
-    out.push(`The ${money(c.quote_fee_kept, cur)} quote fee was for the quote you received and isn't refunded.`);
+    out.push(`The ${money(c.quote_fee_kept, cur)} pre-processing charge paid for the mesh and quote you received and isn't refunded.`);
   }
   out.push("This can't be undone. To run it later, submit the job again.");
   return out;
@@ -183,9 +183,9 @@ export function Cancelled({ job }: { job: CfdJob }) {
   if (c?.at) rows.push(["Cancelled", fmtDate(c.at)]);
   if (c?.released && Number(c.released) > 0) rows.push(["Back in your wallet", `${money(c.released, cur)} (the whole run hold)`]);
   if (c?.quote_fee_refunded && Number(c.quote_fee_refunded) > 0)
-    rows.push(["Quote fee", `${money(c.quote_fee_refunded, cur)}, refunded (the quote was not delivered)`]);
+    rows.push(["Pre-processing", `${money(c.quote_fee_refunded, cur)}, refunded (the mesh and quote were not delivered)`]);
   else if (c?.quote_fee_kept && Number(c.quote_fee_kept) > 0)
-    rows.push(["Quote fee", `${money(c.quote_fee_kept, cur)}, not refunded (it paid for the quote you received)`]);
+    rows.push(["Pre-processing", `${money(c.quote_fee_kept, cur)}, not refunded (it paid for the mesh and quote you received)`]);
   if (c && !(c.released && Number(c.released) > 0)) rows.push(["Charged for the run", "Nothing"]);
   return (
     <Card title="Cancelled">

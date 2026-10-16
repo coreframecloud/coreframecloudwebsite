@@ -102,7 +102,7 @@ function HeroCard({ o, introLabel, i }: { o: Offering; introLabel: string | null
           ) : null}
           {o.id === "cfd" ? (
             <p className="mt-2.5 text-[12.5px] text-white/80 sm:mt-3 sm:text-[13px]">
-              Quote fee <span className="font-semibold text-white">₹599 incl. GST</span> for most models
+              Pre-processing <span className="font-semibold text-white">₹599 incl. GST</span> for most models
             </p>
           ) : null}
           {o.id === "studio" ? (
@@ -221,7 +221,7 @@ function OfferingBand({ o, flip }: { o: Offering; flip: boolean }) {
               {o.secondary.label}
             </TrackedLink>
           </div>
-          {o.id === "cfd" ? <p className="mt-6 text-[14px] text-ink-2">Quote fee ₹599 incl. GST for most models; ₹1,499 over 5 million cells. Rooms and HVAC airflow: coming soon.</p> : null}
+          {o.id === "cfd" ? <p className="mt-6 text-[14px] text-ink-2">Pre-processing / mesh validation ₹599 incl. GST for most models; ₹1,499 over 5 million cells. Rooms and HVAC airflow: coming soon.</p> : null}
           {o.id === "studio" ? (
             <p className="mt-6 text-[14px] text-ink-2">Opening soon. In private testing now; tell us and we&rsquo;ll message you when it opens.</p>
           ) : null}

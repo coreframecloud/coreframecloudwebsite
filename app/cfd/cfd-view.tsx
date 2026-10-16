@@ -15,7 +15,7 @@ import { cellsLabel, formatMoney, usdRates, type Currency, type UsdRateCard } fr
  * Until 13 Oct this page was a six-step brief for "we size a GPU workstation,
  * you bring the solver licence". The product behind it is now the automatic
  * duct/pipe service in the control plane (apps/api/app/api/cfd_jobs.py):
- * one closed binary STL -> automatic geometry check -> quote fee from the
+ * one closed binary STL -> automatic geometry check -> pre-processing (quote_fee) from the
  * wallet -> mesh on our machine -> emailed quote -> pay from the wallet ->
  * OpenFOAM run -> PDF report, 3D viewer and data files.
  *
@@ -46,15 +46,23 @@ import { cellsLabel, formatMoney, usdRates, type Currency, type UsdRateCard } fr
  *
  * 15 Oct 2026: rendered twice, as /cfd (INR) and /usd/cfd (USD, for visitors
  * outside India; proxy.ts rewrites to it, the browser keeps /cfd). The USD
- * copy shows the quote fee from the rate card's `usd` block with no GST and
+ * copy shows the pre-processing charge from the rate card's `usd` block with no GST and
  * says runs are quoted in US dollars after the mesh, never a run price.
  */
 
 export const cfdMetadata: Metadata = {
-  title: "Duct and Pipe CFD: Pressure Drop from One STL",
+  // Absolute (no "| Coreframe Cloud"): the SEO audit's 60-character title limit (16 Oct 2026).
+  title: { absolute: "Duct and Pipe Pressure Drop Calculation · CFD Meshing" },
   description:
-    "Upload one STL of your duct or pipe and get a quote by email. Then a PDF report, a 3D results viewer and the OpenFOAM data. No CFD licence needed.",
+    "Pressure drop calculation for ducts and pipes with OpenFOAM CFD. Upload one STL; we build and check a wall-resolved mesh, quote, run it and report.",
   keywords: [
+    "pressure drop calculation",
+    "pipe pressure drop calculation",
+    "duct pressure drop",
+    "CFD pre-processing",
+    "CFD meshing",
+    "mesh quality check",
+    "snappyHexMesh",
     "CFD pressure drop duct",
     "pipe pressure drop CFD India",
     "duct CFD analysis service",
@@ -66,7 +74,7 @@ export const cfdMetadata: Metadata = {
   alternates: { canonical: "/cfd" },
   openGraph: {
     images: [OG_IMAGE],
-    title: "CFD for ducts and pipes — Coreframe Cloud",
+    title: "Duct and pipe pressure drop calculation (CFD) — Coreframe Cloud",
     description:
       "One STL in. Pressure drop, loss coefficient, a PDF report, a 3D viewer and the data files out. OpenFOAM on our machine, no licence on yours.",
     url: "https://www.coreframecloud.com/cfd",
@@ -123,8 +131,8 @@ const STEPS = [
     body: "Closed solid, units, and the flat end caps that become your inlet and outlets. You confirm which opening is the inlet on your job page.",
   },
   {
-    title: "Pay the quote fee (₹599 incl. GST for most models). We mesh it and email the quote",
-    body: "We build the real mesh on our machine, with wall layers, and email you a quote with packages to choose from.",
+    title: "Pay for pre-processing / mesh validation (₹599 incl. GST for most models)",
+    body: "We check your geometry, build a wall-resolved mesh and verify its quality; your exact run price comes with it. You get a one-page mesh report and a quote with packages to choose from, by email.",
   },
   {
     title: "Accept, pay from your wallet, get the results",
@@ -163,7 +171,15 @@ const FAQ = [
   },
   {
     q: "What does it cost to start?",
-    a: "The quote fee is ₹599 (incl. GST) for most duct and pipe models and ₹1,499 for very large models (over 5 million cells), paid from your Coreframe wallet. The size is estimated from your STL before you pay, so you see which fee applies on your job page. For that we build the real mesh of your geometry and email you a quote with packages. You pay for the run only if you accept the quote. The quoted amount is held in your wallet, you are charged for what the run actually used, and the rest goes back to your wallet.",
+    a: "Pre-processing / mesh validation is ₹599 (incl. GST) for most duct and pipe models and ₹1,499 for very large models (over 5 million cells), paid from your Coreframe wallet. We check your geometry, build a wall-resolved mesh and verify its quality; your exact run price comes with it. The size is estimated from your STL before you pay, so you see which price applies on your job page. You get a one-page mesh report and a quote with packages. Pre-processing is a separate charge for that work and is not deducted from the run. You pay for the run only if you accept the quote. The quoted amount is held in your wallet, you are charged for what the run actually used, and the rest goes back to your wallet.",
+  },
+  {
+    q: "Do you offer CFD meshing as a service?",
+    a: "Not as a separate product. Meshing is part of pre-processing / mesh validation (₹599 incl. GST for most models): we build a wall-resolved mesh of your geometry with OpenFOAM snappyHexMesh, run a mesh quality check on it and send you a one-page Mesh report with your exact run price. The mesh files themselves (the OpenFOAM polyMesh, which opens in ParaView) come in the case download after a run.",
+  },
+  {
+    q: "Do you check mesh independence?",
+    a: "Not in the standard packages yet. Every run uses one wall-resolved mesh that has passed our mesh quality check, and the Mesh report shows its numbers. A mesh independence study, the same case on several meshes with a grid convergence index, is not part of the Quick or Standard packages yet.",
   },
   {
     q: "How fast do I get results?",
@@ -179,7 +195,7 @@ const FAQ = [
   },
   {
     q: "What if my job is out of scope?",
-    a: "It is rejected automatically, before any meshing, with the reason and what to change. You are not charged for a rejection, and a quote fee already paid for that job goes back to your wallet.",
+    a: "It is rejected automatically, before any meshing, with the reason and what to change. You are not charged for a rejection, and a pre-processing charge already paid for that job goes back to your wallet.",
   },
   {
     q: "What can you not run yet?",
@@ -217,15 +233,15 @@ const serviceLd = {
     "Automatic OpenFOAM internal-flow runs for ducts, pipes, bends, reducers, valves and fittings from one closed STL: pressure drop, loss coefficient, PDF report, 3D results viewer and data files.",
   offers: {
     "@type": "Offer",
-    name: "Quote fee (mesh and quote)",
+    name: "Pre-processing / mesh validation",
     price: "599",
     priceCurrency: "INR",
     valueAddedTaxIncluded: true,
-    description: "Including GST, for most duct and pipe models. Very large models (over 5 million cells): ₹1,499 including GST. Paid from the Coreframe wallet. The run is quoted separately and paid only if you accept.",
+    description: "Including GST, for most duct and pipe models. Very large models (over 5 million cells): ₹1,499 including GST. Paid from the Coreframe wallet. Geometry check, wall-resolved mesh and mesh-quality check, with a mesh report and the exact run price. The run is quoted separately and paid only if you accept.",
   },
 };
 
-/** The quote-fee sentences for a visitor outside India. No GST: an export of
+/** The pre-processing sentences for a visitor outside India. No GST: an export of
  *  services. Run prices are never shown; runs are quoted after the mesh. */
 function usdCopy(u: UsdRateCard) {
   const small = formatMoney(u.cfd_quote_fee_small, "USD");
@@ -239,8 +255,8 @@ function usdSteps(u: UsdRateCard) {
   return STEPS.map((s, i) =>
     i === 2
       ? {
-          title: `Pay the quote fee (${small} for most models, no GST). We mesh it and email the quote`,
-          body: "We build the real mesh on our machine, with wall layers, and email you a quote in US dollars with packages to choose from.",
+          title: `Pay for pre-processing / mesh validation (${small} for most models, no GST)`,
+          body: "We check your geometry, build a wall-resolved mesh and verify its quality; your exact run price comes with it. You get a one-page mesh report and a quote in US dollars with packages to choose from, by email.",
         }
       : s,
   );
@@ -249,10 +265,12 @@ function usdSteps(u: UsdRateCard) {
 function usdFaq(u: UsdRateCard) {
   const { small, large, cells } = usdCopy(u);
   return FAQ.map((f) =>
-    f.q === "What does it cost to start?"
+    f.q === "Do you offer CFD meshing as a service?"
+      ? { q: f.q, a: f.a.replace("₹599 incl. GST for most models", `${small} for most models, no GST`) }
+      : f.q === "What does it cost to start?"
       ? {
           q: f.q,
-          a: `The quote fee is ${small} for most duct and pipe models and ${large} for very large models (over ${cells} cells), paid from your Coreframe wallet, with no GST (export of services). The size is estimated from your STL before you pay, so you see which fee applies on your job page. For that we build the real mesh of your geometry and email you a quote with packages. Runs are quoted in US dollars after the mesh is built, and you pay for the run only if you accept the quote. The quoted amount is held in your wallet, you are charged for what the run actually used, and the rest goes back to your wallet.`,
+          a: `Pre-processing / mesh validation is ${small} for most duct and pipe models and ${large} for very large models (over ${cells} cells), paid from your Coreframe wallet, with no GST (export of services). We check your geometry, build a wall-resolved mesh and verify its quality; your exact run price comes with it. The size is estimated from your STL before you pay, so you see which price applies on your job page. You get a one-page mesh report and a quote with packages. Pre-processing is a separate charge for that work and is not deducted from the run. Runs are quoted in US dollars after the mesh is built, and you pay for the run only if you accept the quote. The quoted amount is held in your wallet, you are charged for what the run actually used, and the rest goes back to your wallet.`,
         }
       : f,
   );
@@ -264,11 +282,11 @@ function usdServiceLd(u: UsdRateCard) {
     ...serviceLd,
     offers: {
       "@type": "Offer",
-      name: "Quote fee (mesh and quote)",
+      name: "Pre-processing / mesh validation",
       price: String(u.cfd_quote_fee_small),
       priceCurrency: "USD",
       valueAddedTaxIncluded: false,
-      description: `For most duct and pipe models; no GST (export of services). Very large models (over ${cells} cells): ${large}. Paid from the Coreframe wallet. The run is quoted separately in US dollars and paid only if you accept.`,
+      description: `For most duct and pipe models; no GST (export of services). Very large models (over ${cells} cells): ${large}. Paid from the Coreframe wallet. Geometry check, wall-resolved mesh and mesh-quality check, with a mesh report and the exact run price. The run is quoted separately in US dollars and paid only if you accept.`,
     },
   };
 }
@@ -299,7 +317,7 @@ export default async function CfdView({ currency }: { currency: Currency }) {
             <div className="min-w-0">
               <p className="cf-eyebrow">CFD for ducts and pipes · Live</p>
               <p className="mt-5 font-heading text-[22px] leading-tight font-medium sm:text-[26px]">Slow CFD? Try us.</p>
-              <h1 className="cf-display mt-3">Pressure drop for your duct or pipe, from one STL.</h1>
+              <h1 className="cf-display mt-3">Pressure drop calculation for your duct or pipe, from one STL.</h1>
               <p className="cf-lead mt-5">
                 Upload the geometry. We check it, mesh it on our machine and email you a quote. Accept it and you get a
                 PDF report, a 3D results viewer and the data files, with the pressure drop and the loss coefficient.
@@ -311,13 +329,13 @@ export default async function CfdView({ currency }: { currency: Currency }) {
               </div>
               {usdText ? (
                 <p className="mt-6 text-[14px]">
-                  {usdText.small} quote fee (no GST — export of services) for most duct and pipe models; {usdText.large} for
-                  very large models (over {usdText.cells} cells). Runs are quoted in US dollars after the mesh is built; pay
+                  Pre-processing / mesh validation: {usdText.small} (no GST — export of services) for most duct and pipe models; {usdText.large} for
+                  very large models (over {usdText.cells} cells). We check your geometry, build a wall-resolved mesh and verify its quality; your exact run price comes with it. Runs are quoted in US dollars after the mesh is built; pay
                   for the run only if you accept the quote.
                 </p>
               ) : (
               <p className="mt-6 text-[14px]">
-                ₹599 quote fee (incl. GST) for most duct and pipe models; ₹1,499 for very large models (over 5 million cells). Pay for the run only if you accept the quote.
+                Pre-processing / mesh validation: ₹599 incl. GST for most duct and pipe models; ₹1,499 for very large models (over 5 million cells). We check your geometry, build a wall-resolved mesh and verify its quality; your exact run price comes with it. Pay for the run only if you accept the quote.
               </p>
               )}
             </div>
@@ -402,6 +420,32 @@ export default async function CfdView({ currency }: { currency: Currency }) {
                 </li>
               ))}
             </ol>
+          </div>
+        </section>
+
+        {/* ── Pre-processing (SEO, owner 16 Oct 2026) ─────────────────────── */}
+        <section id="pre-processing" className="cf-section scroll-mt-20 px-5 pt-0">
+          <div className="cf-wide">
+            <p className="cf-eyebrow">Pre-processing</p>
+            <h2 className="cf-section-title mt-4">CFD pre-processing and mesh validation</h2>
+            <p className="cf-section-copy mt-3 max-w-[46rem]">
+              Before any run, we check your geometry, build a wall-resolved mesh with OpenFOAM (blockMesh and
+              snappyHexMesh) and run a mesh quality check on it. You get a one-page Mesh report and the exact price of the
+              pressure drop simulation, for {usdText ? `${usdText.small} (no GST)` : "₹599 incl. GST"} on most models.
+            </p>
+            <div className="mt-8 grid gap-6 sm:grid-cols-2">
+              {[
+                ["Geometry check", "A closed solid, believable units, and the flat openings that become the inlet and outlets, with their areas and hydraulic diameters. You confirm the inlet."],
+                ["Wall-resolved mesh", "CFD mesh generation with snappyHexMesh, with prism layers at the walls sized for y+ ≈ 1. Where those layers cannot cover enough of the wall, we fall back to layers for wall functions, and the report says so."],
+                ["Mesh quality check", "checkMesh on every mesh: non-orthogonality, skewness and negative cell volumes against our limits, plus the wall-layer coverage. A mesh that fails is not quoted."],
+                ["Mesh report and run price", "One page: the geometry, the mesh numbers, pass or fail for each check and a picture of the mesh, with the price of each run package. A separate charge, not deducted from the run."],
+              ].map(([t, b]) => (
+                <div key={t} className="cf-card">
+                  <h3 className="cf-card-label">{t}</h3>
+                  <p className="cf-section-copy">{b}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </section>
 
@@ -514,16 +558,17 @@ export default async function CfdView({ currency }: { currency: Currency }) {
           <div className="cf-wide rounded-[28px] bg-night p-6 text-white sm:p-10">
             <p className="cf-eyebrow !bg-white/10 !text-white">What it costs to start</p>
             <h2 className="cf-section-title mt-4 !text-white">
-              {usdText ? `${usdText.small} for the mesh and the quote.` : "₹599 incl. GST for the mesh and the quote."}
+              {usdText ? `${usdText.small} for pre-processing / mesh validation.` : "₹599 incl. GST for pre-processing / mesh validation."}
             </h2>
             <ul className="mt-7 grid grid-cols-1 gap-5 sm:grid-cols-2">
               {[
                 usdText
-                  ? ["Quote fee", `${usdText.small} for most duct and pipe models; ${usdText.large} for very large models (over ${usdText.cells} cells). No GST (export of services). Paid from your Coreframe wallet. For it we build the real mesh of your geometry.`]
-                  : ["Quote fee", "₹599 incl. GST for most duct and pipe models; ₹1,499 for very large models (over 5 million cells). Paid from your Coreframe wallet. For it we build the real mesh of your geometry."],
+                  ? ["Pre-processing / mesh validation", `${usdText.small} for most duct and pipe models; ${usdText.large} for very large models (over ${usdText.cells} cells). No GST (export of services). Paid from your Coreframe wallet. We check your geometry, build a wall-resolved mesh and verify its quality; your exact run price comes with it.`]
+                  : ["Pre-processing / mesh validation", "₹599 incl. GST for most duct and pipe models; ₹1,499 for very large models (over 5 million cells). Paid from your Coreframe wallet. We check your geometry, build a wall-resolved mesh and verify its quality; your exact run price comes with it."],
+                ["A separate charge", "Pre-processing pays for the geometry check, the mesh and its quality check. It is not deducted from the run price."],
                 usdText
-                  ? ["Quote by email", "Runs are quoted in US dollars after the mesh is built: packages to choose from, each with its iteration budget and convergence targets."]
-                  : ["Quote by email", "Packages to choose from, each with its iteration budget and convergence targets."],
+                  ? ["Mesh report and quote by email", "A one-page mesh report (geometry, mesh quality checks, a picture of the mesh) and a quote in US dollars: packages to choose from, each with its iteration budget and convergence targets."]
+                  : ["Mesh report and quote by email", "A one-page mesh report (geometry, mesh quality checks, a picture of the mesh) and packages to choose from, each with its iteration budget and convergence targets."],
                 ["Pay only if you accept", "Nothing runs, and nothing more is charged, until you pay the quote."],
                 ["Normal or express", "Normal: results within 24 hours. Express: results in 1–2 hours at 3x the price, where the quote offers it."],
                 ["Held, then settled", "The quote is held in your wallet; you are charged for what the run used and the rest comes back."],
@@ -536,12 +581,12 @@ export default async function CfdView({ currency }: { currency: Currency }) {
             </ul>
             {usdText ? (
               <p className="mt-7 text-[14px] leading-6 text-white/60">
-                Rejected before meshing: no charge. A quote that fails on our side: the fee goes back to your wallet. An
+                Rejected before meshing: no charge. Pre-processing that fails on our side: the charge goes back to your wallet. An
                 invoice in US dollars on every payment.
               </p>
             ) : (
             <p className="mt-7 text-[14px] leading-6 text-white/60">
-              Rejected before meshing: no charge. A quote that fails on our side: the fee goes back to your wallet. GST
+              Rejected before meshing: no charge. Pre-processing that fails on our side: the charge goes back to your wallet. GST
               invoice on every payment.
             </p>
             )}
@@ -556,7 +601,7 @@ export default async function CfdView({ currency }: { currency: Currency }) {
               <h2 className="cf-section-title mt-4">Tell us the flow, then upload the STL.</h2>
               <p className="cf-section-copy mt-3">
                 A few fields and a file, from your Coreframe account. Your name, email and WhatsApp number come from the
-                account, and the quote fee is paid from its wallet on your job page.
+                account, and pre-processing is paid from its wallet on your job page.
               </p>
               <div className="mt-8">
                 <CfdStart currency={currency} />

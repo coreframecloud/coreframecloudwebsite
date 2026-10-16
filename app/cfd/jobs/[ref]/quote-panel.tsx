@@ -91,7 +91,7 @@ export function QuotePanel({
     return (
       <Card tone="action" eyebrow="Next step" title="This quote has expired">
         <Body>
-          Quotes are valid for seven days. A fresh quote is built from your existing mesh and costs the quote fee
+          Quotes are valid for seven days. A fresh quote is built from your existing mesh and is charged as pre-processing again
           {job.quote_fee ? ` (${money(job.quote_fee.total, cur)}${usd ? "" : " incl. GST"})` : ""}.
         </Body>
         <div className="mt-5">

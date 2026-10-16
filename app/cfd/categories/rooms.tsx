@@ -24,7 +24,7 @@ import type { CategoryFields } from "./types";
  * same as the control plane's e2e harness): heat + buoyancy on, k-epsilon, no
  * geometry file. The `hvac` block alone makes it a room job (the runner meshes
  * it and reports mode "hvac", which prices it as a room), so the job goes
- * straight to the quote fee, or is rejected at once, free, with the fix, when the
+ * straight to pre-processing, or is rejected at once, free, with the fix, when the
  * description cannot be set up. The API test SITE_ROOM_BODY in
  * apps/api/tests/test_cfd_cloud.py is this form's output: keep them in step.
  *

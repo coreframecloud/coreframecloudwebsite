@@ -269,11 +269,11 @@ export default function CfdJobForm({ token, accountEmail, onSignedOut, currency 
           <ol className="list-decimal space-y-1 pl-5">
             <li>{fields?.nextFirstStep ?? "Confirm which opening is the inlet (and the units, if we ask)."}</li>
             {usdFee ? (
-              <li>Pay the quote fee from your Coreframe wallet: {usdFee.small} for most models, {usdFee.large} for very large models (over {usdFee.cells} cells), no GST.</li>
+              <li>Pay for pre-processing / mesh validation from your Coreframe wallet: {usdFee.small} for most models, {usdFee.large} for very large models (over {usdFee.cells} cells), no GST.</li>
             ) : (
-            <li>Pay the quote fee from your Coreframe wallet: ₹599 incl. GST for most models, ₹1,499 for very large models (over 5 million cells).</li>
+            <li>Pay for pre-processing / mesh validation from your Coreframe wallet: ₹599 incl. GST for most models, ₹1,499 for very large models (over 5 million cells).</li>
             )}
-            <li>We build the mesh and email you the quote.</li>
+            <li>We check the geometry, build a wall-resolved mesh and verify its quality, then email you the mesh report and the quote. Pre-processing is a separate charge for that work, not deducted from the run.</li>
           </ol>
         </div>
 
@@ -377,7 +377,7 @@ export default function CfdJobForm({ token, accountEmail, onSignedOut, currency 
 
             <div className="mt-7 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <p className="text-[13px] leading-5 text-ink-3">
-                Submitting as {accountEmail || "your Coreframe account"}. Nothing is charged when you submit. The quote fee
+                Submitting as {accountEmail || "your Coreframe account"}. Nothing is charged when you submit. Pre-processing
                 {usdFee
                   ? ` (${usdFee.small} for most models, ${usdFee.large} over ${usdFee.cells} cells, no GST)`
                   : " (₹599 incl. GST for most models, ₹1,499 over 5 million cells)"} is paid later, on your job page, from your Coreframe wallet. By submitting you agree to our{" "}

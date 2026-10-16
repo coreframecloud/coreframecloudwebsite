@@ -495,7 +495,7 @@ export default async function RootLayout({
                   ],
                   offers: {
                     "@type": "Offer",
-                    name: "Quote fee (mesh and quote)",
+                    name: "CFD pre-processing / mesh validation",
                     price: "599",
                     priceCurrency: "INR",
                     valueAddedTaxIncluded: true,

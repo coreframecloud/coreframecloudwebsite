@@ -14,7 +14,7 @@
  *     us." is a hook; the body sells no licence / no workstation, not speed);
  *   - Studio images are "generated", and Studio is "Opening soon" until it
  *     opens: its CTA leads to /floor-plan-to-render, never to a sign-up;
- *   - the only typed price is the CFD quote fee, which is published on
+ *   - the only typed price is the CFD pre-processing charge, which is published on
  *     /cfd. Workstation prices come from the live rate card.
  */
 

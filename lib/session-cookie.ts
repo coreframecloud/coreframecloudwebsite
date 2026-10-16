@@ -2,7 +2,7 @@
  * Keep the API's HttpOnly session cookie in step with the site's token.
  *
  * WHY (16 Oct 2026). The site signs in with a bearer token in localStorage,
- * but pages the API serves itself — the CFD job page and its "Pay quote fee"
+ * but pages the API serves itself — the CFD job page and its "Pay for pre-processing"
  * button — can only see the `cf_session` cookie on control.coreframecloud.com.
  * The API set that cookie on every sign-in, and the browser threw it away,
  * because no fetch here sent `credentials: "include"`. Every job page 401'd.

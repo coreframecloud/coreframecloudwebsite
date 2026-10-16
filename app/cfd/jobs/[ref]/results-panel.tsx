@@ -165,7 +165,7 @@ export function BillingLine({ job, cur }: { job: CfdJob; cur: Currency }) {
   const items: [string, string][] = [];
   if (b.quote_fee?.amount_inr)
     items.push([
-      "Quote fee",
+      "Pre-processing",
       `${money(b.quote_fee.amount_inr, cur)}${usd ? "" : " incl. GST"}${b.quote_fee.state === "refunded" ? " (refunded)" : ""}`,
     ]);
   if (Number(b.on_hold_inr) > 0) items.push(["On hold for the run", money(b.on_hold_inr, cur)]);
