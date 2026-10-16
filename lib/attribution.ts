@@ -217,3 +217,56 @@ export function readAttribution(): Attribution | null {
   const hasAnything = Object.values(a).some((v) => v !== null && v !== "");
   return hasAnything ? a : null;
 }
+
+/** The fields the API stores on the user row (services/attribution.py). */
+const SIGNUP_KEYS = [
+  "utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term",
+  "fbclid", "gclid", "gbraid", "wbraid",
+  "landing_path", "referrer", "first_seen_at",
+] as const;
+
+/**
+ * The "Continue with Google" URL, carrying the first-touch record.
+ *
+ * WHY. A Google sign-up is created by the API in the OAuth callback — Google's
+ * redirect, which carries nothing from this browser — so until 16 Oct 2026
+ * every Google account (most sign-ups, and every one from the Meta ads) was
+ * stored with no source at all. The record now goes out as `?a=<json>` on
+ * /auth/google; the API carries it through Google in its signed state and
+ * writes it only when the callback creates the account.
+ *
+ * Only the stored fields are sent (not last_touch, fbp/fbc) to keep the URL
+ * short. Called at click time, never during render: localStorage does not
+ * exist on the server, and reading it while rendering would make the server
+ * and client markup disagree.
+ */
+export function googleSignInUrl(api: string): string {
+  const base = `${api}/auth/google`;
+  try {
+    const a = readAttribution();
+    if (!a) return base;
+    const slim: Record<string, string> = {};
+    for (const k of SIGNUP_KEYS) {
+      const v = a[k];
+      if (typeof v === "string" && v) slim[k] = v;
+    }
+    if (Object.keys(slim).length === 0) return base;
+    return `${base}?a=${encodeURIComponent(JSON.stringify(slim))}`;
+  } catch {
+    return base;
+  }
+}
+
+/**
+ * onClick for a "Continue with Google" anchor whose href is the bare
+ * /auth/google. A plain click is sent to the URL carrying attribution; a
+ * modified click (new tab, new window) keeps the browser's default.
+ */
+export function goToGoogleSignIn(
+  e: { preventDefault: () => void; button: number; metaKey: boolean; ctrlKey: boolean; shiftKey: boolean; altKey: boolean },
+  api: string,
+): void {
+  if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+  e.preventDefault();
+  window.location.assign(googleSignInUrl(api));
+}

@@ -12,7 +12,7 @@ import {
   type Country,
   type GstState,
 } from "@/lib/validation";
-import { readAttribution } from "@/lib/attribution";
+import { goToGoogleSignIn, readAttribution } from "@/lib/attribution";
 import { markPendingSignup, trackSignupIfNew } from "@/lib/analytics";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -61,6 +61,7 @@ function GoogleBlock({ api, below = false }: { api: string; below?: boolean }) {
       </div>
       <a
         href={`${api}/auth/google`}
+        onClick={(e) => goToGoogleSignIn(e, api)}
         className="flex min-h-11 w-full items-center justify-center gap-3 rounded-cf border border-rule-strong bg-paper py-3 text-sm font-medium text-ink shadow-[0_1px_2px_rgba(16,17,19,0.06)] transition hover:bg-paper-2"
       >
         <GoogleIcon />
@@ -487,7 +488,13 @@ export default function LoginForm({
       const res = await fetch(`${API}/auth/request-login-code`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: codeEmail.trim() }),
+        // This call CREATES the account for an unknown address, so it is a
+        // sign-up door too and carries the same first-touch record. The API
+        // ignores it for an existing account.
+        body: JSON.stringify({
+          email: codeEmail.trim(),
+          attribution: readAttribution() ?? undefined,
+        }),
       });
       if (!res.ok) {
         const data = await res.json();
@@ -587,6 +594,7 @@ export default function LoginForm({
           <>
             <a
               href={`${API}/auth/google`}
+              onClick={(e) => goToGoogleSignIn(e, API)}
               className="flex min-h-11 w-full items-center justify-center gap-3 rounded-cf border border-rule bg-paper py-3 text-sm font-medium text-ink transition hover:bg-paper-2"
             >
               <GoogleIcon />
