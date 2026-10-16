@@ -39,6 +39,7 @@ import {
 import { ActionErrorView, Body, Card, ErrorLine, Fine, More, PrimaryButton, QuietButton, UploadBox, WalletRow, signInHref, type ActionError } from "./parts";
 import { QuoteDetails, QuotePanel } from "./quote-panel";
 import { BillingLine, ContinuePanel, ResultsPanel } from "./results-panel";
+import { CancelLink, Cancelled, RunCard } from "./run-card";
 
 const JobViewer = dynamic(() => import("./job-viewer"), { ssr: false });
 
@@ -449,11 +450,13 @@ function JobBody({
         />
       ) : null}
 
-      {s === "failed" || s === "cancelled" ? (
-        <Card title={s === "failed" ? "The run did not finish" : "Cancelled"}>
+      {s === "failed" ? (
+        <Card title="The run did not finish">
           <Body>{rupeeWords(job.status_text)}</Body>
         </Card>
       ) : null}
+
+      {s === "cancelled" ? <Cancelled job={job} /> : null}
 
       {job.review_reasons?.length ? (
         <Card tone="warn">
@@ -468,6 +471,15 @@ function JobBody({
       <BillingLine job={job} cur={cur} />
 
       {job.quote && s === "quoted" ? <QuoteDetails job={job} quote={job.quote} cur={cur} /> : null}
+
+      {job.cancel_option ? (
+        <CancelLink
+          job={job}
+          busy={busy === "cancel"}
+          error={errFor("cancel")}
+          onCancel={() => act("cancel", "/cancel")}
+        />
+      ) : null}
       {job.quote && s !== "quoted" ? <QuoteDetailsAfter job={job} /> : null}
 
       {REUPLOAD_OK.has(s) && !needsUpload && !(s === "new" && otherProblems.length) ? (
@@ -591,65 +603,6 @@ function InletCard({
       </div>
       <Fine className="mt-3">No charge. The quote fee comes next.</Fine>
       <ActionErrorView error={error} refId={job.ref_id} />
-    </Card>
-  );
-}
-
-function RunCard({ job }: { job: CfdJob }) {
-  const cur = jobCurrency(job);
-  const sc = job.schedule;
-  const pkgName = job.billing?.package;
-  const pkg = job.quote?.packages?.find((p) => p.package === pkgName);
-  const it = job.iteration ?? 0;
-  const of = pkg?.iterations ?? 0;
-  const pct = of ? Math.min(100, Math.round((it / of) * 100)) : 0;
-  const express = job.delivery === "express";
-  const stageWords: Record<string, string> = {
-    queued: "Queued",
-    waiting: "Waiting for the full machine",
-    meshing: "Building the mesh",
-    solving: "Solving",
-    post: "Writing the report",
-    packaging: "Packaging the results",
-  };
-  const running = job.status === "running";
-  return (
-    <Card eyebrow={express ? "Express" : "Normal delivery"} title={running ? "Your run is in progress" : "Paid, starting soon"}>
-      {running && it ? (
-        <div>
-          <p className="text-[16px] text-ink">
-            Iteration {fmtNumber(it)}
-            {of ? <span className="text-ink-2"> of up to {fmtNumber(of)}</span> : null}
-            {job.stage && stageWords[job.stage] ? <span className="text-ink-2"> · {stageWords[job.stage]}</span> : null}
-          </p>
-          {of ? (
-            <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-ink/10">
-              <div className="h-full rounded-full bg-ink" style={{ width: `${pct}%` }} />
-            </div>
-          ) : null}
-          <Fine className="mt-2">Most runs stop before the allowance, once the residuals meet their targets.</Fine>
-        </div>
-      ) : null}
-      {sc ? (
-        <Body className={running && it ? "mt-4" : ""}>
-          {job.status === "approved" && sc.starts_text ? `${sc.starts_text.charAt(0).toUpperCase()}${sc.starts_text.slice(1)}; ` : ""}
-          {sc.results_text}.
-        </Body>
-      ) : job.turnaround ? (
-        <Body className={running && it ? "mt-4" : ""}>
-          {job.turnaround.charAt(0).toUpperCase() + job.turnaround.slice(1)} of payment.
-        </Body>
-      ) : null}
-      <Fine className="mt-3">
-        {pkg ? `${pkg.label} package. ` : ""}
-        {job.stop_when_settled === undefined
-          ? ""
-          : job.stop_when_settled
-            ? "Stops early when the answer has settled. "
-            : "Runs until the residual targets or the allowance. "}
-        We email you when the results are ready; this page updates by itself.
-        {job.billing && Number(job.billing.on_hold_inr) > 0 ? ` ${money(job.billing.on_hold_inr, cur)} is held in your wallet; the unused part comes back when the run ends.` : ""}
-      </Fine>
     </Card>
   );
 }

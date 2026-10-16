@@ -71,16 +71,54 @@ export interface QuotePackage {
   list_total?: Money | null;
   discount_percent?: number | null;
   estimated_compute_hours: { low: number; high: number; label: string };
+  /** "residuals below 10⁻³" (16 Oct 2026). */
+  convergence_short?: string;
+  /** The full calculation, from the API (never recomputed here). */
+  breakdown?: PriceBreakdown;
 }
 
-export interface NormalDeliveryPkg {
+/** cfd_jobs.py _price_breakdown: base + compute (+ adjustment) = subtotal − discount = price before GST. */
+export interface PriceBreakdown {
+  currency: string;
+  base_fee: Money;
+  compute: Money;
+  compute_formula: {
+    mcells: number;
+    iterations: number;
+    rate_per_mcell_per_kiter: Money | null;
+    rate_after_discount?: Money | null;
+    factor: number;
+  };
+  adjustment: Money | null;
+  adjustment_kind: "minimum" | "rounding" | null;
+  subtotal: Money;
+  discount: Money | null;
+  discount_percent: number | null;
+  price_ex_gst: Money;
+  gst: Money;
+  gst_percent: number;
+  total: Money;
+  hold: Money;
+  minimum_charge: Money;
+  minimum_applies: boolean;
+}
+
+/** Times are ISO-8601 UTC ("…Z"); the page shows them in the viewer's own zone. */
+export interface Times {
+  start_now?: boolean;
+  start_at?: string | null;
+  results_at?: string | null;
+  promise_at?: string | null;
+}
+
+export interface NormalDeliveryPkg extends Times {
   package: string;
   label: string;
   starts_text?: string;
   results_text?: string;
 }
 
-export interface ExpressDeliveryPkg {
+export interface ExpressDeliveryPkg extends Times {
   package: string;
   label: string;
   hold: Money;
@@ -92,7 +130,13 @@ export interface ExpressDeliveryPkg {
 
 export interface Quote {
   delivery?: {
-    normal?: { text: string; turnaround?: string; starts_text?: string; packages?: NormalDeliveryPkg[] };
+    normal?: {
+      text: string;
+      turnaround?: string;
+      starts_text?: string;
+      packages?: NormalDeliveryPkg[];
+      promise_hours?: number;
+    };
     express?: {
       available?: boolean;
       text?: string;
@@ -144,7 +188,15 @@ export interface CfdJob {
   payment?: { account_email?: string; how?: string; topup_url?: string } | null;
   delivery?: "normal" | "express";
   turnaround?: string;
-  schedule?: { starts_text?: string; results_text?: string; waiting_for_batch?: boolean } | null;
+  schedule?:
+    | (Times & { starts_text?: string; results_text?: string; waiting_for_batch?: boolean; started?: boolean })
+    | null;
+  /** queued | starting (machine being prepared, solver not started) | running (solver started). */
+  run_state?: "queued" | "starting" | "running";
+  /** What cancelling now would do (absent: cannot be cancelled now). */
+  cancel_option?: CancelOption | null;
+  cancel_closed_text?: string;
+  cancellation?: Cancellation | null;
   express_notice?: string;
   stage?: string | null;
   iteration?: number | null;
@@ -169,6 +221,23 @@ export interface CfdJob {
   results_url?: string;
   results_available?: boolean;
   convergence_state?: string | null;
+}
+
+export interface CancelOption {
+  when: "before_payment" | "before_start";
+  release: Money | null;
+  quote_fee_refund: Money | null;
+  quote_fee_kept: Money | null;
+  currency?: string;
+  text: string;
+}
+
+export interface Cancellation {
+  at: string;
+  when: "before_payment" | "before_start";
+  released: Money | null;
+  quote_fee_refunded: Money | null;
+  quote_fee_kept: Money | null;
 }
 
 export function jobCurrency(job: Pick<CfdJob, "currency"> | null | undefined): Currency {
@@ -220,14 +289,32 @@ export function parseApiDate(iso: string | null | undefined): Date | null {
   return Number.isNaN(d.getTime()) ? null : d;
 }
 
+/** The viewer's zone label: "IST" for India (browsers say "GMT+5:30"), else the short name ("CEST"). */
+function zoneLabel(d: Date, timeZone?: string): string {
+  const zone = timeZone ?? Intl.DateTimeFormat().resolvedOptions().timeZone;
+  if (zone === "Asia/Kolkata" || zone === "Asia/Calcutta") return "IST";
+  const short = (locale: string) =>
+    new Intl.DateTimeFormat(locale, { timeZone, timeZoneName: "short" })
+      .formatToParts(d)
+      .find((x) => x.type === "timeZoneName")?.value ?? "";
+  // en-GB names European zones (CEST, BST); en-US names the Americas (EDT, PDT)
+  let name = short("en-GB");
+  if (/^GMT[+-]/.test(name)) {
+    const us = short("en-US");
+    if (/^[A-Z]{2,5}$/.test(us)) name = us;
+  }
+  return name === "GMT" && zone === "UTC" ? "UTC" : name.replace(/^GMT(?=[+-])/, "UTC");
+}
+
 /**
- * "Fri 23 Oct, 13:40 IST" for an INR account. A USD account sees its own
- * browser's time zone, named the same way ("Fri 23 Oct, 09:10 BST").
+ * "Fri 16 Oct, 15:00 CEST": every time in the viewer's own browser zone (owner,
+ * 16 Oct 2026), with the zone named; India reads IST. Call it only in the
+ * browser (the job page renders after mount, so server and client never differ).
+ * `_cur` is kept for old callers; the zone no longer depends on the currency.
  */
-export function fmtDate(iso: string | null | undefined, cur: Currency): string {
+export function fmtDate(iso: string | null | undefined, _cur?: Currency, timeZone?: string): string {
   const d = parseApiDate(iso);
   if (!d) return "";
-  const timeZone = cur === "INR" ? "Asia/Kolkata" : undefined;
   const parts = new Intl.DateTimeFormat("en-GB", {
     timeZone,
     weekday: "short",
@@ -236,11 +323,25 @@ export function fmtDate(iso: string | null | undefined, cur: Currency): string {
     hour: "2-digit",
     minute: "2-digit",
     hour12: false,
-    timeZoneName: cur === "INR" ? undefined : "short",
   }).formatToParts(d);
   const get = (t: string) => parts.find((p) => p.type === t)?.value ?? "";
-  const tz = cur === "INR" ? "IST" : get("timeZoneName");
+  const tz = zoneLabel(d, timeZone);
   return `${get("weekday")} ${get("day")} ${get("month")}, ${get("hour")}:${get("minute")}${tz ? ` ${tz}` : ""}`;
+}
+
+/** "in about 3 h" / "in about 40 min" for a future time; "" when it is past or under 5 minutes away. */
+export function fromNow(iso: string | null | undefined, now: number = Date.now()): string {
+  const d = parseApiDate(iso);
+  if (!d) return "";
+  const min = (d.getTime() - now) / 60000;
+  if (min < 5) return "";
+  if (min < 60) return `in about ${Math.round(min / 5) * 5 || 5} min`;
+  const h = min / 60;
+  if (h < 10) {
+    const r = Math.round(h * 2) / 2;
+    return `in about ${r % 1 ? r.toFixed(1) : r} h`;
+  }
+  return `in about ${Math.round(h)} h`;
 }
 
 // ─── the job token ───────────────────────────────────────────────────────────

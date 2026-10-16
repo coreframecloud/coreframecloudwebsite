@@ -11,7 +11,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { type Currency } from "@/lib/money";
-import { money, type WalletLine } from "@/lib/cfd-job";
+import { fmtDate, fromNow, money, type WalletLine } from "@/lib/cfd-job";
 import { uploadGeometry, type UploadProgress } from "@/lib/cfd-upload";
 
 export function Card({
@@ -280,5 +280,21 @@ export function UploadBox({
       ) : null}
       {err ? <ErrorLine>{err}</ErrorLine> : null}
     </div>
+  );
+}
+
+/**
+ * A time in the viewer's own zone ("Fri 16 Oct, 15:00 CEST") with a relative
+ * hint ("in about 3 h"). The job page only renders after mount (the job is
+ * fetched in the browser), so the server never renders a different zone.
+ */
+export function When({ iso, hint = true }: { iso: string | null | undefined; hint?: boolean }) {
+  const text = fmtDate(iso);
+  const rel = hint ? fromNow(iso) : "";
+  return (
+    <span suppressHydrationWarning>
+      <time dateTime={iso ?? undefined}>{text}</time>
+      {rel ? <span className="block text-[12px] text-ink-3">{rel}</span> : null}
+    </span>
   );
 }
