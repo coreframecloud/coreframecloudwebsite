@@ -75,6 +75,13 @@ const HERO: HeroImage = {
   credit: "Rendered on Coreframe",
 };
 
+/** More rooms from the same demo plan, each a Studio 4K export (16 Oct 2026). */
+const STUDIO_ROOMS = [
+  { src: "/studio-renders/studio-kitchen-2048.webp", cap: "The kitchen.", alt: "The kitchen from the demo plan: sage-green cabinets, a stone-topped island with a fruit bowl, open shelves with copper jars and brass taps" },
+  { src: "/studio-renders/studio-masterbed-2048.webp", cap: "The master bedroom.", alt: "The master bedroom from the demo plan: a teak bed with a rust throw, a tall louvred wardrobe, a patterned rug, a palm and sheer curtains" },
+  { src: "/studio-renders/studio-balcony-2048.webp", cap: "The balcony, looking back into a bedroom.", alt: "The balcony from the demo plan at dusk: potted plants, a cane chair and a railing over trees, with a lit bedroom through the door" },
+];
+
 const steps = [
   { n: "1", title: "Upload your DXF.", body: "We find the walls and rooms. Free." },
   { n: "2", title: "Pick a room.", body: "Tell us it's a bedroom or a kitchen. Free." },
@@ -107,7 +114,7 @@ const faqs = [
 
 export default function Page() {
   return (
-    <div className="min-h-screen text-ink">
+    <div className="cf-warm-page min-h-screen text-ink">
       <JsonLd data={breadcrumbList([{ name: "Floor plan to render", path: "/floor-plan-to-render" }])} />
 
       <script
@@ -151,21 +158,22 @@ export default function Page() {
           </div>
         </section>
 
-        {/* A real Studio export (16 Oct 2026): the demo plan's living & dining
-            room through the live Studio code path (plan preset, wide view, 4K,
-            seed 101) on our node. Labelled "Generated image", as Studio labels
-            it. Shown smaller than the 3840 x 2880 file. */}
+        {/* Real Studio exports (16 Oct 2026): rooms of the demo plan through the
+            live Studio code path (plan preset, 4K) on our node; prompts and seeds
+            in marketing-20261016-site-explainer/gen/runs.jsonl. Labelled
+            "Generated image", as Studio labels it. Shown smaller than the
+            3840 x 2880 files. */}
         <section className="cf-section px-5">
           <div className="cf-wide">
-            <h2 className="cf-section-title">One plan, one room, one export.</h2>
-            <p className="cf-section-copy mt-3">The demo 3BHK plan, its living and dining room, exported at 4K from Studio.</p>
+            <h2 className="cf-section-title">One plan, every room.</h2>
+            <p className="cf-section-copy mt-3">The demo 3BHK plan and its rooms, each exported at 4K from Studio.</p>
             <div className="mt-8 grid items-start gap-6 lg:grid-cols-[0.75fr_1.25fr]">
               <PlanImage caption="The demo plan (real drawing)" />
               <figure className="min-w-0">
                 <div className="relative overflow-hidden rounded-[20px] bg-paper-2">
                   <Image
-                    src="/studio/demo-living-dining-4k.webp"
-                    alt="The living and dining room from the demo plan, furnished: a cane and teak sofa, a teak coffee table on a jute rug, a TV unit, a kota stone floor and open doors as drawn"
+                    src="/studio-renders/studio-living2-2048.webp"
+                    alt="The living room from the demo plan, furnished: a sofa with cushions, a carved wooden cabinet, a floor lamp, plants and a rug on a stone floor, with the doors and window as drawn"
                     width={2048}
                     height={1536}
                     sizes="(max-width: 1024px) 100vw, 600px"
@@ -177,6 +185,17 @@ export default function Page() {
                   A 4K export (3840 × 2880) from Studio, shown smaller. Walls, doors and windows from the drawing; the furniture is generated.
                 </figcaption>
               </figure>
+            </div>
+            <div className="mt-10 grid gap-6 sm:grid-cols-3">
+              {STUDIO_ROOMS.map((r) => (
+                <figure key={r.src} className="min-w-0">
+                  <div className="relative overflow-hidden rounded-[20px] bg-paper-2 shadow-[0_18px_40px_-26px_rgb(90_60_30/0.45)]">
+                    <Image src={r.src} alt={r.alt} width={2048} height={1536} sizes="(max-width: 640px) 100vw, 310px" className="h-auto w-full" />
+                    <span className="absolute right-2.5 bottom-2.5 rounded-md bg-black/60 px-2 py-1 text-[11px] font-semibold text-white">Generated image</span>
+                  </div>
+                  <figcaption className="mt-2 text-[12.5px] text-ink-3">{r.cap}</figcaption>
+                </figure>
+              ))}
             </div>
           </div>
         </section>
@@ -244,7 +263,7 @@ export default function Page() {
 
         <section className="cf-section px-5 pt-0">
           <div className="cf-wide">
-            <div id="notify" className="scroll-mt-24 rounded-[32px] bg-night px-7 py-12 text-white sm:px-14">
+            <div id="notify" className="scroll-mt-24 rounded-[32px] bg-[#2a1f17] px-7 py-12 text-white sm:px-14">
               <p className="text-[11.5px] font-semibold tracking-[0.12em] text-white/75 uppercase">Opening soon</p>
               <h2 className="mt-3 font-heading text-[28px] font-medium sm:text-[36px]">Be first in when Studio opens.</h2>
               <p className="mt-3 text-white/80">

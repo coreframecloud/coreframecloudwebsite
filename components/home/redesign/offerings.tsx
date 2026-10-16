@@ -124,10 +124,12 @@ export function HeroOfferingCards({ introLabel }: { introLabel: string | null })
   );
 }
 
+/** One theme per product (owner, 16 Oct 2026): GPU = the cinema panel, CFD =
+ *  the watercolour explainer paper, Studio = warm interiors. globals.css. */
 const BAND_TINT: Record<Offering["id"], string> = {
-  gpu: "bg-tint-blue",
-  cfd: "bg-tint-mint",
-  studio: "bg-tint-lilac",
+  gpu: "cf-cine",
+  cfd: "cfx-panel",
+  studio: "cf-warm",
 };
 
 /** The points each band lists. Facts only, the same ones the service pages carry. */
@@ -167,17 +169,17 @@ function BandMedia({ o }: { o: Offering }) {
   }
   return (
     <figure className="min-w-0">
-      <div className={`overflow-hidden rounded-[24px] ${o.image.fit === "contain" ? "bg-white p-2" : "bg-night"}`}>
+      <div className={`overflow-hidden rounded-[24px] ${o.id === "cfd" ? "" : o.image.fit === "contain" ? "bg-white p-2" : "bg-night"}`}>
         <Image
           src={o.image.src}
           alt={o.image.alt}
           width={o.image.width}
           height={o.image.height}
-          className="h-auto w-full"
+          className={`h-auto w-full ${o.id === "cfd" ? "cfx-art" : ""}`}
           sizes="(min-width: 1024px) 540px, 100vw"
         />
       </div>
-      <figcaption className="mt-3 text-[12.5px] text-ink-3">{o.image.caption}</figcaption>
+      {o.image.caption ? <figcaption className="mt-3 text-[12.5px] text-ink-3">{o.image.caption}</figcaption> : null}
     </figure>
   );
 }

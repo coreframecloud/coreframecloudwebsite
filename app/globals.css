@@ -693,7 +693,8 @@ body {
 }
 
 /* ── Page hero band (every subpage's opening section) ─────────────────────
-   Dark, full-bleed, our Blender render faint behind, rounded at the bottom
+   Dark, full-bleed, our own living-room render faint behind (the Blender
+   splash scene until 16 Oct 2026: licence unconfirmed), rounded at the bottom
    so the white page reads as a sheet beneath it. Put `cf-pagehero` on the
    opening <section> only.
 
@@ -706,7 +707,7 @@ body {
   color: #fff;
   background:
     linear-gradient(100deg, rgb(11 13 17 / 0.96) 0%, rgb(11 13 17 / 0.86) 55%, rgb(11 13 17 / 0.7) 100%),
-    url("/home/hero-interior.webp") center 40% / cover no-repeat,
+    url("/heroes/default-hero-interior-2560.webp") center 40% / cover no-repeat,
     var(--color-night);
   border-bottom-left-radius: 40px;
   border-bottom-right-radius: 40px;
@@ -1136,3 +1137,154 @@ body:has([data-usd-view]) .cf-ticker {
 }
 /* CFD job page header: the sketch on the right half only, a little lower. */
 .cf-pagehero--paper.cf-pagehero--job .cf-pagehero-bg { left: 54%; }
+
+/* ─────────────────────────────────────────────────────────────────────────
+   GPU family "cinema" theme (owner, 16 Oct 2026: one theme per product, all
+   the way down the page). Put `cf-cine` on a block under a GPU page's sci-fi
+   hero: it becomes a graphite panel with a teal and an orange glow and a
+   faint motion-streak texture, and everything inside it that was a pastel
+   card (cf-card, bg-tint-*, cf-note, the testimonial cards) turns into dark
+   glass with white text. Unlayered so it beats the utilities inside.
+   Contrast: body text at 78% white on the darkest ground is >= 9:1; labels in
+   #8fd3cb teal are >= 8:1. Content-heavy sections (details, FAQ, pricing)
+   stay light on purpose.
+   ───────────────────────────────────────────────────────────────────────── */
+.cf-cine {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  color: #fff;
+  background:
+    radial-gradient(ellipse 55% 70% at 0% 0%, rgb(42 157 147 / 0.2), transparent 62%),
+    radial-gradient(ellipse 50% 65% at 100% 100%, rgb(238 122 90 / 0.17), transparent 62%),
+    linear-gradient(165deg, #121722 0%, #0b0d12 60%, #0a0c10 100%);
+}
+.cf-cine::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: repeating-linear-gradient(-14deg, rgb(255 255 255 / 0.028) 0 1px, transparent 1px 26px);
+  -webkit-mask-image: linear-gradient(100deg, transparent 0%, #000 45%, transparent 100%);
+  mask-image: linear-gradient(100deg, transparent 0%, #000 45%, transparent 100%);
+}
+.cf-cine--band {
+  border-radius: 40px;
+  padding-block: clamp(56px, 8vw, 104px);
+}
+@media (min-width: 640px) { .cf-cine--band { border-radius: 64px; } }
+.cf-cine--panel { border-radius: 28px; }
+
+.cf-cine :is(h2, h3, strong, .cf-section-title, .cfh-h2, .text-ink) { color: #fff; }
+.cf-cine :is(p, li, dd, .cf-section-copy, .text-ink-2, .text-ink-3, .text-ink\/80) { color: rgb(255 255 255 / 0.78); }
+.cf-cine .cf-card-label { color: #8fd3cb; }
+.cf-cine a:not([class*="cf-btn"]):not([class*="cfh-pill"]):not(.border-ink\/25) { color: #a9c4ff; }
+.cf-cine .cf-btn-primary { background: #fff; color: var(--color-ink); }
+.cf-cine .cf-btn-secondary { border-color: rgb(255 255 255 / 0.4); color: #fff; }
+.cf-cine .cf-eyebrow { background: rgb(255 255 255 / 0.1); color: #fff; }
+
+/* pastel cards -> dark glass, glow alternating teal / orange */
+.cf-cine :is(.cf-card, .cf-note, .bg-tint-blue, .bg-tint-lilac, .bg-tint-mint, .bg-tint-sand, .bg-paper-2) {
+  background:
+    radial-gradient(120% 90% at 0% 0%, rgb(42 157 147 / 0.16), transparent 55%),
+    linear-gradient(160deg, rgb(255 255 255 / 0.075), rgb(255 255 255 / 0.025));
+  border: 1px solid rgb(255 255 255 / 0.11);
+  box-shadow: 0 20px 50px -30px rgb(0 0 0 / 0.8), inset 0 1px 0 rgb(255 255 255 / 0.06);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+.cf-cine :is(.cf-card:nth-child(even), .bg-tint-mint, .bg-tint-sand) {
+  background:
+    radial-gradient(120% 90% at 100% 0%, rgb(238 122 90 / 0.15), transparent 55%),
+    linear-gradient(160deg, rgb(255 255 255 / 0.075), rgb(255 255 255 / 0.025));
+}
+.cf-cine .cfh-lift:hover { box-shadow: 0 24px 50px -20px rgb(42 157 147 / 0.35); }
+/* testimonial dots */
+.cf-cine button.bg-ink { background: #fff; }
+.cf-cine button.bg-ink\/25 { background: rgb(255 255 255 / 0.3); }
+
+/* The animated diagrams (components/visuals/diagrams.tsx) are drawn in brand
+   colours for a white page; in the cinema panel their devices go graphite,
+   the screens deep blue and every label light. Matched on the colours the
+   SVG uses, so the diagram code stays one version. */
+.cf-cine svg :is(rect, path, ellipse)[fill="#101113"] { fill: #262e3d; stroke: rgb(255 255 255 / 0.16); stroke-width: 1; }
+.cf-cine svg circle[fill="#101113"] { fill: #eef2f8; }
+.cf-cine svg text[fill="#101113"] { fill: #eef2f8; }
+.cf-cine svg text[fill="#6b7079"] { fill: #b4bdcc; }
+.cf-cine svg text[fill="#2f6be0"] { fill: #8fb3ff; }
+.cf-cine svg [fill="#e8effb"] { fill: #12203a; }
+.cf-cine svg [fill="#c6d4f2"] { fill: #3b4c6e; }
+.cf-cine svg [stroke="#c6d4f2"] { stroke: rgb(143 179 255 / 0.45); }
+.cf-cine svg rect[fill="#fff"] { fill: #172030; }
+.cf-cine svg rect[fill="#eef1f6"] { fill: #1a2130; }
+
+/* ── CFD everywhere: the explainer look on any CFD block (16 Oct 2026) ──
+   `cfx-panel` is a self-contained CFD block for other pages (homepage band,
+   /pricing, offering strips): grid paper, ink outline, offset shadow, ink
+   text even inside a dark band. Inside a `cfx-paper` page (/cfd, the job
+   page) the old pastel cards become paper cards with an ink outline, and a
+   warning card keeps a coral edge. Unlayered to beat the tint utilities. */
+.cfx-panel {
+  color: var(--color-ink);
+  background-color: var(--color-paper-2);
+  background-image:
+    linear-gradient(var(--cfx-grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--cfx-grid-line) 1px, transparent 1px);
+  background-size: var(--cfx-grid-size) var(--cfx-grid-size);
+  border: 1.5px solid var(--color-ink);
+  box-shadow: 6px 6px 0 #1011130f;
+}
+.cfx-panel :is(h2, h3, strong, .cf-section-title, .cfh-h2, .text-ink) { color: var(--color-ink); }
+.cfx-panel :is(p, li, .cf-section-copy, .text-ink-2) { color: var(--color-ink-2); }
+.cfx-panel .text-ink-3 { color: var(--color-ink-3); }
+.cfx-paper :is(.cf-card, .bg-tint-blue, .bg-tint-lilac, .bg-tint-mint, .bg-tint-sand) {
+  background: var(--color-paper);
+  border: 1.5px solid var(--color-ink);
+  border-radius: 6px;
+  box-shadow: 6px 6px 0 #1011130f;
+}
+.cfx-paper .bg-tint-sand { border-left: 5px solid var(--cfx-wash-coral); }
+.cfx-paper .cf-card-label { color: var(--cfx-teal-ink); }
+.cfx-paper .bg-paper-2 { background: #fffffff2; box-shadow: inset 0 0 0 1px var(--color-rule-strong); }
+
+/* ── Studio: warm architectural interiors (16 Oct 2026) ───────────────────
+   Cream and sand, a terracotta accent, soft shadows; used for every Studio
+   block (its page, the homepage band and card strip, /pricing). Terracotta
+   #9a4a26 is 6.4:1 on the cream. */
+.cf-warm {
+  color: var(--color-ink);
+  background:
+    radial-gradient(ellipse 60% 80% at 100% 0%, rgb(232 176 120 / 0.18), transparent 60%),
+    linear-gradient(160deg, #fbf7f0 0%, #f4ebdd 100%);
+  border: 1px solid #e7d9c3;
+}
+.cf-warm :is(h2, h3, strong, .cf-section-title, .cfh-h2, .text-ink) { color: #1d1712; }
+.cf-warm :is(p, li, .cf-section-copy, .text-ink-2) { color: #5a4d40; }
+.cf-warm .text-ink-3 { color: #6e5f50; }
+.cf-warm-page :is(.cf-card, .bg-tint-blue, .bg-tint-lilac, .bg-tint-mint, .bg-tint-sand) {
+  background: linear-gradient(170deg, #fffaf3, #f7efe2);
+  border: 1px solid #eadcc6;
+  box-shadow: 0 18px 40px -26px rgb(90 60 30 / 0.35);
+}
+.cf-warm-page .cf-card-label { color: #9a4a26; }
+.cf-warm-page .cf-card .bg-ink { background: #9a4a26; }
+
+/* the homepage bands: the GPU band's light bits flipped for the cinema panel */
+.cf-cine .cfh-pill-dark { background: #fff; color: var(--color-ink); }
+.cf-cine .cfh-pill-dark:hover { background: #e9ebef; }
+.cf-cine .border-ink\/25 { border-color: rgb(255 255 255 / 0.4); color: #fff; }
+.cf-cine li > span.bg-ink { background: #8fd3cb; }
+/* GPU pages below the cinema band: content-heavy, so light, but neutral
+   graphite-on-white instead of the pastel tints (16 Oct 2026). */
+.cf-gpu-page main .cf-note, main.cf-gpu-page .cf-note {
+  background: #f3f4f6;
+  border: 1px solid var(--color-rule);
+}
+.cf-gpu-page .cf-card:not(.cf-cine .cf-card) { background: #f3f4f6; }
+/* Pale-left pictures (e.g. the SketchUp sky): a darker scrim under the text. */
+@media (min-width: 900px) {
+  .cf-pagehero:has(> .cf-pagehero-bg--strong)::before {
+    background: linear-gradient(100deg, rgb(11 13 17 / 0.93) 0%, rgb(11 13 17 / 0.9) 48%, rgb(11 13 17 / 0.5) 76%, rgb(11 13 17 / 0.2) 100%);
+  }
+}

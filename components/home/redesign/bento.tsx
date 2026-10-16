@@ -7,13 +7,15 @@ import { Drift } from "@/components/home/redesign/depth";
 import { walkthroughVideoObject } from "@/components/home/landing/walkthrough-section";
 
 /**
- * The GPU workstation in detail, as soft-tinted cards with real screenshots
+ * The GPU workstation in detail, as glass cards in the cinema panel (16 Oct 2026; were soft tints) with real screenshots
  * cropped inside (the SiteGround "bento"). Studio left this grid on 13 Oct
  * 2026: it has its own band above (components/home/redesign/offerings.tsx).
  */
 export function Bento({ youtubeId }: { youtubeId: string }) {
   return (
-    <section className="cfh-wrap pt-20 pb-24 sm:pt-28">
+    // The GPU family's cinema panel (owner, 16 Oct 2026): .cf-cine in globals.css.
+    <section className="cf-cine cf-cine--band mt-16 sm:mx-3">
+      <div className="cfh-wrap">
       <Reveal className="mx-auto max-w-[44rem] text-center">
         <p className="text-[11.5px] font-semibold tracking-[0.12em] text-ink-2 uppercase">GPU workstations, in detail</p>
         <h2 className="cfh-h2 mt-3">
@@ -115,6 +117,7 @@ export function Bento({ youtubeId }: { youtubeId: string }) {
             </div>
           </div>
         </Reveal>
+      </div>
       </div>
     </section>
   );

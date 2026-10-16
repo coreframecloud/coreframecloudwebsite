@@ -179,7 +179,7 @@ function Figure({
 
 export default function ClinicFloorHvacPage() {
   return (
-    <div className="relative min-h-screen text-ink">
+    <div className="cfx-paper relative min-h-screen text-ink">
       <JsonLd
         data={breadcrumbList([
           { name: "CFD", path: "/cfd" },
@@ -189,14 +189,14 @@ export default function ClinicFloorHvacPage() {
       <JsonLd data={articleLd} />
       <main className="relative">
         {/* ── Hero ─────────────────────────────────────────────────────── */}
-        <section className="cf-section px-5 cf-pagehero">
+        <section className="cf-section px-5 cf-pagehero cf-pagehero--paper">
           <div className="cf-wide">
             <nav aria-label="Breadcrumb" className="mb-6 font-mono text-[12px] tracking-[0.06em]">
-              <Link href="/cfd" className="text-white/70 hover:text-white">
+              <Link href="/cfd" className="text-ink-2 hover:text-ink">
                 CFD
               </Link>
-              <span aria-hidden className="text-white/50"> / </span>
-              <span className="text-white/70">Projects</span>
+              <span aria-hidden className="text-ink-3"> / </span>
+              <span className="text-ink-2">Projects</span>
             </nav>
             <div className="grid items-center gap-10 lg:grid-cols-[1fr_1.05fr]">
               <div className="min-w-0">
@@ -328,40 +328,40 @@ export default function ClinicFloorHvacPage() {
 
         {/* ── Limits ───────────────────────────────────────────────────── */}
         <section id="limits" className="cf-section scroll-mt-20 px-5 pt-0">
-          <div className="cf-wide rounded-[28px] bg-night p-6 text-white sm:p-10">
-            <p className="cf-eyebrow !bg-white/10 !text-white">What this is, and what it is not</p>
-            <h2 className="cf-section-title mt-4 !text-white">An indicative first pass, not an engineering sign-off.</h2>
+          <div className="cfx-panel cf-wide rounded-[6px] p-6 sm:p-10">
+            <p className="cfx-eyebrow">What this is, and what it is not</p>
+            <h2 className="cf-section-title mt-4">An indicative first pass, not an engineering sign-off.</h2>
             <div className="mt-6 grid gap-6 md:grid-cols-2">
-              <ul className="space-y-3 text-[15px] leading-6 text-white/75">
+              <ul className="space-y-3 text-[15px] leading-6 text-ink-2">
                 <li>
-                  <span className="font-semibold text-white">Coarser mesh.</span>{" "}A whole floor at 1.9 million cells is
+                  <span className="font-semibold text-ink">Coarser mesh.</span>{" "}A whole floor at 1.9 million cells is
                   coarser than the level we validate single rooms at.
                 </li>
                 <li>
-                  <span className="font-semibold text-white">Derived loads.</span>{" "}Each room&apos;s heat load was worked
+                  <span className="font-semibold text-ink">Derived loads.</span>{" "}Each room&apos;s heat load was worked
                   back from its design airflow, not taken from a load calculation.
                 </li>
                 <li>
-                  <span className="font-semibold text-white">Simple diffuser model.</span>{" "}Each diffuser blows its design
+                  <span className="font-semibold text-ink">Simple diffuser model.</span>{" "}Each diffuser blows its design
                   flow through its face, without the maker&apos;s throw data.
                 </li>
                 <li>
-                  <span className="font-semibold text-white">Not validated.</span>{" "}Rooms and HVAC airflow is not on sale
+                  <span className="font-semibold text-ink">Not validated.</span>{" "}Rooms and HVAC airflow is not on sale
                   yet. We release it once it passes our validation cases.
                 </li>
               </ul>
               <div className="min-w-0">
                 <p className="font-semibold">For an engineering-grade study we would add:</p>
-                <ul className="mt-3 space-y-3 text-[15px] leading-6 text-white/75">
+                <ul className="mt-3 space-y-3 text-[15px] leading-6 text-ink-2">
                   {NEXT_STEPS.map(([t, b]) => (
                     <li key={t}>
-                      <span className="font-semibold text-white">{t}.</span> {b}
+                      <span className="font-semibold text-ink">{t}.</span> {b}
                     </li>
                   ))}
                 </ul>
               </div>
             </div>
-            <p className="mt-7 text-[14px] leading-6 text-white/60">
+            <p className="mt-7 text-[14px] leading-6 text-ink-3">
               What it already shows is useful: where the jets go, which rooms are slow or warm, and where the draught
               risk is. All from the design data, before anything is built.
             </p>

@@ -27,6 +27,8 @@ export type HeroImage = {
   alt: string;
   pos?: string;
   posMobile?: string;
+  /** A darker scrim, for a picture whose left side is pale (16 Oct 2026). */
+  strongScrim?: boolean;
   /** Short truthful credit, bottom right. Omit for none. */
   credit?: string;
 };
@@ -46,7 +48,7 @@ export function PageHeroBg({ image, sizes = "100vw" }: { image: HeroImage; sizes
   } as CSSProperties;
   return (
     <>
-      <picture className="cf-pagehero-bg" style={style}>
+      <picture className={`cf-pagehero-bg${image.strongScrim ? " cf-pagehero-bg--strong" : ""}`} style={style}>
         {mobile ? <source media="(max-width: 899px)" srcSet={mobile} sizes="100vw" /> : null}
         <source media="(min-width: 900px)" srcSet={desktop} sizes={sizes} />
         <img {...rest} srcSet={desktop} alt={image.alt} loading="eager" fetchPriority="high" decoding="async" />

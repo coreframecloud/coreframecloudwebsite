@@ -128,7 +128,7 @@ export default function CfdJobPage({ refId }: { refId: string }) {
   const errFor = (a: string): ActionError => (error?.action === a ? error.e : null);
 
   return (
-    <main data-clarity-mask="true">
+    <main data-clarity-mask="true" className="cfx-paper">
       <Hero refId={refId} job={job} />
       <div className="mx-auto w-full max-w-[960px] space-y-5 px-4 py-8 sm:px-6 sm:py-12">
         {token === null || load.kind === "not_found" ? <Missing refId={refId} /> : null}

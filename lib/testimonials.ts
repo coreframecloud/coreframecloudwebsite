@@ -54,3 +54,30 @@ export const TESTIMONIALS: Testimonial[] = [
     role: "Video editor · After Effects & FFmpeg, Singapore",
   },
 ];
+
+/**
+ * The same approved quotes, the most relevant first for a page (owner, 16 Oct
+ * 2026: testimonials on every GPU page). Only ORDERS the list above by name;
+ * it never filters a quote out, edits one or adds one. Unknown page: the list
+ * as it stands.
+ */
+const FIRST_BY_PAGE: Record<string, string[]> = {
+  "twinmotion-cloud-workstation": ["Dinesh", "Avi"],
+  "blender-cloud-workstation": ["Sai"],
+  "after-effects-premiere-cloud-workstation": ["Sai", "Jin"],
+  "gpu-workstation-rental-india": ["Avi", "Srini"],
+  "revit-cloud-workstation": ["Dinesh"],
+  "3ds-max-cloud-workstation": ["Dinesh"],
+  "sketchup-cloud-workstation": ["Dinesh"],
+  "vray-cloud-rendering": ["Dinesh"],
+  "rhino-cloud-workstation": ["Dinesh"],
+  "d5-render-cloud-workstation": ["Dinesh"],
+  "lumion-cloud-gpu": ["Dinesh"],
+  "enscape-cloud-gpu": ["Dinesh"],
+};
+
+export function testimonialsFor(page: string): Testimonial[] {
+  const first = FIRST_BY_PAGE[page] ?? [];
+  const lead = first.map((n) => TESTIMONIALS.find((t) => t.name === n)).filter((t): t is Testimonial => Boolean(t));
+  return [...lead, ...TESTIMONIALS.filter((t) => !lead.includes(t))];
+}

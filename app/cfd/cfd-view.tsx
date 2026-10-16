@@ -713,9 +713,9 @@ export default async function CfdView({ currency }: { currency: Currency }) {
 
         {/* ── Cost ─────────────────────────────────────────────────────── */}
         <section className="cf-section px-5 pt-0">
-          <div className="cf-wide rounded-[28px] bg-night p-6 text-white sm:p-10">
-            <p className="cf-eyebrow !bg-white/10 !text-white">What it costs to start</p>
-            <h2 className="cf-section-title mt-4 !text-white">
+          <div className="cfx-panel cf-wide rounded-[6px] p-6 sm:p-10">
+            <p className="cfx-eyebrow">What it costs to start</p>
+            <h2 className="cf-section-title mt-4">
               {usdText ? `${usdText.small} for pre-processing / mesh validation.` : "₹599 incl. GST for pre-processing / mesh validation."}
             </h2>
             <ul className="mt-7 grid grid-cols-1 gap-5 sm:grid-cols-2">
@@ -731,19 +731,19 @@ export default async function CfdView({ currency }: { currency: Currency }) {
                 ["Normal or express", "Normal: results within 24 hours. Express: results in 1–2 hours at 3x the price, where the quote offers it."],
                 ["Held, then settled", "The quote is held in your wallet; you are charged for what the run used and the rest comes back."],
               ].map(([t, b]) => (
-                <li key={t} className="min-w-0 border-t border-white/15 pt-4">
-                  <p className="font-semibold">{t}</p>
-                  <p className="mt-1 text-[15px] leading-6 text-white/70">{b}</p>
+                <li key={t} className="min-w-0 border-t border-dashed border-ink/25 pt-4">
+                  <p className="font-semibold text-ink">{t}</p>
+                  <p className="mt-1 text-[15px] leading-6 text-ink-2">{b}</p>
                 </li>
               ))}
             </ul>
             {usdText ? (
-              <p className="mt-7 text-[14px] leading-6 text-white/60">
+              <p className="mt-7 text-[14px] leading-6 text-ink-3">
                 Rejected before meshing: no charge. Pre-processing that fails on our side: the charge goes back to your wallet. An
                 invoice in US dollars on every payment.
               </p>
             ) : (
-            <p className="mt-7 text-[14px] leading-6 text-white/60">
+            <p className="mt-7 text-[14px] leading-6 text-ink-3">
               Rejected before meshing: no charge. Pre-processing that fails on our side: the charge goes back to your wallet. GST
               invoice on every payment.
             </p>
