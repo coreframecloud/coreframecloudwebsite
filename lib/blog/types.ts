@@ -35,7 +35,17 @@ export type Block =
   | { type: "video"; youtubeId: string; title: string; caption?: string }
   /** The monospace fact block: specs and figures live here, per globals.css. */
   | { type: "spec"; label?: string; rows: [string, string][] }
-  | { type: "table"; head: string[]; rows: string[][] };
+  | { type: "table"; head: string[]; rows: string[][] }
+  /**
+   * The CFD explainer blocks (16 Oct 2026, components/cfd-explainer). Strings
+   * may contain [label](href) links; `hl` is the ONE yellow-highlighted phrase
+   * (it must occur verbatim in `text`). Sketches are illustrations: say so in
+   * the alt text and never caption one as a result.
+   */
+  | { type: "sectionHead"; n?: number; tint?: "teal" | "blue" | "coral"; eyebrow?: string; title: string; text?: string }
+  | { type: "callout"; text: string; hl?: string; source?: string }
+  | { type: "statement"; big: string; caption?: string }
+  | ({ type: "explainFigure"; maxWidth?: number; stamp?: string; labels?: [string, string] } & BlogImage);
 
 /** A block or a deliberate gap (a sentence that needs a live value which is missing). */
 export type MaybeBlock = Block | null | false | undefined;

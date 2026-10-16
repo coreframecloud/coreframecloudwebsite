@@ -205,6 +205,10 @@ const nextConfig: NextConfig = {
     // 90 for the app screenshots in the workstation card: at the default 75 the
     // small UI text in them goes soft.
     qualities: [75, 90],
+    // AVIF first, WebP fallback (16 Oct 2026): the full-bleed page-hero
+    // pictures (components/page-hero-bg.tsx) are the LCP element on their
+    // pages, and AVIF roughly halves them at the same quality.
+    formats: ["image/avif", "image/webp"],
   },
   async headers() {
     return [

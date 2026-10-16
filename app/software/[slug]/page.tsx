@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { ViewContent } from "@/components/analytics/view-content";
 import Link from "next/link";
 import { GenImage, OwnImage } from "@/components/visuals/media";
+import { PageHeroBg, type HeroImage } from "@/components/page-hero-bg";
 import { StreamDiagram, FileSyncDiagram } from "@/components/visuals/diagrams";
 import { notFound } from "next/navigation";
 import {
@@ -77,24 +78,45 @@ export async function generateMetadata({
  * One picture per software page. Generated images (Gemini) are labelled by
  * GenImage; the Blender page uses our own Cycles render instead.
  */
-type Hero = { src: string; alt: string; w: number; h: number; generated: boolean; caption?: string };
+type Hero = { src: string; alt: string; w: number; h: number; generated: boolean; caption?: string; bg?: HeroImage };
+
+/**
+ * Full-bleed hero pictures (owner, 16 Oct 2026: "science fiction movie scenes,
+ * with a jet, with a lot of action"). Made on our own RTX 5080 with Z-Image
+ * Turbo; prompts and seeds in marketing-20261016-site-explainer/gen/runs.jsonl.
+ * Original designs: no real aircraft, no brands, no characters. NO CAPTION:
+ * never "Rendered in Blender" for a generated still, and no "generated with
+ * AI" line either (owner). A page with `bg` drops the side picture.
+ */
+const JET: HeroImage = {
+  src: "/heroes/hero-gpu-jet-2560.webp",
+  w: 2560,
+  h: 1440,
+  mobile: { src: "/heroes/hero-gpu-jet-m780.webp", w: 780, h: 1040 },
+  alt: "A sci-fi jet banking hard between night-lit towers at dusk, trailing sparks and light streaks",
+  pos: "60% 50%",
+  posMobile: "50% 50%",
+};
+const ANIM_JET: HeroImage = {
+  src: "/heroes/hero-anim-jet-2560.webp",
+  w: 2560,
+  h: 1440,
+  mobile: { src: "/heroes/hero-anim-jet-m780.webp", w: 780, h: 1040 },
+  alt: "An animated-film style hover-jet racing past floating sky islands at sunset, with flame trails",
+  pos: "62% 50%",
+  posMobile: "50% 50%",
+};
 const G = (src: string, alt: string): Hero => ({ src: `/visuals/${src}`, alt, w: 1600, h: 914, generated: true });
 const HERO_BY_SLUG: Record<string, Hero> = {
   "revit-cloud-workstation": G("gen-architect-client-walkthrough-16x9.webp", "An architect walking clients through a 3D model"),
   "3ds-max-cloud-workstation": G("gen-visualiser-home-16x9.webp", "A 3D visualiser working on a laptop at home"),
   "sketchup-cloud-workstation": G("gen-designer-cafe-laptop-16x9.webp", "An interior designer working on a laptop in a cafe"),
-  "blender-cloud-workstation": {
-    src: "/home/hero-interior.webp",
-    alt: "The Blender 4.1 splash interior rendered in Cycles on a Coreframe RTX 5080",
-    w: 2560,
-    h: 1440,
-    generated: false,
-    caption: "Rendered in Blender Cycles on our RTX 5080. Scene: Blender 4.1 splash, blender.org demo files.",
-  },
+  "blender-cloud-workstation": { ...G("gen-motion-designer-desk-16x9.webp", "A motion designer at his desk"), bg: ANIM_JET },
   "twinmotion-cloud-workstation": G("gen-architects-big-screen-16x9.webp", "Two architects discussing a building walkthrough on a wall screen"),
   "vray-cloud-rendering": G("gen-visualisers-review-16x9.webp", "Two visualisers reviewing stills together at a studio desk"),
   "rhino-cloud-workstation": { src: "/visuals/gen-student-architecture-4x5.webp", alt: "An architecture student with a laptop and models", w: 1000, h: 1286, generated: true },
-  "after-effects-premiere-cloud-workstation": G("gen-motion-designer-desk-16x9.webp", "A motion designer at his desk"),
+  "after-effects-premiere-cloud-workstation": { ...G("gen-motion-designer-desk-16x9.webp", "A motion designer at his desk"), bg: ANIM_JET },
+  "gpu-workstation-rental-india": { ...G("gen-designer-cafe-laptop-16x9.webp", "A designer working on a thin laptop"), bg: JET },
   default: G("gen-designer-cafe-laptop-16x9.webp", "A designer working on a thin laptop"),
 };
 
@@ -131,8 +153,9 @@ export default async function SoftwareLandingPage({
   return (
     <>
     <section className="cf-section cf-pagehero px-5">
-      <div className="cf-wide grid items-center gap-10 lg:grid-cols-[1.05fr_1fr]">
-        <div className="min-w-0">
+      {hero.bg ? <PageHeroBg image={hero.bg} /> : null}
+      <div className={hero.bg ? "cf-wide" : "cf-wide grid items-center gap-10 lg:grid-cols-[1.05fr_1fr]"}>
+        <div className={hero.bg ? "min-w-0 max-w-[620px]" : "min-w-0"}>
           <h1 className="cf-display">{page.title}</h1>
           <p className="cf-lead mt-[22px]">{page.intro}</p>
           <div className="mt-8 flex flex-wrap gap-3">
@@ -140,7 +163,7 @@ export default async function SoftwareLandingPage({
             <Link href="/pricing" className="cf-btn-secondary">Pricing</Link>
           </div>
         </div>
-        {hero.generated ? (
+        {hero.bg ? null : hero.generated ? (
           <GenImage src={hero.src} alt={hero.alt} width={hero.w} height={hero.h} sizes="(max-width: 1024px) 100vw, 480px" parallax priority />
         ) : (
           <OwnImage src={hero.src} alt={hero.alt} width={hero.w} height={hero.h} caption={hero.caption} sizes="(max-width: 1024px) 100vw, 480px" />

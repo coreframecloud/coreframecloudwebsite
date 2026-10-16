@@ -3,7 +3,9 @@ import { JsonLd } from "@/components/seo/json-ld";
 import { breadcrumbList } from "@/lib/seo";
 import Link from "next/link";
 import { Fold } from "@/components/visuals/fold";
+import Image from "next/image";
 import { PlanImage, ShellFurnished } from "@/components/visuals/studio-compare";
+import { PageHeroBg, type HeroImage } from "@/components/page-hero-bg";
 import { NODE } from "@/lib/node-spec";
 import { STUDIO_NOTIFY_WHATSAPP } from "@/lib/offerings";
 
@@ -53,6 +55,24 @@ export const metadata: Metadata = {
     "AI render for architects India",
   ],
   alternates: { canonical: "/floor-plan-to-render" },
+};
+
+/**
+ * Hero picture (owner, 16 Oct 2026: "the subtle interior"). It is the warm
+ * living room from a RenderGrid test render on our RTX 5080 -- NOT a Studio
+ * output -- so it carries "Rendered on Coreframe" and no "Generated image"
+ * label, and the plan card moved out of the hero to sit next to a real
+ * Studio export further down.
+ */
+const HERO: HeroImage = {
+  src: "/heroes/interior-rendergrid-2560.webp",
+  w: 2560,
+  h: 1440,
+  mobile: { src: "/heroes/interior-rendergrid-m780.webp", w: 780, h: 1040 },
+  alt: "A calm living room with a white sofa, a woven leather chair, an olive tree and a garden through the windows",
+  pos: "70% 50%",
+  posMobile: "50% 50%",
+  credit: "Rendered on Coreframe",
 };
 
 const steps = [
@@ -107,8 +127,9 @@ export default function Page() {
 
       <main className="relative">
         <section className="cf-section px-5 cf-pagehero">
-          <div className="cf-wide grid items-center gap-10 lg:grid-cols-[1fr_1fr]">
-            <div className="min-w-0">
+          <PageHeroBg image={HERO} />
+          <div className="cf-wide">
+            <div className="min-w-0 max-w-[600px]">
               <p className="cf-eyebrow mb-5">Studio · Pre-sale renders</p>
               <h1 className="cf-display">Win the client before the project is signed.</h1>
               <p className="cf-lead mt-6">Upload a 2D DXF floor plan. Get concept images of the room back, generated in the browser, ready to pitch with.</p>
@@ -127,11 +148,40 @@ export default function Page() {
                 </a>
               </div>
             </div>
-            <PlanImage />
           </div>
         </section>
 
+        {/* A real Studio export (16 Oct 2026): the demo plan's living & dining
+            room through the live Studio code path (plan preset, wide view, 4K,
+            seed 101) on our node. Labelled "Generated image", as Studio labels
+            it. Shown smaller than the 3840 x 2880 file. */}
         <section className="cf-section px-5">
+          <div className="cf-wide">
+            <h2 className="cf-section-title">One plan, one room, one export.</h2>
+            <p className="cf-section-copy mt-3">The demo 3BHK plan, its living and dining room, exported at 4K from Studio.</p>
+            <div className="mt-8 grid items-start gap-6 lg:grid-cols-[0.75fr_1.25fr]">
+              <PlanImage caption="The demo plan (real drawing)" />
+              <figure className="min-w-0">
+                <div className="relative overflow-hidden rounded-[20px] bg-paper-2">
+                  <Image
+                    src="/studio/demo-living-dining-4k.webp"
+                    alt="The living and dining room from the demo plan, furnished: a cane and teak sofa, a teak coffee table on a jute rug, a TV unit, a kota stone floor and open doors as drawn"
+                    width={2048}
+                    height={1536}
+                    sizes="(max-width: 1024px) 100vw, 600px"
+                    className="h-auto w-full"
+                  />
+                  <span className="absolute right-3 bottom-3 rounded-md bg-black/60 px-2 py-1 text-[11px] font-semibold text-white">Generated image</span>
+                </div>
+                <figcaption className="mt-2 text-[12.5px] text-ink-3">
+                  A 4K export (3840 × 2880) from Studio, shown smaller. Walls, doors and windows from the drawing; the furniture is generated.
+                </figcaption>
+              </figure>
+            </div>
+          </div>
+        </section>
+
+        <section className="cf-section px-5 pt-0">
           <div className="cf-wide grid items-center gap-10 lg:grid-cols-[0.8fr_1.2fr]">
             <div>
               <h2 className="cf-section-title">From your drawing to the room.</h2>

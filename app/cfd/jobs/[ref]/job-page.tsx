@@ -15,6 +15,7 @@
  */
 import dynamic from "next/dynamic";
 import Link from "next/link";
+import { PageHeroBg, type HeroImage } from "@/components/page-hero-bg";
 import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import {
   LIVE,
@@ -155,14 +156,26 @@ export default function CfdJobPage({ refId }: { refId: string }) {
   );
 }
 
+/** The /cfd "what is CFD" sketch, decorative here (alt ""), hidden below
+ *  900px so a phone gets straight to the job (explainer style, 16 Oct 2026). */
+const JOB_HERO_ART: HeroImage = {
+  src: "/cfd/explainer/hero-what-is-cfd-1440.webp",
+  w: 1440,
+  h: 624,
+  alt: "",
+  pos: "right 40%",
+};
+
 function Hero({ refId, job }: { refId: string; job: CfdJob | null }) {
   const cur = jobCurrency(job);
   return (
     <section
-      className="cf-pagehero px-4 sm:px-6"
+      className="cf-pagehero cf-pagehero--paper cf-pagehero--noart-m cf-pagehero--job px-4 sm:px-6"
       style={{ paddingTop: "clamp(40px, 6vw, 72px)", paddingBottom: "clamp(40px, 6vw, 72px)" }}
     >
+      <PageHeroBg image={JOB_HERO_ART} sizes="(max-width: 899px) 1px, 50vw" />
       <div className="mx-auto w-full max-w-[960px]">
+        <div className="min-w-0 min-[900px]:max-w-[56%]">
         <p className="cf-eyebrow">CFD job · {refId}</p>
         <h1 className="mt-4 font-heading text-[clamp(28px,4.4vw,39px)] leading-[1.12] font-medium tracking-[-0.015em] break-words">
           {job?.project_name || "Your CFD job"}
@@ -171,13 +184,14 @@ function Hero({ refId, job }: { refId: string; job: CfdJob | null }) {
           <>
             <p className="mt-3 max-w-[680px] text-[16px] leading-[1.55]">{rupeeWords(job.status_text)}</p>
             {job.submitted_at ? (
-              <p className="mt-2 font-mono text-[12px] tracking-[0.04em] opacity-70">
+              <p className="mt-2 font-mono text-[12px] tracking-[0.04em] text-ink-3">
                 Submitted {fmtDate(job.submitted_at, cur)}
                 {job.completed_at ? ` · finished ${fmtDate(job.completed_at, cur)}` : ""}
               </p>
             ) : null}
           </>
         ) : null}
+        </div>
       </div>
     </section>
   );

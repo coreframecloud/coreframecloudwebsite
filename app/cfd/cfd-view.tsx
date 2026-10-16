@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { OG_IMAGE, breadcrumbList } from "@/lib/seo";
+import { breadcrumbList } from "@/lib/seo";
 import { JsonLd } from "@/components/seo/json-ld";
 import { Fold } from "@/components/visuals/fold";
+import { PageHeroBg, type HeroImage } from "@/components/page-hero-bg";
+import { Callout, CheckRow, ExplainFigure, Hl, SectionHead, Stamp } from "@/components/cfd-explainer";
+import { VelocityProfileOverlay } from "@/components/cfd-explainer/velocity-profile";
 import CfdStart from "./cfd-start";
 import { StatusBadge } from "@/components/home/redesign/offerings";
 import { getRateCard } from "@/lib/rate-card";
@@ -50,6 +53,13 @@ import { cellsLabel, formatMoney, usdRates, type Currency, type UsdRateCard } fr
  * says runs are quoted in US dollars after the mesh, never a run price.
  */
 
+const CFD_OG_IMAGE = {
+  url: "/cfd/og-cfd.jpg",
+  width: 1200,
+  height: 630,
+  alt: "Pressure drop you can check: a sketch of a duct bend under a magnifying glass",
+};
+
 export const cfdMetadata: Metadata = {
   // Absolute (no "| Coreframe Cloud"): the SEO audit's 60-character title limit (16 Oct 2026).
   title: { absolute: "Duct and Pipe Pressure Drop Calculation · CFD Meshing" },
@@ -73,12 +83,33 @@ export const cfdMetadata: Metadata = {
   ],
   alternates: { canonical: "/cfd" },
   openGraph: {
-    images: [OG_IMAGE],
+    // The CFD share card (16 Oct 2026, explainer style). No price on it, on
+    // purpose: share cards are cached for weeks.
+    images: [CFD_OG_IMAGE],
     title: "Duct and pipe pressure drop calculation (CFD) — Coreframe Cloud",
     description:
       "One STL in. Pressure drop, loss coefficient, a PDF report, a 3D viewer and the data files out. OpenFOAM on our machine, no licence on yours.",
     url: "https://www.coreframecloud.com/cfd",
   },
+  twitter: {
+    card: "summary_large_image",
+    title: "Duct and pipe pressure drop calculation (CFD) — Coreframe Cloud",
+    images: [CFD_OG_IMAGE.url],
+  },
+};
+
+/** The explainer sketches (ink + watercolour, Z-Image Turbo on our node,
+ *  16 Oct 2026; prompts and seeds in marketing-20261016-cfd-style/art/illustrations.json).
+ *  Illustrations only: every result picture on this page is from a real run. */
+const ART = "/cfd/explainer";
+
+const CFD_HERO: HeroImage = {
+  src: `${ART}/hero-what-is-cfd-1440.webp`,
+  w: 1440,
+  h: 624,
+  mobile: { src: `${ART}/hero-what-is-cfd-m780.webp`, w: 780, h: 624 },
+  alt: "Sketch: air flowing into a duct bend, with a magnifying glass showing the mesh on its wall",
+  pos: "right center",
 };
 
 const CFD_SERVICES: {
@@ -88,6 +119,7 @@ const CFD_SERVICES: {
   href?: string;
   cta: string;
   tint: string;
+  art?: { src: string; alt: string };
 }[] = [
   {
     name: "Ducts and pipes",
@@ -96,6 +128,7 @@ const CFD_SERVICES: {
     href: "#start",
     cta: "Start a job",
     tint: "bg-tint-mint",
+    art: { src: "/cfd/explainer/j-pressure-drop-gauges.webp", alt: "Sketch of a pipe with a valve and an elbow, and a pressure gauge on each side of the valve" },
   },
   {
     name: "Rooms and HVAC airflow",
@@ -103,6 +136,7 @@ const CFD_SERVICES: {
     body: "Room air movement and comfort for HVAC designers: describe one room, its diffusers, returns and heat loads, and get air speed, temperature, PMV/PPD and ADPI in a PDF report. Opening once it passes our heated-room validation.",
     cta: "Opening soon",
     tint: "bg-tint-blue",
+    art: { src: "/cfd/explainer/i-room-diffuser-airflow.webp", alt: "Sketch of a room cut open, with air curling down from a ceiling diffuser" },
   },
 ];
 
@@ -300,7 +334,7 @@ export default async function CfdView({ currency }: { currency: Currency }) {
   const steps = usd ? usdSteps(usd) : STEPS;
   const faq = usd ? usdFaq(usd) : FAQ;
   return (
-    <div className="relative min-h-screen text-ink" data-usd-view={usdView ? "" : undefined}>
+    <div className="cfx-paper relative min-h-screen text-ink" data-usd-view={usdView ? "" : undefined}>
       <JsonLd data={breadcrumbList([{ name: "CFD for ducts and pipes", path: "/cfd" }])} />
       <JsonLd
         data={
@@ -311,49 +345,30 @@ export default async function CfdView({ currency }: { currency: Currency }) {
       />
       <JsonLd data={usd ? usdServiceLd(usd) : serviceLd} />
       <main className="relative">
-        {/* ── Hero ─────────────────────────────────────────────────────── */}
-        <section className="cf-section px-5 cf-pagehero">
-          <div className="cf-wide grid items-center gap-10 lg:grid-cols-[1.05fr_1fr]">
-            <div className="min-w-0">
+        {/* ── Hero ─────────────────────────────────────────────────────
+            Paper variant (explainer style, owner approved 16 Oct 2026): the
+            "what is CFD" sketch on the right, ink text, no scrim. The real
+            velocity picture that used to sit here is in the sample section. */}
+        <section className="cf-section px-5 cf-pagehero cf-pagehero--paper">
+          <div className="cf-wide">
+            <div className="min-w-0 max-w-[640px] min-[900px]:max-w-[52%]">
               <p className="cf-eyebrow">CFD for ducts and pipes · Live</p>
-              <p className="mt-5 font-heading text-[22px] leading-tight font-medium sm:text-[26px]">Slow CFD? Try us.</p>
-              <h1 className="cf-display mt-3">Pressure drop calculation for your duct or pipe, from one STL.</h1>
-              <p className="cf-lead mt-5">
-                Upload the geometry. We check it, mesh it on our machine and email you a quote. Accept it and you get a
-                PDF report, a 3D results viewer and the data files, with the pressure drop and the loss coefficient.
-                OpenFOAM runs on our side, so you need no CFD licence.
+              <h1 className="cf-display mt-5 max-w-[14ch]">Pressure drop calculation for your duct or pipe, from one STL.</h1>
+              <p className="cf-lead mt-5 max-w-[44ch]">
+                Upload the geometry. We check it, mesh it on our machine and email you a quote. OpenFOAM runs on our side,
+                so you need no CFD licence.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
                 <a href="#start" className="cf-btn-primary">Start a job</a>
                 <a href="#sample" className="cf-btn-secondary">See a sample report</a>
               </div>
-              {usdText ? (
-                <p className="mt-6 text-[14px]">
-                  Pre-processing / mesh validation: {usdText.small} (no GST — export of services) for most duct and pipe models; {usdText.large} for
-                  very large models (over {usdText.cells} cells). We check your geometry, build a wall-resolved mesh and verify its quality; your exact run price comes with it. Runs are quoted in US dollars after the mesh is built; pay
-                  for the run only if you accept the quote.
-                </p>
-              ) : (
-              <p className="mt-6 text-[14px]">
-                Pre-processing / mesh validation: ₹599 incl. GST for most duct and pipe models; ₹1,499 for very large models (over 5 million cells). We check your geometry, build a wall-resolved mesh and verify its quality; your exact run price comes with it. Pay for the run only if you accept the quote.
+              <p className="cfx-quiet mt-6">
+                <a href="#right">How we know the answer is right ↓</a>
               </p>
-              )}
             </div>
-            <figure className="min-w-0 overflow-hidden rounded-[24px] bg-white p-3 sm:p-4">
-              <Image
-                src="/cfd/bend-slice-U-zoom.webp"
-                alt="Velocity magnitude on the mid-plane of a 90 degree pipe bend, from a Coreframe CFD run"
-                width={1329}
-                height={889}
-                sizes="(max-width: 1024px) 100vw, 460px"
-                preload
-                className="h-auto w-full"
-              />
-              <figcaption className="mt-2 px-1 text-[12.5px] leading-5 !text-ink-3">
-                Velocity through a 90° bend, water at 4 m/s, from one of our own test runs.
-              </figcaption>
-            </figure>
           </div>
+          {/* After the text on purpose: below 900px the sketch flows under it. */}
+          <PageHeroBg image={CFD_HERO} />
         </section>
 
         {/* ── CFD services (sub-categories) ────────────────────────────────
@@ -373,6 +388,11 @@ export default async function CfdView({ currency }: { currency: Currency }) {
                     <StatusBadge status={c.status} />
                   </div>
                   <p className="mt-3 text-[15px] leading-6 text-ink-2">{c.body}</p>
+                  {c.art ? (
+                    <figure className="mt-4">
+                      <Image src={c.art.src} alt={c.art.alt} width={1536} height={864} sizes="(max-width: 768px) 90vw, 420px" className="cfx-art mx-auto h-auto w-full max-w-[360px]" />
+                    </figure>
+                  ) : null}
                   {c.href ? (
                     <Link href={c.href} className="cfh-link mt-auto pt-5 text-ink">
                       {c.cta} <span aria-hidden>→</span>
@@ -402,11 +422,21 @@ export default async function CfdView({ currency }: { currency: Currency }) {
           </div>
         </section>
 
-        {/* ── How it works ─────────────────────────────────────────────── */}
+        {/* ── How it works ─────────────────────────────────────────────
+            Explainer style: numbered head, the geometry → mesh → solve strip,
+            then the four real steps (account first, pre-processing, quote). */}
         <section className="cf-section px-5 pt-0">
-          <div className="cf-wide rounded-[28px] bg-tint-blue p-6 sm:p-10">
-            <p className="cf-eyebrow">How it works</p>
-            <h2 className="cf-section-title mt-4">Four steps, all automatic.</h2>
+          <div className="cf-wide">
+            <SectionHead n={1} tint="teal" eyebrow="How it works" title="Geometry, mesh, solve.">
+              Four steps, all automatic. You see your mesh report and the run price before anything runs.
+            </SectionHead>
+            <ExplainFigure
+              src={`${ART}/b-process-geometry-mesh-solve.webp`}
+              alt="Sketch of the same pipe elbow three times: plain geometry, then covered in mesh, then with coloured flow"
+              width={1536}
+              height={640}
+              sizes="(max-width: 960px) 100vw, 960px"
+            />
             <ol className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2">
               {steps.map((s, i) => (
                 <li key={s.title} className="flex gap-4">
@@ -537,19 +567,147 @@ export default async function CfdView({ currency }: { currency: Currency }) {
           </div>
         </section>
 
-        {/* ── Accuracy ─────────────────────────────────────────────────── */}
-        <section className="cf-section px-5 pt-0">
-          <div className="cf-wide grid gap-6 md:grid-cols-3">
-            {[
-              ["Checked against the textbook", "In a straight pipe, our friction factor matched the Haaland/Colebrook correlation to about 1–5 %."],
-              ["Wall-resolved by default", "Prism layers sized for y+ ≈ 1, so the boundary layer is resolved, and the report shows the y+ you actually got."],
-              ["Converged, or told so", "Each run is judged against residual targets. If it did not converge, the report carries a provisional warning and you can continue it."],
-            ].map(([t, b]) => (
-              <div key={t} className="cf-card">
-                <p className="cf-card-label">{t}</p>
-                <p className="cf-section-copy">{b}</p>
+        {/* ── How we know your answer is right (explainer, 16 Oct 2026) ──
+            Claims are only the RUNBOOK ones (see the header of this file):
+            residual targets + CONVERGED/provisional, wall layers at y+ ≈ 1
+            with the wall-function fallback, and 1–5 % against
+            Haaland/Colebrook in a straight pipe. Mesh independence (GCI) is
+            NOT in the packages yet, so it is marked coming soon. */}
+        <section id="right" className="cf-section scroll-mt-20 px-5 pt-0">
+          <div className="cf-wide">
+            <SectionHead n={2} tint="blue" eyebrow="Trusting the result" title="How we know your answer is right.">
+              Colourful flow plots are easy. Three checks decide whether the number behind them means anything.
+            </SectionHead>
+
+            <CheckRow
+              q="Check A · Did it settle?"
+              title="Residuals fall, then the run is called converged."
+              figure={
+                <ExplainFigure
+                  src={`${ART}/c-convergence-funnel.webp`}
+                  alt="Sketch of a glass funnel: tangled colourful lines go in at the top, one calm line comes out of the spout"
+                  width={1024}
+                  height={1024}
+                  maxWidth={420}
+                  stamp={<Stamp decorative>Converged</Stamp>}
+                />
+              }
+            >
+              <p>
+                The solver guesses, measures how wrong the guess is (the residual), and guesses again. When every residual is
+                under its target, the answer has stopped changing.
+              </p>
+              <div className="cfx-ministat">
+                <b>
+                  &lt;&thinsp;10<sup>−3</sup>
+                </b>
+                <span>default residual target</span>
               </div>
-            ))}
+              <p>
+                The report says <strong className="text-ink">CONVERGED</strong> only when the targets were met. A run that did
+                not get there is delivered with a provisional warning, and you can continue it.
+              </p>
+            </CheckRow>
+
+            <CheckRow
+              flip
+              q="Check B · Is the wall resolved?"
+              title="Thin layers at the wall, sized for y+ ≈ 1."
+              figure={
+                <ExplainFigure
+                  src={`${ART}/f-wall-layers-yplus.webp`}
+                  alt="Sketch of a hatched wall with thin flat mesh layers stacked on it; an inset draws the flow speed rising from zero at the wall"
+                  width={1536}
+                  height={864}
+                  overlay={<VelocityProfileOverlay />}
+                  caption="Inset: the flow speed is zero at the wall and climbs through the thin layers to the core flow."
+                />
+              }
+            >
+              <p>
+                Most of the pressure drop is made in a thin layer right at the wall, where the flow speed climbs from zero. We
+                stack prism layers there so that layer is resolved, not guessed.
+              </p>
+              <ul>
+                <li>Every mesh goes through a quality check before it is quoted.</li>
+                <li>The report shows the y+ you actually got.</li>
+                <li>Where layers cannot cover enough of the wall, we fall back to wall functions and the report says so.</li>
+              </ul>
+            </CheckRow>
+
+            <CheckRow
+              q="Check C · Does the mesh change the answer?"
+              title="Three meshes, one answer: mesh independence."
+              figure={
+                <ExplainFigure
+                  src={`${ART}/g-three-meshes-gci.webp`}
+                  alt="Sketch of the same bend three times: coarse, medium and fine mesh"
+                  width={1536}
+                  height={640}
+                />
+              }
+            >
+              <p>
+                Run the same case on a coarse, a medium and a fine mesh. If the pressure drop stops moving, the mesh is no
+                longer part of the answer. The grid convergence index (GCI) puts a number on what is left.
+              </p>
+              <p>
+                <span className="cfx-chip">Validated package · coming soon</span>
+              </p>
+            </CheckRow>
+          </div>
+        </section>
+
+        {/* ── Pretty vs converged ─────────────────────────────────────── */}
+        <section className="cf-section px-5 pt-0">
+          <div className="cf-wide">
+            <SectionHead n={3} tint="coral" eyebrow="Why it matters" title="Beautiful is not the same as right.">
+              An unconverged run still draws a lovely picture. The residuals, the wall layers and the mesh check are what tell
+              you the pressure drop is real.
+            </SectionHead>
+            <div className="grid gap-8 min-[900px]:grid-cols-[7fr_4fr] min-[900px]:items-center">
+              <ExplainFigure
+                src={`${ART}/h-pretty-vs-converged.webp`}
+                alt="Sketch of the same pipe twice: on the left a chaotic rainbow splash, on the right calm teal flow"
+                width={1536}
+                height={864}
+                sizes="(max-width: 900px) 100vw, 560px"
+                labels={["Beautiful but meaningless", "Converged, checked"]}
+              />
+              <Callout source="Our validation cases · design guidance, not certification">
+                In a straight pipe, our friction factor matched the Haaland/Colebrook correlation to <Hl>about 1–5 %</Hl>.
+              </Callout>
+            </div>
+          </div>
+        </section>
+
+        {/* ── Accuracy against time, next to normal / express ─────────── */}
+        <section className="cf-section px-5 pt-0">
+          <div className="cf-wide">
+            <SectionHead n={4} tint="teal" eyebrow="Good enough is a decision" title="Accuracy against time.">
+              Each package on your quote has its own iteration budget and convergence targets. Tighter targets take longer;
+              you choose, and you choose how fast.
+            </SectionHead>
+            <div className="grid gap-8 min-[900px]:grid-cols-2 min-[900px]:items-center">
+              <ExplainFigure
+                src={`${ART}/e-accuracy-vs-time-scale.webp`}
+                alt="Sketch of a brass balance scale with an hourglass on one pan and an archery target on the other, level"
+                width={1536}
+                height={864}
+              />
+              <dl className="grid gap-4">
+                {[
+                  ["Normal", "Results within 24 hours of payment."],
+                  ["Express", "Results in 1–2 hours at 3x the price of the same package, where your quote offers it (smaller steady runs)."],
+                  ["Either way", "The quote is held in your wallet, you pay for the iterations run, and the rest comes back."],
+                ].map(([k, v]) => (
+                  <div key={k} className="min-w-0 rounded-[6px] border-[1.5px] border-ink bg-paper px-6 py-4">
+                    <dt className="cfx-eyebrow">{k}</dt>
+                    <dd className="mt-2 text-[15.5px] leading-6 text-ink-2">{v}</dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
           </div>
         </section>
 
