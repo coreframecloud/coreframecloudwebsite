@@ -103,6 +103,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${BASE}/dwg-check`, lastModified: now, changeFrequency: "monthly", priority: 0.9 },
     // One of the three services (13 Oct 2026), so it ranks with the other two.
     { url: `${BASE}/cfd`, lastModified: now, changeFrequency: "weekly", priority: 0.9 },
+    // The Verified package's page (16 Oct 2026): mesh independence study / GCI.
+    { url: `${BASE}/cfd/mesh-independence-study`, lastModified: new Date("2026-10-16"), changeFrequency: "monthly", priority: 0.8 },
     // Case study (13 Oct 2026): HVAC airflow on a real clinic floor.
     { url: `${BASE}/cfd/projects/clinic-floor-hvac`, lastModified: new Date("2026-10-13"), changeFrequency: "monthly", priority: 0.7 },
 

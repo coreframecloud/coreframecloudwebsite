@@ -2,7 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { currencyForCountry, parseCurrency } from "@/lib/money";
 
 /**
- * Visitor currency for /pricing and /cfd — DISPLAY ONLY (owner, 15 Oct 2026).
+ * Visitor currency for /pricing, /cfd and /cfd/mesh-independence-study — DISPLAY ONLY (owner, 15 Oct 2026).
  *
  * A visitor whose Cloudflare CF-IPCountry is anything but India (absent, "XX"
  * and "T1" count as India) is shown the US-dollar prices. What a customer is
@@ -24,7 +24,7 @@ import { currencyForCountry, parseCurrency } from "@/lib/money";
  * paths never become pages of their own.
  */
 
-const PAGES = new Set(["/pricing", "/cfd"]);
+const PAGES = new Set(["/pricing", "/cfd", "/cfd/mesh-independence-study"]);
 
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -49,5 +49,5 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/pricing", "/cfd", "/usd", "/usd/:path*"],
+  matcher: ["/pricing", "/cfd", "/cfd/mesh-independence-study", "/usd", "/usd/:path*"],
 };

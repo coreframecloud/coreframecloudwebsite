@@ -4,6 +4,7 @@ import { laptopD5Lumion } from "./posts/laptop-d5-lumion";
 import { costWorkstationFarmBuy } from "./posts/cost-workstation-farm-buy";
 import { afterEffectsRemoteGpu } from "./posts/after-effects-remote-gpu";
 import { pressureDropHandCalcVsCfd } from "./posts/pressure-drop-hand-calc-vs-cfd";
+import { verificationVsValidationCfd } from "./posts/verification-vs-validation-cfd";
 
 /** Newest first. Same date today, so this order is the editorial order. */
 export const POSTS: BlogPost[] = [
@@ -13,6 +14,8 @@ export const POSTS: BlogPost[] = [
   afterEffectsRemoteGpu,
   // DRAFT, not approved for publishing (16 Oct 2026).
   pressureDropHandCalcVsCfd,
+  // DRAFT, Verified launch (16 Oct 2026): awaiting the owner's approval.
+  verificationVsValidationCfd,
 ];
 
 /**

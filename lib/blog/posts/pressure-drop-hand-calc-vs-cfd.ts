@@ -102,7 +102,7 @@ export const pressureDropHandCalcVsCfd: BlogPost = {
     },
     {
       type: "p",
-      text: "A CFD number is only as good as three checks. The residuals must fall below their target, so the answer has stopped changing. The cells at the wall must be thin enough (y+ ≈ 1) to resolve the boundary layer where the friction is made. And the answer must not move when the mesh is refined.",
+      text: "A CFD number is only as good as three checks. The residuals must fall below their target, so the answer has stopped changing. The cells at the wall must be thin enough (y+ ≈ 1) to resolve the boundary layer where the friction is made. And the answer must not move when the mesh is refined, which is what a [mesh independence study](/cfd/mesh-independence-study) measures.",
     },
     { type: "statement", big: "y+ ≈ 1", caption: "wall layers on every Coreframe mesh by default" },
     {
@@ -155,11 +155,12 @@ export const pressureDropHandCalcVsCfd: BlogPost = {
     },
     {
       q: "How do I know a CFD pressure drop is right?",
-      a: "Ask for three things: residuals under their target (a converged run), wall layers fine enough to resolve the boundary layer (y+ ≈ 1), and evidence that refining the mesh no longer changes the answer. A straight-pipe case checked against Colebrook or Haaland is a good first test of any provider.",
+      a: "Ask for three things: residuals under their target (a converged run), wall layers fine enough to resolve the boundary layer (y+ ≈ 1), and evidence that refining the mesh no longer changes the answer (a mesh independence study with the grid convergence index). A straight-pipe case checked against Colebrook or Haaland is a good first test of any provider.",
     },
   ],
   related: [
     { href: "/cfd", label: "CFD for ducts and pipes" },
     { href: "/cfd#right", label: "How we know the answer is right" },
+    { href: "/cfd/mesh-independence-study", label: "Mesh independence study (GCI)" },
   ],
 };
