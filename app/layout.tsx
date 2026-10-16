@@ -94,7 +94,7 @@ export const metadata: Metadata = {
     template: "%s | Coreframe Cloud",
   },
   description:
-    "Three services from Bengaluru: RTX 5080 Windows workstations by the minute, CFD for ducts and pipes from one STL with no licence, and Studio for pre-sale concept images from a floor plan (opening soon).",
+    "Three services from Bengaluru: RTX 5080 Windows workstations by the minute, CFD for ducts and pipes from one STL with no licence, and Studio for pre-sale concept images from a floor plan (free previews).",
   keywords: [
     "faster D5 Render cloud India",
     "CFD simulation faster India",
@@ -133,7 +133,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Coreframe Cloud — GPU workstations, CFD and Studio, India",
     description:
-      "Rent an RTX 5080 workstation by the minute, get CFD for your duct or pipe from one STL, and Studio for pre-sale concept images (opening soon). Hosted in Bengaluru.",
+      "Rent an RTX 5080 workstation by the minute, get CFD for your duct or pipe from one STL, and Studio for pre-sale concept images from a floor plan. Hosted in Bengaluru.",
     url: "https://www.coreframecloud.com",
     siteName: "Coreframe Cloud",
     locale: "en_IN",
@@ -146,7 +146,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Coreframe Cloud",
     description:
-      "RTX 5080 workstations by the minute, CFD for ducts and pipes with no licence, and Studio for floor-plan concept images (opening soon). Hosted in Bengaluru, India.",
+      "RTX 5080 workstations by the minute, CFD for ducts and pipes with no licence, and Studio for floor-plan concept images. Hosted in Bengaluru, India.",
   },
   other: {
     "contact:email": "admin@coreframecloud.com",
@@ -370,7 +370,7 @@ export default async function RootLayout({
                    */
                   hasMap: COMPANY_MAPS_URL,
                   description:
-                    "Three services from Bengaluru, India: RTX 5080 GPU workstations on demand for D5 Render, Lumion, Enscape, Blender and Unreal Engine; CFD for ducts and pipes (OpenFOAM, quote by email, no licence needed); and Coreframe Studio, pre-sale concept images from a DXF floor plan (opening soon).",
+                    "Three services from Bengaluru, India: RTX 5080 GPU workstations on demand for D5 Render, Lumion, Enscape, Blender and Unreal Engine; CFD for ducts and pipes (OpenFOAM, quote by email, no licence needed); and Coreframe Studio, pre-sale concept images from a DXF floor plan (free previews).",
                   telephone: "+916366889488",
                   email: "admin@coreframecloud.com",
                   address: {
@@ -513,7 +513,7 @@ export default async function RootLayout({
                   url: "https://www.coreframecloud.com/floor-plan-to-render",
                   provider: { "@id": "https://www.coreframecloud.com/#organization" },
                   description:
-                    "Opening soon, in private testing. Pre-sale concept images for interior designers: upload a 2D DXF floor plan and get generated room images in the browser.",
+                    "Pre-sale concept images for interior designers: upload a 2D DXF floor plan and get generated room images in the browser. Free previews; 2K download ₹30, 4K ₹50.",
                 },
               ],
             }),

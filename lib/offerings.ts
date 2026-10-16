@@ -12,8 +12,8 @@
  * Copy rules (CLAUDE.md + memory):
  *   - no render-time, run-time or turnaround promise anywhere ("Slow CFD? Try
  *     us." is a hook; the body sells no licence / no workstation, not speed);
- *   - Studio images are "generated", and Studio is "Opening soon" until it
- *     opens: its CTA leads to /floor-plan-to-render, never to a sign-up;
+ *   - Studio images are "generated". Studio is open (16 Oct 2026): its CTA
+ *     opens the app at /studio, which signs in with the site's own account;
  *   - the only typed price is the CFD pre-processing charge, which is published on
  *     /cfd. Workstation prices come from the live rate card.
  */
@@ -97,11 +97,11 @@ export const OFFERINGS: Offering[] = [
     longName: "Studio: floor plan to concept images",
     footerName: "Studio for floor plans",
     blurb: "Floor plan to concept images",
-    status: "Opening soon",
+    status: "New",
     headline: "Win the client before the project is signed.",
-    line: "Pre-sale concept images for interior designers: upload a 2D DXF floor plan and get generated room images in the browser.",
+    line: "Pre-sale concept images for interior designers: upload a 2D DXF floor plan and get generated room images in the browser. Previews are free.",
     href: "/floor-plan-to-render",
-    cta: { label: "Get notified", href: "/floor-plan-to-render#notify" },
+    cta: { label: "Open Studio", href: "/studio" },
     secondary: { label: "How Studio works", href: "/floor-plan-to-render" },
     // A Studio 4K export of the demo plan's kitchen (16 Oct 2026), so the
     // card and the band below it show different rooms.

@@ -106,6 +106,17 @@ const CSP = [
   "form-action 'self' https://www.facebook.com",
 ].join("; ") + ";";
 
+/**
+ * Studio's page (16 Oct 2026) is served HERE, at /studio, so it shares this
+ * site's sign-in. It is the same policy as the rest of the site plus the two
+ * things the Studio page itself loads: Google Fonts (its typefaces). Its API
+ * calls go to control.coreframecloud.com, which API_ORIGINS already allows.
+ * Listed after the catch-all in headers(), so this CSP is the one sent.
+ */
+const STUDIO_CSP = CSP
+  .replace("style-src 'self' 'unsafe-inline'", "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com")
+  .replace("font-src 'self' data:", "font-src 'self' data: https://fonts.gstatic.com");
+
 const securityHeaders = [
   {
     // Two years, and tell browsers to use HTTPS before the first request is
@@ -229,6 +240,23 @@ const nextConfig: NextConfig = {
         ],
       },
       /**
+       * Studio, the app (16 Oct 2026): its page loads Google Fonts, and it is
+       * a signed-in application page -- never cached at the edge, never
+       * indexed (it canonicals to /floor-plan-to-render, which should rank).
+       */
+      {
+        source: "/studio",
+        headers: [
+          { key: "Content-Security-Policy", value: STUDIO_CSP },
+          { key: "Cache-Control", value: "private, no-cache, must-revalidate" },
+          { key: "X-Robots-Tag", value: "noindex, follow" },
+        ],
+      },
+      {
+        source: "/studio/:path*",
+        headers: [{ key: "Content-Security-Policy", value: STUDIO_CSP }],
+      },
+      /**
        * Only www.coreframecloud.com may be indexed (12 Oct 2026). Vercel marks
        * per-commit PREVIEW deployments noindex by itself, but the production
        * aliases on vercel.app (coreframecloudwebsite.vercel.app,
@@ -255,8 +283,17 @@ const nextConfig: NextConfig = {
       { source: "/r/:token", destination: `${CONTROL_PLANE}/r/:token` },
       // its API. Scoped to /api/tools so nothing else on /api is proxied.
       { source: "/api/tools/:path*", destination: `${CONTROL_PLANE}/api/tools/:path*` },
-      // The AI studio MOVED to studio.coreframecloud.com. Its page rewrites are
-      // gone -- see redirects() below for where they went and why.
+      // STUDIO IS BACK ON THIS SITE (16 Oct 2026, owner: one account, one
+      // sign-in, one dashboard). Only the PAGE and its small static files come
+      // through Vercel: the page then calls control.coreframecloud.com/api/
+      // studio/* directly with this site's bearer token, so DXF uploads and
+      // rendered images still go Cloudflare -> our nginx with no Vercel
+      // body-size or proxy-timeout limit (the reason it moved to its own host
+      // on 13 Oct). Because the page runs on www's origin it reads the same
+      // `cf_customer_token` as every other page here: no second login.
+      // studio.coreframecloud.com/studio now 302s back here.
+      { source: "/studio", destination: `${CONTROL_PLANE}/studio` },
+      { source: "/studio/:path*", destination: `${CONTROL_PLANE}/studio/:path*` },
       //
       // These two API rewrites STAY, on purpose and temporarily. A browser tab
       // that was already open on coreframecloud.com/studio when we cut over is
@@ -342,41 +379,12 @@ const nextConfig: NextConfig = {
         destination: "/enscape-cloud-gpu",
         permanent: true,
       },
-      /**
-       * The Studio now lives on its own host.
-       *
-       * WHY IT MOVED. It used to be proxied through here, which meant every DXF
-       * upload and every rendered PNG travelled Cloudflare -> Vercel -> our own
-       * box and back. That is a bandwidth bill and a set of edge limits on
-       * request body size and response time that we neither need nor control,
-       * for a hop that ends at a server we already own. studio.coreframecloud.com
-       * is Cloudflare straight to nginx.
-       *
-       * PERMANENT, so the move is recorded once in every browser cache and
-       * search index rather than re-litigated on every visit. That is also why
-       * this cannot be reverted casually: a 301 is cached hard, so unwinding
-       * this means serving a 301 back the other way, not just deleting these.
-       *
-       * BOTH PATHS ARE KEPT ON THE NEW HOST as well, so the destination here is
-       * the same path on a different name -- /studio/guide.pdf still resolves,
-       * and the link on the home page and anything already posted keeps working.
-       *
-       * ONE THING THIS DOES COST: sign-in state. The Studio token is in browser
-       * storage, which is per-origin, so anyone signed in on coreframecloud.com
-       * lands on the new host signed out and has to enter an emailed code once.
-       * Their projects are keyed to the account, not the browser, so nothing is
-       * lost -- but it will look like a logout to them the first time.
+      /*
+       * The /studio -> studio.coreframecloud.com redirects (13 Oct 2026) are
+       * gone: Studio is served at /studio again, see rewrites() above. They
+       * were sent with Cache-Control max-age=0, must-revalidate, so browsers
+       * revalidate and pick up the change rather than holding the old 308.
        */
-      {
-        source: "/studio",
-        destination: "https://studio.coreframecloud.com/studio",
-        permanent: true,
-      },
-      {
-        source: "/studio/:path*",
-        destination: "https://studio.coreframecloud.com/studio/:path*",
-        permanent: true,
-      },
     ];
   },
 };

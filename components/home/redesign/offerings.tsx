@@ -106,7 +106,9 @@ function HeroCard({ o, introLabel, i }: { o: Offering; introLabel: string | null
             </p>
           ) : null}
           {o.id === "studio" ? (
-            <p className="mt-2.5 text-[12.5px] text-white/80 sm:mt-3 sm:text-[13px]">In private testing now.</p>
+            <p className="mt-2.5 text-[12.5px] text-white/80 sm:mt-3 sm:text-[13px]">
+              Free previews. Edits <span className="font-semibold text-white">₹20</span>, 2K download ₹30, 4K ₹50
+            </p>
           ) : null}
         </div>
       </div>
@@ -225,7 +227,7 @@ function OfferingBand({ o, flip }: { o: Offering; flip: boolean }) {
           </div>
           {o.id === "cfd" ? <p className="mt-6 text-[14px] text-ink-2">Pre-processing / mesh validation ₹599 incl. GST for most models; ₹1,499 over 5 million cells. Rooms and HVAC airflow: coming soon.</p> : null}
           {o.id === "studio" ? (
-            <p className="mt-6 text-[14px] text-ink-2">Opening soon. In private testing now; tell us and we&rsquo;ll message you when it opens.</p>
+            <p className="mt-6 text-[14px] text-ink-2">Free previews, up to 5 a day. Edits ₹20, 2K download ₹30, 4K ₹50, GST included, paid from the same wallet as your workstation hours. DXF plans only.</p>
           ) : null}
         </div>
         <div className={`min-w-0 ${flip ? "lg:order-1" : ""}`}>
@@ -268,7 +270,7 @@ export function OfferingsStrip({ location }: { location: string }) {
             params={{ offering: o.id, label: o.longName, location }}
             className="cfh-link mt-auto pt-5 text-ink"
           >
-            {o.id === "studio" ? "Studio, opening soon" : o.longName} <span aria-hidden>→</span>
+            {o.longName} <span aria-hidden>→</span>
           </TrackedLink>
         </div>
       ))}
