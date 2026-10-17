@@ -28,7 +28,10 @@ const DOWNLOADS_ENABLED = process.env.DOWNLOADS_ENABLED === "true";
 // a signed build is published. The download page shows the full
 // SmartScreen/UAC walkthrough while this is false, and drops it when true --
 // no code change needed on signing day, just the env var + redeploy.
-const INSTALLER_SIGNED = process.env.INSTALLER_SIGNED === "true";
+// 17 Oct 2026: Connect 1.0.0 is the first build signed with the SSL.com certificate
+// (Coreframe Compute Labs Private Limited), so signed is now the default; set
+// INSTALLER_SIGNED=false in Vercel only if an unsigned build is ever published again.
+const INSTALLER_SIGNED = process.env.INSTALLER_SIGNED !== "false";
 
 type Release = {
   version: string;
