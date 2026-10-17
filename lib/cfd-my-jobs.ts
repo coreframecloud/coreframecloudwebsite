@@ -1,35 +1,13 @@
 /**
- * The signed-in account's CFD jobs (16 Oct 2026): GET /me/cfd-jobs, and the
- * "account access" that opens a job page without the emailed #t= token.
+ * The signed-in account's CFD jobs (16 Oct 2026): GET /me/cfd-jobs.
  *
- * Before this a signed-in customer could not find their jobs anywhere: the job
- * page opened only from the private link in an email. The API now lets the
- * job's own account open the page and use every action with its session
- * (control plane apps/api/app/api/cfd_owner.py), and lists the account's jobs.
- * The list never carries a job token.
+ * A job page opens only for the account that owns it (17 Oct 2026: the
+ * emailed "private link" was removed), so this list on /my-activity is where
+ * a customer finds their jobs. The list never carries a job token.
  */
 import { API_BASE } from "@/lib/api-base";
 import { apiFetch } from "@/lib/session";
 import { customerWords } from "@/lib/cfd-words";
-
-/**
- * Stands in for the job token when the page is opened by its signed-in owner.
- * Never sent: jobUrl() leaves the token off and the bearer goes instead.
- */
-export const ACCOUNT_ACCESS = "@account";
-
-export function isAccountAccess(token: string | null | undefined): boolean {
-  return token === ACCOUNT_ACCESS;
-}
-
-/**
- * The job token as a request HEADER (security review 17 Oct 2026): it used to
- * ride in the URL as ?token=, which put it in the API's access logs. Nothing
- * when the signed-in session opens the job instead.
- */
-export function jobTokenHeaders(token: string | null | undefined): Record<string, string> {
-  return token && !isAccountAccess(token) ? { "X-Job-Token": token } : {};
-}
 
 export interface MyCfdJob {
   ref: string;

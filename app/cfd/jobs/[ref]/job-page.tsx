@@ -30,7 +30,6 @@ import {
   money,
   moneyValue,
   postJob,
-  readJobToken,
   rupeeWords,
   sessionToken,
   stepOf,
@@ -38,8 +37,6 @@ import {
   type WalletLine,
 } from "@/lib/cfd-job";
 import { ActionErrorView, Body, Card, ErrorLine, Fine, More, PrimaryButton, QuietButton, UploadBox, WalletRow, signInHref, type ActionError } from "./parts";
-import { isAccountAccess } from "@/lib/cfd-my-jobs";
-import { MissingSignedIn } from "@/components/cfd/my-cfd-jobs";
 import { QuoteDetails, QuotePanel } from "./quote-panel";
 import { BillingLine, ContinuePanel, ResultsPanel } from "./results-panel";
 import { CancelLink, Cancelled, RunCard } from "./run-card";
@@ -52,12 +49,19 @@ const FILE_LINK_REFRESH_MS = 4 * 60_000;
 const noSubscribe = () => () => {};
 const WALLET_STATES = new Set(["quote_fee_due", "quoted", "not_converged", "completed"]);
 
-type Load = { kind: "loading" } | { kind: "not_found" } | { kind: "offline" } | { kind: "ok"; job: CfdJob };
+type Load =
+  | { kind: "loading" }
+  | { kind: "signed_out" }
+  | { kind: "not_found" }
+  | { kind: "offline" }
+  | { kind: "ok"; job: CfdJob };
 
 export default function CfdJobPage({ refId }: { refId: string }) {
-  // Browser-only reads (the job token, the session), as external stores: the
-  // server render and the first client render both see `undefined`.
-  const token = useSyncExternalStore(noSubscribe, () => readJobToken(refId), () => undefined);
+  // Browser-only reads, as external stores: the server render and the first
+  // client render both see `false`. The job opens only for its signed-in
+  // account (17 Oct 2026): there is no job token, and the API answers 401
+  // signed out, 404 for anyone else's job.
+  const mounted = useSyncExternalStore(noSubscribe, () => true, () => false);
   const hasSession = useSyncExternalStore(noSubscribe, () => !!sessionToken(), () => false);
   const [load, setLoad] = useState<Load>({ kind: "loading" });
   const [wallet, setWallet] = useState<WalletLine | null | "signed_out">(null);
@@ -66,36 +70,34 @@ export default function CfdJobPage({ refId }: { refId: string }) {
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<{ action: string; e: ActionError } | null>(null);
 
-  const refresh = useCallback(
-    async (t: string) => {
-      try {
-        const r = await fetchJob(refId, t);
-        if (r.body) setLoad({ kind: "ok", job: r.body });
-        else setLoad((prev) => (prev.kind === "ok" && r.status >= 500 ? prev : { kind: "not_found" }));
-      } catch {
-        setLoad((prev) => (prev.kind === "ok" ? prev : { kind: "offline" }));
-      }
-    },
-    [refId],
-  );
+  const refresh = useCallback(async () => {
+    try {
+      const r = await fetchJob(refId);
+      if (r.body) setLoad({ kind: "ok", job: r.body });
+      else if (r.status === 401) setLoad({ kind: "signed_out" });
+      else setLoad((prev) => (prev.kind === "ok" && r.status >= 500 ? prev : { kind: "not_found" }));
+    } catch {
+      setLoad((prev) => (prev.kind === "ok" ? prev : { kind: "offline" }));
+    }
+  }, [refId]);
 
   useEffect(() => {
     // Fetching the job is the external system; its state lands after the await.
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    if (token) void refresh(token);
-  }, [token, refresh]);
+    if (mounted) void refresh();
+  }, [mounted, refresh]);
 
   const job = load.kind === "ok" ? load.job : null;
   const status = job?.status ?? "";
 
   // Live states re-read themselves while the tab is visible.
   useEffect(() => {
-    if (!token || !LIVE.has(status)) return;
+    if (!LIVE.has(status)) return;
     const id = setInterval(() => {
-      if (document.visibilityState === "visible") void refresh(token);
+      if (document.visibilityState === "visible") void refresh();
     }, POLL_MS);
     return () => clearInterval(id);
-  }, [token, status, refresh]);
+  }, [status, refresh]);
 
   // File links (report, results, 3D views) are signed for 5 minutes (security
   // review 17 Oct 2026). Keep them fresh on a page left open, and on return
@@ -104,19 +106,19 @@ export default function CfdJobPage({ refId }: { refId: string }) {
     job && (job.report_url || job.results_url || job.view3d_url || job.mesh_report_url || job.preview_url),
   );
   useEffect(() => {
-    if (!token || !hasFiles) return;
+    if (!hasFiles) return;
     const id = setInterval(() => {
-      if (document.visibilityState === "visible") void refresh(token);
+      if (document.visibilityState === "visible") void refresh();
     }, FILE_LINK_REFRESH_MS);
     const onVisible = () => {
-      if (document.visibilityState === "visible") void refresh(token);
+      if (document.visibilityState === "visible") void refresh();
     };
     document.addEventListener("visibilitychange", onVisible);
     return () => {
       clearInterval(id);
       document.removeEventListener("visibilitychange", onVisible);
     };
-  }, [token, hasFiles, refresh]);
+  }, [hasFiles, refresh]);
 
   useEffect(() => {
     if (!WALLET_STATES.has(status)) return;
@@ -133,10 +135,9 @@ export default function CfdJobPage({ refId }: { refId: string }) {
 
   const act = useCallback(
     async (action: string, path: string, body?: unknown) => {
-      if (!token) return;
       setBusy(action);
       setError(null);
-      const r = await postJob(refId, token, path, body);
+      const r = await postJob(refId, path, body);
       setBusy(null);
       if (r.status === 200 && r.body?.status) {
         setLoad({ kind: "ok", job: r.body });
@@ -145,7 +146,7 @@ export default function CfdJobPage({ refId }: { refId: string }) {
       if (r.status === 401) setSignedOut(true);
       setError({ action, e: { text: errorText(r), status: r.status } });
     },
-    [refId, token],
+    [refId],
   );
 
   const errFor = (a: string): ActionError => (error?.action === a ? error.e : null);
@@ -154,26 +155,28 @@ export default function CfdJobPage({ refId }: { refId: string }) {
     <main data-clarity-mask="true" className="cfx-paper">
       <Hero refId={refId} job={job} />
       <div className="mx-auto w-full max-w-[960px] space-y-5 px-4 py-8 sm:px-6 sm:py-12">
-        {token === null || load.kind === "not_found" ? <Missing refId={refId} /> : null}
-        {token !== null && load.kind === "loading" ? <Fine>Loading your job…</Fine> : null}
+        {load.kind === "signed_out" ? <SignInFirst refId={refId} /> : null}
+        {load.kind === "not_found" ? <Missing refId={refId} /> : null}
+        {load.kind === "loading" ? <Fine>Loading your job…</Fine> : null}
         {load.kind === "offline" ? (
           <Card title="We could not reach Coreframe">
             <Body>Check your connection and reload this page.</Body>
           </Card>
         ) : null}
-        {job && token ? (
+        {job ? (
           <JobBody
             job={job}
-            token={token}
             wallet={wallet}
             signedIn={signedIn}
             busy={busy}
             errFor={errFor}
             act={act}
-            reload={() => void refresh(token)}
+            reload={() => void refresh()}
           />
         ) : null}
-        {job && token && !isAccountAccess(token) ? <PrivateLink refId={refId} token={token} /> : null}
+        {job ? (
+          <p className="pt-2 text-[13px] text-ink-2">Questions about this job? Reply to any email from us about {refId}.</p>
+        ) : null}
       </div>
     </main>
   );
@@ -274,44 +277,52 @@ function Stepper({ status }: { status: string }) {
   );
 }
 
-function Missing({ refId }: { refId: string }) {
+/** Signed out (or an old emailed link): sign in first; the job is never shown without it. */
+function SignInFirst({ refId }: { refId: string }) {
   return (
-    <Card title="Open this page from your email">
+    <Card title="Sign in to see this job">
       <Body>
-        We could not open job {refId} here. Use the “Open your job page” link in the latest email about this job:
-        the link carries a private key for this job, and this browser keeps it for 30 days.
+        CFD job pages open only for the Coreframe account that submitted the job. Sign in and you come straight
+        back to job {refId}.
       </Body>
+      <div className="mt-4">
+        <Link href={signInHref(refId)} className="cf-btn-primary w-full sm:w-auto">
+          Sign in
+        </Link>
+      </div>
       <Fine className="mt-3">
-        Lost the email? Reply to any email from us, or write to admin@coreframecloud.com with the job number.
+        Opened a link from an older email? Those links no longer open a job on their own. Sign in with the email
+        address the job was sent to.
       </Fine>
-      <MissingSignedIn refId={refId} />
     </Card>
   );
 }
 
-function PrivateLink({ refId, token }: { refId: string; token: string }) {
-  const [copied, setCopied] = useState(false);
+/** Signed in, but not this account's job (or no such job: the API says the same). */
+function Missing({ refId }: { refId: string }) {
   return (
-    <div className="flex flex-col gap-2 pt-2 text-[13px] text-ink-2 sm:flex-row sm:items-center sm:justify-between">
-      <p>Questions about this job? Reply to any email from us about {refId}.</p>
-      <button
-        type="button"
-        className="self-start underline underline-offset-2 sm:self-auto"
-        onClick={() => {
-          void navigator.clipboard
-            ?.writeText(`${window.location.origin}/cfd/jobs/${refId}#t=${encodeURIComponent(token)}`)
-            .then(() => setCopied(true));
-        }}
-      >
-        {copied ? "Private link copied" : "Copy the private link to this page"}
-      </button>
-    </div>
+    <Card title="This job is not in your account">
+      <Body>
+        We could not find job {refId} in the account you are signed in with. A job page opens only for the account
+        that submitted it. Your own jobs are under{" "}
+        <Link href="/my-activity#cfd-jobs" className="font-medium text-ink underline underline-offset-2">
+          CFD jobs
+        </Link>
+        .
+      </Body>
+      <Fine className="mt-3">
+        Submitted it from another account?{" "}
+        <Link href={signInHref(refId)} className="underline underline-offset-2">
+          Sign in with that account
+        </Link>
+        . Lost track of it? Reply to any email from us, or write to admin@coreframecloud.com with the job number.
+      </Fine>
+    </Card>
   );
 }
 
 function JobBody({
   job,
-  token,
   wallet,
   signedIn,
   busy,
@@ -320,7 +331,6 @@ function JobBody({
   reload,
 }: {
   job: CfdJob;
-  token: string;
   wallet: WalletLine | null | "signed_out";
   signedIn: boolean;
   busy: string | null;
@@ -394,7 +404,7 @@ function JobBody({
             </ul>
           ) : null}
           {noGeometry ? <Fine className="mb-3">{problems.find((p) => p.code === "no_geometry")?.fix}</Fine> : null}
-          <UploadBox refId={job.ref_id} token={token} primary onDone={reload} />
+          <UploadBox refId={job.ref_id} primary onDone={reload} />
           {job.dimensions_option ? (
             <div className="mt-5 border-t border-rule pt-4">
               <Fine>{rupeeWords(job.dimensions_option.text)}</Fine>
@@ -420,7 +430,7 @@ function JobBody({
             ))}
           </ul>
           <div className="mt-5">
-            <UploadBox refId={job.ref_id} token={token} primary onDone={reload} />
+            <UploadBox refId={job.ref_id} primary onDone={reload} />
           </div>
         </Card>
       ) : null}
@@ -529,7 +539,7 @@ function JobBody({
       {REUPLOAD_OK.has(s) && !needsUpload && !(s === "new" && otherProblems.length) ? (
         <More summary="Upload a new version of the model">
           <Fine>A new file replaces this one and starts again from the geometry check{s === "quoted" ? "; this quote is withdrawn and the new file needs pre-processing again" : ""}.</Fine>
-          <UploadBox refId={job.ref_id} token={token} primary={false} onDone={reload} />
+          <UploadBox refId={job.ref_id} primary={false} onDone={reload} />
         </More>
       ) : null}
     </>

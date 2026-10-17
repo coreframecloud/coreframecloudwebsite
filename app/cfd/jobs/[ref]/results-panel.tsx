@@ -4,7 +4,7 @@
  * Results: the lead number first (the page's one yellow highlight), the other
  * headline values as quiet tiles, the PDF report as the one primary action,
  * then the 3D view and the full case. Downloads are buttons that open the
- * tokenised API URL on click, so those URLs are never in the DOM.
+ * signed 5-minute API link on click, so those URLs are never in the DOM.
  */
 import dynamic from "next/dynamic";
 import { useState } from "react";

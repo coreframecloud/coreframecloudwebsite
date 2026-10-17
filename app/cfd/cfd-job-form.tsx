@@ -23,7 +23,8 @@ import { Field, inputCls, textareaCls } from "./form-ui";
  * and the "job received" screen.
  *
  * POST /cfd-jobs (CfdJobCreate field names), then the geometry to
- * POST /cfd-jobs/{ref}/upload with the job's token. The single-request upload
+ * POST /cfd-jobs/{ref}/upload with the signed-in session (17 Oct 2026: there is
+ * no job token; a job opens only for its own account). The single-request upload
  * takes up to 80 MB; a bigger STL (up to 200 MB) goes through the chunked
  * upload on the job page, which we link to.
  */
@@ -100,7 +101,6 @@ export default function CfdJobForm({ token, accountEmail, onSignedOut, currency 
   const [submitError, setSubmitError] = useState("");
 
   const [refId, setRefId] = useState("");
-  const [jobUrl, setJobUrl] = useState("");
   const [uploadState, setUploadState] = useState<"" | "done" | "too_big" | "failed" | "skipped">("");
   const [uploadError, setUploadError] = useState("");
   const [validation, setValidation] = useState<Validation | null>(null);
@@ -113,7 +113,8 @@ export default function CfdJobForm({ token, accountEmail, onSignedOut, currency 
     const poll = async () => {
       if (attempts++ > 30) return;
       try {
-        const r = await fetch(`${API_BASE}/cfd-jobs/${ref}/validation`);
+        // The job's own signed-in account only (17 Oct 2026): the session cookie goes with it.
+        const r = await apiFetch(`${API_BASE}/cfd-jobs/${ref}/validation`);
         if (r.ok) {
           const data = await r.json();
           const v = (data.validation || {}) as Validation;
@@ -132,7 +133,7 @@ export default function CfdJobForm({ token, accountEmail, onSignedOut, currency 
     setTimeout(poll, 1500);
   };
 
-  const upload = async (ref: string, jobToken: string | undefined, f: File) => {
+  const upload = async (ref: string, f: File) => {
     if (f.size > SINGLE_UPLOAD_MAX) {
       setUploadState("too_big");
       return;
@@ -141,12 +142,11 @@ export default function CfdJobForm({ token, accountEmail, onSignedOut, currency 
     try {
       const fd = new FormData();
       fd.append("file", f);
-      // The job's token AND the owner's session: either one lets the API accept the file.
-      // In a header, never the URL (security review 17 Oct 2026).
+      // The owner's signed-in session is what lets the API accept the file.
       const res = await apiFetch(`${API_BASE}/cfd-jobs/${ref}/upload`, {
         method: "POST",
         body: fd,
-        headers: { ...auth, ...(jobToken ? { "X-Job-Token": jobToken } : {}) },
+        headers: { ...auth },
       });
       if (!res.ok) {
         let msg = "The upload did not go through.";
@@ -208,13 +208,8 @@ export default function CfdJobForm({ token, accountEmail, onSignedOut, currency 
         if (res.status === 429) throw new Error("Too many jobs in the last hour. Try again later, or WhatsApp us.");
         throw new Error(detailMessage(body) ?? "That did not send. Check the fields and try again, or WhatsApp us.");
       }
-      const data = (await res.json()) as { ref_id: string; access_token?: string };
+      const data = (await res.json()) as { ref_id: string };
       setRefId(data.ref_id);
-      if (data.access_token) {
-        // The job page on this site (16 Oct 2026); the token rides in the #fragment
-        // (never sent to a server; app/cfd/jobs/[ref]/page.tsx strips it on arrival).
-        setJobUrl(`/cfd/jobs/${encodeURIComponent(data.ref_id)}#t=${encodeURIComponent(data.access_token)}`);
-      }
       // A submitted CFD job is a lead (Meta "Lead"). No form fields go with it.
       trackConversion("generate_lead", { method: categoryId === "rooms" ? "cfd_room_job" : "cfd_duct_job", location: "cfd_intake" });
       // Its own GA4 key event too, so Google Ads can bid on CFD jobs apart from WhatsApp taps.
@@ -224,7 +219,7 @@ export default function CfdJobForm({ token, accountEmail, onSignedOut, currency 
       if (!geometry) {
         setUploadState("skipped");
       } else {
-        await upload(data.ref_id, data.access_token, geometry);
+        await upload(data.ref_id, geometry);
       }
     } catch (err: unknown) {
       setBusy("");
@@ -284,10 +279,9 @@ export default function CfdJobForm({ token, accountEmail, onSignedOut, currency 
           </ol>
         </div>
 
-        {/* Signed in (every submission is, since 13 Oct 2026): the job page also opens with the
-            session, so the link works even when the API sent no token. */}
+        {/* Signed in (every submission is, since 13 Oct 2026): the job page opens with the session. */}
         <a
-          href={jobUrl || `/cfd/jobs/${encodeURIComponent(refId)}`}
+          href={`/cfd/jobs/${encodeURIComponent(refId)}`}
           target="_blank"
           rel="noreferrer"
           className="cf-btn-primary mt-7"

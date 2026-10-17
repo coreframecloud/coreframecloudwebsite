@@ -16,6 +16,8 @@ import { ROOMS_TRANSIENT_OFFERED } from "@/lib/cfd-rooms";
  *   returns[]   {wall, center_m, size_m}
  *   heat_loads[] people {count, w_each, center_m, size_m}; equipment / lighting {watts, box_m}
  *   comfort     {clothing_clo, metabolic_met, relative_humidity_pct}
+ *   mesh_level  "fine" (default) | "medium": the customer's Draft / Fine choice (17 Oct 2026). The runner
+ *               meshes the room at it and the quote is priced from that mesh, so the quote follows it.
  *   tier_preference  "steady" | "transient" (only preselects the tier on the quote)
  *
  * An opening's centre (u, v) is in its wall's own plane:
@@ -79,6 +81,8 @@ export type RoomState = {
   clothing: string;
   met: string;
   rh: string;
+  /** Draft = the medium mesh, Fine = the default (owner, 17 Oct 2026). */
+  mesh: "fine" | "medium";
   tier: "steady" | "transient";
 };
 
@@ -128,6 +132,7 @@ export function hvacBlock(s: RoomState) {
       metabolic_met: isPos(s.met) ? num(s.met) : 1.2,
       relative_humidity_pct: s.rh.trim() !== "" && isNonNeg(s.rh) ? num(s.rh) : 50,
     },
+    mesh_level: s.mesh === "medium" ? "medium" : "fine",
     tier_preference: ROOMS_TRANSIENT_OFFERED ? s.tier : "steady",
   };
 }
@@ -270,6 +275,15 @@ function RoomFields({ state, set }: { state: RoomState; set: (patch: Partial<Roo
         </div>
       </div>
 
+      <Field label="Mesh" full hint={
+        state.mesh === "medium"
+          ? "Draft uses the medium mesh: for early design comparisons. Use Fine for final numbers. Your quote and report state which mesh was used."
+          : "Fine: for final numbers. Choose Draft (the medium mesh) for early design comparisons. Your quote and report state which mesh was used."
+      }>
+        <Choice name="hvac-mesh" value={state.mesh} onChange={(v) => set({ mesh: v === "medium" ? "medium" : "fine" })}
+          options={[{ value: "fine", label: "Fine" }, { value: "medium", label: "Draft" }]} />
+      </Field>
+
       {ROOMS_TRANSIENT_OFFERED ? (
         <Field label="Analysis" full hint={
           state.tier === "steady"
@@ -298,6 +312,7 @@ export const roomFields: CategoryFields<RoomState> = {
     supplies: [newSupply()], returns: [newReturn()],
     people: "", wPerPerson: "75", equipment: "", lighting: "",
     clothing: "0.6", met: "1.2", rh: "50",
+    mesh: "fine",
     tier: "steady",
   }),
 

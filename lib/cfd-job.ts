@@ -1,30 +1,26 @@
 /**
- * The customer's CFD job page on www (16 Oct 2026): types, money/date words,
- * the job token and the calls to the control-plane API.
+ * The customer's CFD job page on www (16 Oct 2026): types, money/date words
+ * and the calls to the control-plane API.
  *
- * Until 16 Oct the job page was served by the API itself
- * (control.coreframecloud.com/api/cfd-jobs/<ref>/view?token=…, plain dark HTML).
- * It now lives at /cfd/jobs/<ref> on the site and calls the same JSON endpoints
+ * Until 16 Oct the job page was served by the API itself; it now lives at
+ * /cfd/jobs/<ref> on the site and calls the same JSON endpoints
  * (apps/api/app/api/cfd_jobs.py in the control plane). The API redirects old
  * links here.
  *
- * THE JOB TOKEN NEVER TRAVELS IN A URL THE SERVER OR ANALYTICS SEES. Links carry
- * it in the #fragment (/cfd/jobs/CF-XXXXXX#t=…), which the browser never sends
- * to Vercel or in a Referer. An inline script in page.tsx reads it, keeps it in
- * this origin's localStorage (30 days, per job) and strips it from the address
- * bar before any analytics tag loads. Download links are buttons, not hrefs, so
- * the tokenised API URLs are not in the DOM either.
+ * SIGN-IN ONLY (owner, 17 Oct 2026: "delete the private link to any job ...
+ * someone could open it without login"). There is no job token any more: every
+ * call goes with the signed-in session (the HttpOnly cookie, lib/session.ts)
+ * and the API opens the job only for the account that owns it. Signed out it
+ * answers 401 and the page asks the visitor to sign in. Download links are
+ * buttons, not hrefs: the API's 5-minute signed file links are not in the DOM.
  */
 import { API_BASE } from "@/lib/api-base";
 import { type Currency } from "@/lib/money";
-import { ACCOUNT_ACCESS, jobTokenHeaders } from "@/lib/cfd-my-jobs";
 import { apiFetch, sessionMarker } from "@/lib/session";
 import { customerWords } from "@/lib/cfd-words";
 
 export { customerWords };
 
-export const JOB_TOKEN_PREFIX = "cf_cfd_job_token:";
-const JOB_TOKEN_TTL_MS = 30 * 24 * 3600 * 1000;
 
 /** Statuses as the API names them (cfd_jobs.py _CUSTOMER_STAGE). */
 export type JobStatus =
@@ -216,6 +212,8 @@ export interface Quote {
   validated_unavailable?: string | null;
   /** Rooms / HVAC (17 Oct 2026): the validation claim in the approved words; null for other jobs. */
   validation_note?: string | null;
+  /** Rooms / HVAC (17 Oct 2026): the mesh this quote is for, Draft (medium) or Fine; null for other jobs. */
+  mesh_choice?: { level: "fine" | "medium" | string; label: string; short: string; text: string } | null;
   default_package?: string;
   settle_option?: { default?: boolean; text: string; detail?: string } | null;
   pay_line?: string;
@@ -406,26 +404,6 @@ export function fromNow(iso: string | null | undefined, now: number = Date.now()
   return `in about ${Math.round(h)} h`;
 }
 
-// ─── the job token ───────────────────────────────────────────────────────────
-
-/** The token page.tsx's inline script picked up (and stripped) on this load, or the kept one. */
-export function readJobToken(ref: string): string | null {
-  if (typeof window === "undefined") return null;
-  const w = window as unknown as { __cfJobToken?: { ref: string; t: string } };
-  if (w.__cfJobToken && w.__cfJobToken.ref === ref) return w.__cfJobToken.t;
-  try {
-    const kept = JSON.parse(localStorage.getItem(JOB_TOKEN_PREFIX + ref) || "null") as
-      | { t?: string; at?: number }
-      | null;
-    if (kept?.t && kept.at && Date.now() - kept.at < JOB_TOKEN_TTL_MS) return kept.t;
-  } catch {
-    /* storage blocked: only the emailed link works */
-  }
-  // No emailed key here, but signed in: the job's own account opens it with its
-  // session (16 Oct 2026). Another account gets the same "not found" as before.
-  return sessionToken() ? ACCOUNT_ACCESS : null;
-}
-
 // ─── the signed-in session (an HttpOnly cookie: lib/session.ts) ──────────────
 
 /** "cookie" when this browser is signed in, else null. Never a credential. */
@@ -441,37 +419,28 @@ export interface ApiResult<T = unknown> {
   body: T;
 }
 
-/** A job API URL. The job token never goes in it: see jobTokenHeaders. */
+/** A job API URL. */
 export function jobUrl(ref: string, path: string): string {
   return `${API_BASE}/cfd-jobs/${encodeURIComponent(ref)}${path}`;
 }
 
-export async function fetchJob(ref: string, jobToken: string): Promise<ApiResult<CfdJob | null>> {
-  // Signed in: the bearer goes too, so the job's own account still gets in when
-  // the kept email key has been retired (the API accepts the token OR the owner).
-  const res = await apiFetch(jobUrl(ref, "/status"), {
-    cache: "no-store",
-    headers: jobTokenHeaders(jobToken),
-  });
+/** The job, for the signed-in account that owns it. 401: signed out; 404: not this account's job. */
+export async function fetchJob(ref: string): Promise<ApiResult<CfdJob | null>> {
+  const res = await apiFetch(jobUrl(ref, "/status"), { cache: "no-store" });
   const body = res.ok ? customerWords((await res.json()) as CfdJob) : null;
   return { status: res.status, body };
 }
 
-/** POST a job action with the job token and, when signed in, the account's bearer. */
+/** POST a job action with the signed-in session. */
 export async function postJob(
   ref: string,
-  jobToken: string,
   path: string,
   body?: unknown,
 ): Promise<ApiResult<CfdJob & { detail?: unknown }>> {
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-    ...jobTokenHeaders(jobToken),
-  };
   try {
     const res = await apiFetch(jobUrl(ref, path), {
       method: "POST",
-      headers,
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body ?? {}),
     });
     const json = await res.json().catch(() => ({}));
