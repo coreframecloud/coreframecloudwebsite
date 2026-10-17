@@ -520,7 +520,7 @@ export default async function RootLayout({
                   url: "https://www.coreframecloud.com/floor-plan-to-render",
                   provider: { "@id": "https://www.coreframecloud.com/#organization" },
                   description:
-                    "Pre-sale concept images for interior designers: upload a 2D DXF floor plan and get generated room images in the browser. Free previews; 2K download ₹30, 4K ₹50.",
+                    "Pre-sale concept images for interior designers: upload a 2D DXF floor plan and get generated room images in the browser. Free previews (5 a day, then ₹10 each); 2K download ₹30, 4K ₹50.",
                 },
               ],
             }),

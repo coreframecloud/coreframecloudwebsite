@@ -105,7 +105,7 @@ const faqs = [
   },
   {
     q: "What does it cost?",
-    a: "Reading the drawing, browsing the rooms and previewing the three camera angles are free, up to 5 previews a day. You pay only for what you keep: an edit of a preview is ₹20, a 2K download ₹30 and a 4K download ₹50, GST included (US$0.49, $0.99 and $1.49 for accounts billed in dollars). It comes out of the same Coreframe wallet as GPU workstation hours and CFD, and Studio shows the price before you confirm.",
+    a: "Reading the drawing, browsing the rooms and previewing the three camera angles are free, up to 5 previews a day; after that, extra previews are ₹10 each. You pay only for those and for what you keep: an edit of a preview is ₹20, a 2K download ₹30 and a 4K download ₹50, GST included (US$0.25, $0.49, $0.99 and $1.49 for accounts billed in dollars). It comes out of the same Coreframe wallet as GPU workstation hours and CFD, and Studio shows the price before you confirm.",
   },
   {
     q: "Do I have to install anything?",
@@ -272,7 +272,7 @@ export default function Page() {
               <p className="text-[11.5px] font-semibold tracking-[0.12em] text-white/75 uppercase">Studio is live</p>
               <h2 className="mt-3 font-heading text-[28px] font-medium sm:text-[36px]">Try it with your own plan.</h2>
               <p className="mt-3 text-white/80">
-                Previews are free, up to 5 a day. Edits ₹20, 2K download ₹30, 4K ₹50, from your Coreframe wallet.
+                Previews are free, up to 5 a day, then ₹10 each. Edits ₹20, 2K download ₹30, 4K ₹50, from your Coreframe wallet.
               </p>
               <p className="mt-3 text-white/70">
                 Need a whole machine for your own software instead?{" "}

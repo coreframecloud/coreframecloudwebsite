@@ -302,10 +302,12 @@ export default async function PricingView({ currency }: { currency: Currency }) 
           <h2 className="cf-section-title mt-4">Pre-sale concept images from a floor plan.</h2>
           <p className="cf-section-copy mt-3 max-w-[40rem]">
             Studio turns a 2D DXF floor plan into generated room images in the browser. Previews are free, up to 5 a
-            day; you pay only for what you keep, from the same wallet as your workstation hours.
+            day, then extra previews are {usdView ? "$0.25" : "₹10"} each; otherwise you pay only for what you keep,
+            from the same wallet as your workstation hours.
           </p>
           <ul className="mt-5 space-y-1.5 text-[15px] text-ink">
-            <li>Preview (three camera angles): free</li>
+            <li>Preview (three camera angles): free, up to 5 a day</li>
+            <li>Extra preview after that: {usdView ? "$0.25" : "₹10"}</li>
             <li>Edit a preview: {usdView ? "$0.49" : "₹20"}</li>
             <li>2K download: {usdView ? "$0.99" : "₹30"}</li>
             <li>4K download: {usdView ? "$1.49" : "₹50"}</li>

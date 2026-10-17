@@ -227,7 +227,7 @@ function OfferingBand({ o, flip }: { o: Offering; flip: boolean }) {
           </div>
           {o.id === "cfd" ? <p className="mt-6 text-[14px] text-ink-2">Pre-processing / mesh check ₹599 incl. GST for most models; ₹1,499 over 5 million cells. Rooms and HVAC airflow: live (steady analysis).</p> : null}
           {o.id === "studio" ? (
-            <p className="mt-6 text-[14px] text-ink-2">Free previews, up to 5 a day. Edits ₹20, 2K download ₹30, 4K ₹50, GST included, paid from the same wallet as your workstation hours. DXF plans only.</p>
+            <p className="mt-6 text-[14px] text-ink-2">Free previews, up to 5 a day, then ₹10 each. Edits ₹20, 2K download ₹30, 4K ₹50, GST included, paid from the same wallet as your workstation hours. DXF plans only.</p>
           ) : null}
         </div>
         <div className={`min-w-0 ${flip ? "lg:order-1" : ""}`}>
