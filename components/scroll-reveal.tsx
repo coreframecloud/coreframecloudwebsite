@@ -64,27 +64,35 @@ export function ScrollReveal() {
       { rootMargin: "0px 0px -60px 0px" },
     );
 
-    const seen = new Set<HTMLElement>();
-    const candidates = [
-      ...Array.from(document.querySelectorAll<HTMLElement>("[data-cf-reveal], [data-cf-steps]")),
-      ...Array.from(document.querySelectorAll<HTMLElement>(GENERIC)),
-    ];
+    const candidates = Array.from(
+      new Set([
+        ...Array.from(document.querySelectorAll<HTMLElement>("[data-cf-reveal], [data-cf-steps]")),
+        ...Array.from(document.querySelectorAll<HTMLElement>(GENERIC)),
+      ]),
+    ).filter((el) => !el.closest(".cf-pagehero") && !el.classList.contains("cf-reveal"));
+    // Read every position first, then write: interleaving the two forced a
+    // full layout per element (measured as extra blocking time on phones).
     const fold = window.innerHeight;
-    for (const el of candidates) {
-      if (seen.has(el)) continue;
-      seen.add(el);
-      if (el.closest(".cf-pagehero") || el.classList.contains("cf-reveal")) continue;
-      if (el.getBoundingClientRect().top < fold) continue; // on screen at load: never hidden
+    const below = candidates.filter((el) => el.getBoundingClientRect().top >= fold); // on screen at load: never hidden
+    // Hide them with transitions held off: otherwise adding .cf-reveal to an
+    // element that is already painted runs a 0.75 s fade-OUT on every one of
+    // them right after load (seen as per-frame style work in a trace).
+    const root = document.documentElement;
+    root.classList.add("cf-hold");
+    for (const el of below) {
       if (isStaggerGroup(el)) {
         el.classList.add("cf-stagger");
         Array.from(el.children).forEach((k, i) => (k as HTMLElement).style.setProperty("--cf-i", String(i)));
       }
       el.classList.add("cf-reveal");
-      io.observe(el);
     }
+    if (below.length) void getComputedStyle(below[0]).opacity; // commit the hidden state, untransitioned
+    root.classList.remove("cf-hold");
+    for (const el of below) io.observe(el);
     return () => {
       io.disconnect();
       timers.forEach(clearTimeout);
+      root.classList.remove("cf-hold");
     };
   }, [pathname]);
 

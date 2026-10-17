@@ -40,6 +40,8 @@
     filter var(--cf-dur-3) var(--cf-ease) var(--cf-d, 0s);
 }
 .cf-reveal.cf-in { opacity: 1; transform: none; }
+/* Set for one style pass while the runtime hides things, so nothing fades OUT. */
+.cf-hold :is(.cf-reveal, .cf-reveal *, .cf-reveal *::before) { transition: none !important; }
 
 /* Bento cards rise with a slight 3D tilt (was framer's `tilt`). */
 .cf-reveal[data-cf-reveal="tilt"] {
