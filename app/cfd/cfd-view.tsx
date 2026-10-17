@@ -260,7 +260,7 @@ const FAQ = [
 
 /** The mesh-independence answer; only the price differs by currency. */
 function verifiedFaq(cur: Currency): string {
-  return `Yes, with the Verified package (${verifiedFrom(cur)}${cur === "USD" ? ", no GST" : ""}): a mesh-independence study that runs your case on three meshes, coarse, medium and fine, and reports the grid convergence index (GCI) on the pressure drop, for example "Mesh-independent: static pressure drop = 12.20 Pa ± 0.85 % (GCI, fine mesh)". Internal flow up to about ${VERIFIED.maxMcells} million cells, results within ${VERIFIED.deliveryHours} hours. ${VERIFIED.meaning} The Quick and Standard packages run one wall-resolved mesh that has passed our mesh quality check.`;
+  return `Yes, with the Verified package (${verifiedFrom(cur)}${cur === "USD" ? ", no GST" : ""}): a mesh-independence study that runs your case on three meshes, coarse, medium and fine, and reports the grid convergence index (GCI) on the pressure drop, for example "Mesh-independent: static pressure drop = 12.30 Pa ± 0.13 % (fine mesh)". Internal flow up to about ${VERIFIED.maxMcells} million cells, results within ${VERIFIED.deliveryHours} hours. ${VERIFIED.meaning} The Quick and Standard packages run one wall-resolved mesh that has passed our mesh quality check.`;
 }
 
 const faqLd = {
@@ -671,8 +671,8 @@ export default async function CfdView({ currency }: { currency: Currency }) {
                 longer part of the answer. The grid convergence index (GCI) puts a number on what is left.
               </p>
               <p>
-                On our own 90° bend test, three meshes from 0.25 to 1.21 million cells gave 12.247, 12.240 and 12.205 Pa:
-                mesh-independent to ± 0.85 %.
+                On our own 90° bend test, three meshes from 0.25 to 1.21 million cells gave 12.234, 12.292 and 12.297 Pa:
+                mesh-independent, 12.30 Pa ± 0.13 %.
               </p>
               <p>
                 <a href="#verified" className="cfx-chip no-underline">

@@ -52,15 +52,24 @@ export function verifiedPriceLine(cur: Currency): string {
     : `From ${formatMoney(VERIFIED.fromInr, "INR")} + GST. The price scales with the cells in your mesh: about ${formatMoney(VERIFIED.inrAt2M, "INR")} + GST at 2 million cells. It is on your quote, next to the single-mesh packages.`;
 }
 
-/** Our own bend test (16 Oct 2026): air, 4 m/s, D 50 mm, R/D 1.5. Monotone convergence. */
+/**
+ * Our own bend test, a live Verified run (17 Oct 2026, job CF-MA2WOW): air,
+ * 4 m/s, D 50 mm, R/D 1.5; meshes r = 1.3. Replaced the 16 Oct run
+ * (12.20 Pa ± 0.85 %, indicative) on 18 Oct 2026; the running ads quote this one.
+ * The band (0.13 %) is the solver's own iteration-to-iteration change, which is
+ * larger than the GCI (0.08 %), so the band, not the GCI, is the number we quote.
+ */
 export const BEND_RECORD = {
   case: "90° bend, R/D 1.5, air at 4 m/s, D = 50 mm",
   meshes: [
-    { level: "Coarse", mcells: 0.25, dp: 12.247 },
-    { level: "Medium", mcells: 0.54, dp: 12.24 },
-    { level: "Fine", mcells: 1.21, dp: 12.205 },
+    { level: "Coarse", mcells: 0.25, dp: 12.234, iterations: 663, converged: "residual targets" },
+    { level: "Medium", mcells: 0.54, dp: 12.292, iterations: 1500, converged: "engineering criterion" },
+    { level: "Fine", mcells: 1.21, dp: 12.297, iterations: 2400, converged: "steady periodic solution" },
   ],
-  verdict: "Mesh-independent (indicative): 12.20 Pa ± 0.85 %",
+  resultPa: 12.3,
+  bandPct: 0.13,
+  gciPct: 0.08,
+  verdict: "Mesh-independent: 12.30 Pa ± 0.13 %",
 } as const;
 
 /** Our own straight-pipe test (16 Oct 2026): 72 D long. Oscillatory, judged by Stern et al. 2001. */

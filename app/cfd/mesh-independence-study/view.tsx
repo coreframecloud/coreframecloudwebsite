@@ -22,10 +22,12 @@ import type { Currency } from "@/lib/money";
  * stay on this URL). Only the prices differ.
  *
  * Facts: lib/cfd-verified.ts and cfd-runner/RUNBOOK.md (Validated section,
- * 16 Oct 2026 validation). The bend's ± 0.85 % is the solver's own swing on
- * the medium and fine meshes, wider than its GCI (0.51 %), and the verdict is
- * marked indicative because those two meshes did not reach the residual
- * targets. Say so; never present it as a clean GCI. Convergence rule since
+ * 16 Oct 2026 validation). The bend example is the live Verified run of 17 Oct
+ * 2026 (job CF-MA2WOW), on the site since 18 Oct 2026 in place of the 16 Oct
+ * run (12.20 Pa ± 0.85 %, indicative): 12.30 Pa ± 0.13 %, where the band is
+ * the solver's own iteration-to-iteration change, larger than its GCI (0.08 %).
+ * The running ads quote the same numbers; change both together. Never present
+ * a band narrower than the solver's own change as a clean GCI. Convergence rule since
  * 17 Oct 2026 (control plane cfd_validated.convergence_words): residual
  * targets; else dP < 0.5 % over 300 iterations with residuals 3 orders down;
  * else a steady periodic solution (no drift, residuals 2 orders down, half the
@@ -118,7 +120,7 @@ function faqs(cur: Currency) {
     },
     {
       q: "What is the grid convergence index (GCI)?",
-      a: "A standard way, from Roache and set out step by step by Celik et al. (2008), to report the discretisation error of a CFD result as a percentage band. From three meshes it estimates how fast the answer converges (the apparent order), then scales the change between the two finest meshes by a safety factor of 1.25. We report it on the fine mesh: for example, 'Mesh-independent: static pressure drop = 12.20 Pa ± 0.85 % (GCI, fine mesh)'.",
+      a: "A standard way, from Roache and set out step by step by Celik et al. (2008), to report the discretisation error of a CFD result as a percentage band. From three meshes it estimates how fast the answer converges (the apparent order), then scales the change between the two finest meshes by a safety factor of 1.25. We report it on the fine mesh: for example, 'Mesh-independent: static pressure drop = 12.30 Pa ± 0.13 % (fine mesh)'.",
     },
     {
       q: "How many meshes does a GCI calculation need?",
@@ -297,7 +299,7 @@ export default async function MeshStudyView({ currency }: { currency: Currency }
         <section id="example" className="cf-section scroll-mt-20 px-5 pt-0">
           <div className="cf-wide">
             <SectionHead n={3} tint="coral" eyebrow="Worked example" title="Our 90° bend on three meshes.">
-              One of our own validation runs, through the same code a customer job uses: {BEND_RECORD.case}.
+              A live Verified run of 17 October, through the same code a customer job uses: {BEND_RECORD.case}.
             </SectionHead>
             <div className="grid gap-8 min-[900px]:grid-cols-[7fr_5fr] min-[900px]:items-start">
               <div className="min-w-0">
@@ -323,25 +325,23 @@ export default async function MeshStudyView({ currency }: { currency: Currency }
                 </div>
                 <div className="mt-6 space-y-4 text-[16px] leading-[1.65] text-ink-2">
                   <p>
-                    The three answers sit within 0.35 % of each other. With the apparent order capped at 2, the GCI on the
-                    fine mesh is about 0.5 %.
+                    The medium and fine meshes differ by 0.04 %, and the GCI on the fine mesh is 0.08 %.
                   </p>
                   <p>
-                    But the medium and fine meshes never quite reached their residual targets: the separated flow after the
-                    bend keeps moving, and their pressure drop still swung by up to 1.7 % over the last 200 iterations. That
-                    swing is bigger than the differences between the meshes, so the band in the verdict is half of it,
-                    ± 0.85 %, and the verdict is marked indicative.
+                    Each mesh converged under the rule above. The coarse mesh reached its residual targets (663 iterations).
+                    The medium mesh met the engineering criterion: its pressure drop moved less than 0.5 % over the last 300
+                    iterations, with every residual down 1,000-fold (1,500 iterations). The fine mesh settled into a steady
+                    periodic solution, a small, regular oscillation with no drift (2,400 iterations).
                   </p>
                   <p>
-                    That run used the rule and solver settings of 16 October. Since 17 October Verified solves with heavier
-                    under-relaxation, which keeps the fine mesh close to steady, and a mesh that ends in a small, regular
-                    oscillation with no drift counts as converged, with half the oscillation added to the band.
+                    The solver&apos;s own iteration-to-iteration change on the fine mesh, ± 0.13 %, is larger than the GCI, so
+                    it is the band in the verdict: the band is never narrower than the solver&apos;s own change.
                   </p>
                 </div>
               </div>
               <div className="min-w-0">
                 <div className="cfx-ministat mt-0">
-                  <CountUp to={0.85} decimals={2} prefix="± " suffix=" %" />
+                  <CountUp to={BEND_RECORD.bandPct} decimals={2} prefix="± " suffix=" %" />
                   <span>the band on the fine-mesh pressure drop</span>
                 </div>
                 <div className="mt-6 rounded-[6px] border-[1.5px] border-ink bg-paper px-5 py-4">

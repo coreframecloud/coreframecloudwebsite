@@ -23,7 +23,7 @@ export function VerifiedCard({
   const rows: [string, string][] = [
     ["Three meshes", "Your case on a coarse, a medium and a fine mesh, refinement ratio 1.3 between them."],
     ["Grid convergence index", "GCI per Celik et al. (2008) with a safety factor of 1.25; answers that oscillate between meshes are judged on 1.25 × half their spread (Stern et al., 2001)."],
-    ["A verdict in the report", "For example: “Mesh-independent: static pressure drop = 12.20 Pa ± 0.85 % (GCI, fine mesh)”, with all three meshes and their numbers."],
+    ["A verdict in the report", "For example: “Mesh-independent: static pressure drop = 12.30 Pa ± 0.13 % (fine mesh)”, with all three meshes and their numbers."],
     ["Scope", `Internal flow: pipes, ducts, fittings and manifolds, quoted meshes up to about ${VERIFIED.maxMcells} million cells. Results within ${VERIFIED.deliveryHours} hours; not offered as express.`],
   ];
   return (

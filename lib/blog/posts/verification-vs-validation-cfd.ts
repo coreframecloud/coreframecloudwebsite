@@ -9,11 +9,14 @@ const IMG = `/blog/${SLUG}`;
  * launch (lib/cfd-verified.ts; landing page /cfd/mesh-independence-study).
  * Owner approved it 17 Oct 2026.
  *
- * Numbers are our own 16 Oct 2026 validation runs (cfd-runner/RUNBOOK.md,
- * Validated section): the bend 12.247 / 12.240 / 12.205 Pa on 0.25 / 0.54 /
- * 1.21 M cells, GCI 0.51 % with p capped at 2, reported band ± 0.85 % set by
- * the solver's swing (medium and fine did not reach their residual targets),
- * hence "indicative"; the straight pipe 72 D within 0.63 %, developed friction
+ * Numbers are our own runs. The bend is the live Verified run of 17 Oct 2026
+ * (job CF-MA2WOW; replaced the 16 Oct run on 18 Oct 2026, same as the ads):
+ * 12.234 / 12.292 / 12.297 Pa on 0.25 / 0.54 / 1.21 M cells, verdict
+ * mesh-independent, 12.30 Pa ± 0.13 %, the band being the solver's own
+ * iteration-to-iteration change, larger than the GCI (0.08 %); coarse converged
+ * on residuals (663 it), medium on the engineering criterion (1,500), fine as a
+ * steady periodic solution (2,400). The 16 Oct 2026 validation runs
+ * (cfd-runner/RUNBOOK.md, Validated section) give the straight pipe 72 D within 0.63 %, developed friction
  * factor GCI ± 0.6 %, -4.8 % against Haaland (Re 13,300, k-omega SST). No price
  * in the body: prices live on the landing page, which follows the visitor's
  * currency. No costs, machines or competitor names.
@@ -86,19 +89,19 @@ export const verificationVsValidationCfd: BlogPost = {
       text: "When the three results go up and down instead of converging in one direction, the GCI formula breaks. A common fallback (Stern et al., 2001) is to take 1.25 times half the spread of the three results as the band.",
     },
 
-    { type: "sectionHead", n: 3, tint: "coral", eyebrow: "Worked example", title: "A 90° bend on three meshes", text: "Our own test: air at 4 m/s through a 50 mm bend with R/D 1.5, solved on our own machines." },
+    { type: "sectionHead", n: 3, tint: "coral", eyebrow: "Worked example", title: "A 90° bend on three meshes", text: "Our own live Verified run of 17 October: air at 4 m/s through a 50 mm bend with R/D 1.5." },
     {
       type: "table",
       head: ["Mesh", "Cells", "ΔP"],
       rows: [
-        ["Coarse", "0.25 M", "12.247 Pa"],
-        ["Medium", "0.54 M", "12.240 Pa"],
-        ["Fine", "1.21 M", "12.205 Pa"],
+        ["Coarse", "0.25 M", "12.234 Pa"],
+        ["Medium", "0.54 M", "12.292 Pa"],
+        ["Fine", "1.21 M", "12.297 Pa"],
       ],
     },
     {
       type: "p",
-      text: "The refinement ratio from medium to fine is (1.21 / 0.54)^⅓ ≈ 1.31. The relative change between those two meshes is 0.035 / 12.205 ≈ 0.29 %. With the order capped at 2, rᵖ − 1 ≈ 0.71, and the GCI is 1.25 × 0.29 % / 0.71 ≈ 0.5 %.",
+      text: "The refinement ratio from medium to fine is (1.21 / 0.54)^⅓ ≈ 1.31. The relative change between those two meshes is 0.005 / 12.297 ≈ 0.04 %, and the GCI on the fine mesh is 0.08 %.",
     },
     {
       type: "explainFigure",
@@ -111,12 +114,12 @@ export const verificationVsValidationCfd: BlogPost = {
     },
     {
       type: "p",
-      text: "There is a catch, and it is the useful part. The medium and fine runs never quite reached their residual targets: the separated flow downstream of the bend kept moving, and their pressure drop still swung by up to 1.7 % over the last 200 iterations. That swing is larger than the differences between the meshes, so a 0.5 % band would claim more than the runs can support. We report half the swing instead.",
+      text: "There is a catch, and it is the useful part. Only the coarse mesh reached its residual targets (663 iterations). The medium mesh converged on the engineering criterion: its pressure drop moved less than 0.5 % over the last 300 iterations, with every residual down 1,000-fold (1,500 iterations). The fine mesh settled into a steady periodic solution, a small, regular oscillation with no drift (2,400 iterations). Its own iteration-to-iteration change, 0.13 %, is larger than the GCI, so a 0.08 % band would claim more than the run can support. We report the solver's change instead.",
     },
-    { type: "statement", big: "0.85 %", caption: "the band we report: 12.20 Pa ± 0.85 % on the fine mesh (indicative)" },
+    { type: "statement", big: "0.13 %", caption: "the band we report: mesh-independent, 12.30 Pa ± 0.13 % on the fine mesh" },
     {
       type: "note",
-      text: "Indicative, because two of the three meshes did not reach their residual targets. A band is never narrower than the solver's own swing.",
+      text: "A band is never narrower than the solver's own change, even when the GCI is smaller.",
     },
 
     { type: "sectionHead", n: 4, tint: "teal", eyebrow: "Validation", title: "What it doesn't prove" },
