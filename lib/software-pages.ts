@@ -489,7 +489,7 @@ export const SOFTWARE_PAGES: SoftwarePage[] = [
     title: "Unreal Engine Cloud Workstation — preinstalled on a rented RTX 5080",
     metaTitle: "Unreal Engine Cloud Workstation, RTX 5080",
     description:
-      "Unreal Engine 5.8 with Quixel Bridge comes preinstalled on a Windows RTX 5080 workstation in India, billed per minute. Sign in with your Epic account and open your project.",
+      "Unreal Engine 5.8 with Quixel Bridge, preinstalled on a Windows RTX 5080 workstation in India and billed per minute. Sign in with your Epic account.",
     intro:
       `Unreal Engine 5.8 with Quixel Bridge is preinstalled on every Coreframe workstation. You sign in with your own Epic account, open your project from persistent storage and work on an ${NODE.gpu} with ${NODE.vram}, billed by the minute.`,
     problem:

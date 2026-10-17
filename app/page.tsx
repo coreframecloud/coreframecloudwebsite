@@ -14,7 +14,7 @@ import {
 } from "@/lib/rate-card";
 
 export const metadata: Metadata = {
-  title: "RTX 5080 Workstations, CFD and Studio, India — Coreframe Cloud",
+  title: { absolute: "RTX 5080 Workstations, CFD & Studio, India | Coreframe Cloud" },
   description:
     "Rent a Windows RTX 5080 workstation by the minute, get CFD for your duct or pipe from one STL with no licence, and Studio concept images. From Bengaluru.",
   alternates: { canonical: "/" },

@@ -16,7 +16,12 @@ import {
   billingSentence,
   entryPlanFee,
   storageRatePerTb,
+  getIntroOffer,
+  hoursLabel,
+  rupees,
 } from "@/lib/rate-card";
+import { formatMoney, usdRates } from "@/lib/money";
+import { CFD_PREPROCESS_INR } from "@/lib/cfd-prices";
 import { BANDWIDTH_SENTENCE } from "@/lib/streaming-terms";
 
 /**
@@ -45,7 +50,8 @@ import { BANDWIDTH_SENTENCE } from "@/lib/streaming-terms";
 export const metadata: Metadata = {
   title: { absolute: "What is Coreframe Cloud? Company, machines, prices" },
   description:
-    "Coreframe Cloud, run by Coreframe Compute Labs Pvt Ltd in Bengaluru: RTX 5080 workstations by the minute, CFD for ducts and pipes, and Studio for floor-plan concept images.",
+    // Under 160 characters (SEO review 18 Oct 2026, T9).
+    "Coreframe Cloud, by Coreframe Compute Labs, Bengaluru: RTX 5080 workstations by the minute, CFD for ducts, pipes and rooms, and Studio floor-plan renders.",
   alternates: { canonical: "/about" },
   openGraph: {
     images: [OG_IMAGE],
@@ -101,6 +107,8 @@ export default async function AboutPage() {
   const card = await getRateCard();
   const introFaq = introOfferFaq(card);
   const hourly = adhocRateHourly(card);
+  const intro = getIntroOffer(card);
+  const usd = usdRates(card);
   const planFrom = entryPlanFee(card);
   const perTb = storageRatePerTb(card);
 
@@ -216,6 +224,15 @@ export default async function AboutPage() {
                 Three services: {NODE.gpu} workstations streamed to the laptop you own and billed by the
                 minute, CFD for ducts and pipes, and Studio for floor-plan concept images.
                 Run by Coreframe Compute Labs Private Limited, Bengaluru.
+              </p>
+              {/* Answer-first, with live prices in both currencies (SEO review 18 Oct 2026, 4). */}
+              <p className="mt-4 max-w-[56ch] text-[15.5px] leading-7 text-ink-2">
+                Coreframe Cloud is run by Coreframe Compute Labs Private Limited, Bengaluru (founded 2026). It offers three
+                services: Windows {NODE.gpu} workstations rented by the minute
+                {hourly ? ` (${hourly} incl. GST in India${intro ? `; first ${rupees(intro.priceRupees)} = ${hoursLabel(intro.hours)}` : ""}; ${formatMoney(usd.gpu_hourly, "USD")}/hr elsewhere)` : ""},
+                CFD pressure-drop and room-airflow reports from one STL or a room description (mesh check{" "}
+                {formatMoney(CFD_PREPROCESS_INR.small, "INR")} / {formatMoney(usd.cfd_quote_fee_small, "USD")}), and Studio concept
+                renders from a DXF floor plan (previews free).
               </p>
         </div>
           <GenImage src="/visuals/gen-team-review-16x9.webp" alt="A small design studio team reviewing an interior image together" width={1600} height={914} sizes="(max-width: 1024px) 100vw, 480px" parallax priority />

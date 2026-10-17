@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { JsonLd } from "@/components/seo/json-ld";
-import { breadcrumbList, faqPage } from "@/lib/seo";
+import { ORG_ID, SITE, breadcrumbList, faqPage, regionalOffers } from "@/lib/seo";
+import { formatMoney } from "@/lib/money";
 import Link from "next/link";
 import { NODE } from "@/lib/node-spec";
 import {
@@ -16,24 +17,46 @@ import { Clock, Cloud, UserRound, ReceiptText } from "lucide-react";
 import { GenImage } from "@/components/visuals/media";
 import { TeamStorageDiagram } from "@/components/visuals/diagrams";
 
-export const metadata: Metadata = {
-  title: "Team Plans: Monthly GPU Plans for Design Studios",
-  description:
-    // No prices in the meta description. A description is cached by search
-    // engines and quoted by answer engines long after a rate changes, and it is
-    // the one string on the page that cannot read the live rate card without
-    // making metadata generation depend on a network call.
-    "Team plans for design firms: one shared pool of RTX 5080 hours, cloud storage for the whole team, a login for each person and one bill. GST included.",
-  keywords: [
-    "cloud GPU plan India",
-    "GPU workstation monthly plan India",
-    "cloud rendering subscription India",
-    "D5 Render monthly plan India",
-    "architecture studio cloud GPU",
-    "committed cloud GPU India",
-  ],
-  alternates: { canonical: "/enterprise" },
-};
+const TITLE = "Team Plans: Shared RTX 5080 Hours for Studios | Coreframe";
+const KEYWORDS = [
+  "team GPU plan India",
+  "cloud GPU plan India",
+  "GPU workstation monthly plan India",
+  "cloud rendering subscription India",
+  "D5 Render monthly plan India",
+  "architecture studio cloud GPU",
+];
+const UPDATED = "2026-10-18";
+
+/** "2–5 TB" across the priced plans, from the rate card. */
+function storageRange(plans: RateCardPlan[]): string | null {
+  const tb = plans.map((p) => p.included_storage_gb / 1024).filter((n) => n > 0);
+  if (!tb.length) return null;
+  const lo = Math.min(...tb), hi = Math.max(...tb);
+  const f = (n: number) => (Number.isInteger(n) ? String(n) : n.toFixed(1));
+  return lo === hi ? `${f(lo)} TB` : `${f(lo)}–${f(hi)} TB`;
+}
+
+/**
+ * Title, description and canonical (SEO review 18 Oct 2026, 3.7). The entry
+ * fee in the description is read from the rate card at render time (the page
+ * renders per request); without a rate card the description carries no price
+ * rather than a typed one.
+ */
+export async function generateMetadata(): Promise<Metadata> {
+  const card = await getRateCard();
+  const fee = entryPlanFee(card);
+  const storage = storageRange(planTiers(card));
+  const description =
+    `Monthly team plans for design studios: one shared pool of RTX 5080 hours, ${storage ? `${storage} shared storage` : "shared storage"}, ` +
+    `a login per person and one GST invoice.${fee ? ` From ${fee}/month.` : ""}`;
+  return {
+    title: { absolute: TITLE },
+    description,
+    keywords: KEYWORDS,
+    alternates: { canonical: "/enterprise" },
+  };
+}
 
 /**
  * PRESENTATION ONLY. Every number on this page — monthly fee, included hours,
@@ -110,6 +133,33 @@ export default async function EnterprisePage() {
   const fromFee = entryPlanFee(card);
   const storageRate = storageRatePerTb(card);
 
+  // The answer-first passage and the per-plan Offers (SEO review 18 Oct 2026, 3.7).
+  const entry = priced[0];
+  const adhocText = adhocNumber != null ? inr(adhocNumber) : null;
+  const entryUsd = entry?.usd_monthly_fee ? formatMoney(entry.usd_monthly_fee, "USD") : null;
+  const teamLd = {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    "@id": `${SITE}/enterprise#team-plans`,
+    name: "Team plans: shared RTX 5080 hours for studios",
+    serviceType: "Monthly cloud GPU workstation plan",
+    provider: { "@id": ORG_ID },
+    url: `${SITE}/enterprise`,
+    isRelatedTo: { "@id": `${SITE}/#gpu-workstation-service` },
+    offers: priced.flatMap((p) =>
+      p.usd_monthly_fee
+        ? regionalOffers({
+            name: `Team plan: ${p.name}`,
+            inr: p.monthly_fee_rupees,
+            usd: p.usd_monthly_fee,
+            url: `${SITE}/enterprise#plans`,
+            description: `${p.included_gpu_hours} GPU-hours a month, ${p.named_seats} logins, ${Math.round(p.included_storage_gb / 1024)} TB storage${p.commitment_months ? `, ${p.commitment_months}-month commitment` : ""}.`,
+            unit: { unitText: "month", billingDuration: "P1M" },
+          })
+        : [],
+    ),
+  };
+
   const faqs = [
     { q: "How many people can use one plan?", a: "Each plan includes a set number of team logins, shown on its card. Everyone signs in with their own account." },
     { q: "What if we use more hours than the plan includes?", a: "You keep working. Extra hours are charged at the plan's lower hourly rate, shown on each card." },
@@ -122,6 +172,7 @@ export default async function EnterprisePage() {
     <div className="relative min-h-screen bg-paper text-ink">
       <JsonLd data={breadcrumbList([{ name: "Team plans", path: "/enterprise" }])} />
       <JsonLd data={faqPage(faqs)} />
+      {teamLd.offers.length ? <JsonLd data={teamLd} /> : null}
 
       <main className="relative">
         <section className="cf-section cf-pagehero px-5">
@@ -132,7 +183,21 @@ export default async function EnterprisePage() {
               <p className="cf-lead mt-5">
                 Shared hours. Shared storage. A login for everyone. One bill.
               </p>
-              {fromFee ? <p className="mt-3 text-[15px]">Plans start at {fromFee} a month, GST included.</p> : null}
+              {/* Answer-first, every figure from the rate card (SEO review 18 Oct 2026, 3.7). */}
+              {fromFee ? (
+                <p className="mt-4 max-w-[52ch] text-[15.5px] leading-7 text-ink-2">
+                  Team plans give a studio one shared pool of {NODE.gpu} hours, shared cloud storage and one GST invoice. Plans
+                  start at {fromFee} a month incl. GST
+                  {entry?.effective_included_hourly_rupees != null && adhocText
+                    ? ` (about ${inr(entry.effective_included_hourly_rupees)} per included hour against ${adhocText} pay-as-you-go)`
+                    : ""}
+                  {entry?.overage_hourly_rate_rupees != null ? `, with extra hours at ${inr(entry.overage_hourly_rate_rupees)}` : ""}.
+                  {entryUsd ? ` Studios billed outside India: from ${entryUsd} a month, no GST.` : ""}
+                </p>
+              ) : null}
+              <p className="mt-3 text-[13px] text-ink-3">
+                Last updated <time dateTime={UPDATED}>18 October 2026</time>
+              </p>
               <div className="mt-8 flex flex-wrap gap-3">
                 <Link href="/signup" className="cf-btn-primary">Sign up your studio</Link>
                 <a href="#plans" className="cf-btn-secondary">See plans</a>
