@@ -1,4 +1,5 @@
 import { Fold } from "@/components/visuals/fold";
+import { PageByline } from "@/components/seo/page-byline";
 import { GenImage } from "@/components/visuals/media";
 import { VramDiagram } from "@/components/visuals/diagrams";
 import type { Metadata } from "next";
@@ -142,6 +143,7 @@ export default async function Page() {
             <p className="cf-lead mt-6">
             Usually, until suddenly it isn&apos;t. Here&apos;s what the vendors say, and how to measure your own scene.
           </p>
+            <PageByline path="/vram-for-architectural-rendering" className="mt-4 opacity-75" />
           </div>
           <GenImage src="/visuals/gen-student-architecture-4x5.webp" alt="An architecture student working on a laptop beside her models" width={1000} height={1286} sizes="(max-width: 1024px) 100vw, 480px" parallax priority />
         </div>

@@ -1,4 +1,5 @@
 import { StreamDiagram } from "@/components/visuals/diagrams";
+import { PageByline } from "@/components/seo/page-byline";
 import { ViewContent } from "@/components/analytics/view-content";
 import { PageHeroBg } from "@/components/page-hero-bg";
 import { GpuCineBand } from "@/components/gpu-cine-band";
@@ -145,6 +146,7 @@ export default async function D5Page() {
             <p className="cf-lead mt-[22px]">
             A full Windows desktop with an RTX 5080 and D5 Render installed, streamed to your laptop and billed by the minute. Sign in with your own D5 account.
           </p>
+            <PageByline path="/d5-render-cloud-workstation" className="mt-4 opacity-75" />
         </div>
         </div>
       </section>

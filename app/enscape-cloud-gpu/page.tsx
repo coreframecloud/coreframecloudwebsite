@@ -129,7 +129,7 @@ export default async function EnscapePage() {
                 Team plans
               </Link>
             </div>
-            <LastUpdated date="18 October 2026" className="mt-6" />
+            <LastUpdated date="18 October 2026" path="/enscape-cloud-gpu" className="mt-6" />
           </div>
         </div>
         </section>

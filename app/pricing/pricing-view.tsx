@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { PageByline } from "@/components/seo/page-byline";
 import { VERIFIED, verifiedPriceLine } from "@/lib/cfd-verified";
 import type { Metadata } from "next";
 import { ViewContent } from "@/components/analytics/view-content";
@@ -175,6 +176,7 @@ export default async function PricingView({ currency }: { currency: Currency }) 
               ? "Workstations by the minute, in US dollars with no GST. CFD by quote. Studio previews free."
               : "Workstations by the minute or a monthly plan, GST included. CFD by quote. Studio previews free."}
           </p>
+          <PageByline path="/pricing" className="mt-4 opacity-75" />
         </div>
       </section>
 

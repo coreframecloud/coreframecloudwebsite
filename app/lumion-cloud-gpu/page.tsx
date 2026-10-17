@@ -134,7 +134,7 @@ export default async function LumionPage() {
                 Team plans
               </Link>
             </div>
-            <LastUpdated date="18 October 2026" className="mt-6" />
+            <LastUpdated date="18 October 2026" path="/lumion-cloud-gpu" className="mt-6" />
           </div>
         </div>
         </section>

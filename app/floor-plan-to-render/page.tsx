@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { PageByline } from "@/components/seo/page-byline";
 import { JsonLd } from "@/components/seo/json-ld";
 import { breadcrumbList } from "@/lib/seo";
 import Link from "next/link";
@@ -244,9 +245,7 @@ export default async function Page() {
                 DXF floor plans only, up to {MAX_DXF_MB} MB. Working in DWG or Revit?{" "}
                 <a href="#export-dxf" className="underline underline-offset-4">Export a clean DXF</a>.
               </p>
-              <p className="mt-2 text-[12.5px] text-ink-3">
-                Last updated <time dateTime={LAST_UPDATED.iso}>{LAST_UPDATED.label}</time>
-              </p>
+              <PageByline path="/floor-plan-to-render" updated={LAST_UPDATED.iso} className="mt-2 text-ink-3" />
             </div>
           </div>
         </section>

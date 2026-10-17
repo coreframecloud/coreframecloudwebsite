@@ -8,7 +8,8 @@ import { Callout, ExplainFigure, Hl, SectionHead } from "@/components/cfd-explai
 import { getRateCard } from "@/lib/rate-card";
 import { formatMoney, usdRates } from "@/lib/money";
 import { CFD_NORMAL_HOURS, CFD_PREPROCESS_INR, preprocessFeeBoth } from "@/lib/cfd-prices";
-import { CLINIC_CASE, HVAC_PAGE, updatedLabel } from "@/lib/cfd-pages";
+import { CLINIC_CASE, HVAC_PAGE } from "@/lib/cfd-pages";
+import { PageByline } from "@/components/seo/page-byline";
 import { ROOMS_DELIVERS, ROOMS_VALIDATION } from "@/lib/cfd-rooms";
 
 /**
@@ -169,9 +170,7 @@ export default async function RoomAirflowHvacPage() {
                 <Link href="/cfd#start" className="cf-btn-primary">Start a room job</Link>
                 <Link href={CLINIC_CASE.path} className="cf-btn-secondary">See a whole-floor example</Link>
               </div>
-              <p className="mt-4 text-[13px] text-ink-3">
-                Last updated <time dateTime={HVAC_PAGE.updated}>{updatedLabel(HVAC_PAGE.updated)}</time>
-              </p>
+              <PageByline path={HVAC_PAGE.path} published="2026-10-18" className="mt-4 text-ink-3" />
             </div>
             <ExplainFigure
               src={`${ART}/i-room-diffuser-airflow.webp`}

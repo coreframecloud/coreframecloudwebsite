@@ -1,4 +1,5 @@
 import { StreamDiagram } from "@/components/visuals/diagrams";
+import { PageByline } from "@/components/seo/page-byline";
 import { GenImage } from "@/components/visuals/media";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -112,6 +113,7 @@ export default async function WorkstationVsFarmPage() {
               <p className="cf-lead mt-[22px]">
             A render farm renders a <em>finished</em> scene on many machines. A workstation is <em>one</em> machine you drive while the scene is still changing.
           </p>
+              <PageByline path="/cloud-workstation-vs-render-farm" className="mt-4 opacity-75" />
         </div>
           <GenImage src="/visuals/gen-visualiser-home-16x9.webp" alt="A 3D visualiser working on a laptop at home" width={1600} height={914} sizes="(max-width: 1024px) 100vw, 480px" parallax priority />
         </div>

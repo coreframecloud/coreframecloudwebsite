@@ -3,7 +3,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { ORG_ID, SITE, breadcrumbList, faqPage } from "@/lib/seo";
 import { Fold } from "@/components/visuals/fold";
-import { CLINIC_CASE, HVAC_PAGE, updatedLabel } from "@/lib/cfd-pages";
+import { CLINIC_CASE, HVAC_PAGE } from "@/lib/cfd-pages";
+import { PageByline } from "@/components/seo/page-byline";
 import { VERIFIED } from "@/lib/cfd-verified";
 import { JsonLd } from "@/components/seo/json-ld";
 
@@ -250,10 +251,7 @@ export default function ClinicFloorHvacPage() {
                   </a>
                   .
                 </p>
-                <p className="mt-2 text-[13px] text-ink-3">
-                  Published 13 October 2026 · Last updated{" "}
-                  <time dateTime={CLINIC_CASE.updated}>{updatedLabel(CLINIC_CASE.updated)}</time>
-                </p>
+                <PageByline path={PATH} published="2026-10-13" className="mt-2 text-ink-3" />
               </div>
               <figure className="min-w-0 overflow-hidden rounded-[24px] bg-white p-3 sm:p-4">
                 <Image

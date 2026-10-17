@@ -1,3 +1,4 @@
+import { PageByline } from "@/components/seo/page-byline";
 /**
  * The workstation spec as a real HTML table (SEO review 18 Oct 2026, open
  * since the 13 Oct audit): a <dl> of div rows reads fine to a person but is
@@ -27,6 +28,9 @@ export function SpecTable({ rows, caption, showCaption = false }: { rows: [strin
 }
 
 /** Visible content date, small and quiet, for pages answer engines quote. */
-export function LastUpdated({ date, className = "" }: { date: string; className?: string }) {
-  return <p className={`text-[13px] leading-5 text-ink-3 ${className}`}>Last updated {date}</p>;
+/** Byline + "Updated" date, with the WebPage dateModified (components/seo/page-byline.tsx). */
+export function LastUpdated({ date, path, className = "" }: { date: string; path: string; className?: string }) {
+  const parsed = new Date(`${date} 00:00 UTC`);
+  const iso = Number.isNaN(parsed.getTime()) ? undefined : parsed.toISOString().slice(0, 10);
+  return <PageByline path={path} updated={iso} className={`text-ink-3 ${className}`} />;
 }

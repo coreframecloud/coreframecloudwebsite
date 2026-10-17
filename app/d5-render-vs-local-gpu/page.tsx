@@ -1,4 +1,5 @@
 import { VramDiagram } from "@/components/visuals/diagrams";
+import { PageByline } from "@/components/seo/page-byline";
 import { GenImage } from "@/components/visuals/media";
 import { Fold } from "@/components/visuals/fold";
 import type { Metadata } from "next";
@@ -128,6 +129,7 @@ export default async function ComparisonPage() {
             <p className="cf-lead mt-6">
             It depends on how many hours a year you render. The arithmetic is below, including when buying wins.
           </p>
+            <PageByline path="/d5-render-vs-local-gpu" className="mt-4 opacity-75" />
           </div>
           <GenImage src="/visuals/gen-tired-designer.webp" alt="A designer waiting on a slow laptop late at night" width={1000} height={1750} sizes="(max-width: 1024px) 100vw, 480px" parallax priority />
         </div>

@@ -25,6 +25,7 @@ import {
 import { formatMoney, usdRates } from "@/lib/money";
 import { NODE } from "@/lib/node-spec";
 import { LastUpdated, SpecTable } from "@/components/gpu/spec-table";
+import { SOFTWARE_CONTENT_DATE } from "@/lib/page-dates";
 import { JsonLd } from "@/components/seo/json-ld";
 import { breadcrumbList, faqPage, OG_IMAGE } from "@/lib/seo";
 import { GpuCineBand } from "@/components/gpu-cine-band";
@@ -211,7 +212,9 @@ export default async function SoftwareLandingPage({
             <Link href="/signup" className="cf-btn-primary">Sign up</Link>
             <Link href="/pricing" className="cf-btn-secondary">Pricing</Link>
           </div>
-          {page.lastUpdated ? <LastUpdated date={page.lastUpdated} className="mt-6" /> : null}
+          {/* Every page carries a byline and date (GEO check 18 Oct 2026). Pages
+              without their own lastUpdated were last edited 11 Oct 2026. */}
+          <LastUpdated date={page.lastUpdated ?? SOFTWARE_CONTENT_DATE} path={`/software/${page.slug}`} className="mt-6" />
         </div>
         {heroBg ? null : hero.generated ? (
           <GenImage src={hero.src} alt={hero.alt} width={hero.w} height={hero.h} sizes="(max-width: 1024px) 100vw, 480px" parallax priority />

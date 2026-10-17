@@ -21,7 +21,8 @@ import {
   preprocessLargeBoth,
   verifiedFromBoth,
 } from "@/lib/cfd-prices";
-import { CFD_HOME, CLINIC_CASE, HVAC_PAGE, updatedLabel } from "@/lib/cfd-pages";
+import { CFD_HOME, CLINIC_CASE, HVAC_PAGE } from "@/lib/cfd-pages";
+import { PageByline } from "@/components/seo/page-byline";
 import { getVisiblePost } from "@/lib/blog";
 import { VERIFICATION_POST_SLUG } from "@/lib/blog/posts/verification-vs-validation-cfd";
 import { HAND_CALC_POST_SLUG } from "@/lib/blog/posts/pressure-drop-hand-calc-vs-cfd";
@@ -463,9 +464,7 @@ export default async function CfdView({ currency }: { currency: Currency }) {
               <p className="cfx-quiet mt-6">
                 <a href="#right">How we know the answer is right ↓</a>
               </p>
-              <p className="mt-4 text-[13px] text-ink-3">
-                Last updated <time dateTime={CFD_HOME.updated}>{updatedLabel(CFD_HOME.updated)}</time>
-              </p>
+              <PageByline path={CFD_HOME.path} className="mt-4 text-ink-3" />
             </div>
           </div>
           {/* After the text on purpose: below 900px the sketch flows under it. */}

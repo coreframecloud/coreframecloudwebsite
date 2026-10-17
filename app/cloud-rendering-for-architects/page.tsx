@@ -1,4 +1,5 @@
 import { StreamDiagram } from "@/components/visuals/diagrams";
+import { PageByline } from "@/components/seo/page-byline";
 import { ViewContent } from "@/components/analytics/view-content";
 import { Fold } from "@/components/visuals/fold";
 import { GenImage } from "@/components/visuals/media";
@@ -186,6 +187,7 @@ export default async function ArchitectsPage() {
             <p className="cf-lead mt-6">
             {NODE.gpu} workstations by the minute for D5 Render, Lumion, Enscape and Revit. Everyone renders at once, from shared project files.
           </p>
+            <PageByline path="/cloud-rendering-for-architects" className="mt-4 opacity-75" />
 
             <div className="mt-8 flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:gap-4">
               <Link href="/signup" className="cf-btn-primary w-full sm:w-auto min-h-[44px]">

@@ -86,6 +86,7 @@ export const SOFTWARE_PAGES: SoftwarePage[] = [
     title: "Revit Cloud Workstation — run Revit on a rented RTX GPU",
     metaTitle: "Revit Cloud Workstation, rented RTX GPU",
     teamPlansLink: true,
+    lastUpdated: "18 October 2026",
     description:
       "Run Autodesk Revit on a Windows GPU workstation in India, billed per minute. Bring your Autodesk licence, open large models, and render without buying hardware.",
     intro:

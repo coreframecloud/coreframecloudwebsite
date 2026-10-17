@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { JsonLd } from "@/components/seo/json-ld";
 import { ORG_ID, SITE, breadcrumbList, faqPage, regionalOffers } from "@/lib/seo";
 import { formatMoney } from "@/lib/money";
+import { PageByline } from "@/components/seo/page-byline";
 import Link from "next/link";
 import { NODE } from "@/lib/node-spec";
 import {
@@ -26,7 +27,6 @@ const KEYWORDS = [
   "D5 Render monthly plan India",
   "architecture studio cloud GPU",
 ];
-const UPDATED = "2026-10-18";
 
 /** "2–5 TB" across the priced plans, from the rate card. */
 function storageRange(plans: RateCardPlan[]): string | null {
@@ -195,9 +195,7 @@ export default async function EnterprisePage() {
                   {entryUsd ? ` Studios billed outside India: from ${entryUsd} a month, no GST.` : ""}
                 </p>
               ) : null}
-              <p className="mt-3 text-[13px] text-ink-3">
-                Last updated <time dateTime={UPDATED}>18 October 2026</time>
-              </p>
+              <PageByline path="/enterprise" className="mt-3 text-ink-3" />
               <div className="mt-8 flex flex-wrap gap-3">
                 <Link href="/signup" className="cf-btn-primary">Sign up your studio</Link>
                 <a href="#plans" className="cf-btn-secondary">See plans</a>

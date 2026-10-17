@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { PageByline } from "@/components/seo/page-byline";
 import { WALKTHROUGH_YOUTUBE_ID } from "@/components/home/landing/walkthrough-section";
 import { RedesignHero } from "@/components/home/redesign/hero";
 import { Bento } from "@/components/home/redesign/bento";
@@ -59,6 +60,10 @@ export default async function Page() {
       <BuiltFor />
       <Testimonials />
       <OfferBand adhocRate={adhocRate} intro={intro} />
+      {/* Who and when (GEO check 18 Oct 2026, G-DATES / G-BYLINE). */}
+      <div className="cf-wide px-5 py-6">
+        <PageByline path="/" className="text-ink-3" />
+      </div>
     </main>
   );
 }

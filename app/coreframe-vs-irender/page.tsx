@@ -1,4 +1,5 @@
 import { BillingMeter } from "@/components/visuals/billing-meter";
+import { PageByline } from "@/components/seo/page-byline";
 import { GenImage } from "@/components/visuals/media";
 import type { Metadata } from "next";
 import { JsonLd } from "@/components/seo/json-ld";
@@ -143,6 +144,7 @@ export default async function Page() {
             <p className="cf-lead mt-6">
             Both rent you a GPU by the hour. Their prices and ours, side by side, with the conversion shown.
           </p>
+            <PageByline path="/coreframe-vs-irender" className="mt-4 opacity-75" />
           </div>
           <GenImage src="/visuals/gen-night-desk-laptop.webp" alt="A laptop on a desk at night with a client message waiting" width={1000} height={1750} sizes="(max-width: 1024px) 100vw, 480px" parallax priority />
         </div>

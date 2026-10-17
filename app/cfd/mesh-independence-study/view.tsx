@@ -11,7 +11,8 @@ import { getVisiblePost } from "@/lib/blog";
 import { VERIFICATION_POST_SLUG } from "@/lib/blog/posts/verification-vs-validation-cfd";
 import type { Currency } from "@/lib/money";
 import { verifiedFromBoth } from "@/lib/cfd-prices";
-import { CLINIC_CASE, HVAC_PAGE, MESH_STUDY, updatedLabel } from "@/lib/cfd-pages";
+import { CLINIC_CASE, HVAC_PAGE, MESH_STUDY } from "@/lib/cfd-pages";
+import { PageByline } from "@/components/seo/page-byline";
 
 /**
  * /cfd/mesh-independence-study — the Verified package's landing page (owner,
@@ -257,9 +258,9 @@ export default async function MeshStudyView({ currency }: { currency: Currency }
                 {VERIFIED.maxMcells} M cells
               </p>
               <p className="mt-1 text-[14px] leading-6 text-ink-3">
-                Verified is {verifiedFromBoth(currency)}. Last updated{" "}
-                <time dateTime={MESH_STUDY.updated}>{updatedLabel(MESH_STUDY.updated)}</time>.
+                Verified is {verifiedFromBoth(currency)}.
               </p>
+              <PageByline path={MESH_STUDY.path} published="2026-10-16" className="mt-2 text-ink-3" />
               <div className="mt-8 flex flex-wrap gap-3">
                 <Link href="/cfd#start" className="cf-btn-primary">Start a job</Link>
                 <a href="#example" className="cf-btn-secondary">See a worked example</a>

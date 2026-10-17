@@ -258,6 +258,10 @@ export default async function RootLayout({
       lang="en-IN"
       className={`${inter.variable} ${plexMono.variable} ${poppins.variable}`}
     >
+      <head>
+        {/* The blog feed (GEO check 18 Oct 2026), on every page so it is found from anywhere. */}
+        <link rel="alternate" type="application/rss+xml" title="Coreframe Cloud blog" href="/blog/rss.xml" />
+      </head>
       <body className="bg-paper text-ink antialiased">
         {/* Google tag (GA4 + Google Ads), with Consent Mode v2 defaults.
             The consent defaults and the dataLayer shim run first, in the same

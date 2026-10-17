@@ -1,4 +1,5 @@
 import { GenImage } from "@/components/visuals/media";
+import { PageByline } from "@/components/seo/page-byline";
 import type { Metadata } from "next";
 import { JsonLd } from "@/components/seo/json-ld";
 import { breadcrumbList } from "@/lib/seo";
@@ -84,6 +85,7 @@ export default async function ComputeNodesPage() {
             <p className="cf-lead mt-5 max-w-[680px]">
             One machine for everyone: {NODE.gpu}, {NODE.vram}, {NODE.ram} of RAM, in {NODE.location}. One price, nothing to pick wrong.
           </p>
+            <PageByline path="/compute-nodes" className="mt-4 opacity-75" />
           </div>
           <GenImage src="/visuals/gen-artist-dual-monitor-16x9.webp" alt="A 3D artist working at a two-monitor desk in a home studio" width={1600} height={914} sizes="(max-width: 1024px) 100vw, 480px" parallax priority />
         </div>

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { PageByline } from "@/components/seo/page-byline";
 import { JsonLd } from "@/components/seo/json-ld";
 import { breadcrumbList } from "@/lib/seo";
 import Link from "next/link";
@@ -64,6 +65,7 @@ export default function SolutionsPage() {
               <p className="cf-eyebrow mb-5">Solutions</p>
               <h1 className="cf-display">One machine can render. Everything queues behind it.</h1>
               <p className="cf-lead mt-6">Rent machines by the minute, so everyone gets one when the deadline needs it.</p>
+              <PageByline path="/solutions" className="mt-4 opacity-75" />
               <div className="mt-8 flex flex-wrap gap-3">
                 <Link href="/signup" className="cf-btn-primary">Sign up</Link>
                 <Link href="/enterprise" className="cf-btn-secondary">Team plans</Link>

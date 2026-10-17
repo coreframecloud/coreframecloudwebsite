@@ -1,4 +1,5 @@
 import { GenImage } from "@/components/visuals/media";
+import { PageByline } from "@/components/seo/page-byline";
 import { StreamDiagram } from "@/components/visuals/diagrams";
 import type { Metadata } from "next";
 import { JsonLd } from "@/components/seo/json-ld";
@@ -225,6 +226,7 @@ export default async function AboutPage() {
                 minute, CFD for ducts and pipes, and Studio for floor-plan concept images.
                 Run by Coreframe Compute Labs Private Limited, Bengaluru.
               </p>
+              <PageByline path="/about" className="mt-4 opacity-75" />
               {/* Answer-first, with live prices in both currencies (SEO review 18 Oct 2026, 4). */}
               <p className="mt-4 max-w-[56ch] text-[15.5px] leading-7 text-ink-2">
                 Coreframe Cloud is run by Coreframe Compute Labs Private Limited, Bengaluru (founded 2026). It offers three

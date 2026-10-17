@@ -1,4 +1,5 @@
 import { FileSyncDiagram } from "@/components/visuals/diagrams";
+import { PageByline } from "@/components/seo/page-byline";
 import { OwnImage } from "@/components/visuals/media";
 import type { Metadata } from "next";
 import { JsonLd } from "@/components/seo/json-ld";
@@ -131,6 +132,7 @@ export default function AppsPage() {
           <p className="cf-lead mt-6">
             A full {NODE.os} desktop with the tools already installed. Sign in with your own licences.
           </p>
+          <PageByline path="/apps" className="mt-4 opacity-75" />
         </div>
           <OwnImage src="/blog/blender-interior-render-on-cloud-rtx-5080/file-on-workstation.webp" alt="Blender ready on a Coreframe workstation" width={923} height={597} caption="Blender, D5 and Twinmotion come installed." sizes="(max-width: 1024px) 100vw, 480px" />
         </div>

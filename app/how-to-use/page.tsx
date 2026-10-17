@@ -1,4 +1,5 @@
 import { FileSyncDiagram } from "@/components/visuals/diagrams";
+import { PageByline } from "@/components/seo/page-byline";
 import { OwnImage } from "@/components/visuals/media";
 import type { Metadata } from "next";
 import { JsonLd } from "@/components/seo/json-ld";
@@ -134,6 +135,7 @@ export default function HowToUsePage() {
             <p className="cf-lead mt-5">
             Rent a Windows {NODE.gpu} desktop by the minute and stream it to the computer you own. Here&apos;s the whole thing, start to finish.
           </p>
+            <PageByline path="/how-to-use" className="mt-4 opacity-75" />
       </div>
           <OwnImage src="/home/wt-launch.webp" alt="The Coreframe app with the RTX 5080 ready to launch" width={1000} height={698} caption="Step one: pick the RTX 5080 and launch." sizes="(max-width: 1024px) 100vw, 480px" />
         </div>
