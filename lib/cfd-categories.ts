@@ -44,7 +44,7 @@ export const CFD_CATEGORIES: CfdCategory[] = [
       // No "hvac"/"room"/"indoor" keyword: those apply the 2-50 m room size check.
       applicationType: "Duct / pipe internal flow (pressure drop)",
       domainType: "Internal flow (duct / pipe)",
-      solverSoftware: "OpenFOAM (Coreframe)",
+      solverSoftware: "Coreframe CFD",
       kpi: "Pressure drop and loss coefficient",
     },
   },
@@ -62,7 +62,7 @@ export const CFD_CATEGORIES: CfdCategory[] = [
       // this text is for people and emails. Tested: apps/api tests/test_cfd_cloud.py (SITE_ROOM_BODY).
       applicationType: "HVAC / Indoor air (room comfort)",
       domainType: "Internal flow (room)",
-      solverSoftware: "OpenFOAM (Coreframe)",
+      solverSoftware: "Coreframe CFD",
       kpi: "Air speed, temperature, PMV/PPD, ADPI",
     },
     futureInputs: [

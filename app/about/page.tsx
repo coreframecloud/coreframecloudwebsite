@@ -107,7 +107,7 @@ export default async function AboutPage() {
   const faqs: { q: string; a: string }[] = [
     {
       q: "What is Coreframe Cloud?",
-      a: `Coreframe Cloud is run by Coreframe Compute Labs Private Limited, a company registered in Bengaluru, Karnataka, India, and offers three services. GPU workstations: full ${NODE.os} desktops on NVIDIA ${NODE.gpu} graphics cards, streamed over the internet and billed by the minute, for architects, interior designers, visualisation studios, 3D artists and engineers who need a GPU but don't want to buy a workstation. CFD for ducts and pipes: upload one STL, get a quote by email, and get the pressure drop, a PDF report, a 3D viewer and the data files, with OpenFOAM running on our machines so you need no CFD licence. And Coreframe Studio: pre-sale concept images generated from a DXF floor plan, for interior designers.`,
+      a: `Coreframe Cloud is run by Coreframe Compute Labs Private Limited, a company registered in Bengaluru, Karnataka, India, and offers three services. GPU workstations: full ${NODE.os} desktops on NVIDIA ${NODE.gpu} graphics cards, streamed over the internet and billed by the minute, for architects, interior designers, visualisation studios, 3D artists and engineers who need a GPU but don't want to buy a workstation. CFD for ducts and pipes: upload one STL, get a quote by email, and get the pressure drop, a PDF report, a 3D viewer and the data files, with the solver running on our machines so you need no CFD licence. And Coreframe Studio: pre-sale concept images generated from a DXF floor plan, for interior designers.`,
     },
     {
       q: "What makes Coreframe Cloud different from other cloud GPU services?",

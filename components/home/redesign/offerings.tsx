@@ -155,7 +155,7 @@ const BAND_POINTS: Record<Offering["id"], string[]> = {
 
 const BAND_BODY: Record<Offering["id"], string> = {
   gpu: "Open D5, Lumion, Blender or Twinmotion on a full Windows workstation from the laptop you already own, streamed in 4K. Your project files stay on storage in Bengaluru between sessions.",
-  cfd: "Pressure drop for your duct or pipe, from one STL. OpenFOAM runs on our machines, so you need no CFD licence and your own computer stays free. You pay for the run only if you accept the quote.",
+  cfd: "Pressure drop for your duct or pipe, from one STL. The solver runs on our machines, so you need no CFD licence and your own computer stays free. You pay for the run only if you accept the quote.",
   studio:
     "Show the client the room before the project is signed. Upload a 2D DXF floor plan, pick a room and say how it should feel; Studio gives you concept images to pitch with.",
 };

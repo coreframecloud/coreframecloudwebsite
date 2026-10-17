@@ -85,7 +85,7 @@ const BUILDING = [
 
 const RUN = [
   ["Mesh", "1.9 million cells"],
-  ["Solver", "OpenFOAM, steady, buoyant, 3,000 iterations"],
+  ["Solver", "Open-source CFD solver, steady, buoyant, 3,000 iterations"],
   ["Run time", "5.1 hours on our own machine in Bengaluru"],
   ["Outputs", "Temperature, air speed, ADPI, PMV and draught maps, plus a table for every room"],
 ];

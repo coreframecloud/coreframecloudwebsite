@@ -162,7 +162,7 @@ export default async function MeshStudyView({ currency }: { currency: Currency }
     ...(usd ? {} : { areaServed: "IN" }),
     isRelatedTo: { "@id": `${SITE}/#cfd-service` },
     description:
-      "The same internal-flow CFD case (pipes, ducts, fittings, manifolds) solved with OpenFOAM on three meshes, refinement ratio 1.3, with the grid convergence index per Celik et al. (2008) and a verdict on the static pressure drop in the PDF report. Results within 24 hours.",
+      "The same internal-flow CFD case (pipes, ducts, fittings, manifolds) solved on three meshes, refinement ratio 1.3, with the grid convergence index per Celik et al. (2008) and a verdict on the static pressure drop in the PDF report. Results within 24 hours.",
     offers: {
       "@type": "Offer",
       name: "Verified: mesh-independence study (GCI)",

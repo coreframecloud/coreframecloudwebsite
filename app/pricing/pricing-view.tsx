@@ -247,7 +247,7 @@ export default async function PricingView({ currency }: { currency: Currency }) 
           </h2>
           <p className="cf-section-copy mt-3 max-w-[40rem]">
             Upload one STL of your duct or pipe. We check it, build the real mesh on our machine and email you a quote.
-            OpenFOAM runs on our side, so you need no CFD licence.
+            The solver runs on our side, so you need no CFD licence.
           </p>
           <ul className="mt-7 grid grid-cols-1 gap-5 sm:grid-cols-2">
             {[

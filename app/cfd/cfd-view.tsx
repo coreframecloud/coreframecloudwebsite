@@ -73,7 +73,7 @@ export const cfdMetadata: Metadata = {
   // Absolute (no "| Coreframe Cloud"): the SEO audit's 60-character title limit (16 Oct 2026).
   title: { absolute: "Duct and Pipe Pressure Drop Calculation · CFD Meshing" },
   description:
-    "Pressure drop calculation for ducts and pipes with OpenFOAM CFD. Upload one STL; we build and check a wall-resolved mesh, quote, run it and report.",
+    "Pressure drop calculation for ducts and pipes with CFD. Upload one STL; we build and check a wall-resolved mesh, quote, run it and report.",
   keywords: [
     "pressure drop calculation",
     "pipe pressure drop calculation",
@@ -81,12 +81,11 @@ export const cfdMetadata: Metadata = {
     "CFD pre-processing",
     "CFD meshing",
     "mesh quality check",
-    "snappyHexMesh",
     "CFD pressure drop duct",
     "pipe pressure drop CFD India",
     "duct CFD analysis service",
     "loss coefficient CFD",
-    "OpenFOAM CFD service India",
+    "CFD service India",
     "CFD for final year project",
     "mesh independence study",
     "HVAC duct CFD consultant",
@@ -98,7 +97,7 @@ export const cfdMetadata: Metadata = {
     images: [CFD_OG_IMAGE],
     title: "Duct and pipe pressure drop calculation (CFD) — Coreframe Cloud",
     description:
-      "One STL in. Pressure drop, loss coefficient, a PDF report, a 3D viewer and the data files out. OpenFOAM on our machine, no licence on yours.",
+      "One STL in. Pressure drop, loss coefficient, a PDF report, a 3D viewer and the data files out. The solver runs on our machine, no licence on yours.",
     url: "https://www.coreframecloud.com/cfd",
   },
   twitter: {
@@ -165,7 +164,7 @@ const AUDIENCE = [
   },
   {
     label: "Students and researchers",
-    body: "A real OpenFOAM case for your final-year project or thesis: mesh, convergence history, fields and the full case files.",
+    body: "A real CFD case for your final-year project or thesis: mesh, convergence history, fields and the full case files.",
   },
 ];
 
@@ -192,9 +191,9 @@ const RECEIVE = [
   ["Pressure drop", "Static and total, inlet to outlet, in pascals"],
   ["Loss coefficient K", "For one inlet and one outlet, on the inlet velocity (and the outlet velocity where they differ)"],
   ["Convergence verdict", "Residual history, the monitored pressure drop, and CONVERGED or a provisional warning"],
-  ["Mesh record", "Cell count, wall layers, y+ on the walls, checkMesh quality"],
+  ["Mesh record", "Cell count, wall layers, y+ on the walls, mesh quality checks"],
   ["Fields and 3D view", "Velocity and pressure on the mid-plane, wall pressure and streamlines, in a viewer that runs in your browser"],
-  ["Data files", "The OpenFOAM case with the final fields and mesh, readable in ParaView"],
+  ["Data files", "The complete simulation case with the final fields and mesh, in an open format that free CFD post-processing tools can read"],
 ];
 
 const GALLERY = [
@@ -211,7 +210,7 @@ const FAQ = [
   },
   {
     q: "Do I need a CFD licence?",
-    a: "No. The case runs on OpenFOAM on our machine. You need a browser and a Coreframe account with wallet balance.",
+    a: "No. The case runs on an open-source CFD solver on our machine. You need a browser and a Coreframe account with wallet balance.",
   },
   {
     q: "Do I need a Coreframe account?",
@@ -223,7 +222,7 @@ const FAQ = [
   },
   {
     q: "Do you offer CFD meshing as a service?",
-    a: "Not as a separate product. Meshing is part of pre-processing / mesh check (₹599 incl. GST for most models): we build a wall-resolved mesh of your geometry with OpenFOAM snappyHexMesh, run a mesh quality check on it and send you a one-page Mesh report with your exact run price. The mesh files themselves (the OpenFOAM polyMesh, which opens in ParaView) come in the case download after a run.",
+    a: "Not as a separate product. Meshing is part of pre-processing / mesh check (₹599 incl. GST for most models): we build a wall-resolved mesh of your geometry, run a mesh quality check on it and send you a one-page Mesh report with your exact run price. The mesh files themselves come in the case download after a run, in an open format.",
   },
   {
     q: "Do you check mesh independence?",
@@ -283,7 +282,7 @@ const serviceLd = {
   provider: { "@type": "Organization", name: "Coreframe Cloud", url: "https://www.coreframecloud.com" },
   areaServed: "IN",
   description:
-    "Automatic OpenFOAM internal-flow runs for ducts, pipes, bends, reducers, valves and fittings from one closed STL: pressure drop, loss coefficient, PDF report, 3D results viewer and data files.",
+    "Automatic CFD internal-flow runs for ducts, pipes, bends, reducers, valves and fittings from one closed STL: pressure drop, loss coefficient, PDF report, 3D results viewer and data files.",
   offers: {
     "@type": "Offer",
     name: "Pre-processing / mesh check",
@@ -376,7 +375,7 @@ export default async function CfdView({ currency }: { currency: Currency }) {
               <p className="cf-eyebrow">CFD for ducts and pipes · Live</p>
               <h1 className="cf-display mt-5 max-w-[14ch]">Pressure drop calculation for your duct or pipe, from one STL.</h1>
               <p className="cf-lead mt-5 max-w-[44ch]">
-                Upload the geometry. We check it, mesh it on our machine and email you a quote. OpenFOAM runs on our side,
+                Upload the geometry. We check it, mesh it on our machine and email you a quote. The solver runs on our side,
                 so you need no CFD licence.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
@@ -480,15 +479,14 @@ export default async function CfdView({ currency }: { currency: Currency }) {
             <p className="cf-eyebrow">Pre-processing</p>
             <h2 className="cf-section-title mt-4">CFD pre-processing and mesh check</h2>
             <p className="cf-section-copy mt-3 max-w-[46rem]">
-              Before any run, we check your geometry, build a wall-resolved mesh with OpenFOAM (blockMesh and
-              snappyHexMesh) and run a mesh quality check on it. You get a one-page Mesh report and the exact price of the
+              Before any run, we check your geometry, build a wall-resolved mesh and run a mesh quality check on it. You get a one-page Mesh report and the exact price of the
               pressure drop simulation, for {usdText ? `${usdText.small} (no GST)` : "₹599 incl. GST"} on most models.
             </p>
             <div className="mt-8 grid gap-6 sm:grid-cols-2">
               {[
                 ["Geometry check", "A closed solid, believable units, and the flat openings that become the inlet and outlets, with their areas and hydraulic diameters. You confirm the inlet."],
-                ["Wall-resolved mesh", "CFD mesh generation with snappyHexMesh, with prism layers at the walls sized for y+ ≈ 1. Where those layers cannot cover enough of the wall, we fall back to layers for wall functions, and the report says so."],
-                ["Mesh quality check", "checkMesh on every mesh: non-orthogonality, skewness and negative cell volumes against our limits, plus the wall-layer coverage. A mesh that fails is not quoted."],
+                ["Wall-resolved mesh", "CFD mesh generation with prism layers at the walls sized for y+ ≈ 1. Where those layers cannot cover enough of the wall, we fall back to layers for wall functions, and the report says so."],
+                ["Mesh quality check", "A quality check on every mesh: non-orthogonality, skewness and negative cell volumes against our limits, plus the wall-layer coverage. A mesh that fails is not quoted."],
                 ["Mesh report and run price", "One page: the geometry, the mesh numbers, pass or fail for each check and a picture of the mesh, with the price of each run package. A separate charge, not deducted from the run."],
               ].map(([t, b]) => (
                 <div key={t} className="cf-card">

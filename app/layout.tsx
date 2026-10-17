@@ -377,7 +377,7 @@ export default async function RootLayout({
                    */
                   hasMap: COMPANY_MAPS_URL,
                   description:
-                    "Three services from Bengaluru, India: RTX 5080 GPU workstations on demand for D5 Render, Lumion, Enscape, Blender and Unreal Engine; CFD for ducts and pipes (OpenFOAM, quote by email, no licence needed); and Coreframe Studio, pre-sale concept images from a DXF floor plan (free previews).",
+                    "Three services from Bengaluru, India: RTX 5080 GPU workstations on demand for D5 Render, Lumion, Enscape, Blender and Unreal Engine; CFD for ducts and pipes (quote by email, no licence needed); and Coreframe Studio, pre-sale concept images from a DXF floor plan (free previews).",
                   telephone: "+916366889488",
                   email: "admin@coreframecloud.com",
                   address: {
@@ -413,7 +413,6 @@ export default async function RootLayout({
                     "real-time rendering",
                     "GPU-accelerated CFD",
                     "computational fluid dynamics",
-                    "OpenFOAM",
                     "duct and pipe pressure drop",
                     "interior concept rendering from floor plans",
                     "NVIDIA RTX 5080",
@@ -495,7 +494,7 @@ export default async function RootLayout({
                   url: "https://www.coreframecloud.com/cfd",
                   provider: { "@id": "https://www.coreframecloud.com/#organization" },
                   description:
-                    "Automatic OpenFOAM internal-flow runs for ducts, pipes, bends, reducers, valves and fittings from one closed STL: a quote by email, then pressure drop, loss coefficient, a PDF report, a 3D results viewer and the data files. No CFD licence needed.",
+                    "Automatic CFD internal-flow runs for ducts, pipes, bends, reducers, valves and fittings from one closed STL: a quote by email, then pressure drop, loss coefficient, a PDF report, a 3D results viewer and the data files. No CFD licence needed.",
                   areaServed: [
                     { "@type": "Country", name: "India" },
                     { "@type": "Place", name: "Worldwide" },

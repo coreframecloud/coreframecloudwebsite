@@ -18,17 +18,23 @@ import { COMPANY, COMPANY_ADDRESS_FULL } from "@/lib/company";
 export const metadata: Metadata = {
   title: "Refund Policy",
   description:
-    "Coreframe Cloud refund policy. Wallet credits are non-refundable; a GST tax invoice is issued at the time of recharge.",
+    "Coreframe Cloud refund policy for workstations, CFD and Studio. Wallet credits are non-refundable; failures on our side come back automatically.",
   alternates: {
     canonical: "/refund-policy",
   },
 };
 
-const policySections = [
+/**
+ * 18 Oct 2026: extended from workstation-only to every service, in step with
+ * the Terms of Service (/terms-of-service). The CFD and Studio rules below are
+ * what the control plane does (cfd_billing / cfd_pricing settle-and-release;
+ * Studio refunds only when our side failed). Keep the two pages consistent.
+ */
+const policySections: { title: string; body: string }[] = [
   {
     title: "Wallet credits are non-refundable",
     body:
-      "A recharge is a purchase of prepaid GPU compute credit, and the supply is complete when the payment is received. We issue a full GST tax invoice at that moment, and the tax is discharged to the government on that invoice. Credits are therefore not refundable to your bank account, in whole or in part.",
+      "A recharge is a purchase of prepaid credit for our services, and the supply is complete when the payment is received. We issue a full tax invoice at that moment (a GST invoice in India; an invoice in US dollars for accounts billed outside India), and any tax is discharged on that invoice. Credits are therefore not refundable to your bank account, in whole or in part, except in the cases on this page.",
   },
   {
     title: "Credit is valid for one year",
@@ -36,29 +42,54 @@ const policySections = [
       "Credit expires twelve months from the date you buy it, and the expiry date appears on the tax invoice for that recharge. Your oldest credit is always spent first, so a later top-up never causes an earlier one to lapse while you are still using the platform. We will tell you in the app when credit is within sixty days of expiring. There is no dormancy fee and no other charge for holding a balance.",
   },
   {
-    title: "Consumed usage",
+    title: "Promotional credit",
     body:
-      "GPU session time, persistent NAS storage and any other service you have used are non-refundable. Sessions are billed per minute from the moment your workstation starts streaming — provisioning time and failed connections are never charged.",
+      "Bonus credit on larger top-ups and any new-customer offer are promotional. They have no cash value, are never refunded or transferred, and are spent according to the rules stated with the offer, which can include a shorter validity and limits on what they can be spent on. For example, the new-customer offer is for GPU workstation time only and must be used within 30 days, and promotional credit cannot pay for CFD.",
+  },
+  {
+    title: "GPU workstations",
+    body:
+      "Session time and storage you have used are non-refundable. Sessions are billed per minute from the moment your workstation starts streaming; provisioning time and failed connections are never charged. If a workstation fails through a fault on our side, we credit the affected session time back to your wallet. Where an outage is significant we may issue additional service credit at our discretion.",
+  },
+  {
+    title: "CFD: pre-processing / mesh check",
+    body:
+      "If your case is rejected as out of scope before meshing, nothing is charged. The pre-processing fee is refunded to your wallet if pre-processing fails because of a problem on our side, or if you cancel before the mesh is delivered. It is not refunded once the mesh and quote have been delivered, or if meshing fails because of the geometry you supplied. The fee is a separate charge and is not deducted from the run.",
+  },
+  {
+    title: "CFD: runs",
+    body:
+      "When you accept a quote, the full quoted amount is held from your wallet. When the run ends, you are charged for what it used under the rules on your quote, never more than the quote, and the rest is released to your wallet straight away. You can cancel until the run starts and the whole hold is released. If a run fails, diverges or cannot start because of a problem on our side, the whole hold is released. Normal delivery is within 24 hours of payment, or the run is free: if we miss it because of a problem on our side, the run charge is returned to your wallet in full (time spent waiting for you, such as for corrected geometry, does not count).",
+  },
+  {
+    title: "Studio",
+    body:
+      "A paid Studio action (an extra preview, an edit, a 2K or 4K download, or a ray-traced render) is charged when it starts. If it fails because of a problem on our side, the charge comes back to your wallet automatically. An image you do not like is not a failure. If you think something went wrong, tell us.",
   },
   {
     title: "Duplicate and failed payments",
     body:
-      "This is the exception, and it is unconditional. If you are charged twice for the same recharge, or money leaves your account without the credit appearing, we refund it in full to the original payment method. Contact us and we will resolve it — you should never have to raise a chargeback for our error.",
+      "This is the exception, and it is unconditional. If you are charged twice for the same recharge, or money leaves your account without the credit appearing, we refund it in full to the original payment method. Contact us and we will resolve it. You should never have to raise a chargeback for our error.",
   },
   {
-    title: "Service failures",
+    title: "If we close your account",
     body:
-      "If a workstation fails through a fault on our side, we credit back the affected session time. Where an outage is significant we may issue additional service credit at our discretion. Service credits are added to your wallet balance and are not paid out in cash.",
+      "If we close your account without any fault on your part, we refund the unused paid balance in your wallet (not promotional credit) to the original payment method. If you choose to close your account, unused credit is not refunded, so please use it first.",
+  },
+  {
+    title: "Refunds go to your wallet",
+    body:
+      "Unless this page says otherwise, refunds for service failures, CFD holds and Studio failures are credited to your Coreframe wallet, not paid out in cash. Service credits are added to your wallet balance.",
   },
   {
     title: "Chargebacks",
     body:
-      "Raising a chargeback against a legitimate, consumed charge suspends the account while we investigate. Please contact us first — a duplicate charge or a service failure is something we will fix directly, and far faster than your bank will.",
+      "Raising a chargeback against a legitimate, consumed charge suspends the account while we investigate. Please contact us first. A duplicate charge or a service failure is something we will fix directly, and far faster than your bank will.",
   },
   {
-    title: "Committed and enterprise plans",
+    title: "Team plans and agreements",
     body:
-      "Monthly committed plans are governed by the service agreement signed for that account, which takes precedence over this page where the two differ.",
+      "Monthly Team plans and any committed plan are governed by the plan terms and any service agreement signed for that account, which take precedence over this page where the two differ. This page forms part of our Terms of Service.",
   },
 ];
 
@@ -74,7 +105,7 @@ export default function RefundPolicyPage() {
               Refund Policy
             </h1>
             <p className="mt-4 cf-eyebrow">
-              Last Updated: August 2026
+              Last Updated: 18 October 2026
             </p>
       </div>
     </section>
@@ -86,12 +117,13 @@ export default function RefundPolicyPage() {
             sections down is the kind of thing that gets a charge disputed. */}
         <div className="mt-8 rounded-cf border border-rule bg-paper-2 border-l-2 border-l-blue px-6 py-5">
           <p className="text-base leading-7 text-ink-2">
-            <span className="font-semibold">In short:</span> money you add to your
-            wallet is not refundable, because we issue a GST tax invoice and pay the
-            tax the moment you recharge, and it is valid for one year from purchase.
-            Your oldest credit is always spent first, so a top-up never causes an
-            earlier one to lapse. Please add only what you expect to use within the
-            year. Duplicate charges and payment failures are always refunded in full.
+            <span className="font-semibold">In short:</span>{" "}
+            money you add to your wallet is not refundable, because we issue a tax invoice
+            the moment you recharge, and it is valid for one year from purchase. Your oldest
+            credit is always spent first. When something fails on our side (a workstation,
+            a CFD run, a Studio image) the charge comes back to your wallet, and a CFD run
+            we deliver late is free. Duplicate charges and payment failures are always
+            refunded in full.
           </p>
         </div>
 

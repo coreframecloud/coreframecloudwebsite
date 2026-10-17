@@ -217,7 +217,7 @@ export function QuotePanel({
               return n?.results_at ? <When iso={n.results_at} /> : `Within ${promiseH} h`;
             },
           },
-          { key: "n-prom", label: "Guaranteed", cell: () => `Within ${promiseH} h of payment` },
+          { key: "n-prom", label: "Guaranteed", cell: () => `Within ${promiseH} h of payment, or the run is free` },
         ]
       : []),
     ...(ex

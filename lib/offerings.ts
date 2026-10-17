@@ -77,7 +77,7 @@ export const OFFERINGS: Offering[] = [
     blurb: "Ducts and pipes, quote by email",
     status: "New",
     headline: "Slow CFD? Try us.",
-    line: "Upload one STL of your duct or pipe and get a quote by email. OpenFOAM runs on our machines: no CFD licence, no workstation of your own tied up.",
+    line: "Upload one STL of your duct or pipe and get a quote by email. The solver runs on our machines: no CFD licence, no workstation of your own tied up.",
     href: "/cfd",
     cta: { label: "Get a CFD quote", href: "/cfd#start" },
     secondary: { label: "See a sample report", href: "/cfd#sample" },

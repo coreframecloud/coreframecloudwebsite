@@ -61,7 +61,14 @@ export function RunCard({ job }: { job: CfdJob }) {
   }
   if (sc?.results_at) rows.push(["Estimated results", <When key="r" iso={sc.results_at} />]);
   else if (job.turnaround) rows.push(["Results", `${job.turnaround.charAt(0).toUpperCase()}${job.turnaround.slice(1)} of payment`]);
-  if (sc?.promise_at) rows.push(["Guaranteed by", <When key="p" iso={sc.promise_at} hint={false} />]);
+  if (sc?.promise_at)
+    rows.push([
+      "Guaranteed by",
+      <span key="p">
+        <When iso={sc.promise_at} hint={false} />
+        <span className="text-ink-2"> (or the run is free)</span>
+      </span>,
+    ]);
 
   return (
     <Card eyebrow={express ? "Express" : "Normal delivery"} title={state === "running" ? "Your run is in progress" : "Paid"}>

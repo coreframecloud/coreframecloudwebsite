@@ -86,7 +86,7 @@ export const verificationVsValidationCfd: BlogPost = {
       text: "When the three results go up and down instead of converging in one direction, the GCI formula breaks. A common fallback (Stern et al., 2001) is to take 1.25 times half the spread of the three results as the band.",
     },
 
-    { type: "sectionHead", n: 3, tint: "coral", eyebrow: "Worked example", title: "A 90° bend on three meshes", text: "Our own test: air at 4 m/s through a 50 mm bend with R/D 1.5, solved with OpenFOAM." },
+    { type: "sectionHead", n: 3, tint: "coral", eyebrow: "Worked example", title: "A 90° bend on three meshes", text: "Our own test: air at 4 m/s through a 50 mm bend with R/D 1.5, solved on our own machines." },
     {
       type: "table",
       head: ["Mesh", "Cells", "ΔP"],

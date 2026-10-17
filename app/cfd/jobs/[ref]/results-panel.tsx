@@ -78,7 +78,7 @@ export function ResultsPanel({ job }: { job: CfdJob }) {
           </button>
         ) : null}
         {job.results_url ? (
-          <QuietButton onClick={() => open(job.results_url!)}>Full case (OpenFOAM, zip)</QuietButton>
+          <QuietButton onClick={() => open(job.results_url!)}>Full case (zip)</QuietButton>
         ) : null}
       </div>
       {!job.results_url && job.results_available === false ? (

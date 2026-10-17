@@ -67,7 +67,7 @@ const parts: Part[] = [
     blocks: [
       "You can create an organisation and invite colleagues with a join code or invitation. Each member has their own login and their own sessions. An organisation administrator can invite, approve and remove members and set the organisation's billing details, such as its GSTIN.",
       "Usage by members is billed to the organisation: either to one shared wallet held by the organisation's billing contact, or, where we have agreed it in writing, invoiced monthly. The organisation is responsible for all usage by its members.",
-      "Monthly plans (shown on our [Studio plans](/enterprise) page) include a set number of team logins, GPU hours and storage for a minimum term. Included hours do not carry over to the next month. Hours above the plan are charged at the plan's overage rate. The plan's details and any signed agreement govern those accounts.",
+      "Monthly plans (shown on our [Team plans](/enterprise) page) include a set number of team logins, GPU hours and storage for a minimum term. Included hours do not carry over to the next month. Hours above the plan are charged at the plan's overage rate. The plan's details and any signed agreement govern those accounts.",
     ],
   },
   {
@@ -127,7 +127,7 @@ const parts: Part[] = [
           "You can cancel until the run starts, and the whole hold comes back. Once a run has started it cannot be cancelled; if it is stopped, you are charged only for the iterations it has run.",
         ],
       },
-      "Turnaround. Normal delivery is within 24 hours of payment, and Express is typically 1 to 2 hours. These are targets, not guarantees. If we are going to miss one, we will tell you and keep working on your job. Compute-time estimates on a quote are estimates, not completion times.",
+      "Turnaround. Normal delivery is within 24 hours of payment, or the run is free: if we miss that time because of a problem on our side, we return the run charge to your wallet in full (the pre-processing fee follows its own rules above). The 24 hours does not run while we are waiting for you, for example for a corrected geometry or an answer to a question about your case. Express is typically 1 to 2 hours; that is an estimate, not a commitment, and the same 24-hour promise applies to it. Compute-time estimates on a quote are estimates, not completion times.",
       "Delivery. Results are shown on your job page, which only you can open when signed in to your account, and we email you the PDF report. Your results include the case files of the simulation, which you can download from the job page.",
       "What CFD results are, and what they are not. Please read this carefully.",
       {
@@ -152,7 +152,7 @@ const parts: Part[] = [
           "A paid action is charged when it starts. If it fails because of a problem on our side, the charge is returned to your wallet automatically. An image you don't like is not a failure.",
           "Images are AI-generated. Studio keeps the walls, doors and windows from your drawing, but furniture, materials, lighting and everything else the drawing doesn't show are generated, and may contain inaccuracies or things that could not be built. Studio images are for concept and marketing use. They are not renders of a final design, not measured drawings and not construction documents.",
           "You must have the right to upload every drawing and image you give Studio, and you must not use Studio to create content that breaks section 9.",
-          "Some optional premium render options are processed for us by third-party AI service providers, under contract and only to produce your image.",
+          "Plus and Pro ray-traced renders are processed for us by an outside AI service, only to produce your image. Previews, edits, 2K and 4K downloads and Standard ray-traced renders are made on our own machines.",
         ],
       },
     ],
@@ -206,7 +206,7 @@ const parts: Part[] = [
     id: "data",
     title: "11. Storage, retention and personal data",
     blocks: [
-      "We store your content in India, apart from the optional premium render options described in section 7. Workstation project files, Studio projects, and CFD uploads and results are kept in your account until you delete them or your account is closed. We do not delete them on a timer. You can delete a Studio project yourself with its delete button. For anything else, or to close your account, email us and we will delete your content within 30 days, except what we must keep by law.",
+      "We store your content in India. The one exception is Studio Plus and Pro ray-traced renders, which are processed by an outside AI service (section 7). Workstation project files, Studio projects, and CFD uploads and results are kept in your account until you delete them or your account is closed. We do not delete them on a timer. You can delete a Studio project yourself with its delete button. For anything else, or to close your account, email us and we will delete your content within 30 days, except what we must keep by law.",
       "We keep records that Indian law requires us to keep, even after you delete content or close your account, for the periods the law sets. These include tax invoices and billing records under GST law, and records of who used our compute services, when and from where, as required by the directions of CERT-In (the Indian Computer Emergency Response Team).",
       "How we handle your personal data, and your rights under India's Digital Personal Data Protection Act, 2023, are set out in our [Privacy Policy](/privacy-policy).",
     ],
@@ -259,7 +259,7 @@ const parts: Part[] = [
         list: [
           "we are not liable for any indirect, incidental, special or consequential loss, or for loss of profit, revenue, business, contracts, goodwill or data, or for the cost of replacement services;",
           "we are not liable for loss caused by engineering, design, construction or business decisions made using our results, reports or images;",
-          "our total liability to you for all claims arising from the Services in any period of three months is limited to the amount you paid us for the Services in the three months before the event giving rise to the claim; and for a claim about a particular CFD job or Studio order, to the fees you paid for that job or order.",
+          "our total liability to you for all claims arising from the Services is limited to the amount you paid us for the Services in the three months before the event giving rise to the claim; and for a claim about a particular CFD job or Studio order, to the fees you paid for that job or order (for a CFD job, including its pre-processing fee).",
         ],
       },
       "These limits do not apply to liability that cannot be limited by law, such as liability for fraud or for death or personal injury caused by negligence.",
