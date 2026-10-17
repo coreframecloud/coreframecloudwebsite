@@ -5,6 +5,7 @@ import { JsonLd } from "@/components/seo/json-ld";
 import { Fold } from "@/components/visuals/fold";
 import { Callout, ExplainFigure, Hl, SectionHead } from "@/components/cfd-explainer";
 import { VerifiedCard } from "@/components/cfd-explainer/verified-card";
+import { CountUp } from "@/components/cfd-explainer/count-up";
 import { BEND_RECORD, PIPE_RECORD, VERIFIED, verifiedFrom, verifiedPriceLine } from "@/lib/cfd-verified";
 import { getVisiblePost } from "@/lib/blog";
 import { VERIFICATION_POST_SLUG } from "@/lib/blog/posts/verification-vs-validation-cfd";
@@ -340,7 +341,7 @@ export default async function MeshStudyView({ currency }: { currency: Currency }
               </div>
               <div className="min-w-0">
                 <div className="cfx-ministat mt-0">
-                  <b>± 0.85 %</b>
+                  <CountUp to={0.85} decimals={2} prefix="± " suffix=" %" />
                   <span>the band on the fine-mesh pressure drop</span>
                 </div>
                 <div className="mt-6 rounded-[6px] border-[1.5px] border-ink bg-paper px-5 py-4">
