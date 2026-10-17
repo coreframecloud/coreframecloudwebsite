@@ -37,9 +37,21 @@ export function ShellFurnished({
   const [pos, setPos] = useState(50);
   const [touched, setTouched] = useState(false);
   const t0 = useRef(0);
+  const box = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+
+  // Sweep only while the comparison is on screen (18 Oct 2026): it used to
+  // re-render 60 times a second for the whole visit, wherever you were.
+  useEffect(() => {
+    const el = box.current;
+    if (!el) return;
+    const io = new IntersectionObserver(([e]) => setVisible(e.isIntersecting));
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
 
   useEffect(() => {
-    if (touched) return;
+    if (touched || !visible) return;
     let raf = 0;
     const tick = (t: number) => {
       if (!t0.current) t0.current = t;
@@ -49,16 +61,19 @@ export function ShellFurnished({
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [touched, reduce]);
+  }, [touched, reduce, visible]);
 
   return (
     <figure className={className}>
-      <div className="relative aspect-video overflow-hidden rounded-[20px] bg-paper-2">
+      <div ref={box} className="relative aspect-video overflow-hidden rounded-[20px] bg-paper-2">
         <Image src="/home/studio-furnished-room.webp" alt="The same room, furnished (generated image)" fill sizes="(max-width: 768px) 100vw, 640px" className="object-cover" />
         <div className="absolute inset-0" style={{ clipPath: `inset(0 ${100 - pos}% 0 0)` }}>
           <Image src="/home/studio-shell-room.webp" alt="A room shell ray-traced from the drawing: walls, windows, light" fill sizes="(max-width: 768px) 100vw, 640px" className="object-cover" />
         </div>
-        <div className="pointer-events-none absolute inset-y-0 w-0.5 bg-white shadow-[0_0_0_1px_rgba(0,0,0,0.15)]" style={{ left: `${pos}%` }} />
+        {/* Moved with transform, not `left`, so the sweep is never a layout shift. */}
+        <div className="pointer-events-none absolute inset-0" style={{ transform: `translateX(${pos}%)` }}>
+          <div className="absolute inset-y-0 left-0 w-0.5 -translate-x-1/2 bg-white shadow-[0_0_0_1px_rgba(0,0,0,0.15)]" />
+        </div>
         <span className="absolute top-3 left-3 rounded-md bg-black/60 px-2 py-1 text-[11px] font-semibold text-white">Shell</span>
         <span className="absolute top-3 right-3 rounded-md bg-black/60 px-2 py-1 text-[11px] font-semibold text-white">Furnished</span>
         <input
