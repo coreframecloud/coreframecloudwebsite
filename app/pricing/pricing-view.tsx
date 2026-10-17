@@ -3,7 +3,9 @@ import { VERIFIED, verifiedPriceLine } from "@/lib/cfd-verified";
 import type { Metadata } from "next";
 import { ViewContent } from "@/components/analytics/view-content";
 import { JsonLd } from "@/components/seo/json-ld";
-import { breadcrumbList } from "@/lib/seo";
+import { ORG_ID, SITE, breadcrumbList, regionalOffers } from "@/lib/seo";
+import { CFD_PREPROCESS_INR } from "@/lib/cfd-prices";
+import { studioPrices } from "@/lib/studio-prices";
 import { PricingSection } from "@/components/home/pricing-section";
 import { ExplainerFaq } from "@/components/home/explainer-faq";
 import { BillingMeter } from "@/components/visuals/billing-meter";
@@ -35,20 +37,20 @@ import { TrackedLink } from "@/components/analytics/tracked-link";
 import { offering } from "@/lib/offerings";
 import { cellsLabel, formatMoney, usdRates, type Currency } from "@/lib/money";
 
+/**
+ * ONE metadata for both copies (SEO review 18 Oct 2026, T2 and T9): crawlers
+ * read the USD copy from the US, so the description names both currencies,
+ * and the title fits in 60 characters. The two exports stay so the page files
+ * do not change.
+ */
 export const pricingMetadata: Metadata = {
-  title: { absolute: "Pricing: RTX 5080 by the minute, CFD by quote | Coreframe Cloud" },
+  title: { absolute: "Pricing: RTX 5080 by the Minute, CFD by Quote | Coreframe" },
   description:
-    "RTX 5080 workstation prices per minute and per month, GST included, and what a duct or pipe CFD job costs to start (₹599 for pre-processing / mesh check for most models).",
+    "RTX 5080 workstations by the minute (rupees with GST in India, US dollars elsewhere), team plans, CFD from a ₹599 / $15 mesh check, and Studio downloads.",
   alternates: { canonical: "/pricing" },
 };
 
-/** The same page for a visitor outside India (see proxy.ts): US dollars, no
- *  GST; every product in dollars. Canonical stays /pricing. */
-export const pricingMetadataUsd: Metadata = {
-  ...pricingMetadata,
-  description:
-    "RTX 5080 workstation prices per minute in US dollars, and what a duct or pipe CFD job costs to start ($15 for pre-processing / mesh check for most models, no GST on exports).",
-};
+export const pricingMetadataUsd: Metadata = pricingMetadata;
 
 /**
  * Pricing got its own page when the landing page was rebuilt.
@@ -108,8 +110,57 @@ export default async function PricingView({ currency }: { currency: Currency }) 
         ]
       : [];
 
+  // Every price in both currencies, for every visitor and every crawler
+  // (SEO review 18 Oct 2026, T2). Rupee figures from the rate card (or the
+  // one typed CFD fee in lib/cfd-prices.ts); dollar figures from its usd block.
+  const studio = studioPrices(rateCard);
+  const introAny = getIntroOffer(rateCard);
+  const entryPlan = (rateCard?.plans ?? []).filter((p) => !p.quote_on_request && p.monthly_fee_rupees != null).sort((a, b) => a.monthly_fee_rupees - b.monthly_fee_rupees)[0];
+  const inrHour = adhocRateValue(rateCard);
+  const bothRows: [string, string | null, string][] = [
+    ["RTX 5080 workstation, per hour (billed per minute)", inrHour != null ? `${rupees(inrHour)} incl. GST` : null, formatMoney(usd.gpu_hourly, "USD")],
+    [
+      "First top-up",
+      introAny ? `${rupees(introAny.priceRupees)} = ${hoursLabel(introAny.hours)}` : null,
+      `From ${formatMoney(usd.topup_min_first, "USD")}`,
+    ],
+    [
+      "Team plans, per month from",
+      entryPlan ? `${rupees(entryPlan.monthly_fee_rupees)} incl. GST` : null,
+      entryPlan?.usd_monthly_fee ? formatMoney(entryPlan.usd_monthly_fee, "USD") : "—",
+    ],
+    ["CFD pre-processing / mesh check", `${rupees(CFD_PREPROCESS_INR.small)} incl. GST`, formatMoney(usd.cfd_quote_fee_small, "USD")],
+    [
+      `CFD mesh check, over ${cellsLabel(usd.cfd_quote_fee_small_max_cells)} cells`,
+      `${rupees(CFD_PREPROCESS_INR.large)} incl. GST`,
+      formatMoney(usd.cfd_quote_fee_large, "USD"),
+    ],
+    ["CFD Verified (mesh-independence study)", `From ${rupees(VERIFIED.fromInr)} + GST`, `From ${formatMoney(VERIFIED.fromUsd, "USD")}`],
+    ["Studio previews", "Free, 5 a day", "Free, 5 a day"],
+    ["Studio extra preview / edit", `${rupees(studio.inr.extraPreview)} / ${rupees(studio.inr.edit)}`, `${formatMoney(studio.usd.extraPreview, "USD")} / ${formatMoney(studio.usd.edit, "USD")}`],
+    ["Studio 2K / 4K download", `${rupees(studio.inr.k2)} / ${rupees(studio.inr.k4)}`, `${formatMoney(studio.usd.k2, "USD")} / ${formatMoney(studio.usd.k4, "USD")}`],
+  ];
+  const catalogLd = {
+    "@context": "https://schema.org",
+    "@type": "OfferCatalog",
+    "@id": `${SITE}/pricing#catalog`,
+    name: "Coreframe Cloud prices, India (INR, GST included) and elsewhere (USD)",
+    url: `${SITE}/pricing`,
+    provider: { "@id": ORG_ID },
+    itemListElement: [
+      ...(inrHour != null
+        ? regionalOffers({ name: "RTX 5080 workstation, per GPU-hour", inr: Math.round(inrHour), usd: usd.gpu_hourly, url: `${SITE}/pricing`, unit: { unitText: "GPU-hour" } })
+        : []),
+      ...regionalOffers({ name: "CFD pre-processing / mesh check", inr: CFD_PREPROCESS_INR.small, usd: usd.cfd_quote_fee_small, url: `${SITE}/cfd` }),
+      ...regionalOffers({ name: "CFD Verified: mesh-independence study (GCI)", inr: VERIFIED.fromInr, usd: VERIFIED.fromUsd, url: `${SITE}${VERIFIED.path}`, inrTaxIncluded: false, from: true }),
+      ...regionalOffers({ name: "Studio 2K download", inr: studio.inr.k2, usd: studio.usd.k2, url: `${SITE}/floor-plan-to-render` }),
+      ...regionalOffers({ name: "Studio 4K download", inr: studio.inr.k4, usd: studio.usd.k4, url: `${SITE}/floor-plan-to-render` }),
+    ],
+  };
+
   return (
     <main className="text-ink" data-usd-view={usdView ? "" : undefined}>
+      <JsonLd data={catalogLd} />
       <ViewContent name="Pricing" category="pricing" />
       <JsonLd data={breadcrumbList([{ name: "Pricing", path: "/pricing" }])} />
       <section className="cf-section px-5 pb-0 cf-pagehero">
@@ -166,6 +217,38 @@ export default async function PricingView({ currency }: { currency: Currency }) 
               <span className="mt-1.5 text-[14px] leading-[1.5] text-ink-2">{note}</span>
             </a>
           ))}
+        </div>
+      </section>
+
+      {/* Both currencies, always (SEO review 18 Oct 2026, T2). The currency
+          you are charged in is fixed at sign-up by your billing country. */}
+      <section id="both-currencies" className="cf-section scroll-mt-20 px-5 pb-0">
+        <div className="cf-wide">
+          <h2 className="cf-section-title">Every price, in India and elsewhere.</h2>
+          <p className="cf-section-copy mt-2 max-w-[44rem]">
+            Accounts in India pay in rupees with 18% GST included (except where it says + GST). Accounts outside India pay in
+            US dollars with no GST. Your account&apos;s currency is set once, at sign-up, by your billing country.
+          </p>
+          <div className="mt-6 overflow-x-auto rounded-[20px] border border-rule bg-paper-2">
+            <table className="w-full min-w-[560px] border-collapse text-left text-[14.5px] leading-6">
+              <thead>
+                <tr className="text-ink-3">
+                  <th scope="col" className="px-5 py-3 font-mono text-[12px] font-normal tracking-[0.12em] uppercase">What</th>
+                  <th scope="col" className="px-5 py-3 font-mono text-[12px] font-normal tracking-[0.12em] uppercase">In India (INR)</th>
+                  <th scope="col" className="px-5 py-3 font-mono text-[12px] font-normal tracking-[0.12em] uppercase">Elsewhere (USD)</th>
+                </tr>
+              </thead>
+              <tbody>
+                {bothRows.map(([what, inrText, usdText]) => (
+                  <tr key={what} className="border-t border-rule align-top">
+                    <th scope="row" className="px-5 py-3 font-semibold text-ink">{what}</th>
+                    <td className={`px-5 py-3 ${usdView ? "text-ink-2" : "text-ink"}`}>{inrText ?? "See below"}</td>
+                    <td className={`px-5 py-3 ${usdView ? "text-ink" : "text-ink-2"}`}>{usdText}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </section>
 

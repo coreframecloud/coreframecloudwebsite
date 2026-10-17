@@ -50,3 +50,72 @@ export const OG_IMAGE = {
   height: 630,
   alt: "Coreframe Cloud: Windows RTX 5080 workstations, rented by the minute",
 };
+
+/** The Organization node in the layout's @graph; every page's schema points at it. */
+export const ORG_ID = `${SITE}/#organization`;
+
+const INDIA = { "@type": "Country", name: "IN" } as const;
+
+/**
+ * The same thing for sale in both currencies (SEO review 18 Oct 2026, T2):
+ * an INR Offer eligible in India, GST included unless said otherwise, and a
+ * USD Offer for everywhere else, never GST. Crawlers read the page from the
+ * US and used to see one currency only; with both Offers every crawler gets
+ * the same structured data whatever copy of the page it was served.
+ */
+export function regionalOffers(o: {
+  name: string;
+  inr: number;
+  usd: number;
+  url: string;
+  description?: string;
+  /** Default true. Verified is quoted "+ GST", so it passes false. */
+  inrTaxIncluded?: boolean;
+  /** A "from" price: adds a PriceSpecification with minPrice. */
+  from?: boolean;
+  /** Per month, per hour...: adds a UnitPriceSpecification. */
+  unit?: { unitText: string; billingDuration?: string };
+}) {
+  const one = (price: number, currency: "INR" | "USD", vat: boolean) => ({
+    "@type": "Offer",
+    name: o.name,
+    url: o.url,
+    price: String(price),
+    priceCurrency: currency,
+    ...(o.description ? { description: o.description } : {}),
+    ...(currency === "INR"
+      ? { eligibleRegion: INDIA }
+      : { eligibleRegion: { "@type": "Place", name: "Worldwide" }, ineligibleRegion: INDIA }),
+    ...(o.from || o.unit
+      ? {
+          priceSpecification: {
+            "@type": o.unit ? "UnitPriceSpecification" : "PriceSpecification",
+            ...(o.from ? { minPrice: price } : { price }),
+            priceCurrency: currency,
+            valueAddedTaxIncluded: vat,
+            ...(o.unit ? { unitText: o.unit.unitText } : {}),
+            ...(o.unit?.billingDuration ? { billingDuration: o.unit.billingDuration } : {}),
+          },
+        }
+      : {}),
+    valueAddedTaxIncluded: vat,
+  });
+  return [one(o.inr, "INR", o.inrTaxIncluded ?? true), one(o.usd, "USD", false)];
+}
+
+/** areaServed for a service sold in India and abroad. */
+export const AREA_SERVED_WORLD = [
+  { "@type": "Country", name: "India" },
+  { "@type": "Place", name: "Worldwide" },
+];
+
+/** HowTo from plain steps (name + text). */
+export function howTo(name: string, steps: { title: string; body: string }[], extra: object = {}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    name,
+    ...extra,
+    step: steps.map((s, i) => ({ "@type": "HowToStep", position: i + 1, name: s.title, text: s.body })),
+  };
+}

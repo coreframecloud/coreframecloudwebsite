@@ -20,6 +20,14 @@ import { currencyForCountry, parseCurrency } from "@/lib/money";
  * safe; if a Cloudflare "cache everything" rule is ever added for them, it must
  * key on the country.
  *
+ * SEO (18 Oct 2026, T2): crawlers crawl from the US and so read the USD copy.
+ * Every price sentence on these pages now carries BOTH currencies and the
+ * structured data has an INR Offer (India) and a USD Offer (elsewhere) on both
+ * copies, so what is indexed does not depend on where the crawler is. (A
+ * `Vary: CF-IPCountry` header was tried and dropped: Next's renderer writes
+ * its own Vary on these pages and replaces anything set here or in
+ * next.config.ts headers().)
+ *
  * `?currency=USD|INR` overrides the country, for testing. A direct hit on
  * /usd/... is redirected to the public URL with ?currency=USD, so the variant
  * paths never become pages of their own.

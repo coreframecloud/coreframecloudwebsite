@@ -45,6 +45,9 @@ import { SiteFooter } from "@/components/home/site-footer";
 import { ScrollReveal } from "@/components/scroll-reveal";
 import { IntroStrip } from "@/components/home/intro-strip";
 import { getIntroOffer, hoursLabel, getRateCard, planTiers } from "@/lib/rate-card";
+import { usdRates } from "@/lib/money";
+import { regionalOffers } from "@/lib/seo";
+import { CFD_PREPROCESS_INR } from "@/lib/cfd-prices";
 
 /**
  * Ad-platform tags, both optional and both off unless their env var is set at
@@ -91,7 +94,7 @@ const CONSENT_DENIED_REGIONS = [
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.coreframecloud.com"),
   title: {
-    default: "Coreframe Cloud — RTX 5080 workstations, CFD and Studio, India",
+    default: "Coreframe Cloud: RTX 5080 Workstations, CFD & Studio, India",
     template: "%s | Coreframe Cloud",
   },
   description:
@@ -179,26 +182,23 @@ export default async function RootLayout({
   // deliberate price of a CSP with no 'unsafe-inline' (owner, 17 Oct 2026).
   const nonce = (await headers()).get("x-nonce") ?? undefined;
   const rateCard = await getRateCard();
+  const usdCard = usdRates(rateCard);
   const adhoc = rateCard?.gpus.find((g) => !g.quote_on_request && g.hourly_rate_rupees != null);
   const tiers = planTiers(rateCard);
   const storagePerTb = rateCard?.storage_rate_rupees_per_tb_month ?? null;
   const intro = getIntroOffer(rateCard);
 
   const offers = [
-    adhoc?.hourly_rate_rupees != null && {
-      "@type": "Offer",
-      name: "Ad-hoc GPU-hour",
-      price: String(Math.round(adhoc.hourly_rate_rupees)),
-      priceCurrency: "INR",
-      valueAddedTaxIncluded: true,
-      priceSpecification: {
-        "@type": "UnitPriceSpecification",
-        price: String(Math.round(adhoc.hourly_rate_rupees)),
-        priceCurrency: "INR",
-        valueAddedTaxIncluded: true,
-        unitText: "GPU-hour",
-      },
-    },
+    // INR in India and the rate card's USD rate elsewhere (SEO review 18 Oct 2026, T2).
+    ...(adhoc?.hourly_rate_rupees != null
+      ? regionalOffers({
+          name: "Ad-hoc GPU-hour",
+          inr: Math.round(adhoc.hourly_rate_rupees),
+          usd: usdCard.gpu_hourly,
+          url: "https://www.coreframecloud.com/pricing",
+          unit: { unitText: "GPU-hour" },
+        })
+      : []),
     // Every published tier, not just the cheapest: "how much is the monthly
     // plan" has as many answers as there are tiers, and an engine given one
     // will quote it for all of them.
@@ -499,15 +499,15 @@ export default async function RootLayout({
                     { "@type": "Country", name: "India" },
                     { "@type": "Place", name: "Worldwide" },
                   ],
-                  offers: {
-                    "@type": "Offer",
+                  // Both currencies (SEO review 18 Oct 2026, T2): INR for India,
+                  // USD (the rate card's) everywhere else.
+                  offers: regionalOffers({
                     name: "CFD pre-processing / mesh check",
-                    price: "599",
-                    priceCurrency: "INR",
-                    valueAddedTaxIncluded: true,
-                    description: "Including GST, for most duct and pipe models. Very large models (over 5 million cells): ₹1,499 including GST. The run is quoted by email and paid only if you accept.",
+                    inr: CFD_PREPROCESS_INR.small,
+                    usd: usdCard.cfd_quote_fee_small,
                     url: "https://www.coreframecloud.com/cfd",
-                  },
+                    description: `For most duct and pipe models; very large models (over 5 million cells) ${CFD_PREPROCESS_INR.large} INR incl. GST or ${usdCard.cfd_quote_fee_large} USD. The run is quoted by email and paid only if you accept.`,
+                  }),
                 },
                 {
                   "@type": "Service",

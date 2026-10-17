@@ -6,7 +6,7 @@ import { SITE, breadcrumbList, faqPage } from "@/lib/seo";
 import { getRateCard } from "@/lib/rate-card";
 import { PlanImage } from "@/components/visuals/studio-compare";
 import { Hl } from "@/components/cfd-explainer";
-import { FREE_PREVIEWS_PER_DAY, MAX_DXF_MB, inr, studioPrices, usd, type StudioPrices } from "../studio-prices";
+import { FREE_PREVIEWS_PER_DAY, MAX_DXF_MB, inr, studioPrices, usd, type StudioPrices } from "@/lib/studio-prices";
 
 /**
  * /floor-plan-to-render/3bhk-example: one real 3BHK drawing taken through
@@ -27,7 +27,7 @@ import { FREE_PREVIEWS_PER_DAY, MAX_DXF_MB, inr, studioPrices, usd, type StudioP
  * /floor-plan-to-render shows, labelled "Generated image" as Studio labels it.
  * Facts about reading the drawing come from the Studio guide
  * (apps/tools/web/learn.html): DXF only, defaults 2.8 m / 2.1 m / 0.9-2.1 m,
- * every read free. No timings are claimed. Prices: ../studio-prices.ts.
+ * every read free. No timings are claimed. Prices: @/lib/studio-prices.ts.
  */
 
 const PATH = "/floor-plan-to-render/3bhk-example";

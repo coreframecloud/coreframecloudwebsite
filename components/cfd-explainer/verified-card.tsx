@@ -2,6 +2,7 @@ import Link from "next/link";
 import { StatusBadge } from "@/components/home/redesign/offerings";
 import { VERIFIED, verifiedFrom } from "@/lib/cfd-verified";
 import { formatMoney, type Currency } from "@/lib/money";
+import { verifiedOtherCurrency } from "@/lib/cfd-prices";
 
 /**
  * The Verified package card (owner, 16 Oct 2026): /cfd and
@@ -44,6 +45,8 @@ export function VerifiedCard({
               ? "No GST (export of services). Scales with the cells in your mesh."
               : `Scales with the cells in your mesh: about ${formatMoney(VERIFIED.inrAt2M, "INR")} + GST at 2 million cells.`}
           </p>
+          {/* The other currency too: crawlers only ever see one copy (SEO review 18 Oct 2026, T2). */}
+          <p className="mt-1 text-[13px] leading-5 text-ink-3">{verifiedOtherCurrency(currency)}</p>
         </div>
       </div>
       <dl className="mt-7 grid grid-cols-1 gap-x-8 gap-y-5 sm:grid-cols-2">

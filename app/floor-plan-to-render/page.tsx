@@ -10,7 +10,7 @@ import { NODE } from "@/lib/node-spec";
 import { SITE } from "@/lib/seo";
 import { getRateCard } from "@/lib/rate-card";
 import { Hl } from "@/components/cfd-explainer";
-import { FREE_PREVIEWS_PER_DAY, MAX_DXF_MB, inr, studioOffers, studioPrices, usd, type StudioPrices } from "./studio-prices";
+import { FREE_PREVIEWS_PER_DAY, MAX_DXF_MB, inr, studioOffers, studioPrices, usd, type StudioPrices } from "@/lib/studio-prices";
 
 /**
  * THE INDEXABLE PAGE FOR STUDIO. It did not exist, and that is why Studio is
@@ -38,7 +38,7 @@ import { FREE_PREVIEWS_PER_DAY, MAX_DXF_MB, inr, studioOffers, studioPrices, usd
  *
  * PRICES (16 Oct 2026, Studio open): the rupee prices below are the live
  * defaults in apps/tools (CF_STUDIO_PRICE_*_INR: edit 20, 2K 30, 4K 50), typed
- * once in ./studio-prices.ts (dollars from the rate card). If they change
+ * once in @/lib/studio-prices.ts (dollars from the rate card). If they change
  * there, change them in studio-prices.ts and components/home/redesign/
  * offerings.tsx. The note that follows is history.
  *
@@ -57,7 +57,7 @@ import { FREE_PREVIEWS_PER_DAY, MAX_DXF_MB, inr, studioOffers, studioPrices, usd
  * 60 / 155-character limits, an answer-first paragraph with both currencies in
  * the static HTML, WebApplication + HowTo schema with dual-currency Offers, a
  * visible "Last updated" date, the "export a clean DXF" how-to, and a link to
- * the 3BHK worked example. Prices: ./studio-prices.ts.
+ * the 3BHK worked example. Prices: @/lib/studio-prices.ts.
  */
 const LAST_UPDATED = { iso: "2026-10-18", label: "18 October 2026" };
 
