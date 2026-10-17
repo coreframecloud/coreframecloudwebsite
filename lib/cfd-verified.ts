@@ -17,9 +17,10 @@ import { formatMoney, type Currency } from "@/lib/money";
  * Internal flow only (pipes, ducts, fittings, manifolds), quoted meshes up to
  * about 6 M cells, results within 24 hours, never express.
  *
- * Prices (owner, 16 Oct 2026; the API's cfd_packages.validated min_charge and
- * usd_min_charge): India from ₹2,499 + GST, scaling with the cells (about
- * ₹5,493 + GST at 1 M cells); outside India from $99, no GST. Pre-processing /
+ * Prices (owner, 16 Oct 2026; minimum raised 17 Oct 2026; the API's
+ * cfd_packages.validated min_charge and usd_min_charge): India from ₹5,999 + GST,
+ * scaling with the cells (about ₹10,734 + GST at 2 M cells); outside India from
+ * $99, no GST. Pre-processing /
  * mesh check is a separate charge, as for every package. Never publish how
  * the price is built, our costs or margins.
  *
@@ -33,13 +34,13 @@ export const VERIFIED = {
   meaning: "Mesh-independent means the mesh error is small; it does not mean the result matches experiments.",
   maxMcells: 6,
   deliveryHours: 24,
-  fromInr: 2499,
-  inrAt1M: 5493,
+  fromInr: 5999,
+  inrAt2M: 10734,
   fromUsd: 99,
   path: "/cfd/mesh-independence-study",
 } as const;
 
-/** "from ₹2,499 + GST" / "from $99". */
+/** "from ₹5,999 + GST" / "from $99". */
 export function verifiedFrom(cur: Currency): string {
   return cur === "USD" ? `from ${formatMoney(VERIFIED.fromUsd, "USD")}` : `from ${formatMoney(VERIFIED.fromInr, "INR")} + GST`;
 }
@@ -48,7 +49,7 @@ export function verifiedFrom(cur: Currency): string {
 export function verifiedPriceLine(cur: Currency): string {
   return cur === "USD"
     ? `From ${formatMoney(VERIFIED.fromUsd, "USD")}, no GST (export of services). The price scales with the cells in your mesh and is on your quote, next to the single-mesh packages.`
-    : `From ${formatMoney(VERIFIED.fromInr, "INR")} + GST. The price scales with the cells in your mesh: about ${formatMoney(VERIFIED.inrAt1M, "INR")} + GST at 1 million cells. It is on your quote, next to the single-mesh packages.`;
+    : `From ${formatMoney(VERIFIED.fromInr, "INR")} + GST. The price scales with the cells in your mesh: about ${formatMoney(VERIFIED.inrAt2M, "INR")} + GST at 2 million cells. It is on your quote, next to the single-mesh packages.`;
 }
 
 /** Our own bend test (16 Oct 2026): air, 4 m/s, D 50 mm, R/D 1.5. Monotone convergence. */

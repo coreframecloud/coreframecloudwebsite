@@ -42,7 +42,7 @@ export function VerifiedCard({
           <p className="mt-1 text-[13px] leading-5 text-ink-3">
             {usd
               ? "No GST (export of services). Scales with the cells in your mesh."
-              : `Scales with the cells in your mesh: about ${formatMoney(VERIFIED.inrAt1M, "INR")} + GST at 1 million cells.`}
+              : `Scales with the cells in your mesh: about ${formatMoney(VERIFIED.inrAt2M, "INR")} + GST at 2 million cells.`}
           </p>
         </div>
       </div>

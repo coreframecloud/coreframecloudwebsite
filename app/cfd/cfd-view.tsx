@@ -34,7 +34,7 @@ import { VERIFIED, verifiedFrom } from "@/lib/cfd-verified";
  *
  * VERIFIED (owner, 16 Oct 2026): the mesh-independence study (GCI), built as
  * the API's "validated" package, is on sale and is the one package whose
- * starting price is published (lib/cfd-verified.ts: from ₹2,499 + GST, from $99
+ * starting price is published (lib/cfd-verified.ts: from ₹5,999 + GST, from $99
  * outside India). Never call it "Validated" here: a GCI study is verification,
  * not validation. Landing page: /cfd/mesh-independence-study.
  *
