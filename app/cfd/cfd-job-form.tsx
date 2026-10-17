@@ -296,7 +296,7 @@ export default function CfdJobForm({ token, accountEmail, onSignedOut, currency 
           in your account.
         </p>
         <p className="mt-4 text-[13.5px] leading-5 text-ink-3">
-          The same link is on its way to {accountEmail || "your account's email"}. Keep it private: it also opens your results.
+          We have also emailed it to {accountEmail || "your account's email"}. The job page opens only when you are signed in to this account.
         </p>
       </div>
     );
