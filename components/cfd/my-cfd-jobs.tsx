@@ -1,8 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
-import { sessionToken } from "@/lib/cfd-job";
+import { useCallback, useEffect, useState } from "react";
 import { fetchMyCfdJobs, type MyCfdJob } from "@/lib/cfd-my-jobs";
 import { formatMoney, parseCurrency } from "@/lib/money";
 
@@ -185,35 +184,4 @@ export default function MyCfdJobs({ token }: { token: string | null }) {
 
   if (!token) return null;
   return <CfdJobsList jobs={jobs} more={!!cursor} loadingMore={loadingMore} onMore={() => void more()} state={state} />;
-}
-
-const noSubscribe = () => () => {};
-
-/** Under the job page's "Open this page from your email": the signed-in way in. */
-export function MissingSignedIn({ refId }: { refId: string }) {
-  const signedIn = useSyncExternalStore(noSubscribe, () => !!sessionToken(), () => false);
-  return (
-    <p className="mt-3 text-[13px] leading-[1.6] text-ink-2">
-      {signedIn ? (
-        <>
-          Signed in with another account? Your own jobs are under{" "}
-          <Link href="/my-activity#cfd-jobs" className="font-medium text-ink underline underline-offset-2">
-            CFD jobs
-          </Link>
-          .
-        </>
-      ) : (
-        <>
-          Or{" "}
-          <Link
-            href={`/login?next=${encodeURIComponent(`/cfd/jobs/${refId}`)}`}
-            className="font-medium text-ink underline underline-offset-2"
-          >
-            sign in
-          </Link>{" "}
-          with the account that submitted it.
-        </>
-      )}
-    </p>
-  );
 }

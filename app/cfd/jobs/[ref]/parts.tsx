@@ -208,12 +208,10 @@ const PHASE_WORDS: Record<UploadProgress["phase"], string> = {
 /** Upload (or replace) the STL: chunked and resumable, as on the API page. */
 export function UploadBox({
   refId,
-  token,
   primary,
   onDone,
 }: {
   refId: string;
-  token: string;
   primary: boolean;
   onDone: () => void;
 }) {
@@ -228,7 +226,7 @@ export function UploadBox({
     setBusy(true);
     setErr("");
     try {
-      await uploadGeometry({ ref: refId, token, file, onProgress: setProg });
+      await uploadGeometry({ ref: refId, file, onProgress: setProg });
       setMsg("Uploaded. Checking the geometry…");
       setTimeout(onDone, 3000);
     } catch (e) {

@@ -101,7 +101,7 @@ export default function JobViewer({
       const loader = new GLTFLoader();
       // File URLs are signed 5-minute links (sig=); an unsigned one is opened
       // by the session cookie.
-      if (!/[?&](?:sig|token)=/.test(url) && sessionToken()) loader.setWithCredentials(true);
+      if (!/[?&]sig=/.test(url) && sessionToken()) loader.setWithCredentials(true);
       loader.load(
         url,
         (gltf) => {

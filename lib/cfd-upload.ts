@@ -10,7 +10,6 @@
  */
 import { API_BASE } from "@/lib/api-base";
 import { apiFetch } from "@/lib/session";
-import { jobTokenHeaders } from "@/lib/cfd-my-jobs";
 
 const CHUNK = 8 * 1024 * 1024;
 const PARALLEL = 3;
@@ -39,16 +38,14 @@ const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 async function api<T>(
   ref: string,
-  token: string,
   method: string,
   path: string,
   body?: BodyInit | null,
   headers?: Record<string, string>,
 ): Promise<T> {
   const url = `${API_BASE}/cfd-jobs/${encodeURIComponent(ref)}${path}`;
-  // Signed in: the session cookie opens the job for its own account.
-  const h: Record<string, string> = { ...(headers ?? {}), ...jobTokenHeaders(token) };
-  const r = await apiFetch(url, { method, body: body ?? undefined, headers: h });
+  // The signed-in session (cookie) opens the job for its own account; nothing else does.
+  const r = await apiFetch(url, { method, body: body ?? undefined, headers: headers ?? {} });
   const j = (await r.json().catch(() => ({}))) as { detail?: { message?: string } | string } & T;
   if (!r.ok) {
     const d = j.detail;
@@ -63,11 +60,10 @@ async function api<T>(
 
 export async function uploadGeometry(opts: {
   ref: string;
-  token: string;
   file: File;
   onProgress?: (p: UploadProgress) => void;
 }): Promise<unknown> {
-  const { ref, token, file } = opts;
+  const { ref, file } = opts;
   const progress = opts.onProgress ?? (() => {});
   const n = Math.max(1, Math.ceil(file.size / CHUNK));
   const digests: string[] = new Array(n);
@@ -80,7 +76,6 @@ export async function uploadGeometry(opts: {
   const tree = await sha256(new TextEncoder().encode(digests.join("\n")));
   const session = await api<{ upload_id: string; uploaded_chunks?: number[] }>(
     ref,
-    token,
     "POST",
     "/uploads",
     JSON.stringify({ filename: file.name, size_bytes: file.size, sha256: tree, chunk_size_bytes: CHUNK }),
@@ -94,7 +89,7 @@ export async function uploadGeometry(opts: {
 
   async function attempt(k: number, blob: Blob, t: number): Promise<void> {
     try {
-      await api(ref, token, "PUT", `/uploads/${session.upload_id}/chunks/${k}`, blob, {
+      await api(ref, "PUT", `/uploads/${session.upload_id}/chunks/${k}`, blob, {
         "X-Chunk-SHA256": digests[k],
       });
     } catch (e) {
@@ -113,5 +108,5 @@ export async function uploadGeometry(opts: {
   }
   await Promise.all(Array.from({ length: PARALLEL }, worker));
   progress({ phase: "verify", done: n, total: n });
-  return api(ref, token, "POST", `/uploads/${session.upload_id}/complete`, null);
+  return api(ref, "POST", `/uploads/${session.upload_id}/complete`, null);
 }

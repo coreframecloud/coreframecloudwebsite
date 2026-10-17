@@ -255,7 +255,7 @@ const FAQ = [
   },
   {
     q: "Is my geometry kept private?",
-    a: "Your job belongs to your Coreframe account. Its page and results open only with the private link we email you.",
+    a: "Your job belongs to your Coreframe account. Its page, results and files open only when you are signed in to that account; the links in our emails take you to the job page, which asks you to sign in first.",
   },
 ];
 
