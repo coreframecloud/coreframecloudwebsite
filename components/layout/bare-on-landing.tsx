@@ -33,3 +33,16 @@ export function BareOnLanding({ children }: { children: React.ReactNode }) {
   if (pathname && BARE.has(pathname)) return null;
   return <>{children}</>;
 }
+
+/**
+ * The promo strip ("Get started", "First top-up ...") sells sign-up. A customer on their own job page,
+ * account or Studio is already signed up, and the strip's moving links sit right above working
+ * controls (UI test, 17 Oct 2026: a click meant for the quote landed on it). So no strip there.
+ */
+const NO_STRIP_PREFIXES = ["/cfd/jobs", "/my-activity", "/studio"];
+
+export function NoStripOnAppPages({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+  if (pathname && NO_STRIP_PREFIXES.some((p) => pathname === p || pathname.startsWith(p + "/"))) return null;
+  return <>{children}</>;
+}

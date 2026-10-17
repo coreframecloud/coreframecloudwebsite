@@ -397,7 +397,8 @@ export function QuotePanel({
         </fieldset>
       ) : null}
 
-      {quote.settle_option ? (
+      {/* Verified never stops early on "settled" (residual targets only), so it gets no switch. */}
+      {quote.settle_option && pkg?.package !== "validated" ? (
         <label className="mt-5 flex cursor-pointer items-start gap-3 text-[14px] leading-[1.55] text-ink-2">
           <input
             type="checkbox"
@@ -413,7 +414,7 @@ export function QuotePanel({
         {signedIn ? (
           <PrimaryButton
             busy={busy}
-            onClick={() => pkg && onPay({ package: pkg.package, stop_when_settled: settle, express: useExpress })}
+            onClick={() => pkg && onPay({ package: pkg.package, stop_when_settled: settle && pkg.package !== "validated", express: useExpress })}
           >
             Pay {money(amount, cur)} and start
           </PrimaryButton>

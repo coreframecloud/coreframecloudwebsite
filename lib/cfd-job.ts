@@ -335,7 +335,8 @@ export function rupeeWords(text: string | null | undefined): string {
 export function fmtNumber(x: number | string): string {
   const v = Number(x);
   if (!Number.isFinite(v) || v === 0) return String(x);
-  if (Math.abs(v) >= 1000) return Math.round(v).toLocaleString("en-IN");
+  // International grouping (539,965), readable everywhere; "5,39,965" confused customers outside India.
+  if (Math.abs(v) >= 1000) return Math.round(v).toLocaleString("en-US");
   if (Math.abs(v) >= 0.001) return String(Number(v.toPrecision(4)));
   return v.toExponential(2);
 }

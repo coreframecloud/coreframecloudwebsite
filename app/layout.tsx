@@ -39,7 +39,7 @@ import { WhatsAppButton } from "@/components/home/whatsapp-button";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 import { SiteHeader } from "@/components/home/site-header";
-import { BareOnLanding } from "@/components/layout/bare-on-landing";
+import { BareOnLanding, NoStripOnAppPages } from "@/components/layout/bare-on-landing";
 import { SiteFooter } from "@/components/home/site-footer";
 import { ScrollReveal } from "@/components/scroll-reveal";
 import { IntroStrip } from "@/components/home/intro-strip";
@@ -527,7 +527,9 @@ export default async function RootLayout({
           highest intent, and until now the offer was only on the front page.
         */}
         <BareOnLanding>
-          <IntroStrip />
+          <NoStripOnAppPages>
+            <IntroStrip />
+          </NoStripOnAppPages>
           <SiteHeader />
         </BareOnLanding>
         <AttributionCapture />
