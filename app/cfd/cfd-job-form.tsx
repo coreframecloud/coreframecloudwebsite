@@ -139,8 +139,12 @@ export default function CfdJobForm({ token, accountEmail, onSignedOut, currency 
       const fd = new FormData();
       fd.append("file", f);
       // The job's token AND the owner's session: either one lets the API accept the file.
-      const q = jobToken ? `?token=${encodeURIComponent(jobToken)}` : "";
-      const res = await fetch(`${API_BASE}/cfd-jobs/${ref}/upload${q}`, { method: "POST", body: fd, headers: auth });
+      // In a header, never the URL (security review 17 Oct 2026).
+      const res = await fetch(`${API_BASE}/cfd-jobs/${ref}/upload`, {
+        method: "POST",
+        body: fd,
+        headers: { ...auth, ...(jobToken ? { "X-Job-Token": jobToken } : {}) },
+      });
       if (!res.ok) {
         let msg = "The upload did not go through.";
         try {

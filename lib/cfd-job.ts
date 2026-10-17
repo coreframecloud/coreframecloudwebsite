@@ -17,7 +17,7 @@
  */
 import { API_BASE } from "@/lib/api-base";
 import { type Currency } from "@/lib/money";
-import { ACCOUNT_ACCESS, tokenQuery } from "@/lib/cfd-my-jobs";
+import { ACCOUNT_ACCESS, jobTokenHeaders } from "@/lib/cfd-my-jobs";
 import { customerWords } from "@/lib/cfd-words";
 
 export { customerWords };
@@ -451,18 +451,21 @@ export interface ApiResult<T = unknown> {
   body: T;
 }
 
-export function jobUrl(ref: string, path: string, jobToken: string): string {
-  const q = tokenQuery(jobToken);
-  return `${API_BASE}/cfd-jobs/${encodeURIComponent(ref)}${path}${q ? `?${q}` : ""}`;
+/** A job API URL. The job token never goes in it: see jobTokenHeaders. */
+export function jobUrl(ref: string, path: string): string {
+  return `${API_BASE}/cfd-jobs/${encodeURIComponent(ref)}${path}`;
 }
 
 export async function fetchJob(ref: string, jobToken: string): Promise<ApiResult<CfdJob | null>> {
   // Signed in: the bearer goes too, so the job's own account still gets in when
   // the kept email key has been retired (the API accepts the token OR the owner).
   const bearer = sessionToken();
-  const res = await fetch(jobUrl(ref, "/status", jobToken), {
+  const res = await fetch(jobUrl(ref, "/status"), {
     cache: "no-store",
-    headers: bearer ? { Authorization: `Bearer ${bearer}` } : undefined,
+    headers: {
+      ...jobTokenHeaders(jobToken),
+      ...(bearer ? { Authorization: `Bearer ${bearer}` } : {}),
+    },
   });
   const body = res.ok ? customerWords((await res.json()) as CfdJob) : null;
   return { status: res.status, body };
@@ -475,11 +478,14 @@ export async function postJob(
   path: string,
   body?: unknown,
 ): Promise<ApiResult<CfdJob & { detail?: unknown }>> {
-  const headers: Record<string, string> = { "Content-Type": "application/json" };
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+    ...jobTokenHeaders(jobToken),
+  };
   const bearer = sessionToken();
   if (bearer) headers.Authorization = `Bearer ${bearer}`;
   try {
-    const res = await fetch(jobUrl(ref, path, jobToken), {
+    const res = await fetch(jobUrl(ref, path), {
       method: "POST",
       headers,
       body: JSON.stringify(body ?? {}),

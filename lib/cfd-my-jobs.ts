@@ -21,9 +21,13 @@ export function isAccountAccess(token: string | null | undefined): boolean {
   return token === ACCOUNT_ACCESS;
 }
 
-/** `token=…` for a job URL, or "" when the session opens the job. */
-export function tokenQuery(token: string): string {
-  return isAccountAccess(token) ? "" : `token=${encodeURIComponent(token)}`;
+/**
+ * The job token as a request HEADER (security review 17 Oct 2026): it used to
+ * ride in the URL as ?token=, which put it in the API's access logs. Nothing
+ * when the signed-in session opens the job instead.
+ */
+export function jobTokenHeaders(token: string | null | undefined): Record<string, string> {
+  return token && !isAccountAccess(token) ? { "X-Job-Token": token } : {};
 }
 
 export interface MyCfdJob {
