@@ -24,7 +24,11 @@ import type { Currency } from "@/lib/money";
  * 16 Oct 2026 validation). The bend's ± 0.85 % is the solver's own swing on
  * the medium and fine meshes, wider than its GCI (0.51 %), and the verdict is
  * marked indicative because those two meshes did not reach the residual
- * targets. Say so; never present it as a clean GCI. No costs, margins, VM
+ * targets. Say so; never present it as a clean GCI. Convergence rule since
+ * 17 Oct 2026 (control plane cfd_validated.convergence_words): residual
+ * targets; else dP < 0.5 % over 300 iterations with residuals 3 orders down;
+ * else a steady periodic solution (no drift, residuals 2 orders down, half the
+ * oscillation in the band). No costs, margins, VM
  * types or competitor names on this page.
  */
 
@@ -80,7 +84,7 @@ const HERO = {
 
 const METHOD: [string, string][] = [
   ["Three meshes", "Coarse, medium (your quoted mesh) and fine, with a refinement ratio r = 1.3 between neighbours. Same geometry, same boundary conditions, same wall-layer rule."],
-  ["Solve each one", "Every mesh is run to its residual targets. A mesh whose pressure drop has stopped moving (≤ 0.2 % over its last 200 iterations) counts as settled, and the report says so."],
+  ["Solve each one", "Every mesh is run to its residual targets. If its residuals level off first, it still counts as converged when its pressure drop moves less than 0.5 % over the last 300 iterations and every residual has fallen 1,000-fold, or when it has settled into a small, regular oscillation with no drift (residuals down at least 100-fold and not growing); that oscillation then goes into the band. The report says which applied to each mesh."],
   ["Compare the answers", "Static pressure drop from inlet to outlet on each mesh. The changes between them tell us whether the answer converges as the cells get smaller, and how fast."],
   ["Calculate the GCI", "Grid convergence index on the fine mesh, per Celik et al. (2008), with a safety factor Fs = 1.25 and the apparent order limited to the formal order, 2."],
 ];
@@ -273,8 +277,8 @@ export default async function MeshStudyView({ currency }: { currency: Currency }
                 <h3 className="cf-card-label">Never narrower than the solver</h3>
                 <p className="cf-section-copy">
                   When a mesh did not stop on its residual targets, the band is at least half the swing of its pressure drop
-                  over the last 200 iterations. If the meshes differ by less than that swing, the swing is the band and the
-                  verdict says so.
+                  over the last 300 iterations, or over whole periods when it oscillates (Stern et al. 2001). If the meshes
+                  differ by less than that swing, the swing is the band and the verdict says so.
                 </p>
               </div>
               <div className="cf-card">
@@ -326,6 +330,11 @@ export default async function MeshStudyView({ currency }: { currency: Currency }
                     bend keeps moving, and their pressure drop still swung by up to 1.7 % over the last 200 iterations. That
                     swing is bigger than the differences between the meshes, so the band in the verdict is half of it,
                     ± 0.85 %, and the verdict is marked indicative.
+                  </p>
+                  <p>
+                    That run used the rule and solver settings of 16 October. Since 17 October Verified solves with heavier
+                    under-relaxation, which keeps the fine mesh close to steady, and a mesh that ends in a small, regular
+                    oscillation with no drift counts as converged, with half the oscillation added to the band.
                   </p>
                 </div>
               </div>
