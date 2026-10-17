@@ -346,8 +346,8 @@ export default function ClinicFloorHvacPage() {
                   flow through its face, without the maker&apos;s throw data.
                 </li>
                 <li>
-                  <span className="font-semibold text-ink">Not validated.</span>{" "}Rooms and HVAC airflow is not on sale
-                  yet. We release it once it passes our validation cases.
+                  <span className="font-semibold text-ink">Not validated.</span>{" "}This whole-floor run is indicative. The
+                  Rooms / HVAC service on our CFD page runs one room at a time, with its own validation statement.
                 </li>
               </ul>
               <div className="min-w-0">
@@ -384,8 +384,8 @@ export default function ClinicFloorHvacPage() {
             <div className="flex min-w-0 flex-col rounded-[24px] bg-tint-lilac p-6 sm:p-7">
               <h3 className="font-heading text-[20px] leading-[1.25] font-medium text-ink">Have a floor you want checked?</h3>
               <p className="mt-3 text-[15px] leading-6 text-ink-2">
-                Rooms and HVAC airflow is coming soon. Send us an IFC with spaces and the HVAC model, or plans with a
-                diffuser schedule, and tell us what you need to know.
+                Single rooms run on our CFD page today (steady analysis). For a whole floor, send us an IFC with spaces
+                and the HVAC model, or plans with a diffuser schedule, and tell us what you need to know.
               </p>
               <Link href="/request-demo" className="cfh-link mt-auto pt-5 text-ink">
                 Talk to us <span aria-hidden>→</span>

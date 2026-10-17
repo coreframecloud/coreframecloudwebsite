@@ -272,8 +272,8 @@ export default async function PricingView({ currency }: { currency: Currency }) 
           </ul>
           <p className="mt-6 text-[14px] leading-6 text-ink-2">
             {usdView
-              ? "Rejected before meshing: no charge. An invoice in US dollars on every payment. Rooms and HVAC airflow: coming soon."
-              : "Rejected before meshing: no charge. A GST invoice on every payment. Rooms and HVAC airflow: coming soon."}
+              ? "Rejected before meshing: no charge. An invoice in US dollars on every payment. Rooms and HVAC airflow (steady analysis): describe one room instead of uploading an STL; it is pre-processed and quoted the same way."
+              : "Rejected before meshing: no charge. A GST invoice on every payment. Rooms and HVAC airflow (steady analysis): describe one room instead of uploading an STL; it is pre-processed and quoted the same way."}
           </p>
           <div className="mt-7 flex flex-wrap gap-3">
             <TrackedLink

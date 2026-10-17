@@ -2,6 +2,7 @@
 
 import { Choice, Field, inputCls } from "../form-ui";
 import type { CategoryFields } from "./types";
+import { ROOMS_TRANSIENT_OFFERED } from "@/lib/cfd-rooms";
 
 /**
  * Rooms / HVAC (16 Oct 2026): a room is DESCRIBED, not uploaded. The fields
@@ -29,7 +30,9 @@ import type { CategoryFields } from "./types";
  * apps/api/tests/test_cfd_cloud.py is this form's output: keep them in step.
  *
  * Owner, 16 Oct 2026: steady ships first; the transient (premium) tier is offered
- * on the quote only once it is validated and switched on in the API. Never show
+ * on the quote only once it is validated and switched on in the API. 17 Oct 2026:
+ * steady released, transient still off, so the form shows no tier choice
+ * (ROOMS_TRANSIENT_OFFERED in lib/cfd-rooms.ts) and always sends "steady". Never show
  * prices, the provider or how quotes are priced here.
  */
 
@@ -125,7 +128,7 @@ export function hvacBlock(s: RoomState) {
       metabolic_met: isPos(s.met) ? num(s.met) : 1.2,
       relative_humidity_pct: s.rh.trim() !== "" && isNonNeg(s.rh) ? num(s.rh) : 50,
     },
-    tier_preference: s.tier,
+    tier_preference: ROOMS_TRANSIENT_OFFERED ? s.tier : "steady",
   };
 }
 
@@ -267,14 +270,24 @@ function RoomFields({ state, set }: { state: RoomState; set: (patch: Partial<Roo
         </div>
       </div>
 
-      <Field label="Analysis" full hint={
-        state.tier === "steady"
-          ? "Room averages (mean air speed, PMV/PPD, ADPI) as numbers; the fastest air and the worst head-ankle temperature difference as a flagged range."
-          : "The room run in time until the answer settles, every value one number. Premium. Your quote offers it only for rooms where we run it; otherwise you get the steady analysis to choose."
-      }>
-        <Choice name="hvac-tier" value={state.tier} onChange={(v) => set({ tier: v as RoomState["tier"] })}
-          options={[{ value: "steady", label: "Steady" }, { value: "transient", label: "Transient (premium)" }]} />
-      </Field>
+      {ROOMS_TRANSIENT_OFFERED ? (
+        <Field label="Analysis" full hint={
+          state.tier === "steady"
+            ? "Room averages (mean air speed, PMV/PPD, ADPI) as numbers; the fastest air and the worst head-ankle temperature difference as a flagged range."
+            : "The room run in time until the answer settles, every value one number. Premium. Your quote offers it only for rooms where we run it; otherwise you get the steady analysis to choose."
+        }>
+          <Choice name="hvac-tier" value={state.tier} onChange={(v) => set({ tier: v as RoomState["tier"] })}
+            options={[{ value: "steady", label: "Steady" }, { value: "transient", label: "Transient (premium)" }]} />
+        </Field>
+      ) : (
+        <div className="sm:col-span-2">
+          <p className="text-[13.5px] leading-5 font-medium text-ink">Analysis: steady</p>
+          <p className="mt-1 text-[12.5px] leading-5 text-ink-3">
+            Room averages (mean air speed, PMV/PPD, ADPI) as numbers, temperature and air-speed maps, and the fastest air
+            and the worst head-ankle temperature difference as a flagged range.
+          </p>
+        </div>
+      )}
     </>
   );
 }

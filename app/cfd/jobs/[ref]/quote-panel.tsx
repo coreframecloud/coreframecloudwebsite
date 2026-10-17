@@ -372,6 +372,7 @@ export function QuotePanel({
         ) : null}
         {dv.express && !dv.express.available && dv.express.unavailable ? <Fine>{dv.express.unavailable}</Fine> : null}
         {quote.validated_unavailable ? <Fine>{quote.validated_unavailable}</Fine> : null}
+        {quote.validation_note ? <Fine>{quote.validation_note}</Fine> : null}
         {pkgs.some((p) => p.levels_text) ? (
           <Fine>
             Verified is a mesh-independence study (GCI): your case on three meshes, a coarser one, the quoted one and a

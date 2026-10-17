@@ -9,6 +9,7 @@ import { cellsLabel, formatMoney, parseCurrency, usdRates, type Currency } from 
 import { trackConversion, trackEvent } from "@/lib/analytics";
 import { CFD_CATEGORIES, DEFAULT_CFD_CATEGORY, cfdCategory, type CfdCategoryId } from "@/lib/cfd-categories";
 import { CATEGORY_FIELDS } from "./categories";
+import { ROOMS_VALIDATION } from "@/lib/cfd-rooms";
 import { Field, inputCls, textareaCls } from "./form-ui";
 
 /**
@@ -338,6 +339,9 @@ export default function CfdJobForm({ token, accountEmail, onSignedOut, currency 
         })}
       </div>
       <p className="mt-3 text-[13.5px] leading-5 text-ink-3">{category.summary}</p>
+      {categoryId === "rooms" ? (
+        <p className="mt-2 text-[13px] leading-5 text-ink-3">{ROOMS_VALIDATION}</p>
+      ) : null}
 
       <div id="cfd-tabpanel" role="tabpanel" aria-labelledby={`cfd-tab-${categoryId}`} className="mt-6">
         {!Fields ? (

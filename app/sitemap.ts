@@ -106,7 +106,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // The Verified package's page (16 Oct 2026): mesh independence study / GCI.
     { url: `${BASE}/cfd/mesh-independence-study`, lastModified: new Date("2026-10-16"), changeFrequency: "monthly", priority: 0.8 },
     // Case study (13 Oct 2026): HVAC airflow on a real clinic floor.
-    { url: `${BASE}/cfd/projects/clinic-floor-hvac`, lastModified: new Date("2026-10-13"), changeFrequency: "monthly", priority: 0.7 },
+    { url: `${BASE}/cfd/projects/clinic-floor-hvac`, lastModified: new Date("2026-10-17"), changeFrequency: "monthly", priority: 0.7 },
 
     // /contact is NOT here: it is a redirect to /request-demo, and a sitemap
     // should list destinations, not hops.
