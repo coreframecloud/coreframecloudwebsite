@@ -2,7 +2,7 @@
 
 import { clearReturnPath, peekReturnPath, rememberReturnPath, safeReturnPath } from "@/lib/return-path";
 import { goAfterSignIn, signOutThisSession } from "@/lib/session-cookie";
-import { adoptLegacyToken, isSignedIn, rememberUser } from "@/lib/session";
+import { SESSION_MODE_HEADERS, adoptLegacyToken, isSignedIn, rememberUser } from "@/lib/session";
 import { useState, useEffect, useRef } from "react";
 import {
   COUNTRIES,
@@ -550,10 +550,10 @@ export default function LoginForm({
     try {
       const res = await fetch(`${API}/auth/verify-login-code`, {
         method: "POST",
-        // So the browser KEEPS the HttpOnly cf_session cookie this sets on
-        // control: the CFD job page there signs in with nothing else.
+        // The session is the HttpOnly cookies this sets on control
+        // (lib/session.ts); the header asks for exactly that.
         credentials: "include",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...SESSION_MODE_HEADERS },
         body: JSON.stringify({ email: codeEmail.trim(), code: codeValue.trim() }),
       });
       const data = await res.json();

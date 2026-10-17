@@ -8,7 +8,7 @@ import { Suspense } from "react";
 import { trackSignupIfNew } from "@/lib/analytics";
 import { API_BASE } from "@/lib/api-base";
 import { goAfterSignIn } from "@/lib/session-cookie";
-import { rememberUser } from "@/lib/session";
+import { SESSION_MODE_HEADERS, rememberUser } from "@/lib/session";
 
 const API = API_BASE;
 
@@ -66,7 +66,7 @@ function MagicLinkVerifier() {
       // Keep the HttpOnly cf_session cookie this sets on control (the CFD job
       // page signs in with nothing else). Google sign-in also ends here.
       credentials: "include",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", ...SESSION_MODE_HEADERS },
       body: JSON.stringify({ token }),
     })
       .then((res) => res.json().then((data) => ({ ok: res.ok, data })))

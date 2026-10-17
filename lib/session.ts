@@ -20,6 +20,13 @@ import { API_BASE } from "@/lib/api-base";
 const USER_KEY = "cf_customer_user";
 const LEGACY_TOKEN_KEY = "cf_customer_token";
 
+/**
+ * Sent on sign-in and adopt calls: "give this browser a cookie session, and no
+ * token in the JSON". The API still answers the previous site (which does not
+ * send it) with a bearer, so the API could be deployed before this site.
+ */
+export const SESSION_MODE_HEADERS: Record<string, string> = { "X-Coreframe-Session": "cookie" };
+
 /** Stands in for "a token" where code only needs to know someone is signed in. */
 export const COOKIE_SESSION = "cookie";
 
@@ -80,7 +87,7 @@ export function adoptLegacyToken(): Promise<void> {
       await fetch(`${API_BASE}/auth/session-cookie`, {
         method: "POST",
         credentials: "include",
-        headers: { Authorization: `Bearer ${old}` },
+        headers: { Authorization: `Bearer ${old}`, ...SESSION_MODE_HEADERS },
       });
     } catch {
       /* offline: the next page load tries again */
