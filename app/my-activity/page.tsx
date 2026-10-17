@@ -12,6 +12,7 @@ import ActivityList, {
 import { announceWallet } from "@/components/wallet/wallet-events";
 import MyCfdJobs from "@/components/cfd/my-cfd-jobs";
 import MyStudioProjects from "@/components/studio/my-studio-projects";
+import SignInSecurity from "@/components/account/sign-in-security";
 import { trackEvent } from "@/lib/analytics";
 import {
   getIntroOffer,
@@ -1006,6 +1007,10 @@ export default function MyActivityPage() {
           onLoadMore={loadMoreLedger}
           onOpenInvoice={openInvoice}
         />
+      </div>
+
+      <div className="mt-6">
+        <SignInSecurity token={token} />
       </div>
 
       <TopUpDialog

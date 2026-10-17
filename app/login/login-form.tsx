@@ -1,7 +1,7 @@
 "use client";
 
 import { clearReturnPath, peekReturnPath, rememberReturnPath, safeReturnPath } from "@/lib/return-path";
-import { clearSessionCookie, goAfterSignIn } from "@/lib/session-cookie";
+import { goAfterSignIn, signOutThisSession } from "@/lib/session-cookie";
 import { useState, useEffect, useRef } from "react";
 import {
   COUNTRIES,
@@ -265,10 +265,20 @@ export default function LoginForm({
   const [signedInAs, setSignedInAs] = useState<string | null>(null);
   // Where "Continue" goes for someone already signed in who arrived with ?next=.
   const [signedInNext, setSignedInNext] = useState<string | null>(null);
+  // A one-line note from where they came from: signed out everywhere, or a
+  // Google sign-in we refused (security review 17 Oct 2026).
+  const [arrivalNote, setArrivalNote] = useState<string | null>(null);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     if (params.get("source") === "connect") setTab("code");
+    if (params.get("signed_out") === "everywhere") {
+      setArrivalNote("You're signed out on every device. Sign in again to continue.");
+    } else if (params.get("error") === "google_unverified") {
+      setArrivalNote(
+        "Google hasn't verified that email address, so we can't sign you in with it. Use the email option below instead.",
+      );
+    }
     // A new account finishes on /auth/magic or /verify, not here, so the
     // `next` it was sent with is kept for those pages (lib/return-path.ts).
     rememberReturnPath(params.get("next"));
@@ -583,7 +593,13 @@ export default function LoginForm({
             <button
               type="button"
               onClick={() => {
-                void clearSessionCookie();
+                let leaving: string | null = null;
+                try {
+                  leaving = localStorage.getItem("cf_customer_token");
+                } catch {
+                  /* storage blocked */
+                }
+                void signOutThisSession(leaving);
                 try {
                   localStorage.removeItem("cf_customer_token");
                   localStorage.removeItem("cf_customer_user");
@@ -606,6 +622,12 @@ export default function LoginForm({
           past, so the header stays compact: the field still sits well inside
           the first screen on a 390x844 phone. No wordmark: the site header
           renders one just above. */}
+      {arrivalNote && (
+        <p role="status" className="mb-4 w-full text-[14px] leading-6 text-ink-2">
+          {arrivalNote}
+        </p>
+      )}
+
       <div className="cf-glass w-full p-5 sm:p-7 md:p-8">
         <CardHeader
           compact={isStart}

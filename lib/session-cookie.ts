@@ -76,3 +76,64 @@ export async function goAfterSignIn(dest: string): Promise<void> {
   }
   window.location.href = dest;
 }
+
+/**
+ * Sign out of THIS browser for real (security review 17 Oct 2026): the API
+ * revokes the session's token and clears its HttpOnly cookie. Before this,
+ * signing out only forgot the token here, and a copy of it kept working for
+ * up to 24 hours. Other devices (Connect mid-session) stay signed in.
+ *
+ * Falls back to clearing the cookie alone if the API cannot be reached, so a
+ * customer is never stuck "signed in" because the network blinked.
+ */
+export async function signOutThisSession(token: string | null | undefined): Promise<void> {
+  try {
+    sessionStorage.removeItem(SYNCED_KEY);
+  } catch {
+    /* nothing to clear */
+  }
+  try {
+    const res = await fetch(`${API_BASE}/auth/sign-out`, {
+      method: "POST",
+      credentials: "include",
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    });
+    if (res.ok) return;
+  } catch {
+    /* fall through */
+  }
+  await clearSessionCookie();
+}
+
+/**
+ * End every session on every device: this browser, other browsers, Studio and
+ * Coreframe Connect. For a lost phone or a shared computer. Returns false when
+ * the API refused (e.g. the session had already ended).
+ */
+export async function signOutEverywhere(token: string | null | undefined): Promise<boolean> {
+  try {
+    sessionStorage.removeItem(SYNCED_KEY);
+  } catch {
+    /* nothing to clear */
+  }
+  try {
+    const res = await fetch(`${API_BASE}/auth/sign-out-everywhere`, {
+      method: "POST",
+      credentials: "include",
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    });
+    return res.ok;
+  } catch {
+    return false;
+  }
+}
+
+/** Forget the signed-in customer in this browser (after either sign-out). */
+export function forgetLocalSession(): void {
+  try {
+    localStorage.removeItem("cf_customer_token");
+    localStorage.removeItem("cf_customer_user");
+  } catch {
+    /* storage blocked */
+  }
+}

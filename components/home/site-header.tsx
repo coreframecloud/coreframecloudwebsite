@@ -9,7 +9,7 @@ import { trackEvent } from "@/lib/analytics";
 import { getIntroOffer, hoursLabel, rupees } from "@/lib/rate-card";
 import { useRateCard } from "@/lib/use-rate-card";
 import { API_BASE } from "@/lib/api-base";
-import { clearSessionCookie, syncSessionCookie } from "@/lib/session-cookie";
+import { forgetLocalSession, signOutThisSession, syncSessionCookie } from "@/lib/session-cookie";
 import { OFFERINGS, type OfferingStatus } from "@/lib/offerings";
 import { WALLET_CHANGED_EVENT } from "@/components/wallet/wallet-events";
 
@@ -286,10 +286,16 @@ export function SiteHeader() {
 
   async function handleSignOut() {
     // Before the reload, or the reload cancels it and the job page on control
-    // stays signed in as someone who believes they signed out.
-    await clearSessionCookie();
-    localStorage.removeItem("cf_customer_token");
-    localStorage.removeItem("cf_customer_user");
+    // stays signed in as someone who believes they signed out. The API
+    // revokes this session's token too, so a copy of it stops working.
+    let token: string | null = auth?.token ?? null;
+    try {
+      token = token ?? localStorage.getItem("cf_customer_token");
+    } catch {
+      /* storage blocked */
+    }
+    await signOutThisSession(token);
+    forgetLocalSession();
     setAuth(null);
     window.location.reload();
   }
