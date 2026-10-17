@@ -214,6 +214,8 @@ export interface Quote {
   packages: QuotePackage[];
   /** Why the Verified study (API: validated) is not offered for this model (null when it is, or when it is switched off). */
   validated_unavailable?: string | null;
+  /** Rooms / HVAC (17 Oct 2026): the validation claim in the approved words; null for other jobs. */
+  validation_note?: string | null;
   default_package?: string;
   settle_option?: { default?: boolean; text: string; detail?: string } | null;
   pay_line?: string;
