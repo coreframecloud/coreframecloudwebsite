@@ -53,6 +53,25 @@ export type SoftwarePage = {
   sections?: { h2: string; body: string[] }[];
   /** Related slugs for internal linking. */
   related: string[];
+  /**
+   * The whole <title>, brand included, when the "| Coreframe Cloud" suffix
+   * would push it past ~60 characters (SEO review 18 Oct 2026).
+   */
+  absoluteTitle?: string;
+  /** The H1, when it should differ from `title`. */
+  h1?: string;
+  /**
+   * Live prices under the lead, from the rate card (never typed here):
+   * "answer" = the answer-first passage plus the spec table (GPU rental page);
+   * "line" = one line with the hourly rate in both currencies.
+   */
+  livePrice?: "answer" | "line";
+  /** Short sections shown open (not folded), each with an optional link. */
+  callouts?: { h2: string; body: string; link?: { href: string; label: string } }[];
+  /** Adds the quiet "Studio of 3 or more? Team plans" link. */
+  teamPlansLink?: boolean;
+  /** Visible content date, e.g. "18 October 2026". */
+  lastUpdated?: string;
 };
 
 const RESET_ANSWER =
@@ -66,6 +85,7 @@ export const SOFTWARE_PAGES: SoftwarePage[] = [
     slug: "revit-cloud-workstation",
     title: "Revit Cloud Workstation — run Revit on a rented RTX GPU",
     metaTitle: "Revit Cloud Workstation, rented RTX GPU",
+    teamPlansLink: true,
     description:
       "Run Autodesk Revit on a Windows GPU workstation in India, billed per minute. Bring your Autodesk licence, open large models, and render without buying hardware.",
     intro:
@@ -104,6 +124,16 @@ export const SOFTWARE_PAGES: SoftwarePage[] = [
     slug: "3ds-max-cloud-workstation",
     title: "3ds Max Cloud Workstation — GPU rendering by the hour",
     metaTitle: "3ds Max Cloud Workstation by the hour",
+    absoluteTitle: "3ds Max Cloud Workstation & Rendering, RTX 5080 | Coreframe",
+    callouts: [
+      {
+        h2: "3ds Max cloud rendering: workstation or render farm?",
+        body: "A render farm takes a finished scene and renders its frames on many machines; you submit and wait. A cloud workstation is one machine you drive yourself: you model, light, tweak materials and render in the same session. For look development and stills, a workstation fits; for a long animation split across many machines, a farm does.",
+        link: { href: "/cloud-workstation-vs-render-farm", label: "Cloud workstation vs render farm" },
+      },
+    ],
+    teamPlansLink: true,
+    lastUpdated: "18 October 2026",
     description:
       "Run Autodesk 3ds Max with V-Ray or Corona on a rented RTX GPU workstation in India. Per-minute billing, your own licence, no hardware purchase.",
     intro:
@@ -246,7 +276,9 @@ export const SOFTWARE_PAGES: SoftwarePage[] = [
     description:
       "Run Twinmotion on a rented RTX GPU workstation in India, billed per minute. Twinmotion is preinstalled and free for most users.",
     intro:
-      "Twinmotion is free for most individual users, and it's already installed on every Coreframe workstation. All you're renting is the GPU that makes it run properly.",
+      "Twinmotion is preinstalled on every Coreframe workstation, and its free tier covers most individual users. All you rent is the RTX 5080 that makes it run properly, by the minute.",
+    livePrice: "line",
+    lastUpdated: "18 October 2026",
     problem:
       "Twinmotion looks great in demos and stutters on your own laptop, especially with vegetation and reflections turned up.",
     why: [
@@ -268,7 +300,7 @@ export const SOFTWARE_PAGES: SoftwarePage[] = [
       },
       { q: "Do my Twinmotion projects persist?", a: RESET_ANSWER },
     ],
-    related: ["blender-cloud-workstation", "revit-cloud-workstation", "vray-cloud-rendering"],
+    related: ["unreal-engine-cloud-workstation", "blender-cloud-workstation", "revit-cloud-workstation", "vray-cloud-rendering"],
   },
 
   {
@@ -397,6 +429,17 @@ export const SOFTWARE_PAGES: SoftwarePage[] = [
     slug: "gpu-workstation-rental-india",
     title: "GPU Workstation Rental in India — per-minute RTX workstations",
     metaTitle: "Rent an RTX 5080 Workstation in India",
+    absoluteTitle: "GPU on Rent in India: RTX 5080 by the Minute | Coreframe",
+    h1: "Rent a GPU workstation in India: RTX 5080 by the minute",
+    livePrice: "answer",
+    lastUpdated: "18 October 2026",
+    callouts: [
+      {
+        h2: "Running your own CFD software?",
+        body: `Bring your own licence. A Coreframe workstation is a full ${NODE.os} desktop with an ${NODE.gpu} (${NODE.vram}) and ${NODE.ram} of RAM, so you install your CFD or simulation package and run it the way you would on a machine under your desk. If you only need the pressure drop of a duct or pipe, we can run it for you instead.`,
+        link: { href: "/cfd", label: "CFD for ducts and pipes" },
+      },
+    ],
     description:
       "Rent a Windows RTX GPU workstation in India by the minute for 3D rendering, CAD and simulation. No hardware purchase, GST invoices, persistent NAS storage.",
     intro:
@@ -437,6 +480,46 @@ export const SOFTWARE_PAGES: SoftwarePage[] = [
       },
     ],
     related: ["d5-render-vs-local-gpu", "coreframe-vs-irender", "cloud-workstation-vs-render-farm", "d5-render-cloud-workstation", "lumion-cloud-gpu", "blender-cloud-workstation"],
+  },
+  {
+    // Added 18 Oct 2026 (SEO review, action 15). Unreal Engine is in the
+    // standard image (owner confirmed 13 Oct 2026; lib/software-catalogue.ts).
+    // No render-time or frame-rate claims: they depend on the project.
+    slug: "unreal-engine-cloud-workstation",
+    title: "Unreal Engine Cloud Workstation — preinstalled on a rented RTX 5080",
+    metaTitle: "Unreal Engine Cloud Workstation, RTX 5080",
+    description:
+      "Unreal Engine 5.8 with Quixel Bridge comes preinstalled on a Windows RTX 5080 workstation in India, billed per minute. Sign in with your Epic account and open your project.",
+    intro:
+      `Unreal Engine 5.8 with Quixel Bridge is preinstalled on every Coreframe workstation. You sign in with your own Epic account, open your project from persistent storage and work on an ${NODE.gpu} with ${NODE.vram}, billed by the minute.`,
+    problem:
+      "Unreal wants a strong GPU and a lot of VRAM, and the laptop you take to client meetings has neither.",
+    why: [
+      "Preinstalled: no multi-gigabyte engine download before you can start.",
+      `${NODE.vram} of VRAM for Nanite geometry, Lumen lighting and high-resolution textures.`,
+      "Datasmith imports from Revit and SketchUp, and Twinmotion is on the same machine.",
+      "Project files stay on persistent NAS storage between sessions.",
+      "Rent it for the weeks a project needs it and stop paying when it ships.",
+    ],
+    licence:
+      "Unreal Engine is preinstalled. Sign in with your own Epic account; Epic's licence terms apply to your project exactly as they would on your own PC.",
+    faqs: [
+      {
+        q: "Is Unreal Engine preinstalled on Coreframe?",
+        a: "Yes. Unreal Engine 5.8 with Quixel Bridge is part of the standard image, so it is there when your session starts. Sign in with your own Epic account.",
+      },
+      {
+        q: "Can I bring a Revit or SketchUp model into Unreal on the workstation?",
+        a: "Yes, with Datasmith, as you would locally. Install Revit or SketchUp with your own licence in the same session if you need the source application too.",
+      },
+      {
+        q: "How fast will my Unreal project run?",
+        a: `We don't quote frame rates or render times, because they depend on your project and settings. The machine has an ${NODE.gpu} with ${NODE.vram}, ${NODE.ram} of RAM and an ${NODE.cpu}. Open your heaviest level in a session and see.`,
+      },
+      { q: "Do my Unreal projects persist between sessions?", a: RESET_ANSWER },
+    ],
+    related: ["twinmotion-cloud-workstation", "d5-render-cloud-workstation", "blender-cloud-workstation", "gpu-workstation-rental-india"],
+    lastUpdated: "18 October 2026",
   },
 ];
 

@@ -10,7 +10,21 @@ import {
   SOFTWARE_PAGES_BY_SLUG,
   type SoftwarePage,
 } from "@/lib/software-pages";
-import { getRateCard, introOfferFaq, pricingFaqAnswer } from "@/lib/rate-card";
+import {
+  adhocRateValue,
+  cpuSpec,
+  getIntroOffer,
+  getRateCard,
+  hoursLabel,
+  introOfferFaq,
+  pricingFaqAnswer,
+  rupees,
+  storageSpec,
+  type RateCard,
+} from "@/lib/rate-card";
+import { formatMoney, usdRates } from "@/lib/money";
+import { NODE } from "@/lib/node-spec";
+import { LastUpdated, SpecTable } from "@/components/gpu/spec-table";
 import { JsonLd } from "@/components/seo/json-ld";
 import { breadcrumbList, faqPage, OG_IMAGE } from "@/lib/seo";
 import { GpuCineBand } from "@/components/gpu-cine-band";
@@ -63,7 +77,7 @@ export async function generateMetadata({
   const page = SOFTWARE_PAGES_BY_SLUG[slug];
   if (!page) return { title: "Page not found" };
   return {
-    title: page.metaTitle ?? page.title,
+    title: page.absoluteTitle ? { absolute: page.absoluteTitle } : (page.metaTitle ?? page.title),
     description: page.description,
     alternates: { canonical: `/software/${page.slug}` },
     openGraph: {
@@ -97,6 +111,55 @@ const HERO_BY_SLUG: Record<string, Hero> = {
   default: G("gen-designer-cafe-laptop-16x9.webp", "A designer working on a thin laptop"),
 };
 
+/**
+ * The hourly rate in both currencies, from the rate card (SEO review 18 Oct
+ * 2026, T2): crawlers fetch from the US, so the static text carries the rupee
+ * AND the dollar price instead of one or the other. Null when the control
+ * plane is unreachable: no price is better than a stale one.
+ */
+function bothRates(card: RateCard | null): { inr: string; usd: string; perMinute: boolean } | null {
+  const rate = adhocRateValue(card);
+  if (rate == null) return null;
+  return {
+    inr: rupees(rate),
+    usd: formatMoney(usdRates(card).gpu_hourly, "USD"),
+    perMinute: card?.billing_granularity === "per_minute",
+  };
+}
+
+/** The answer-first passage for the GPU rental page, lowest price first. */
+function rentalAnswer(card: RateCard | null): string | null {
+  const r = bothRates(card);
+  if (!r) return null;
+  const intro = getIntroOffer(card);
+  const gpu = card?.gpus.find((g) => !g.quote_on_request && g.hourly_rate_rupees != null);
+  const machine = `a ${NODE.os} ${gpu?.name ?? NODE.gpu} workstation (${gpu ? `${gpu.vram_gb} GB` : NODE.vram})`;
+  const billed = r.perMinute ? ", billed per minute" : "";
+  return [
+    intro
+      ? `Your first ${rupees(intro.priceRupees)} top-up buys ${hoursLabel(intro.hours)} of ${machine}. After that it is ${r.inr} an hour incl. GST${billed}.`
+      : `${machine.charAt(0).toUpperCase()}${machine.slice(1)} costs ${r.inr} an hour incl. GST${billed}.`,
+    `Outside India it is ${r.usd} an hour (no GST).`,
+    `Hosted in ${NODE.location.split(",")[0]}, streamed to your laptop with the Coreframe Connect app.`,
+  ].join(" ");
+}
+
+/** The machine, from the rate card's own row; NODE when it is unreachable. */
+function specRows(card: RateCard | null): [string, string][] {
+  const gpu = card?.gpus.find((g) => !g.quote_on_request && g.hourly_rate_rupees != null);
+  const r = bothRates(card);
+  return [
+    ["GPU", gpu ? `${gpu.gpu_count}× ${gpu.name}` : NODE.gpu],
+    ["VRAM", gpu ? `${gpu.vram_gb} GB` : NODE.vram],
+    ["CPU", gpu ? cpuSpec(gpu) : NODE.cpuShort],
+    ["System RAM", gpu ? `${gpu.ram_gb} GB` : NODE.ram],
+    ["Storage", gpu ? `${storageSpec(gpu.storage_gb)} NVMe` : NODE.disk],
+    ["Operating system", NODE.os],
+    ["Location", NODE.location],
+    ...(r ? ([["Price", `${r.inr}/hr incl. GST in India · ${r.usd}/hr elsewhere (no GST)`]] as [string, string][]) : []),
+  ];
+}
+
 export default async function SoftwareLandingPage({
   params,
 }: {
@@ -126,6 +189,12 @@ export default async function SoftwareLandingPage({
     ...(intro ? [intro] : []),
   ];
 
+  const answer = page.livePrice === "answer" ? rentalAnswer(card) : null;
+  const rates = page.livePrice === "line" ? bothRates(card) : null;
+  const priceLine = rates
+    ? `${rates.inr} an hour incl. GST in India · ${rates.usd} an hour elsewhere (no GST)${rates.perMinute ? ", billed per minute" : ""}.`
+    : null;
+
   const hero = HERO_BY_SLUG[page.slug] ?? HERO_BY_SLUG.default;
   const heroBg = GPU_HEROES[page.slug];
   return (
@@ -134,12 +203,15 @@ export default async function SoftwareLandingPage({
       {heroBg ? <PageHeroBg image={heroBg} /> : null}
       <div className={heroBg ? "cf-wide" : "cf-wide grid items-center gap-10 lg:grid-cols-[1.05fr_1fr]"}>
         <div className={heroBg ? "min-w-0 max-w-[620px]" : "min-w-0"}>
-          <h1 className="cf-display">{page.title}</h1>
+          <h1 className="cf-display">{page.h1 ?? page.title}</h1>
           <p className="cf-lead mt-[22px]">{page.intro}</p>
+          {answer ? <p className="cf-section-copy mt-5">{answer}</p> : null}
+          {priceLine ? <p className="cf-section-copy mt-5">{priceLine}</p> : null}
           <div className="mt-8 flex flex-wrap gap-3">
             <Link href="/signup" className="cf-btn-primary">Sign up</Link>
             <Link href="/pricing" className="cf-btn-secondary">Pricing</Link>
           </div>
+          {page.lastUpdated ? <LastUpdated date={page.lastUpdated} className="mt-6" /> : null}
         </div>
         {heroBg ? null : hero.generated ? (
           <GenImage src={hero.src} alt={hero.alt} width={hero.w} height={hero.h} sizes="(max-width: 1024px) 100vw, 480px" parallax priority />
@@ -180,6 +252,31 @@ export default async function SoftwareLandingPage({
       <JsonLd data={faqPage(faqs)} />
       <JsonLd data={breadcrumbList([{ name: page.metaTitle ?? page.title, path: `/software/${page.slug}` }])} />
 
+      {page.livePrice === "answer" ? (
+        <section className="cf-col">
+          <h2 className="cf-section-title">The machine.</h2>
+          <SpecTable rows={specRows(card)} caption="The workstation you rent: hardware, location and price" />
+        </section>
+      ) : null}
+
+      {page.callouts?.map((c) => (
+        <section key={c.h2} className="cf-col mt-16">
+          <h2 className="cf-section-title">{c.h2}</h2>
+          <p className="cf-section-copy mt-4">
+            {c.body}
+            {c.link ? (
+              <>
+                {" "}
+                <Link href={c.link.href} className="text-ink underline underline-offset-4">
+                  {c.link.label}
+                </Link>
+                .
+              </>
+            ) : null}
+          </p>
+        </section>
+      ))}
+
       {page.sections?.length ? (
         <section className="cf-col mt-16">
           <h2 className="cf-section-title">The details.</h2>
@@ -208,6 +305,15 @@ export default async function SoftwareLandingPage({
             See what is preinstalled →
           </Link>
         </div>
+        {page.teamPlansLink ? (
+          <p className="mt-5 text-[15px] leading-6 text-ink-2">
+            Studio of 3 or more?{" "}
+            <Link href="/enterprise" className="text-ink underline underline-offset-4">
+              Team plans
+            </Link>{" "}
+            share one pool of hours and one GST invoice.
+          </p>
+        ) : null}
       </section>
 
       <section className="cf-col mt-16">
