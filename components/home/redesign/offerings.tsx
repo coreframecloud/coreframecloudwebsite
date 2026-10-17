@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import type { CSSProperties } from "react";
 import { Reveal } from "@/components/home/redesign/reveal";
 import { TrackedLink } from "@/components/analytics/tracked-link";
 import { OFFERINGS, type Offering, type OfferingStatus } from "@/lib/offerings";
@@ -42,9 +43,10 @@ function ctaEvent(href: string) {
  */
 function HeroCard({ o, introLabel, i }: { o: Offering; introLabel: string | null; i: number }) {
   return (
-    <Reveal
-      delay={0.08 * i}
-      className="group relative flex min-w-0 flex-col overflow-hidden rounded-[20px] border border-white/15 bg-[#0b0d11]/70 backdrop-blur-md sm:rounded-[24px]"
+    <div
+      data-cf-spot=""
+      style={{ "--cf-i": i } as CSSProperties}
+      className="cf-hero-card group relative flex min-w-0 flex-col overflow-hidden rounded-[20px] border border-white/15 bg-[#0b0d11]/70 backdrop-blur-md sm:rounded-[24px]"
     >
       <div className="grid min-w-0 grid-cols-[88px_1fr] gap-3.5 p-3.5 sm:flex sm:flex-1 sm:flex-col sm:gap-0 sm:p-0">
         <div
@@ -113,7 +115,7 @@ function HeroCard({ o, introLabel, i }: { o: Offering; introLabel: string | null
           ) : null}
         </div>
       </div>
-    </Reveal>
+    </div>
   );
 }
 

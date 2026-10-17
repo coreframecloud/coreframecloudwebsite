@@ -5,6 +5,13 @@ import { hoursLabel, rupees, type IntroOffer } from "@/lib/rate-card";
 import { Reveal } from "@/components/home/redesign/reveal";
 import { ParallaxBg } from "@/components/home/redesign/depth";
 import { StreamDiagram } from "@/components/visuals/diagrams";
+import { Marquee } from "@/components/motion/marquee";
+import { PREINSTALLED } from "@/lib/software-catalogue";
+
+/** Creative apps from the live software catalogue (lib/software-catalogue). */
+const MARQUEE_APPS = PREINSTALLED.filter((s) => s.category === "3D & rendering" || s.category === "Images & textures").map(
+  (s) => s.name,
+);
 
 /**
  * Dark band: what you get, as facts only. A real Blender screenshot from a
@@ -73,6 +80,10 @@ export function BuiltFor() {
           </Reveal>
         ))}
       </div>
+      <Reveal className="mt-10">
+        <p className="text-[11.5px] font-semibold tracking-[0.12em] text-ink-2 uppercase">Preinstalled on every workstation</p>
+        <Marquee items={MARQUEE_APPS} label="Preinstalled on every workstation" className="mt-4 font-heading text-[17px] text-ink sm:text-[19px]" />
+      </Reveal>
     </section>
   );
 }
@@ -128,7 +139,7 @@ export function HowItWorks() {
       <Reveal className="grid items-center gap-10 rounded-[32px] bg-tint-blue p-7 sm:p-12 lg:grid-cols-[0.85fr_1.15fr]">
         <div>
           <h2 className="cfh-h2">Three steps. Then it feels local.</h2>
-          <ol className="mt-7 space-y-3">
+          <ol data-cf-steps="" className="mt-7 space-y-3">
             {steps.map((t, i) => (
               <li key={t} className="flex items-center gap-4 text-[16px] text-ink">
                 <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-ink font-heading text-[15px] text-white">{i + 1}</span>

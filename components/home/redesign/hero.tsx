@@ -1,4 +1,3 @@
-import { Reveal } from "@/components/home/redesign/reveal";
 import { HeroBackdrop } from "@/components/home/redesign/depth";
 import { HeroOfferingCards } from "@/components/home/redesign/offerings";
 
@@ -30,7 +29,8 @@ export function RedesignHero({ introLabel }: { introLabel: string | null }) {
       <div className="absolute inset-x-0 bottom-0 -z-10 h-2/3 bg-gradient-to-t from-[#0b0d11]/85 to-transparent" />
 
       <div className="cfh-wrap pt-24 pb-8 sm:pt-28 sm:pb-12">
-        <Reveal className="max-w-[56rem]">
+        {/* Never animated: the headline is the LCP text (18 Oct 2026). */}
+        <div className="max-w-[56rem]">
           <p className="mb-4 inline-block rounded-md bg-white/12 px-3 py-1.5 text-[11px] font-semibold tracking-[0.12em] uppercase sm:mb-5 sm:text-[11.5px]">
             Coreframe Cloud · Bengaluru
           </p>
@@ -42,7 +42,7 @@ export function RedesignHero({ introLabel }: { introLabel: string | null }) {
             Rent an RTX 5080 workstation by the minute, send us a duct or pipe for CFD, or turn a floor
             plan into concept images. Three services, one team in Bengaluru.
           </p>
-        </Reveal>
+        </div>
 
         <div className="mt-6 sm:mt-8">
           <HeroOfferingCards introLabel={introLabel} />
