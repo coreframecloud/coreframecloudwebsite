@@ -51,8 +51,10 @@ export function ScrollReveal() {
         }, 1300 + delay + n * 140),
       );
     };
+    let alive = false;
     const io = new IntersectionObserver(
       (entries) => {
+        alive = true;
         for (const e of entries) {
           if (!e.isIntersecting) continue;
           const el = e.target as HTMLElement;
@@ -61,7 +63,10 @@ export function ScrollReveal() {
           done(el);
         }
       },
-      { rootMargin: "0px 0px -60px 0px" },
+      // The root reaches far ABOVE the viewport, so anything the reader has
+      // jumped past (an anchor link, a fast flick, End) counts as seen and is
+      // shown at once: nothing above the viewport is ever left hidden.
+      { rootMargin: "100000px 0px -60px 0px" },
     );
 
     const candidates = Array.from(
@@ -89,6 +94,17 @@ export function ScrollReveal() {
     if (below.length) void getComputedStyle(below[0]).opacity; // commit the hidden state, untransitioned
     root.classList.remove("cf-hold");
     for (const el of below) io.observe(el);
+    // Fail open: an observer always reports once right after observe(). If
+    // that never comes (the tab is not rendering, e.g. an occluded window),
+    // show everything rather than leave content hidden.
+    if (below.length)
+      timers.push(
+        window.setTimeout(() => {
+          if (alive) return;
+          io.disconnect();
+          for (const el of below) el.classList.remove("cf-reveal", "cf-in", "cf-stagger");
+        }, 2500),
+      );
     return () => {
       io.disconnect();
       timers.forEach(clearTimeout);
