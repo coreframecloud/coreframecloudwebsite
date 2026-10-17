@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { newNonce, pageCsp } from "@/lib/csp";
 import { currencyForCountry, parseCurrency } from "@/lib/money";
 
 /**
@@ -26,6 +27,22 @@ import { currencyForCountry, parseCurrency } from "@/lib/money";
 
 const PAGES = new Set(["/pricing", "/cfd", "/cfd/mesh-independence-study"]);
 
+/**
+ * EVERY PAGE GETS A NONCE CSP (security review 17 Oct 2026, #3; lib/csp.ts).
+ * The nonce goes on the request (Next reads it from the CSP request header and
+ * stamps its own inline scripts; app/layout.tsx reads x-nonce for the tags)
+ * and the policy on the response. A response without our CSP would be one
+ * where an injected inline script runs, so every exit path below carries it.
+ */
+function withCsp(request: NextRequest): { headers: Headers; csp: string } {
+  const nonce = newNonce();
+  const csp = pageCsp(nonce);
+  const headers = new Headers(request.headers);
+  headers.set("x-nonce", nonce);
+  headers.set("Content-Security-Policy", csp);
+  return { headers, csp };
+}
+
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
@@ -36,18 +53,38 @@ export function proxy(request: NextRequest) {
     return NextResponse.redirect(target, 307);
   }
 
-  if (!PAGES.has(pathname)) return NextResponse.next();
-
-  const currency =
-    parseCurrency(request.nextUrl.searchParams.get("currency")) ??
-    currencyForCountry(request.headers.get("cf-ipcountry"));
-  if (currency !== "USD") return NextResponse.next();
-
-  const target = request.nextUrl.clone();
-  target.pathname = `/usd${pathname}`;
-  return NextResponse.rewrite(target);
+  const { headers, csp } = withCsp(request);
+  let response: NextResponse;
+  const currency = PAGES.has(pathname)
+    ? (parseCurrency(request.nextUrl.searchParams.get("currency")) ??
+      currencyForCountry(request.headers.get("cf-ipcountry")))
+    : null;
+  if (currency === "USD") {
+    const target = request.nextUrl.clone();
+    target.pathname = `/usd${pathname}`;
+    response = NextResponse.rewrite(target, { request: { headers } });
+  } else {
+    response = NextResponse.next({ request: { headers } });
+  }
+  response.headers.set("Content-Security-Policy", csp);
+  return response;
 }
 
 export const config = {
-  matcher: ["/pricing", "/cfd", "/cfd/mesh-independence-study", "/usd", "/usd/:path*"],
+  matcher: [
+    /*
+     * Every page. Not: API routes, Next's static files and images, /studio
+     * (rewritten from the control plane, its own policy in next.config.ts),
+     * the IFC checker and report rewrites, and anything with a file
+     * extension (robots.txt, sitemap.xml, images, fonts).
+     */
+    {
+      source:
+        "/((?!api/|_next/static|_next/image|studio|tools|r/|favicon\\.ico|.*\\.[a-zA-Z0-9]+$).*)",
+      missing: [
+        { type: "header", key: "next-router-prefetch" },
+        { type: "header", key: "purpose", value: "prefetch" },
+      ],
+    },
+  ],
 };

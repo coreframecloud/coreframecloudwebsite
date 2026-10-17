@@ -8,6 +8,7 @@ import { Suspense } from "react";
 import { trackSignupIfNew } from "@/lib/analytics";
 import { API_BASE } from "@/lib/api-base";
 import { goAfterSignIn } from "@/lib/session-cookie";
+import { SESSION_MODE_HEADERS, rememberUser } from "@/lib/session";
 
 const API = API_BASE;
 
@@ -65,7 +66,7 @@ function MagicLinkVerifier() {
       // Keep the HttpOnly cf_session cookie this sets on control (the CFD job
       // page signs in with nothing else). Google sign-in also ends here.
       credentials: "include",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", ...SESSION_MODE_HEADERS },
       body: JSON.stringify({ token }),
     })
       .then((res) => res.json().then((data) => ({ ok: res.ok, data })))
@@ -75,8 +76,9 @@ function MagicLinkVerifier() {
           setStatus("error");
           return;
         }
-        localStorage.setItem("cf_customer_token", data.access_token);
-        localStorage.setItem("cf_customer_user", JSON.stringify(data.user));
+        // The session is the HttpOnly cookie the API just set; the response
+        // carries no token (lib/session.ts). Only the user record is kept.
+        rememberUser(data.user);
         // THE sign-up conversion. verify-magic-link is the call that creates
         // the account for a new email; this fires only when this browser asked
         // for that new account (or the API says is_new_user), once per account.

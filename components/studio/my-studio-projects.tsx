@@ -1,5 +1,6 @@
 "use client";
 
+import { apiFetch } from "@/lib/session";
 import { useEffect, useState } from "react";
 import { API_BASE } from "@/lib/api-base";
 import { formatMoney, parseCurrency } from "@/lib/money";
@@ -50,9 +51,8 @@ function Thumb({ token, project }: { token: string; project: StudioProject }) {
     if (!project.has_plan) return;
     let url: string | null = null;
     let gone = false;
-    fetch(`${API_ORIGIN}/api/studio/jobs/${encodeURIComponent(project.job_id)}/plan-thumb.svg`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+    apiFetch(`${API_ORIGIN}/api/studio/jobs/${encodeURIComponent(project.job_id)}/plan-thumb.svg`, {
+      })
       .then((r) => (r.ok ? r.blob() : null))
       .then((b) => {
         if (!b || gone) return;
@@ -86,7 +86,7 @@ export default function MyStudioProjects({ token }: { token: string | null }) {
   useEffect(() => {
     if (!token) return;
     let gone = false;
-    fetch(`${API_ORIGIN}/api/studio/activity`, { headers: { Authorization: `Bearer ${token}` } })
+    apiFetch(`${API_ORIGIN}/api/studio/activity`)
       .then(async (r) => {
         if (!r.ok) throw new Error(String(r.status));
         const d = (await r.json()) as { projects?: StudioProject[]; currency?: string };

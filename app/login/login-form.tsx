@@ -2,6 +2,7 @@
 
 import { clearReturnPath, peekReturnPath, rememberReturnPath, safeReturnPath } from "@/lib/return-path";
 import { goAfterSignIn, signOutThisSession } from "@/lib/session-cookie";
+import { SESSION_MODE_HEADERS, adoptLegacyToken, isSignedIn, rememberUser } from "@/lib/session";
 import { useState, useEffect, useRef } from "react";
 import {
   COUNTRIES,
@@ -283,7 +284,7 @@ export default function LoginForm({
     // `next` it was sent with is kept for those pages (lib/return-path.ts).
     rememberReturnPath(params.get("next"));
     try {
-      if (localStorage.getItem("cf_customer_token")) {
+      if (isSignedIn() || localStorage.getItem("cf_customer_token")) {
         const raw = localStorage.getItem("cf_customer_user");
         const u = raw ? (JSON.parse(raw) as { email?: string }) : null;
         setSignedInAs(u?.email ?? "your account");
@@ -323,7 +324,7 @@ export default function LoginForm({
     const onShow = (e: PageTransitionEvent) => {
       if (!e.persisted) return;
       try {
-        if (localStorage.getItem("cf_customer_token")) window.location.reload();
+        if (isSignedIn()) window.location.reload();
       } catch {
         // storage blocked; nothing to restore from
       }
@@ -369,9 +370,10 @@ export default function LoginForm({
   const [codeLoading, setCodeLoading] = useState(false);
 
 
-  function storeAndRedirect(data: { access_token: string; user: unknown }) {
-    localStorage.setItem("cf_customer_token", data.access_token);
-    localStorage.setItem("cf_customer_user", JSON.stringify(data.user));
+  function storeAndRedirect(data: { access_token?: string; user: unknown }) {
+    // The session is the HttpOnly cookie the API just set (lib/session.ts);
+    // the response carries no token. Only the user record is kept here.
+    rememberUser(data.user);
     const params = new URLSearchParams(window.location.search);
     const next = safeReturnPath(params.get("next")) ?? peekReturnPath();
 
@@ -548,10 +550,10 @@ export default function LoginForm({
     try {
       const res = await fetch(`${API}/auth/verify-login-code`, {
         method: "POST",
-        // So the browser KEEPS the HttpOnly cf_session cookie this sets on
-        // control: the CFD job page there signs in with nothing else.
+        // The session is the HttpOnly cookies this sets on control
+        // (lib/session.ts); the header asks for exactly that.
         credentials: "include",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...SESSION_MODE_HEADERS },
         body: JSON.stringify({ email: codeEmail.trim(), code: codeValue.trim() }),
       });
       const data = await res.json();
@@ -593,13 +595,7 @@ export default function LoginForm({
             <button
               type="button"
               onClick={() => {
-                let leaving: string | null = null;
-                try {
-                  leaving = localStorage.getItem("cf_customer_token");
-                } catch {
-                  /* storage blocked */
-                }
-                void signOutThisSession(leaving);
+                void adoptLegacyToken().then(() => signOutThisSession());
                 try {
                   localStorage.removeItem("cf_customer_token");
                   localStorage.removeItem("cf_customer_user");

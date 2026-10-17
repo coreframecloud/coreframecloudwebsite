@@ -9,6 +9,7 @@
  * The list never carries a job token.
  */
 import { API_BASE } from "@/lib/api-base";
+import { apiFetch } from "@/lib/session";
 import { customerWords } from "@/lib/cfd-words";
 
 /**
@@ -21,9 +22,13 @@ export function isAccountAccess(token: string | null | undefined): boolean {
   return token === ACCOUNT_ACCESS;
 }
 
-/** `token=…` for a job URL, or "" when the session opens the job. */
-export function tokenQuery(token: string): string {
-  return isAccountAccess(token) ? "" : `token=${encodeURIComponent(token)}`;
+/**
+ * The job token as a request HEADER (security review 17 Oct 2026): it used to
+ * ride in the URL as ?token=, which put it in the API's access logs. Nothing
+ * when the signed-in session opens the job instead.
+ */
+export function jobTokenHeaders(token: string | null | undefined): Record<string, string> {
+  return token && !isAccountAccess(token) ? { "X-Job-Token": token } : {};
 }
 
 export interface MyCfdJob {
@@ -51,16 +56,13 @@ export interface MyCfdJobsPage {
 }
 
 export async function fetchMyCfdJobs(
-  bearer: string,
+  _session: string,
   opts: { limit?: number; cursor?: string | null } = {},
 ): Promise<MyCfdJobsPage | "signed_out" | null> {
   const q = new URLSearchParams({ limit: String(opts.limit ?? 10) });
   if (opts.cursor) q.set("cursor", opts.cursor);
   try {
-    const res = await fetch(`${API_BASE}/me/cfd-jobs?${q}`, {
-      headers: { Authorization: `Bearer ${bearer}` },
-      cache: "no-store",
-    });
+    const res = await apiFetch(`${API_BASE}/me/cfd-jobs?${q}`, { cache: "no-store" });
     if (res.status === 401) return "signed_out";
     if (!res.ok) return null;
     return customerWords((await res.json()) as MyCfdJobsPage);

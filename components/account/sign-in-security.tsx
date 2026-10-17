@@ -14,7 +14,7 @@ import { forgetLocalSession, signOutEverywhere } from "@/lib/session-cookie";
  * Asks once before doing it, because a running GPU session in Connect is
  * signed out too.
  */
-export default function SignInSecurity({ token }: { token: string | null }) {
+export default function SignInSecurity() {
   const [confirming, setConfirming] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -22,7 +22,7 @@ export default function SignInSecurity({ token }: { token: string | null }) {
   async function endEverywhere() {
     setBusy(true);
     setError(null);
-    const ok = await signOutEverywhere(token);
+    const ok = await signOutEverywhere();
     if (!ok) {
       setBusy(false);
       setError("That didn't go through. Sign in again and retry, or contact support@coreframecloud.com.");

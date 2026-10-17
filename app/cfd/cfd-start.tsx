@@ -1,5 +1,6 @@
 "use client";
 
+import { COOKIE_SESSION, apiFetch, sessionMarker } from "@/lib/session";
 import { useCallback, useEffect, useState } from "react";
 import { API_BASE } from "@/lib/api-base";
 import { trackEvent } from "@/lib/analytics";
@@ -17,13 +18,13 @@ import type { Currency } from "@/lib/money";
  *   incomplete  -> finish verification at /verify, which comes back here;
  *   complete    -> the form, without name, email or phone.
  *
- * Signed-in state is the site's usual one: the bearer token in localStorage
- * (cf_customer_token). Completeness is asked of GET /verification/status,
+ * Signed-in state is the site's usual one: the HttpOnly session cookie
+ * (lib/session.ts). Completeness is asked of GET /verification/status,
  * which takes both the full and the verification-scoped token and answers
  * with `next_step` ("email" | "mobile" | "done") and `account_active`.
  */
 
-const TOKEN_KEY = "cf_customer_token";
+const LEGACY_TOKEN_KEY = "cf_customer_token";
 const USER_KEY = "cf_customer_user";
 const HERE = "/cfd#start";
 
@@ -32,15 +33,6 @@ type Gate =
   | { kind: "signed_out"; note?: string }
   | { kind: "incomplete"; step: string }
   | { kind: "ready"; token: string; email: string | null };
-
-function tokenExpired(tok: string): boolean {
-  try {
-    const payload = JSON.parse(atob(tok.split(".")[1].replace(/-/g, "+").replace(/_/g, "/")));
-    return typeof payload.exp === "number" && payload.exp * 1000 < Date.now();
-  } catch {
-    return true;
-  }
-}
 
 function storedEmail(): string | null {
   try {
@@ -55,18 +47,13 @@ export default function CfdStart({ currency = "INR" }: { currency?: Currency } =
   const [gate, setGate] = useState<Gate>({ kind: "loading" });
 
   const check = useCallback(async () => {
-    let token: string | null = null;
-    try {
-      token = localStorage.getItem(TOKEN_KEY);
-    } catch {
-      /* storage blocked: treated as signed out */
-    }
-    if (!token || tokenExpired(token)) {
+    const token = sessionMarker();
+    if (!token && !localStorage.getItem(LEGACY_TOKEN_KEY)) {
       setGate({ kind: "signed_out" });
       return;
     }
     try {
-      const res = await fetch(`${API_BASE}/verification/status`, { headers: { Authorization: `Bearer ${token}` } });
+      const res = await apiFetch(`${API_BASE}/verification/status`);
       if (res.status === 401 || res.status === 403) {
         setGate({ kind: "signed_out" });
         return;
@@ -78,7 +65,7 @@ export default function CfdStart({ currency = "INR" }: { currency?: Currency } =
         setGate({ kind: "incomplete", step });
         return;
       }
-      setGate({ kind: "ready", token, email: storedEmail() });
+      setGate({ kind: "ready", token: token ?? COOKIE_SESSION, email: storedEmail() });
     } catch {
       // Could not reach the API. Show the sign-in path rather than a form that cannot submit.
       setGate({ kind: "signed_out", note: "We could not check your sign-in just now. Reload the page, or sign in again." });

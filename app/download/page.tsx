@@ -1,5 +1,7 @@
 "use client";
 
+import { API_BASE } from "@/lib/api-base";
+import { apiFetch, isSignedIn } from "@/lib/session";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -29,14 +31,16 @@ export default function DownloadPage() {
   const [downloading, setDownloading] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem("cf_customer_token");
-    // Ask the server first even without a token: while downloads are paused the
+    // Ask the server first even when signed out: while downloads are paused the
     // answer is the same for everyone, and telling a signed-out visitor to log
-    // in for something that is switched off wastes their time.
-    fetch("/api/download/client", {
-      headers: token ? { Authorization: `Bearer ${token}` } : {},
-    })
+    // in for something that is switched off wastes their time. Signed in or
+    // not is the API's answer for the session cookie (lib/session.ts).
+    const signedIn = isSignedIn()
+      ? apiFetch(`${API_BASE}/me`).then((r) => r.ok).catch(() => false)
+      : Promise.resolve(false);
+    fetch("/api/download/client")
       .then(async (res) => {
+        const token = await signedIn;
         // 503 + paused = downloads are deliberately off, not broken. Say so
         // plainly rather than showing an error the customer might retry at.
         if (res.status === 503) {

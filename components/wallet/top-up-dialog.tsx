@@ -46,6 +46,7 @@
  * Every legacy `*_rupees` field is in the account's currency.
  */
 
+import { apiFetch, sessionMarker } from "@/lib/session";
 import { useCallback, useEffect, useState } from "react";
 import { trackConversion } from "@/lib/analytics";
 import { hoursLabel, type IntroOffer } from "@/lib/rate-card";
@@ -236,10 +237,10 @@ export default function TopUpDialog({
   }, [open, starterOffer]);
 
   const loadConfig = useCallback(async (): Promise<PaymentsConfig | null> => {
-    const token = localStorage.getItem("cf_customer_token");
+    const token = sessionMarker();
     if (!token) return null;
     try {
-      const r = await fetch(`${API}/payments/config`, { headers: { Authorization: `Bearer ${token}` } });
+      const r = await apiFetch(`${API}/payments/config`);
       const c: PaymentsConfig | null = r.ok ? await r.json() : null;
       if (!c) return null;
       // The effective floor is the higher of the gateway's minimum and this
@@ -261,7 +262,7 @@ export default function TopUpDialog({
 
   useEffect(() => {
     if (!open) return;
-    const token = localStorage.getItem("cf_customer_token");
+    const token = sessionMarker();
     if (!token) return;
 
     loadConfig();
@@ -322,7 +323,7 @@ export default function TopUpDialog({
   // India, the state) is saved first, which fixes the account's currency.
   const saveCountry = useCallback(async (confirmedIndia = false) => {
     setError("");
-    const token = localStorage.getItem("cf_customer_token");
+    const token = sessionMarker();
     if (!token) return setError("Please sign in again.");
     if (!countryIso) return setError("Select your country.");
     if (countryIso === INDIA.iso && !stateCode) {
@@ -334,9 +335,9 @@ export default function TopUpDialog({
     setAskIndia(false);
     setSavingCountry(true);
     try {
-      const r = await fetch(`${API}/verification/location`, {
+      const r = await apiFetch(`${API}/verification/location`, {
         method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           country_code: countryIso,
           state_code: countryIso === INDIA.iso ? stateCode : FOREIGN_STATE_CODE,
@@ -372,7 +373,7 @@ export default function TopUpDialog({
 
   const pay = useCallback(async () => {
     setError("");
-    const token = localStorage.getItem("cf_customer_token");
+    const token = sessionMarker();
     if (!token) return setError("Please sign in again.");
     if (!config?.enabled || !config.key_id) return setError("Online recharge is not available right now.");
 
@@ -399,9 +400,9 @@ export default function TopUpDialog({
       const ok = await loadRazorpay();
       if (!ok) throw new Error("Could not load the payment window. Check your connection and try again.");
 
-      const orderRes = await fetch(`${API}/payments/create-order`, {
+      const orderRes = await apiFetch(`${API}/payments/create-order`, {
         method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           // `amount` and `currency` from 15 Oct 2026; `amount_rupees` (the same
           // number, in the account's currency) for an older server.
@@ -448,9 +449,9 @@ export default function TopUpDialog({
           // constitute a paid order. Nothing is credited on this side.
           handler: async (resp: Record<string, string>) => {
             try {
-              const vr = await fetch(`${API}/payments/verify`, {
+              const vr = await apiFetch(`${API}/payments/verify`, {
                 method: "POST",
-                headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                   razorpay_order_id: resp.razorpay_order_id,
                   razorpay_payment_id: resp.razorpay_payment_id,

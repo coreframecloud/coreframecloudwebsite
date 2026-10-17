@@ -47,6 +47,8 @@ import { CancelLink, Cancelled, RunCard } from "./run-card";
 const JobViewer = dynamic(() => import("./job-viewer"), { ssr: false });
 
 const POLL_MS = 20_000;
+// Under the API's 5-minute file-link lifetime (cfd_jobs.FILE_LINK_SECONDS).
+const FILE_LINK_REFRESH_MS = 4 * 60_000;
 const noSubscribe = () => () => {};
 const WALLET_STATES = new Set(["quote_fee_due", "quoted", "not_converged", "completed"]);
 
@@ -94,6 +96,27 @@ export default function CfdJobPage({ refId }: { refId: string }) {
     }, POLL_MS);
     return () => clearInterval(id);
   }, [token, status, refresh]);
+
+  // File links (report, results, 3D views) are signed for 5 minutes (security
+  // review 17 Oct 2026). Keep them fresh on a page left open, and on return
+  // to the tab, so a download button never hands out an expired link.
+  const hasFiles = Boolean(
+    job && (job.report_url || job.results_url || job.view3d_url || job.mesh_report_url || job.preview_url),
+  );
+  useEffect(() => {
+    if (!token || !hasFiles) return;
+    const id = setInterval(() => {
+      if (document.visibilityState === "visible") void refresh(token);
+    }, FILE_LINK_REFRESH_MS);
+    const onVisible = () => {
+      if (document.visibilityState === "visible") void refresh(token);
+    };
+    document.addEventListener("visibilitychange", onVisible);
+    return () => {
+      clearInterval(id);
+      document.removeEventListener("visibilitychange", onVisible);
+    };
+  }, [token, hasFiles, refresh]);
 
   useEffect(() => {
     if (!WALLET_STATES.has(status)) return;
