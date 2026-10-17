@@ -1,9 +1,4 @@
-"use client";
-
 import Image from "next/image";
-import { useRef } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
-import { usePrefersReducedMotion } from "@/lib/use-reduced-motion";
 
 /**
  * Pictures that replace paragraphs.
@@ -14,8 +9,9 @@ import { usePrefersReducedMotion } from "@/lib/use-reduced-motion";
  * render, "rendered on our RTX 5080" or a customer. Studio product output
  * keeps its "generated image" label (components/visuals/studio-compare).
  *
- * Parallax is gentle (±24px) and switched off under reduced motion; the
- * markup is the same either way, so hydration always matches.
+ * Parallax is gentle (±24px) and switched off under reduced motion. Since
+ * 18 Oct 2026 it is a CSS scroll-driven animation (app/motion.css), not
+ * framer-motion, so these are server components and ship no JavaScript.
  */
 export function GenImage({
   src,
@@ -36,13 +32,9 @@ export function GenImage({
   parallax?: boolean;
   priority?: boolean;
 }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const reduce = usePrefersReducedMotion();
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
-  const y = useTransform(scrollYProgress, [0, 1], parallax && !reduce ? [24, -24] : [0, 0]);
   return (
-    <figure ref={ref} className={`relative overflow-hidden rounded-[24px] bg-paper-2 ${className}`}>
-      <motion.div style={{ y }} className={parallax ? "-my-6" : ""}>
+    <figure className={`relative overflow-hidden rounded-[24px] bg-paper-2 ${parallax ? "cf-px-scope" : ""} ${className}`}>
+      <div className={parallax ? "cf-px-drift-lg -my-6" : ""}>
         <Image
           src={src}
           alt={alt}
@@ -52,7 +44,7 @@ export function GenImage({
           preload={priority}
           className="h-auto w-full object-cover"
         />
-      </motion.div>
+      </div>
     </figure>
   );
 }

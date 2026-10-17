@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "./motion.css";
 
 /* ─────────────────────────────────────────────────────────────────────────
    Coreframe design system — owner approved 11 Oct 2026 (replaces the 30 Sep
@@ -14,9 +15,8 @@
    rule. Controls and inputs use --radius-cf (12px). Do not invent a third
    radius or a second accent colour.
 
-   Motion: sections fade up once as they scroll in (components/scroll-reveal
-   and components/home/redesign/reveal); nothing moves under
-   prefers-reduced-motion.
+   Motion: one system in app/motion.css, driven by components/scroll-reveal
+   (18 Oct 2026); nothing moves under prefers-reduced-motion.
 
    THE RULE THAT STILL MAKES IT COHERENT: specifications never hide inside a
    paragraph. Anything a customer would write down — a price, a spec, a
@@ -727,17 +727,7 @@ body {
 .cf-pagehero .cf-btn-secondary:hover { background: rgb(255 255 255 / 0.1); }
 .cf-pagehero .border-rule { border-color: rgb(255 255 255 / 0.15); }
 
-/* ── Fade-up reveal (components/scroll-reveal.tsx adds these) ─────────────
-   Only JavaScript adds .cf-reveal, so without JS nothing is ever hidden. */
-.cf-reveal {
-  opacity: 0;
-  transform: translateY(24px);
-  transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1), transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
-}
-.cf-reveal.cf-in { opacity: 1; transform: none; }
-@media (prefers-reduced-motion: reduce) {
-  .cf-reveal { opacity: 1; transform: none; transition: none; }
-}
+/* ── Fade-up reveal, stagger, spotlight, parallax: app/motion.css ───────── */
 
 /* ── Footer: dark band (unlayered for the same reason as .cf-pagehero) ── */
 .cf-footer :is(.text-ink, h2, h3) { color: #fff; }

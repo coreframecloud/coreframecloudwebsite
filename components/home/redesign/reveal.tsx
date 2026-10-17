@@ -1,40 +1,39 @@
-"use client";
-
-import { motion } from "framer-motion";
-import type { ReactNode } from "react";
-import { usePrefersReducedMotion } from "@/lib/use-reduced-motion";
+import type { CSSProperties, ReactNode } from "react";
 
 /**
- * Fade-up on first scroll into view: the one entrance the homepage uses. The
- * markup is identical with reduced motion (no hydration mismatch); there the
- * content only fades, it never slides.
+ * Fade-up on first scroll into view: the one entrance the homepage uses.
+ *
+ * 18 Oct 2026: no longer framer-motion. This is plain markup (usable from
+ * server and client components alike); the site's motion runtime
+ * (components/scroll-reveal.tsx) hides it only if it is below the fold when
+ * the page loads, then reveals it with app/motion.css. So the server HTML is
+ * always fully visible (the old version shipped the hero headline at
+ * opacity 0), and with reduced motion nothing moves at all.
  */
 export function Reveal({
   children,
   delay = 0,
   className,
   tilt = false,
+  spot = false,
 }: {
   children: ReactNode;
+  /** Seconds. */
   delay?: number;
   className?: string;
   /** Rise with a slight 3D tilt and scale-in (bento cards). */
   tilt?: boolean;
+  /** A soft light follows the pointer (dark cards that are not .cfh-card). */
+  spot?: boolean;
 }) {
-  const reduce = usePrefersReducedMotion();
   return (
-    <motion.div
+    <div
       className={className}
-      initial={tilt ? { opacity: 0, y: 48, rotateX: 9, scale: 0.96, transformPerspective: 1200 } : { opacity: 0, y: 28 }}
-      whileInView={tilt ? { opacity: 1, y: 0, rotateX: 0, scale: 1, transformPerspective: 1200 } : { opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-80px" }}
-      transition={
-        reduce
-          ? { opacity: { duration: 0.5, delay }, y: { duration: 0 }, rotateX: { duration: 0 }, scale: { duration: 0 } }
-          : { duration: tilt ? 0.9 : 0.7, delay, ease: [0.22, 1, 0.36, 1] }
-      }
+      data-cf-reveal={tilt ? "tilt" : "up"}
+      data-cf-spot={spot ? "" : undefined}
+      style={delay ? ({ "--cf-d": `${delay}s` } as CSSProperties) : undefined}
     >
       {children}
-    </motion.div>
+    </div>
   );
 }

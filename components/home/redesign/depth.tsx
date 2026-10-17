@@ -1,55 +1,42 @@
-"use client";
-
 import Image from "next/image";
-import { useRef, type ReactNode } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
-import { usePrefersReducedMotion } from "@/lib/use-reduced-motion";
+import type { ReactNode } from "react";
 
 /**
  * Scroll depth for the homepage (owner, round 4). Transform and opacity only,
- * so nothing reflows. Under reduced motion every value is pinned to rest:
- * the markup is identical, it just doesn't move.
+ * so nothing reflows.
+ *
+ * 18 Oct 2026: CSS scroll-driven animations (app/motion.css, section 8)
+ * replace framer-motion's useScroll, so these are server components and ship
+ * no JavaScript. Same distances as before. Browsers without
+ * animation-timeline, and anyone with reduced motion, see a still image.
  */
 
 /** The hero render: moves slower than the page and eases back as the sheet covers it. */
 export function HeroBackdrop({ src, alt }: { src: string; alt: string }) {
-  const reduce = usePrefersReducedMotion();
-  const { scrollY } = useScroll();
-  const y = useTransform(scrollY, [0, 900], reduce ? [0, 0] : [0, 260]);
-  const scale = useTransform(scrollY, [0, 900], reduce ? [1, 1] : [1.06, 0.96]);
-  const dim = useTransform(scrollY, [0, 700], reduce ? [0, 0] : [0, 0.35]);
   return (
-    <motion.div className="absolute inset-0 -z-20 will-change-transform" style={{ y, scale }}>
+    <div className="cf-px-hero absolute inset-0 -z-20">
       <Image src={src} alt={alt} fill preload sizes="100vw" className="object-cover object-center" />
-      <motion.div className="absolute inset-0 bg-black" style={{ opacity: dim }} />
-    </motion.div>
+      <div className="cf-px-dim absolute inset-0 bg-black opacity-0" />
+    </div>
   );
 }
 
 /** A background image that drifts slowly behind a band. */
 export function ParallaxBg({ src, className = "" }: { src: string; className?: string }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const reduce = usePrefersReducedMotion();
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
-  const y = useTransform(scrollYProgress, [0, 1], reduce ? ["0%", "0%"] : ["-12%", "12%"]);
   return (
-    <div ref={ref} className="absolute inset-0 -z-20 overflow-hidden">
-      <motion.div className={`absolute -inset-y-[15%] inset-x-0 ${className}`} style={{ y }}>
+    <div className="cf-px-scope absolute inset-0 -z-20 overflow-hidden">
+      <div className={`cf-px-band absolute -inset-y-[15%] inset-x-0 ${className}`}>
         <Image src={src} alt="" fill sizes="100vw" className="object-cover" />
-      </motion.div>
+      </div>
     </div>
   );
 }
 
 /** Content that drifts a few pixels against the scroll, for images inside cards. */
-export function Drift({ children, amount = 14, className = "" }: { children: ReactNode; amount?: number; className?: string }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const reduce = usePrefersReducedMotion();
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
-  const y = useTransform(scrollYProgress, [0, 1], reduce ? [0, 0] : [amount, -amount]);
+export function Drift({ children, className = "" }: { children: ReactNode; className?: string }) {
   return (
-    <motion.div ref={ref} className={className} style={{ y }}>
-      {children}
-    </motion.div>
+    <div className={`cf-px-scope ${className}`}>
+      <div className="cf-px-drift">{children}</div>
+    </div>
   );
 }

@@ -1,0 +1,218 @@
+/* ─────────────────────────────────────────────────────────────────────────
+   Motion system (18 Oct 2026, plan: plans/site-motion-20261018.md)
+
+   One easing, three durations, four distances. Every effect here is CSS; the
+   only script is components/scroll-reveal.tsx (one IntersectionObserver and
+   one pointer listener, mounted once in the root layout). Looks adapted from
+   React Bits (https://reactbits.dev, MIT + Commons Clause, (c) 2026 David
+   Haz): BlurText, AnimatedContent, AnimatedList, Stepper, SpotlightCard,
+   LogoLoop and DotGrid, rebuilt without motion/react, GSAP or WebGL.
+
+   House rules
+   - Nothing is hidden in the server HTML. Only the runtime adds .cf-reveal,
+     and only to elements below the fold at load, so the LCP headline and the
+     hero image never fade in and a reader without JS sees everything.
+   - Transform, opacity and filter only: nothing reflows (CLS 0).
+   - prefers-reduced-motion: reduce -> nothing moves. The runtime exits, the
+     parallax below sits inside a no-preference query, the marquee wraps.
+   ───────────────────────────────────────────────────────────────────────── */
+:root {
+  --cf-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --cf-dur-1: 0.45s; /* small things: number pops, hover light */
+  --cf-dur-2: 0.75s; /* blocks: fade-up, cards */
+  --cf-dur-3: 1.1s; /* headings and washes */
+  --cf-rise: 24px;
+  --cf-rise-sm: 14px;
+  --cf-stagger: 70ms;
+  --cf-blur: 8px;
+}
+
+/* ── 1. Reveal (AnimatedContent / FadeContent) ───────────────────────────
+   .cf-reveal is set by the runtime; .cf-in when it scrolls into view. The
+   runtime removes both once the entrance has finished, so hover transitions
+   on the same element never inherit a stagger delay. */
+.cf-reveal {
+  opacity: 0;
+  transform: translateY(var(--cf-rise));
+  transition:
+    opacity var(--cf-dur-2) var(--cf-ease) var(--cf-d, 0s),
+    transform var(--cf-dur-2) var(--cf-ease) var(--cf-d, 0s),
+    filter var(--cf-dur-3) var(--cf-ease) var(--cf-d, 0s);
+}
+.cf-reveal.cf-in { opacity: 1; transform: none; }
+
+/* Bento cards rise with a slight 3D tilt (was framer's `tilt`). */
+.cf-reveal[data-cf-reveal="tilt"] {
+  transform: perspective(1200px) translateY(48px) rotateX(9deg) scale(0.96);
+  transition-duration: 0.9s;
+}
+.cf-reveal[data-cf-reveal="tilt"].cf-in { transform: none; }
+
+/* ── 2. Heading blur-rise (BlurText, whole heading, no letter spans) ─────── */
+.cf-reveal:is(.cfh-h2, .cf-section-title, .cfx-h2, h2):not(.cf-in) { filter: blur(var(--cf-blur)); }
+:where(.cf-reveal) :is(.cfh-h2, .cf-section-title, .cfx-h2) {
+  transition:
+    filter var(--cf-dur-3) var(--cf-ease) calc(var(--cf-d, 0s) + 0.08s),
+    opacity var(--cf-dur-3) var(--cf-ease) calc(var(--cf-d, 0s) + 0.08s),
+    transform var(--cf-dur-3) var(--cf-ease) calc(var(--cf-d, 0s) + 0.08s);
+}
+:where(.cf-reveal:not(.cf-in)) :is(.cfh-h2, .cf-section-title, .cfx-h2) {
+  filter: blur(var(--cf-blur));
+  opacity: 0.2;
+  transform: translateY(var(--cf-rise-sm));
+}
+
+/* ── 3. Stagger (AnimatedList): card grids and step lists ─────────────────
+   The container stays put; its children arrive one after another. */
+.cf-reveal.cf-stagger { opacity: 1; transform: none; }
+.cf-reveal.cf-stagger > * {
+  transition:
+    opacity var(--cf-dur-2) var(--cf-ease) calc(var(--cf-i, 0) * var(--cf-stagger)),
+    transform var(--cf-dur-2) var(--cf-ease) calc(var(--cf-i, 0) * var(--cf-stagger));
+}
+.cf-reveal.cf-stagger:not(.cf-in) > * { opacity: 0; transform: translateY(var(--cf-rise)); }
+
+/* Stepper: each step's number pops after its row lands. */
+.cf-reveal[data-cf-steps] > li > :first-child {
+  transition: transform var(--cf-dur-1) cubic-bezier(0.34, 1.56, 0.64, 1)
+    calc(var(--cf-i, 0) * var(--cf-stagger) * 2 + 0.25s);
+}
+.cf-reveal[data-cf-steps]:not(.cf-in) > li > :first-child { transform: scale(0.4); }
+.cf-reveal[data-cf-steps] > * { transition-delay: calc(var(--cf-i, 0) * var(--cf-stagger) * 2); }
+
+/* ── 4. Ink + watercolour (CFD) ──────────────────────────────────────────
+   Washes bloom, sketches bleed in from soft focus, stamps press, and the one
+   yellow highlight is drawn on like a marker. */
+:where(.cf-reveal) .cfx-numeral::before { transition: transform 1.4s var(--cf-ease) 0.1s, opacity 1.4s var(--cf-ease) 0.1s; }
+:where(.cf-reveal:not(.cf-in)) .cfx-numeral::before { transform: scale(0.55); opacity: 0; }
+:where(.cf-reveal) .cfx-art { transition: filter 1.3s var(--cf-ease) 0.1s, opacity 1.3s var(--cf-ease) 0.1s; }
+:where(.cf-reveal:not(.cf-in)) .cfx-art { filter: blur(6px) saturate(0.4); opacity: 0.35; }
+:where(.cf-reveal) .cfx-stamp { transition: transform var(--cf-dur-1) cubic-bezier(0.34, 1.56, 0.64, 1) 0.7s, opacity 0.2s linear 0.7s; }
+:where(.cf-reveal:not(.cf-in)) .cfx-stamp { transform: rotate(-8deg) scale(1.6); opacity: 0; }
+.cfx-hl { background-size: 100% 100%; background-repeat: no-repeat; }
+:where(.cf-reveal) .cfx-hl { transition: background-size 0.9s var(--cf-ease) 0.5s; }
+:where(.cf-reveal:not(.cf-in)) .cfx-hl { background-size: 0% 100%; }
+
+/* ── 5. Spotlight (SpotlightCard) ────────────────────────────────────────
+   A soft pool of light under the pointer. The runtime writes --mx / --my;
+   fine pointers only, and never under reduced motion. Painted behind the
+   card's content (isolation + z-index -1), so text contrast never drops. */
+.cf-card, .cfh-card, [data-cf-spot] { position: relative; isolation: isolate; }
+:is(.cf-card, .cfh-card, [data-cf-spot])::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--cf-dur-1) ease;
+  background: radial-gradient(
+    var(--cf-spot-size, 320px) circle at var(--mx, 50%) var(--my, 50%),
+    var(--cf-spot, rgb(255 255 255 / 0.7)),
+    transparent 70%
+  );
+}
+.cf-cine :is(.cf-card, .cfh-card)::after,
+.cf-pagehero .cf-card::after,
+.cfh-card.bg-night::after,
+[data-cf-spot]::after { --cf-spot: rgb(143 211 203 / 0.14); }
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  :is(.cf-card, .cfh-card, [data-cf-spot]):hover::after { opacity: 1; }
+}
+
+/* ── 6. Marquee (LogoLoop, text only) ────────────────────────────────────
+   Two copies of the list, the second aria-hidden; pauses on hover/focus.
+   Reduced motion: one wrapped, still list. */
+.cf-marquee {
+  position: relative;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+.cf-marquee-track { display: flex; width: max-content; animation: cf-marquee var(--cf-marquee-speed, 48s) linear infinite; }
+.cf-marquee:is(:hover, :focus-within) .cf-marquee-track { animation-play-state: paused; }
+.cf-marquee-list { display: flex; flex: none; gap: 0; margin: 0; padding: 0; list-style: none; }
+.cf-marquee-list li { flex: none; padding-right: 1.6rem; white-space: nowrap; }
+.cf-marquee-list li::before { content: "·"; margin-right: 1.6rem; opacity: 0.4; }
+@keyframes cf-marquee { to { transform: translateX(-50%); } }
+@media (prefers-reduced-motion: reduce) {
+  .cf-marquee { -webkit-mask-image: none; mask-image: none; }
+  .cf-marquee-track { animation: none; width: auto; }
+  .cf-marquee-list { flex-wrap: wrap; row-gap: 0.4rem; }
+  .cf-marquee-list[aria-hidden] { display: none; }
+  .cf-marquee-list li:first-child::before { content: none; }
+}
+
+/* ── 7. Dot grid (DotGrid, CSS only): the one animated background ─────────
+   /pricing hero. Faint dots everywhere; a brighter pool of dots follows the
+   pointer, and the field drifts very slowly. */
+.cf-dotgrid {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  --cf-dot: rgb(255 255 255 / 0.11);
+  background-image: radial-gradient(var(--cf-dot) 1.2px, transparent 1.6px);
+  background-size: 22px 22px;
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 55%, transparent 100%);
+  mask-image: linear-gradient(180deg, #000 0%, #000 55%, transparent 100%);
+}
+.cf-dotgrid::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgb(169 196 255 / 0.55) 1.3px, transparent 1.8px);
+  background-size: 22px 22px;
+  -webkit-mask-image: radial-gradient(260px circle at var(--mx, 70%) var(--my, 40%), #000, transparent 70%);
+  mask-image: radial-gradient(260px circle at var(--mx, 70%) var(--my, 40%), #000, transparent 70%);
+  opacity: 0.8;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .cf-dotgrid, .cf-dotgrid::after { animation: cf-dot-drift 40s linear infinite; }
+}
+@keyframes cf-dot-drift { to { background-position: 22px 44px; } }
+
+/* ── 8. Parallax: CSS scroll-driven animations (were framer useScroll) ────
+   Browsers without animation-timeline get a still image, on purpose. */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: scroll()) {
+    .cf-px-hero {
+      animation: cf-px-hero linear both;
+      animation-timeline: scroll(root);
+      animation-range: 0 900px;
+    }
+    .cf-px-dim {
+      animation: cf-px-dim linear both;
+      animation-timeline: scroll(root);
+      animation-range: 0 700px;
+    }
+    .cf-px-scope { view-timeline: --cf-px block; }
+    .cf-px-band, .cf-px-drift, .cf-px-drift-lg {
+      animation: cf-px-band linear both;
+      animation-timeline: --cf-px;
+      animation-range: cover;
+    }
+    .cf-px-drift { animation-name: cf-px-drift; }
+    .cf-px-drift-lg { animation-name: cf-px-drift-lg; }
+  }
+}
+@keyframes cf-px-hero { from { transform: translateY(0) scale(1.06); } to { transform: translateY(260px) scale(0.96); } }
+@keyframes cf-px-dim { from { opacity: 0; } to { opacity: 0.35; } }
+@keyframes cf-px-band { from { transform: translateY(-12%); } to { transform: translateY(12%); } }
+@keyframes cf-px-drift { from { transform: translateY(14px); } to { transform: translateY(-14px); } }
+@keyframes cf-px-drift-lg { from { transform: translateY(24px); } to { transform: translateY(-24px); } }
+
+/* ── 9. Hero cards: a short staggered settle on first paint ───────────────
+   Not the LCP (that is the hero render / headline, which never animate).
+   Starts at 0.5 opacity, never invisible, and only with motion allowed. */
+@media (prefers-reduced-motion: no-preference) {
+  .cf-hero-card { animation: cf-hero-card 0.8s var(--cf-ease) both; animation-delay: calc(0.15s + var(--cf-i, 0) * 0.09s); }
+}
+@keyframes cf-hero-card { from { opacity: 0.5; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+
+/* ── Reduced motion: belt and braces ─────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .cf-reveal, .cf-reveal.cf-stagger > * { opacity: 1 !important; transform: none !important; filter: none !important; transition: none !important; }
+  .cfx-hl { background-size: 100% 100% !important; }
+}
