@@ -40,6 +40,12 @@ export async function GET(): Promise<Response> {
         out.push("");
       }
     }
+    for (const c of page.callouts ?? []) {
+      out.push(`### ${c.h2}`);
+      out.push("");
+      out.push(c.body + (c.link ? ` (${SITE}${c.link.href})` : ""));
+      out.push("");
+    }
     out.push(`Licensing: ${page.licence}`);
     out.push("");
     for (const f of page.faqs) {

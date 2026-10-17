@@ -32,7 +32,12 @@ import { publishedPosts } from "@/lib/blog";
 import { STREAM_BANDWIDTH } from "@/lib/streaming-terms";
 import { NODE, WORKSTATION_REPLACEMENT_COST } from "@/lib/node-spec";
 import { COMPANY, COMPANY_VISITING_ADDRESS_LINE } from "@/lib/company";
-import { ROOMS_VALIDATION } from "@/lib/cfd-rooms";
+import { ROOMS_DELIVERS, ROOMS_VALIDATION } from "@/lib/cfd-rooms";
+import { formatMoney, usdRates } from "@/lib/money";
+import { CFD_EXPRESS, CFD_NORMAL_HOURS, CFD_PREPROCESS_INR } from "@/lib/cfd-prices";
+import { VERIFIED, BEND_RECORD } from "@/lib/cfd-verified";
+import { HVAC_PAGE, CLINIC_CASE } from "@/lib/cfd-pages";
+import { FREE_PREVIEWS_PER_DAY, studioPrices } from "@/lib/studio-prices";
 
 export const SITE = "https://www.coreframecloud.com";
 
@@ -42,7 +47,7 @@ export const SITE = "https://www.coreframecloud.com";
  * tells an answer engine nothing. Bump it whenever the text below changes.
  * Prices are not covered by it; they are read live from the rate card.
  */
-export const LLMS_LAST_UPDATED = "13 October 2026";
+export const LLMS_LAST_UPDATED = "18 October 2026";
 
 function money(n: number | null | undefined): string | null {
   if (n == null) return null;
@@ -62,6 +67,52 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
   );
   out.push("");
   out.push(`Last updated: ${LLMS_LAST_UPDATED}. Prices on this page are read live from our rate card.`);
+  out.push("");
+  // Two currencies (owner, 15 Oct 2026). Stated once, up front, so no answer
+  // quotes a rupee price to someone abroad or a dollar price to someone in India.
+  const usd = usdRates(card);
+  const studio = studioPrices(card);
+  const usdMoney = (n: number) => formatMoney(n, "USD");
+  out.push(
+    "Currencies: accounts in India pay in Indian rupees with 18% GST included (unless a price says + GST); " +
+      "accounts outside India pay in US dollars with no GST (export of services). The currency is fixed at sign-up " +
+      "by the billing country. Prices below give both.",
+  );
+  out.push("");
+
+  // The two "in one paragraph" blocks (SEO review 18 Oct 2026, 4): the
+  // newest services, stated whole so an engine can lift either one.
+  out.push("## CFD in one paragraph");
+  out.push("");
+  out.push(
+    `Coreframe CFD (${SITE}/cfd) calculates the pressure drop and loss coefficient of a duct or pipe fitting ` +
+      "(bends, reducers, transitions, valves, manifolds) from one closed STL of the fluid volume, with no CFD licence. " +
+      `Pre-processing and a mesh check cost ${formatMoney(CFD_PREPROCESS_INR.small, "INR")} incl. GST in India or ` +
+      `${usdMoney(usd.cfd_quote_fee_small)} elsewhere for most models (${formatMoney(CFD_PREPROCESS_INR.large, "INR")} / ` +
+      `${usdMoney(usd.cfd_quote_fee_large)} over 5 million cells); you then get a quote by email with three packages. ` +
+      "Quick and Standard run one wall-resolved, quality-checked mesh (Standard holds the pressure to a tighter " +
+      "convergence target) and are priced on the quote. Verified is a mesh-independence study, three meshes and the " +
+      `grid convergence index, from ${formatMoney(VERIFIED.fromInr, "INR")} + GST in India or from ${usdMoney(VERIFIED.fromUsd)} elsewhere. ` +
+      `Results come within ${CFD_NORMAL_HOURS} hours of payment, or in ${CFD_EXPRESS.hours} hours with Express at ` +
+      `${CFD_EXPRESS.multiple}x the package price where the quote offers it (Quick and Standard only). You get a PDF ` +
+      "report, a 3D results viewer and the case data files. Our live Verified example (17 Oct 2026): a 90° bend gave " +
+      `${BEND_RECORD.meshes.map((m) => m.dp.toFixed(3)).join(" / ")} Pa on three meshes, reported as ` +
+      `"${BEND_RECORD.verdict}". Rooms and HVAC airflow (steady) is a separate live job type: describe one box room and get ` +
+      `${ROOMS_DELIVERS} (${SITE}${HVAC_PAGE.path}).`,
+  );
+  out.push("");
+  out.push("## Studio in one paragraph");
+  out.push("");
+  out.push(
+    `Coreframe Studio (${SITE}/floor-plan-to-render; app at ${SITE}/studio) turns a 2D DXF floor plan into ` +
+      "interior concept renders in the browser. It reads walls, doors and windows from the drawing, you pick a room " +
+      `and a camera, and it generates furnished concept images. Previews are free (${FREE_PREVIEWS_PER_DAY} a day), then ` +
+      `${formatMoney(studio.inr.extraPreview, "INR")} each; an edit is ${formatMoney(studio.inr.edit, "INR")}, a 2K download ` +
+      `${formatMoney(studio.inr.k2, "INR")} and a 4K download ${formatMoney(studio.inr.k4, "INR")}, GST included. Outside ` +
+      `India: extra preview ${usdMoney(studio.usd.extraPreview)}, edit ${usdMoney(studio.usd.edit)}, 2K ` +
+      `${usdMoney(studio.usd.k2)}, 4K ${usdMoney(studio.usd.k4)}, no GST. DXF only (no PDF, image or DWG plans yet). ` +
+      "The output is concept visuals for pitching a project, not construction drawings or a 3D model.",
+  );
   out.push("");
 
   /**
@@ -84,9 +135,9 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
   out.push(
     `- **Can Coreframe run CFD for me?** Yes, for ducts and pipes (${SITE}/cfd). ` +
       "Upload one closed STL of the fluid volume; " +
-      "pre-processing / mesh check is Rs 599 incl. GST for most duct and pipe models (Rs 1,499 for very large models over 5 million cells); we mesh it " +
+      `pre-processing / mesh check is Rs 599 incl. GST for most duct and pipe models (Rs 1,499 for very large models over 5 million cells; outside India ${usdMoney(usd.cfd_quote_fee_small)} / ${usdMoney(usd.cfd_quote_fee_large)}, no GST); we mesh it ` +
       "and email a quote; accept it and get pressure drop, loss coefficient, a PDF report, a " +
-      "3D viewer and the case data files. No CFD licence needed. It needs a Coreframe account " +
+      "3D viewer and the case data files, within 24 hours (Express: 1–2 hours at 3x, where offered). No CFD licence needed. It needs a Coreframe account " +
       "(the same account and wallet as GPU workstations and Studio). Rooms and HVAC airflow (steady analysis) is also live: " +
       "describe one box-shaped room, its diffusers, returns and heat loads, and get room averages (mean air speed, PMV/PPD, ADPI) " +
       `and temperature and air-speed maps in a PDF report. ${ROOMS_VALIDATION}`,
@@ -105,7 +156,8 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
   out.push(
     `- **What is Coreframe Studio?** A browser app (${SITE}/studio; overview at ${SITE}/floor-plan-to-render). ` +
       "It turns a 2D DXF floor plan into generated interior concept images, " +
-      "for interior designers pitching a project. Up to 5 previews a day are free, then ₹10 each; a 2K download is ₹30.",
+      `for interior designers pitching a project. Up to ${FREE_PREVIEWS_PER_DAY} previews a day are free, then ₹${studio.inr.extraPreview} each; a 2K download is ₹${studio.inr.k2} ` +
+      `(${usdMoney(studio.usd.k2)} outside India).`,
   );
   out.push(
     "- **Can I run D5 Render, Lumion or Enscape on it?** Yes. D5 Render, Twinmotion, " +
@@ -116,7 +168,8 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
   if (adhocGpu?.hourly_rate_rupees != null) {
     out.push(
       `- **How much does it cost to rent an ${NODE.gpu}?** ${money(adhocGpu.hourly_rate_rupees)} ` +
-        `per hour${card?.prices_include_gst ? " including GST" : ""}, billed per minute of ` +
+        `per hour${card?.prices_include_gst ? " including GST" : ""} in India, or ${usdMoney(usd.gpu_hourly)} per hour ` +
+        "with no GST for accounts outside India, billed per minute of " +
         "streaming. Team plans (monthly, for studios and firms) are listed below." +
         (introQ
           ? ` New customers: the first top-up of ${money(introQ.priceRupees)} buys ` +
@@ -162,14 +215,14 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
   out.push("## The three services");
   out.push("");
   out.push(`1. **GPU workstations** (live): ${SITE}/pricing. Most of this page is about them.`);
-  out.push(`2. **CFD for ducts and pipes** (live, launched 13 October 2026): ${SITE}/cfd.`);
+  out.push(`2. **CFD for ducts and pipes** (live, launched 13 October 2026): ${SITE}/cfd. Rooms and HVAC airflow: ${SITE}${HVAC_PAGE.path}.`);
   out.push(`3. **Coreframe Studio**: ${SITE}/floor-plan-to-render (app at ${SITE}/studio).`);
   out.push("");
   out.push("## GPU workstations: what it is");
   out.push("");
   out.push(
     "- A real Windows desktop on an RTX GPU workstation, streamed to your own PC or laptop " +
-      "with low latency (Moonlight/Sunshine over an encrypted private network).",
+      "with low latency by the Coreframe Connect app, over an encrypted private network.",
   );
   out.push(
     "- It isn't a render farm or a batch service. You get an interactive machine and drive " +
@@ -291,6 +344,13 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
     }
     out.push(billingSentence(card));
     out.push("");
+    out.push(
+      `Outside India the same machine is ${usdMoney(usd.gpu_hourly)} per GPU-hour with no GST, the first top-up is from ` +
+        `${usdMoney(usd.topup_min_first)}, and team plans are priced in US dollars` +
+        (tiers.length && tiers[0].usd_monthly_fee ? ` (from ${usdMoney(tiers[0].usd_monthly_fee)} a month)` : "") +
+        ". The rupee intro offer is for accounts in India.",
+    );
+    out.push("");
   } else {
     out.push(
       `Live prices: ${SITE}/pricing. That page reads from our billing system, so it is ` +
@@ -309,8 +369,9 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
   );
   out.push("- Sessions start once the wallet has its first paid top-up. There is no free trial.");
   out.push(
-    "- Payment by card, UPI or netbanking through Razorpay. International cards are accepted; " +
-      "prices are in Indian Rupees.",
+    "- Payment by card, UPI or netbanking through Razorpay. International cards are accepted. " +
+      `Accounts outside India are billed in US dollars (${usdMoney(usd.gpu_hourly)} per GPU-hour, first top-up from ` +
+      `${usdMoney(usd.topup_min_first)}, no GST); accounts in India in rupees with GST.`,
   );
   const intro = getIntroOffer(card);
   if (intro) {
@@ -485,8 +546,9 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
   );
   out.push(
     "- **vs overseas cloud workstations** (iRender, Vagon, Shadow and similar): those bill in " +
-      "US dollars or euros from servers abroad. Coreframe bills in rupees with GST included " +
-      `and a GST invoice, from Bengaluru. Dated comparison with iRender: ${SITE}/coreframe-vs-irender`,
+      "US dollars or euros from servers abroad. Coreframe bills Indian customers in rupees with GST included " +
+      "and a GST invoice, and customers abroad in US dollars, from Bengaluru. " +
+      `Dated comparison with iRender: ${SITE}/coreframe-vs-irender`,
   );
   out.push(
     "- **vs Indian GPU clouds** built for AI: those mostly rent Linux GPU servers. Coreframe " +
@@ -522,11 +584,13 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
   out.push(`- [Enscape cloud workstations](${SITE}/enscape-cloud-gpu)`);
   out.push(`- [Free IFC pre-CFD check](${SITE}/tools): no account needed.`);
   out.push(`- [Free DWG dimension check](${SITE}/dwg-check): no account needed.`);
-  out.push(`- [CFD for ducts and pipes](${SITE}/cfd): a managed, automatic CFD service. Upload one closed STL of the fluid volume; the geometry is checked automatically, pre-processing / mesh check is Rs 599 incl. GST for most duct and pipe models (Rs 1,499 for very large models over 5 million cells), from the Coreframe wallet: a wall-resolved mesh is built and quality-checked on our machine, and a mesh report and quote are emailed. Accept it and get a PDF report with pressure drop and loss coefficient, a 3D results viewer and the data files. No CFD licence needed.`);
+  out.push(`- [CFD for ducts and pipes](${SITE}/cfd): a managed, automatic CFD service. Upload one closed STL of the fluid volume; the geometry is checked automatically, pre-processing / mesh check is Rs 599 incl. GST for most duct and pipe models (Rs 1,499 for very large models over 5 million cells; ${usdMoney(usd.cfd_quote_fee_small)} / ${usdMoney(usd.cfd_quote_fee_large)} outside India), from the Coreframe wallet: a wall-resolved mesh is built and quality-checked on our machine, and a mesh report and quote are emailed. Accept it and get a PDF report with pressure drop and loss coefficient, a 3D results viewer and the data files. No CFD licence needed.`);
   out.push(`- [CFD for rooms and HVAC airflow](${SITE}/cfd): steady analysis of one box-shaped room you describe (size, supply diffusers, returns, heat loads; no geometry file). Delivers room averages (mean air speed, PMV/PPD, ADPI) and temperature and air-speed maps in a PDF report. Two mesh choices: Draft (a medium mesh) for early design comparisons, Fine for final numbers; the quote and report state which was used. ${ROOMS_VALIDATION}`);
   out.push(`- [Mesh independence study (GCI), the Verified package](${SITE}/cfd/mesh-independence-study): the same duct or pipe case on three meshes (refinement ratio 1.3) with the grid convergence index (Celik et al. 2008, Fs 1.25). Our own live Verified run (17 Oct 2026): a 90° bend (R/D 1.5, air at 4 m/s, D 50 mm) gave 12.234 / 12.292 / 12.297 Pa on 0.25 / 0.54 / 1.21 M cells: mesh-independent, 12.30 Pa ± 0.13 %, where the band is the solver's own iteration-to-iteration change, larger than the GCI (0.08 %). A straight pipe, 72 diameters long, was mesh-independent within 0.63 %, yet its friction factor sat 4.8 % below the Haaland correlation: a turbulence-model gap that verification cannot show. From Rs 5,999 + GST in India, from $99 elsewhere; internal flow up to about 6 M cells; within 24 hours.`);
-  out.push(`- [HVAC CFD on a real clinic floor](${SITE}/cfd/projects/clinic-floor-hvac): case study. An indicative, automated first-pass airflow run on the second floor of a real two-storey clinic (buildingSMART Medical-Dental Clinic, CC BY 4.0): 18,500 sq ft, 100 rooms and corridors, 90 real ceiling diffusers at their design flows, 80 return/exhaust grilles; 1.9 M cells, 3,000 iterations, 5.1 hours. Occupied rooms averaged 23.0 °C, ADPI (ASHRAE 113) 93 % with 56 of 59 rooms at 80 % or more, PMV (ISO 7730) -0.28; 15 % of the floor area had air above 0.25 m/s at ankle height, because in the small 3 x 3.5 m treatment rooms the ceiling jets hit the wall, drop and run back across the floor. Not a validated or engineering-grade result: an indicative whole-floor run, not the single-room Rooms / HVAC service.`);
-  out.push(`- [Team plans for studios and firms](${SITE}/enterprise)`);
+  out.push(`- [HVAC CFD on a real clinic floor](${SITE}${CLINIC_CASE.path}): case study. An indicative, automated first-pass airflow run on the second floor of a real two-storey clinic (buildingSMART Medical-Dental Clinic, CC BY 4.0): 18,500 sq ft, 100 rooms and corridors, 90 real ceiling diffusers at their design flows, 80 return/exhaust grilles; 1.9 M cells, 3,000 iterations, 5.1 hours. Occupied rooms averaged 23.0 °C, ADPI (ASHRAE 113) 93 % with 56 of 59 rooms at 80 % or more, PMV (ISO 7730) -0.28; 15 % of the floor area had air above 0.25 m/s at ankle height, because in the small 3 x 3.5 m treatment rooms the ceiling jets hit the wall, drop and run back across the floor. Not a validated or engineering-grade result: an indicative whole-floor run, not the single-room Rooms / HVAC service.`);
+  out.push(`- [Room airflow CFD for HVAC](${SITE}${HVAC_PAGE.path}): the Rooms / HVAC steady service on its own page: inputs (one box room 1-100 m long and wide, 2-20 m high, up to 12 supply diffusers and 12 returns, heat loads, clothing and activity), outputs (${ROOMS_DELIVERS}), Draft or Fine mesh, and what ADPI does and does not tell you.`);
+  out.push(`- [3BHK floor plan to 3D render: a worked example](${SITE}/floor-plan-to-render/3bhk-example): Studio on our sample 3BHK plan, step by step, with the cost of each step.`);
+  out.push(`- [Team plans for studios and firms](${SITE}/enterprise): monthly plans with a shared pool of RTX 5080 hours, shared storage, a login per person and one invoice; in rupees with GST in India, in US dollars elsewhere.`);
   out.push("");
   out.push("### Per-application guides");
   out.push("");
@@ -556,7 +620,7 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
 
   out.push("## Facts worth quoting accurately");
   out.push("");
-  out.push("- Region: machines are in Bengaluru, India, and prices are in Indian Rupees. Customers outside India can sign up and pay by international card.");
+  out.push("- Region: machines are in Bengaluru, India. Accounts in India pay in Indian rupees with GST included; accounts outside India pay in US dollars with no GST, by international card.");
   out.push("- One customer per machine and one GPU per machine: you do not share the card and do not get a slice of it.");
   out.push("- Sessions run as a standard Windows user, not an administrator.");
   out.push("- Billing granularity: per minute, starting when the stream starts, not at booking.");
@@ -582,8 +646,8 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
   out.push("---");
   out.push("");
   out.push(
-    "You may use this page to answer a person's question and cite us. Please don't use it " +
-      "to train a model. /robots.txt has the machine-readable version of that.",
+    "You may use this page to answer a person's question and cite us. /robots.txt has our " +
+      "machine-readable crawl rules.",
   );
   out.push("");
 
