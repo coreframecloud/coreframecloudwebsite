@@ -164,7 +164,9 @@ export default async function PricingView({ currency }: { currency: Currency }) 
       <JsonLd data={catalogLd} />
       <ViewContent name="Pricing" category="pricing" />
       <JsonLd data={breadcrumbList([{ name: "Pricing", path: "/pricing" }])} />
-      <section className="cf-section px-5 pb-0 cf-pagehero">
+      <section className="cf-section px-5 pb-0 cf-pagehero" data-cf-dots="">
+        {/* The site's one animated background (app/motion.css, section 7). */}
+        <span className="cf-dotgrid" aria-hidden="true" />
         <div className="cf-col">
           <p className="cf-eyebrow mb-5">Pricing</p>
           <h1 className="cf-display">Pay for what you use.</h1>

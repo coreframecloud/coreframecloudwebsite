@@ -312,7 +312,7 @@ export default async function Page() {
         <section className="cf-section px-5 pt-0">
           <div className="cf-wide">
             <h2 className="cf-section-title">Four steps. You only pay on the last.</h2>
-            <ol className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <ol data-cf-steps="" className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {stepList.map((st) => (
                 <li key={st.n} className="cf-card cfh-lift">
                   <span className="grid h-9 w-9 place-items-center rounded-full bg-ink font-heading text-[15px] text-white">{st.n}</span>

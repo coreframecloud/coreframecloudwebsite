@@ -546,7 +546,7 @@ export default async function CfdView({ currency }: { currency: Currency }) {
               height={640}
               sizes="(max-width: 960px) 100vw, 960px"
             />
-            <ol className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2">
+            <ol data-cf-steps="" className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2">
               {steps.map((s, i) => (
                 <li key={s.title} className="flex gap-4">
                   <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-ink font-heading text-[15px] text-white">
