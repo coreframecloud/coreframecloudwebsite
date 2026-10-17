@@ -12,6 +12,7 @@ import { getRateCard, pricingFaqAnswer } from "@/lib/rate-card";
 import { storageTerms } from "@/lib/storage-terms";
 import { NODE } from "@/lib/node-spec";
 import Link from "next/link";
+import { LastUpdated, SpecTable } from "@/components/gpu/spec-table";
 
 export const metadata: Metadata = {
   title: "Lumion Cloud GPU Workstation, RTX 5080",
@@ -46,6 +47,12 @@ const SPECS: [string, string][] = [
   ["Access", `Coreframe Connect app, streamed at ${NODE.stream}`],
   ["Display driver", "WDDM, which Lumion requires"],
   ["Location", NODE.location],
+];
+
+/** VRAM is the number to compare (13 Oct audit: as a real table, not prose). */
+const VRAM_COMPARE: [string, string][] = [
+  ["This workstation", NODE.vram],
+  ["Many laptops and entry desktops sold for design work", "6 to 8 GB"],
 ];
 
 export default async function LumionPage() {
@@ -127,6 +134,7 @@ export default async function LumionPage() {
                 Team plans
               </Link>
             </div>
+            <LastUpdated date="18 October 2026" className="mt-6" />
           </div>
         </div>
         </section>
@@ -168,19 +176,8 @@ export default async function LumionPage() {
         <section className="cf-section px-5 pt-0">
           <div className="cf-wide">
             <h2 className="cf-section-title">The machine.</h2>
-            <dl className="mt-8 overflow-hidden rounded-cf border border-rule bg-paper-2">
-              {SPECS.map(([k, v], i) => (
-                <div
-                  key={k}
-                  className={`flex flex-col gap-1 px-5 py-4 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6 ${
-                    i > 0 ? "border-t border-rule" : ""
-                  }`}
-                >
-                  <dt className="text-sm text-ink-2">{k}</dt>
-                  <dd className="text-sm font-medium break-words text-ink sm:text-right">{v}</dd>
-                </div>
-              ))}
-            </dl>
+            <SpecTable rows={SPECS} caption="The Lumion workstation: hardware and access" />
+            <SpecTable rows={VRAM_COMPARE} caption="VRAM compared" showCaption />
             <p className="cf-section-copy mt-5">
               Each node has one GPU and one customer at a time. We don&rsquo;t publish
               render times because they depend on your scene and your settings.
