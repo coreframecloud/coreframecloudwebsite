@@ -134,7 +134,7 @@ export type RateCardPlan = {
   usd_monthly_fee?: number | null;
   usd_overage_hourly_rate?: number | null;
   file_retention_days: number | null;
-  /** Priced per customer (Big Firm, 11 Oct 2026). Its fee and rates come back
+  /** Priced per customer (Large Team, was Big Firm; 11 Oct 2026). Its fee and rates come back
    *  null; planTiers() leaves it out, quotePlans() returns it. Optional so an
    *  older control plane does not break the build. */
   quote_on_request?: boolean;
@@ -221,11 +221,36 @@ export async function getRateCard(): Promise<RateCard | null> {
       );
       return null;
     }
-    return (await res.json()) as RateCard;
+    return withTeamPlanNames((await res.json()) as RateCard);
   } catch (err) {
     console.error(`[rate-card] could not reach ${RATE_CARD_URL} —`, err);
     return null;
   }
+}
+
+/**
+ * Team plans were "Studio plans" until 18 Oct 2026 (owner): "Studio" is also
+ * the floor-plan render product, so the committed monthly tiers became Small /
+ * Medium / Large Team. The names live in the `plans` table and are renamed by a
+ * control-plane migration; until that has run, the API still serves the old
+ * names. Mapping them here makes the site correct on either side of the
+ * migration, in any deploy order. Exact old names only, so a name an admin sets
+ * later passes through untouched. Safe to delete once the migration is live.
+ */
+const LEGACY_TEAM_PLAN_NAMES: Record<string, string> = {
+  Studio: "Small Team",
+  "Medium Firm": "Medium Team",
+  "Big Firm": "Large Team",
+  "Big Firm Dedicated": "Large Team (Dedicated)",
+};
+
+export function teamPlanName(name: string): string {
+  return LEGACY_TEAM_PLAN_NAMES[name] ?? name;
+}
+
+export function withTeamPlanNames(card: RateCard): RateCard {
+  if (!card || !Array.isArray(card.plans)) return card;
+  return { ...card, plans: card.plans.map((p) => ({ ...p, name: teamPlanName(p.name) })) };
 }
 
 /**

@@ -55,7 +55,7 @@ export function Bento({ youtubeId }: { youtubeId: string }) {
         </Reveal>
 
         <div className="grid min-w-0 gap-5 sm:grid-cols-2 lg:grid-cols-1">
-          {/* Studio plans */}
+          {/* Team plans */}
           <Reveal tilt delay={0.16} className="cfh-card bg-tint-mint">
             <h3 className="cfh-h3">For studios</h3>
             <ul className="mt-4 space-y-2 text-[15px] leading-[1.5] text-ink-2">
@@ -65,7 +65,7 @@ export function Bento({ youtubeId }: { youtubeId: string }) {
               <li>One bill, one admin</li>
             </ul>
             <Link href="/enterprise" className="cfh-link mt-5 text-ink">
-              Studio plans <span aria-hidden>↗</span>
+              Team plans <span aria-hidden>↗</span>
             </Link>
           </Reveal>
 

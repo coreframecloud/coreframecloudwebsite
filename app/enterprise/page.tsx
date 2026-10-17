@@ -17,13 +17,13 @@ import { GenImage } from "@/components/visuals/media";
 import { TeamStorageDiagram } from "@/components/visuals/diagrams";
 
 export const metadata: Metadata = {
-  title: "Monthly GPU Plans for Design Studios",
+  title: "Team Plans: Monthly GPU Plans for Design Studios",
   description:
     // No prices in the meta description. A description is cached by search
     // engines and quoted by answer engines long after a rate changes, and it is
     // the one string on the page that cannot read the live rate card without
     // making metadata generation depend on a network call.
-    "Monthly plans for design firms: one shared pool of RTX 5080 hours, cloud storage for the whole team, a login for each person and one bill. GST included.",
+    "Team plans for design firms: one shared pool of RTX 5080 hours, cloud storage for the whole team, a login for each person and one bill. GST included.",
   keywords: [
     "cloud GPU plan India",
     "GPU workstation monthly plan India",
@@ -70,8 +70,13 @@ const GRID_BY_COUNT: Record<number, string> = {
 };
 const GRID_FALLBACK = "md:grid-cols-2 xl:grid-cols-4";
 
+// Team plans, renamed from "Studio plans" 18 Oct 2026. getRateCard() already
+// maps the old names, but both spellings stay here so the badge survives either
+// side of the plans-table migration whatever path the name took.
 const PLAN_PRESENTATION: Record<string, { highlight?: boolean; dedicated?: boolean }> = {
+  "Medium Team": { highlight: true },
   "Medium Firm": { highlight: true },
+  "Large Team (Dedicated)": { dedicated: true },
   "Big Firm Dedicated": { dedicated: true },
 };
 
@@ -115,14 +120,14 @@ export default async function EnterprisePage() {
 
   return (
     <div className="relative min-h-screen bg-paper text-ink">
-      <JsonLd data={breadcrumbList([{ name: "Monthly plans for studios", path: "/enterprise" }])} />
+      <JsonLd data={breadcrumbList([{ name: "Team plans", path: "/enterprise" }])} />
       <JsonLd data={faqPage(faqs)} />
 
       <main className="relative">
         <section className="cf-section cf-pagehero px-5">
           <div className="cf-wide grid items-center gap-10 lg:grid-cols-[1fr_1.05fr]">
             <div className="min-w-0">
-              <div className="cf-eyebrow">Studio plans</div>
+              <div className="cf-eyebrow">Team plans</div>
               <h1 className="cf-display mt-3">One account for the whole studio.</h1>
               <p className="cf-lead mt-5">
                 Shared hours. Shared storage. A login for everyone. One bill.

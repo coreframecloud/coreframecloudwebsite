@@ -117,7 +117,7 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
     out.push(
       `- **How much does it cost to rent an ${NODE.gpu}?** ${money(adhocGpu.hourly_rate_rupees)} ` +
         `per hour${card?.prices_include_gst ? " including GST" : ""}, billed per minute of ` +
-        "streaming. Monthly plans for studios are listed below." +
+        "streaming. Team plans (monthly, for studios and firms) are listed below." +
         (introQ
           ? ` New customers: the first top-up of ${money(introQ.priceRupees)} buys ` +
             `${hoursLabel(introQ.hours)}${introQ.validityDays ? `, used within ${introQ.validityDays} days` : ""}.`
@@ -270,7 +270,7 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
     }
     const tiers = planTiers(card);
     if (tiers.length) {
-      out.push("Monthly plans for studios (committed; prices include GST):");
+      out.push("Team plans, monthly for studios and firms (committed; prices include GST):");
       out.push("");
       for (const t of tiers) {
         const bits = [
@@ -526,7 +526,7 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
   out.push(`- [CFD for rooms and HVAC airflow](${SITE}/cfd): steady analysis of one box-shaped room you describe (size, supply diffusers, returns, heat loads; no geometry file). Delivers room averages (mean air speed, PMV/PPD, ADPI) and temperature and air-speed maps in a PDF report. Two mesh choices: Draft (a medium mesh) for early design comparisons, Fine for final numbers; the quote and report state which was used. ${ROOMS_VALIDATION}`);
   out.push(`- [Mesh independence study (GCI), the Verified package](${SITE}/cfd/mesh-independence-study): the same duct or pipe case on three meshes (refinement ratio 1.3) with the grid convergence index (Celik et al. 2008, Fs 1.25). Our own test: a 90° bend (R/D 1.5, air at 4 m/s, D 50 mm) gave 12.247 / 12.240 / 12.205 Pa on 0.25 / 0.54 / 1.21 M cells, mesh-independent (indicative) at 12.20 Pa ± 0.85 %. A straight pipe, 72 diameters long, was mesh-independent within 0.63 %, yet its friction factor sat 4.8 % below the Haaland correlation: a turbulence-model gap that verification cannot show. From Rs 5,999 + GST in India, from $99 elsewhere; internal flow up to about 6 M cells; within 24 hours.`);
   out.push(`- [HVAC CFD on a real clinic floor](${SITE}/cfd/projects/clinic-floor-hvac): case study. An indicative, automated first-pass airflow run on the second floor of a real two-storey clinic (buildingSMART Medical-Dental Clinic, CC BY 4.0): 18,500 sq ft, 100 rooms and corridors, 90 real ceiling diffusers at their design flows, 80 return/exhaust grilles; 1.9 M cells, 3,000 iterations, 5.1 hours. Occupied rooms averaged 23.0 °C, ADPI (ASHRAE 113) 93 % with 56 of 59 rooms at 80 % or more, PMV (ISO 7730) -0.28; 15 % of the floor area had air above 0.25 m/s at ankle height, because in the small 3 x 3.5 m treatment rooms the ceiling jets hit the wall, drop and run back across the floor. Not a validated or engineering-grade result: an indicative whole-floor run, not the single-room Rooms / HVAC service.`);
-  out.push(`- [For teams and studios](${SITE}/enterprise)`);
+  out.push(`- [Team plans for studios and firms](${SITE}/enterprise)`);
   out.push("");
   out.push("### Per-application guides");
   out.push("");

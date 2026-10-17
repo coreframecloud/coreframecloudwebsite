@@ -119,7 +119,7 @@ export default async function EnscapePage() {
                 Start a session
               </Link>
               <Link href="/enterprise" className="cf-btn-secondary">
-                Studio plans
+                Team plans
               </Link>
             </div>
           </div>

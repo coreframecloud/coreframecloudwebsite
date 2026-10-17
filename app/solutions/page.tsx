@@ -66,7 +66,7 @@ export default function SolutionsPage() {
               <p className="cf-lead mt-6">Rent machines by the minute, so everyone gets one when the deadline needs it.</p>
               <div className="mt-8 flex flex-wrap gap-3">
                 <Link href="/signup" className="cf-btn-primary">Sign up</Link>
-                <Link href="/enterprise" className="cf-btn-secondary">Studio plans</Link>
+                <Link href="/enterprise" className="cf-btn-secondary">Team plans</Link>
               </div>
             </div>
             <GenImage
@@ -146,7 +146,7 @@ export default function SolutionsPage() {
               <p className="mt-3 max-w-lg text-white/70">Put one person on it for a week and watch the queue disappear.</p>
               <div className="mt-7 flex flex-wrap gap-3">
                 <Link href="/signup" className="cfh-pill-light">Sign up</Link>
-                <Link href="/enterprise" className="cfh-pill-ghost">Studio plans</Link>
+                <Link href="/enterprise" className="cfh-pill-ghost">Team plans</Link>
               </div>
             </div>
           </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import type { RateCard } from "@/lib/rate-card";
+import { withTeamPlanNames, type RateCard } from "@/lib/rate-card";
 import { API_BASE } from "@/lib/api-base";
 
 const API = API_BASE;
@@ -21,6 +21,7 @@ function load(): Promise<RateCard | null> {
   if (!pending) {
     pending = fetch(`${API}/public/rate-card`)
       .then((r) => (r.ok ? (r.json() as Promise<RateCard>) : null))
+      .then((c) => (c ? withTeamPlanNames(c) : null))
       .catch(() => null);
   }
   return pending;

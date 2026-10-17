@@ -124,7 +124,7 @@ export default async function LumionPage() {
                 Start a session
               </Link>
               <Link href="/enterprise" className="cf-btn-secondary">
-                Studio plans
+                Team plans
               </Link>
             </div>
           </div>

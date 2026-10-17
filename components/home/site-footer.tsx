@@ -66,7 +66,7 @@ export function SiteFooter() {
               ))}
               {[
                 { label: "Pricing", href: "/pricing" },
-                { label: "Enterprise plans", href: "/enterprise" },
+                { label: "Team plans", href: "/enterprise" },
               ].map((l) => (
                 <Link key={l.href} href={l.href} className="flex min-h-11 items-center text-[13.5px] text-ink-2 transition hover:text-ink">{l.label}</Link>
               ))}

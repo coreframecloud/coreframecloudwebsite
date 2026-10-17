@@ -204,7 +204,7 @@ export const costWorkstationFarmBuy: BlogPost = {
     ctx.hourly
       ? {
           q: "How is Coreframe billed?",
-          a: `${ctx.hourly} with GST included, billed per minute from the moment the stream starts. Uploads and preparing the machine are free. Committed monthly plans are available for studios.`,
+          a: `${ctx.hourly} with GST included, billed per minute from the moment the stream starts. Uploads and preparing the machine are free. Committed monthly Team plans are available for studios.`,
         }
       : null,
     {
@@ -216,7 +216,7 @@ export const costWorkstationFarmBuy: BlogPost = {
     { href: "/d5-render-vs-local-gpu", label: "Renting a workstation vs buying one" },
     { href: "/cloud-workstation-vs-render-farm", label: "Cloud workstation vs render farm" },
     { href: "/pricing", label: "Pricing and monthly plans" },
-    { href: "/enterprise", label: "Plans for studios" },
+    { href: "/enterprise", label: "Team plans for studios" },
     { href: "/software/gpu-workstation-rental-india", label: "Rent an RTX 5080 workstation in India" },
   ],
 };

@@ -101,7 +101,7 @@ export default async function PricingView({ currency }: { currency: Currency }) 
       ? [
           { label: "Pay as you go, per hour", value: rupees(adhocNum), ratio: 1 },
           {
-            label: `Studio plans, per included hour from (${effectiveFrom.planName})`,
+            label: `Team plans, per included hour from (${effectiveFrom.planName})`,
             value: `≈ ${rupees(effectiveFrom.rupees)}`,
             ratio: effectiveFrom.rupees / adhocNum,
           },

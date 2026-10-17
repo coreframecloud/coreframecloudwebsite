@@ -195,7 +195,7 @@ export function PricingSection({
                 className="cf-btn-primary w-full text-center block"
                 onClick={() => trackEvent("enterprise_click", { location: "pricing_committed" })}
               >
-                See studio plans →
+                See team plans →
               </Link>
             </div>
           </div>

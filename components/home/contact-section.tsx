@@ -31,10 +31,12 @@ const initialState: FormState = {
 // pricing section above already shows the live figures.
 const renderingGpuOptions = [
   "RTX 5080 16GB — ad-hoc, pay as you go",
-  "Committed monthly plan — Studio",
-  "Committed monthly plan — Medium Firm",
-  "Committed monthly plan — Big Firm",
-  "Big Firm Dedicated",
+  // Team plans (renamed from "Studio plans" 18 Oct 2026; Studio is the
+  // floor-plan render product). Labels only: nothing parses these strings.
+  "Team plan — Small Team",
+  "Team plan — Medium Team",
+  "Team plan — Large Team",
+  "Large Team (Dedicated)",
   "Persistent NAS storage add-on",
 ];
 

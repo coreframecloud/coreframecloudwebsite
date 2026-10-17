@@ -347,7 +347,7 @@ export default async function ComparisonPage() {
                 ["/compute-nodes", "What is in one Coreframe node"],
                 ["/cloud-workstation-vs-render-farm", "Cloud workstation vs render farm"],
                 ["/coreframe-vs-irender", "Coreframe vs iRender"],
-                ["/enterprise", "Committed monthly plans for studios"],
+                ["/enterprise", "Team plans: committed monthly plans for studios"],
                 ["/about", "What Coreframe Cloud is"],
               ].map(([href, label]) => (
                 <li key={href}>

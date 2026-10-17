@@ -30,7 +30,7 @@ export const metadata: Metadata = {
  *                  as equal cards (GPU workstations · CFD · Studio), 13 Oct 2026
  *   2  the sheet   white page slides up over the hero
  *   3  bands       one band per service, same order as the hero cards
- *   4  bento       the workstation in detail · studio plans · per-minute · walkthrough
+ *   4  bento       the workstation in detail · team plans · per-minute · walkthrough
  *   5  facts       what's in the box, facts only, with the benchmark source
  *   6  built for   who uses it and with what
  *   7  customers   their exact words (renders nothing until there are some)

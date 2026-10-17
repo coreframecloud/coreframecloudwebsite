@@ -96,7 +96,8 @@ const workflow = [
  * hour, no commitment", which was never true: the API has billed per minute
  * since it was written.
  */
-const PLAN_HIGHLIGHT = "Medium Firm";
+// "Medium Firm" until 18 Oct 2026 (Team plans rename); both accepted.
+const PLAN_HIGHLIGHT = new Set(["Medium Team", "Medium Firm"]);
 
 const planWhatsapp = (plan: string) =>
   `https://wa.me/916366889488?text=${encodeURIComponent(
@@ -163,7 +164,7 @@ export default async function ArchitectsPage() {
       ].filter(Boolean).join(" · "),
       cta: "Get a quote",
       href: planWhatsapp(t.name),
-      highlight: t.name === PLAN_HIGHLIGHT,
+      highlight: PLAN_HIGHLIGHT.has(t.name),
     })),
   ];
 
@@ -191,7 +192,7 @@ export default async function ArchitectsPage() {
                 Get started
               </Link>
               <Link href="/enterprise" className="cf-btn-secondary w-full sm:w-auto min-h-[44px]">
-                Studio plans
+                Team plans
               </Link>
             </div>
           </div>
