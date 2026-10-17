@@ -49,12 +49,12 @@ export const CFD_CATEGORIES: CfdCategory[] = [
     },
   },
   {
-    // 16 Oct 2026: hidden again (owner) after the Blay 1992 heated-floor benchmark: near-wall
-    // temperatures failed and a steady run could settle in the wrong flow pattern unnoticed. Set
-    // status "live" only after the follow-up validation passes. "coming_soon" shows futureInputs.
+    // 16 Oct 2026: hidden (owner) after the heated-floor benchmark. 17 Oct 2026: steady tier released
+    // (owner: "release the steady tier if we are clear about it"), with the validation wording in
+    // lib/cfd-rooms.ts. Goes with CFD_HVAC_ROOMS_ENABLED=true in the API ("coming_soon" = 409 there).
     id: "rooms",
     label: "Rooms / HVAC",
-    status: "coming_soon",
+    status: "live",
     summary:
       "Room air movement and comfort for HVAC designers: air speed, temperature, PMV/PPD and ADPI for one box-shaped room you describe. No geometry file needed.",
     api: {

@@ -13,6 +13,7 @@ import { getRateCard } from "@/lib/rate-card";
 import { cellsLabel, formatMoney, usdRates, type Currency, type UsdRateCard } from "@/lib/money";
 import { VerifiedCard } from "@/components/cfd-explainer/verified-card";
 import { VERIFIED, verifiedFrom } from "@/lib/cfd-verified";
+import { ROOMS_DELIVERS, ROOMS_VALIDATION } from "@/lib/cfd-rooms";
 
 /**
  * /cfd — CFD for ducts and pipes (managed, automatic). Live 13 Oct 2026.
@@ -125,6 +126,8 @@ const CFD_SERVICES: {
   name: string;
   status: "Live" | "Coming soon";
   body: string;
+  /** Small print under the body (Rooms: the validation claim). */
+  note?: string;
   href?: string;
   cta: string;
   tint: string;
@@ -141,9 +144,11 @@ const CFD_SERVICES: {
   },
   {
     name: "Rooms and HVAC airflow",
-    status: "Coming soon",
-    body: "Room air movement and comfort for HVAC designers: describe one room, its diffusers, returns and heat loads, and get air speed, temperature, PMV/PPD and ADPI in a PDF report. Opening once it passes our heated-room validation.",
-    cta: "Opening soon",
+    status: "Live",
+    body: `Room air movement and comfort for HVAC designers: describe one box-shaped room, its diffusers, returns and heat loads, and get ${ROOMS_DELIVERS}. No geometry file needed.`,
+    note: ROOMS_VALIDATION,
+    href: "#start",
+    cta: "Start a room job",
     tint: "bg-tint-blue",
     art: { src: "/cfd/explainer/i-room-diffuser-airflow.webp", alt: "Sketch of a room cut open, with air curling down from a ceiling diffuser" },
   },
@@ -242,7 +247,7 @@ const FAQ = [
   },
   {
     q: "What can you not run yet?",
-    a: "For ducts and pipes: heat transfer, buoyancy, transient flow, multiphase, moving or rotating parts, compressible flow and more than one inlet. Air and water only. Rooms with heat loads and buoyancy (Rooms / HVAC) are opening soon, once they pass our heated-room validation.",
+    a: `For ducts and pipes: heat transfer, buoyancy, transient flow, multiphase, moving or rotating parts, compressible flow and more than one inlet. Air and water only. Rooms with heat loads and buoyancy are a separate service (Rooms / HVAC): one box-shaped room you describe, steady analysis. ${ROOMS_VALIDATION}`,
   },
   {
     q: "I have a straight duct but no CAD. Can I still submit?",
@@ -389,9 +394,8 @@ export default async function CfdView({ currency }: { currency: Currency }) {
 
         {/* ── CFD services (sub-categories) ────────────────────────────────
             Owner, 13 Oct 2026: the sub-categories live here, not in the
-            homepage hero. Only real ones: ducts and pipes is live, and rooms and
-            HVAC airflow is the next physics case (not sold until it passes
-            validation). The bring-your-own-solver page was retired 13 Oct 2026. */}
+            homepage hero. Only real ones: ducts and pipes, and rooms and HVAC
+            airflow (steady tier, released 17 Oct 2026 with lib/cfd-rooms.ts). The bring-your-own-solver page was retired 13 Oct 2026. */}
         <section id="services" className="cf-section scroll-mt-20 px-5">
           <div className="cf-wide">
             <p className="cf-eyebrow">CFD services</p>
@@ -404,6 +408,7 @@ export default async function CfdView({ currency }: { currency: Currency }) {
                     <StatusBadge status={c.status} />
                   </div>
                   <p className="mt-3 text-[15px] leading-6 text-ink-2">{c.body}</p>
+                  {c.note ? <p className="mt-3 text-[13.5px] leading-5 text-ink-3">{c.note}</p> : null}
                   {c.art ? (
                     <figure className="mt-4">
                       <Image src={c.art.src} alt={c.art.alt} width={1536} height={864} sizes="(max-width: 768px) 90vw, 420px" className="cfx-art mx-auto h-auto w-full max-w-[360px]" />
@@ -518,7 +523,7 @@ export default async function CfdView({ currency }: { currency: Currency }) {
                   ["Flow", "Steady, incompressible, isothermal; laminar or turbulent"],
                   ["Openings", "One inlet; one or more outlets at the outlet pressure"],
                   ["Not yet", "Heat transfer, transient, multiphase, moving parts, compressible flow"],
-                  ["Rooms", "Rooms / HVAC with diffusers, returns and heat loads: opening soon"],
+                  ["Rooms", "One box-shaped room with diffusers, returns and heat loads: steady analysis, room averages and temperature and air-speed maps"],
                 ].map(([k, v], i) => (
                   <div key={k} className={`flex flex-col gap-1 px-5 py-3.5 sm:flex-row sm:gap-6 ${i ? "border-t border-rule" : ""}`}>
                     <dt className="text-sm font-semibold text-ink sm:w-28 sm:shrink-0">{k}</dt>
