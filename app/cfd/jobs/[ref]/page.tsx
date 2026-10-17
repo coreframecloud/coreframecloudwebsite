@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import CfdJobPage from "./job-page";
 
@@ -38,9 +39,11 @@ history.replaceState(history.state,"",location.pathname+(s?"?"+s:""));
 export default async function Page({ params }: { params: Promise<{ ref: string }> }) {
   const { ref } = await params;
   if (!/^[A-Za-z0-9_-]{1,64}$/.test(ref)) notFound();
+  // The CSP nonce (proxy.ts): without it this inline script would not run.
+  const nonce = (await headers()).get("x-nonce") ?? undefined;
   return (
     <>
-      <script dangerouslySetInnerHTML={{ __html: TOKEN_SCRIPT }} />
+      <script nonce={nonce} dangerouslySetInnerHTML={{ __html: TOKEN_SCRIPT }} />
       <CfdJobPage refId={ref} />
     </>
   );

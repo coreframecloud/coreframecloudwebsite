@@ -33,6 +33,7 @@ const plexMono = IBM_Plex_Mono({
 });
 import { COMPANY_MAPS_URL, COMPANY_YOUTUBE_URL, COMPANY_INSTAGRAM_URL } from "@/lib/company";
 import Script from "next/script";
+import { headers } from "next/headers";
 import { AttributionCapture } from "@/components/attribution-capture";
 import { WhatsAppClickTracker } from "@/components/analytics/whatsapp-click-tracker";
 import { WhatsAppButton } from "@/components/home/whatsapp-button";
@@ -172,6 +173,11 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  // This request's CSP nonce (proxy.ts, lib/csp.ts). The tags below are
+  // inline, so they run only because they carry it; what they load runs under
+  // 'strict-dynamic'. Reading it makes the page render per request: the
+  // deliberate price of a CSP with no 'unsafe-inline' (owner, 17 Oct 2026).
+  const nonce = (await headers()).get("x-nonce") ?? undefined;
   const rateCard = await getRateCard();
   const adhoc = rateCard?.gpus.find((g) => !g.quote_on_request && g.hourly_rate_rupees != null);
   const tiers = planTiers(rateCard);
@@ -258,7 +264,7 @@ export default async function RootLayout({
             inline script, so they precede every config and event call. */}
         {GTAG_LOADER_ID ? (
           <>
-            <Script id="google-consent-and-tag" strategy="afterInteractive">
+            <Script id="google-consent-and-tag" strategy="afterInteractive" nonce={nonce}>
               {`
                 window.dataLayer = window.dataLayer || [];
                 function gtag(){window.dataLayer.push(arguments);}
@@ -281,6 +287,7 @@ export default async function RootLayout({
             <Script
               src={`https://www.googletagmanager.com/gtag/js?id=${GTAG_LOADER_ID}`}
               strategy="afterInteractive"
+              nonce={nonce}
             />
           </>
         ) : null}
@@ -293,7 +300,7 @@ export default async function RootLayout({
             Google tag stays afterInteractive: Ads attribution needs the gclid
             read on the landing page view. */}
         {META_PIXEL_ID ? (
-          <Script id="meta-pixel" strategy="lazyOnload">
+          <Script id="meta-pixel" strategy="lazyOnload" nonce={nonce}>
             {`
               !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
               n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
@@ -315,7 +322,7 @@ export default async function RootLayout({
         ) : null}
 
         {/* Microsoft Clarity */}
-        <Script id="microsoft-clarity" strategy="lazyOnload">
+        <Script id="microsoft-clarity" strategy="lazyOnload" nonce={nonce}>
           {`
             (function(c,l,a,r,i,t,y){
               c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
