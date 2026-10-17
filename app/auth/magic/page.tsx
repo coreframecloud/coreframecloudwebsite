@@ -1,9 +1,8 @@
 "use client";
 
 import { takeReturnPath } from "@/lib/return-path";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
 import { CheckCircle, XCircle, Loader2 } from "lucide-react";
 import { Suspense } from "react";
 import { trackSignupIfNew } from "@/lib/analytics";
@@ -12,13 +11,40 @@ import { goAfterSignIn } from "@/lib/session-cookie";
 
 const API = API_BASE;
 
+/**
+ * The sign-in token arrives in the FRAGMENT, #t=... (security review
+ * 17 Oct 2026): a fragment is never sent to a server, so it is not in Vercel's
+ * or our access logs, nor in a Referer. Links emailed before that change carry
+ * ?t=; both are read, once, and the URL is cleaned at once so the token does
+ * not stay in the address bar or history, or reach an analytics tool.
+ */
+const noopSubscribe = () => () => {};
+
+function takeLinkToken(): string | null {
+  if (typeof window === "undefined") return null;
+  const fromHash = new URLSearchParams(window.location.hash.slice(1)).get("t");
+  const fromQuery = new URLSearchParams(window.location.search).get("t");
+  const token = fromHash || fromQuery;
+  if (token) {
+    try {
+      window.history.replaceState(null, "", "/auth/magic");
+    } catch {
+      /* the token is still read; only the cleanup failed */
+    }
+  }
+  return token;
+}
+
 function MagicLinkVerifier() {
-  const params = useSearchParams();
-  const token = params.get("t");
-  // A missing token is known at render time; deriving it (rather than setting
-  // state inside the effect) keeps the effect to the network call alone.
-  const [status, setStatus] = useState<"loading" | "success" | "error">(token ? "loading" : "error");
-  const [errorMsg, setErrorMsg] = useState(token ? "" : "Missing sign-in token. Please request a new link.");
+  // Read once, on the client, before anything else on the page runs.
+  const [token] = useState<string | null>(() => takeLinkToken());
+  // Rendered on the server without a token: decide only once in the browser.
+  const mounted = useSyncExternalStore(noopSubscribe, () => true, () => false);
+  const [fetchStatus, setStatus] = useState<"loading" | "success" | "error">("loading");
+  const [fetchError, setErrorMsg] = useState("");
+  const missing = mounted && !token;
+  const status = missing ? "error" : fetchStatus;
+  const errorMsg = missing ? "Missing sign-in token. Please request a new link." : fetchError;
 
   // Fire EXACTLY once per token. useSearchParams() returns a fresh object on
   // some re-renders and React StrictMode invokes effects twice in development;
