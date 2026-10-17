@@ -7,6 +7,10 @@ import Image from "next/image";
 import { PlanImage, ShellFurnished } from "@/components/visuals/studio-compare";
 import { PageHeroBg, type HeroImage } from "@/components/page-hero-bg";
 import { NODE } from "@/lib/node-spec";
+import { SITE } from "@/lib/seo";
+import { getRateCard } from "@/lib/rate-card";
+import { Hl } from "@/components/cfd-explainer";
+import { FREE_PREVIEWS_PER_DAY, MAX_DXF_MB, inr, studioOffers, studioPrices, usd, type StudioPrices } from "./studio-prices";
 
 /**
  * THE INDEXABLE PAGE FOR STUDIO. It did not exist, and that is why Studio is
@@ -33,8 +37,9 @@ import { NODE } from "@/lib/node-spec";
  * carries a canonical link back to it.
  *
  * PRICES (16 Oct 2026, Studio open): the rupee prices below are the live
- * defaults in apps/tools (CF_STUDIO_PRICE_*_INR: edit 20, 2K 30, 4K 50). If
- * they change there, change them here and in components/home/redesign/
+ * defaults in apps/tools (CF_STUDIO_PRICE_*_INR: edit 20, 2K 30, 4K 50), typed
+ * once in ./studio-prices.ts (dollars from the rate card). If they change
+ * there, change them in studio-prices.ts and components/home/redesign/
  * offerings.tsx. The note that follows is history.
  *
  * NO RUPEE FIGURE ON THIS PAGE. It carried "Credits from Rs 99" in the meta
@@ -46,16 +51,27 @@ import { NODE } from "@/lib/node-spec";
  * is a helper to read it from.
  */
 
+/**
+ * SEO/AEO review 18 Oct 2026 (section 3.4, action 7): a descriptive H1 (the
+ * slogan became the line under it), a title and description inside the
+ * 60 / 155-character limits, an answer-first paragraph with both currencies in
+ * the static HTML, WebApplication + HowTo schema with dual-currency Offers, a
+ * visible "Last updated" date, the "export a clean DXF" how-to, and a link to
+ * the 3BHK worked example. Prices: ./studio-prices.ts.
+ */
+const LAST_UPDATED = { iso: "2026-10-18", label: "18 October 2026" };
+
 export const metadata: Metadata = {
-  title: "Floor Plan to Interior Render from a DXF",
+  title: { absolute: "Floor Plan to 3D Interior Render from DXF | Coreframe Studio" },
   description:
-    "Coreframe Studio: upload a 2D DXF floor plan, pick a room and get pre-sale concept images. Free previews; 2K download ₹30. Walls, doors and windows come from your drawing.",
+    "Upload a 2D DXF floor plan, pick a room and get interior concept renders. Walls, doors and windows come from your drawing. Free previews; 2K ₹30.",
   keywords: [
     "floor plan to 3d render",
+    "floor plan rendering",
     "DXF to interior render",
+    "2d floor plan to 3d render",
     "AI interior rendering from floor plan",
     "convert floor plan to render India",
-    "2d plan to 3d visualisation online",
     "AI render for architects India",
   ],
   alternates: { canonical: "/floor-plan-to-render" },
@@ -87,17 +103,73 @@ const STUDIO_ROOMS = [
   { src: "/studio-renders/studio-balcony-2048.webp", cap: "The balcony, looking back into a bedroom.", alt: "The balcony from our sample plan at dusk: potted plants, a cane chair and a railing over trees, with a lit bedroom through the door" },
 ];
 
-const steps = [
-  { n: "1", title: "Upload your DXF.", body: "We find the walls and rooms. Free." },
-  { n: "2", title: "Pick a room.", body: "Tell us it's a bedroom or a kitchen. Free." },
-  { n: "3", title: "Say how it should feel.", body: "One sentence. You get three angles to compare. Free, up to 5 previews a day." },
-  { n: "4", title: "Download the one you like.", body: "2K for email (₹30), 4K for print (₹50). Only this step is paid." },
+function steps(p: StudioPrices) {
+  return [
+    { n: "1", title: "Upload your DXF.", body: "We find the walls and rooms. Free." },
+    { n: "2", title: "Pick a room.", body: "Tell us it's a bedroom or a kitchen. Use our camera angles or place your own. Free." },
+    { n: "3", title: "Say how it should feel.", body: `One sentence. You get three angles to compare. Free, up to ${FREE_PREVIEWS_PER_DAY} previews a day.` },
+    {
+      n: "4",
+      title: "Download the one you like.",
+      body: `2K for email (${inr(p.inr.k2)}), 4K for print (${inr(p.inr.k4)}); ${usd(p.usd.k2)} and ${usd(p.usd.k4)} for accounts billed in dollars.`,
+    },
+  ];
+}
+
+/** HowTo schema: the same four steps, in plain words. */
+function howToLd(p: StudioPrices) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    name: "How to turn a DXF floor plan into an interior concept render",
+    description: "Upload a 2D DXF floor plan to Coreframe Studio, pick a room, preview three camera angles for free and download the image you want.",
+    tool: { "@type": "HowToTool", name: "A 2D floor plan saved as DXF" },
+    step: [
+      { "@type": "HowToStep", position: 1, name: "Upload the DXF", text: `Upload a 2D DXF floor plan (up to ${MAX_DXF_MB} MB) at ${SITE}/studio. Studio reads the walls, rooms, doors and windows from the drawing. Free.` },
+      { "@type": "HowToStep", position: 2, name: "Pick a room", text: "Choose a room and its type (bedroom, kitchen and so on). Use the suggested camera angles or place your own camera. Free." },
+      { "@type": "HowToStep", position: 3, name: "Preview", text: `Describe the feel in one sentence and get three camera angles to compare. Free, up to ${FREE_PREVIEWS_PER_DAY} previews a day, then ${inr(p.inr.extraPreview)} (${usd(p.usd.extraPreview)}) each.` },
+      { "@type": "HowToStep", position: 4, name: "Download", text: `Download the image you want: 2K ${inr(p.inr.k2)} or 4K ${inr(p.inr.k4)} incl. GST in India; ${usd(p.usd.k2)} or ${usd(p.usd.k4)} for accounts billed in US dollars.` },
+    ],
+  };
+}
+
+/** WebApplication schema with the free preview and the downloads in both currencies. */
+function appLd(p: StudioPrices) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "@id": `${SITE}/floor-plan-to-render#app`,
+    name: "Coreframe Studio",
+    alternateName: "Coreframe Studio: floor plan to interior render",
+    url: `${SITE}/studio`,
+    applicationCategory: "DesignApplication",
+    operatingSystem: "Any (web browser)",
+    browserRequirements: "A current web browser and a Coreframe account",
+    description:
+      "Turns a 2D DXF floor plan into interior concept renders in the browser. Walls, doors and windows are read from the drawing; the furniture is generated. Concept visuals, not construction drawings or a 3D model.",
+    isAccessibleForFree: false,
+    provider: { "@id": `${SITE}/#organization` },
+    publisher: { "@id": `${SITE}/#organization` },
+    isRelatedTo: { "@id": `${SITE}/#studio-service` },
+    dateModified: LAST_UPDATED.iso,
+    offers: studioOffers(p, `${SITE}/floor-plan-to-render`),
+  };
+}
+
+/** How to get a clean DXF out of each tool, from the Studio guide (/studio/learn). */
+const EXPORTS: [string, string][] = [
+  ["AutoCAD and AutoCAD LT", "In Model space, File › Save As, and pick AutoCAD 2018 DXF (or the newest DXF offered). DXFOUT does the same."],
+  ["Revit", "Open the floor plan view (not a 3D view or a sheet), then File › Export › CAD Formats › DXF, current view only. Turn off a crop region that cuts rooms."],
+  ["Archicad", "On the Floor Plan window for the storey you want, File › Save as… and choose DXF with the default translator."],
+  ["SketchUp Pro", "Top camera, Parallel Projection, then File › Export › 2D Graphic as DXF at 1:1. SketchUp Free and Web cannot export DXF."],
+  ["BricsCAD, ZWCAD, DraftSight and similar", "Model space, Save As, the newest DXF in the list."],
 ];
 
-const faqs = [
+function faqs(p: StudioPrices) {
+  return [
   {
     q: "What file does Coreframe Studio need?",
-    a: "A DXF floor plan (up to 30 MB). Studio reads the walls, doors and windows from the drawing's lines, so a PDF, JPG or PNG of a plan can't be read yet, and neither can a DWG. If you work in AutoCAD, Revit or ArchiCAD, exporting a DXF is a Save As; the three-click guide is at coreframecloud.com/studio/learn, and there's a demo 3BHK plan to try if you don't have a drawing to hand.",
+    a: `A DXF floor plan (up to ${MAX_DXF_MB} MB). Studio reads the walls, doors and windows from the drawing's lines, so a PDF, JPG or PNG of a plan can't be read yet, and neither can a DWG. If you work in AutoCAD, Revit or ArchiCAD, exporting a DXF is a Save As; the three-click guide is at coreframecloud.com/studio/learn, and there's a demo 3BHK plan to try if you don't have a drawing to hand.`,
   },
   {
     q: "Does it invent rooms or windows that are not on my plan?",
@@ -105,7 +177,11 @@ const faqs = [
   },
   {
     q: "What does it cost?",
-    a: "Reading the drawing, browsing the rooms and previewing the three camera angles are free, up to 5 previews a day; after that, extra previews are ₹10 each. You pay only for those and for what you keep: an edit of a preview is ₹20, a 2K download ₹30 and a 4K download ₹50, GST included (US$0.25, $0.49, $0.99 and $1.49 for accounts billed in dollars). It comes out of the same Coreframe wallet as GPU workstation hours and CFD, and Studio shows the price before you confirm.",
+    a: `Reading the drawing, browsing the rooms and previewing the three camera angles are free, up to ${FREE_PREVIEWS_PER_DAY} previews a day; after that, extra previews are ${inr(p.inr.extraPreview)} each. You pay only for those and for what you keep: an edit of a preview is ${inr(p.inr.edit)}, a 2K download ${inr(p.inr.k2)} and a 4K download ${inr(p.inr.k4)}, GST included (US${usd(p.usd.extraPreview)}, ${usd(p.usd.edit)}, ${usd(p.usd.k2)} and ${usd(p.usd.k4)} for accounts billed in dollars, no GST). It comes out of the same Coreframe wallet as GPU workstation hours and CFD, and Studio shows the price before you confirm.`,
+  },
+  {
+    q: "Is it a 3D model or a construction drawing?",
+    a: "No. Studio makes concept images for pitching a design: the walls, doors and windows come from your drawing and the furniture, materials and light are generated. It does not produce a 3D model file, a floor plan, or drawings you could build from.",
   },
   {
     q: "Do I have to install anything?",
@@ -115,49 +191,61 @@ const faqs = [
     q: "What happens to my client's drawing?",
     a: "It stays in your account until you delete it (there's a delete button). We don't purge on a schedule, and we don't train on your drawings unless you choose to let us (an optional tick box that earns wallet credit). Studio runs on our own machines in Bengaluru; the one exception is Plus and Pro ray-traced renders, which are processed by an outside AI service, only to make your image.",
   },
-];
+  ];
+}
 
-export default function Page() {
+export default async function Page() {
+  const prices = studioPrices(await getRateCard());
+  const faq = faqs(prices);
+  const stepList = steps(prices);
   return (
     <div className="cf-warm-page min-h-screen text-ink">
       <JsonLd data={breadcrumbList([{ name: "Floor plan to render", path: "/floor-plan-to-render" }])} />
-
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "FAQPage",
-            mainEntity: faqs.map((f) => ({
-              "@type": "Question",
-              name: f.q,
-              acceptedAnswer: { "@type": "Answer", text: f.a },
-            })),
-          }),
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: faq.map((f) => ({
+            "@type": "Question",
+            name: f.q,
+            acceptedAnswer: { "@type": "Answer", text: f.a },
+          })),
         }}
       />
+      <JsonLd data={appLd(prices)} />
+      <JsonLd data={howToLd(prices)} />
 
       <main className="relative">
         <section className="cf-section px-5 cf-pagehero">
           <PageHeroBg image={HERO} />
           <div className="cf-wide">
-            <div className="min-w-0 max-w-[600px]">
+            <div className="min-w-0 max-w-[620px]">
               <p className="cf-eyebrow mb-5">Studio · Pre-sale renders</p>
-              <h1 className="cf-display">Win the client before the project is signed.</h1>
-              <p className="cf-lead mt-6">Upload a 2D DXF floor plan. Get concept images of the room back, generated in the browser, ready to pitch with.</p>
-              {/* Studio is open (16 Oct 2026). /studio is the app itself, on
-                  this site, signed in with the same Coreframe account. */}
-              <p className="mt-6 inline-flex items-center gap-2 rounded-full bg-white/10 px-3.5 py-1.5 text-[13px]">
-                <span className="h-2 w-2 rounded-full bg-[#15803d]" /> Live. Free previews, 2K download ₹30.
+              <h1 className="cf-display">Floor plan to interior render, straight from your DXF.</h1>
+              <p className="mt-4 font-heading text-[clamp(19px,2.3vw,24px)] leading-[1.3] font-medium">
+                Win the client before the project is signed.
               </p>
+              {/* Answer-first (SEO/AEO review 18 Oct 2026): both currencies in
+                  the static HTML, whatever country the reader is in. */}
+              <p className="cf-lead mt-5">
+                Coreframe Studio turns a 2D DXF floor plan into interior concept renders in the browser. It reads the walls,
+                doors and windows from your drawing; you pick a room and a camera, and it furnishes the room. Previews are
+                free ({FREE_PREVIEWS_PER_DAY} a day, then {inr(prices.inr.extraPreview)} each); a 2K download is{" "}
+                {inr(prices.inr.k2)} and 4K {inr(prices.inr.k4)}, GST included ({usd(prices.usd.k2)} and{" "}
+                {usd(prices.usd.k4)} outside India).
+              </p>
+              <p className="mt-3 text-[14.5px] leading-6">Concept visuals for pitching, not construction drawings or a 3D model.</p>
               <div className="mt-7 flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
                 <a href="/studio" className="cf-btn-primary w-full sm:w-auto">
                   Try it with your plan
                 </a>
               </div>
               <p className="mt-4 text-[13.5px] text-ink-3">
-                DXF floor plans only, up to 30 MB. Working in DWG or Revit?{" "}
-                <a href="/studio/learn" className="underline underline-offset-4">Export a DXF in three clicks</a>.
+                DXF floor plans only, up to {MAX_DXF_MB} MB. Working in DWG or Revit?{" "}
+                <a href="#export-dxf" className="underline underline-offset-4">Export a clean DXF</a>.
+              </p>
+              <p className="mt-2 text-[12.5px] text-ink-3">
+                Last updated <time dateTime={LAST_UPDATED.iso}>{LAST_UPDATED.label}</time>
               </p>
             </div>
           </div>
@@ -171,7 +259,13 @@ export default function Page() {
         <section className="cf-section px-5">
           <div className="cf-wide">
             <h2 className="cf-section-title">One plan, every room.</h2>
-            <p className="cf-section-copy mt-3">The demo 3BHK plan and its rooms, each exported at 4K from Studio.</p>
+            <p className="cf-section-copy mt-3">
+              The demo 3BHK plan and its rooms, each exported at 4K from Studio.{" "}
+              <Link href="/floor-plan-to-render/3bhk-example" className="text-ink underline underline-offset-4">
+                Follow the whole 3BHK example, step by step
+              </Link>
+              .
+            </p>
             <div className="mt-8 grid items-start gap-6 lg:grid-cols-[0.75fr_1.25fr]">
               <PlanImage caption="Our sample 3BHK plan (a real drawing)" />
               <figure className="min-w-0">
@@ -212,7 +306,7 @@ export default function Page() {
               <p className="cf-section-copy mt-3">Your walls and windows, exactly as drawn. Then we furnish it.</p>
               <p className="mt-2 text-[14px] text-ink-3">Drag the line to compare.</p>
             </div>
-            <ShellFurnished />
+            <ShellFurnished caption="Shell: your walls and openings, rendered from the drawing. Furnished: a generated image." />
           </div>
         </section>
 
@@ -220,7 +314,7 @@ export default function Page() {
           <div className="cf-wide">
             <h2 className="cf-section-title">Four steps. You only pay on the last.</h2>
             <ol className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              {steps.map((st) => (
+              {stepList.map((st) => (
                 <li key={st.n} className="cf-card cfh-lift">
                   <span className="grid h-9 w-9 place-items-center rounded-full bg-ink font-heading text-[15px] text-white">{st.n}</span>
                   <h3 className="mt-4 font-heading text-[18px] font-medium text-ink">{st.title}</h3>
@@ -249,11 +343,40 @@ export default function Page() {
           </div>
         </section>
 
+        {/* Export a clean DXF: from the Studio guide (apps/tools/web/learn.html). */}
+        <section id="export-dxf" className="cf-section scroll-mt-24 px-5 pt-0">
+          <div className="cf-col">
+            <h2 className="cf-section-title">Working in DWG or Revit? Export a clean DXF.</h2>
+            <p className="cf-section-copy mt-3">
+              Studio reads DXF only: a PDF or scan of a plan has no walls in it to measure, and DWG is not read yet. The
+              export takes a few clicks in most tools. <Hl>Every read of a drawing is free</Hl>, so you can check what Studio
+              measured before you spend anything.
+            </p>
+            <dl className="mt-6 divide-y divide-rule rounded-[20px] border border-rule">
+              {EXPORTS.map(([tool, how]) => (
+                <div key={tool} className="px-5 py-4">
+                  <dt className="font-semibold text-ink">{tool}</dt>
+                  <dd className="mt-1 text-[15px] leading-6 text-ink-2">{how}</dd>
+                </div>
+              ))}
+            </dl>
+            <ul className="mt-6 space-y-2 text-[15px] leading-6 text-ink-2">
+              <li>Export at 1:1 from model space, one storey per file.</li>
+              <li>Keep at least one dimension or a room label with real numbers: it tells Studio the units.</li>
+              <li>Leave your layer names alone and don&rsquo;t explode everything first; leave out raster underlays, details and schedules.</li>
+            </ul>
+            <p className="mt-5 text-[14px] text-ink-3">
+              The full guide, with Chief Architect and what Studio takes from the drawing:{" "}
+              <a href="/studio/learn" className="underline underline-offset-4">Getting a DXF out of your CAD</a>.
+            </p>
+          </div>
+        </section>
+
         <section className="cf-section px-5 pt-0">
           <div className="cf-col">
             <h2 className="cf-section-title">What architects ask first.</h2>
             <div className="mt-6 divide-y divide-rule rounded-[24px] border border-rule">
-              {faqs.map((f) => (
+              {faq.map((f) => (
                 <details key={f.q} className="group px-6 py-5">
                   <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-medium text-ink">
                     {f.q}
@@ -272,7 +395,9 @@ export default function Page() {
               <p className="text-[11.5px] font-semibold tracking-[0.12em] text-white/75 uppercase">Studio is live</p>
               <h2 className="mt-3 font-heading text-[28px] font-medium sm:text-[36px]">Try it with your own plan.</h2>
               <p className="mt-3 text-white/80">
-                Previews are free, up to 5 a day, then ₹10 each. Edits ₹20, 2K download ₹30, 4K ₹50, from your Coreframe wallet.
+                Previews are free, up to {FREE_PREVIEWS_PER_DAY} a day, then {inr(prices.inr.extraPreview)} each. Edits {inr(prices.inr.edit)}, 2K download{" "}
+                {inr(prices.inr.k2)}, 4K {inr(prices.inr.k4)}, from your Coreframe wallet ({usd(prices.usd.edit)}, {usd(prices.usd.k2)} and{" "}
+                {usd(prices.usd.k4)} for accounts billed in dollars).
               </p>
               <p className="mt-3 text-white/70">
                 Need a whole machine for your own software instead?{" "}
