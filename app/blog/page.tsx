@@ -17,9 +17,9 @@ import { OG_IMAGE, breadcrumbList } from "@/lib/seo";
 const hasPublished = publishedPosts().length > 0;
 
 export const metadata: Metadata = {
-  title: "Blog: rendering, GPUs and cloud workstations",
+  title: "Blog: rendering, CFD and cloud GPUs",
   description:
-    "Guides from the Coreframe team on rendering hardware, cloud workstations, costs in India, and running D5, Lumion, Blender and After Effects on a remote RTX GPU.",
+    "Guides from the Coreframe team: pressure drop and CFD verification, rendering hardware, cloud workstation costs, and D5, Lumion and Blender on a remote GPU.",
   alternates: { canonical: "/blog" },
   ...(hasPublished ? {} : { robots: { index: false, follow: false } }),
   openGraph: {

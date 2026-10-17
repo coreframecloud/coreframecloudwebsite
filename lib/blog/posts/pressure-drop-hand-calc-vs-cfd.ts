@@ -1,12 +1,15 @@
 import type { BlogPost } from "../types";
 
-const SLUG = "pressure-drop-calculation-hand-calc-vs-cfd";
+export const HAND_CALC_POST_SLUG = "pressure-drop-calculation-hand-calc-vs-cfd";
+const SLUG = HAND_CALC_POST_SLUG;
 const IMG = `/blog/${SLUG}`;
 
 /**
- * DRAFT (16 Oct 2026): the first post in the CFD explainer style, from the
+ * Drafted 16 Oct 2026, the first post in the CFD explainer style, from the
  * design agent's template (marketing-20261016-cfd-style/blog-pressure-drop.html).
- * Not approved for publishing: `draft: true` keeps it off production.
+ * Published 18 Oct 2026 (SEO review action 14, owner-approved fix list), after
+ * the worked example was re-checked: Haaland 0.02051, Colebrook 0.02064,
+ * 3,274 Pa/m, 2,395 Pa per elbow, 10 m + 2 elbows = 37.5 kPa.
  *
  * Numbers: the worked example is textbook arithmetic (water at 20 °C, 4 m/s,
  * 50 mm commercial steel): Re = 998 × 4 × 0.05 / 0.001 ≈ 199,600; Haaland
@@ -19,9 +22,9 @@ const IMG = `/blog/${SLUG}`;
 export const pressureDropHandCalcVsCfd: BlogPost = {
   slug: SLUG,
   title: "Pressure drop calculation for ducts and pipes: hand calc vs CFD",
-  metaTitle: "Pressure Drop Calculation: Hand Calc vs CFD",
+  metaTitle: "Pressure Drop Calculation: Hand vs CFD",
   description:
-    "Darcy–Weisbach and K factors get you most of the way. Where the hand calculation runs out, and the three checks a CFD pressure drop has to pass before you trust it.",
+    "Darcy–Weisbach and K factors, worked for a 50 mm water pipe. Where the hand calculation runs out, and three checks a CFD pressure drop must pass.",
   targetQueries: [
     "pressure drop calculation",
     "pipe pressure drop calculation",
@@ -29,8 +32,9 @@ export const pressureDropHandCalcVsCfd: BlogPost = {
     "darcy weisbach pressure drop example",
     "pressure drop cfd vs hand calculation",
   ],
-  datePublished: "2026-10-16",
-  draft: true,
+  datePublished: "2026-10-18",
+  dateModified: "2026-10-18",
+  draft: false,
   eyebrow: "CFD · Ducts and pipes",
   hero: {
     src: `${IMG}/j-pressure-drop-gauges.webp`,
@@ -67,6 +71,7 @@ export const pressureDropHandCalcVsCfd: BlogPost = {
         ["Dynamic pressure", "ρv²/2 ≈ 7.98 kPa", "998 × 4² / 2"],
         ["Straight pipe", "≈ 3.3 kPa per metre", "f / D × ρv²/2"],
         ["One 90° elbow", "≈ 2.4 kPa", "K = 0.3 taken as an example; handbook values vary widely with radius and make"],
+        ["10 m of pipe and two elbows", "≈ 37.5 kPa", "(0.0205 × 10 / 0.05 + 2 × 0.3) × 7.98 kPa: 32.7 kPa of friction, 4.8 kPa of fittings"],
       ],
     },
     { type: "note", text: "Worked example with textbook inputs. The elbow K is an assumed table value, not a Coreframe result." },
@@ -162,5 +167,6 @@ export const pressureDropHandCalcVsCfd: BlogPost = {
     { href: "/cfd", label: "CFD for ducts and pipes" },
     { href: "/cfd#right", label: "How we know the answer is right" },
     { href: "/cfd/mesh-independence-study", label: "Mesh independence study (GCI)" },
+    { href: "/blog/verification-vs-validation-cfd-mesh-independence", label: "Verification vs validation in CFD" },
   ],
 };

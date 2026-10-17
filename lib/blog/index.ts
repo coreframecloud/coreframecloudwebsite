@@ -6,16 +6,16 @@ import { afterEffectsRemoteGpu } from "./posts/after-effects-remote-gpu";
 import { pressureDropHandCalcVsCfd } from "./posts/pressure-drop-hand-calc-vs-cfd";
 import { verificationVsValidationCfd } from "./posts/verification-vs-validation-cfd";
 
-/** Newest first. Same date today, so this order is the editorial order. */
+/** Newest first; posts with the same date keep this editorial order. */
 export const POSTS: BlogPost[] = [
+  // Published 18 Oct 2026 (SEO review action 14).
+  pressureDropHandCalcVsCfd,
+  // Published 17 Oct 2026 (Verified launch).
+  verificationVsValidationCfd,
   laptopD5Lumion,
   costWorkstationFarmBuy,
   blenderInteriorRender,
   afterEffectsRemoteGpu,
-  // DRAFT, not approved for publishing (16 Oct 2026).
-  pressureDropHandCalcVsCfd,
-  // DRAFT, Verified launch (16 Oct 2026): awaiting the owner's approval.
-  verificationVsValidationCfd,
 ];
 
 /**

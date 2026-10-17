@@ -185,5 +185,8 @@ export const verificationVsValidationCfd: BlogPost = {
     { href: "/cfd/mesh-independence-study", label: "Mesh independence study (GCI)" },
     { href: "/cfd", label: "CFD for ducts and pipes" },
     { href: "/cfd#right", label: "How we know the answer is right" },
+    // SEO review 18 Oct 2026, 3.2: link the clinic case study and the hand-calc post.
+    { href: "/cfd/projects/clinic-floor-hvac", label: "Case study: HVAC CFD on a clinic floor" },
+    { href: "/blog/pressure-drop-calculation-hand-calc-vs-cfd", label: "Pressure drop calculation: hand calc vs CFD" },
   ],
 };
