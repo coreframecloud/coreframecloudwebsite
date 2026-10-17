@@ -107,6 +107,12 @@ export function SiteFooter() {
                 { label: "Coreframe vs iRender", href: "/coreframe-vs-irender" },
                 { label: "Workstation specs", href: "/compute-nodes" },
                 { label: "Free DWG dimension check", href: "/dwg-check" },
+                // The CFD and Studio guides (SEO review 18 Oct 2026): the
+                // clinic case study had no links in at all.
+                { label: "Mesh independence study (GCI)", href: "/cfd/mesh-independence-study" },
+                { label: "Room airflow CFD for HVAC", href: "/cfd/room-airflow-hvac" },
+                { label: "HVAC CFD case study: a clinic floor", href: "/cfd/projects/clinic-floor-hvac" },
+                { label: "3BHK floor plan to render", href: "/floor-plan-to-render/3bhk-example" },
                 { label: "Book a demo or talk to us", href: "/request-demo" },
               ].map((l) => (
                 <Link key={l.href} href={l.href} className="flex min-h-11 items-center text-[13.5px] text-ink-2 transition hover:text-ink">{l.label}</Link>

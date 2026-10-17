@@ -242,6 +242,13 @@ const nextConfig: NextConfig = {
         destination: "/",
         permanent: true,
       },
+      /**
+       * Short legal URLs (SEO review 18 Oct 2026, T6). Google crawled /terms
+       * and got a 404; the page is /terms-of-service. One hop, permanent.
+       */
+      { source: "/terms", destination: "/terms-of-service", permanent: true },
+      { source: "/privacy", destination: "/privacy-policy", permanent: true },
+      { source: "/refund", destination: "/refund-policy", permanent: true },
 
       /**
        * Retired app/[slug] stubs. Each was 40-60 words of generic copy on a URL
