@@ -3,7 +3,6 @@ import { OwnImage } from "@/components/visuals/media";
 import type { Metadata } from "next";
 import { JsonLd } from "@/components/seo/json-ld";
 import { breadcrumbList } from "@/lib/seo";
-import Image from "next/image";
 import Link from "next/link";
 import { Fold } from "@/components/visuals/fold";
 import { NODE } from "@/lib/node-spec";
@@ -45,7 +44,7 @@ const STEPS = [
   },
   {
     title: "4. Install Coreframe Connect.",
-    body: "Connect is the Windows client. It handles the private network link and the stream, so there's nothing else to set up. Download it from your account in Chrome (Edge blocks the file outright), then run the installer and sign in. Windows will warn you about it because the installer isn't code-signed yet. The Installing on Windows section below shows the two clicks that get past the warning.",
+    body: "Connect is the Windows client. It handles the private network link and the stream, so there's nothing else to set up. Download it from your account, run the installer and sign in. The installer is signed by Coreframe Compute Labs Private Limited, so Windows shows our name as the publisher.",
   },
   {
     title: "5. Press Connect.",
@@ -163,36 +162,24 @@ export default function HowToUsePage() {
           </ol>
         </section>
 
-        {/* Public on purpose. The same walkthrough lives on /download, but that page
-            is behind sign-in, so there was no link anyone could send to a customer who
-            was stuck BEFORE they got in. This one can be pasted into a WhatsApp reply. */}
+        {/* Public on purpose: a link support can paste into a WhatsApp reply. */}
         <Fold title="Installing on Windows.">
           <p className="cf-section-copy mt-3">
-            Windows warns you about our installer, and the way past it isn&apos;t obvious. First,
-            download in Chrome. Edge blocks the file outright and gives you no way through. Then, when the blue &ldquo;Windows protected your PC&rdquo; box appears,
-            click <strong className="text-ink">More info</strong>, which is a small link and easy to
-            miss, and then <strong className="text-ink">Run anyway</strong>.
+            Connect is code-signed by Coreframe Compute Labs Private Limited. When Windows asks
+            whether to let the installer make changes, the publisher shows as our company name.
+            Click <strong className="text-ink">Yes</strong>.
           </p>
           <p className="cf-section-copy mt-3">
-            The warning is there because our installer isn&apos;t code-signed yet, so Windows can&apos;t
-            check the publisher. Windows builds that reputation as more people install it, so
-            clicking through does help us get there. We&apos;re a young company and we&apos;d rather
-            tell you that than pretend the warning isn&apos;t there. Nothing is wrong with your
-            machine or with the file.
+            To check the signature yourself, right-click the downloaded file, choose{" "}
+            <strong className="text-ink">Properties</strong>, then open the{" "}
+            <strong className="text-ink">Digital Signatures</strong> tab. It should list Coreframe
+            Compute Labs Private Limited. If it lists anyone else, or has no such tab, don&apos;t
+            run it and message us instead.
           </p>
-          <figure className="mt-6">
-            <Image
-              src="/guide/windows-install.png"
-              alt="Download in Chrome rather than Edge, then click More info and Run anyway in the Windows SmartScreen dialog."
-              width={1080}
-              height={1240}
-              priority={false}
-              className="h-auto w-full max-w-[460px] rounded-cf border border-rule"
-            />
-            <figcaption className="mt-2 text-xs leading-5 text-ink-3">
-              An illustration of the dialog, not a screenshot of your machine.
-            </figcaption>
-          </figure>
+          <p className="cf-section-copy mt-3">
+            On first connect, Windows asks to allow Connect&apos;s private network link and
+            firewall access. Click Yes. You only see these once.
+          </p>
         </Fold>
 
         <Fold title="Read this before your first session.">
