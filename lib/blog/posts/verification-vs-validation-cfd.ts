@@ -5,9 +5,9 @@ const SLUG = VERIFICATION_POST_SLUG;
 const IMG = `/blog/${SLUG}`;
 
 /**
- * DRAFT (16 Oct 2026), CFD explainer style, written for the Verified package
+ * Published 17 Oct 2026 (owner approved), CFD explainer style, written for the Verified package
  * launch (lib/cfd-verified.ts; landing page /cfd/mesh-independence-study).
- * `draft: true` keeps it off production until the owner approves it.
+ * Owner approved it 17 Oct 2026.
  *
  * Numbers are our own 16 Oct 2026 validation runs (cfd-runner/RUNBOOK.md,
  * Validated section): the bend 12.247 / 12.240 / 12.205 Pa on 0.25 / 0.54 /
@@ -32,8 +32,8 @@ export const verificationVsValidationCfd: BlogPost = {
     "GCI calculation example",
     "grid independence study",
   ],
-  datePublished: "2026-10-16",
-  draft: true,
+  datePublished: "2026-10-17",
+  draft: false,
   eyebrow: "CFD · Verification",
   hero: {
     src: `${IMG}/g-three-meshes-gci.webp`,

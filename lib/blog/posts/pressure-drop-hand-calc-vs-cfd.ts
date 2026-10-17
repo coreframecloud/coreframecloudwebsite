@@ -141,7 +141,7 @@ export const pressureDropHandCalcVsCfd: BlogPost = {
     },
     {
       type: "p",
-      text: "Coreframe runs [pressure drop CFD for duct and pipe STLs](/cfd): pre-processing and mesh validation first, then a quote, then the run and a report.",
+      text: "Coreframe runs [pressure drop CFD for duct and pipe STLs](/cfd): pre-processing and mesh check first, then a quote, then the run and a report.",
     },
   ],
   faqs: () => [

@@ -56,7 +56,7 @@ export function VerifiedCard({
       </dl>
       <p className="mt-6 text-[14.5px] leading-6 text-ink-2">
         <span className="font-semibold text-ink">What it proves, and what it does not.</span> {VERIFIED.meaning} Pre-processing
-        / mesh validation is charged separately, as for every package.
+        / mesh check is charged separately, as for every package.
       </p>
       <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3 text-[14.5px]">
         <Link href={startHref} className="cfh-link text-ink">

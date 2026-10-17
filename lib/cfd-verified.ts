@@ -20,7 +20,7 @@ import { formatMoney, type Currency } from "@/lib/money";
  * Prices (owner, 16 Oct 2026; the API's cfd_packages.validated min_charge and
  * usd_min_charge): India from ₹2,499 + GST, scaling with the cells (about
  * ₹5,493 + GST at 1 M cells); outside India from $99, no GST. Pre-processing /
- * mesh validation is a separate charge, as for every package. Never publish how
+ * mesh check is a separate charge, as for every package. Never publish how
  * the price is built, our costs or margins.
  *
  * The two validation records below are OUR test runs (fine to cite as ours).

@@ -174,7 +174,7 @@ const STEPS = [
     body: "Closed solid, units, and the flat end caps that become your inlet and outlets. You confirm which opening is the inlet on your job page.",
   },
   {
-    title: "Pay for pre-processing / mesh validation (₹599 incl. GST for most models)",
+    title: "Pay for pre-processing / mesh check (₹599 incl. GST for most models)",
     body: "We check your geometry, build a wall-resolved mesh and verify its quality; your exact run price comes with it. You get a one-page mesh report and a quote with packages to choose from, by email.",
   },
   {
@@ -214,11 +214,11 @@ const FAQ = [
   },
   {
     q: "What does it cost to start?",
-    a: "Pre-processing / mesh validation is ₹599 (incl. GST) for most duct and pipe models and ₹1,499 for very large models (over 5 million cells), paid from your Coreframe wallet. We check your geometry, build a wall-resolved mesh and verify its quality; your exact run price comes with it. The size is estimated from your STL before you pay, so you see which price applies on your job page. You get a one-page mesh report and a quote with packages. Pre-processing is a separate charge for that work and is not deducted from the run. You pay for the run only if you accept the quote. The quoted amount is held in your wallet, you are charged for what the run actually used, and the rest goes back to your wallet.",
+    a: "Pre-processing / mesh check is ₹599 (incl. GST) for most duct and pipe models and ₹1,499 for very large models (over 5 million cells), paid from your Coreframe wallet. We check your geometry, build a wall-resolved mesh and verify its quality; your exact run price comes with it. The size is estimated from your STL before you pay, so you see which price applies on your job page. You get a one-page mesh report and a quote with packages. Pre-processing is a separate charge for that work and is not deducted from the run. You pay for the run only if you accept the quote. The quoted amount is held in your wallet, you are charged for what the run actually used, and the rest goes back to your wallet.",
   },
   {
     q: "Do you offer CFD meshing as a service?",
-    a: "Not as a separate product. Meshing is part of pre-processing / mesh validation (₹599 incl. GST for most models): we build a wall-resolved mesh of your geometry with OpenFOAM snappyHexMesh, run a mesh quality check on it and send you a one-page Mesh report with your exact run price. The mesh files themselves (the OpenFOAM polyMesh, which opens in ParaView) come in the case download after a run.",
+    a: "Not as a separate product. Meshing is part of pre-processing / mesh check (₹599 incl. GST for most models): we build a wall-resolved mesh of your geometry with OpenFOAM snappyHexMesh, run a mesh quality check on it and send you a one-page Mesh report with your exact run price. The mesh files themselves (the OpenFOAM polyMesh, which opens in ParaView) come in the case download after a run.",
   },
   {
     q: "Do you check mesh independence?",
@@ -281,7 +281,7 @@ const serviceLd = {
     "Automatic OpenFOAM internal-flow runs for ducts, pipes, bends, reducers, valves and fittings from one closed STL: pressure drop, loss coefficient, PDF report, 3D results viewer and data files.",
   offers: {
     "@type": "Offer",
-    name: "Pre-processing / mesh validation",
+    name: "Pre-processing / mesh check",
     price: "599",
     priceCurrency: "INR",
     valueAddedTaxIncluded: true,
@@ -303,7 +303,7 @@ function usdSteps(u: UsdRateCard) {
   return STEPS.map((s, i) =>
     i === 2
       ? {
-          title: `Pay for pre-processing / mesh validation (${small} for most models, no GST)`,
+          title: `Pay for pre-processing / mesh check (${small} for most models, no GST)`,
           body: "We check your geometry, build a wall-resolved mesh and verify its quality; your exact run price comes with it. You get a one-page mesh report and a quote in US dollars with packages to choose from, by email.",
         }
       : s,
@@ -320,7 +320,7 @@ function usdFaq(u: UsdRateCard) {
       : f.q === "What does it cost to start?"
       ? {
           q: f.q,
-          a: `Pre-processing / mesh validation is ${small} for most duct and pipe models and ${large} for very large models (over ${cells} cells), paid from your Coreframe wallet, with no GST (export of services). We check your geometry, build a wall-resolved mesh and verify its quality; your exact run price comes with it. The size is estimated from your STL before you pay, so you see which price applies on your job page. You get a one-page mesh report and a quote with packages. Pre-processing is a separate charge for that work and is not deducted from the run. Runs are quoted in US dollars after the mesh is built, and you pay for the run only if you accept the quote. The quoted amount is held in your wallet, you are charged for what the run actually used, and the rest goes back to your wallet.`,
+          a: `Pre-processing / mesh check is ${small} for most duct and pipe models and ${large} for very large models (over ${cells} cells), paid from your Coreframe wallet, with no GST (export of services). We check your geometry, build a wall-resolved mesh and verify its quality; your exact run price comes with it. The size is estimated from your STL before you pay, so you see which price applies on your job page. You get a one-page mesh report and a quote with packages. Pre-processing is a separate charge for that work and is not deducted from the run. Runs are quoted in US dollars after the mesh is built, and you pay for the run only if you accept the quote. The quoted amount is held in your wallet, you are charged for what the run actually used, and the rest goes back to your wallet.`,
         }
       : f,
   );
@@ -332,7 +332,7 @@ function usdServiceLd(u: UsdRateCard) {
     ...serviceLd,
     offers: {
       "@type": "Offer",
-      name: "Pre-processing / mesh validation",
+      name: "Pre-processing / mesh check",
       price: String(u.cfd_quote_fee_small),
       priceCurrency: "USD",
       valueAddedTaxIncluded: false,
@@ -473,7 +473,7 @@ export default async function CfdView({ currency }: { currency: Currency }) {
         <section id="pre-processing" className="cf-section scroll-mt-20 px-5 pt-0">
           <div className="cf-wide">
             <p className="cf-eyebrow">Pre-processing</p>
-            <h2 className="cf-section-title mt-4">CFD pre-processing and mesh validation</h2>
+            <h2 className="cf-section-title mt-4">CFD pre-processing and mesh check</h2>
             <p className="cf-section-copy mt-3 max-w-[46rem]">
               Before any run, we check your geometry, build a wall-resolved mesh with OpenFOAM (blockMesh and
               snappyHexMesh) and run a mesh quality check on it. You get a one-page Mesh report and the exact price of the
@@ -741,13 +741,13 @@ export default async function CfdView({ currency }: { currency: Currency }) {
           <div className="cfx-panel cf-wide rounded-[6px] p-6 sm:p-10">
             <p className="cfx-eyebrow">What it costs to start</p>
             <h2 className="cf-section-title mt-4">
-              {usdText ? `${usdText.small} for pre-processing / mesh validation.` : "₹599 incl. GST for pre-processing / mesh validation."}
+              {usdText ? `${usdText.small} for pre-processing / mesh check.` : "₹599 incl. GST for pre-processing / mesh check."}
             </h2>
             <ul className="mt-7 grid grid-cols-1 gap-5 sm:grid-cols-2">
               {[
                 usdText
-                  ? ["Pre-processing / mesh validation", `${usdText.small} for most duct and pipe models; ${usdText.large} for very large models (over ${usdText.cells} cells). No GST (export of services). Paid from your Coreframe wallet. We check your geometry, build a wall-resolved mesh and verify its quality; your exact run price comes with it.`]
-                  : ["Pre-processing / mesh validation", "₹599 incl. GST for most duct and pipe models; ₹1,499 for very large models (over 5 million cells). Paid from your Coreframe wallet. We check your geometry, build a wall-resolved mesh and verify its quality; your exact run price comes with it."],
+                  ? ["Pre-processing / mesh check", `${usdText.small} for most duct and pipe models; ${usdText.large} for very large models (over ${usdText.cells} cells). No GST (export of services). Paid from your Coreframe wallet. We check your geometry, build a wall-resolved mesh and verify its quality; your exact run price comes with it.`]
+                  : ["Pre-processing / mesh check", "₹599 incl. GST for most duct and pipe models; ₹1,499 for very large models (over 5 million cells). Paid from your Coreframe wallet. We check your geometry, build a wall-resolved mesh and verify its quality; your exact run price comes with it."],
                 ["A separate charge", "Pre-processing pays for the geometry check, the mesh and its quality check. It is not deducted from the run price."],
                 usdText
                   ? ["Mesh report and quote by email", "A one-page mesh report (geometry, mesh quality checks, a picture of the mesh) and a quote in US dollars: packages to choose from, each with its iteration budget and convergence targets."]

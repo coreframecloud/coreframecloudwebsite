@@ -38,7 +38,7 @@ import { cellsLabel, formatMoney, usdRates, type Currency } from "@/lib/money";
 export const pricingMetadata: Metadata = {
   title: { absolute: "Pricing: RTX 5080 by the minute, CFD by quote | Coreframe Cloud" },
   description:
-    "RTX 5080 workstation prices per minute and per month, GST included, and what a duct or pipe CFD job costs to start (₹599 for pre-processing / mesh validation for most models).",
+    "RTX 5080 workstation prices per minute and per month, GST included, and what a duct or pipe CFD job costs to start (₹599 for pre-processing / mesh check for most models).",
   alternates: { canonical: "/pricing" },
 };
 
@@ -47,7 +47,7 @@ export const pricingMetadata: Metadata = {
 export const pricingMetadataUsd: Metadata = {
   ...pricingMetadata,
   description:
-    "RTX 5080 workstation prices per minute in US dollars, and what a duct or pipe CFD job costs to start ($15 for pre-processing / mesh validation for most models, no GST on exports).",
+    "RTX 5080 workstation prices per minute in US dollars, and what a duct or pipe CFD job costs to start ($15 for pre-processing / mesh check for most models, no GST on exports).",
 };
 
 /**
@@ -242,8 +242,8 @@ export default async function PricingView({ currency }: { currency: Currency }) 
           </div>
           <h2 className="cf-section-title mt-4 max-w-[36rem]">
             {usdView
-              ? `${formatMoney(usd.cfd_quote_fee_small, "USD")} for pre-processing / mesh validation.`
-              : "₹599 incl. GST for pre-processing / mesh validation."}
+              ? `${formatMoney(usd.cfd_quote_fee_small, "USD")} for pre-processing / mesh check.`
+              : "₹599 incl. GST for pre-processing / mesh check."}
           </h2>
           <p className="cf-section-copy mt-3 max-w-[40rem]">
             Upload one STL of your duct or pipe. We check it, build the real mesh on our machine and email you a quote.
@@ -252,8 +252,8 @@ export default async function PricingView({ currency }: { currency: Currency }) 
           <ul className="mt-7 grid grid-cols-1 gap-5 sm:grid-cols-2">
             {[
               usdView
-                ? ["Pre-processing / mesh validation", `${formatMoney(usd.cfd_quote_fee_small, "USD")} for most duct and pipe models; ${formatMoney(usd.cfd_quote_fee_large, "USD")} for very large models (over ${cellsLabel(usd.cfd_quote_fee_small_max_cells)} cells). No GST (export of services). Paid from your Coreframe wallet. We check your geometry, build a wall-resolved mesh and verify its quality; your exact run price comes with it. A separate charge, not deducted from the run.`]
-                : ["Pre-processing / mesh validation", "₹599 incl. GST for most duct and pipe models; ₹1,499 for very large models (over 5 million cells). Paid from your Coreframe wallet. We check your geometry, build a wall-resolved mesh and verify its quality; your exact run price comes with it. A separate charge, not deducted from the run."],
+                ? ["Pre-processing / mesh check", `${formatMoney(usd.cfd_quote_fee_small, "USD")} for most duct and pipe models; ${formatMoney(usd.cfd_quote_fee_large, "USD")} for very large models (over ${cellsLabel(usd.cfd_quote_fee_small_max_cells)} cells). No GST (export of services). Paid from your Coreframe wallet. We check your geometry, build a wall-resolved mesh and verify its quality; your exact run price comes with it. A separate charge, not deducted from the run.`]
+                : ["Pre-processing / mesh check", "₹599 incl. GST for most duct and pipe models; ₹1,499 for very large models (over 5 million cells). Paid from your Coreframe wallet. We check your geometry, build a wall-resolved mesh and verify its quality; your exact run price comes with it. A separate charge, not deducted from the run."],
               usdView
                 ? ["Mesh report and quote by email", "Runs are quoted in US dollars after the mesh is built: packages to choose from, each with its iteration budget and convergence targets."]
                 : ["Mesh report and quote by email", "Packages to choose from, each with its iteration budget and convergence targets."],

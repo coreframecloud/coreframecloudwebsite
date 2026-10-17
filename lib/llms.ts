@@ -83,7 +83,7 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
   out.push(
     `- **Can Coreframe run CFD for me?** Yes, for ducts and pipes (${SITE}/cfd). ` +
       "Upload one closed STL of the fluid volume; " +
-      "pre-processing / mesh validation is Rs 599 incl. GST for most duct and pipe models (Rs 1,499 for very large models over 5 million cells); we mesh it " +
+      "pre-processing / mesh check is Rs 599 incl. GST for most duct and pipe models (Rs 1,499 for very large models over 5 million cells); we mesh it " +
       "and email a quote; accept it and get pressure drop, loss coefficient, a PDF report, a " +
       "3D viewer and the OpenFOAM data. No CFD licence needed. It needs a Coreframe account " +
       "(the same account and wallet as GPU workstations and Studio). Rooms and HVAC airflow: coming soon.",
@@ -96,7 +96,7 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
       "factor of 1.25, and oscillating results are judged on 1.25 x half their spread (Stern et al. 2001). The report " +
       "states, e.g., \"Mesh-independent: static pressure drop = 12.20 Pa ± 0.85 % (GCI, fine mesh)\". Results within " +
       "24 hours (no express). From Rs 2,499 + GST in India (about Rs 5,493 + GST at 1 million cells), from $99 outside " +
-      "India (no GST), plus pre-processing / mesh validation. A GCI study is verification, not validation: " +
+      "India (no GST), plus pre-processing / mesh check. A GCI study is verification, not validation: " +
       "mesh-independent means the mesh error is small; it does not mean the result matches experiments.",
   );
   out.push(
@@ -519,7 +519,7 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
   out.push(`- [Enscape cloud workstations](${SITE}/enscape-cloud-gpu)`);
   out.push(`- [Free IFC pre-CFD check](${SITE}/tools): no account needed.`);
   out.push(`- [Free DWG dimension check](${SITE}/dwg-check): no account needed.`);
-  out.push(`- [CFD for ducts and pipes](${SITE}/cfd): a managed, automatic OpenFOAM service. Upload one closed STL of the fluid volume; the geometry is checked automatically, pre-processing / mesh validation is Rs 599 incl. GST for most duct and pipe models (Rs 1,499 for very large models over 5 million cells), from the Coreframe wallet: a wall-resolved mesh is built and quality-checked on our machine, and a mesh report and quote are emailed. Accept it and get a PDF report with pressure drop and loss coefficient, a 3D results viewer and the data files. No CFD licence needed. Rooms and HVAC comfort: coming soon.`);
+  out.push(`- [CFD for ducts and pipes](${SITE}/cfd): a managed, automatic OpenFOAM service. Upload one closed STL of the fluid volume; the geometry is checked automatically, pre-processing / mesh check is Rs 599 incl. GST for most duct and pipe models (Rs 1,499 for very large models over 5 million cells), from the Coreframe wallet: a wall-resolved mesh is built and quality-checked on our machine, and a mesh report and quote are emailed. Accept it and get a PDF report with pressure drop and loss coefficient, a 3D results viewer and the data files. No CFD licence needed. Rooms and HVAC comfort: coming soon.`);
   out.push(`- [Mesh independence study (GCI), the Verified package](${SITE}/cfd/mesh-independence-study): the same duct or pipe case on three meshes (refinement ratio 1.3) with the grid convergence index (Celik et al. 2008, Fs 1.25). Our own test: a 90° bend (R/D 1.5, air at 4 m/s, D 50 mm) gave 12.247 / 12.240 / 12.205 Pa on 0.25 / 0.54 / 1.21 M cells, mesh-independent (indicative) at 12.20 Pa ± 0.85 %. A straight pipe, 72 diameters long, was mesh-independent within 0.63 %, yet its friction factor sat 4.8 % below the Haaland correlation: a turbulence-model gap that verification cannot show. From Rs 2,499 + GST in India, from $99 elsewhere; internal flow up to about 6 M cells; within 24 hours.`);
   out.push(`- [HVAC CFD on a real clinic floor](${SITE}/cfd/projects/clinic-floor-hvac): case study. An indicative, automated first-pass airflow run on the second floor of a real two-storey clinic (buildingSMART Medical-Dental Clinic, CC BY 4.0): 18,500 sq ft, 100 rooms and corridors, 90 real ceiling diffusers at their design flows, 80 return/exhaust grilles; 1.9 M cells, 3,000 iterations, 5.1 hours. Occupied rooms averaged 23.0 °C, ADPI (ASHRAE 113) 93 % with 56 of 59 rooms at 80 % or more, PMV (ISO 7730) -0.28; 15 % of the floor area had air above 0.25 m/s at ankle height, because in the small 3 x 3.5 m treatment rooms the ceiling jets hit the wall, drop and run back across the floor. Not a validated or engineering-grade result; rooms and HVAC airflow is not on sale yet.`);
   out.push(`- [For teams and studios](${SITE}/enterprise)`);

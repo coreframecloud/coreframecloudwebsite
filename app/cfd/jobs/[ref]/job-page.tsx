@@ -405,7 +405,7 @@ function JobBody({
       {s === "quote_fee_due" && job.quote_fee ? (
         <Card tone="action" eyebrow="Next step" title="Pay for pre-processing to get your quote">
           <Body>
-            Pre-processing / mesh validation: we check your geometry, build a wall-resolved mesh and verify its quality; your exact run price comes with it. The mesh report and the quote follow
+            Pre-processing / mesh check: we check your geometry, build a wall-resolved mesh and verify its quality; your exact run price comes with it. The mesh report and the quote follow
             automatically, by email and on this page.
           </Body>
           {job.size_estimate ? <Fine className="mt-2">{job.size_estimate.text}{job.size_estimate.note ? ` ${job.size_estimate.note}` : ""}</Fine> : null}
@@ -628,13 +628,13 @@ function InletCard({
   );
 }
 
-/** Pre-processing / mesh validation is done: what was checked, and the one-page Mesh report. */
+/** Pre-processing / mesh check is done: what was checked, and the one-page Mesh report. */
 function MeshReportRow({ job, url }: { job: CfdJob; url: string }) {
   const q = job.quote!;
   const wl = q.mesh_quality?.wall_layers;
   const layers = wl?.used && wl.used !== "off" && wl.coverage_pct ? `, wall layers on ${fmtNumber(wl.coverage_pct)}% of the wall` : "";
   return (
-    <Card eyebrow="Pre-processing / mesh validation · done" title="Your mesh is checked">
+    <Card eyebrow="Pre-processing / mesh check · done" title="Your mesh is checked">
       <Body>
         Geometry checked, {wl?.used === "lowre" ? "wall-resolved " : ""}mesh built and quality-checked:{" "}
         {q.cells ? `${fmtNumber(q.cells)} cells` : "mesh ready"}

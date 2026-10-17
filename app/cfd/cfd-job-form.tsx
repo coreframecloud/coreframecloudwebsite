@@ -269,9 +269,9 @@ export default function CfdJobForm({ token, accountEmail, onSignedOut, currency 
           <ol className="list-decimal space-y-1 pl-5">
             <li>{fields?.nextFirstStep ?? "Confirm which opening is the inlet (and the units, if we ask)."}</li>
             {usdFee ? (
-              <li>Pay for pre-processing / mesh validation from your Coreframe wallet: {usdFee.small} for most models, {usdFee.large} for very large models (over {usdFee.cells} cells), no GST.</li>
+              <li>Pay for pre-processing / mesh check from your Coreframe wallet: {usdFee.small} for most models, {usdFee.large} for very large models (over {usdFee.cells} cells), no GST.</li>
             ) : (
-            <li>Pay for pre-processing / mesh validation from your Coreframe wallet: ₹599 incl. GST for most models, ₹1,499 for very large models (over 5 million cells).</li>
+            <li>Pay for pre-processing / mesh check from your Coreframe wallet: ₹599 incl. GST for most models, ₹1,499 for very large models (over 5 million cells).</li>
             )}
             <li>We check the geometry, build a wall-resolved mesh and verify its quality, then email you the mesh report and the quote. Pre-processing is a separate charge for that work, not deducted from the run.</li>
           </ol>

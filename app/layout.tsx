@@ -495,7 +495,7 @@ export default async function RootLayout({
                   ],
                   offers: {
                     "@type": "Offer",
-                    name: "CFD pre-processing / mesh validation",
+                    name: "CFD pre-processing / mesh check",
                     price: "599",
                     priceCurrency: "INR",
                     valueAddedTaxIncluded: true,

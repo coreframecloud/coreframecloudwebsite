@@ -125,7 +125,7 @@ function faqs(cur: Currency) {
     },
     {
       q: "What does a mesh independence study cost?",
-      a: `${verifiedPriceLine(cur)} Pre-processing / mesh validation is charged separately, as for every package. You pay for the iterations run on the meshes that were solved, never more than the quote; a mesh that fails on our side is not charged.`,
+      a: `${verifiedPriceLine(cur)} Pre-processing / mesh check is charged separately, as for every package. You pay for the iterations run on the meshes that were solved, never more than the quote; a mesh that fails on our side is not charged.`,
     },
     {
       q: "How long does it take?",
@@ -173,7 +173,7 @@ export default async function MeshStudyView({ currency }: { currency: Currency }
         valueAddedTaxIncluded: false,
       },
       ...(usd ? {} : { eligibleRegion: { "@type": "Country", name: "IN" } }),
-      description: verifiedPriceLine(currency) + " Plus pre-processing / mesh validation.",
+      description: verifiedPriceLine(currency) + " Plus pre-processing / mesh check.",
     },
   };
 
@@ -410,7 +410,7 @@ export default async function MeshStudyView({ currency }: { currency: Currency }
             <VerifiedCard currency={currency} learnMore={false} />
             <p className="mt-5 text-[14px] leading-6 text-ink-3">
               How to order: start a duct or pipe job on <Link href="/cfd#start" className="underline underline-offset-4">/cfd</Link>.
-              After pre-processing / mesh validation, Verified appears on your quote next to Quick and Standard whenever your
+              After pre-processing / mesh check, Verified appears on your quote next to Quick and Standard whenever your
               model qualifies.
             </p>
           </div>
