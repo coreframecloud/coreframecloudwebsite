@@ -28,7 +28,7 @@ export function PlanImage({ className = "", caption = "The plan (real drawing)" 
 
 export function ShellFurnished({
   className = "",
-  caption = "Shell: your walls and openings, rendered in Cycles. Furnished: a generated image.",
+  caption = "Shell: your walls and openings, ray-traced from your drawing. Furnished: a generated image.",
 }: {
   className?: string;
   caption?: string;
@@ -56,7 +56,7 @@ export function ShellFurnished({
       <div className="relative aspect-video overflow-hidden rounded-[20px] bg-paper-2">
         <Image src="/home/studio-furnished-room.webp" alt="The same room, furnished (generated image)" fill sizes="(max-width: 768px) 100vw, 640px" className="object-cover" />
         <div className="absolute inset-0" style={{ clipPath: `inset(0 ${100 - pos}% 0 0)` }}>
-          <Image src="/home/studio-shell-room.webp" alt="A room shell rendered in Cycles from the drawing: walls, windows, light" fill sizes="(max-width: 768px) 100vw, 640px" className="object-cover" />
+          <Image src="/home/studio-shell-room.webp" alt="A room shell ray-traced from the drawing: walls, windows, light" fill sizes="(max-width: 768px) 100vw, 640px" className="object-cover" />
         </div>
         <div className="pointer-events-none absolute inset-y-0 w-0.5 bg-white shadow-[0_0_0_1px_rgba(0,0,0,0.15)]" style={{ left: `${pos}%` }} />
         <span className="absolute top-3 left-3 rounded-md bg-black/60 px-2 py-1 text-[11px] font-semibold text-white">Shell</span>
