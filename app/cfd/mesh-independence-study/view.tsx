@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { SITE, breadcrumbList, faqPage } from "@/lib/seo";
+import { AREA_SERVED_WORLD, ORG_ID, SITE, breadcrumbList, faqPage, regionalOffers } from "@/lib/seo";
 import { JsonLd } from "@/components/seo/json-ld";
 import { Fold } from "@/components/visuals/fold";
 import { Callout, ExplainFigure, Hl, SectionHead } from "@/components/cfd-explainer";
@@ -10,6 +10,8 @@ import { BEND_RECORD, PIPE_RECORD, VERIFIED, verifiedFrom, verifiedPriceLine } f
 import { getVisiblePost } from "@/lib/blog";
 import { VERIFICATION_POST_SLUG } from "@/lib/blog/posts/verification-vs-validation-cfd";
 import type { Currency } from "@/lib/money";
+import { verifiedFromBoth } from "@/lib/cfd-prices";
+import { CLINIC_CASE, HVAC_PAGE, MESH_STUDY, updatedLabel } from "@/lib/cfd-pages";
 
 /**
  * /cfd/mesh-independence-study — the Verified package's landing page (owner,
@@ -153,6 +155,8 @@ export default async function MeshStudyView({ currency }: { currency: Currency }
   const post = getVisiblePost(VERIFICATION_POST_SLUG);
   const faq = faqs(currency);
   const usd = currency === "USD";
+  // The same structured data on both copies (SEO review 18 Oct 2026, T2):
+  // INR (India, + GST) and USD (elsewhere) Offers, whichever copy a crawler got.
   const serviceLd = {
     "@context": "https://schema.org",
     "@type": "Service",
@@ -160,28 +164,64 @@ export default async function MeshStudyView({ currency }: { currency: Currency }
     name: "Mesh independence study (GCI) for duct and pipe CFD",
     alternateName: ["Verified", "Grid independence study", "Mesh convergence study", "Grid convergence index (GCI) calculation"],
     serviceType: "CFD verification: mesh independence study with the grid convergence index",
-    provider: { "@type": "Organization", name: "Coreframe Cloud", url: SITE },
+    provider: { "@id": ORG_ID },
     url: `${SITE}${PATH}`,
-    ...(usd ? {} : { areaServed: "IN" }),
+    areaServed: AREA_SERVED_WORLD,
     isRelatedTo: { "@id": `${SITE}/#cfd-service` },
     description:
       "The same internal-flow CFD case (pipes, ducts, fittings, manifolds) solved on three meshes, refinement ratio 1.3, with the grid convergence index per Celik et al. (2008) and a verdict on the static pressure drop in the PDF report. Results within 24 hours.",
-    offers: {
-      "@type": "Offer",
+    offers: regionalOffers({
       name: "Verified: mesh-independence study (GCI)",
+      inr: VERIFIED.fromInr,
+      usd: VERIFIED.fromUsd,
       url: `${SITE}${PATH}`,
-      price: String(usd ? VERIFIED.fromUsd : VERIFIED.fromInr),
-      priceCurrency: usd ? "USD" : "INR",
-      valueAddedTaxIncluded: false,
-      priceSpecification: {
-        "@type": "PriceSpecification",
-        minPrice: usd ? VERIFIED.fromUsd : VERIFIED.fromInr,
-        priceCurrency: usd ? "USD" : "INR",
-        valueAddedTaxIncluded: false,
-      },
-      ...(usd ? {} : { eligibleRegion: { "@type": "Country", name: "IN" } }),
-      description: verifiedPriceLine(currency) + " Plus pre-processing / mesh check.",
-    },
+      inrTaxIncluded: false,
+      from: true,
+      description: `${verifiedPriceLine("INR")} Outside India: ${verifiedPriceLine("USD")} Plus pre-processing / mesh check.`,
+    }),
+  };
+
+  // The worked example as an article and a dataset (SEO review 18 Oct 2026,
+  // 3.2): the 17 Oct live run is the dated, citable record answer engines
+  // otherwise invent numbers for.
+  const articleLd = {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    "@id": `${SITE}${PATH}#article`,
+    headline: "Mesh independence study for duct and pipe CFD, with a worked GCI example",
+    description: DESCRIPTION,
+    url: `${SITE}${PATH}`,
+    inLanguage: "en-IN",
+    about: [
+      { "@type": "Thing", name: "Grid convergence index" },
+      { "@type": "Thing", name: "Mesh independence study" },
+    ],
+    datePublished: "2026-10-16",
+    dateModified: MESH_STUDY.updated,
+    author: { "@id": ORG_ID },
+    publisher: { "@id": ORG_ID },
+    image: `${SITE}/cfd/og-mesh-independence.jpg`,
+    mainEntityOfPage: `${SITE}${PATH}`,
+  };
+  const datasetLd = {
+    "@context": "https://schema.org",
+    "@type": "Dataset",
+    "@id": `${SITE}${PATH}#bend-dataset`,
+    name: "Three-mesh pressure drop of a 90° bend (Coreframe Verified run, 17 October 2026)",
+    description: `Static pressure drop of a ${BEND_RECORD.case} on three meshes with refinement ratio 1.3: ${BEND_RECORD.meshes
+      .map((m) => `${m.level.toLowerCase()} ${m.mcells.toFixed(2)} M cells, ${m.dp.toFixed(3)} Pa`)
+      .join("; ")}. Verdict: ${BEND_RECORD.verdict} (fine mesh); GCI ${BEND_RECORD.gciPct} %, band set by the solver's own iteration-to-iteration change.`,
+    url: `${SITE}${PATH}#example`,
+    creator: { "@id": ORG_ID },
+    datePublished: "2026-10-18",
+    dateModified: MESH_STUDY.updated,
+    temporalCoverage: "2026-10-17",
+    isAccessibleForFree: true,
+    variableMeasured: [
+      { "@type": "PropertyValue", name: "Cells", unitText: "million cells" },
+      { "@type": "PropertyValue", name: "Static pressure drop", unitCode: "PAL", unitText: "Pa" },
+    ],
+    measurementTechnique: "CFD mesh independence study, grid convergence index (Celik et al. 2008)",
   };
 
   return (
@@ -194,6 +234,8 @@ export default async function MeshStudyView({ currency }: { currency: Currency }
       />
       <JsonLd data={faqPage(faq)} />
       <JsonLd data={serviceLd} />
+      <JsonLd data={articleLd} />
+      <JsonLd data={datasetLd} />
       <main className="relative">
         {/* ── Hero (paper variant, the three-meshes sketch on the right) ── */}
         <section className="cf-section px-5 cf-pagehero cf-pagehero--paper">
@@ -201,14 +243,22 @@ export default async function MeshStudyView({ currency }: { currency: Currency }
             <div className="min-w-0 max-w-[640px]">
               <p className="cf-eyebrow">CFD · Verified · mesh-independence study (GCI)</p>
               <h1 className="cf-display mt-5">Mesh independence study for your duct or pipe CFD.</h1>
-              <p className="cf-lead mt-5 max-w-[44ch]">
-                We solve your case on three meshes, calculate the grid convergence index on the pressure drop and write one
-                line in the report: does the mesh still change the answer, and by how much.
+              {/* Answer-first, quotable (SEO review 18 Oct 2026, 3.2). Numbers from BEND_RECORD. */}
+              <p className="cf-lead mt-5 max-w-[52ch]">
+                A mesh independence study solves the same CFD case on three successively finer meshes and checks whether the
+                answer still moves. The grid convergence index (GCI, Celik et al. 2008) turns the change into an error band.
+                On our 90° bend, three meshes from {BEND_RECORD.meshes[0].mcells} to {BEND_RECORD.meshes[2].mcells} million
+                cells gave {BEND_RECORD.meshes.map((m) => m.dp.toFixed(3)).join(", ").replace(/, ([^,]*)$/, " and $1")} Pa:
+                reported as mesh-independent, {BEND_RECORD.resultPa.toFixed(2)} Pa ± {BEND_RECORD.bandPct} %.
               </p>
               <p className="mt-4 text-[15px] leading-6">
                 {verifiedFrom(currency)}
                 {usd ? " (no GST)" : ""} · results within {VERIFIED.deliveryHours} hours · internal flow up to about{" "}
                 {VERIFIED.maxMcells} M cells
+              </p>
+              <p className="mt-1 text-[14px] leading-6 text-ink-3">
+                Verified is {verifiedFromBoth(currency)}. Last updated{" "}
+                <time dateTime={MESH_STUDY.updated}>{updatedLabel(MESH_STUDY.updated)}</time>.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
                 <Link href="/cfd#start" className="cf-btn-primary">Start a job</Link>
@@ -382,14 +432,27 @@ export default async function MeshStudyView({ currency }: { currency: Currency }
                 Mesh-independent means the mesh error is small; it <Hl>does not mean the result matches experiments</Hl>.
               </Callout>
             </div>
-            {post ? (
-              <p className="mt-8 text-[15px] leading-6 text-ink-2">
-                Read more:{" "}
-                <Link href={`/blog/${post.slug}`} className="text-ink underline underline-offset-4">
-                  {post.title}
+            <ul className="mt-8 space-y-1.5 text-[15px] leading-6 text-ink-2">
+              {post ? (
+                <li>
+                  Read more:{" "}
+                  <Link href={`/blog/${post.slug}`} className="text-ink underline underline-offset-4">
+                    {post.title}
+                  </Link>
+                </li>
+              ) : null}
+              <li>
+                A whole-floor example:{" "}
+                <Link href={CLINIC_CASE.path} className="text-ink underline underline-offset-4">
+                  HVAC CFD on a clinic floor with 90 diffusers
+                </Link>{" "}
+                (indicative, and labelled so), and{" "}
+                <Link href={HVAC_PAGE.path} className="text-ink underline underline-offset-4">
+                  room airflow CFD for HVAC
                 </Link>
-              </p>
-            ) : null}
+                .
+              </li>
+            </ul>
           </div>
         </section>
 

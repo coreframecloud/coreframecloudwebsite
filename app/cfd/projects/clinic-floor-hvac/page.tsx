@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { SITE, breadcrumbList } from "@/lib/seo";
+import { ORG_ID, SITE, breadcrumbList, faqPage } from "@/lib/seo";
+import { Fold } from "@/components/visuals/fold";
+import { CLINIC_CASE, HVAC_PAGE, updatedLabel } from "@/lib/cfd-pages";
+import { VERIFIED } from "@/lib/cfd-verified";
 import { JsonLd } from "@/components/seo/json-ld";
 
 /**
@@ -14,8 +17,14 @@ import { JsonLd } from "@/components/seo/json-ld";
  * Rules for this page:
  *   - Numbers are exactly the run's (floor_metrics.json / the internal plan).
  *     Do not round them up or add new ones.
- *   - It is an INDICATIVE, automated first pass. Rooms and HVAC airflow is not
- *     on sale and not validated yet; never say it is.
+ *   - It is an INDICATIVE, automated first pass. This whole-floor run is not
+ *     validated; never say it is. (The single-room Rooms / HVAC steady service
+ *     went on sale 17 Oct 2026 with its own validation statement,
+ *     lib/cfd-rooms.ts; it is a different, smaller job.)
+ *   - SEO review 18 Oct 2026, 3.3: title under 60 characters, answer-first
+ *     opening, FAQPage, one updated date (lib/cfd-pages.ts) shared by the
+ *     schema, the visible line and the sitemap, and links to /cfd, the HVAC
+ *     page and the mesh study (it had none coming in).
  *   - No prices, no cost or margin figures, no machine RAM, no CPU maker.
  *   - The CC BY 4.0 attribution block must stay on the page (licence term).
  *   - The summary PDF is NOT published: it carries internal notes (machine
@@ -26,9 +35,10 @@ import { JsonLd } from "@/components/seo/json-ld";
  * script hvac-case/wm.py.
  */
 
-const PATH = "/cfd/projects/clinic-floor-hvac";
+const PATH = CLINIC_CASE.path;
 const IMG = "/cfd/projects/clinic-floor-hvac";
-const TITLE = "HVAC CFD on a Real Clinic Floor: 90 Diffusers";
+// Absolute, 52 characters (the template's brand suffix would take it past 60).
+const TITLE = "HVAC CFD Case Study: a Clinic Floor with 90 Diffusers";
 const DESCRIPTION =
   "A real clinic floor, 90 ceiling diffusers at design airflow: rooms held 23.0 °C and ADPI was 93 %, but 15 % of the floor had draught at ankle height.";
 
@@ -40,7 +50,7 @@ const OG = {
 };
 
 export const metadata: Metadata = {
-  title: TITLE,
+  title: { absolute: TITLE },
   description: DESCRIPTION,
   keywords: [
     "HVAC CFD case study",
@@ -129,15 +139,15 @@ const articleLd = {
   description: DESCRIPTION,
   image: [`${SITE}${IMG}/ankle-air-speed.webp`, `${SITE}${OG.url}`],
   datePublished: "2026-10-13",
-  dateModified: "2026-10-13",
+  dateModified: CLINIC_CASE.updated,
   inLanguage: "en-IN",
   about: ["HVAC airflow simulation", "Computational fluid dynamics", "Thermal comfort"],
   mainEntityOfPage: { "@type": "WebPage", "@id": `${SITE}${PATH}` },
   url: `${SITE}${PATH}`,
-  author: { "@type": "Organization", "@id": `${SITE}/#organization`, name: "Coreframe Cloud", url: SITE },
+  author: { "@type": "Organization", "@id": ORG_ID, name: "Coreframe Cloud", url: SITE },
   publisher: {
     "@type": "Organization",
-    "@id": `${SITE}/#organization`,
+    "@id": ORG_ID,
     name: "Coreframe Cloud",
     logo: { "@type": "ImageObject", url: `${SITE}/icon.png` },
   },
@@ -149,6 +159,26 @@ const articleLd = {
     license: LICENCE_URL,
   },
 };
+
+/** Answers from the run's numbers only (the rules at the top of this file). */
+const FAQ = [
+  {
+    q: "What ADPI did the clinic floor reach?",
+    a: "93 % over the floor at 1.1 m, by the ASHRAE 113 test, with 56 of the 59 occupied rooms at 80 % or more. Occupied rooms averaged 23.0 °C and PMV (ISO 7730) was −0.28, a touch on the cool side of neutral.",
+  },
+  {
+    q: "Where was the draught?",
+    a: "At ankle height in the small treatment rooms. 15 % of the floor area had air faster than 0.25 m/s at 0.1 m: in rooms of about 3 × 3.5 m, the jet from the four-way ceiling diffuser reaches the wall before it slows, drops down the wall and runs back across the floor.",
+  },
+  {
+    q: "How big was the model and how long did the run take?",
+    a: "The second floor of a real two-storey clinic: 18,500 sq ft, 100 rooms and corridors, 90 ceiling diffusers at their design flows and 80 return and exhaust grilles, read from the building model. 1.9 million cells, 3,000 iterations, 5.1 hours.",
+  },
+  {
+    q: "Is this a validated, engineering-grade result?",
+    a: "No. It is an indicative, automated first pass: the whole floor is meshed more coarsely than we validate single rooms at, room loads were worked back from the design airflows, and diffusers blow their flow through their face without the maker's throw data. The single-room Rooms / HVAC service carries its own validation statement.",
+  },
+];
 
 function Figure({
   src,
@@ -187,6 +217,7 @@ export default function ClinicFloorHvacPage() {
         ])}
       />
       <JsonLd data={articleLd} />
+      <JsonLd data={faqPage(FAQ)} />
       <main className="relative">
         {/* ── Hero ─────────────────────────────────────────────────────── */}
         <section className="cf-section px-5 cf-pagehero cf-pagehero--paper">
@@ -202,10 +233,15 @@ export default function ClinicFloorHvacPage() {
               <div className="min-w-0">
                 <p className="cf-eyebrow">Project · Rooms and HVAC airflow</p>
                 <h1 className="cf-display mt-5">A real clinic floor. 90 real diffusers. Where does the cold air land?</h1>
+                {/* Answer-first (SEO review 18 Oct 2026, 3.3): the numbers in the first lines. */}
                 <p className="cf-lead mt-5">
-                  We took a real building model with its HVAC drawn in, and ran the air on a whole floor. Every diffuser
-                  sits where the designer put it and blows its design airflow. The rooms are comfortable at head height.
-                  At the ankles, the small rooms are draughty.
+                  On a real clinic floor with 90 ceiling diffusers at design airflow, the occupied rooms averaged 23.0 °C and the floor reached
+                  an ADPI of 93 %, but 15 % of the floor had air faster than 0.25 m/s at ankle height (0.1 m).
+                </p>
+                <p className="mt-4 text-[15.5px] leading-7 text-ink-2">
+                  We took a real building model with its HVAC drawn in and ran the air on a whole floor. Every diffuser sits
+                  where the designer put it. The rooms are comfortable at head height; at the ankles, the small rooms are
+                  draughty.
                 </p>
                 <p className="mt-6 text-[14px] leading-6">
                   An indicative, automated first-pass study. Read what that means{" "}
@@ -213,6 +249,10 @@ export default function ClinicFloorHvacPage() {
                     below
                   </a>
                   .
+                </p>
+                <p className="mt-2 text-[13px] text-ink-3">
+                  Published 13 October 2026 · Last updated{" "}
+                  <time dateTime={CLINIC_CASE.updated}>{updatedLabel(CLINIC_CASE.updated)}</time>
                 </p>
               </div>
               <figure className="min-w-0 overflow-hidden rounded-[24px] bg-white p-3 sm:p-4">
@@ -384,13 +424,33 @@ export default function ClinicFloorHvacPage() {
             <div className="flex min-w-0 flex-col rounded-[24px] bg-tint-lilac p-6 sm:p-7">
               <h3 className="font-heading text-[20px] leading-[1.25] font-medium text-ink">Have a floor you want checked?</h3>
               <p className="mt-3 text-[15px] leading-6 text-ink-2">
-                Single rooms run on our CFD page today (steady analysis). For a whole floor, send us an IFC with spaces
+                Single rooms run today (steady analysis): see{" "}
+                <Link href={HVAC_PAGE.path} className="underline underline-offset-4">room airflow CFD for HVAC</Link>. For a whole floor, send us an IFC with spaces
                 and the HVAC model, or plans with a diffuser schedule, and tell us what you need to know.
               </p>
               <Link href="/request-demo" className="cfh-link mt-auto pt-5 text-ink">
                 Talk to us <span aria-hidden>→</span>
               </Link>
             </div>
+          </div>
+        </section>
+
+        {/* ── FAQ ──────────────────────────────────────────────────────── */}
+        <section className="cf-section px-5 pt-0">
+          <div className="cf-col">
+            <h2 className="cf-section-title">Questions.</h2>
+            {FAQ.map((f) => (
+              <Fold key={f.q} title={f.q}>
+                <p className="mt-3 text-[15px] leading-6 break-words text-ink-2">{f.a}</p>
+              </Fold>
+            ))}
+            <p className="mt-8 text-[14.5px] leading-6 text-ink-2">
+              Related: <Link href="/cfd" className="text-ink underline underline-offset-4">CFD for ducts and pipes</Link>
+              {" · "}
+              <Link href={HVAC_PAGE.path} className="text-ink underline underline-offset-4">Room airflow CFD for HVAC</Link>
+              {" · "}
+              <Link href={VERIFIED.path} className="text-ink underline underline-offset-4">Mesh independence study (GCI)</Link>
+            </p>
           </div>
         </section>
 
