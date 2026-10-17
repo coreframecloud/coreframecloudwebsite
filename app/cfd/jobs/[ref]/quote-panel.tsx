@@ -372,6 +372,7 @@ export function QuotePanel({
         ) : null}
         {dv.express && !dv.express.available && dv.express.unavailable ? <Fine>{dv.express.unavailable}</Fine> : null}
         {quote.validated_unavailable ? <Fine>{quote.validated_unavailable}</Fine> : null}
+        {quote.mesh_choice ? <Fine>Mesh: {quote.mesh_choice.text}</Fine> : null}
         {quote.validation_note ? <Fine>{quote.validation_note}</Fine> : null}
         {pkgs.some((p) => p.levels_text) ? (
           <Fine>
@@ -500,6 +501,7 @@ export function QuoteDetails({ job, quote }: { job: CfdJob; quote: Quote; cur?: 
           {quote.cells ? (
             <li>
               Mesh: {fmtNumber(quote.cells)} cells
+              {quote.mesh_choice ? ` (${quote.mesh_choice.short})` : ""}
               {mq.max_non_orthogonality != null ? ` · max non-orthogonality ${Math.round(mq.max_non_orthogonality)}°` : ""}
               {mq.max_skewness != null ? ` · max skewness ${Number(mq.max_skewness).toFixed(2)}` : ""}
               {mq.mesh_ok ? " · mesh checks passed" : ""}

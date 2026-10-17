@@ -212,6 +212,8 @@ export interface Quote {
   validated_unavailable?: string | null;
   /** Rooms / HVAC (17 Oct 2026): the validation claim in the approved words; null for other jobs. */
   validation_note?: string | null;
+  /** Rooms / HVAC (17 Oct 2026): the mesh this quote is for, Draft (medium) or Fine; null for other jobs. */
+  mesh_choice?: { level: "fine" | "medium" | string; label: string; short: string; text: string } | null;
   default_package?: string;
   settle_option?: { default?: boolean; text: string; detail?: string } | null;
   pay_line?: string;
