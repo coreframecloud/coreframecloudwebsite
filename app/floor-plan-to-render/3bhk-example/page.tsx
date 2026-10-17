@@ -204,7 +204,7 @@ export default async function Page() {
         <section className="cf-section px-5 pt-0">
           <div className="cf-col">
             <h2 className="cf-section-title">Five steps, and what each one cost.</h2>
-            <ol className="mt-6 space-y-5">
+            <ol data-cf-steps="" className="mt-6 space-y-5">
               {stepList.map((s, i) => (
                 <li key={s.title} className="flex gap-4">
                   <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-ink font-heading text-[15px] text-white">{i + 1}</span>

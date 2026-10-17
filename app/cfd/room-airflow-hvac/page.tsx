@@ -286,7 +286,7 @@ export default async function RoomAirflowHvacPage() {
             <div className="min-w-0">
               <p className="cf-eyebrow">How it works</p>
               <h2 className="cf-section-title mt-4">Four steps, from your account.</h2>
-              <ol className="mt-6 space-y-5">
+              <ol data-cf-steps="" className="mt-6 space-y-5">
                 {STEPS.map(([t, b], i) => (
                   <li key={t} className="flex gap-4">
                     <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-ink font-heading text-[15px] text-white">{i + 1}</span>
