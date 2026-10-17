@@ -18,8 +18,10 @@
  * account that is neither active nor missing a contact check gets an honest
  * "we are finishing your account" screen instead of a redirect loop.
  *
- * The token this page holds is verification-scoped; every response that comes
- * back with `access_token` replaces it (adoptToken), because /me/wallet refuses
+ * The session is the API's HttpOnly cookie (lib/session.ts). While sign-up is
+ * unfinished it is verification-scoped; when the account becomes active the
+ * API re-issues the cookie with full scope in the same response (it used to
+ * hand back a new token for this page to store), because /me/wallet refuses
  * the scoped one with a 403 — the loop reported on 26 Sep.
  */
 
@@ -37,7 +39,8 @@ import {
 } from "@/lib/validation";
 import { API_BASE } from "@/lib/api-base";
 import { peekReturnPath, takeReturnPath } from "@/lib/return-path";
-import { goAfterSignIn, syncSessionCookie } from "@/lib/session-cookie";
+import { goAfterSignIn } from "@/lib/session-cookie";
+import { apiFetch, isSignedIn, rememberUser } from "@/lib/session";
 
 const API = API_BASE;
 const DONE_URL = "/my-activity?topup=1";
@@ -123,28 +126,13 @@ export default function VerifyFlow() {
   // once the done card renders, which is always after the status fetch.
   const [returnTo] = useState<string | null>(() => (typeof window === "undefined" ? null : peekReturnPath()));
 
-  const authHeaders = useCallback((): HeadersInit => {
-    let tok: string | null = null;
-    try {
-      tok = localStorage.getItem("cf_customer_token");
-    } catch {
-      /* storage blocked */
-    }
-    return { "Content-Type": "application/json", Authorization: `Bearer ${tok}` };
-  }, []);
+  // No token here: the cookie travels with apiFetch (credentials: "include").
+  const authHeaders = useCallback((): HeadersInit => ({ "Content-Type": "application/json" }), []);
 
-  /** Swap in the full-access token whenever the API hands one back. */
+  /** Keep the cached user record current when the API returns it (the account
+   *  just became active: the API has already upgraded the session cookie). */
   const adoptToken = useCallback((data: { access_token?: string; user?: unknown }) => {
-    if (!data?.access_token) return;
-    try {
-      localStorage.setItem("cf_customer_token", data.access_token);
-      if (data.user) localStorage.setItem("cf_customer_user", JSON.stringify(data.user));
-      // The full-access token replaces the verification one: the API's own
-      // pages (CFD job page) need the cookie to carry the new one too.
-      void syncSessionCookie(data.access_token);
-    } catch {
-      /* private mode: the next load retries */
-    }
+    if (data?.user) rememberUser(data.user);
   }, []);
 
   const apply = useCallback(
@@ -166,7 +154,7 @@ export default function VerifyFlow() {
   );
 
   const loadStatus = useCallback(async () => {
-    const res = await fetch(`${API}/verification/status`, { headers: authHeaders() });
+    const res = await apiFetch(`${API}/verification/status`, { headers: authHeaders() });
     if (res.status === 401) {
       window.location.href = "/login?next=/verify";
       return;
@@ -180,7 +168,7 @@ export default function VerifyFlow() {
   useEffect(() => {
     let hasToken = false;
     try {
-      hasToken = Boolean(localStorage.getItem("cf_customer_token"));
+      hasToken = isSignedIn() || Boolean(localStorage.getItem("cf_customer_token"));
     } catch {
       /* treated as signed out */
     }
@@ -219,7 +207,7 @@ export default function VerifyFlow() {
     }
     setBusy(true);
     try {
-      const res = await fetch(`${API}/verification/phone`, {
+      const res = await apiFetch(`${API}/verification/phone`, {
         method: "POST",
         headers: authHeaders(),
         body: JSON.stringify({ phone_number: check.value }),
@@ -241,7 +229,7 @@ export default function VerifyFlow() {
     setError("");
     setBusy(true);
     try {
-      const res = await fetch(`${API}/verification/mobile-otp/send`, {
+      const res = await apiFetch(`${API}/verification/mobile-otp/send`, {
         method: "POST",
         headers: authHeaders(),
       });
@@ -263,7 +251,7 @@ export default function VerifyFlow() {
     if (value.length !== 6) return setError("Enter the 6-digit code.");
     setBusy(true);
     try {
-      const res = await fetch(`${API}/verification/mobile-otp/verify`, {
+      const res = await apiFetch(`${API}/verification/mobile-otp/verify`, {
         method: "POST",
         headers: authHeaders(),
         body: JSON.stringify({ code: value }),

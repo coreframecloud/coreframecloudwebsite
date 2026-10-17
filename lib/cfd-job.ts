@@ -18,13 +18,13 @@
 import { API_BASE } from "@/lib/api-base";
 import { type Currency } from "@/lib/money";
 import { ACCOUNT_ACCESS, jobTokenHeaders } from "@/lib/cfd-my-jobs";
+import { apiFetch, sessionMarker } from "@/lib/session";
 import { customerWords } from "@/lib/cfd-words";
 
 export { customerWords };
 
 export const JOB_TOKEN_PREFIX = "cf_cfd_job_token:";
 const JOB_TOKEN_TTL_MS = 30 * 24 * 3600 * 1000;
-const SESSION_KEY = "cf_customer_token";
 
 /** Statuses as the API names them (cfd_jobs.py _CUSTOMER_STAGE). */
 export type JobStatus =
@@ -423,24 +423,11 @@ export function readJobToken(ref: string): string | null {
   return sessionToken() ? ACCOUNT_ACCESS : null;
 }
 
-// ─── the signed-in session (the site's usual bearer) ─────────────────────────
+// ─── the signed-in session (an HttpOnly cookie: lib/session.ts) ──────────────
 
-function tokenExpired(tok: string): boolean {
-  try {
-    const payload = JSON.parse(atob(tok.split(".")[1].replace(/-/g, "+").replace(/_/g, "/")));
-    return typeof payload.exp === "number" && payload.exp * 1000 < Date.now();
-  } catch {
-    return true;
-  }
-}
-
+/** "cookie" when this browser is signed in, else null. Never a credential. */
 export function sessionToken(): string | null {
-  try {
-    const t = localStorage.getItem(SESSION_KEY);
-    return t && !tokenExpired(t) ? t : null;
-  } catch {
-    return null;
-  }
+  return sessionMarker();
 }
 
 // ─── API calls ───────────────────────────────────────────────────────────────
@@ -459,13 +446,9 @@ export function jobUrl(ref: string, path: string): string {
 export async function fetchJob(ref: string, jobToken: string): Promise<ApiResult<CfdJob | null>> {
   // Signed in: the bearer goes too, so the job's own account still gets in when
   // the kept email key has been retired (the API accepts the token OR the owner).
-  const bearer = sessionToken();
-  const res = await fetch(jobUrl(ref, "/status"), {
+  const res = await apiFetch(jobUrl(ref, "/status"), {
     cache: "no-store",
-    headers: {
-      ...jobTokenHeaders(jobToken),
-      ...(bearer ? { Authorization: `Bearer ${bearer}` } : {}),
-    },
+    headers: jobTokenHeaders(jobToken),
   });
   const body = res.ok ? customerWords((await res.json()) as CfdJob) : null;
   return { status: res.status, body };
@@ -482,10 +465,8 @@ export async function postJob(
     "Content-Type": "application/json",
     ...jobTokenHeaders(jobToken),
   };
-  const bearer = sessionToken();
-  if (bearer) headers.Authorization = `Bearer ${bearer}`;
   try {
-    const res = await fetch(jobUrl(ref, path), {
+    const res = await apiFetch(jobUrl(ref, path), {
       method: "POST",
       headers,
       body: JSON.stringify(body ?? {}),
@@ -514,13 +495,9 @@ export interface WalletLine {
 }
 
 export async function fetchWallet(): Promise<WalletLine | null | "signed_out"> {
-  const bearer = sessionToken();
-  if (!bearer) return "signed_out";
+  if (!sessionToken()) return "signed_out";
   try {
-    const res = await fetch(`${API_BASE}/customer/me/wallet`, {
-      headers: { Authorization: `Bearer ${bearer}` },
-      cache: "no-store",
-    });
+    const res = await apiFetch(`${API_BASE}/customer/me/wallet`, { cache: "no-store" });
     if (res.status === 401) return "signed_out";
     if (!res.ok) return null;
     const w = (await res.json()) as {

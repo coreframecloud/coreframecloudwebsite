@@ -13,6 +13,7 @@ import { announceWallet } from "@/components/wallet/wallet-events";
 import MyCfdJobs from "@/components/cfd/my-cfd-jobs";
 import MyStudioProjects from "@/components/studio/my-studio-projects";
 import SignInSecurity from "@/components/account/sign-in-security";
+import { apiFetch, forgetLocalSession, isSignedIn, sessionMarker } from "@/lib/session";
 import { trackEvent } from "@/lib/analytics";
 import {
   getIntroOffer,
@@ -394,13 +395,13 @@ interface ActivityData {
 /** Everything the page shows, in one go. Throws "auth_failed" on 401 and
  *  "forbidden" on 403; anything else (network, a missing endpoint) reads as
  *  empty, so one failing list never blanks the page. */
-async function fetchActivity(token: string, ledgerLimit: number): Promise<ActivityData> {
-  const headers = { Authorization: `Bearer ${token}` };
+async function fetchActivity(_session: string, ledgerLimit: number): Promise<ActivityData> {
   const authFetch = async (url: string) => {
     try {
       // no-store: the browser must never answer these from its cache, or a
-      // re-read after a top-up shows the balance from before it.
-      const r = await fetch(url, { headers, cache: "no-store" });
+      // re-read after a top-up shows the balance from before it. The session
+      // is the HttpOnly cookie (lib/session.ts), renewed once on a 401.
+      const r = await apiFetch(url, { cache: "no-store" });
       // 401 = the token is bad; sign them out.
       // 403 = the token is fine but this account may not use the page. That
       // USED to mean "not verified" and always went to /verify; now only a
@@ -432,14 +433,11 @@ async function fetchActivity(token: string, ledgerLimit: number): Promise<Activi
   };
 }
 
-/** The invoice PDF endpoint requires the bearer token, so it cannot be a link.
- *  Fetch it, open the blob. Revoked after a beat so the tab keeps working. */
+/** The invoice PDF endpoint needs the session, so it is fetched with the
+ *  cookie and opened as a blob. Revoked after a beat so the tab keeps working. */
 async function openInvoice(invoiceId: number) {
-  const token = localStorage.getItem("cf_customer_token");
-  if (!token) return;
-  const res = await fetch(`${API}/invoices/${invoiceId}/pdf`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  if (!isSignedIn()) return;
+  const res = await apiFetch(`${API}/invoices/${invoiceId}/pdf`);
   if (!res.ok) {
     alert("That invoice could not be opened. Please contact support@coreframecloud.com.");
     return;
@@ -508,8 +506,7 @@ export default function MyActivityPage() {
       apply(await fetchActivity(t, ledgerLimit.current));
     } catch (err) {
       if (err instanceof Error && err.message === "auth_failed") {
-        localStorage.removeItem("cf_customer_token");
-        localStorage.removeItem("cf_customer_user");
+        forgetLocalSession();
         setToken(null);
       }
     }
@@ -572,7 +569,7 @@ export default function MyActivityPage() {
       }
       if (params.get("studio") === "1") setStudioCtx(true);
     }
-    const t = localStorage.getItem("cf_customer_token");
+    const t = sessionMarker();
     const uRaw = localStorage.getItem("cf_customer_user");
 
     if (!t || !uRaw) {
@@ -592,7 +589,6 @@ export default function MyActivityPage() {
     setToken(t);
     setUser(u);
 
-    const headers = { Authorization: `Bearer ${t}` };
     tokenRef.current = t;
 
     fetchActivity(t, ledgerLimit.current)
@@ -602,7 +598,7 @@ export default function MyActivityPage() {
           // Keep the session. Ask the one endpoint a scoped token may call
           // whether sign-up is unfinished; only then is /verify the answer.
           try {
-            const r = await fetch(`${API}/verification/status`, { headers });
+            const r = await apiFetch(`${API}/verification/status`);
             const st = r.ok ? await r.json() : null;
             const pending =
               st?.account_status === "pending_approval" ||
@@ -620,8 +616,7 @@ export default function MyActivityPage() {
           return;
         }
         if (err.message === "auth_failed") {
-          localStorage.removeItem("cf_customer_token");
-          localStorage.removeItem("cf_customer_user");
+          forgetLocalSession();
           setToken(null);
         }
         // other errors: still render the page with whatever loaded
@@ -1010,7 +1005,7 @@ export default function MyActivityPage() {
       </div>
 
       <div className="mt-6">
-        <SignInSecurity token={token} />
+        <SignInSecurity />
       </div>
 
       <TopUpDialog

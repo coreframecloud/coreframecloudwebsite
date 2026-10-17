@@ -99,9 +99,9 @@ export default function JobViewer({
       };
 
       const loader = new GLTFLoader();
-      // File URLs are signed 5-minute links (sig=); an unsigned one is opened by the bearer.
-      const bearer = /[?&](?:sig|token)=/.test(url) ? null : sessionToken();
-      if (bearer) loader.setRequestHeader({ Authorization: `Bearer ${bearer}` });
+      // File URLs are signed 5-minute links (sig=); an unsigned one is opened
+      // by the session cookie.
+      if (!/[?&](?:sig|token)=/.test(url) && sessionToken()) loader.setWithCredentials(true);
       loader.load(
         url,
         (gltf) => {

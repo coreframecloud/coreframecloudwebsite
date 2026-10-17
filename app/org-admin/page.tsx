@@ -1,5 +1,6 @@
 "use client";
 
+import { apiFetch, sessionMarker } from "@/lib/session";
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { API_BASE } from "@/lib/api-base";
@@ -123,12 +124,12 @@ export default function OrgAdminPage() {
   const [billingLoading, setBillingLoading] = useState(false);
   const [billingMsg, setBillingMsg] = useState<{ ok: boolean; text: string } | null>(null);
 
-  const loadData = useCallback((tok: string) => {
+  const loadData = useCallback(() => {
     return Promise.all([
-      fetch(`${API}/org-admin/me`, { headers: { Authorization: `Bearer ${tok}` } }),
-      fetch(`${API}/org-admin/team`, { headers: { Authorization: `Bearer ${tok}` } }),
-      fetch(`${API}/org-admin/pending-members`, { headers: { Authorization: `Bearer ${tok}` } }),
-      fetch(`${API}/org-admin/usage`, { headers: { Authorization: `Bearer ${tok}` } }),
+      apiFetch(`${API}/org-admin/me`),
+      apiFetch(`${API}/org-admin/team`),
+      apiFetch(`${API}/org-admin/pending-members`),
+      apiFetch(`${API}/org-admin/usage`),
     ]).then(async ([meRes, teamRes, pendingRes, usageRes]) => {
       if (meRes.status === 401) throw new Error("token_expired");
       if (meRes.status === 403) throw new Error("access_denied");
@@ -149,10 +150,10 @@ export default function OrgAdminPage() {
   }, []);
 
   useEffect(() => {
-    const tok = localStorage.getItem("cf_customer_token");
+    const tok = sessionMarker();
     if (!tok) { setLoading(false); return; }
     setToken(tok);
-    loadData(tok).catch((e) => setError(e.message)).finally(() => setLoading(false));
+    loadData().catch((e) => setError(e.message)).finally(() => setLoading(false));
   }, [loadData]);
 
   async function handleInvite(e: React.FormEvent) {
@@ -161,9 +162,9 @@ export default function OrgAdminPage() {
     setInviteLoading(true);
     setInviteMsg(null);
     try {
-      const res = await fetch(`${API}/org-admin/invite`, {
+      const res = await apiFetch(`${API}/org-admin/invite`, {
         method: "POST",
-        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: inviteEmail.trim(), full_name: inviteName.trim() }),
       });
       const data = await res.json();
@@ -171,7 +172,7 @@ export default function OrgAdminPage() {
       setInviteMsg({ ok: true, text: data.message });
       setInviteEmail("");
       setInviteName("");
-      loadData(token).catch(() => {});
+      loadData().catch(() => {});
     } catch (e: unknown) {
       setInviteMsg({ ok: false, text: e instanceof Error ? e.message : "Error" });
     } finally {
@@ -197,9 +198,9 @@ export default function OrgAdminPage() {
       // caller's own wallet with no payment confirmation and was removed — this
       // button had been calling a 404 ever since. Submitting now RECORDS a claim;
       // the balance moves only when Coreframe confirms the transfer.
-      const res = await fetch(`${API}/org-admin/wallet/topup-request`, {
+      const res = await apiFetch(`${API}/org-admin/wallet/topup-request`, {
         method: "POST",
-        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           amount_rupees: amt,
           payment_method: topupMethod,
@@ -215,7 +216,7 @@ export default function OrgAdminPage() {
       setTopupAmount("");
       setTopupRef("");
       setTopupNote("");
-      loadData(token).catch(() => {});
+      loadData().catch(() => {});
     } catch (e: unknown) {
       setTopupMsg({ ok: false, text: e instanceof Error ? e.message : "Error" });
     } finally {
@@ -234,15 +235,15 @@ export default function OrgAdminPage() {
     setBillingLoading(true);
     setBillingMsg(null);
     try {
-      const res = await fetch(`${API}/org-admin/billing`, {
+      const res = await apiFetch(`${API}/org-admin/billing`, {
         method: "PATCH",
-        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ gstin, billing_state: billingState || null }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.detail || "Failed");
       setBillingMsg({ ok: true, text: "Billing profile saved" });
-      loadData(token).catch(() => {});
+      loadData().catch(() => {});
       setTimeout(() => setShowBilling(false), 1200);
     } catch (e: unknown) {
       setBillingMsg({ ok: false, text: e instanceof Error ? e.message : "Error" });
@@ -263,11 +264,10 @@ export default function OrgAdminPage() {
 
     setDecidingId(member.user_id);
     try {
-      const res = await fetch(
-        `${API}/org-admin/members/${member.user_id}/${verb === "approve" ? "approve-membership" : "reject-membership"}`,
+      const res = await apiFetch(`${API}/org-admin/members/${member.user_id}/${verb === "approve" ? "approve-membership" : "reject-membership"}`,
         {
           method: "POST",
-          headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ note: note || null }),
         }
       );
@@ -276,7 +276,7 @@ export default function OrgAdminPage() {
         throw new Error(body.detail || `Could not ${verb} this member.`);
       }
       setPending((prev) => prev.filter((p) => p.user_id !== member.user_id));
-      await loadData(token);
+      await loadData();
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : `Could not ${verb} this member.`);
     } finally {
@@ -289,13 +289,13 @@ export default function OrgAdminPage() {
     const newStatus = member.status === "active" ? "inactive" : "active";
     if (!confirm(`${newStatus === "inactive" ? "Deactivate" : "Reactivate"} ${member.full_name}?`)) return;
     try {
-      const res = await fetch(`${API}/org-admin/members/${member.id}/status`, {
+      const res = await apiFetch(`${API}/org-admin/members/${member.id}/status`, {
         method: "PATCH",
-        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status: newStatus }),
       });
       if (!res.ok) { const d = await res.json(); alert(d.detail || "Failed"); return; }
-      loadData(token).catch(() => {});
+      loadData().catch(() => {});
     } catch {
       alert("Failed to update member status");
     }

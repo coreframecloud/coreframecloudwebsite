@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { API_BASE } from "@/lib/api-base";
 
-const CONTROL_API = API_BASE;
 
 // The installer, its checksum and its version all come from ONE place: the
 // release feed nginx serves out of /home/coreframe/releases on the control
@@ -104,22 +102,12 @@ export async function GET(req: NextRequest) {
     );
   }
 
-  const auth = req.headers.get("authorization") || "";
-  const token = auth.startsWith("Bearer ") ? auth.slice(7) : "";
-
-  if (!token) {
-    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-  }
-
-  // Verify token against control plane
-  const meRes = await fetch(`${CONTROL_API}/me`, {
-    headers: { Authorization: `Bearer ${token}` },
-    next: { revalidate: 0 },
-  });
-
-  if (!meRes.ok) {
-    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-  }
+  // NO BEARER HERE ANY MORE (security review 17 Oct 2026). The website's
+  // session is an HttpOnly cookie on control.coreframecloud.com, which this
+  // server never sees; the download page checks it with the API itself. This
+  // route only describes the public release feed (the installer is served
+  // publicly from /releases/; using Connect is what needs an account).
+  void req;
 
   const release = await fetchRelease();
 

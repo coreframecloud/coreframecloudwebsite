@@ -9,6 +9,7 @@
  * The list never carries a job token.
  */
 import { API_BASE } from "@/lib/api-base";
+import { apiFetch } from "@/lib/session";
 import { customerWords } from "@/lib/cfd-words";
 
 /**
@@ -55,16 +56,13 @@ export interface MyCfdJobsPage {
 }
 
 export async function fetchMyCfdJobs(
-  bearer: string,
+  _session: string,
   opts: { limit?: number; cursor?: string | null } = {},
 ): Promise<MyCfdJobsPage | "signed_out" | null> {
   const q = new URLSearchParams({ limit: String(opts.limit ?? 10) });
   if (opts.cursor) q.set("cursor", opts.cursor);
   try {
-    const res = await fetch(`${API_BASE}/me/cfd-jobs?${q}`, {
-      headers: { Authorization: `Bearer ${bearer}` },
-      cache: "no-store",
-    });
+    const res = await apiFetch(`${API_BASE}/me/cfd-jobs?${q}`, { cache: "no-store" });
     if (res.status === 401) return "signed_out";
     if (!res.ok) return null;
     return customerWords((await res.json()) as MyCfdJobsPage);

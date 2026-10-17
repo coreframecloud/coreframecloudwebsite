@@ -9,7 +9,8 @@ import { trackEvent } from "@/lib/analytics";
 import { getIntroOffer, hoursLabel, rupees } from "@/lib/rate-card";
 import { useRateCard } from "@/lib/use-rate-card";
 import { API_BASE } from "@/lib/api-base";
-import { forgetLocalSession, signOutThisSession, syncSessionCookie } from "@/lib/session-cookie";
+import { forgetLocalSession, signOutThisSession } from "@/lib/session-cookie";
+import { COOKIE_SESSION, adoptLegacyToken, apiFetch } from "@/lib/session";
 import { OFFERINGS, type OfferingStatus } from "@/lib/offerings";
 import { WALLET_CHANGED_EVENT } from "@/components/wallet/wallet-events";
 
@@ -219,22 +220,16 @@ export function SiteHeader() {
   }, []);
 
   useEffect(() => {
-    const token = localStorage.getItem("cf_customer_token");
+    // The session is the API's HttpOnly cookie (lib/session.ts). What is kept
+    // here is only the cached user record, so the header can render at once.
     const userRaw = localStorage.getItem("cf_customer_user");
-    if (!token || !userRaw) return;
-
-    // Decode JWT exp to clear stale token immediately (no flicker)
-    function isExpired(tok: string): boolean {
-      try {
-        const payload = JSON.parse(atob(tok.split(".")[1]));
-        return payload.exp * 1000 < Date.now();
-      } catch { return true; }
-    }
-    if (isExpired(token)) {
-      localStorage.removeItem("cf_customer_token");
-      localStorage.removeItem("cf_customer_user");
+    if (!userRaw) {
+      // No cached user: nothing to show. An old bearer, if any, is still
+      // swapped for a cookie session so the next page load sees it.
+      void adoptLegacyToken();
       return;
     }
+    const token = COOKIE_SESSION;
 
     let cachedUser: AuthState["user"];
     try {
@@ -243,22 +238,11 @@ export function SiteHeader() {
       return;
     }
 
-    // Give the API's own pages (the CFD job page) this session too: sessions
-    // signed in before 16 Oct 2026 never got the cookie. Once per token per tab.
-    void syncSessionCookie(token);
-
     // Fetch wallet + fresh user info (so role/customer_type are always current)
-    Promise.all([
-      fetch(`${API_BASE}/me/wallet`, {
-        headers: { Authorization: `Bearer ${token}` },
-      }),
-      fetch(`${API_BASE}/me`, {
-        headers: { Authorization: `Bearer ${token}` },
-      }),
-    ])
+    Promise.all([apiFetch(`${API_BASE}/me/wallet`), apiFetch(`${API_BASE}/me`)])
       .then(async ([walletRes, meRes]) => {
         if (walletRes.status === 401 || meRes.status === 401) throw new Error("unauthorized");
-        // 403 = a valid but verification-scoped token. The account exists and
+        // 403 = a valid but verification-scoped session. The account exists and
         // the person IS signed in — they just cannot use the product yet. Keep
         // the session so "Sign out" works and stays truthful; the header used
         // to say "Sign out" while every page said "please sign in".
@@ -270,16 +254,16 @@ export function SiteHeader() {
         const freshUser = meRes.ok ? await meRes.json() : null;
         // Merge fresh role/customer_type into cached user
         const user = freshUser
-          ? { ...cachedUser, role: freshUser.role, customer_type: freshUser.customer_type }
+          ? { ...cachedUser, role: freshUser.role, customer_type: freshUser.customer_type,
+              status: freshUser.status ?? cachedUser?.status }
           : cachedUser;
         // Persist updated role so other pages see it
         localStorage.setItem("cf_customer_user", JSON.stringify(user));
         setAuth({ token, user, wallet });
       })
       .catch(() => {
-        // Token expired or invalid — clear immediately
-        localStorage.removeItem("cf_customer_token");
-        localStorage.removeItem("cf_customer_user");
+        // Session ended (expired, revoked, or the refresh chain ran out)
+        forgetLocalSession();
         setAuth(null);
       });
   }, []);
@@ -288,13 +272,8 @@ export function SiteHeader() {
     // Before the reload, or the reload cancels it and the job page on control
     // stays signed in as someone who believes they signed out. The API
     // revokes this session's token too, so a copy of it stops working.
-    let token: string | null = auth?.token ?? null;
-    try {
-      token = token ?? localStorage.getItem("cf_customer_token");
-    } catch {
-      /* storage blocked */
-    }
-    await signOutThisSession(token);
+    await adoptLegacyToken();
+    await signOutThisSession();
     forgetLocalSession();
     setAuth(null);
     window.location.reload();

@@ -1,5 +1,6 @@
 "use client";
 
+import { apiFetch } from "@/lib/session";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { API_BASE } from "@/lib/api-base";
@@ -52,7 +53,7 @@ export default function CfdJobForm({ token, accountEmail, onSignedOut, currency 
   const [walletCurrency, setWalletCurrency] = useState<Currency | null>(null);
   useEffect(() => {
     let live = true;
-    fetch(`${API_BASE}/customer/me/wallet`, { headers: { Authorization: `Bearer ${token}` } })
+    apiFetch(`${API_BASE}/customer/me/wallet`)
       .then((r) => (r.ok ? r.json() : null))
       .then((w: { wallet_currency?: string | null } | null) => {
         if (live) setWalletCurrency(parseCurrency(w?.wallet_currency));
@@ -103,7 +104,8 @@ export default function CfdJobForm({ token, accountEmail, onSignedOut, currency 
   const [uploadError, setUploadError] = useState("");
   const [validation, setValidation] = useState<Validation | null>(null);
 
-  const auth = { Authorization: `Bearer ${token}` };
+  // The session is the HttpOnly cookie (apiFetch); no header to add.
+  const auth: Record<string, string> = {};
 
   const pollValidation = (ref: string) => {
     let attempts = 0;
@@ -140,7 +142,7 @@ export default function CfdJobForm({ token, accountEmail, onSignedOut, currency 
       fd.append("file", f);
       // The job's token AND the owner's session: either one lets the API accept the file.
       // In a header, never the URL (security review 17 Oct 2026).
-      const res = await fetch(`${API_BASE}/cfd-jobs/${ref}/upload`, {
+      const res = await apiFetch(`${API_BASE}/cfd-jobs/${ref}/upload`, {
         method: "POST",
         body: fd,
         headers: { ...auth, ...(jobToken ? { "X-Job-Token": jobToken } : {}) },
@@ -185,7 +187,7 @@ export default function CfdJobForm({ token, accountEmail, onSignedOut, currency 
         description: notes.trim() || `${category.label}, submitted from /cfd`,
         ...fields.toPayload(catState),
       };
-      const res = await fetch(`${API_BASE}/cfd-jobs`, {
+      const res = await apiFetch(`${API_BASE}/cfd-jobs`, {
         method: "POST",
         headers: { "Content-Type": "application/json", ...auth },
         body: JSON.stringify(payload),

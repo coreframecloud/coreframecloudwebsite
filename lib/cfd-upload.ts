@@ -9,7 +9,7 @@
  * resumes: chunks already on the server are skipped.
  */
 import { API_BASE } from "@/lib/api-base";
-import { sessionToken } from "@/lib/cfd-job";
+import { apiFetch } from "@/lib/session";
 import { jobTokenHeaders } from "@/lib/cfd-my-jobs";
 
 const CHUNK = 8 * 1024 * 1024;
@@ -46,11 +46,9 @@ async function api<T>(
   headers?: Record<string, string>,
 ): Promise<T> {
   const url = `${API_BASE}/cfd-jobs/${encodeURIComponent(ref)}${path}`;
-  // Signed in: the bearer opens the job for its own account (no token needed).
-  const bearer = sessionToken();
+  // Signed in: the session cookie opens the job for its own account.
   const h: Record<string, string> = { ...(headers ?? {}), ...jobTokenHeaders(token) };
-  if (bearer) h.Authorization = `Bearer ${bearer}`;
-  const r = await fetch(url, { method, body: body ?? undefined, headers: h });
+  const r = await apiFetch(url, { method, body: body ?? undefined, headers: h });
   const j = (await r.json().catch(() => ({}))) as { detail?: { message?: string } | string } & T;
   if (!r.ok) {
     const d = j.detail;
