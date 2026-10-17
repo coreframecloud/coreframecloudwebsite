@@ -48,7 +48,14 @@ export function BillingMeter({
         {cost !== null ? (
           <div className="text-right">
             <p className="text-[12px] text-white/55">Cost so far</p>
-            <p className="font-heading text-[40px] leading-none font-medium tabular-nums">{currency === "USD" ? "$" : "₹"}{cost.toFixed(2)}</p>
+            {/* The widest value sits invisibly in the same grid cell, so the
+                block never changes width as the cost ticks up (no layout shift). */}
+            <p className="grid font-heading text-[40px] leading-none font-medium tabular-nums">
+              <span className="invisible col-start-1 row-start-1" aria-hidden="true">
+                {currency === "USD" ? "$" : "₹"}{((ratePerHour ?? 0) * RUN / 60).toFixed(2)}
+              </span>
+              <span className="col-start-1 row-start-1">{currency === "USD" ? "$" : "₹"}{cost.toFixed(2)}</span>
+            </p>
           </div>
         ) : null}
       </div>
