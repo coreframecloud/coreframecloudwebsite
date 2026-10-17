@@ -169,7 +169,7 @@ function faqs(p: StudioPrices) {
   return [
   {
     q: "What file does Coreframe Studio need?",
-    a: `A DXF floor plan (up to ${MAX_DXF_MB} MB). Studio reads the walls, doors and windows from the drawing's lines, so a PDF, JPG or PNG of a plan can't be read yet, and neither can a DWG. If you work in AutoCAD, Revit or ArchiCAD, exporting a DXF is a Save As; the three-click guide is at coreframecloud.com/studio/learn, and there's a demo 3BHK plan to try if you don't have a drawing to hand.`,
+    a: `A DXF floor plan (up to ${MAX_DXF_MB} MB). Studio reads the walls, doors and windows from the drawing's lines, so a PDF, JPG or PNG of a plan can't be read yet, and neither can a DWG. If you work in AutoCAD, Revit or ArchiCAD, exporting a DXF is a Save As; the three-click guide is at coreframecloud.com/studio/learn.`,
   },
   {
     q: "Does it invent rooms or windows that are not on my plan?",
@@ -260,7 +260,7 @@ export default async function Page() {
           <div className="cf-wide">
             <h2 className="cf-section-title">One plan, every room.</h2>
             <p className="cf-section-copy mt-3">
-              The demo 3BHK plan and its rooms, each exported at 4K from Studio.{" "}
+              Our sample 3BHK plan and its rooms, each exported at 4K from Studio.{" "}
               <Link href="/floor-plan-to-render/3bhk-example" className="text-ink underline underline-offset-4">
                 Follow the whole 3BHK example, step by step
               </Link>
