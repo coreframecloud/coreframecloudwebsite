@@ -120,12 +120,12 @@ export const laptopD5Lumion: BlogPost = {
     { type: "h3", text: "2. Buy a desktop or a workstation laptop" },
     {
       type: "p",
-      text: `If you render most days, owning the hardware is usually cheaper over time. By our own estimate a desktop in the same class as our workstations (an ${NODE.gpu} with ${NODE.ram} of RAM) costs about ${ctx.replacementCost} in India. Our [rent-or-buy page](/d5-render-vs-local-gpu) works out the break-even, and [this cost comparison](/blog/cloud-workstation-vs-render-farm-vs-buying-cost-india) adds render farms to the picture.`,
+      text: `If you render most days, owning the hardware is usually cheaper over time. By our own estimate a desktop in the same class as our workstations (an ${NODE.gpu} with ${NODE.ram} of RAM) ${ctx.replacementCost ? `costs about ${ctx.replacementCost} in India` : "is a large one-off purchase"}. Our [rent-or-buy page](/d5-render-vs-local-gpu) works out the break-even, and [this cost comparison](/blog/cloud-workstation-vs-render-farm-vs-buying-cost-india) adds render farms to the picture.`,
     },
     { type: "h3", text: "3. Rent a cloud workstation for the heavy days" },
     {
       type: "p",
-      text: `A cloud workstation is a full Windows desktop with a capable GPU, running in a data centre and streamed to your laptop. You keep modelling on the laptop, and when it's time to render, you open the same project on the remote machine. Ours is an ${NODE.gpu} with ${NODE.vram}, ${NODE.ram} of RAM and an ${NODE.cpu}, hosted in ${NODE.location}. D5 Render, Blender and Twinmotion come preinstalled; Lumion and other licensed tools run with your own licence.${ctx.hourly ? ` It costs ${ctx.hourly} with GST included, billed by the minute.` : ""}`,
+      text: `A cloud workstation is a full Windows desktop with a capable GPU, running in a data centre and streamed to your laptop. You keep modelling on the laptop, and when it's time to render, you open the same project on the remote machine. Ours is an ${NODE.gpu} with ${NODE.vram}, ${NODE.ram} of RAM and an ${NODE.cpu}, hosted in ${NODE.location}. D5 Render, Blender and Twinmotion come preinstalled; Lumion and other licensed tools run with your own licence.${ctx.hourly ? ` It costs ${ctx.hourly} ${ctx.taxIncl}, billed by the minute.` : ""}`,
     },
     {
       type: "figure",

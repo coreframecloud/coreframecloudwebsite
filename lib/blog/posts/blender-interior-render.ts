@@ -74,7 +74,7 @@ export const blenderInteriorRender: BlogPost = {
     ctx.hourly
       ? {
           type: "p",
-          text: `The card shows the rate, ${ctx.hourly} with GST included. ${ctx.billing} You can see current rates and monthly plans on the [pricing page](/pricing).`,
+          text: `The card shows the rate, ${ctx.hourly} ${ctx.taxIncl}. ${ctx.billing} You can see current rates and monthly plans on the [pricing page](/pricing).`,
         }
       : { type: "p", text: `${ctx.billing} Current rates are on the [pricing page](/pricing).` },
 
@@ -268,7 +268,7 @@ export const blenderInteriorRender: BlogPost = {
     ctx.hourly
       ? {
           q: "What does a Blender session cost?",
-          a: `${ctx.hourly} with GST included, billed per minute while the desktop is streaming. Uploading files before you launch is not billed.`,
+          a: `${ctx.hourly} ${ctx.taxIncl}, billed per minute while the desktop is streaming. Uploading files before you launch is not billed.`,
         }
       : null,
   ],

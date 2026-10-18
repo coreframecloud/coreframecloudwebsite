@@ -19,6 +19,7 @@
  */
 
 import { NODE, WORKSTATION_REPLACEMENT_COST } from "./node-spec";
+import type { Currency } from "./money";
 
 export type SoftwarePage = {
   /** URL slug under / */
@@ -63,7 +64,7 @@ export type SoftwarePage = {
   /**
    * Live prices under the lead, from the rate card (never typed here):
    * "answer" = the answer-first passage plus the spec table (GPU rental page);
-   * "line" = one line with the hourly rate in both currencies.
+   * "line" = one line with the hourly rate in the visitor's currency.
    */
   livePrice?: "answer" | "line";
   /** Short sections shown open (not folded), each with an optional link. */
@@ -80,7 +81,16 @@ const RESET_ANSWER =
 const LICENCE_BYOL =
   "You install it and sign in with your own licence, exactly as you would on a new PC. We don't supply licences for commercial software, because the licence belongs to you and not to the machine.";
 
-export const SOFTWARE_PAGES: SoftwarePage[] = [
+/**
+ * The pages, built for one display currency (owner, 18 Oct 2026: one currency
+ * per visitor). The rupee build is the source copy (sitemap, llms.txt). The
+ * dollar build words the "what a workstation costs to buy" comparison without
+ * a figure (WORKSTATION_REPLACEMENT_COST is a rupee estimate for the Indian
+ * market and there is no dollar estimate) and drops the GST and rupee claims.
+ */
+function buildSoftwarePages(cur: Currency): SoftwarePage[] {
+  const usd = cur === "USD";
+  return [
   {
     slug: "revit-cloud-workstation",
     title: "Revit Cloud Workstation — run Revit on a rented RTX GPU",
@@ -140,7 +150,9 @@ export const SOFTWARE_PAGES: SoftwarePage[] = [
     intro:
       "3ds Max with V-Ray or Corona is the classic case for renting a GPU, because the work comes in bursts. You need serious hardware for a few days before a deadline and almost none for the rest of the month.",
     problem:
-      `Rendering ties up your workstation for hours, and the machine that would do it comfortably lands at about ${WORKSTATION_REPLACEMENT_COST} and sits idle most of the year.`,
+      usd
+        ? "Rendering ties up your workstation for hours, and the machine that would do it comfortably is a large one-off purchase that sits idle most of the year."
+        : `Rendering ties up your workstation for hours, and the machine that would do it comfortably lands at about ${WORKSTATION_REPLACEMENT_COST} and sits idle most of the year.`,
     why: [
       "V-Ray GPU and Chaos Vantage render on the graphics card, which is what this hardware is for. Corona is a CPU renderer, so read the note below before you assume it gets faster.",
       "Your own computer stays usable while the render runs on the rented machine.",
@@ -161,9 +173,9 @@ export const SOFTWARE_PAGES: SoftwarePage[] = [
       {
         h2: "Why studios rent for 3ds Max specifically.",
         body: [
-          `Archviz work in 3ds Max comes in bursts, which makes buying hardware a poor deal. There is a week before a client presentation when the machine cannot keep up, and three weeks afterwards when it idles. A workstation that renders comfortably lands at roughly ${WORKSTATION_REPLACEMENT_COST} in India, is bought once, and is still on the books whether or not the project that justified it goes ahead.`,
+          `Archviz work in 3ds Max comes in bursts, which makes buying hardware a poor deal. There is a week before a client presentation when the machine cannot keep up, and three weeks afterwards when it idles. ${usd ? "A workstation that renders comfortably is a large purchase, bought once," : `A workstation that renders comfortably lands at roughly ${WORKSTATION_REPLACEMENT_COST} in India, is bought once,`} and is still on the books whether or not the project that justified it goes ahead.`,
           "The second reason is that rendering takes the machine away from you. A local render ties up the computer you also model on, so the afternoon is spent waiting. Run it on a rented machine and you get the afternoon back, because your own computer stays free while the render runs somewhere else.",
-          `The third is hiring. A studio taking on a remote 3ds Max artist otherwise has to ship them a workstation, buy a laptop that cannot really cope, or hope they own something adequate. A rented machine they reach from their own laptop is a monthly line item instead of ${WORKSTATION_REPLACEMENT_COST} of hardware, and it stops cleanly if the arrangement does not.`,
+          `The third is hiring. A studio taking on a remote 3ds Max artist otherwise has to ship them a workstation, buy a laptop that cannot really cope, or hope they own something adequate. A rented machine they reach from their own laptop is a monthly line item instead of ${usd ? "a workstation's worth" : WORKSTATION_REPLACEMENT_COST} of hardware, and it stops cleanly if the arrangement does not.`,
         ],
       },
       {
@@ -311,7 +323,7 @@ export const SOFTWARE_PAGES: SoftwarePage[] = [
     description:
       "Run Chaos V-Ray GPU rendering on a rented RTX workstation in India, billed per minute. Works with 3ds Max, SketchUp, Rhino and Revit. Bring your Chaos licence.",
     intro:
-      `V-Ray GPU wants VRAM and CUDA cores. Owning them means a machine at about ${WORKSTATION_REPLACEMENT_COST} sitting on the books all year for work that keeps it busy a few weeks of the year. Renting gets you the same card for just those weeks.`,
+      `V-Ray GPU wants VRAM and CUDA cores. Owning them means ${usd ? "an expensive machine" : `a machine at about ${WORKSTATION_REPLACEMENT_COST}`} sitting on the books all year for work that keeps it busy a few weeks of the year. Renting gets you the same card for just those weeks.`,
     problem:
       "V-Ray GPU renders outlast your working day on a card that was never meant for production rendering.",
     why: [
@@ -442,13 +454,19 @@ export const SOFTWARE_PAGES: SoftwarePage[] = [
       },
     ],
     description:
-      "Rent a Windows RTX GPU workstation in India by the minute for 3D rendering, CAD and simulation. No hardware purchase, GST invoices, persistent NAS storage.",
+      usd
+        ? "Rent a Windows RTX GPU workstation in India by the minute for 3D rendering, CAD and simulation. No hardware purchase, billed in US dollars, persistent NAS storage."
+        : "Rent a Windows RTX GPU workstation in India by the minute for 3D rendering, CAD and simulation. No hardware purchase, GST invoices, persistent NAS storage.",
     intro:
       "Coreframe rents Windows GPU workstations by the minute from infrastructure in India. You stream a real RTX desktop to the computer you already own and pay only while the stream is running.",
     problem:
-      `A workstation that would handle your rendering lands at about ${WORKSTATION_REPLACEMENT_COST}, depreciates the day it arrives, and sits idle most of the week. An international cloud GPU bills in dollars and comes with the latency you'd expect from a server abroad.`,
+      usd
+        ? "A workstation that would handle your rendering is a large up-front purchase, depreciates the day it arrives, and sits idle most of the week."
+        : `A workstation that would handle your rendering lands at about ${WORKSTATION_REPLACEMENT_COST}, depreciates the day it arrives, and sits idle most of the week. An international cloud GPU bills in dollars and comes with the latency you'd expect from a server abroad.`,
     why: [
-      "The machines are in India, so latency is low for Indian users, and you pay in rupees with GST invoices.",
+      usd
+        ? "The machines are in India, so latency is low for users in and near India. Accounts billed outside India pay in US dollars, with no GST."
+        : "The machines are in India, so latency is low for Indian users, and you pay in rupees with GST invoices.",
       "Per-minute billing starts when the stream does. Provisioning is free.",
       "Persistent NAS storage for project files between sessions.",
       "A full Windows desktop where every application you need is installed for you.",
@@ -475,10 +493,15 @@ export const SOFTWARE_PAGES: SoftwarePage[] = [
         q: "Is my data safe on a rented workstation?",
         a: RESET_ANSWER,
       },
-      {
-        q: "Do I get a GST invoice?",
-        a: "Yes. A GST invoice is issued automatically for every payment. Business accounts can add their GSTIN so it appears on the invoice, and can be billed monthly instead of prepaying.",
-      },
+      usd
+        ? {
+            q: "Do I get an invoice?",
+            a: "Yes. An invoice is issued automatically for every payment, in US dollars and with no GST (export of services). Business accounts can be billed monthly instead of prepaying.",
+          }
+        : {
+            q: "Do I get a GST invoice?",
+            a: "Yes. A GST invoice is issued automatically for every payment. Business accounts can add their GSTIN so it appears on the invoice, and can be billed monthly instead of prepaying.",
+          },
     ],
     related: ["d5-render-vs-local-gpu", "coreframe-vs-irender", "cloud-workstation-vs-render-farm", "d5-render-cloud-workstation", "lumion-cloud-gpu", "blender-cloud-workstation"],
   },
@@ -522,8 +545,21 @@ export const SOFTWARE_PAGES: SoftwarePage[] = [
     related: ["twinmotion-cloud-workstation", "d5-render-cloud-workstation", "blender-cloud-workstation", "gpu-workstation-rental-india"],
     lastUpdated: "18 October 2026",
   },
-];
+  ];
+}
+
+export const SOFTWARE_PAGES: SoftwarePage[] = buildSoftwarePages("INR");
+const SOFTWARE_PAGES_USD: SoftwarePage[] = buildSoftwarePages("USD");
 
 export const SOFTWARE_PAGES_BY_SLUG: Record<string, SoftwarePage> = Object.fromEntries(
   SOFTWARE_PAGES.map((p) => [p.slug, p]),
 );
+
+const SOFTWARE_PAGES_BY_SLUG_USD: Record<string, SoftwarePage> = Object.fromEntries(
+  SOFTWARE_PAGES_USD.map((p) => [p.slug, p]),
+);
+
+/** The page for `slug` in the visitor's display currency, or undefined. */
+export function softwarePage(slug: string, cur: Currency): SoftwarePage | undefined {
+  return (cur === "USD" ? SOFTWARE_PAGES_BY_SLUG_USD : SOFTWARE_PAGES_BY_SLUG)[slug];
+}

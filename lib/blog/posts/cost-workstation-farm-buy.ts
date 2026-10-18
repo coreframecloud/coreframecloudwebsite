@@ -1,5 +1,5 @@
 import { NODE } from "@/lib/node-spec";
-import { hoursLabel, rupees } from "@/lib/rate-card";
+import { hoursLabel } from "@/lib/rate-card";
 import type { BlogPost, MaybeBlock } from "../types";
 
 const SLUG = "cloud-workstation-vs-render-farm-vs-buying-cost-india";
@@ -11,8 +11,11 @@ const IMG = `/blog/${SLUG}`;
  * someone else's rate in a blog body dates it the day it changes. The one
  * outside figure is a retail GPU price, dated and linked.
  *
- * Every rupee figure of ours is derived from the rate card at build time
- * through BlogContext. Nothing here is typed by hand.
+ * Every figure of ours is derived from the rate card at build time through
+ * BlogContext. Nothing here is typed by hand. The dollar view (owner,
+ * 18 Oct 2026: one currency per visitor) has no rupee figure at all: the
+ * purchase-price estimate and the retail card price are rupees only, so it
+ * describes the purchase without them and drops the break-even arithmetic.
  */
 const SCENARIOS = [10, 40, 120];
 
@@ -22,6 +25,8 @@ export const costWorkstationFarmBuy: BlogPost = {
   metaTitle: "Workstation vs Render Farm vs New PC: Cost",
   description:
     "Buying a PC, renting by the minute and using a render farm are priced three different ways. How to compare them in rupees, with the break-even worked out.",
+  descriptionUsd:
+    "Buying a PC, renting by the minute and using a render farm are priced three different ways. How to compare them against your own hours of use.",
   targetQueries: [
     "rent vs buy gpu workstation india",
     "rtx 5080 workstation price india",
@@ -41,24 +46,26 @@ export const costWorkstationFarmBuy: BlogPost = {
       "Per-minute billing as it appears in My Activity: an 18-minute session, then sessions of 2, 25, 6 and 4 minutes, each billed for its own length.",
   },
   answer: (ctx) =>
-    `Buying a workstation costs the most up front and the least per hour once you use it heavily. A cloud workstation costs nothing up front and ${ctx.hourly ? `${ctx.hourly} (GST included) for each hour you use it` : "a fixed rate for each hour you use it"}, so it wins when your rendering comes in bursts. A render farm charges by the compute a finished job consumes, which suits a big finished animation and is no help while you're still working on the scene. ${ctx.breakEvenHours ? `With a comparable machine at about ${ctx.replacementCost}, renting adds up to the purchase price after roughly ${ctx.breakEvenHours.toLocaleString("en-IN")} hours of use.` : ""}`.trim(),
+    `Buying a workstation costs the most up front and the least per hour once you use it heavily. A cloud workstation costs nothing up front and ${ctx.hourly ? `${ctx.hourly} (${ctx.taxShort}) for each hour you use it` : "a fixed rate for each hour you use it"}, so it wins when your rendering comes in bursts. A render farm charges by the compute a finished job consumes, which suits a big finished animation and is no help while you're still working on the scene. ${ctx.breakEvenHours ? `With a comparable machine at about ${ctx.replacementCost}, renting adds up to the purchase price after roughly ${ctx.breakEvenHours.toLocaleString("en-IN")} hours of use.` : ""}`.trim(),
   body: (ctx) => {
     const scenarioRows: [string, string][] = SCENARIOS.flatMap((h) => {
       const c = ctx.cost(h);
       return c ? [[`${h} hours a month`, `${c} a month, ${ctx.cost(h * 12)} a year`] as [string, string]] : [];
     });
-    const planRows: [string, string][] = ctx.plans.map((p) => [
+    const planRows: [string, string][] = ctx.plans.flatMap((p) => {
+      const fee = ctx.planFee(p);
+      const overage = ctx.planOverage(p);
+      if (!fee) return [];
+      return [[
       p.name,
-      `${rupees(p.monthly_fee_rupees)}/month, ${hoursLabel(p.included_gpu_hours)}` +
+      `${fee}/month, ${hoursLabel(p.included_gpu_hours)}` +
         (p.included_storage_gb ? ` + ${p.included_storage_gb >= 1024 ? `${Math.round(p.included_storage_gb / 1024)} TB` : `${p.included_storage_gb} GB`} storage` : "") +
         (p.named_seats ? `, ${p.named_seats} seats` : "") +
-        (p.overage_hourly_rate_rupees != null ? `, then ${rupees(p.overage_hourly_rate_rupees)}/hr` : "") +
+        (overage ? `, then ${overage}/hr` : "") +
         (p.commitment_months ? `, ${p.commitment_months}-month commitment` : ""),
-    ]);
-    const plansBelowAdhoc =
-      ctx.rate != null &&
-      ctx.plans.length > 0 &&
-      ctx.plans.every((p) => p.overage_hourly_rate_rupees != null && p.overage_hourly_rate_rupees < ctx.rate!);
+      ] as [string, string]];
+    });
+    const plansBelowAdhoc = ctx.plansBelowAdhoc;
     const years120 = ctx.breakEvenHours ? Math.round((ctx.breakEvenHours / (120 * 12)) * 10) / 10 : null;
     const years = ctx.breakEvenHours ? Math.round((ctx.breakEvenHours / (40 * 12)) * 10) / 10 : null;
 
@@ -76,7 +83,9 @@ export const costWorkstationFarmBuy: BlogPost = {
       { type: "h2", text: "What does it cost to buy an RTX workstation in India?" },
       {
         type: "p",
-        text: `By our own estimate, a desktop matching our workstations (an ${NODE.gpu} with ${NODE.vram}, ${NODE.ram} of RAM, an ${NODE.cpu} and fast NVMe storage) costs about ${ctx.replacementCost} in India today. The graphics card is the largest single part: on 10 October 2026 one Indian retailer listed the RTX 5080 alone at over ₹1.1 lakh, and out of stock ([getpc.co.in](https://getpc.co.in/parts/gpu/rtx-5080-16gb)).`,
+        text: ctx.replacementCost
+          ? `By our own estimate, a desktop matching our workstations (an ${NODE.gpu} with ${NODE.vram}, ${NODE.ram} of RAM, an ${NODE.cpu} and fast NVMe storage) costs about ${ctx.replacementCost} in India today. The graphics card is the largest single part: on 10 October 2026 one Indian retailer listed the RTX 5080 alone at over ₹1.1 lakh, and out of stock ([getpc.co.in](https://getpc.co.in/parts/gpu/rtx-5080-16gb)).`
+          : `A desktop matching our workstations (an ${NODE.gpu} with ${NODE.vram}, ${NODE.ram} of RAM, an ${NODE.cpu} and fast NVMe storage) is a large one-off purchase, and the graphics card is the largest single part of it.`,
       },
       {
         type: "p",
@@ -91,7 +100,7 @@ export const costWorkstationFarmBuy: BlogPost = {
       ctx.hourly
         ? {
             type: "p",
-            text: `Ours costs ${ctx.hourly} with GST included${ctx.perMinute ? `, which is ${ctx.perMinute} a minute` : ""}. ${ctx.billing} You top up a prepaid wallet and sessions draw from it. There's no setup fee and no monthly minimum, so a month you don't render costs nothing.`,
+            text: `Ours costs ${ctx.hourly} ${ctx.taxIncl}${ctx.perMinute ? `, which is ${ctx.perMinute} a minute` : ""}. ${ctx.billing} You top up a prepaid wallet and sessions draw from it. There's no setup fee and no monthly minimum, so a month you don't render costs nothing.`,
           }
         : {
             type: "p",
@@ -138,7 +147,7 @@ export const costWorkstationFarmBuy: BlogPost = {
       { type: "h2", text: "What does a render farm cost?" },
       {
         type: "p",
-        text: `A farm charges for the compute your finished job consumes. Farms publish rates per GHz-hour or per benchmark-hour, often with three priority levels, and a few offer a trial credit. Converting that into rupees per frame needs a benchmark of your own scene on their hardware, which is why we're not going to print anyone's rate here: the honest comparison is your scene, on their trial.`,
+        text: `A farm charges for the compute your finished job consumes. Farms publish rates per GHz-hour or per benchmark-hour, often with three priority levels, and a few offer a trial credit. Converting that into ${ctx.currency === "USD" ? "dollars" : "rupees"} per frame needs a benchmark of your own scene on their hardware, which is why we're not going to print anyone's rate here: the honest comparison is your scene, on their trial.`,
       },
       {
         type: "p",
@@ -170,7 +179,9 @@ export const costWorkstationFarmBuy: BlogPost = {
           "Software licences. You need your own licence for commercial tools on your own PC and on a rented workstation. Farms differ on whether renderer licences are included in their rate, so check before comparing.",
           "Upload time. A big project travels over your own connection to a farm or a cloud drive. Plan it before the deadline, not during it.",
           `Storage. ${ctx.storageGb} GB of persistent project storage comes with every Coreframe account; check what your farm keeps and for how long.`,
-          "GST. Our prices include it and every top-up gets a GST invoice. If your practice is GST-registered, ask your accountant about claiming it as input credit; the same goes for a hardware purchase.",
+          ...(ctx.currency === "USD"
+            ? []
+            : ["GST. Our prices include it and every top-up gets a GST invoice. If your practice is GST-registered, ask your accountant about claiming it as input credit; the same goes for a hardware purchase."]),
           "Idle time. An owned machine costs the same whether it renders or not. A rented one costs nothing once the session is closed, as long as you remember to close it.",
         ],
       },
@@ -193,10 +204,12 @@ export const costWorkstationFarmBuy: BlogPost = {
         ? `It depends on hours of use. Renting at ${ctx.hourly} adds up to a ${ctx.replacementCost} machine after about ${ctx.breakEvenHours.toLocaleString("en-IN")} hours. Below that, renting is cheaper; well above it, buying is.`
         : "It depends on hours of use. Divide the purchase price by the hourly rate: below that many hours, renting is cheaper; well above it, buying is.",
     },
-    {
-      q: "How much does an RTX 5080 workstation cost in India?",
-      a: `By our estimate about ${ctx.replacementCost} for a desktop with an RTX 5080, ${NODE.ram} of RAM and an ${NODE.cpu}. On 10 October 2026 the RTX 5080 card alone was listed at over ₹1.1 lakh by one Indian retailer.`,
-    },
+    ctx.replacementCost
+      ? {
+          q: "How much does an RTX 5080 workstation cost in India?",
+          a: `By our estimate about ${ctx.replacementCost} for a desktop with an RTX 5080, ${NODE.ram} of RAM and an ${NODE.cpu}. On 10 October 2026 the RTX 5080 card alone was listed at over ₹1.1 lakh by one Indian retailer.`,
+        }
+      : null,
     {
       q: "Is a render farm cheaper than a cloud workstation?",
       a: "For a finished animation in a supported offline renderer, often yes, because the farm spreads frames across many machines. For interactive work, real-time renderers and scenes still being changed, a farm does not fit, and a workstation is the cheaper way to get the work done.",
@@ -204,7 +217,7 @@ export const costWorkstationFarmBuy: BlogPost = {
     ctx.hourly
       ? {
           q: "How is Coreframe billed?",
-          a: `${ctx.hourly} with GST included, billed per minute from the moment the stream starts. Uploads and preparing the machine are free. Committed monthly Team plans are available for studios.`,
+          a: `${ctx.hourly} ${ctx.taxIncl}, billed per minute from the moment the stream starts. Uploads and preparing the machine are free. Committed monthly Team plans are available for studios.`,
         }
       : null,
     {

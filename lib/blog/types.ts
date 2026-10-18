@@ -9,6 +9,7 @@
  * lib/rate-card.ts for why that rule exists.
  */
 import type { IntroOffer, RateCardPlan } from "@/lib/rate-card";
+import type { Currency } from "@/lib/money";
 
 export type BlogImage = {
   /** Site-relative, under /blog/<slug>/. */
@@ -54,7 +55,13 @@ export type Faq = { q: string; a: string };
 
 /** Everything an article may say about money or terms, resolved from the rate card. */
 export type BlogContext = {
-  /** "₹399/hr", or null when the control plane is unreachable. */
+  /** The page's display currency: every figure below is in it, and only it. */
+  currency: Currency;
+  /** "with GST included" / "with no GST", after a price. */
+  taxIncl: string;
+  /** "GST included" / "no GST", in brackets after a price. */
+  taxShort: string;
+  /** "₹399/hr" / "$5.99/hr", or null when the control plane is unreachable. */
   hourly: string | null;
   rate: number | null;
   /** "₹6.65", or null unless billing is per minute. */
@@ -68,12 +75,18 @@ export type BlogContext = {
   introHours: string | null;
   storageGb: number;
   plans: RateCardPlan[];
-  /** "₹N" for `hours` at the ad-hoc rate, or null. */
+  /** A plan's monthly fee / overage rate in the page's currency, or null. */
+  planFee: (p: RateCardPlan) => string | null;
+  planOverage: (p: RateCardPlan) => string | null;
+  /** Every plan bills extra hours below the pay-as-you-go rate, in this currency. */
+  plansBelowAdhoc: boolean;
+  /** "₹N" / "$N" for `hours` at the ad-hoc rate, or null. */
   cost: (hours: number) => string | null;
   /** Rented hours that add up to the price of buying a comparable machine. */
   breakEvenHours: number | null;
-  /** "₹6,00,000": our own estimate of buying an equivalent machine (lib/node-spec.ts). */
-  replacementCost: string;
+  /** "₹6,00,000": our own estimate of buying an equivalent machine (lib/node-spec.ts).
+   *  Null on the dollar view: the estimate is in rupees only. */
+  replacementCost: string | null;
 };
 
 export type BlogPost = {
@@ -83,6 +96,8 @@ export type BlogPost = {
   /** <title>, when `title` would run past ~60 chars with the suffix. */
   metaTitle?: string;
   description: string;
+  /** The description for the dollar view, when `description` talks rupees. */
+  descriptionUsd?: string;
   /** The searches this post is written to answer. Used for keywords. */
   targetQueries: string[];
   /** ISO date. */

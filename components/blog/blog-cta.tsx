@@ -21,7 +21,7 @@ export function BlogCta({ ctx }: { ctx: BlogContext }) {
         {o && ctx.introPrice && ctx.introHours
           ? `New accounts: your first top-up of ${ctx.introPrice} buys ${ctx.introHours}${o.gpuName ? ` on an ${o.gpuName}` : ""}${o.validityDays ? `, to use within ${o.validityDays} days` : ""}. `
           : ctx.hourly
-            ? `${ctx.hourly} with GST included, billed per minute. `
+            ? `${ctx.hourly} ${ctx.taxIncl}, billed per minute. `
             : ""}
         Sign up with an email and a WhatsApp code, no ID documents. International cards work.
       </p>

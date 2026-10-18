@@ -152,7 +152,7 @@ export const afterEffectsRemoteGpu: BlogPost = {
     ctx.hourly
       ? {
           type: "p",
-          text: `${ctx.hourly} with GST included, billed per minute while you're streaming.${ctx.introPrice && ctx.introHours ? ` A new account's first top-up of ${ctx.introPrice} buys ${ctx.introHours}, enough for that test and some real work.` : ""} See [pricing](/pricing) for monthly plans.`,
+          text: `${ctx.hourly} ${ctx.taxIncl}, billed per minute while you're streaming.${ctx.introPrice && ctx.introHours ? ` A new account's first top-up of ${ctx.introPrice} buys ${ctx.introHours}, enough for that test and some real work.` : ""} See [pricing](/pricing) for monthly plans.`,
         }
       : null,
   ],
