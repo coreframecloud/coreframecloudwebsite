@@ -39,7 +39,7 @@
  * /payments/config, decides everything here -- never the visitor's IP. INR is
  * India (GST included); USD is every other billing country (no GST, export of
  * services; the address is always state 96 in the account's country, so no
- * Indian states are offered; no Studio starter; the intro offer is the dollar
+ * Indian states are offered; the Studio starter is $3 -> $9; the intro offer is the dollar
  * one, $20 = 8 hours, owner 18 Oct 2026, only while the API publishes it and
  * reports this account can still claim it). An account
  * with no country yet (`country_required`) chooses it FIRST, which fixes the
@@ -210,10 +210,13 @@ export default function TopUpDialog({
   useEffect(() => {
     if (open && countryRequired) fetchIpCountry(API).then(setIpCountry);
   }, [open, countryRequired]);
-  // The starter is never offered to a USD account; the API should not send
-  // it, and this makes sure. The intro offer is shown only in the account's
-  // own currency (a rupee offer never reaches a dollar account, or back).
-  const starterOffer = isUsd ? null : studioStarter ?? null;
+  // The Studio starter in the account's own currency (owner, 18 Oct 2026:
+  // dollar accounts get $3 -> $9 too). The wallet status prices it in the
+  // wallet's currency, so it is shown only while that matches the account's;
+  // a rupee starter never reaches a dollar account, or back. The intro offer
+  // follows the same rule.
+  const starterOffer =
+    studioStarter && (parseCurrency(walletCurrency) ?? "INR") === currency ? studioStarter : null;
   const intro = introOffer && introOffer.currency === currency ? introOffer : null;
   const [states, setStates] = useState<GstState[]>([]);
   const [amount, setAmount] = useState<string>("");
@@ -675,12 +678,12 @@ export default function TopUpDialog({
                 {starterOffer && (
                   <div className={`mt-5 rounded-cf border px-4 py-3 ${starterMode ? "border-blue bg-blue-soft" : "border-rule bg-paper-2"}`}>
                     <p className="text-sm font-semibold text-ink">
-                      Start with ₹{starterOffer.priceRupees.toLocaleString("en-IN")} — get ₹
-                      {starterOffer.totalRupees.toLocaleString("en-IN")} of Studio renders (once per account)
+                      Start with {money(starterOffer.priceRupees)} — get{" "}
+                      {money(starterOffer.totalRupees)} of Studio renders (once per account)
                     </p>
                     <p className="mt-1 text-xs leading-5 text-ink-2">
-                      For Studio only: downloads, edits and ray-traced renders. ₹
-                      {(starterOffer.totalRupees - starterOffer.priceRupees).toLocaleString("en-IN")} of it is a
+                      For Studio only: downloads, edits and ray-traced renders.{" "}
+                      {money(starterOffer.totalRupees - starterOffer.priceRupees)} of it is a
                       bonus that lasts 30 days.
                     </p>
                     <button
@@ -691,7 +694,7 @@ export default function TopUpDialog({
                       }}
                       className="mt-2 text-xs font-semibold text-blue underline"
                     >
-                      {starterMode ? "Top up a different amount instead" : `Choose the ₹${starterOffer.priceRupees} starter`}
+                      {starterMode ? "Top up a different amount instead" : `Choose the ${money(starterOffer.priceRupees)} starter`}
                     </button>
                   </div>
                 )}
