@@ -273,20 +273,25 @@ export function getTrialTerms(card: RateCard | null): TrialTerms | null {
 }
 
 /**
- * The intro offer, resolved for display: what you pay, how many hours of which
- * GPU it buys. Every field comes from the rate card.
+ * The intro offer, resolved for display: what you pay (in `currency`), how
+ * many hours of which GPU it buys. Every field comes from the rate card: the
+ * rupee offer from `intro_offer`, the dollar offer from `usd.intro_offer`.
  */
 export type IntroOffer = {
-  priceRupees: number;
+  currency: Currency;
+  /** What the customer pays, in `currency`. */
+  price: number;
   hours: number;
-  bonusRupees: number | null;
+  /** Credited on top of `price`, in `currency`. */
+  bonus: number | null;
   validityDays: number | null;
   onePerCustomer: boolean;
   gpuName: string | null;
 };
 
 /**
- * The first-top-up offer, or null when there is nothing honest to advertise.
+ * The RUPEE first-top-up offer, or null when there is nothing honest to
+ * advertise. For a page in either currency use introOfferFor().
  *
  * Null when the control plane is unreachable, predates `intro_offer`, or has
  * the offer switched off. Callers then show NO offer numbers — never a typed
@@ -310,13 +315,41 @@ export function getIntroOffer(card: RateCard | null): IntroOffer | null {
   if (!hours || hours <= 0) return null;
   const gpu = card?.gpus.find((g) => !g.quote_on_request && g.hourly_rate_rupees != null);
   return {
-    priceRupees: io.price_rupees,
+    currency: "INR",
+    price: io.price_rupees,
     hours,
-    bonusRupees: io.bonus_rupees ?? null,
+    bonus: io.bonus_rupees ?? null,
     validityDays: io.validity_days ?? null,
     onePerCustomer: io.one_per_customer ?? true,
     gpuName: gpu?.name ?? null,
   };
+}
+
+/**
+ * The US-dollar first-top-up offer (owner, 18 Oct 2026: $20 = 8 hours), or
+ * null. Read ONLY from `usd.intro_offer` on the rate card, which the control
+ * plane publishes while it is crediting the offer to USD accounts; there is
+ * deliberately no fallback constant (unlike usdRates()), so the site can
+ * never advertise a dollar offer the API is not granting.
+ */
+export function getUsdIntroOffer(card: RateCard | null): IntroOffer | null {
+  const io = card?.usd?.intro_offer;
+  if (!io || !(io.price > 0) || !(io.hours > 0)) return null;
+  const gpu = card?.gpus.find((g) => !g.quote_on_request && g.hourly_rate_rupees != null);
+  return {
+    currency: "USD",
+    price: io.price,
+    hours: io.hours,
+    bonus: io.bonus ?? null,
+    validityDays: io.validity_days ?? null,
+    onePerCustomer: true,
+    gpuName: io.gpu_name ?? gpu?.name ?? null,
+  };
+}
+
+/** "₹1,000" / "$20": the offer's price in its own currency. */
+export function introPrice(o: IntroOffer): string {
+  return formatMoney(o.price, o.currency);
 }
 
 /** "₹1,000" */
@@ -332,20 +365,20 @@ export function hoursLabel(hours: number, short = false): string {
 }
 
 /**
- * The intro offer for a visitor shown `cur` prices: null for USD. The offer
- * is a rupee first top-up and is never offered to an account billed in US
- * dollars (components/wallet/top-up-dialog.tsx), so a page in dollars must
- * not advertise it (owner, 18 Oct 2026: one currency per visitor).
+ * The intro offer for a page shown in `cur`: the rupee offer on a rupee page,
+ * the dollar offer (`usd.intro_offer`, only while the API publishes it) on a
+ * dollar page. Never the other currency's offer (owner, 18 Oct 2026: one
+ * currency per visitor).
  */
 export function introOfferFor(card: RateCard | null, cur: Currency = "INR"): IntroOffer | null {
-  return cur === "USD" ? null : getIntroOffer(card);
+  return cur === "USD" ? getUsdIntroOffer(card) : getIntroOffer(card);
 }
 
-/** "₹1,000 = 8 hours of RTX 5080", or null when no offer is live (always null for USD). */
+/** "₹1,000 = 8 hours of RTX 5080" / "$20 = 8 hours of RTX 5080", or null when no offer is live. */
 export function introOfferHeadline(card: RateCard | null, cur: Currency = "INR"): string | null {
   const o = introOfferFor(card, cur);
   if (!o) return null;
-  return `${rupees(o.priceRupees)} = ${hoursLabel(o.hours)}${o.gpuName ? ` of ${o.gpuName}` : ""}`;
+  return `${introPrice(o)} = ${hoursLabel(o.hours)}${o.gpuName ? ` of ${o.gpuName}` : ""}`;
 }
 
 /**
@@ -372,7 +405,7 @@ export function getOnboarding(card: RateCard | null): Onboarding {
 export function minFirstTopup(card: RateCard | null): number | null {
   return (
     card?.wallet?.min_first_topup_rupees ??
-    getIntroOffer(card)?.priceRupees ??
+    getIntroOffer(card)?.price ??
     card?.wallet?.min_topup_rupees ??
     null
   );
@@ -389,7 +422,7 @@ export function introOfferFaq(card: RateCard | null, cur: Currency = "INR"): { q
   return {
     q: "Is there an offer for new customers?",
     a:
-      `Yes. Your first top-up of ${rupees(o.priceRupees)} buys ${hoursLabel(o.hours)}` +
+      `Yes. Your first top-up of ${introPrice(o)}${o.currency === "USD" ? " (no GST)" : ""} buys ${hoursLabel(o.hours)}` +
       `${o.gpuName ? ` on an ${o.gpuName}` : ""}${o.validityDays ? `, to use within ${o.validityDays} days` : ""}, ` +
       "one per customer. You sign up with an email and a WhatsApp code to your mobile, with no ID documents, " +
       "and international cards work. We won't say what you can finish in that time, because it " +

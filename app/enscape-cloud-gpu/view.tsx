@@ -161,7 +161,7 @@ export default async function EnscapeView({ currency }: { currency: Currency }) 
                 },
                 {
                   title: "No machine to buy",
-                  body: `${machineCost ? `A workstation that renders comfortably costs about ${machineCost} in India.` : "A workstation that renders comfortably is a large up-front purchase."} You buy it once, and then it sits idle for the three weeks after the presentation you bought it for. Rent one and it's there when the deadline is.`,
+                  body: `A workstation that renders comfortably costs about ${machineCost}${currency === "USD" ? "" : " in India"}. You buy it once, and then it sits idle for the three weeks after the presentation you bought it for. Rent one and it's there when the deadline is.`,
                 },
               ].map((c) => (
                 <div key={c.title} className="cf-card">

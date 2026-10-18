@@ -12,7 +12,7 @@ import {
   formatHourly,
   introOfferFor,
   hoursLabel,
-  rupees,
+  introPrice,
 } from "@/lib/rate-card";
 
 /** One metadata for both copies: the description quotes no price. */
@@ -45,7 +45,8 @@ export const homeMetadata: Metadata = {
  *
  * Rendered twice (owner, 18 Oct 2026: one currency per visitor): / in rupees
  * and app/usd/page.tsx in US dollars, which proxy.ts serves to visitors
- * outside India. The dollar copy has no intro offer (a rupee top-up).
+ * outside India. Each copy shows its own currency's intro offer, the dollar
+ * one only while the API publishes usd.intro_offer.
  */
 export default async function HomeView({ currency }: { currency: Currency }) {
   const rateCard = await getRateCard();
@@ -54,7 +55,7 @@ export default async function HomeView({ currency }: { currency: Currency }) {
   const adhocRate = hourly && hourly.endsWith("/hr") ? hourly.replace("/hr", "") : undefined;
   const intro = introOfferFor(rateCard, currency);
   const prices = offeringPrices(rateCard, currency);
-  const introLabel = intro ? `${rupees(intro.priceRupees)} = ${hoursLabel(intro.hours)}` : null;
+  const introLabel = intro ? `${introPrice(intro)} = ${hoursLabel(intro.hours)}` : null;
 
   return (
     <main className="text-ink">

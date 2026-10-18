@@ -44,7 +44,7 @@ import { BareOnLanding, NoStripOnAppPages } from "@/components/layout/bare-on-la
 import { SiteFooter } from "@/components/home/site-footer";
 import { ScrollReveal } from "@/components/scroll-reveal";
 import { IntroStrip } from "@/components/home/intro-strip";
-import { getIntroOffer, hoursLabel, getRateCard, planTiers } from "@/lib/rate-card";
+import { getIntroOffer, getUsdIntroOffer, hoursLabel, getRateCard, planTiers } from "@/lib/rate-card";
 import { usdRates } from "@/lib/money";
 import { requestCurrency } from "@/lib/display-currency";
 import { FREE_PREVIEWS_PER_DAY, inr, studioPrices, usd } from "@/lib/studio-prices";
@@ -193,6 +193,7 @@ export default async function RootLayout({
   const tiers = planTiers(rateCard);
   const storagePerTb = rateCard?.storage_rate_rupees_per_tb_month ?? null;
   const intro = getIntroOffer(rateCard);
+  const introUsd = getUsdIntroOffer(rateCard);
   const studio = studioPrices(rateCard);
 
   const offers = [
@@ -240,21 +241,36 @@ export default async function RootLayout({
         unitText: "TB per month",
       },
     },
-    // The intro offer, only while the control plane says it is enabled.
+    // The intro offers, each only while the control plane publishes it: the
+    // rupee one for accounts billed in India, the dollar one (usd.intro_offer,
+    // owner 18 Oct 2026) everywhere else. The text names an amount only in the
+    // page's own currency (one currency per visitor, 18 Oct 2026).
     intro && {
       "@type": "Offer",
       name: `Intro offer — first top-up, ${hoursLabel(intro.hours)}${intro.gpuName ? ` of ${intro.gpuName}` : ""}`,
-      // A rupee offer, for accounts billed in India only; the text names the
-      // amount only on the rupee view (one currency per visitor, 18 Oct 2026).
       description:
         (usdView
           ? `For accounts billed in India: the first wallet top-up buys ${hoursLabel(intro.hours)} of GPU time`
-          : `First wallet top-up of ${intro.priceRupees} INR buys ${hoursLabel(intro.hours)} of GPU time`) +
+          : `First wallet top-up of ${intro.price} INR buys ${hoursLabel(intro.hours)} of GPU time`) +
         `${intro.validityDays ? `, valid ${intro.validityDays} days` : ""}. One per customer.`,
       eligibleRegion: { "@type": "Country", name: "IN" },
-      price: String(Math.round(intro.priceRupees)),
+      price: String(Math.round(intro.price)),
       priceCurrency: "INR",
       valueAddedTaxIncluded: true,
+    },
+    introUsd && {
+      "@type": "Offer",
+      name: `Intro offer — first top-up, ${hoursLabel(introUsd.hours)}${introUsd.gpuName ? ` of ${introUsd.gpuName}` : ""}`,
+      description:
+        (usdView
+          ? `First wallet top-up of ${introUsd.price} USD buys ${hoursLabel(introUsd.hours)} of GPU time, no GST`
+          : `For accounts billed outside India: the first wallet top-up buys ${hoursLabel(introUsd.hours)} of GPU time`) +
+        `${introUsd.validityDays ? `, valid ${introUsd.validityDays} days` : ""}. One per customer.`,
+      eligibleRegion: { "@type": "Place", name: "Worldwide" },
+      ineligibleRegion: { "@type": "Country", name: "IN" },
+      price: String(introUsd.price),
+      priceCurrency: "USD",
+      valueAddedTaxIncluded: false,
     },
   ]
     .filter(Boolean)

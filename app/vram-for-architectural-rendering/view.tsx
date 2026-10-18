@@ -10,7 +10,7 @@ import Link from "next/link";
 import { BackgroundGlow } from "@/components/home/background-glow";
 import { SpecBlock, K, B } from "@/components/home/spec-block";
 import { NODE } from "@/lib/node-spec";
-import { getRateCard, adhocRateHourly, introOfferFor, hoursLabel, rupees, taxWords } from "@/lib/rate-card";
+import { getRateCard, adhocRateHourly, introOfferFor, hoursLabel, taxWords, introPrice } from "@/lib/rate-card";
 
 /**
  * How much VRAM architectural rendering actually needs.
@@ -270,7 +270,7 @@ export default async function VramView({ currency }: { currency: Currency }) {
             </p>
             <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:gap-4">
               <Link href="/login" className="cf-btn-primary">
-                {intro ? `Try it: ${rupees(intro.priceRupees)} for ${hoursLabel(intro.hours)}` : "Create an account"}
+                {intro ? `Try it: ${introPrice(intro)} for ${hoursLabel(intro.hours)}` : "Create an account"}
               </Link>
               <Link href="/coreframe-vs-irender" className="cf-btn-secondary">
                 Compare the two on price

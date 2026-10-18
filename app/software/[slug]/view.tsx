@@ -18,9 +18,9 @@ import {
   introOfferFaq,
   introOfferFor,
   pricingFaqAnswer,
-  rupees,
   storageSpec,
   type RateCard,
+  introPrice,
 } from "@/lib/rate-card";
 import type { Currency } from "@/lib/money";
 import { NODE } from "@/lib/node-spec";
@@ -134,7 +134,7 @@ function rentalAnswer(card: RateCard | null, currency: Currency): string | null 
   const billed = r.perMinute ? ", billed per minute" : "";
   return [
     intro
-      ? `Your first ${rupees(intro.priceRupees)} top-up buys ${hoursLabel(intro.hours)} of ${machine}. After that it is ${r.rate} an hour ${r.tax}${billed}.`
+      ? `Your first ${introPrice(intro)} top-up buys ${hoursLabel(intro.hours)} of ${machine}. After that it is ${r.rate} an hour ${r.tax}${billed}.`
       : `${machine.charAt(0).toUpperCase()}${machine.slice(1)} costs ${r.rate} an hour, ${r.tax}${billed}.`,
     `Hosted in ${NODE.location.split(",")[0]}, streamed to your laptop with the Coreframe Connect app.`,
   ].join(" ");

@@ -39,7 +39,9 @@
  * /payments/config, decides everything here -- never the visitor's IP. INR is
  * India (GST included); USD is every other billing country (no GST, export of
  * services; the address is always state 96 in the account's country, so no
- * Indian states are offered; no intro offer, no Studio starter). An account
+ * Indian states are offered; no Studio starter; the intro offer is the dollar
+ * one, $20 = 8 hours, owner 18 Oct 2026, only while the API publishes it and
+ * reports this account can still claim it). An account
  * with no country yet (`country_required`) chooses it FIRST, which fixes the
  * currency for good (POST /verification/location). The order carries `amount`
  * and `currency`; the server refuses a mismatch with 409 currency_mismatch.
@@ -208,10 +210,11 @@ export default function TopUpDialog({
   useEffect(() => {
     if (open && countryRequired) fetchIpCountry(API).then(setIpCountry);
   }, [open, countryRequired]);
-  // Never offered to a USD account; the API should not send them, and this
-  // makes sure.
+  // The starter is never offered to a USD account; the API should not send
+  // it, and this makes sure. The intro offer is shown only in the account's
+  // own currency (a rupee offer never reaches a dollar account, or back).
   const starterOffer = isUsd ? null : studioStarter ?? null;
-  const intro = isUsd ? null : introOffer ?? null;
+  const intro = introOffer && introOffer.currency === currency ? introOffer : null;
   const [states, setStates] = useState<GstState[]>([]);
   const [amount, setAmount] = useState<string>("");
   const [name, setName] = useState(user?.full_name ?? "");
@@ -712,15 +715,15 @@ export default function TopUpDialog({
                     />
                     {intro && (
                       <p className="mt-2 text-xs leading-5 text-ink-2">
-                        Your first top-up earns the intro offer instead; the bonus applies from the next one, on GPU
-                        time, CFD and Studio.
+                        Your first top-up earns the intro offer instead; the bonus applies from the next one, on{" "}
+                        {isUsd ? "GPU time and CFD." : "GPU time, CFD and Studio."}
                       </p>
                     )}
                   </div>
                 )}
                 <div className="mt-4 flex flex-wrap gap-2">
                   {presets.map((p) => {
-                    const isIntro = intro && p === intro.priceRupees;
+                    const isIntro = intro && p === intro.price;
                     const presetBonus = intro ? 0 : bulkBonusFor(p, tiers);
                     return (
                       <button
@@ -750,8 +753,8 @@ export default function TopUpDialog({
                 </div>
                 {intro && (
                   <p className="mt-2 text-xs leading-5 text-ink-2">
-                    Intro offer: your first top-up of ₹{intro.priceRupees.toLocaleString("en-IN")} buys{" "}
-                    {hoursLabel(intro.hours)}
+                    Intro offer: your first top-up of {money(intro.price)}
+                    {isUsd ? " (no GST)" : ""} buys {hoursLabel(intro.hours)}
                     {intro.gpuName ? ` of ${intro.gpuName}` : ""}
                     {intro.validityDays ? `, to use within ${intro.validityDays} days` : ""}.
                   </p>

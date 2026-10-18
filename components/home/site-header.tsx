@@ -6,7 +6,8 @@ import { useState, useEffect, useRef, useSyncExternalStore, MouseEvent } from "r
 import { Menu, X } from "lucide-react";
 import { CoreframeWordmarkAtlas } from "@/components/brand/coreframe-wordmark-atlas";
 import { trackEvent } from "@/lib/analytics";
-import { getIntroOffer, hoursLabel, rupees } from "@/lib/rate-card";
+import { hoursLabel, introOfferFor } from "@/lib/rate-card";
+import { formatMoney, parseCurrency, type Currency } from "@/lib/money";
 import { useRateCard } from "@/lib/use-rate-card";
 import { API_BASE } from "@/lib/api-base";
 import { forgetLocalSession, signOutThisSession } from "@/lib/session-cookie";
@@ -84,6 +85,13 @@ interface WalletData {
   // The Rs 99 Studio starter: the whole wallet and its Studio-only part.
   wallet_total_rupees?: number;
   studio_only_rupees?: number;
+  // Two currencies (15 Oct 2026). `wallet_currency` is the ACCOUNT's currency,
+  // fixed at sign-up: every top-up figure (min_topup_rupees_now) is in it.
+  // `billing_currency` is the currency of the wallet that pays, which is the
+  // organisation's for a member of one: the balance figures are in it. Both
+  // absent on an older control plane, which is INR-only.
+  wallet_currency?: string | null;
+  billing_currency?: string | null;
 }
 
 interface AuthState {
@@ -299,30 +307,41 @@ export function SiteHeader() {
   // claimable — all numbers from the wallet status and the rate card.
   const pending = auth?.user?.status === "pending_approval";
   const needsTopup = !pending && auth?.wallet?.paid_access === false;
-  // Only fetched for the one visitor who will see the offer.
+  // The ACCOUNT's currency, as the API reports it (never the visitor's
+  // country): a USD account sees dollars everywhere in the header, an INR
+  // account rupees (owner, 18 Oct 2026).
+  const accountCur: Currency = parseCurrency(auth?.wallet?.wallet_currency) ?? "INR";
+  const balanceCur: Currency = parseCurrency(auth?.wallet?.billing_currency) ?? accountCur;
+  // Only fetched for the one visitor who will see the offer. The offer in the
+  // account's currency: the rupee one, or the dollar one while the API
+  // publishes usd.intro_offer.
   const card = useRateCard(needsTopup && auth?.wallet?.intro_offer_available === true);
-  const intro = getIntroOffer(card);
-  const topupAmount = auth?.wallet?.min_topup_rupees_now ?? intro?.priceRupees ?? null;
+  const intro = auth?.wallet?.intro_offer_available === true ? introOfferFor(card, accountCur) : null;
+  const topupAmount = auth?.wallet?.min_topup_rupees_now ?? intro?.price ?? null;
   const topupLabel = topupAmount
-    ? `Add ${rupees(topupAmount)}${intro && intro.priceRupees === topupAmount ? ` · ${hoursLabel(intro.hours, true)}` : ""}`
+    ? `Add ${formatMoney(topupAmount, accountCur)}${intro && intro.price === topupAmount ? ` · ${hoursLabel(intro.hours, true)}` : ""}`
     : "Add funds to start";
 
-  // ONE number everywhere (unified wallet, 13 Oct 2026): "Wallet ₹X", the
-  // same wallet that pays for GPU time, CFD and Studio. The GPU-only welcome
-  // bonus is inside X; the tooltip and /my-activity name it separately.
-  const inr0 = (x: number) => `₹${Math.floor(x).toLocaleString("en-IN")}`;
+  // ONE number everywhere (unified wallet, 13 Oct 2026): "Wallet ₹X" / "$X",
+  // the same wallet that pays for GPU time, CFD and Studio. The GPU-only
+  // welcome bonus is inside X; the tooltip and /my-activity name it
+  // separately. Rupees round down to the rupee; dollars to the cent.
+  const money0 = (x: number) =>
+    balanceCur === "USD"
+      ? formatMoney(Math.floor(x * 100) / 100, "USD")
+      : `₹${Math.floor(x).toLocaleString("en-IN")}`;
   const balance =
     auth?.wallet != null
-      ? `Wallet ${inr0(auth.wallet.wallet_total_rupees ?? auth.wallet.wallet_balance_rupees)}`
+      ? `Wallet ${money0(auth.wallet.wallet_total_rupees ?? auth.wallet.wallet_balance_rupees)}`
       : null;
   const gpuOnly = auth?.wallet?.gpu_only_bonus_rupees ?? 0;
   const studioOnly = auth?.wallet?.studio_only_rupees ?? 0;
   const balanceTitle =
     (gpuOnly > 0 || studioOnly > 0) && auth?.wallet?.spendable_everywhere_rupees != null
       ? [
-          `${inr0(auth.wallet.spendable_everywhere_rupees)} for GPU, CFD and Studio`,
-          gpuOnly > 0 ? `${inr0(gpuOnly)} welcome bonus for GPU time` : "",
-          studioOnly > 0 ? `Studio-only ${inr0(studioOnly)}` : "",
+          `${money0(auth.wallet.spendable_everywhere_rupees)} for GPU, CFD and Studio`,
+          gpuOnly > 0 ? `${money0(gpuOnly)} welcome bonus for GPU time` : "",
+          studioOnly > 0 ? `Studio-only ${money0(studioOnly)}` : "",
         ].filter(Boolean).join(" + ") + ". Add funds"
       : "Your Coreframe wallet: GPU workstations, CFD and Studio. Add funds";
 

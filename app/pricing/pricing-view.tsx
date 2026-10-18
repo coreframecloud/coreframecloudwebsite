@@ -15,7 +15,7 @@ import { GenImage } from "@/components/visuals/media";
 import {
   getRateCard,
   formatHourly,
-  getIntroOffer,
+  introOfferFor,
   billingSentence,
   bestOverageRate,
   bestOverageRateUsd,
@@ -32,6 +32,7 @@ import {
   hoursLabel,
   otherCurrencyLine,
   taxWords,
+  introPrice,
 } from "@/lib/rate-card";
 import { storageTerms } from "@/lib/storage-terms";
 import Link from "next/link";
@@ -93,8 +94,9 @@ export default async function PricingView({ currency }: { currency: Currency }) 
   const usd = usdRates(rateCard);
   const entry = rateCard?.gpus.find((g) => !g.quote_on_request);
   const adhocRate = usdView ? formatMoney(usd.gpu_hourly, "USD") : entry ? formatHourly(entry).replace("/hr", "") : undefined;
-  // The intro offer is never offered to a USD account.
-  const intro = usdView ? null : getIntroOffer(rateCard);
+  // The page's own currency's offer: $20 = 8 hours on the dollar copy while
+  // the API publishes usd.intro_offer (owner, 18 Oct 2026), else none.
+  const intro = introOfferFor(rateCard, currency);
   const storage = storageTerms(rateCard);
   // Rate bars: pay-as-you-go against the lowest plan rate, both from the card.
   const adhocNum = usdView ? usd.gpu_hourly : adhocRateValue(rateCard);
@@ -181,9 +183,11 @@ export default async function PricingView({ currency }: { currency: Currency }) 
             {
               o: offering("gpu"),
               price: adhocRate ? `${adhocRate} an hour` : "By the minute",
-              note: usdView
-                ? "No GST (export of services), billed per minute"
-                : intro ? `First top-up: ${rupees(intro.priceRupees)} = ${hoursLabel(intro.hours)}` : "GST included, billed per minute",
+              note: intro
+                ? `First top-up: ${introPrice(intro)} = ${hoursLabel(intro.hours)}${usdView ? ", no GST" : ""}`
+                : usdView
+                  ? "No GST (export of services), billed per minute"
+                  : "GST included, billed per minute",
               href: "#gpu-workstations",
               tint: "cf-cine",
             },
@@ -255,6 +259,7 @@ export default async function PricingView({ currency }: { currency: Currency }) 
               : null
           }
           usdTopup={usd}
+          intro={intro}
           bestOverage={bestOverageRateUsd(rateCard)}
           entryPlanFee={entryPlanFeeUsd(rateCard)}
           storageRate={formatMoney(usd.storage_rate_per_tb_month, "USD")}

@@ -1,10 +1,11 @@
 import Link from "next/link";
 import {
   adhocRateHourly,
-  getIntroOffer,
+  introOfferFor,
   getRateCard,
   hoursLabel,
-  rupees,
+  introPrice,
+  taxWords,
 } from "@/lib/rate-card";
 import type { Currency } from "@/lib/money";
 
@@ -36,17 +37,16 @@ import type { Currency } from "@/lib/money";
  *
  * Every figure comes from the control plane, and the whole bar disappears
  * when there is no intro offer — never advertise what billing will not grant.
- * That includes every visitor shown US-dollar prices (owner, 18 Oct 2026: one
- * currency per visitor): the offer is a rupee first top-up that an account
- * billed in dollars never gets, so for them there is no bar.
+ * One currency per visitor (owner, 18 Oct 2026): a visitor shown US-dollar
+ * prices sees the dollar offer ($20 = 8 hours, owner 18 Oct 2026), and only
+ * while the control plane publishes it as `usd.intro_offer`; otherwise no bar.
  */
 export async function IntroStrip({ currency = "INR" }: { currency?: Currency }) {
-  if (currency === "USD") return null;
   const card = await getRateCard();
-  const offer = getIntroOffer(card);
+  const offer = introOfferFor(card, currency);
   if (!offer) return null;
-  const hourly = adhocRateHourly(card);
-  const headline = `First top-up: ${rupees(offer.priceRupees)} = ${hoursLabel(offer.hours)}`;
+  const hourly = adhocRateHourly(card, currency);
+  const headline = `First top-up: ${introPrice(offer)} = ${hoursLabel(offer.hours)}`;
   const gpu = offer.gpuName ? `of ${offer.gpuName}` : "of GPU time";
 
   // One pass of the message. Rendered several times so the loop has no seam,
@@ -55,7 +55,7 @@ export async function IntroStrip({ currency = "INR" }: { currency?: Currency }) 
     { strong: headline, rest: gpu },
     { strong: "No paperwork", rest: "just your email and mobile number" },
     { strong: "International cards", rest: "accepted" },
-    { strong: "Billed by the minute", rest: hourly ? `${hourly} after that, GST included` : "GST included" },
+    { strong: "Billed by the minute", rest: hourly ? `${hourly} after that, ${taxWords(currency)}` : taxWords(currency) },
   ];
 
   const pass = (key: string) => (

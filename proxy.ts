@@ -69,6 +69,8 @@ const PAGES = new Set([
   "/vram-for-architectural-rendering",
   "/cloud-rendering-for-architects",
   "/cloud-workstation-vs-render-farm",
+  // The sign-up page quotes the intro offer and the hourly rate (18 Oct 2026).
+  "/signup",
 ]);
 
 /** Dynamic routes with a /usd copy: exactly one segment after the prefix, so

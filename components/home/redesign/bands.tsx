@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { NODE } from "@/lib/node-spec";
-import { hoursLabel, rupees, type IntroOffer } from "@/lib/rate-card";
+import { hoursLabel, type IntroOffer, introPrice } from "@/lib/rate-card";
 import type { Currency } from "@/lib/money";
 import { Reveal } from "@/components/home/redesign/reveal";
 import { ParallaxBg } from "@/components/home/redesign/depth";
@@ -105,7 +105,7 @@ export function OfferBand({
   currency = "INR",
 }: {
   adhocRate?: string;
-  /** Always null on the dollar copy: the intro offer is a rupee top-up. */
+  /** In the page's currency (introOfferFor), or null when none is published. */
   intro: IntroOffer | null;
   currency?: Currency;
 }) {
@@ -124,7 +124,7 @@ export function OfferBand({
           <h2 className="cfh-h2">Start with one top-up</h2>
           {intro ? (
             <p className="mt-5 font-heading text-[28px] font-medium sm:text-[34px]">
-              {rupees(intro.priceRupees)} = {hoursLabel(intro.hours)}
+              {introPrice(intro)} = {hoursLabel(intro.hours)}
             </p>
           ) : null}
           <ul className="mt-5 space-y-2 text-[16px] leading-[1.55] text-white/85">

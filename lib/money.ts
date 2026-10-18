@@ -60,6 +60,21 @@ export function formatMoney(value: number, currency: Currency): string {
 
 export type UsdBulkTier = { min: number; percent: number; bonus: number };
 
+/**
+ * The USD first-top-up offer (owner, 18 Oct 2026: $20 = 8 hours abroad), as
+ * the control plane publishes it in `usd.intro_offer`. Null or absent while
+ * the offer is off: the site then advertises nothing (no fallback constant,
+ * so a page never promises what billing is not crediting).
+ */
+export type UsdIntroOfferApi = {
+  price: number;
+  hours: number;
+  hourly_rate?: number | null;
+  bonus?: number | null;
+  validity_days?: number | null;
+  gpu_name?: string | null;
+};
+
 /** The `usd` block of GET /public/rate-card. */
 export type UsdRateCard = {
   currency: "USD";
@@ -76,6 +91,9 @@ export type UsdRateCard = {
   /** Team per-seat fee per month, derived from the rupee fee (INR / 96 x 1.5, up to .99). */
   b2b_per_user_monthly_fee: number;
   gst_included: boolean;
+  /** Published only while the USD intro offer is on (18 Oct 2026). Never in
+   *  USD_FALLBACK: see introOfferFor() in lib/rate-card.ts. */
+  intro_offer?: UsdIntroOfferApi | null;
 };
 
 /**

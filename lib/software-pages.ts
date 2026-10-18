@@ -18,7 +18,7 @@
  * here; hardware and behaviour claims must match what the machines do.
  */
 
-import { NODE, WORKSTATION_REPLACEMENT_COST } from "./node-spec";
+import { NODE, replacementCost } from "./node-spec";
 import type { Currency } from "./money";
 
 export type SoftwarePage = {
@@ -84,12 +84,12 @@ const LICENCE_BYOL =
 /**
  * The pages, built for one display currency (owner, 18 Oct 2026: one currency
  * per visitor). The rupee build is the source copy (sitemap, llms.txt). The
- * dollar build words the "what a workstation costs to buy" comparison without
- * a figure (WORKSTATION_REPLACEMENT_COST is a rupee estimate for the Indian
- * market and there is no dollar estimate) and drops the GST and rupee claims.
+ * dollar build quotes the dollar hardware estimate (replacementCost("USD"),
+ * $6,000, owner 18 Oct 2026) and drops the GST and rupee claims.
  */
 function buildSoftwarePages(cur: Currency): SoftwarePage[] {
   const usd = cur === "USD";
+  const machineCost = replacementCost(cur);
   return [
   {
     slug: "revit-cloud-workstation",
@@ -150,9 +150,7 @@ function buildSoftwarePages(cur: Currency): SoftwarePage[] {
     intro:
       "3ds Max with V-Ray or Corona is the classic case for renting a GPU, because the work comes in bursts. You need serious hardware for a few days before a deadline and almost none for the rest of the month.",
     problem:
-      usd
-        ? "Rendering ties up your workstation for hours, and the machine that would do it comfortably is a large one-off purchase that sits idle most of the year."
-        : `Rendering ties up your workstation for hours, and the machine that would do it comfortably lands at about ${WORKSTATION_REPLACEMENT_COST} and sits idle most of the year.`,
+      `Rendering ties up your workstation for hours, and the machine that would do it comfortably lands at about ${machineCost} and sits idle most of the year.`,
     why: [
       "V-Ray GPU and Chaos Vantage render on the graphics card, which is what this hardware is for. Corona is a CPU renderer, so read the note below before you assume it gets faster.",
       "Your own computer stays usable while the render runs on the rented machine.",
@@ -173,9 +171,9 @@ function buildSoftwarePages(cur: Currency): SoftwarePage[] {
       {
         h2: "Why studios rent for 3ds Max specifically.",
         body: [
-          `Archviz work in 3ds Max comes in bursts, which makes buying hardware a poor deal. There is a week before a client presentation when the machine cannot keep up, and three weeks afterwards when it idles. ${usd ? "A workstation that renders comfortably is a large purchase, bought once," : `A workstation that renders comfortably lands at roughly ${WORKSTATION_REPLACEMENT_COST} in India, is bought once,`} and is still on the books whether or not the project that justified it goes ahead.`,
+          `Archviz work in 3ds Max comes in bursts, which makes buying hardware a poor deal. There is a week before a client presentation when the machine cannot keep up, and three weeks afterwards when it idles. A workstation that renders comfortably lands at roughly ${machineCost}${usd ? "" : " in India"}, is bought once, and is still on the books whether or not the project that justified it goes ahead.`,
           "The second reason is that rendering takes the machine away from you. A local render ties up the computer you also model on, so the afternoon is spent waiting. Run it on a rented machine and you get the afternoon back, because your own computer stays free while the render runs somewhere else.",
-          `The third is hiring. A studio taking on a remote 3ds Max artist otherwise has to ship them a workstation, buy a laptop that cannot really cope, or hope they own something adequate. A rented machine they reach from their own laptop is a monthly line item instead of ${usd ? "a workstation's worth" : WORKSTATION_REPLACEMENT_COST} of hardware, and it stops cleanly if the arrangement does not.`,
+          `The third is hiring. A studio taking on a remote 3ds Max artist otherwise has to ship them a workstation, buy a laptop that cannot really cope, or hope they own something adequate. A rented machine they reach from their own laptop is a monthly line item instead of ${machineCost} of hardware, and it stops cleanly if the arrangement does not.`,
         ],
       },
       {
@@ -323,7 +321,7 @@ function buildSoftwarePages(cur: Currency): SoftwarePage[] {
     description:
       "Run Chaos V-Ray GPU rendering on a rented RTX workstation in India, billed per minute. Works with 3ds Max, SketchUp, Rhino and Revit. Bring your Chaos licence.",
     intro:
-      `V-Ray GPU wants VRAM and CUDA cores. Owning them means ${usd ? "an expensive machine" : `a machine at about ${WORKSTATION_REPLACEMENT_COST}`} sitting on the books all year for work that keeps it busy a few weeks of the year. Renting gets you the same card for just those weeks.`,
+      `V-Ray GPU wants VRAM and CUDA cores. Owning them means a machine at about ${machineCost} sitting on the books all year for work that keeps it busy a few weeks of the year. Renting gets you the same card for just those weeks.`,
     problem:
       "V-Ray GPU renders outlast your working day on a card that was never meant for production rendering.",
     why: [
@@ -461,8 +459,8 @@ function buildSoftwarePages(cur: Currency): SoftwarePage[] {
       "Coreframe rents Windows GPU workstations by the minute from infrastructure in India. You stream a real RTX desktop to the computer you already own and pay only while the stream is running.",
     problem:
       usd
-        ? "A workstation that would handle your rendering is a large up-front purchase, depreciates the day it arrives, and sits idle most of the week."
-        : `A workstation that would handle your rendering lands at about ${WORKSTATION_REPLACEMENT_COST}, depreciates the day it arrives, and sits idle most of the week. An international cloud GPU bills in dollars and comes with the latency you'd expect from a server abroad.`,
+        ? `A workstation that would handle your rendering lands at about ${machineCost}, depreciates the day it arrives, and sits idle most of the week.`
+        : `A workstation that would handle your rendering lands at about ${machineCost}, depreciates the day it arrives, and sits idle most of the week. An international cloud GPU bills in dollars and comes with the latency you'd expect from a server abroad.`,
     why: [
       usd
         ? "The machines are in India, so latency is low for users in and near India. Accounts billed outside India pay in US dollars, with no GST."

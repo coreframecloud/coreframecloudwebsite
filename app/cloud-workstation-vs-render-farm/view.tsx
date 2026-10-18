@@ -191,9 +191,7 @@ export default async function WorkstationVsFarmView({ currency }: { currency: Cu
             <p className="mt-4 leading-8 text-ink-2">
               If you would keep a GPU busy most of the working week, owning one
               can be cheaper than either.{" "}
-              {machineCost
-                ? `A machine of this class costs roughly ${machineCost} in India by our own estimate.`
-                : "A machine of this class is a large up-front purchase."}{" "}
+              {`A machine of this class costs roughly ${machineCost}${currency === "USD" ? "" : " in India"} by our own estimate.`}{" "}
               The{" "}
               <Link href="/d5-render-vs-local-gpu" className="text-blue underline underline-offset-4">
                 rent-or-buy break-even

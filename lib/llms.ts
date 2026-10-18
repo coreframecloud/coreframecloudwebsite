@@ -19,6 +19,7 @@
 
 import {
   getIntroOffer,
+  getUsdIntroOffer,
   hoursLabel,
   minFirstTopup,
   planTiers,
@@ -73,6 +74,8 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
   const usd = usdRates(card);
   const studio = studioPrices(card);
   const usdMoney = (n: number) => formatMoney(n, "USD");
+  // The dollar first-top-up offer, only while the API publishes it.
+  const usdIntro = getUsdIntroOffer(card);
   out.push(
     "Currencies: accounts in India pay in Indian rupees with 18% GST included (unless a price says + GST); " +
       "accounts outside India pay in US dollars with no GST (export of services). The currency is fixed at sign-up " +
@@ -172,7 +175,7 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
         "with no GST for accounts outside India, billed per minute of " +
         "streaming. Team plans (monthly, for studios and firms) are listed below." +
         (introQ
-          ? ` New customers: the first top-up of ${money(introQ.priceRupees)} buys ` +
+          ? ` New customers: the first top-up of ${money(introQ.price)} buys ` +
             `${hoursLabel(introQ.hours)}${introQ.validityDays ? `, used within ${introQ.validityDays} days` : ""}.`
           : ""),
     );
@@ -183,7 +186,7 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
   const laterTopup = card?.wallet?.min_topup_rupees ?? null;
   if (firstTopup) {
     const buys =
-      introQ && introQ.priceRupees === firstTopup
+      introQ && introQ.price === firstTopup
         ? `, which buys ${hoursLabel(introQ.hours)}${introQ.gpuName ? ` of ${introQ.gpuName}` : ""}` +
           `${introQ.validityDays ? ` to use within ${introQ.validityDays} days` : ""}` +
           `${introQ.onePerCustomer ? " (one per customer)" : ""}`
@@ -348,7 +351,11 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
       `Outside India the same machine is ${usdMoney(usd.gpu_hourly)} per GPU-hour with no GST, the first top-up is from ` +
         `${usdMoney(usd.topup_min_first)}, and team plans are priced in US dollars` +
         (tiers.length && tiers[0].usd_monthly_fee ? ` (from ${usdMoney(tiers[0].usd_monthly_fee)} a month)` : "") +
-        ". The rupee intro offer is for accounts in India.",
+        "." +
+        (usdIntro
+          ? ` New accounts outside India: the first top-up of ${usdMoney(usdIntro.price)} buys ${hoursLabel(usdIntro.hours)}` +
+            `${usdIntro.gpuName ? ` of ${usdIntro.gpuName}` : ""}, no GST.`
+          : " The rupee intro offer is for accounts in India."),
     );
     out.push("");
   } else {
@@ -376,10 +383,17 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
   const intro = getIntroOffer(card);
   if (intro) {
     out.push(
-      `- Intro offer: the first top-up of ${money(intro.priceRupees)} buys ${hoursLabel(intro.hours)}` +
+      `- Intro offer: the first top-up of ${money(intro.price)} buys ${hoursLabel(intro.hours)}` +
         `${intro.gpuName ? ` of ${intro.gpuName}` : ""}` +
         `${intro.validityDays ? `, to be used within ${intro.validityDays} days` : ""}` +
         `${intro.onePerCustomer ? ", one per customer" : ""}.`,
+    );
+  }
+  if (usdIntro) {
+    out.push(
+      `- Intro offer outside India: the first top-up of ${usdMoney(usdIntro.price)} buys ${hoursLabel(usdIntro.hours)}` +
+        `${usdIntro.gpuName ? ` of ${usdIntro.gpuName}` : ""}, no GST` +
+        `${usdIntro.validityDays ? `, to be used within ${usdIntro.validityDays} days` : ""}, one per customer.`,
     );
   }
   const minFirst = minFirstTopup(card);

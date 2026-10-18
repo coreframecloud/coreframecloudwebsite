@@ -17,7 +17,7 @@
  */
 
 import type { StorageTerms } from "@/lib/storage-terms";
-import { hoursLabel, rupees, type IntroOffer } from "@/lib/rate-card";
+import { hoursLabel, type IntroOffer, introPrice } from "@/lib/rate-card";
 import { BANDWIDTH_SENTENCE } from "@/lib/streaming-terms";
 import type { Currency } from "@/lib/money";
 
@@ -77,7 +77,7 @@ function buildFaq(storage: StorageTerms, intro: IntroOffer | null, adhocRate?: s
   if (intro) {
     items.splice(1, 0, {
       q: "Is there an offer for new customers?",
-      a: `Yes. Your first top-up of ${rupees(intro.priceRupees)} buys ${hoursLabel(intro.hours)}${intro.gpuName ? ` on an ${intro.gpuName}` : ""}${intro.validityDays ? `, to use within ${intro.validityDays} days` : ""}. It's one per customer. You get the same workstation every paying customer uses, billed per minute, so you can open your own project and judge it for yourself. How much rendering that covers depends entirely on your scene, so we won't guess at a number.`,
+      a: `Yes. Your first top-up of ${introPrice(intro)}${intro.currency === "USD" ? " (no GST)" : ""} buys ${hoursLabel(intro.hours)}${intro.gpuName ? ` on an ${intro.gpuName}` : ""}${intro.validityDays ? `, to use within ${intro.validityDays} days` : ""}. It's one per customer. You get the same workstation every paying customer uses, billed per minute, so you can open your own project and judge it for yourself. How much rendering that covers depends entirely on your scene, so we won't guess at a number.`,
     });
   }
 

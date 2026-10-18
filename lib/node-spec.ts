@@ -19,6 +19,9 @@
  *
  * Only put a figure here that someone has read off the machine.
  */
+
+import { formatMoney } from "./money";
+
 export const NODE = {
   gpu: "RTX 5080",
   vram: "16 GB GDDR7",
@@ -61,13 +64,25 @@ export const NODE = {
 export const WORKSTATION_REPLACEMENT_COST = "₹6,00,000";
 
 /**
- * The estimate for a visitor shown `cur` prices: null for USD (owner,
- * 18 Oct 2026: one currency per visitor). It is a rupee figure for the Indian
- * market and there is no dollar estimate to put beside it, so a USD page
- * words the comparison without a number rather than inventing one.
+ * The same estimate for a buyer outside India: about $6,000 (owner, 18 Oct
+ * 2026). Typed once, here, beside the rupee figure; it is NOT a conversion of
+ * it. Re-check both together.
  */
-export function replacementCost(cur: "INR" | "USD"): string | null {
-  return cur === "USD" ? null : WORKSTATION_REPLACEMENT_COST;
+export const WORKSTATION_REPLACEMENT_COST_USD = 6_000;
+
+/** The estimate as a number in `cur`, for break-even arithmetic. */
+export function replacementCostValue(cur: "INR" | "USD"): number {
+  return cur === "USD"
+    ? WORKSTATION_REPLACEMENT_COST_USD
+    : Number(WORKSTATION_REPLACEMENT_COST.replace(/[^\d]/g, ""));
+}
+
+/**
+ * The estimate for a visitor shown `cur` prices, in that currency only (owner,
+ * 18 Oct 2026: one currency per visitor): "₹6,00,000" or "$6,000".
+ */
+export function replacementCost(cur: "INR" | "USD"): string {
+  return cur === "USD" ? formatMoney(WORKSTATION_REPLACEMENT_COST_USD, "USD") : WORKSTATION_REPLACEMENT_COST;
 }
 
 /** One line, for a meta description or a dense spec strip. */

@@ -19,7 +19,7 @@ import {
   storageRatePerTb,
   introOfferFor,
   hoursLabel,
-  rupees,
+  introPrice,
 } from "@/lib/rate-card";
 import { formatMoney, usdRates, type Currency } from "@/lib/money";
 import { CFD_PREPROCESS_INR } from "@/lib/cfd-prices";
@@ -139,11 +139,11 @@ export default async function AboutView({ currency }: { currency: Currency }) {
     },
     {
       q: "Who is Coreframe Cloud for?",
-      a: `Architects, interior designers and architectural visualisation studios in India, along with freelance 3D visualisers and students who need workstation-class hardware without buying it. A second, smaller group is simulation engineers running GPU-accelerated CFD. The common thread is bursty work: heavy rendering in the week before a client presentation and almost none in the three weeks after. That's the pattern that makes ${machineCost ? `a ${machineCost}` : "an expensive"} machine hard to justify.`,
+      a: `Architects, interior designers and architectural visualisation studios in India, along with freelance 3D visualisers and students who need workstation-class hardware without buying it. A second, smaller group is simulation engineers running GPU-accelerated CFD. The common thread is bursty work: heavy rendering in the week before a client presentation and almost none in the three weeks after. That's the pattern that makes a ${machineCost} machine hard to justify.`,
     },
     {
       q: "Why was Coreframe Cloud started?",
-      a: `Coreframe Compute Labs was founded in Bengaluru in 2026 around one observation. The workstation an Indian design studio needs to render comfortably ${machineCost ? `costs about ${machineCost} landed` : "is a large up-front purchase"}. It gets bought once and then sits idle most of the week. The cloud options were either headless Linux boxes built for AI training or foreign services that bill in dollars with no Indian tax invoice. Neither suits someone who just wants to open Lumion and hit render. So we built the unglamorous version: a real ${NODE.os} machine with a real GPU, hosted in Bengaluru, rented by the minute, with a GST invoice at the end of it.`,
+      a: `Coreframe Compute Labs was founded in Bengaluru in 2026 around one observation. The workstation an Indian design studio needs to render comfortably costs about ${machineCost}${usdView ? "" : " landed"}. It gets bought once and then sits idle most of the week. The cloud options were either headless Linux boxes built for AI training or foreign services that bill in dollars with no Indian tax invoice. Neither suits someone who just wants to open Lumion and hit render. So we built the unglamorous version: a real ${NODE.os} machine with a real GPU, hosted in Bengaluru, rented by the minute, with a GST invoice at the end of it.`,
     },
     {
       q: "What technology does Coreframe Cloud run on?",
@@ -249,7 +249,7 @@ export default async function AboutView({ currency }: { currency: Currency }) {
                 Coreframe Cloud is run by Coreframe Compute Labs Private Limited, Bengaluru (founded 2026). It offers three
                 services: Windows {NODE.gpu} workstations rented by the minute
                 {hourly
-                  ? ` (${hourly}, ${usdView ? "no GST" : "incl. GST"}${intro ? `; first ${rupees(intro.priceRupees)} = ${hoursLabel(intro.hours)}` : ""})`
+                  ? ` (${hourly}, ${usdView ? "no GST" : "incl. GST"}${intro ? `; first ${introPrice(intro)} = ${hoursLabel(intro.hours)}` : ""})`
                   : ""}
                 , CFD pressure-drop and room-airflow reports from one STL or a room description (mesh check{" "}
                 {meshCheck}), and Studio concept
@@ -324,7 +324,7 @@ export default async function AboutView({ currency }: { currency: Currency }) {
             </h3>
             <p className="cf-section-copy mt-3">
               An {NODE.gpu} with {NODE.vram} is not a card most design studios in India own. A
-              workstation built around one {machineCost ? `lands at about ${machineCost}` : "is a large up-front purchase"}, and the
+              workstation built around one lands at about {machineCost}, and the
               machines people actually work on commonly ship with 6 to 8 GB. That number limits
               what fits on the card. Geometry, textures and lightmaps all have to fit, and when
               they don&rsquo;t, the work gets cut down to size and your 4K still comes out

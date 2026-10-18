@@ -13,9 +13,10 @@ const IMG = `/blog/${SLUG}`;
  *
  * Every figure of ours is derived from the rate card at build time through
  * BlogContext. Nothing here is typed by hand. The dollar view (owner,
- * 18 Oct 2026: one currency per visitor) has no rupee figure at all: the
- * purchase-price estimate and the retail card price are rupees only, so it
- * describes the purchase without them and drops the break-even arithmetic.
+ * 18 Oct 2026: one currency per visitor) has no rupee figure at all. It uses
+ * the dollar purchase estimate ($6,000, owner 18 Oct 2026) and works the
+ * break-even from the rate card's dollar rate; the Indian retailer's card
+ * price has no honest dollar equivalent, so that sentence is worded without it.
  */
 const SCENARIOS = [10, 40, 120];
 
@@ -26,7 +27,7 @@ export const costWorkstationFarmBuy: BlogPost = {
   description:
     "Buying a PC, renting by the minute and using a render farm are priced three different ways. How to compare them in rupees, with the break-even worked out.",
   descriptionUsd:
-    "Buying a PC, renting by the minute and using a render farm are priced three different ways. How to compare them against your own hours of use.",
+    "Buying a PC, renting by the minute and using a render farm are priced three different ways. How to compare them in US dollars, with the break-even worked out.",
   targetQueries: [
     "rent vs buy gpu workstation india",
     "rtx 5080 workstation price india",
@@ -66,6 +67,7 @@ export const costWorkstationFarmBuy: BlogPost = {
       ] as [string, string]];
     });
     const plansBelowAdhoc = ctx.plansBelowAdhoc;
+    const usd = ctx.currency === "USD";
     const years120 = ctx.breakEvenHours ? Math.round((ctx.breakEvenHours / (120 * 12)) * 10) / 10 : null;
     const years = ctx.breakEvenHours ? Math.round((ctx.breakEvenHours / (40 * 12)) * 10) / 10 : null;
 
@@ -80,12 +82,15 @@ export const costWorkstationFarmBuy: BlogPost = {
         text: `So the first step is to stop comparing headline rates and start from your own year: how many hours you spend with a renderer open, how many of them are interactive (moving cameras, changing materials) and how many are a finished scene grinding out frames.`,
       },
 
-      { type: "h2", text: "What does it cost to buy an RTX workstation in India?" },
+      { type: "h2", text: usd ? "What does it cost to buy an RTX workstation?" : "What does it cost to buy an RTX workstation in India?" },
       {
         type: "p",
-        text: ctx.replacementCost
-          ? `By our own estimate, a desktop matching our workstations (an ${NODE.gpu} with ${NODE.vram}, ${NODE.ram} of RAM, an ${NODE.cpu} and fast NVMe storage) costs about ${ctx.replacementCost} in India today. The graphics card is the largest single part: on 10 October 2026 one Indian retailer listed the RTX 5080 alone at over ₹1.1 lakh, and out of stock ([getpc.co.in](https://getpc.co.in/parts/gpu/rtx-5080-16gb)).`
-          : `A desktop matching our workstations (an ${NODE.gpu} with ${NODE.vram}, ${NODE.ram} of RAM, an ${NODE.cpu} and fast NVMe storage) is a large one-off purchase, and the graphics card is the largest single part of it.`,
+        // The dollar copy has the dollar estimate ($6,000, owner 18 Oct 2026)
+        // but not the Indian retailer's rupee card price, which has no honest
+        // dollar equivalent; it says the card is the largest part instead.
+        text: usd
+          ? `By our own estimate, a desktop matching our workstations (an ${NODE.gpu} with ${NODE.vram}, ${NODE.ram} of RAM, an ${NODE.cpu} and fast NVMe storage) costs about ${ctx.replacementCost} today. The graphics card is the largest single part of that.`
+          : `By our own estimate, a desktop matching our workstations (an ${NODE.gpu} with ${NODE.vram}, ${NODE.ram} of RAM, an ${NODE.cpu} and fast NVMe storage) costs about ${ctx.replacementCost} in India today. The graphics card is the largest single part: on 10 October 2026 one Indian retailer listed the RTX 5080 alone at over ₹1.1 lakh, and out of stock ([getpc.co.in](https://getpc.co.in/parts/gpu/rtx-5080-16gb)).`,
       },
       {
         type: "p",
@@ -204,12 +209,15 @@ export const costWorkstationFarmBuy: BlogPost = {
         ? `It depends on hours of use. Renting at ${ctx.hourly} adds up to a ${ctx.replacementCost} machine after about ${ctx.breakEvenHours.toLocaleString("en-IN")} hours. Below that, renting is cheaper; well above it, buying is.`
         : "It depends on hours of use. Divide the purchase price by the hourly rate: below that many hours, renting is cheaper; well above it, buying is.",
     },
-    ctx.replacementCost
+    ctx.currency === "USD"
       ? {
+          q: "How much does an RTX 5080 workstation cost?",
+          a: `By our estimate about ${ctx.replacementCost} for a desktop with an RTX 5080, ${NODE.ram} of RAM and an ${NODE.cpu}. The graphics card is the largest single part of that.`,
+        }
+      : {
           q: "How much does an RTX 5080 workstation cost in India?",
           a: `By our estimate about ${ctx.replacementCost} for a desktop with an RTX 5080, ${NODE.ram} of RAM and an ${NODE.cpu}. On 10 October 2026 the RTX 5080 card alone was listed at over ₹1.1 lakh by one Indian retailer.`,
-        }
-      : null,
+        },
     {
       q: "Is a render farm cheaper than a cloud workstation?",
       a: "For a finished animation in a supported offline renderer, often yes, because the farm spreads frames across many machines. For interactive work, real-time renderers and scenes still being changed, a farm does not fit, and a workstation is the cheaper way to get the work done.",

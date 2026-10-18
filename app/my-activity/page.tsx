@@ -16,11 +16,12 @@ import SignInSecurity from "@/components/account/sign-in-security";
 import { apiFetch, forgetLocalSession, isSignedIn, sessionMarker } from "@/lib/session";
 import { trackEvent } from "@/lib/analytics";
 import {
-  getIntroOffer,
+  introOfferFor,
   hoursLabel,
   minFirstTopup,
   rupees,
   type IntroOffer,
+  introPrice,
 } from "@/lib/rate-card";
 import { useRateCard } from "@/lib/use-rate-card";
 import { API_BASE } from "@/lib/api-base";
@@ -90,6 +91,9 @@ interface WalletData {
    *  money field here is in THIS currency, whatever its name says. Absent on
    *  an older control plane, which is INR-only. */
   wallet_currency?: string | null;
+  /** The currency of the wallet that PAYS: the organisation's for a member
+   *  of one, else the same as wallet_currency. The balance is in it. */
+  billing_currency?: string | null;
 }
 
 function formatBytes(bytes: number): string {
@@ -118,7 +122,9 @@ function StartCard({
   onAdd: (amount: number | null, source: "intro_offer" | "first_topup") => void;
 }) {
   if (!wallet) return null;
-  const introLive = wallet.intro_offer_available === true && offer != null;
+  const cur: Currency = parseCurrency(wallet.wallet_currency) ?? "INR";
+  // Only the offer in the account's own currency.
+  const introLive = wallet.intro_offer_available === true && offer != null && offer.currency === cur;
   const needsPayment = wallet.paid_access === false;
   if (!introLive && !needsPayment) return null;
 
@@ -134,7 +140,7 @@ function StartCard({
           ) : null}
         </div>
         <p className="mt-3 font-display text-3xl leading-tight font-bold text-ink">
-          {rupees(offer.priceRupees)} <span className="text-blue">→</span>{" "}
+          {introPrice(offer)} <span className="text-blue">→</span>{" "}
           {hoursLabel(offer.hours)}
           {offer.gpuName ? <span className="text-ink-2"> of {offer.gpuName}</span> : null}
         </p>
@@ -142,22 +148,23 @@ function StartCard({
           {needsPayment
             ? "Your account is ready, and your first top-up unlocks sessions. It\u2019s "
             : "Your first top-up is "}
-          one per customer and billed per minute of streaming. Pay by card, UPI or netbanking;
-          international cards work too.
+          one per customer and billed per minute of streaming.{" "}
+          {cur === "USD"
+            ? "Pay by card in US dollars, with no GST."
+            : "Pay by card, UPI or netbanking; international cards work too."}
         </p>
         <button
           type="button"
-          onClick={() => onAdd(offer.priceRupees, "intro_offer")}
+          onClick={() => onAdd(offer.price, "intro_offer")}
           className="cf-btn-primary mt-5 w-full sm:w-auto"
         >
-          Add {rupees(offer.priceRupees)} · {hoursLabel(offer.hours, true)}
+          Add {introPrice(offer)} · {hoursLabel(offer.hours, true)}
         </button>
       </section>
     );
   }
 
   // fallbackMin is the rate card's rupee minimum: no use to a USD account.
-  const cur: Currency = parseCurrency(wallet.wallet_currency) ?? "INR";
   const min = wallet.min_topup_rupees_now ?? (cur === "USD" ? null : fallbackMin);
   const fmt = (v: number) => (cur === "USD" ? formatMoney(v, "USD") : rupees(v));
   return (
@@ -184,6 +191,8 @@ function StartCard({
 /** Disk usage. The free-minutes half of this panel went with the trial. */
 function UsageCards({ wallet }: { wallet: WalletData | null }) {
   if (!wallet) return null;
+  // Storage is billed in the account's currency (wallet_currency).
+  const sym = parseCurrency(wallet.wallet_currency) === "USD" ? "$" : "₹";
   const quotaGb =
     wallet.storage_quota_gb ||
     (wallet.storage_quota_bytes ? Math.round(wallet.storage_quota_bytes / 1024 ** 3) : 0);
@@ -233,17 +242,17 @@ function UsageCards({ wallet }: { wallet: WalletData | null }) {
             <p className="mb-2 font-mono text-[11.5px] leading-none font-medium tracking-[0.2em] uppercase text-ink-2">Storage billing</p>
             <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
               <span className="text-sm text-ink">
-                <b>₹{(wallet.storage_daily_charge_rupees ?? 0).toFixed(2)} a day</b> for the{" "}
+                <b>{sym}{(wallet.storage_daily_charge_rupees ?? 0).toFixed(2)} a day</b> for the{" "}
                 {(wallet.storage_billable_gb ?? 0).toFixed(1)} GB above your{" "}
                 {wallet.storage_allowance_gb ?? 50} GB
               </span>
               <span className="font-mono text-xs whitespace-nowrap tabular-nums text-ink-2">
-                ₹{(wallet.storage_month_to_date_rupees ?? 0).toFixed(2)} this month
+                {sym}{(wallet.storage_month_to_date_rupees ?? 0).toFixed(2)} this month
               </span>
             </div>
             <p className="mt-2 text-xs leading-5 text-ink-2">
               {wallet.storage_rate_rupees_per_tb_month != null
-                ? `Taken from your wallet each morning at ₹${wallet.storage_rate_rupees_per_tb_month}/TB/month.`
+                ? `Taken from your wallet each morning at ${sym}${wallet.storage_rate_rupees_per_tb_month}/TB/month.`
                 : "Taken from your wallet each morning at the published storage rate."}{" "}
               Delete what you
               don&rsquo;t need and the charge stops the same day. There&rsquo;s nothing to cancel.
@@ -455,6 +464,8 @@ export default function MyActivityPage() {
   // The account's currency (wallet_currency); every wallet amount is in it.
   const cur: Currency = parseCurrency(wallet?.wallet_currency) ?? "INR";
   const sym = cur === "USD" ? "$" : "₹";
+  // A member's balance is the organisation's wallet, in its currency.
+  const balSym = (parseCurrency(wallet?.billing_currency) ?? cur) === "USD" ? "$" : "₹";
   const [sessions, setSessions] = useState<SessionRow[]>([]);
   const [payments, setPayments] = useState<PaymentRow[]>([]);
   const [ledger, setLedger] = useState<LedgerRow[]>([]);
@@ -478,7 +489,10 @@ export default function MyActivityPage() {
   const [studioCtx, setStudioCtx] = useState(false);
   const [blocked, setBlocked] = useState<string | null>(null);
   const card = useRateCard();
-  const introOffer = getIntroOffer(card);
+  // The offer in the ACCOUNT's currency: the rupee one, or the dollar one
+  // ($20 = 8 hours, owner 18 Oct 2026) while the API publishes it. Shown only
+  // when the wallet status says this account can still claim it.
+  const introOffer = introOfferFor(card, cur);
 
   const apply = useCallback((d: ActivityData) => {
     if (d.wallet) {
@@ -552,7 +566,7 @@ export default function MyActivityPage() {
     if (source !== "add_funds") {
       trackEvent("begin_checkout", {
         value: amount ?? undefined,
-        currency: "INR",
+        currency: cur,
         location: source === "intro_offer" ? "my_activity_intro_offer" : "my_activity_first_topup",
       });
     }
@@ -811,7 +825,7 @@ export default function MyActivityPage() {
                 Org wallet balance
               </h2>
               <p className="font-display text-3xl font-bold tabular-nums text-blue">
-                {sym}{wallet ? wallet.wallet_balance_rupees.toFixed(2) : "0.00"}
+                {balSym}{wallet ? wallet.wallet_balance_rupees.toFixed(2) : "0.00"}
               </p>
               <p className="mt-1 text-xs text-ink-2">Shared across your organisation</p>
             </div>
@@ -969,7 +983,7 @@ export default function MyActivityPage() {
               Wallet balance
             </h2>
             <p className="font-display text-3xl font-bold tabular-nums text-blue">
-              {sym}{wallet ? wallet.wallet_balance_rupees.toFixed(2) : "0.00"}
+              {balSym}{wallet ? wallet.wallet_balance_rupees.toFixed(2) : "0.00"}
             </p>
             <p className="mt-1 text-xs text-ink-2">Managed by your org admin</p>
           </div>
@@ -1051,7 +1065,7 @@ export default function MyActivityPage() {
         minTopupNow={wallet?.min_topup_rupees_now ?? null}
         introOffer={wallet?.intro_offer_available ? introOffer : null}
         isFirstTopup={wallet?.intro_offer_available === true}
-        presetAmount={topUpPreset ?? (wallet?.intro_offer_available ? introOffer?.priceRupees ?? null : null)}
+        presetAmount={topUpPreset ?? (wallet?.intro_offer_available ? introOffer?.price ?? null : null)}
         defaultCountry={wallet?.country_code ?? null}
         bulkTiers={wallet?.bulk_topup_tiers ?? null}
         walletCurrency={wallet?.wallet_currency ?? null}

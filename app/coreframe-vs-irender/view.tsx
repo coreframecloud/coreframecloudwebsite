@@ -17,9 +17,9 @@ import {
   bestOverageRate,
   firstTopupBonus,
   hoursLabel,
-  rupees,
   lowestPublishedHourly,
   gstClause,
+  introPrice,
 } from "@/lib/rate-card";
 
 /**
@@ -136,7 +136,9 @@ export default async function VsIrenderView({ currency }: { currency: Currency }
     ? [
         "Billed per minute from a prepaid wallet in US dollars, with no GST (export of services) and nothing added at checkout.",
         "D5 Render, Twinmotion and Blender are already installed when the machine starts. Lumion, Enscape, 3ds Max and Revit run on your own licence: we set them up with you once, and after that they're on every workstation you launch.",
-        "Billed per minute, so trying it on your own project costs you minutes instead of a month.",
+        intro
+          ? `A first top-up of ${introPrice(intro)} (no GST) buys ${hoursLabel(intro.hours)}${intro.gpuName ? ` on an ${intro.gpuName}` : ""}, so you can judge it on your own project. (Theirs: ${IRENDER.firstChargeBonus}.)`
+          : "Billed per minute, so trying it on your own project costs you minutes instead of a month.",
         "Sign-up takes an email and a WhatsApp code, with no ID documents, and we accept international cards.",
       ]
     : [
@@ -148,7 +150,7 @@ export default async function VsIrenderView({ currency }: { currency: Currency }
     "Your files stay on storage in India.",
     "D5 Render, Twinmotion and Blender are already installed when the machine starts. Lumion, Enscape, 3ds Max and Revit run on your own licence: we set them up with you once, and after that they're on every workstation you launch.",
     intro
-      ? `A first top-up of ${rupees(intro.priceRupees)} buys ${hoursLabel(intro.hours)}${intro.gpuName ? ` on an ${intro.gpuName}` : ""}, so you can judge it on your own project. (Theirs: ${IRENDER.firstChargeBonus}.)`
+      ? `A first top-up of ${introPrice(intro)} buys ${hoursLabel(intro.hours)}${intro.gpuName ? ` on an ${intro.gpuName}` : ""}, so you can judge it on your own project. (Theirs: ${IRENDER.firstChargeBonus}.)`
       : "Billed per minute, so trying it on your own project costs you minutes instead of a month.",
     "Sign-up takes an email and a WhatsApp code, with no ID documents, and we accept international cards.",
       ];
@@ -302,13 +304,13 @@ export default async function VsIrenderView({ currency }: { currency: Currency }
             <h2 className="cf-title">Try it on your own project</h2>
             <p className="cf-lead mt-5">
               {intro
-                ? `Your first top-up of ${rupees(intro.priceRupees)} buys ${hoursLabel(intro.hours)} on the same machine every customer uses.`
+                ? `Your first top-up of ${introPrice(intro)} buys ${hoursLabel(intro.hours)} on the same machine every customer uses.`
                 : "The same machine every customer uses, billed per minute."}{" "}
               Open your own scene and judge us on that.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:gap-4">
               <Link href="/login" className="cf-btn-primary">
-                {intro ? `Get started: ${rupees(intro.priceRupees)} for ${hoursLabel(intro.hours)}` : "Create an account"}
+                {intro ? `Get started: ${introPrice(intro)} for ${hoursLabel(intro.hours)}` : "Create an account"}
               </Link>
               <Link href="/d5-render-vs-local-gpu" className="cf-btn-secondary">
                 Or compare against buying a machine

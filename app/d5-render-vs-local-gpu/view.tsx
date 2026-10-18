@@ -1,4 +1,4 @@
-import type { Currency } from "@/lib/money";
+import { usdRates, type Currency } from "@/lib/money";
 import { VramDiagram } from "@/components/visuals/diagrams";
 import { PageByline } from "@/components/seo/page-byline";
 import { GenImage } from "@/components/visuals/media";
@@ -9,7 +9,7 @@ import { breadcrumbList, OG_IMAGE } from "@/lib/seo";
 import Link from "next/link";
 import { BackgroundGlow } from "@/components/home/background-glow";
 import { SpecBlock, K, B } from "@/components/home/spec-block";
-import { NODE, WORKSTATION_REPLACEMENT_COST, replacementCost } from "@/lib/node-spec";
+import { NODE, replacementCost, replacementCostValue } from "@/lib/node-spec";
 import {
   getRateCard,
   adhocRateHourly,
@@ -17,7 +17,7 @@ import {
   billingSentence,
   introOfferFor,
   hoursLabel,
-  rupees,
+  introPrice,
 } from "@/lib/rate-card";
 import { BANDWIDTH_SENTENCE } from "@/lib/streaming-terms";
 
@@ -50,7 +50,7 @@ export function d5VsLocalMetadata(currency: Currency): Metadata {
   title: "Rent a cloud GPU or buy a workstation?",
   description:
     usdView
-      ? "For D5 Render, Lumion and Enscape users: what owning an RTX workstation involves, where renting by the minute wins and where buying wins."
+      ? "For D5 Render, Lumion and Enscape users: what an RTX workstation costs to own, where renting by the minute wins, where buying wins, and break-even."
       : "For D5 Render, Lumion and Enscape users in India: what an RTX workstation costs to own, where renting by the minute wins, where buying wins, and break-even.",
   keywords: [
     "cloud vs workstation rendering",
@@ -64,19 +64,13 @@ export function d5VsLocalMetadata(currency: Currency): Metadata {
     title: "Renting a cloud GPU vs buying a workstation",
     description:
       usdView
-        ? "What owning an RTX workstation involves, where renting wins and where buying wins."
+        ? "What an RTX workstation costs to own, where renting wins, where buying wins, and the break-even in hours."
         : "What an RTX workstation costs to own, where renting wins, where buying wins, and the break-even in hours.",
     url: "https://www.coreframecloud.com/d5-render-vs-local-gpu",
     type: "article",
   },
   };
 }
-
-/**
- * The same figure node-spec publishes, as a number, so the arithmetic below
- * and the words above it can never disagree. Nothing is typed twice.
- */
-const WORKSTATION_RUPEES = Number(WORKSTATION_REPLACEMENT_COST.replace(/[^\d]/g, ""));
 
 /** Fixed-width padding for the monospace comparison block. */
 const pad = (s: string, n: number) => s + " ".repeat(Math.max(1, n - s.length));
@@ -85,13 +79,16 @@ export default async function D5VsLocalView({ currency }: { currency: Currency }
   const card = await getRateCard();
   const usdView = currency === "USD";
   const hourly = adhocRateHourly(card, currency);
-  const rate = adhocRateValue(card);
+  // The hourly rate in the page's currency, from the rate card (usd.gpu_hourly
+  // on the dollar copy). Never typed here.
+  const rupeeRate = adhocRateValue(card);
+  const rate = rupeeRate == null ? null : usdView ? usdRates(card).gpu_hourly : rupeeRate;
   const intro = introOfferFor(card, currency);
-  // The hardware estimate is a rupee figure for India; a dollar page words the
-  // comparison without it, and so without the break-even worked from it.
+  // The hardware estimate in the page's currency (lib/node-spec: ₹6,00,000 in
+  // India, $6,000 elsewhere, owner 18 Oct 2026). The figure and the number the
+  // arithmetic uses come from the same place, so they can never disagree.
   const machineCost = replacementCost(currency);
-
-  const breakEvenHours = rate && machineCost ? Math.round(WORKSTATION_RUPEES / rate) : null;
+  const breakEvenHours = rate ? Math.round(replacementCostValue(currency) / rate) : null;
   const hoursPerWeek = 10;
   const breakEvenYears =
     breakEvenHours != null
@@ -100,7 +97,7 @@ export default async function D5VsLocalView({ currency }: { currency: Currency }
 
   /** label · what owning gives you · what renting gives you. Kept fair. */
   const rows: [string, string, string][] = [
-    ["up-front cost", machineCost ?? "the whole machine", "nothing"],
+    ["up-front cost", machineCost, "nothing"],
     ["cost per hour", "none, it is yours", hourly ? `${hourly} ${usdView ? "no GST" : "incl. GST"}` : "on the rate card"],
     ["on the books", "an asset that depreciates", "an operating expense"],
     ["needs internet", "no", "yes, a steady link"],
@@ -180,15 +177,9 @@ export default async function D5VsLocalView({ currency }: { currency: Currency }
               A machine that renders the way a Coreframe node does (a{" "}
               {NODE.gpu} with {NODE.vram}, {NODE.ram} of system memory, an{" "}
               {NODE.cpu} and a {NODE.disk}){" "}
-              {machineCost ? (
-                <>
-                  costs about{" "}
-                  <strong className="font-semibold text-ink">{machineCost}</strong>{" "}
-                  in India once GST and import costs are in.
-                </>
-              ) : (
-                "is a large up-front purchase."
-              )}{" "}
+              costs about{" "}
+              <strong className="font-semibold text-ink">{machineCost}</strong>{" "}
+              {usdView ? "by our estimate." : "in India once GST and import costs are in."}{" "}
               And that&rsquo;s only the purchase. The machine depreciates, takes desk space and power,
               and stays on the books if a hire doesn&rsquo;t work out or a project
               gets cancelled.
@@ -212,14 +203,15 @@ export default async function D5VsLocalView({ currency }: { currency: Currency }
                   {breakEvenHours.toLocaleString("en-IN")} rented hours.
                 </h2>
                 <p className="cf-section-copy mt-4">
-                  At {hourly} including GST, that&rsquo;s what the hardware money
+                  At {hourly} {usdView ? "with no GST" : "including GST"}, that&rsquo;s what the hardware money
                   buys in workstation time. At {hoursPerWeek} hours of
                   rendering a week, which is fair for a small studio, it takes
                   roughly{" "}
                   <strong className="font-semibold text-ink">
                     {breakEvenYears} years
                   </strong>{" "}
-                  to get there, by which point the card is two generations old.
+                  to get there, by which point the card is{" "}
+                  {breakEvenYears != null && breakEvenYears >= 2.5 ? "two generations" : "a generation"} old.
                 </p>
                 <p className="cf-section-copy mt-4">
                   Render more than that and owning starts to win on cost. Render
@@ -345,7 +337,7 @@ export default async function D5VsLocalView({ currency }: { currency: Currency }
               <h2 className="cf-section-title">Open the file that ties up your machine.</h2>
               <p className="cf-section-copy mt-4">
                 {intro
-                  ? `Your first top-up of ${rupees(intro.priceRupees)} buys ${hoursLabel(intro.hours)}.`
+                  ? `Your first top-up of ${introPrice(intro)} buys ${hoursLabel(intro.hours)}.`
                   : "Top up the wallet and launch one session."}{" "}
                 Load the project that eats your afternoon and see how a rented
                 workstation handles it before you decide either way.

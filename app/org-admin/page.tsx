@@ -4,6 +4,7 @@ import { apiFetch, sessionMarker } from "@/lib/session";
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { API_BASE } from "@/lib/api-base";
+import { parseCurrency, type Currency } from "@/lib/money";
 
 const API = API_BASE;
 
@@ -124,13 +125,21 @@ export default function OrgAdminPage() {
   const [billingLoading, setBillingLoading] = useState(false);
   const [billingMsg, setBillingMsg] = useState<{ ok: boolean; text: string } | null>(null);
 
+  // The organisation's currency: the admin's own wallet is the one that pays,
+  // so its `billing_currency` from the wallet status (an older API: INR).
+  // Every amount on this page is in it (owner, 18 Oct 2026).
+  const [orgCur, setOrgCur] = useState<Currency>("INR");
+  const sym = orgCur === "USD" ? "$" : "₹";
+  const locale = orgCur === "USD" ? "en-US" : "en-IN";
+
   const loadData = useCallback(() => {
     return Promise.all([
       apiFetch(`${API}/org-admin/me`),
       apiFetch(`${API}/org-admin/team`),
       apiFetch(`${API}/org-admin/pending-members`),
       apiFetch(`${API}/org-admin/usage`),
-    ]).then(async ([meRes, teamRes, pendingRes, usageRes]) => {
+      apiFetch(`${API}/me/wallet`).catch(() => null),
+    ]).then(async ([meRes, teamRes, pendingRes, usageRes, walletRes]) => {
       if (meRes.status === 401) throw new Error("token_expired");
       if (meRes.status === 403) throw new Error("access_denied");
       if (meRes.status === 404) throw new Error("not_deployed");
@@ -146,6 +155,8 @@ export default function OrgAdminPage() {
       // predates /usage, and the page should still show the team rather than
       // failing wholesale over a stat card.
       setUsage(usageRes.ok ? await usageRes.json() : null);
+      const w = walletRes?.ok ? await walletRes.json().catch(() => null) : null;
+      setOrgCur(parseCurrency(w?.billing_currency) ?? parseCurrency(w?.wallet_currency) ?? "INR");
     });
   }, []);
 
@@ -467,7 +478,7 @@ export default function OrgAdminPage() {
             <div className="cf-glass border-l-2! border-l-blue! px-5 py-4">
               <p className="cf-eyebrow mb-2">Month to date</p>
               <p className="font-display text-2xl font-bold tabular-nums whitespace-nowrap">
-                ₹{usage.month_to_date.billed_rupees.toLocaleString("en-IN", { maximumFractionDigits: 0 })}
+                {sym}{usage.month_to_date.billed_rupees.toLocaleString(locale, { maximumFractionDigits: 0 })}
               </p>
               <p className="mt-1 text-[11px] tabular-nums text-ink-2">
                 {usage.month_to_date.billable_hours.toFixed(1)} GPU-h · {usage.month_to_date.session_count} sessions
@@ -516,10 +527,10 @@ export default function OrgAdminPage() {
               <div className="cf-glass border-l-2! border-l-blue! px-5 py-4">
                 <p className="cf-eyebrow mb-2">Credit used</p>
                 <p className="font-display text-2xl font-bold tabular-nums whitespace-nowrap">
-                  ₹{(usage.credit_used_rupees ?? 0).toLocaleString("en-IN", { maximumFractionDigits: 0 })}
+                  {sym}{(usage.credit_used_rupees ?? 0).toLocaleString(locale, { maximumFractionDigits: 0 })}
                   {usage.credit_limit_rupees != null && (
                     <span className="text-base font-normal text-ink-3">
-                      {" / "}₹{usage.credit_limit_rupees.toLocaleString("en-IN", { maximumFractionDigits: 0 })}
+                      {" / "}{sym}{usage.credit_limit_rupees.toLocaleString(locale, { maximumFractionDigits: 0 })}
                     </span>
                   )}
                 </p>
@@ -531,7 +542,7 @@ export default function OrgAdminPage() {
               <div className="cf-glass border-l-2! border-l-blue! px-5 py-4">
                 <p className="cf-eyebrow mb-2">Shared balance</p>
                 <p className="font-display text-2xl font-bold tabular-nums whitespace-nowrap">
-                  ₹{usage.balance_rupees.toLocaleString("en-IN", { maximumFractionDigits: 0 })}
+                  {sym}{usage.balance_rupees.toLocaleString(locale, { maximumFractionDigits: 0 })}
                 </p>
                 <p className="mt-1 text-[11px] text-ink-2">Funds every member&apos;s sessions</p>
               </div>
@@ -557,7 +568,7 @@ export default function OrgAdminPage() {
           <div className="cf-glass flex flex-col justify-between border-l-2! border-l-blue! px-5 py-4">
             <div>
               <p className="cf-eyebrow mb-2">Wallet balance</p>
-              <p className="font-display text-2xl font-bold tabular-nums whitespace-nowrap text-blue">₹{(orgInfo?.wallet_balance_rupees ?? 0).toFixed(2)}</p>
+              <p className="font-display text-2xl font-bold tabular-nums whitespace-nowrap text-blue">{sym}{(orgInfo?.wallet_balance_rupees ?? 0).toFixed(2)}</p>
             </div>
             <button
               onClick={() => { setShowTopup(true); setTopupMsg(null); }}
@@ -583,7 +594,7 @@ export default function OrgAdminPage() {
               </p>
               <form onSubmit={handleTopup} className="space-y-3">
                 <div>
-                  <label className="mb-1.5 block cf-eyebrow">Amount transferred (₹)</label>
+                  <label className="mb-1.5 block cf-eyebrow">Amount transferred ({sym})</label>
                   <input
                     type="number" min="1" step="1" required
                     value={topupAmount} onChange={(e) => setTopupAmount(e.target.value)}

@@ -178,9 +178,8 @@ export default async function D5View({ currency }: { currency: Currency }) {
           </p>
           <p className="mt-4 leading-8 text-ink-2">
             The usual answer is to buy a workstation.{" "}
-            {machineCost
-              ? <>A machine that renders comfortably costs roughly {machineCost} in India.</>
-              : "A machine that renders comfortably is a large up-front purchase."}{" "}
+            A machine that renders comfortably costs roughly {machineCost}
+            {currency === "USD" ? "" : " in India"}.{" "}
             You buy it once and it sits idle most of the week, because
             visualisation work comes in bursts. You need serious hardware for the four days before a client
             presentation and almost none for the three weeks after it.

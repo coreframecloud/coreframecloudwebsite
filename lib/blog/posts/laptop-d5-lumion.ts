@@ -120,7 +120,7 @@ export const laptopD5Lumion: BlogPost = {
     { type: "h3", text: "2. Buy a desktop or a workstation laptop" },
     {
       type: "p",
-      text: `If you render most days, owning the hardware is usually cheaper over time. By our own estimate a desktop in the same class as our workstations (an ${NODE.gpu} with ${NODE.ram} of RAM) ${ctx.replacementCost ? `costs about ${ctx.replacementCost} in India` : "is a large one-off purchase"}. Our [rent-or-buy page](/d5-render-vs-local-gpu) works out the break-even, and [this cost comparison](/blog/cloud-workstation-vs-render-farm-vs-buying-cost-india) adds render farms to the picture.`,
+      text: `If you render most days, owning the hardware is usually cheaper over time. By our own estimate a desktop in the same class as our workstations (an ${NODE.gpu} with ${NODE.ram} of RAM) costs about ${ctx.replacementCost}${ctx.currency === "USD" ? "" : " in India"}. Our [rent-or-buy page](/d5-render-vs-local-gpu) works out the break-even, and [this cost comparison](/blog/cloud-workstation-vs-render-farm-vs-buying-cost-india) adds render farms to the picture.`,
     },
     { type: "h3", text: "3. Rent a cloud workstation for the heavy days" },
     {

@@ -84,9 +84,9 @@ export type BlogContext = {
   cost: (hours: number) => string | null;
   /** Rented hours that add up to the price of buying a comparable machine. */
   breakEvenHours: number | null;
-  /** "₹6,00,000": our own estimate of buying an equivalent machine (lib/node-spec.ts).
-   *  Null on the dollar view: the estimate is in rupees only. */
-  replacementCost: string | null;
+  /** "₹6,00,000" / "$6,000": our own estimate of buying an equivalent machine,
+   *  in the page's currency (lib/node-spec.ts). */
+  replacementCost: string;
 };
 
 export type BlogPost = {

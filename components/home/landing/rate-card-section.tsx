@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { SpecBlock, K, V } from "@/components/home/spec-block";
-import { hoursLabel, rupees, type IntroOffer } from "@/lib/rate-card";
+import { hoursLabel, type IntroOffer, introPrice } from "@/lib/rate-card";
 
 /**
  * The close: the whole commercial offer in one block, then two doors.
@@ -37,7 +37,7 @@ export function RateCardSection({
           ) : null}
           {intro ? (
             <>
-              {"  "}<K>first top-up</K>{"     "}<V>{rupees(intro.priceRupees)} = {hoursLabel(intro.hours)}</V>
+              {"  "}<K>first top-up</K>{"     "}<V>{introPrice(intro)} = {hoursLabel(intro.hours)}</V>
               {intro.validityDays ? ` · use within ${intro.validityDays} days` : ""}{"\n"}
             </>
           ) : null}
@@ -56,7 +56,7 @@ export function RateCardSection({
 
         <div className="mt-7 flex flex-wrap gap-3.5">
           <Link href="/signup" className="cf-btn-primary">
-            {intro ? `Get started: ${rupees(intro.priceRupees)} for ${hoursLabel(intro.hours)}` : "Create an account"}
+            {intro ? `Get started: ${introPrice(intro)} for ${hoursLabel(intro.hours)}` : "Create an account"}
           </Link>
           <Link href="/floor-plan-to-render" className="cf-btn-secondary">
             Studio: floor plan to render
