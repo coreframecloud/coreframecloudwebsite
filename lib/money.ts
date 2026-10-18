@@ -8,9 +8,9 @@
  *     the API (`/payments/config` -> currency, `/customer/me/wallet` ->
  *     wallet_currency). It decides what a customer is charged. Never inferred
  *     from an IP address.
- *   - VISITOR currency: DISPLAY ONLY, from Cloudflare's CF-IPCountry header on
- *     /cfd and /pricing (see proxy.ts). It decides which prices a stranger is
- *     shown, nothing more.
+ *   - VISITOR currency: DISPLAY ONLY, from Cloudflare's CF-IPCountry header
+ *     (see proxy.ts). It decides which prices a stranger is shown, nothing
+ *     more, and a page shows that one currency only (owner, 18 Oct 2026).
  *
  * USD prices carry no GST (export of services, zero-rated under LUT); INR
  * prices include GST.

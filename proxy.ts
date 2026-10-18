@@ -1,39 +1,83 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { newNonce, pageCsp } from "@/lib/csp";
-import { currencyForCountry, parseCurrency } from "@/lib/money";
+import { CURRENCY_HEADER, currencyForCountry, parseCurrency } from "@/lib/money";
 
 /**
- * Visitor currency for /pricing, /cfd and /cfd/mesh-independence-study — DISPLAY ONLY (owner, 15 Oct 2026).
+ * Visitor currency — DISPLAY ONLY (owner, 15 Oct 2026).
  *
  * A visitor whose Cloudflare CF-IPCountry is anything but India (absent, "XX"
  * and "T1" count as India) is shown the US-dollar prices. What a customer is
  * CHARGED never depends on this: account currency is fixed at sign-up from
  * the billing country, and the top-up dialog reads it from the API.
  *
- * WHY A REWRITE, NOT headers() IN THE PAGE. Both pages are prerendered and
- * served from Vercel's cache (`x-nextjs-prerender: 1`). Reading headers() in
- * the page would make every request render on the server. Instead this proxy
- * rewrites a USD visitor to a second prerendered copy at /usd/<page>; the URL
- * in the browser stays /pricing or /cfd, both copies stay static and ISR, and
- * the proxy is the only per-request work. Cloudflare does not cache these HTML
- * responses (cf-cache-status: DYNAMIC), so one URL serving two variants is
- * safe; if a Cloudflare "cache everything" rule is ever added for them, it must
- * key on the country.
+ * ONE CURRENCY PER VISITOR (owner, 18 Oct 2026): "for Indian users, only
+ * Indian prices should be there, even the meter, even the GPU rates and
+ * everything. And for a foreign customer, they should show it in dollars."
+ * Every customer-visible price on a page is in the visitor's currency only:
+ * no "$x outside India" beside a rupee price, no "₹x in India" on the dollar
+ * copy, no two-currency table. (This replaces the 18 Oct SEO pass that put
+ * both currencies in every price sentence so US-based crawlers would read
+ * rupee prices.) Legal pages state the currency rules for everyone and are
+ * the exception. The structured data keeps an INR Offer (India) and a USD
+ * Offer (elsewhere) on both copies, since it is invisible and describes real
+ * regional pricing; its TEXT fields (descriptions, FAQ and HowTo text) follow
+ * the page's currency, as they must match what is visible.
  *
- * SEO (18 Oct 2026, T2): crawlers crawl from the US and so read the USD copy.
- * Every price sentence on these pages now carries BOTH currencies and the
- * structured data has an INR Offer (India) and a USD Offer (elsewhere) on both
- * copies, so what is indexed does not depend on where the crawler is. (A
- * `Vary: CF-IPCountry` header was tried and dropped: Next's renderer writes
- * its own Vary on these pages and replaces anything set here or in
- * next.config.ts headers().)
+ * WHY A REWRITE, NOT headers() IN THE PAGE. Each priced page in PAGES is
+ * rendered from a view component twice: the public route in rupees and
+ * app/usd/<route> in dollars. This proxy rewrites a USD visitor to the
+ * /usd copy; the URL in the browser stays the public one, and so does the
+ * canonical. (Since the nonce CSP of 17 Oct every page renders per request
+ * anyway, but the pages themselves stay free of request APIs.) Cloudflare does
+ * not cache these HTML responses (cf-cache-status: DYNAMIC), so one URL
+ * serving two variants is safe; if a Cloudflare "cache everything" rule is
+ * ever added for them, it must key on the country. (A `Vary: CF-IPCountry`
+ * header was tried and dropped: Next's renderer writes its own Vary on these
+ * pages and replaces anything set here or in next.config.ts headers().)
+ *
+ * THE SITE CHROME (the intro-offer strip, the footer's tax line, the
+ * layout's structured-data text) is in the root layout, which both copies
+ * share, so it cannot be split by route. The proxy hands it the same
+ * decision as the request header `x-cf-currency` (lib/display-currency.ts),
+ * on every page, always overwritten so a client cannot set it.
+ *
+ * SEO: Googlebot and most crawlers crawl from the US and so index the dollar
+ * copy. Accepted by the owner; do not work around it with visible dual prices.
  *
  * `?currency=USD|INR` overrides the country, for testing. A direct hit on
  * /usd/... is redirected to the public URL with ?currency=USD, so the variant
- * paths never become pages of their own.
+ * paths never become pages of their own (and they are not in the sitemap).
  */
 
-const PAGES = new Set(["/pricing", "/cfd", "/cfd/mesh-independence-study"]);
+const PAGES = new Set([
+  "/",
+  "/pricing",
+  "/cfd",
+  "/cfd/mesh-independence-study",
+  "/cfd/room-airflow-hvac",
+  "/floor-plan-to-render",
+  "/floor-plan-to-render/3bhk-example",
+  "/enterprise",
+  "/about",
+  "/links",
+  "/compute-nodes",
+  "/lumion-cloud-gpu",
+  "/enscape-cloud-gpu",
+  "/d5-render-cloud-workstation",
+  "/d5-render-vs-local-gpu",
+  "/coreframe-vs-irender",
+  "/vram-for-architectural-rendering",
+  "/cloud-rendering-for-architects",
+  "/cloud-workstation-vs-render-farm",
+]);
+
+/** Dynamic routes with a /usd copy: exactly one segment after the prefix, so
+ *  a nested file route (/blog/<slug>/opengraph-image) is never rewritten. */
+const PAGE_PATTERNS = [/^\/software\/[^/]+$/, /^\/blog\/[^/]+$/];
+
+function hasUsdCopy(pathname: string): boolean {
+  return PAGES.has(pathname) || PAGE_PATTERNS.some((re) => re.test(pathname));
+}
 
 /**
  * EVERY PAGE GETS A NONCE CSP (security review 17 Oct 2026, #3; lib/csp.ts).
@@ -63,13 +107,13 @@ export function proxy(request: NextRequest) {
 
   const { headers, csp } = withCsp(request);
   let response: NextResponse;
-  const currency = PAGES.has(pathname)
-    ? (parseCurrency(request.nextUrl.searchParams.get("currency")) ??
-      currencyForCountry(request.headers.get("cf-ipcountry")))
-    : null;
-  if (currency === "USD") {
+  const currency =
+    parseCurrency(request.nextUrl.searchParams.get("currency")) ??
+    currencyForCountry(request.headers.get("cf-ipcountry"));
+  headers.set(CURRENCY_HEADER, currency);
+  if (currency === "USD" && hasUsdCopy(pathname)) {
     const target = request.nextUrl.clone();
-    target.pathname = `/usd${pathname}`;
+    target.pathname = pathname === "/" ? "/usd" : `/usd${pathname}`;
     response = NextResponse.rewrite(target, { request: { headers } });
   } else {
     response = NextResponse.next({ request: { headers } });
