@@ -18,6 +18,10 @@
 
 export type Currency = "INR" | "USD";
 
+/** Request header proxy.ts sets to the visitor currency on every page
+ *  (read by the root layout through lib/display-currency.ts). */
+export const CURRENCY_HEADER = "x-cf-currency";
+
 /** "INR" / "USD" from anything the API or a query string might hand us. */
 export function parseCurrency(v: unknown): Currency | null {
   if (typeof v !== "string") return null;

@@ -17,8 +17,10 @@ import {
 import { visiblePosts } from "@/lib/blog";
 import { NODE } from "@/lib/node-spec";
 import { OFFERINGS } from "@/lib/offerings";
+import type { Currency } from "@/lib/money";
 
-export function SiteFooter() {
+/** `currency`: the visitor's display currency (proxy.ts via the layout). */
+export function SiteFooter({ currency = "INR" }: { currency?: Currency }) {
   return (
     <footer className="cf-footer mt-10 rounded-t-[40px] bg-night text-white sm:rounded-t-[64px]">
       {/* pb-28 is not decoration. The WhatsApp button is `fixed bottom-6 right-6`
@@ -186,7 +188,9 @@ export function SiteFooter() {
           </p>
           <div className="text-xs leading-5 text-ink-2 sm:text-right">
             <p>Registered office: {COMPANY_ADDRESS_LINE}</p>
-            <p className="mt-0.5">GSTIN {COMPANY.gstin} · All prices include GST</p>
+            <p className="mt-0.5">
+              GSTIN {COMPANY.gstin} · {currency === "USD" ? "Prices in US dollars, no GST" : "All prices include GST"}
+            </p>
           </div>
         </div>
       </div>

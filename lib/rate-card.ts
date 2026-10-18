@@ -13,7 +13,7 @@
  */
 
 import { API_BASE } from "@/lib/api-base";
-import { formatMoney, type UsdRateCard } from "@/lib/money";
+import { formatMoney, usdRates, type Currency, type UsdRateCard } from "@/lib/money";
 
 const API = API_BASE;
 
@@ -331,9 +331,19 @@ export function hoursLabel(hours: number, short = false): string {
   return `${n} hour${hours === 1 ? "" : "s"}`;
 }
 
-/** "₹1,000 = 8 hours of RTX 5080", or null when no offer is live. */
-export function introOfferHeadline(card: RateCard | null): string | null {
-  const o = getIntroOffer(card);
+/**
+ * The intro offer for a visitor shown `cur` prices: null for USD. The offer
+ * is a rupee first top-up and is never offered to an account billed in US
+ * dollars (components/wallet/top-up-dialog.tsx), so a page in dollars must
+ * not advertise it (owner, 18 Oct 2026: one currency per visitor).
+ */
+export function introOfferFor(card: RateCard | null, cur: Currency = "INR"): IntroOffer | null {
+  return cur === "USD" ? null : getIntroOffer(card);
+}
+
+/** "₹1,000 = 8 hours of RTX 5080", or null when no offer is live (always null for USD). */
+export function introOfferHeadline(card: RateCard | null, cur: Currency = "INR"): string | null {
+  const o = introOfferFor(card, cur);
   if (!o) return null;
   return `${rupees(o.priceRupees)} = ${hoursLabel(o.hours)}${o.gpuName ? ` of ${o.gpuName}` : ""}`;
 }
@@ -373,8 +383,8 @@ export function minFirstTopup(card: RateCard | null): number | null {
  * offer is live, so the question is dropped rather than answered with a blank.
  * No render-time claim: what 8 hours covers depends on the scene.
  */
-export function introOfferFaq(card: RateCard | null): { q: string; a: string } | null {
-  const o = getIntroOffer(card);
+export function introOfferFaq(card: RateCard | null, cur: Currency = "INR"): { q: string; a: string } | null {
+  const o = introOfferFor(card, cur);
   if (!o) return null;
   return {
     q: "Is there an offer for new customers?",
@@ -444,9 +454,19 @@ export function firstTopupBonus(card: RateCard | null): FirstTopupBonus | null {
   return { percent, capRupees: cap };
 }
 
-/** "₹399/hr", or "On request" where no public price is set. */
-export function formatHourly(gpu: RateCardGpu): string {
+/**
+ * "₹399/hr" / "$5.99/hr", or "On request" where no public price is set.
+ *
+ * The USD block publishes ONE GPU rate (`usd.gpu_hourly`), which is the rate
+ * of the one publicly priced GPU; a USD view of any other priced GPU would be
+ * a number we never set, so it says "On request".
+ */
+export function formatHourly(gpu: RateCardGpu, cur: Currency = "INR", card: RateCard | null = null): string {
   if (gpu.hourly_rate_rupees == null) return "On request";
+  if (cur === "USD") {
+    const first = card?.gpus.find((g) => !g.quote_on_request && g.hourly_rate_rupees != null);
+    return card && first?.slug === gpu.slug ? `${formatMoney(usdRates(card).gpu_hourly, "USD")}/hr` : "On request";
+  }
   return `₹${Math.round(gpu.hourly_rate_rupees).toLocaleString("en-IN")}/hr`;
 }
 
@@ -463,16 +483,20 @@ export function formatHourly(gpu: RateCardGpu): string {
  * until somebody changes the price.
  * ──────────────────────────────────────────────────────────────────────────── */
 
-/** "₹399" — the cheapest publicly-priced GPU, or null if none has a price. */
-export function adhocRate(card: RateCard | null): string | null {
+/**
+ * "₹399" (INR) / "$5.99" (USD, the rate card's `usd.gpu_hourly`) — the
+ * cheapest publicly-priced GPU, or null if none has a price.
+ */
+export function adhocRate(card: RateCard | null, cur: Currency = "INR"): string | null {
   const gpu = card?.gpus.find((g) => !g.quote_on_request && g.hourly_rate_rupees != null);
   if (!gpu || gpu.hourly_rate_rupees == null) return null;
+  if (cur === "USD") return formatMoney(usdRates(card).gpu_hourly, "USD");
   return `₹${Math.round(gpu.hourly_rate_rupees).toLocaleString("en-IN")}`;
 }
 
-/** "₹399/hr", or null. */
-export function adhocRateHourly(card: RateCard | null): string | null {
-  const r = adhocRate(card);
+/** "₹399/hr" / "$5.99/hr", or null. */
+export function adhocRateHourly(card: RateCard | null, cur: Currency = "INR"): string | null {
+  const r = adhocRate(card, cur);
   return r ? `${r}/hr` : null;
 }
 
@@ -490,14 +514,17 @@ export function quotePlans(card: RateCard | null): RateCardPlan[] {
   return (card?.plans ?? []).filter((p) => p.quote_on_request);
 }
 
-/** "₹19,000" — the entry monthly plan, or null when no plans are published. */
-export function entryPlanFee(card: RateCard | null): string | null {
+/** "₹19,000" — the entry monthly plan, or null when no plans are published.
+ *  USD: entryPlanFeeUsd(). */
+export function entryPlanFee(card: RateCard | null, cur: Currency = "INR"): string | null {
+  if (cur === "USD") return entryPlanFeeUsd(card);
   const first = planTiers(card)[0];
   return first ? `₹${Math.round(first.monthly_fee_rupees).toLocaleString("en-IN")}` : null;
 }
 
-/** "₹339" — the best overage rate across plans, or null. */
-export function bestOverageRate(card: RateCard | null): string | null {
+/** "₹339" — the best overage rate across plans, or null. USD: bestOverageRateUsd(). */
+export function bestOverageRate(card: RateCard | null, cur: Currency = "INR"): string | null {
+  if (cur === "USD") return bestOverageRateUsd(card);
   const rates = planTiers(card)
     .map((p) => p.overage_hourly_rate_rupees)
     .filter((r): r is number => r != null);
@@ -520,8 +547,12 @@ export function bestOverageRateUsd(card: RateCard | null): string | null {
   return rates.length ? formatMoney(Math.min(...rates), "USD") : null;
 }
 
-/** "₹1,999" per TB per month, or null. */
-export function storageRatePerTb(card: RateCard | null): string | null {
+/** "₹1,999" / "$15.99" per TB per month, or null. */
+export function storageRatePerTb(card: RateCard | null, cur: Currency = "INR"): string | null {
+  if (cur === "USD") {
+    const u = card ? usdRates(card).storage_rate_per_tb_month : null;
+    return u != null && u > 0 ? formatMoney(u, "USD") : null;
+  }
   const r = card?.storage_rate_rupees_per_tb_month;
   if (r == null || r <= 0) return null;
   return `₹${Math.round(r).toLocaleString("en-IN")}`;
@@ -535,9 +566,11 @@ export function storageRatePerTb(card: RateCard | null): string | null {
  * API has never done — and the only reason nobody noticed is that the claim was
  * prose rather than a number.
  */
-export function billingSentence(card: RateCard | null): string {
+export function billingSentence(card: RateCard | null, cur: Currency = "INR"): string {
   if (card?.billing_granularity !== "per_minute") {
-    return "Billed for the time your session actually runs, with GST included.";
+    return cur === "USD"
+      ? "Billed for the time your session actually runs, with no GST."
+      : "Billed for the time your session actually runs, with GST included.";
   }
   const min = card.minimum_billable_minutes;
   const minimum = min && min > 1 ? ` There is a ${min}-minute minimum.` : "";
@@ -560,23 +593,33 @@ export function billingSentence(card: RateCard | null): string {
  * Returns null when there is no live price, so the caller drops the question
  * from the FAQ entirely rather than publishing an answer with a blank in it.
  */
-export function pricingFaqAnswer(card: RateCard | null): string | null {
-  const adhoc = adhocRate(card);
+export function pricingFaqAnswer(card: RateCard | null, cur: Currency = "INR"): string | null {
+  const adhoc = adhocRate(card, cur);
   if (!adhoc) return null;
-  const fee = entryPlanFee(card);
-  const best = bestOverageRate(card);
-  const tiers = planTiers(card)
-    .filter((p) => p.overage_hourly_rate_rupees != null)
-    .map((p) => `₹${Math.round(p.overage_hourly_rate_rupees!).toLocaleString("en-IN")}/hr on ${p.name}`);
+  const fee = entryPlanFee(card, cur);
+  const best = bestOverageRate(card, cur);
+  const tiers =
+    cur === "USD"
+      ? planTiers(card)
+          .filter((p) => p.usd_overage_hourly_rate != null && p.usd_overage_hourly_rate > 0)
+          .map((p) => `${formatMoney(p.usd_overage_hourly_rate!, "USD")}/hr on ${p.name}`)
+      : planTiers(card)
+          .filter((p) => p.overage_hourly_rate_rupees != null)
+          .map((p) => `₹${Math.round(p.overage_hourly_rate_rupees!).toLocaleString("en-IN")}/hr on ${p.name}`);
 
-  const parts = [`Ad-hoc sessions are ${adhoc} per GPU-hour, ${billingSentence(card).charAt(0).toLowerCase()}${billingSentence(card).slice(1)}`];
+  const billing = billingSentence(card, cur);
+  const parts = [`Ad-hoc sessions are ${adhoc} per GPU-hour, ${billing.charAt(0).toLowerCase()}${billing.slice(1)}`];
   if (fee && best) {
     parts.push(
       `Committed monthly plans start at ${fee}/month and bill extra hours below the ad-hoc rate at every tier` +
         (tiers.length ? `: ${tiers.join(", ")}.` : "."),
     );
   }
-  parts.push("All prices include 18% GST, and a GST invoice showing the tax split is issued.");
+  parts.push(
+    cur === "USD"
+      ? "Prices in US dollars carry no GST (export of services), and the invoice is in US dollars."
+      : "All prices include 18% GST, and a GST invoice showing the tax split is issued.",
+  );
   return parts.join(" ");
 }
 
@@ -628,9 +671,10 @@ export function commitmentIsCheaper(card: RateCard | null): boolean {
  * The hourly figure stays the headline; this goes underneath it as the reason
  * the headline is not what most sessions cost.
  */
-export function perMinuteRate(card: RateCard | null): string | null {
+export function perMinuteRate(card: RateCard | null, cur: Currency = "INR"): string | null {
   const adhoc = adhocRateValue(card);
   if (adhoc == null || card?.billing_granularity !== "per_minute") return null;
+  if (cur === "USD") return `$${(usdRates(card).gpu_hourly / 60).toFixed(2)}`;
   return `₹${(adhoc / 60).toFixed(2)}`;
 }
 
@@ -643,9 +687,14 @@ export function perMinuteRate(card: RateCard | null): string | null {
 export function sessionCostExample(
   card: RateCard | null,
   minutes = 20,
+  cur: Currency = "INR",
 ): { minutes: number; cost: string } | null {
   const adhoc = adhocRateValue(card);
   if (adhoc == null || card?.billing_granularity !== "per_minute") return null;
+  // Dollars to the cent: "$2", "$1.20". Whole rupees for INR (see above).
+  if (cur === "USD") {
+    return { minutes, cost: formatMoney(Math.round((usdRates(card).gpu_hourly / 60) * minutes * 100) / 100, "USD") };
+  }
   return {
     minutes,
     cost: `₹${Math.round((adhoc / 60) * minutes).toLocaleString("en-IN")}`,
@@ -689,4 +738,35 @@ export function cpuSpec(gpu: Pick<RateCardGpu, "vcpu" | "cpu_cores" | "cpu_label
 /** "1 TB" / "500 GB" from `storage_gb` (decimal TB, as drives are sold). */
 export function storageSpec(storageGb: number): string {
   return storageGb >= 1000 && storageGb % 1000 === 0 ? `${storageGb / 1000} TB` : `${storageGb} GB`;
+}
+
+/* ────────────────────────────────────────────────────────────────────────────
+ * One currency per visitor (owner, 18 Oct 2026).
+ *
+ * "For Indian users, only Indian prices ... and for a foreign customer, they
+ * should show it in dollars." A page shows the visitor's currency and only
+ * that one (proxy.ts picks the copy). These are the shared tax words, so no
+ * page types its own.
+ * ──────────────────────────────────────────────────────────────────────────── */
+
+/** "GST included" / "no GST". */
+export function taxWords(cur: Currency): string {
+  return cur === "USD" ? "no GST" : "GST included";
+}
+
+/** The whole-sentence version, for a note under a price block. */
+export function taxSentence(cur: Currency): string {
+  return cur === "USD"
+    ? "Prices in US dollars carry no GST (export of services), and the invoice is in US dollars."
+    : "All prices include 18% GST, so what you see is what you pay. You get a GST invoice showing the taxable value and the tax split.";
+}
+
+/**
+ * The ONE neutral line a page may carry about the other currency (pricing,
+ * CFD): it states the policy and quotes no price in the other currency.
+ */
+export function otherCurrencyLine(cur: Currency): string {
+  return cur === "USD"
+    ? "Billed in India? You'll see and pay prices in rupees, GST included."
+    : "Billed from outside India? You'll see and pay prices in US dollars.";
 }

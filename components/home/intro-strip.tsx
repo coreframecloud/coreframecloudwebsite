@@ -6,6 +6,7 @@ import {
   hoursLabel,
   rupees,
 } from "@/lib/rate-card";
+import type { Currency } from "@/lib/money";
 
 /**
  * The intro offer, above the header on every page. A rolling ticker.
@@ -35,8 +36,12 @@ import {
  *
  * Every figure comes from the control plane, and the whole bar disappears
  * when there is no intro offer — never advertise what billing will not grant.
+ * That includes every visitor shown US-dollar prices (owner, 18 Oct 2026: one
+ * currency per visitor): the offer is a rupee first top-up that an account
+ * billed in dollars never gets, so for them there is no bar.
  */
-export async function IntroStrip() {
+export async function IntroStrip({ currency = "INR" }: { currency?: Currency }) {
+  if (currency === "USD") return null;
   const card = await getRateCard();
   const offer = getIntroOffer(card);
   if (!offer) return null;

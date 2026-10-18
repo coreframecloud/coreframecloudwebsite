@@ -60,6 +60,16 @@ export const NODE = {
  */
 export const WORKSTATION_REPLACEMENT_COST = "₹6,00,000";
 
+/**
+ * The estimate for a visitor shown `cur` prices: null for USD (owner,
+ * 18 Oct 2026: one currency per visitor). It is a rupee figure for the Indian
+ * market and there is no dollar estimate to put beside it, so a USD page
+ * words the comparison without a number rather than inventing one.
+ */
+export function replacementCost(cur: "INR" | "USD"): string | null {
+  return cur === "USD" ? null : WORKSTATION_REPLACEMENT_COST;
+}
+
 /** One line, for a meta description or a dense spec strip. */
 export const NODE_SUMMARY =
   `${NODE.gpu} · ${NODE.vram} · ${NODE.memoryBandwidth} · ${NODE.ram} RAM · ${NODE.cpu}`;

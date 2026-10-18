@@ -22,19 +22,23 @@ import {
   billingSentence,
   type RateCard,
 } from "@/lib/rate-card";
+import type { Currency } from "@/lib/money";
 
 export function PricingCards({
   card,
   adhocNote,
+  currency = "INR",
 }: {
   card: RateCard | null;
+  /** The visitor's display currency (proxy.ts): one currency per page. */
+  currency?: Currency;
   /** Page-specific extra sentence for the ad-hoc card, e.g. storage terms. */
   adhocNote?: string;
 }) {
-  const adhoc = adhocRate(card);
-  const overage = bestOverageRate(card);
-  const fromFee = entryPlanFee(card);
-  const storage = storageRatePerTb(card);
+  const adhoc = adhocRate(card, currency);
+  const overage = bestOverageRate(card, currency);
+  const fromFee = entryPlanFee(card, currency);
+  const storage = storageRatePerTb(card, currency);
 
   return (
     <div className="mt-14 grid gap-4 md:grid-cols-2">
@@ -44,7 +48,7 @@ export function PricingCards({
           {adhoc ?? "—"} <span className="text-lg font-normal text-ink-3">/ GPU-hr</span>
         </div>
         <p className="mt-3 text-sm leading-6 text-ink-2">
-          No commitment. {billingSentence(card)}
+          No commitment. {billingSentence(card, currency)}
           {adhocNote ? ` ${adhocNote}` : ""}
         </p>
       </div>

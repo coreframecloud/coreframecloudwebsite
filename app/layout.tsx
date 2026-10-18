@@ -46,6 +46,8 @@ import { ScrollReveal } from "@/components/scroll-reveal";
 import { IntroStrip } from "@/components/home/intro-strip";
 import { getIntroOffer, hoursLabel, getRateCard, planTiers } from "@/lib/rate-card";
 import { usdRates } from "@/lib/money";
+import { requestCurrency } from "@/lib/display-currency";
+import { FREE_PREVIEWS_PER_DAY, inr, studioPrices, usd } from "@/lib/studio-prices";
 import { regionalOffers } from "@/lib/seo";
 import { CFD_PREPROCESS_INR } from "@/lib/cfd-prices";
 
@@ -181,12 +183,17 @@ export default async function RootLayout({
   // 'strict-dynamic'. Reading it makes the page render per request: the
   // deliberate price of a CSP with no 'unsafe-inline' (owner, 17 Oct 2026).
   const nonce = (await headers()).get("x-nonce") ?? undefined;
+  // The visitor's display currency (proxy.ts): the strip, the footer's tax
+  // line and the text fields below show that currency only (owner, 18 Oct 2026).
+  const currency = await requestCurrency();
+  const usdView = currency === "USD";
   const rateCard = await getRateCard();
   const usdCard = usdRates(rateCard);
   const adhoc = rateCard?.gpus.find((g) => !g.quote_on_request && g.hourly_rate_rupees != null);
   const tiers = planTiers(rateCard);
   const storagePerTb = rateCard?.storage_rate_rupees_per_tb_month ?? null;
   const intro = getIntroOffer(rateCard);
+  const studio = studioPrices(rateCard);
 
   const offers = [
     // INR in India and the rate card's USD rate elsewhere (SEO review 18 Oct 2026, T2).
@@ -237,9 +244,14 @@ export default async function RootLayout({
     intro && {
       "@type": "Offer",
       name: `Intro offer — first top-up, ${hoursLabel(intro.hours)}${intro.gpuName ? ` of ${intro.gpuName}` : ""}`,
+      // A rupee offer, for accounts billed in India only; the text names the
+      // amount only on the rupee view (one currency per visitor, 18 Oct 2026).
       description:
-        `First wallet top-up of ${intro.priceRupees} INR buys ${hoursLabel(intro.hours)} of GPU time` +
+        (usdView
+          ? `For accounts billed in India: the first wallet top-up buys ${hoursLabel(intro.hours)} of GPU time`
+          : `First wallet top-up of ${intro.priceRupees} INR buys ${hoursLabel(intro.hours)} of GPU time`) +
         `${intro.validityDays ? `, valid ${intro.validityDays} days` : ""}. One per customer.`,
+      eligibleRegion: { "@type": "Country", name: "IN" },
       price: String(Math.round(intro.priceRupees)),
       priceCurrency: "INR",
       valueAddedTaxIncluded: true,
@@ -251,7 +263,9 @@ export default async function RootLayout({
   const serviceDescription =
     "On-demand Windows GPU workstations with NVIDIA RTX 5080 (16 GB GDDR7) for " +
     "D5 Render, Lumion, Enscape, 3ds Max, Blender and Unreal Engine, hosted in Bengaluru. " +
-    "Billed per minute of actual use, with 18% GST included in every published rate.";
+    (usdView
+      ? "Billed per minute of actual use; prices in US dollars carry no GST (export of services)."
+      : "Billed per minute of actual use, with 18% GST included in every published rate.");
 
   return (
     <html
@@ -510,7 +524,9 @@ export default async function RootLayout({
                     inr: CFD_PREPROCESS_INR.small,
                     usd: usdCard.cfd_quote_fee_small,
                     url: "https://www.coreframecloud.com/cfd",
-                    description: `For most duct and pipe models; very large models (over 5 million cells) ${CFD_PREPROCESS_INR.large} INR incl. GST or ${usdCard.cfd_quote_fee_large} USD. The run is quoted by email and paid only if you accept.`,
+                    description: usdView
+                      ? `For most duct and pipe models; very large models (over 5 million cells) ${usdCard.cfd_quote_fee_large} USD. The run is quoted by email and paid only if you accept.`
+                      : `For most duct and pipe models; very large models (over 5 million cells) ${CFD_PREPROCESS_INR.large} INR incl. GST. The run is quoted by email and paid only if you accept.`,
                   }),
                 },
                 {
@@ -523,7 +539,10 @@ export default async function RootLayout({
                   url: "https://www.coreframecloud.com/floor-plan-to-render",
                   provider: { "@id": "https://www.coreframecloud.com/#organization" },
                   description:
-                    "Pre-sale concept images for interior designers: upload a 2D DXF floor plan and get generated room images in the browser. Free previews (5 a day, then ₹10 each); 2K download ₹30, 4K ₹50.",
+                    "Pre-sale concept images for interior designers: upload a 2D DXF floor plan and get generated room images in the browser. " +
+                    (usdView
+                      ? `Free previews (${FREE_PREVIEWS_PER_DAY} a day, then ${usd(studio.usd.extraPreview)} each); 2K download ${usd(studio.usd.k2)}, 4K ${usd(studio.usd.k4)}.`
+                      : `Free previews (${FREE_PREVIEWS_PER_DAY} a day, then ${inr(studio.inr.extraPreview)} each); 2K download ${inr(studio.inr.k2)}, 4K ${inr(studio.inr.k4)}.`),
                 },
               ],
             }),
@@ -538,14 +557,14 @@ export default async function RootLayout({
         */}
         <BareOnLanding>
           <NoStripOnAppPages>
-            <IntroStrip />
+            <IntroStrip currency={currency} />
           </NoStripOnAppPages>
           <SiteHeader />
         </BareOnLanding>
         <AttributionCapture />
         <WhatsAppClickTracker />
         {children}
-        <SiteFooter />
+        <SiteFooter currency={currency} />
         <ScrollReveal />
 
         {/* Floating WhatsApp button — every page except the paid landing
