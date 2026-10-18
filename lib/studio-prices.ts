@@ -1,11 +1,11 @@
-import { formatMoney } from "@/lib/money";
+import { formatMoney, type Currency } from "@/lib/money";
 import type { RateCard } from "@/lib/rate-card";
 
 /**
  * Studio prices for the Studio pages (/floor-plan-to-render and its 3BHK
- * worked example), in BOTH currencies, so the static HTML a crawler reads
- * carries the rupee and the dollar price whatever country it crawls from
- * (SEO/AEO review 18 Oct 2026, T2).
+ * worked example) and /pricing. Each page shows ONE currency, the visitor's
+ * (owner, 18 Oct 2026; proxy.ts picks the copy): studioMoney() below. The
+ * structured data keeps an Offer in each currency (studioOffers()).
  *
  * Rupees: the live defaults in apps/tools/app/studio.py (CF_STUDIO_PRICE_*_INR:
  * edit 20, 2K 30, 4K 50; extra preview 10), GST included. The rate card does
@@ -51,6 +51,21 @@ export function studioPrices(card: RateCard | null): StudioPrices {
 
 export const inr = (n: number) => formatMoney(n, "INR");
 export const usd = (n: number) => formatMoney(n, "USD");
+
+export type StudioMoney = { extraPreview: string; edit: string; k2: string; k4: string; tax: string };
+
+/** The Studio prices of one page, formatted in its currency, with its tax words. */
+export function studioMoney(p: StudioPrices, cur: Currency): StudioMoney {
+  const v = cur === "USD" ? p.usd : p.inr;
+  const f = (n: number) => formatMoney(n, cur);
+  return {
+    extraPreview: f(v.extraPreview),
+    edit: f(v.edit),
+    k2: f(v.k2),
+    k4: f(v.k4),
+    tax: cur === "USD" ? "no GST" : "GST included",
+  };
+}
 
 /**
  * schema.org Offers for the Studio WebApplication: the free preview and the

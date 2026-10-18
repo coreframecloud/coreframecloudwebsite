@@ -10,7 +10,6 @@ import { BEND_RECORD, PIPE_RECORD, VERIFIED, verifiedFrom, verifiedPriceLine } f
 import { getVisiblePost } from "@/lib/blog";
 import { VERIFICATION_POST_SLUG } from "@/lib/blog/posts/verification-vs-validation-cfd";
 import type { Currency } from "@/lib/money";
-import { verifiedFromBoth } from "@/lib/cfd-prices";
 import { CLINIC_CASE, HVAC_PAGE, MESH_STUDY } from "@/lib/cfd-pages";
 import { PageByline } from "@/components/seo/page-byline";
 
@@ -178,7 +177,9 @@ export default async function MeshStudyView({ currency }: { currency: Currency }
       url: `${SITE}${PATH}`,
       inrTaxIncluded: false,
       from: true,
-      description: `${verifiedPriceLine("INR")} Outside India: ${verifiedPriceLine("USD")} Plus pre-processing / mesh check.`,
+      // Text in the page's currency only (owner, 18 Oct 2026); the two
+      // regional Offers stay.
+      description: `${verifiedPriceLine(currency)} Plus pre-processing / mesh check.`,
     }),
   };
 
@@ -256,9 +257,6 @@ export default async function MeshStudyView({ currency }: { currency: Currency }
                 {verifiedFrom(currency)}
                 {usd ? " (no GST)" : ""} · results within {VERIFIED.deliveryHours} hours · internal flow up to about{" "}
                 {VERIFIED.maxMcells} M cells
-              </p>
-              <p className="mt-1 text-[14px] leading-6 text-ink-3">
-                Verified is {verifiedFromBoth(currency)}.
               </p>
               <PageByline path={MESH_STUDY.path} published="2026-10-16" className="mt-2 text-ink-3" />
               <div className="mt-8 flex flex-wrap gap-3">

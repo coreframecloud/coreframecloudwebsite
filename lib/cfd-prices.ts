@@ -1,17 +1,13 @@
 import { cellsLabel, formatMoney, type Currency, type UsdRateCard } from "@/lib/money";
-import { VERIFIED } from "@/lib/cfd-verified";
 
 /**
- * CFD prices in BOTH currencies, for every page a crawler reads (SEO review
- * 18 Oct 2026, T2).
+ * CFD prices, in ONE currency per page: the visitor's (owner, 18 Oct 2026).
  *
- * proxy.ts shows a visitor outside India the USD copy of /cfd, /pricing and
- * /cfd/mesh-independence-study. Googlebot, Bingbot and the AI crawlers crawl
- * from the US, so they only ever saw dollars, for an India-first business,
- * with nothing on the page saying the price depends on the country. Every
- * price sentence built here therefore carries both currencies: the visitor's
- * own first, the other one after it. The visitor currency still decides which
- * comes first; it never decides what is CHARGED (lib/money.ts).
+ * proxy.ts shows a visitor outside India the USD copy of the CFD pages and
+ * everyone else the rupee copy; every price sentence built here takes that
+ * currency and names no other. (The 18 Oct SEO pass that put both currencies
+ * in every sentence was overruled the same day.) Display only: what is
+ * CHARGED is the account's currency (lib/money.ts).
  *
  * The rupee pre-processing fee is the control plane's
  * cfd_quote_fee_small_inr_incl_gst / _large_ (apps/api/app/core/config.py);
@@ -39,36 +35,10 @@ export function preprocessFee(cur: Currency, usd: UsdRateCard): string {
     : `${formatMoney(CFD_PREPROCESS_INR.small, "INR")} incl. GST`;
 }
 
-/**
- * "₹599 incl. GST in India, $15 elsewhere (no GST)" — the visitor's currency
- * first. The one phrase every crawler-visible CFD price sentence uses.
- */
-export function preprocessFeeBoth(primary: Currency, usd: UsdRateCard): string {
-  const inr = `${formatMoney(CFD_PREPROCESS_INR.small, "INR")} incl. GST in India`;
-  const usdText = `${formatMoney(usd.cfd_quote_fee_small, "USD")} outside India (no GST)`;
-  return primary === "USD" ? `${usdText}, ${inr}` : `${inr}, ${usdText}`;
-}
-
-/** The very-large-model sentence in both currencies. */
-export function preprocessLargeBoth(primary: Currency, usd: UsdRateCard): string {
+/** The very-large-model sentence: "Very large models (over 5 million cells): ₹1,499 incl. GST." / "...: $39." */
+export function preprocessLarge(cur: Currency, usd: UsdRateCard): string {
   const cells = cellsLabel(usd.cfd_quote_fee_small_max_cells);
-  const inr = `${formatMoney(CFD_PREPROCESS_INR.large, "INR")} incl. GST`;
-  const usdText = `${formatMoney(usd.cfd_quote_fee_large, "USD")}`;
-  return primary === "USD"
-    ? `Very large models (over ${cells} cells): ${usdText}, or ${inr} in India.`
-    : `Very large models (over ${cells} cells): ${inr}, or ${usdText} outside India.`;
-}
-
-/** "from ₹5,999 + GST in India, from $99 elsewhere" — the visitor's first. */
-export function verifiedFromBoth(primary: Currency): string {
-  const inr = `from ${formatMoney(VERIFIED.fromInr, "INR")} + GST in India`;
-  const usdText = `from ${formatMoney(VERIFIED.fromUsd, "USD")} outside India (no GST)`;
-  return primary === "USD" ? `${usdText}, ${inr}` : `${inr}, ${usdText}`;
-}
-
-/** The other currency's Verified floor, for a line under the visitor's own. */
-export function verifiedOtherCurrency(primary: Currency): string {
-  return primary === "USD"
-    ? `In India: from ${formatMoney(VERIFIED.fromInr, "INR")} + GST.`
-    : `Outside India: from ${formatMoney(VERIFIED.fromUsd, "USD")}, no GST.`;
+  return cur === "USD"
+    ? `Very large models (over ${cells} cells): ${formatMoney(usd.cfd_quote_fee_large, "USD")}.`
+    : `Very large models (over ${cells} cells): ${formatMoney(CFD_PREPROCESS_INR.large, "INR")} incl. GST.`;
 }

@@ -30,6 +30,8 @@ import {
   planStorageIsFree,
   rupees,
   hoursLabel,
+  otherCurrencyLine,
+  taxWords,
 } from "@/lib/rate-card";
 import { storageTerms } from "@/lib/storage-terms";
 import Link from "next/link";
@@ -39,19 +41,23 @@ import { offering } from "@/lib/offerings";
 import { cellsLabel, formatMoney, usdRates, type Currency } from "@/lib/money";
 
 /**
- * ONE metadata for both copies (SEO review 18 Oct 2026, T2 and T9): crawlers
- * read the USD copy from the US, so the description names both currencies,
- * and the title fits in 60 characters. The two exports stay so the page files
- * do not change.
+ * One metadata per copy, each in its own currency (owner, 18 Oct 2026: one
+ * currency per visitor). The title fits in 60 characters (SEO review T9).
  */
-export const pricingMetadata: Metadata = {
-  title: { absolute: "Pricing: RTX 5080 by the Minute, CFD by Quote | Coreframe" },
-  description:
-    "RTX 5080 workstations by the minute (rupees with GST in India, US dollars elsewhere), team plans, CFD from a ₹599 / $15 mesh check, and Studio downloads.",
-  alternates: { canonical: "/pricing" },
-};
-
-export const pricingMetadataUsd: Metadata = pricingMetadata;
+export async function pricingMetadata(currency: Currency): Promise<Metadata> {
+  const card = await getRateCard();
+  const usd = usdRates(card);
+  const meshCheck =
+    currency === "USD" ? formatMoney(usd.cfd_quote_fee_small, "USD") : formatMoney(CFD_PREPROCESS_INR.small, "INR");
+  return {
+    title: { absolute: "Pricing: RTX 5080 by the Minute, CFD by Quote | Coreframe" },
+    description:
+      currency === "USD"
+        ? `RTX 5080 workstations by the minute in US dollars with no GST, team plans, CFD from a ${meshCheck} mesh check, and Studio downloads.`
+        : `RTX 5080 workstations by the minute with GST included, team plans, CFD from a ${meshCheck} mesh check, and Studio downloads.`,
+    alternates: { canonical: "/pricing" },
+  };
+}
 
 /**
  * Pricing got its own page when the landing page was rebuilt.
@@ -111,36 +117,22 @@ export default async function PricingView({ currency }: { currency: Currency }) 
         ]
       : [];
 
-  // Every price in both currencies, for every visitor and every crawler
-  // (SEO review 18 Oct 2026, T2). Rupee figures from the rate card (or the
-  // one typed CFD fee in lib/cfd-prices.ts); dollar figures from its usd block.
+  // The structured data keeps an INR Offer (India) and a USD Offer
+  // (elsewhere) for each price: invisible, and true of both copies. Every
+  // VISIBLE price is in the visitor's currency only (owner, 18 Oct 2026).
   const studio = studioPrices(rateCard);
-  const introAny = getIntroOffer(rateCard);
-  const entryPlan = (rateCard?.plans ?? []).filter((p) => !p.quote_on_request && p.monthly_fee_rupees != null).sort((a, b) => a.monthly_fee_rupees - b.monthly_fee_rupees)[0];
   const inrHour = adhocRateValue(rateCard);
-  const bothRows: [string, string | null, string][] = [
-    ["RTX 5080 workstation, per hour (billed per minute)", inrHour != null ? `${rupees(inrHour)} incl. GST` : null, formatMoney(usd.gpu_hourly, "USD")],
-    [
-      "First top-up",
-      introAny ? `${rupees(introAny.priceRupees)} = ${hoursLabel(introAny.hours)}` : null,
-      `From ${formatMoney(usd.topup_min_first, "USD")}`,
-    ],
-    [
-      "Team plans, per month from",
-      entryPlan ? `${rupees(entryPlan.monthly_fee_rupees)} incl. GST` : null,
-      entryPlan?.usd_monthly_fee ? formatMoney(entryPlan.usd_monthly_fee, "USD") : "—",
-    ],
-    ["CFD pre-processing / mesh check", `${rupees(CFD_PREPROCESS_INR.small)} incl. GST`, formatMoney(usd.cfd_quote_fee_small, "USD")],
-    [
-      `CFD mesh check, over ${cellsLabel(usd.cfd_quote_fee_small_max_cells)} cells`,
-      `${rupees(CFD_PREPROCESS_INR.large)} incl. GST`,
-      formatMoney(usd.cfd_quote_fee_large, "USD"),
-    ],
-    ["CFD Verified (mesh-independence study)", `From ${rupees(VERIFIED.fromInr)} + GST`, `From ${formatMoney(VERIFIED.fromUsd, "USD")}`],
-    ["Studio previews", "Free, 5 a day", "Free, 5 a day"],
-    ["Studio extra preview / edit", `${rupees(studio.inr.extraPreview)} / ${rupees(studio.inr.edit)}`, `${formatMoney(studio.usd.extraPreview, "USD")} / ${formatMoney(studio.usd.edit, "USD")}`],
-    ["Studio 2K / 4K download", `${rupees(studio.inr.k2)} / ${rupees(studio.inr.k4)}`, `${formatMoney(studio.usd.k2, "USD")} / ${formatMoney(studio.usd.k4, "USD")}`],
-  ];
+  const money = (inrValue: number, usdValue: number) =>
+    usdView ? formatMoney(usdValue, "USD") : formatMoney(inrValue, "INR");
+  const meshSmall = money(CFD_PREPROCESS_INR.small, usd.cfd_quote_fee_small);
+  const meshLarge = money(CFD_PREPROCESS_INR.large, usd.cfd_quote_fee_large);
+  const cellsOver = cellsLabel(usdView ? usd.cfd_quote_fee_small_max_cells : CFD_PREPROCESS_INR.smallMaxCells);
+  const st = {
+    extraPreview: money(studio.inr.extraPreview, studio.usd.extraPreview),
+    edit: money(studio.inr.edit, studio.usd.edit),
+    k2: money(studio.inr.k2, studio.usd.k2),
+    k4: money(studio.inr.k4, studio.usd.k4),
+  };
   const catalogLd = {
     "@context": "https://schema.org",
     "@type": "OfferCatalog",
@@ -197,17 +189,15 @@ export default async function PricingView({ currency }: { currency: Currency }) 
             },
             {
               o: offering("cfd"),
-              price: usdView ? `${formatMoney(usd.cfd_quote_fee_small, "USD")} pre-processing (no GST)` : "₹599 pre-processing (incl. GST)",
-              note: usdView
-                ? `Most models; ${formatMoney(usd.cfd_quote_fee_large, "USD")} over ${cellsLabel(usd.cfd_quote_fee_small_max_cells)} cells. Pay for the run only if you accept`
-                : "Most models; ₹1,499 over 5 million cells. Pay for the run only if you accept",
+              price: `${meshSmall} pre-processing (${usdView ? "no GST" : "incl. GST"})`,
+              note: `Most models; ${meshLarge} over ${cellsOver} cells. Pay for the run only if you accept`,
               href: "#cfd",
               tint: "cfx-panel",
             },
             {
               o: offering("studio"),
-              price: usdView ? "Free previews; 2K download $0.99" : "Free previews; 2K download ₹30",
-              note: usdView ? "Edit $0.49, 4K $1.49, no GST" : "Edit ₹20, 4K ₹50, GST included",
+              price: `Free previews; 2K download ${st.k2}`,
+              note: `Edit ${st.edit}, 4K ${st.k4}, ${taxWords(currency)}`,
               href: "#studio",
               tint: "cf-warm",
             },
@@ -224,36 +214,10 @@ export default async function PricingView({ currency }: { currency: Currency }) 
         </div>
       </section>
 
-      {/* Both currencies, always (SEO review 18 Oct 2026, T2). The currency
-          you are charged in is fixed at sign-up by your billing country. */}
-      <section id="both-currencies" className="cf-section scroll-mt-20 px-5 pb-0">
-        <div className="cf-wide">
-          <h2 className="cf-section-title">Every price, in India and elsewhere.</h2>
-          <p className="cf-section-copy mt-2 max-w-[44rem]">
-            Accounts in India pay in rupees with 18% GST included (except where it says + GST). Accounts outside India pay in
-            US dollars with no GST. Your account&apos;s currency is set once, at sign-up, by your billing country.
-          </p>
-          <div className="mt-6 overflow-x-auto rounded-[20px] border border-rule bg-paper-2">
-            <table className="w-full min-w-[560px] border-collapse text-left text-[14.5px] leading-6">
-              <thead>
-                <tr className="text-ink-3">
-                  <th scope="col" className="px-5 py-3 font-mono text-[12px] font-normal tracking-[0.12em] uppercase">What</th>
-                  <th scope="col" className="px-5 py-3 font-mono text-[12px] font-normal tracking-[0.12em] uppercase">In India (INR)</th>
-                  <th scope="col" className="px-5 py-3 font-mono text-[12px] font-normal tracking-[0.12em] uppercase">Elsewhere (USD)</th>
-                </tr>
-              </thead>
-              <tbody>
-                {bothRows.map(([what, inrText, usdText]) => (
-                  <tr key={what} className="border-t border-rule align-top">
-                    <th scope="row" className="px-5 py-3 font-semibold text-ink">{what}</th>
-                    <td className={`px-5 py-3 ${usdView ? "text-ink-2" : "text-ink"}`}>{inrText ?? "See below"}</td>
-                    <td className={`px-5 py-3 ${usdView ? "text-ink" : "text-ink-2"}`}>{usdText}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
+      {/* The one line about the other currency (owner, 18 Oct 2026): the
+          policy, never the other currency's prices. */}
+      <section className="cf-section px-5 pb-0">
+        <p className="cf-wide text-[14px] leading-6 text-ink-2">{otherCurrencyLine(currency)}</p>
       </section>
 
       <div id="gpu-workstations" className="scroll-mt-20" />
@@ -329,8 +293,8 @@ export default async function PricingView({ currency }: { currency: Currency }) 
           </div>
           <h2 className="cf-section-title mt-4 max-w-[36rem]">
             {usdView
-              ? `${formatMoney(usd.cfd_quote_fee_small, "USD")} for pre-processing / mesh check.`
-              : "₹599 incl. GST for pre-processing / mesh check."}
+              ? `${meshSmall} for pre-processing / mesh check.`
+              : `${meshSmall} incl. GST for pre-processing / mesh check.`}
           </h2>
           <p className="cf-section-copy mt-3 max-w-[40rem]">
             Upload one STL of your duct or pipe. We check it, build the real mesh on our machine and email you a quote.
@@ -338,9 +302,10 @@ export default async function PricingView({ currency }: { currency: Currency }) 
           </p>
           <ul className="mt-7 grid grid-cols-1 gap-5 sm:grid-cols-2">
             {[
-              usdView
-                ? ["Pre-processing / mesh check", `${formatMoney(usd.cfd_quote_fee_small, "USD")} for most duct and pipe models; ${formatMoney(usd.cfd_quote_fee_large, "USD")} for very large models (over ${cellsLabel(usd.cfd_quote_fee_small_max_cells)} cells). No GST (export of services). Paid from your Coreframe wallet. We check your geometry, build a wall-resolved mesh and verify its quality; your exact run price comes with it. A separate charge, not deducted from the run.`]
-                : ["Pre-processing / mesh check", "₹599 incl. GST for most duct and pipe models; ₹1,499 for very large models (over 5 million cells). Paid from your Coreframe wallet. We check your geometry, build a wall-resolved mesh and verify its quality; your exact run price comes with it. A separate charge, not deducted from the run."],
+              [
+                "Pre-processing / mesh check",
+                `${meshSmall}${usdView ? "" : " incl. GST"} for most duct and pipe models; ${meshLarge} for very large models (over ${cellsOver} cells).${usdView ? " No GST (export of services)." : ""} Paid from your Coreframe wallet. We check your geometry, build a wall-resolved mesh and verify its quality; your exact run price comes with it. A separate charge, not deducted from the run.`,
+              ],
               usdView
                 ? ["Mesh report and quote by email", "Runs are quoted in US dollars after the mesh is built: packages to choose from, each with its iteration budget and convergence targets."]
                 : ["Mesh report and quote by email", "Packages to choose from, each with its iteration budget and convergence targets."],
@@ -377,8 +342,8 @@ export default async function PricingView({ currency }: { currency: Currency }) 
         </div>
       </section>
 
-      {/* Studio: open since 16 Oct 2026. Prices are apps/tools' live defaults
-          (CF_STUDIO_PRICE_*): INR 20 / 30 / 50, USD 0.49 / 0.99 / 1.49. */}
+      {/* Studio: open since 16 Oct 2026. Prices from lib/studio-prices.ts
+          (apps/tools' live defaults; the rate card's usd.studio block). */}
       <section id="studio" className="cf-section scroll-mt-20 px-5 pt-0">
         <div className="cf-warm cf-wide grid items-center gap-8 rounded-[28px] p-6 sm:p-10 lg:grid-cols-[1.2fr_0.8fr]">
           <div className="min-w-0">
@@ -389,15 +354,15 @@ export default async function PricingView({ currency }: { currency: Currency }) 
           <h2 className="cf-section-title mt-4">Pre-sale concept images from a floor plan.</h2>
           <p className="cf-section-copy mt-3 max-w-[40rem]">
             Studio turns a 2D DXF floor plan into generated room images in the browser. Previews are free, up to 5 a
-            day, then extra previews are {usdView ? "$0.25" : "₹10"} each; otherwise you pay only for what you keep,
+            day, then extra previews are {st.extraPreview} each; otherwise you pay only for what you keep,
             from the same wallet as your workstation hours.
           </p>
           <ul className="mt-5 space-y-1.5 text-[15px] text-ink">
             <li>Preview (three camera angles): free, up to 5 a day</li>
-            <li>Extra preview after that: {usdView ? "$0.25" : "₹10"}</li>
-            <li>Edit a preview: {usdView ? "$0.49" : "₹20"}</li>
-            <li>2K download: {usdView ? "$0.99" : "₹30"}</li>
-            <li>4K download: {usdView ? "$1.49" : "₹50"}</li>
+            <li>Extra preview after that: {st.extraPreview}</li>
+            <li>Edit a preview: {st.edit}</li>
+            <li>2K download: {st.k2}</li>
+            <li>4K download: {st.k4}</li>
           </ul>
           <p className="mt-2 text-[13px] text-ink-3">{usdView ? "No GST (export of services)." : "GST included."}</p>
           <div className="mt-7 flex flex-wrap gap-3">

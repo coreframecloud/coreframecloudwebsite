@@ -9,7 +9,7 @@ import { Callout, CheckRow, ExplainFigure, Hl, SectionHead, Stamp } from "@/comp
 import { VelocityProfileOverlay } from "@/components/cfd-explainer/velocity-profile";
 import CfdStart from "./cfd-start";
 import { StatusBadge } from "@/components/home/redesign/offerings";
-import { getRateCard } from "@/lib/rate-card";
+import { getRateCard, otherCurrencyLine } from "@/lib/rate-card";
 import { cellsLabel, formatMoney, usdRates, type Currency, type UsdRateCard } from "@/lib/money";
 import { VerifiedCard } from "@/components/cfd-explainer/verified-card";
 import { VERIFIED, verifiedFrom } from "@/lib/cfd-verified";
@@ -17,9 +17,8 @@ import {
   CFD_EXPRESS,
   CFD_NORMAL_HOURS,
   CFD_PREPROCESS_INR,
-  preprocessFeeBoth,
-  preprocessLargeBoth,
-  verifiedFromBoth,
+  preprocessFee,
+  preprocessLarge,
 } from "@/lib/cfd-prices";
 import { CFD_HOME, CLINIC_CASE, HVAC_PAGE } from "@/lib/cfd-pages";
 import { PageByline } from "@/components/seo/page-byline";
@@ -85,7 +84,7 @@ const CFD_OG_IMAGE = {
 export const cfdMetadata: Metadata = {
   // Absolute, 58 characters with the brand (SEO review 18 Oct 2026, 3.1).
   title: { absolute: "Duct & Pipe Pressure Drop CFD from One STL | Coreframe Cloud" },
-  // Both currencies (T2): crawlers read this page from the US and get the USD copy.
+  // cfdMetadataLive() adds the mesh-check fee in the page's currency.
   description:
     "Upload one STL of a bend, reducer or manifold. We mesh and check it, then quote; you get pressure drop, loss coefficient and a PDF report.",
   keywords: [
@@ -122,14 +121,15 @@ export const cfdMetadata: Metadata = {
 };
 
 /**
- * The metadata both copies serve, with the mesh-check fee in both currencies
- * (crawlers read the USD copy). The dollar fee is the rate card's.
+ * The metadata of one copy, with the mesh-check fee in that copy's currency
+ * only (owner, 18 Oct 2026). The dollar fee is the rate card's.
  */
-export async function cfdMetadataLive(): Promise<Metadata> {
+export async function cfdMetadataLive(currency: Currency): Promise<Metadata> {
   const u = usdRates(await getRateCard());
+  const fee = currency === "USD" ? formatMoney(u.cfd_quote_fee_small, "USD") : formatMoney(CFD_PREPROCESS_INR.small, "INR");
   return {
     ...cfdMetadata,
-    description: `${cfdMetadata.description} Mesh check ${formatMoney(CFD_PREPROCESS_INR.small, "INR")}/${formatMoney(u.cfd_quote_fee_small, "USD")}.`,
+    description: `${cfdMetadata.description} Mesh check ${fee}.`,
   };
 }
 
@@ -298,21 +298,19 @@ function verifiedFaq(cur: Currency): string {
 
 const PACKAGES_Q = "What are the Quick, Standard and Verified packages?";
 
-/** Quick / Standard / Verified / Express in one answer, both currencies for Verified. */
+/** Quick / Standard / Verified / Express in one answer, in the page's currency. */
 function packagesFaq(cur: Currency): string {
-  return `Three packages, shown on your quote after the mesh check. Quick and Standard run your case on one wall-resolved mesh that has passed our mesh quality check; Standard holds the pressure to a tighter convergence target than Quick. Both are priced on your quote. Verified runs the case on three meshes and reports the grid convergence index, ${verifiedFromBoth(cur)}. Express, results in ${CFD_EXPRESS.hours} hours at ${CFD_EXPRESS.multiple}x the price, is offered on Quick and Standard where the model fits.`;
+  return `Three packages, shown on your quote after the mesh check. Quick and Standard run your case on one wall-resolved mesh that has passed our mesh quality check; Standard holds the pressure to a tighter convergence target than Quick. Both are priced on your quote. Verified runs the case on three meshes and reports the grid convergence index, ${verifiedFrom(cur)}${cur === "USD" ? ", no GST" : ""}. Express, results in ${CFD_EXPRESS.hours} hours at ${CFD_EXPRESS.multiple}x the price, is offered on Quick and Standard where the model fits.`;
 }
 
 /**
- * The FAQ for this copy of the page. Every price answer carries the other
- * currency too (SEO review 18 Oct 2026, T2): crawlers only ever see one copy.
+ * The FAQ for this copy of the page, in its currency only (owner, 18 Oct
+ * 2026). The cost answer ends with the page's one line on the other
+ * currency: the policy, never its prices.
  */
 function faqFor(cur: Currency, u: UsdRateCard): { q: string; a: string }[] {
   const base = cur === "USD" ? usdFaq(u) : FAQ;
-  const other =
-    cur === "USD"
-      ? ` In India it is ${formatMoney(CFD_PREPROCESS_INR.small, "INR")} incl. GST (${formatMoney(CFD_PREPROCESS_INR.large, "INR")} for very large models).`
-      : ` Outside India it is ${formatMoney(u.cfd_quote_fee_small, "USD")} (${formatMoney(u.cfd_quote_fee_large, "USD")} for very large models), with no GST.`;
+  const other = ` ${otherCurrencyLine(cur)}`;
   const out: { q: string; a: string }[] = [];
   for (const f of base) {
     out.push(f.q === "What does it cost to start?" ? { q: f.q, a: f.a + other } : f);
@@ -327,7 +325,7 @@ function faqFor(cur: Currency, u: UsdRateCard): { q: string; a: string }[] {
  * add-on (SEO review 18 Oct 2026, 3.1). Same @id as the layout's node, so the
  * two merge. No Quick / Standard prices: they are on the quote.
  */
-function serviceLdFor(u: UsdRateCard) {
+function serviceLdFor(u: UsdRateCard, cur: Currency) {
   const url = `${SITE}/cfd`;
   const cells = cellsLabel(u.cfd_quote_fee_small_max_cells);
   return {
@@ -347,7 +345,7 @@ function serviceLdFor(u: UsdRateCard) {
         inr: CFD_PREPROCESS_INR.small,
         usd: u.cfd_quote_fee_small,
         url,
-        description: `For most duct and pipe models. Geometry check, wall-resolved mesh and mesh-quality check, with a mesh report and the exact run price. Very large models (over ${cells} cells) are ${formatMoney(CFD_PREPROCESS_INR.large, "INR")} incl. GST or ${formatMoney(u.cfd_quote_fee_large, "USD")}. The run is quoted separately and paid only if you accept.`,
+        description: `For most duct and pipe models. Geometry check, wall-resolved mesh and mesh-quality check, with a mesh report and the exact run price. Very large models (over ${cells} cells) are ${cur === "USD" ? formatMoney(u.cfd_quote_fee_large, "USD") : `${formatMoney(CFD_PREPROCESS_INR.large, "INR")} incl. GST`}. The run is quoted separately and paid only if you accept.`,
       }),
       ...regionalOffers({
         name: "Verified: mesh-independence study (GCI)",
@@ -356,7 +354,7 @@ function serviceLdFor(u: UsdRateCard) {
         url: `${SITE}${VERIFIED.path}`,
         inrTaxIncluded: false,
         from: true,
-        description: `Three meshes and the grid convergence index on the pressure drop. India: from ${formatMoney(VERIFIED.fromInr, "INR")} + GST; elsewhere from ${formatMoney(VERIFIED.fromUsd, "USD")}, no GST. Results within ${VERIFIED.deliveryHours} hours.`,
+        description: `Three meshes and the grid convergence index on the pressure drop, ${verifiedFrom(cur)}${cur === "USD" ? ", no GST" : ""}. Results within ${VERIFIED.deliveryHours} hours.`,
       }),
       {
         "@type": "Offer",
@@ -408,20 +406,19 @@ function usdFaq(u: UsdRateCard) {
 
 /** The package table (SEO review 18 Oct 2026, 3.1). Quick and Standard prices are on the quote, never here. */
 function packageRows(cur: Currency, u: UsdRateCard): [string, string, string, string, string][] {
-  const onQuote = `On your quote after the mesh check (${cur === "USD" ? `${formatMoney(u.cfd_quote_fee_small, "USD")}, or ${formatMoney(CFD_PREPROCESS_INR.small, "INR")} in India` : `${formatMoney(CFD_PREPROCESS_INR.small, "INR")}, or ${formatMoney(u.cfd_quote_fee_small, "USD")} outside India`})`;
+  const onQuote = `On your quote after the mesh check (${cur === "USD" ? formatMoney(u.cfd_quote_fee_small, "USD") : formatMoney(CFD_PREPROCESS_INR.small, "INR")})`;
   return [
     ["Quick", "1", "Pressure drop, loss coefficient, PDF report, 3D viewer, data files; default residual targets (10⁻³)", `Within ${CFD_NORMAL_HOURS} h, or Express`, onQuote],
     ["Standard", "1", "As Quick, with a tighter pressure target (10⁻⁴) and a longer iteration budget", `Within ${CFD_NORMAL_HOURS} h, or Express`, onQuote],
-    ["Verified", "3 + GCI", "Mesh-independence study: three meshes, the grid convergence index and a one-line verdict", `Within ${VERIFIED.deliveryHours} h (no Express)`, verifiedFromBoth(cur).replace(/^from/, "From")],
+    ["Verified", "3 + GCI", "Mesh-independence study: three meshes, the grid convergence index and a one-line verdict", `Within ${VERIFIED.deliveryHours} h (no Express)`, `${verifiedFrom(cur).replace(/^from/, "From")}${cur === "USD" ? ", no GST" : ""}`],
     ["Express", "—", "A delivery speed on Quick or Standard, where your quote offers it (smaller steady runs)", `${CFD_EXPRESS.hours} h`, `${CFD_EXPRESS.multiple}x the package price`],
   ];
 }
 
 export default async function CfdView({ currency }: { currency: Currency }) {
   const usdView = currency === "USD";
-  // Both copies read the rate card's `usd` block now: every price sentence a
-  // crawler can see carries both currencies (SEO review 18 Oct 2026, T2). The
-  // INR fee is the published one in lib/cfd-prices.ts.
+  // One currency per copy (owner, 18 Oct 2026). The dollar fees are the rate
+  // card's `usd` block; the INR fee is the published one in lib/cfd-prices.ts.
   const card = usdRates(await getRateCard());
   const usd = usdView ? card : null;
   const usdText = usd ? usdCopy(usd) : null;
@@ -434,7 +431,7 @@ export default async function CfdView({ currency }: { currency: Currency }) {
     <div className="cfx-paper relative min-h-screen text-ink" data-usd-view={usdView ? "" : undefined}>
       <JsonLd data={breadcrumbList([{ name: "CFD for ducts and pipes", path: "/cfd" }])} />
       <JsonLd data={faqPage(faq)} />
-      <JsonLd data={serviceLdFor(card)} />
+      <JsonLd data={serviceLdFor(card, currency)} />
       <JsonLd data={howTo("How to get the pressure drop of a duct or pipe from one STL", steps, { url: `${SITE}/cfd` })} />
       <main className="relative">
         {/* ── Hero ─────────────────────────────────────────────────────
@@ -447,15 +444,15 @@ export default async function CfdView({ currency }: { currency: Currency }) {
               <p className="cf-eyebrow">CFD for ducts and pipes · Live</p>
               <h1 className="cf-display mt-5 max-w-[14ch]">Pressure drop calculation for your duct or pipe, from one STL.</h1>
               {/* Answer-first (SEO review 18 Oct 2026, 3.1): price, turnaround and
-                  deliverables in one quotable passage, in both currencies. */}
+                  deliverables in one quotable passage, in the page's currency. */}
               <p className="cf-lead mt-5 max-w-[52ch]">
                 Coreframe CFD calculates the pressure drop and loss coefficient of a duct or pipe fitting from a single STL
-                file. Pre-processing and a mesh check cost {preprocessFeeBoth(currency, card)} for most models; you then
+                file. Pre-processing and a mesh check cost {preprocessFee(currency, card)} for most models; you then
                 accept a quote for the run and get a PDF report, a 3D viewer and the data files within {CFD_NORMAL_HOURS}{" "}
                 hours, or in {CFD_EXPRESS.hours} hours with Express at {CFD_EXPRESS.multiple}× the price.
               </p>
               <p className="mt-3 max-w-[52ch] text-[15px] leading-6 text-ink-2">
-                The solver runs on our side, so you need no CFD licence. {preprocessLargeBoth(currency, card)}
+                The solver runs on our side, so you need no CFD licence. {preprocessLarge(currency, card)}
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
                 <a href="#start" className="cf-btn-primary">Start a job</a>
@@ -873,8 +870,7 @@ export default async function CfdView({ currency }: { currency: Currency }) {
               {usdText ? `${usdText.small} for pre-processing / mesh check.` : "₹599 incl. GST for pre-processing / mesh check."}
             </h2>
             <p className="mt-3 text-[15px] leading-6 text-ink-2">
-              {preprocessFeeBoth(currency, card).replace(/^./, (c) => c.toUpperCase())} for most models.{" "}
-              {preprocessLargeBoth(currency, card)}
+              {preprocessFee(currency, card)} for most models. {preprocessLarge(currency, card)}
             </p>
             <ul className="mt-7 grid grid-cols-1 gap-5 sm:grid-cols-2">
               {[

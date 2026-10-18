@@ -5,7 +5,7 @@ import CfdView, { cfdMetadataLive } from "@/app/cfd/cfd-view";
 // browser still shows /cfd (and canonical stays /cfd). Prerendered like the
 // INR copy. A direct hit on /usd/cfd is redirected by proxy.ts.
 export async function generateMetadata(): Promise<Metadata> {
-  return cfdMetadataLive();
+  return cfdMetadataLive("USD");
 }
 
 export default function CfdIntakePageUsd() {
