@@ -6,6 +6,43 @@ import { TrackedLink } from "@/components/analytics/tracked-link";
 import { OFFERINGS, type Offering, type OfferingStatus } from "@/lib/offerings";
 import { NODE } from "@/lib/node-spec";
 import { ShellFurnished } from "@/components/visuals/studio-compare";
+import { cellsLabel, formatMoney, usdRates, type Currency } from "@/lib/money";
+import { CFD_PREPROCESS_INR } from "@/lib/cfd-prices";
+import { FREE_PREVIEWS_PER_DAY, studioPrices } from "@/lib/studio-prices";
+import type { RateCard } from "@/lib/rate-card";
+
+/**
+ * The price lines on the hero cards and the bands, in ONE currency: the
+ * visitor's (owner, 18 Oct 2026; proxy.ts picks the copy). Every figure from
+ * its usual source: the CFD pre-processing fee from lib/cfd-prices (rupees)
+ * or the rate card's `usd` block, Studio from studioPrices().
+ */
+export type OfferingPrices = {
+  currency: Currency;
+  /** "₹599 incl. GST" / "$15, no GST" */
+  cfdFee: string;
+  /** "₹1,499" / "$39", over `cfdCells` */
+  cfdLargeFee: string;
+  cfdCells: string;
+  studio: { extraPreview: string; edit: string; k2: string; k4: string };
+};
+
+export function offeringPrices(card: RateCard | null, currency: Currency): OfferingPrices {
+  const usd = usdRates(card);
+  const sp = studioPrices(card);
+  const st = currency === "USD" ? sp.usd : sp.inr;
+  const m = (n: number) => formatMoney(n, currency);
+  return {
+    currency,
+    cfdFee:
+      currency === "USD"
+        ? `${m(usd.cfd_quote_fee_small)}, no GST`
+        : `${m(CFD_PREPROCESS_INR.small)} incl. GST`,
+    cfdLargeFee: m(currency === "USD" ? usd.cfd_quote_fee_large : CFD_PREPROCESS_INR.large),
+    cfdCells: cellsLabel(currency === "USD" ? usd.cfd_quote_fee_small_max_cells : CFD_PREPROCESS_INR.smallMaxCells),
+    studio: { extraPreview: m(st.extraPreview), edit: m(st.edit), k2: m(st.k2), k4: m(st.k4) },
+  };
+}
 
 /**
  * The three services as equals: three cards in the hero, then one band each
@@ -41,7 +78,7 @@ function ctaEvent(href: string) {
  * One hero card. Phones: a compact row (thumbnail beside the text) so all
  * three fit on the first screen. sm and up: image on top, equal-height cards.
  */
-function HeroCard({ o, introLabel, i }: { o: Offering; introLabel: string | null; i: number }) {
+function HeroCard({ o, introLabel, prices, i }: { o: Offering; introLabel: string | null; prices: OfferingPrices; i: number }) {
   return (
     <div
       data-cf-spot=""
@@ -105,12 +142,12 @@ function HeroCard({ o, introLabel, i }: { o: Offering; introLabel: string | null
           ) : null}
           {o.id === "cfd" ? (
             <p className="mt-2.5 text-[12.5px] text-white/80 sm:mt-3 sm:text-[13px]">
-              Pre-processing <span className="font-semibold text-white">₹599 incl. GST</span> for most models
+              Pre-processing <span className="font-semibold text-white">{prices.cfdFee}</span> for most models
             </p>
           ) : null}
           {o.id === "studio" ? (
             <p className="mt-2.5 text-[12.5px] text-white/80 sm:mt-3 sm:text-[13px]">
-              Free previews. Edits <span className="font-semibold text-white">₹20</span>, 2K download ₹30, 4K ₹50
+              Free previews. Edits <span className="font-semibold text-white">{prices.studio.edit}</span>, 2K download {prices.studio.k2}, 4K {prices.studio.k4}
             </p>
           ) : null}
         </div>
@@ -119,11 +156,11 @@ function HeroCard({ o, introLabel, i }: { o: Offering; introLabel: string | null
   );
 }
 
-export function HeroOfferingCards({ introLabel }: { introLabel: string | null }) {
+export function HeroOfferingCards({ introLabel, prices }: { introLabel: string | null; prices: OfferingPrices }) {
   return (
     <div className="grid gap-3 sm:grid-cols-3 sm:gap-4 lg:gap-5">
       {OFFERINGS.map((o, i) => (
-        <HeroCard key={o.id} o={o} introLabel={introLabel} i={i} />
+        <HeroCard key={o.id} o={o} introLabel={introLabel} prices={prices} i={i} />
       ))}
     </div>
   );
@@ -138,11 +175,13 @@ const BAND_TINT: Record<Offering["id"], string> = {
 };
 
 /** The points each band lists. Facts only, the same ones the service pages carry. */
-const BAND_POINTS: Record<Offering["id"], string[]> = {
+const bandPoints = (currency: Currency): Record<Offering["id"], string[]> => ({
   gpu: [
     `${NODE.gpu} ${NODE.vram} · ${NODE.cpuShort} · ${NODE.ram} RAM`,
     "Unreal Engine, D5 Render, Blender and Twinmotion preinstalled",
-    "Billed per minute, GST included; close it and billing stops",
+    currency === "USD"
+      ? "Billed per minute, no GST; close it and billing stops"
+      : "Billed per minute, GST included; close it and billing stops",
   ],
   cfd: [
     "Upload one closed STL of the fluid volume",
@@ -154,7 +193,7 @@ const BAND_POINTS: Record<Offering["id"], string[]> = {
     "Walls, doors and windows read from your DXF, never invented",
     "Furnished concept images, generated in the browser",
   ],
-};
+});
 
 const BAND_BODY: Record<Offering["id"], string> = {
   gpu: "Open D5, Lumion, Blender or Twinmotion on a full Windows workstation from the laptop you already own, streamed in 4K. Your project files stay on storage in Bengaluru between sessions.",
@@ -189,7 +228,7 @@ function BandMedia({ o }: { o: Offering }) {
   );
 }
 
-function OfferingBand({ o, flip }: { o: Offering; flip: boolean }) {
+function OfferingBand({ o, flip, prices }: { o: Offering; flip: boolean; prices: OfferingPrices }) {
   return (
     <section id={o.id} className="scroll-mt-20">
       <Reveal
@@ -203,7 +242,7 @@ function OfferingBand({ o, flip }: { o: Offering; flip: boolean }) {
           <h2 className="cfh-h2 mt-4">{o.headline}</h2>
           <p className="mt-5 max-w-[32rem] text-[17px] leading-[1.6] text-ink-2">{BAND_BODY[o.id]}</p>
           <ul className="mt-7 space-y-3">
-            {BAND_POINTS[o.id].map((t) => (
+            {bandPoints(prices.currency)[o.id].map((t) => (
               <li key={t} className="flex items-start gap-3 text-[15.5px] text-ink">
                 <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-ink" />
                 {t}
@@ -230,14 +269,19 @@ function OfferingBand({ o, flip }: { o: Offering; flip: boolean }) {
           </div>
           {o.id === "cfd" ? (
             <p className="mt-6 text-[14px] text-ink-2">
-              Pre-processing / mesh check ₹599 incl. GST for most models; ₹1,499 over 5 million cells.{" "}
+              Pre-processing / mesh check {prices.cfdFee} for most models; {prices.cfdLargeFee} over {prices.cfdCells} cells.{" "}
               <Link href="/cfd/room-airflow-hvac" className="underline underline-offset-4">Rooms and HVAC airflow</Link>: live
               (steady analysis). See a{" "}
               <Link href="/cfd/projects/clinic-floor-hvac" className="underline underline-offset-4">clinic floor case study</Link>.
             </p>
           ) : null}
           {o.id === "studio" ? (
-            <p className="mt-6 text-[14px] text-ink-2">Free previews, up to 5 a day, then ₹10 each. Edits ₹20, 2K download ₹30, 4K ₹50, GST included, paid from the same wallet as your workstation hours. DXF plans only.</p>
+            <p className="mt-6 text-[14px] text-ink-2">
+              Free previews, up to {FREE_PREVIEWS_PER_DAY} a day, then {prices.studio.extraPreview} each. Edits{" "}
+              {prices.studio.edit}, 2K download {prices.studio.k2}, 4K {prices.studio.k4},{" "}
+              {prices.currency === "USD" ? "no GST" : "GST included"}, paid from the same wallet as your workstation
+              hours. DXF plans only.
+            </p>
           ) : null}
         </div>
         <div className={`min-w-0 ${flip ? "lg:order-1" : ""}`}>
@@ -249,11 +293,11 @@ function OfferingBand({ o, flip }: { o: Offering; flip: boolean }) {
 }
 
 /** One band per service, same order as the hero cards. */
-export function OfferingBands() {
+export function OfferingBands({ prices }: { prices: OfferingPrices }) {
   return (
     <div className="cfh-wrap space-y-6 pt-16 pb-6 sm:space-y-8 sm:pt-20">
       {OFFERINGS.map((o, i) => (
-        <OfferingBand key={o.id} o={o} flip={i % 2 === 1} />
+        <OfferingBand key={o.id} o={o} flip={i % 2 === 1} prices={prices} />
       ))}
     </div>
   );

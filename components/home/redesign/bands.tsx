@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { NODE } from "@/lib/node-spec";
 import { hoursLabel, rupees, type IntroOffer } from "@/lib/rate-card";
+import type { Currency } from "@/lib/money";
 import { Reveal } from "@/components/home/redesign/reveal";
 import { ParallaxBg } from "@/components/home/redesign/depth";
 import { StreamDiagram } from "@/components/visuals/diagrams";
@@ -18,14 +19,19 @@ const MARQUEE_APPS = PREINSTALLED.filter((s) => s.category === "3D & rendering" 
  * session sits behind at low opacity. The one speed multiple carries its
  * source on the same line, or it does not appear at all.
  */
-export function FactsBand() {
+export function FactsBand({ currency = "INR" }: { currency?: Currency }) {
+  const usdView = currency === "USD";
   const facts = [
     { k: `${NODE.gpu} · ${NODE.vram}`, v: "Current-generation graphics card" },
     { k: NODE.cpuShort, v: "High-performance CPU" },
     { k: `${NODE.ram} RAM`, v: "Big scenes and a lot open at once" },
     { k: NODE.stream, v: "Streamed to the laptop you own" },
-    { k: "Hosted in Bengaluru", v: "Close to you, billed in rupees" },
-    { k: "GST included", v: "Charged per minute, nothing to cancel" },
+    usdView
+      ? { k: "Hosted in Bengaluru", v: "Billed in US dollars" }
+      : { k: "Hosted in Bengaluru", v: "Close to you, billed in rupees" },
+    usdView
+      ? { k: "No GST", v: "Charged per minute, nothing to cancel" }
+      : { k: "GST included", v: "Charged per minute, nothing to cancel" },
   ];
   return (
     <section className="relative isolate overflow-hidden bg-night py-24 text-white sm:py-28">
@@ -93,7 +99,16 @@ export function BuiltFor() {
  * by the 30th) at partial opacity. Every figure comes from the live rate card;
  * a missing value removes its line rather than showing a stale one.
  */
-export function OfferBand({ adhocRate, intro }: { adhocRate?: string; intro: IntroOffer | null }) {
+export function OfferBand({
+  adhocRate,
+  intro,
+  currency = "INR",
+}: {
+  adhocRate?: string;
+  /** Always null on the dollar copy: the intro offer is a rupee top-up. */
+  intro: IntroOffer | null;
+  currency?: Currency;
+}) {
   return (
     <section className="cfh-wrap pb-24 sm:pb-28">
       <Reveal className="relative isolate overflow-hidden rounded-[32px] bg-night px-7 py-14 text-white sm:px-14 sm:py-20">
@@ -114,7 +129,12 @@ export function OfferBand({ adhocRate, intro }: { adhocRate?: string; intro: Int
           ) : null}
           <ul className="mt-5 space-y-2 text-[16px] leading-[1.55] text-white/85">
             {intro?.validityDays ? <li>Use it within {intro.validityDays} days.</li> : null}
-            {adhocRate ? <li>After that, {adhocRate} an hour, GST included, charged per minute.</li> : null}
+            {adhocRate ? (
+              <li>
+                {intro ? "After that, " : ""}
+                {adhocRate} an hour, {currency === "USD" ? "no GST" : "GST included"}, charged per minute.
+              </li>
+            ) : null}
             <li>Sign up with your email and a WhatsApp code. No monthly plan.</li>
           </ul>
           <div className="mt-9 flex flex-wrap gap-3">
