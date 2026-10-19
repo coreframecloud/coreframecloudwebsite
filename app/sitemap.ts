@@ -52,6 +52,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // find late or not at all, so these two lines are not optional.
     { url: `${BASE}/coreframe-vs-irender`, lastModified: lm("/coreframe-vs-irender"), changeFrequency: "monthly", priority: 0.8 },
     { url: `${BASE}/vram-for-architectural-rendering`, lastModified: lm("/vram-for-architectural-rendering"), changeFrequency: "monthly", priority: 0.8 },
+    // The architectural visualization hub (19 Oct 2026): every archviz tool page, grouped by job.
+    { url: `${BASE}/architectural-visualization`, lastModified: lm("/architectural-visualization"), changeFrequency: "monthly", priority: 0.8 },
     { url: `${BASE}/cloud-rendering-for-architects`, lastModified: lm("/cloud-rendering-for-architects"), changeFrequency: "monthly", priority: 0.8 },
     // Added 10 Oct 2026: answers "render farm vs cloud workstation", a query
     // every result for which was a competitor's blog.

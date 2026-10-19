@@ -586,6 +586,7 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
   out.push(`- [Coreframe vs iRender](${SITE}/coreframe-vs-irender): dated, sourced price comparison.`);
   out.push(`- [Is 8 GB of VRAM enough?](${SITE}/vram-for-architectural-rendering)`);
   out.push(`- [Cloud rendering for architects](${SITE}/cloud-rendering-for-architects)`);
+  out.push(`- [Architectural visualization](${SITE}/architectural-visualization): the hub for archviz on one Windows RTX 5080 workstation, grouped by job: real-time walkthroughs (D5 Render, Lumion, Enscape, Twinmotion, Unreal Engine), path-traced stills (V-Ray, 3ds Max, Blender), modelling and BIM (Revit, SketchUp, Rhino), and interiors from a floor plan (Coreframe Studio). D5 Render, Twinmotion, Unreal Engine and Blender are preinstalled; the rest run on your own licence.`);
   out.push(`- [Coreframe Studio: floor plan to interior render](${SITE}/floor-plan-to-render): turns a DXF floor plan into interior concept images in the browser, at ${SITE}/studio with a Coreframe account. Previews are free (up to 5 a day), then ₹10 each; edits ₹20, 2K download ₹30, 4K ₹50, GST included, from the Coreframe wallet. DXF only (no PDF, image or DWG plans yet).`);
   out.push(`- [Download Coreframe Connect](${SITE}/download): Windows 10/11 client.`);
   out.push(`- [Workstation specs](${SITE}/compute-nodes): the hardware in each machine.`);

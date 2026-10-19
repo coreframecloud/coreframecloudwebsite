@@ -102,6 +102,7 @@ export function SiteFooter({ currency = "INR" }: { currency?: Currency }) {
             <h2 className="cf-eyebrow">Guides</h2>
             <div className="mt-3 flex flex-col gap-0">
               {[
+                { label: "Architectural visualization", href: "/architectural-visualization" },
                 { label: "Cloud rendering for architects", href: "/cloud-rendering-for-architects" },
                 { label: `Rent an ${NODE.gpu} in India`, href: "/software/gpu-workstation-rental-india" },
                 { label: "Workstations and storage for studios", href: "/solutions" },
