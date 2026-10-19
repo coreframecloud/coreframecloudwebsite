@@ -5,7 +5,6 @@ import {
   getRateCard,
   hoursLabel,
   introPrice,
-  taxWords,
 } from "@/lib/rate-card";
 import type { Currency } from "@/lib/money";
 
@@ -55,7 +54,9 @@ export async function IntroStrip({ currency = "INR" }: { currency?: Currency }) 
     { strong: headline, rest: gpu },
     { strong: "No paperwork", rest: "just your email and mobile number" },
     { strong: "International cards", rest: "accepted" },
-    { strong: "Billed by the minute", rest: hourly ? `${hourly} after that, ${taxWords(currency)}` : taxWords(currency) },
+    // One all-in price, no tax words in the banner (owner, 19 Oct 2026); the
+    // GST invoice already carries the split.
+    { strong: "Billed by the minute", rest: hourly ? `${hourly} after that` : "for the minutes you use" },
   ];
 
   const pass = (key: string) => (
