@@ -798,8 +798,12 @@ export function taxSentence(cur: Currency): string {
  * The ONE neutral line a page may carry about the other currency (pricing,
  * CFD): it states the policy and quotes no price in the other currency.
  */
-export function otherCurrencyLine(cur: Currency): string {
+export function otherCurrencyLine(cur: Currency, opts: { tax?: boolean } = {}): string {
+  // CFD surfaces pass tax: false (owner, 19 Oct 2026: one all-in price, no
+  // tax words on CFD pages; the terms page says it once).
   return cur === "USD"
-    ? "Billed in India? You'll see and pay prices in rupees, GST included."
+    ? opts.tax === false
+      ? "Billed in India? You'll see and pay prices in rupees."
+      : "Billed in India? You'll see and pay prices in rupees, GST included."
     : "Billed from outside India? You'll see and pay prices in US dollars.";
 }

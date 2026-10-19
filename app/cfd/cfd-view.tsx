@@ -279,7 +279,7 @@ function packagesFaq(cur: Currency): string {
  */
 function faqFor(cur: Currency, u: UsdRateCard): { q: string; a: string }[] {
   const base = cur === "USD" ? usdFaq(u) : FAQ;
-  const other = ` ${otherCurrencyLine(cur)}`;
+  const other = ` ${otherCurrencyLine(cur, { tax: false })}`;
   const out: { q: string; a: string }[] = [];
   for (const f of base) {
     out.push(f.q === "What does it cost to start?" ? { q: f.q, a: f.a + other } : f);
