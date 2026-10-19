@@ -1,4 +1,4 @@
-import { CFD_HOME, CLINIC_CASE, HVAC_PAGE, MESH_STUDY } from "@/lib/cfd-pages";
+import { CFD_HOME, CLINIC_CASE, HVAC_PAGE, HVAC_SERVICE, MESH_STUDY } from "@/lib/cfd-pages";
 
 /**
  * When each page's CONTENT last changed (SEO review 18 Oct 2026, T8). One
@@ -38,6 +38,7 @@ export const PAGE_UPDATED: Record<string, string> = {
   [CFD_HOME.path]: CFD_HOME.updated,
   [MESH_STUDY.path]: MESH_STUDY.updated,
   [HVAC_PAGE.path]: HVAC_PAGE.updated,
+  [HVAC_SERVICE.path]: HVAC_SERVICE.updated,
   [CLINIC_CASE.path]: CLINIC_CASE.updated,
 };
 

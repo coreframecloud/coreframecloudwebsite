@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 import { SOFTWARE_PAGES } from "@/lib/software-pages";
 import { publishedPosts } from "@/lib/blog";
 import { PAGE_UPDATED as UPDATED } from "@/lib/page-dates";
-import { HVAC_PAGE } from "@/lib/cfd-pages";
+import { HVAC_PAGE, HVAC_SERVICE } from "@/lib/cfd-pages";
 
 /**
  * Canonical host is www: the apex 308-redirects to it. Listing apex URLs here
@@ -134,6 +134,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${BASE}/cfd/mesh-independence-study`, lastModified: lm("/cfd/mesh-independence-study"), changeFrequency: "monthly", priority: 0.8 },
     // Room airflow / HVAC (SEO review 18 Oct 2026, action 13).
     { url: `${BASE}${HVAC_PAGE.path}`, lastModified: lm(HVAC_PAGE.path), changeFrequency: "monthly", priority: 0.8 },
+    // The HVAC simulation service page (19 Oct 2026); the guide above supports it.
+    { url: `${BASE}${HVAC_SERVICE.path}`, lastModified: lm(HVAC_SERVICE.path), changeFrequency: "monthly", priority: 0.8 },
     // Case study (13 Oct 2026): HVAC airflow on a real clinic floor.
     { url: `${BASE}/cfd/projects/clinic-floor-hvac`, lastModified: lm("/cfd/projects/clinic-floor-hvac"), changeFrequency: "monthly", priority: 0.7 },
 

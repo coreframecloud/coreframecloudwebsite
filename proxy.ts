@@ -55,6 +55,7 @@ const PAGES = new Set([
   "/cfd",
   "/cfd/mesh-independence-study",
   "/cfd/room-airflow-hvac",
+  "/cfd/hvac-simulation",
   "/floor-plan-to-render",
   "/floor-plan-to-render/3bhk-example",
   "/enterprise",

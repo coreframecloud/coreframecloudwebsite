@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ORG_ID, SITE, breadcrumbList, faqPage } from "@/lib/seo";
 import { Fold } from "@/components/visuals/fold";
-import { CLINIC_CASE, HVAC_PAGE } from "@/lib/cfd-pages";
+import { CLINIC_CASE, HVAC_PAGE, HVAC_SERVICE } from "@/lib/cfd-pages";
 import { PageByline } from "@/components/seo/page-byline";
 import { VERIFIED } from "@/lib/cfd-verified";
 import { JsonLd } from "@/components/seo/json-ld";
@@ -422,8 +422,9 @@ export default function ClinicFloorHvacPage() {
             <div className="flex min-w-0 flex-col rounded-[24px] bg-tint-lilac p-6 sm:p-7">
               <h3 className="font-heading text-[20px] leading-[1.25] font-medium text-ink">Have a floor you want checked?</h3>
               <p className="mt-3 text-[15px] leading-6 text-ink-2">
-                Single rooms run today (steady analysis): see{" "}
-                <Link href={HVAC_PAGE.path} className="underline underline-offset-4">room airflow CFD for HVAC</Link>. For a whole floor, send us an IFC with spaces
+                Single rooms run today (steady analysis): see the{" "}
+                <Link href={HVAC_SERVICE.path} className="underline underline-offset-4">HVAC simulation service</Link> and the{" "}
+                <Link href={HVAC_PAGE.path} className="underline underline-offset-4">room airflow guide</Link>. For a whole floor, send us an IFC with spaces
                 and the HVAC model, or plans with a diffuser schedule, and tell us what you need to know.
               </p>
               <Link href="/request-demo" className="cfh-link mt-auto pt-5 text-ink">
@@ -444,6 +445,8 @@ export default function ClinicFloorHvacPage() {
             ))}
             <p className="mt-8 text-[14.5px] leading-6 text-ink-2">
               Related: <Link href="/cfd" className="text-ink underline underline-offset-4">CFD for ducts and pipes</Link>
+              {" · "}
+              <Link href={HVAC_SERVICE.path} className="text-ink underline underline-offset-4">HVAC simulation service</Link>
               {" · "}
               <Link href={HVAC_PAGE.path} className="text-ink underline underline-offset-4">Room airflow CFD for HVAC</Link>
               {" · "}
