@@ -45,6 +45,7 @@ const LANDING_LINKS: Record<string, string> = {
   "enscape-cloud-gpu": "Enscape on a cloud RTX 5080",
   "cloud-rendering-for-architects": "Cloud rendering for architects",
   "architectural-visualization": "Architectural visualization: every tool, by job",
+  "video-animation-rendering": "Video and animation rendering",
   "d5-render-vs-local-gpu": "Renting a workstation vs buying one",
   "vram-for-architectural-rendering": "Is 8 GB of VRAM enough?",
   "cloud-workstation-vs-render-farm": "Cloud workstation vs render farm",
