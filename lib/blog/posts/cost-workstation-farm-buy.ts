@@ -235,6 +235,7 @@ export const costWorkstationFarmBuy: BlogPost = {
   ],
   related: [
     { href: "/d5-render-vs-local-gpu", label: "Renting a workstation vs buying one" },
+    { href: "/blog/is-cloud-rendering-cheaper-than-buying-a-workstation", label: "Is cloud rendering cheaper than buying? The break-even" },
     { href: "/cloud-workstation-vs-render-farm", label: "Cloud workstation vs render farm" },
     { href: "/pricing", label: "Pricing and monthly plans" },
     { href: "/enterprise", label: "Team plans for studios" },

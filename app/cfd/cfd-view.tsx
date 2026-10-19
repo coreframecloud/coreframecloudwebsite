@@ -89,11 +89,15 @@ const CFD_OG_IMAGE = {
 };
 
 export const cfdMetadata: Metadata = {
-  // Absolute, 58 characters with the brand (SEO review 18 Oct 2026, 3.1).
-  title: { absolute: "Duct & Pipe Pressure Drop CFD from One STL | Coreframe Cloud" },
+  // Absolute, 57 characters with the brand. 19 Oct 2026: "cfd workstation"
+  // drew 57 impressions and no clicks (it came through the retired
+  // /ansys-cfd-gpu, which 308s here), so the title answers it: no workstation
+  // needed. Was "Duct & Pipe Pressure Drop CFD from One STL" (SEO review
+  // 18 Oct 2026, 3.1); duct and pipe moved into the description.
+  title: { absolute: "Pressure Drop CFD Without a Workstation | Coreframe Cloud" },
   // cfdMetadataLive() adds the mesh-check fee in the page's currency.
   description:
-    "Upload one STL of a bend, reducer or manifold. We mesh and check it, then quote; you get pressure drop, loss coefficient and a PDF report.",
+    "No CFD workstation or licence needed. Upload one STL of a duct or pipe fitting; get pressure drop, loss coefficient and a PDF report.",
   keywords: [
     "pressure drop calculation",
     "pipe pressure drop calculation",

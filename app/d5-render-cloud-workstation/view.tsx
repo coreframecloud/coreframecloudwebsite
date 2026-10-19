@@ -40,12 +40,14 @@ import { BANDWIDTH_SENTENCE } from "@/lib/streaming-terms";
  * coreframe-outreach. VRAM and core counts are published specifications and are
  * the honest way to make the hardware point.
  */
-export function d5Metadata(currency: Currency): Metadata {
-  const usdView = currency === "USD";
+// 19 Oct 2026: "d5 cloud" ranked around position 6 with no clicks, so the
+// title now says it plainly. Was "D5 Render Cloud Workstation, RTX 5080".
+// The description has no currency or tax words, so both copies share it.
+export function d5Metadata(): Metadata {
   return {
-  title: "D5 Render Cloud Workstation, RTX 5080",
+  title: { absolute: "Run D5 Render in the Cloud on an RTX 5080 | Coreframe Cloud" },
   description:
-    `Run D5 Render on a Windows RTX 5080 cloud workstation in India, billed per minute ${usdView ? "in US dollars, no GST" : "with GST"}. D5 is preinstalled; sign in with your account. Files persist.`,
+    "D5 Render in the cloud: a Windows RTX 5080 workstation with D5 preinstalled, billed per minute. Sign in with your D5 account; your files persist.",
   keywords: [
     "D5 Render cloud workstation",
     "D5 Render cloud GPU India",

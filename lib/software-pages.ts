@@ -135,7 +135,10 @@ function buildSoftwarePages(cur: Currency): SoftwarePage[] {
     slug: "3ds-max-cloud-workstation",
     title: "3ds Max Cloud Workstation — GPU rendering by the hour",
     metaTitle: "3ds Max Cloud Workstation by the hour",
-    absoluteTitle: "3ds Max Cloud Workstation & Rendering, RTX 5080 | Coreframe",
+    // 19 Oct 2026: "3ds max cloud rendering (service)" and "cloud rendering
+    // for 3ds max" (~64 impressions, no clicks) lead the title now. Was
+    // "3ds Max Cloud Workstation & Rendering, RTX 5080 | Coreframe".
+    absoluteTitle: "3ds Max Cloud Rendering, RTX 5080 Workstation | Coreframe",
     callouts: [
       {
         h2: "3ds Max cloud rendering: workstation or render farm?",
@@ -146,7 +149,7 @@ function buildSoftwarePages(cur: Currency): SoftwarePage[] {
     teamPlansLink: true,
     lastUpdated: "18 October 2026",
     description:
-      "Run Autodesk 3ds Max with V-Ray or Corona on a rented RTX GPU workstation in India. Per-minute billing, your own licence, no hardware purchase.",
+      "3ds Max cloud rendering on a rented RTX 5080 workstation: V-Ray GPU and Chaos Vantage with 16 GB VRAM, your own licence, billed per minute.",
     intro:
       "3ds Max with V-Ray or Corona is the classic case for renting a GPU, because the work comes in bursts. You need serious hardware for a few days before a deadline and almost none for the rest of the month.",
     problem:
@@ -284,8 +287,11 @@ function buildSoftwarePages(cur: Currency): SoftwarePage[] {
     slug: "twinmotion-cloud-workstation",
     title: "Twinmotion Cloud Workstation for architects",
     metaTitle: "Twinmotion Cloud Workstation, RTX 5080",
+    // 19 Oct 2026: "twinmotion workstation" (29 impressions, no clicks) leads
+    // the <title>. Was "Twinmotion Cloud Workstation, RTX 5080 | Coreframe Cloud".
+    absoluteTitle: "Twinmotion Workstation in the Cloud, RTX 5080 | Coreframe",
     description:
-      "Run Twinmotion on a rented RTX GPU workstation in India, billed per minute. Twinmotion is preinstalled and free for most users.",
+      "Rent a Twinmotion workstation by the minute: an RTX 5080 with 16 GB VRAM and 64 GB RAM, Twinmotion preinstalled, streamed to your own computer.",
     intro:
       "Twinmotion is preinstalled on every Coreframe workstation, and its free tier covers most individual users. All you rent is the RTX 5080 that makes it run properly, by the minute.",
     livePrice: "line",

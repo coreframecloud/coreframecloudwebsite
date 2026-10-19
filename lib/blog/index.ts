@@ -5,9 +5,14 @@ import { costWorkstationFarmBuy } from "./posts/cost-workstation-farm-buy";
 import { afterEffectsRemoteGpu } from "./posts/after-effects-remote-gpu";
 import { pressureDropHandCalcVsCfd } from "./posts/pressure-drop-hand-calc-vs-cfd";
 import { verificationVsValidationCfd } from "./posts/verification-vs-validation-cfd";
+import { cloudRenderingVsBuyingWorkstation } from "./posts/cloud-rendering-vs-buying-workstation";
+import { d5RenderSystemRequirementsLaptop } from "./posts/d5-render-system-requirements-laptop";
 
 /** Newest first; posts with the same date keep this editorial order. */
 export const POSTS: BlogPost[] = [
+  // Published 19 Oct 2026 (Search Console question queries).
+  cloudRenderingVsBuyingWorkstation,
+  d5RenderSystemRequirementsLaptop,
   // Published 18 Oct 2026 (SEO review action 14).
   pressureDropHandCalcVsCfd,
   // Published 17 Oct 2026 (Verified launch).
