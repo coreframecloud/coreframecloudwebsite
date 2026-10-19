@@ -277,7 +277,7 @@ function buildSoftwarePages(cur: Currency): SoftwarePage[] {
       },
       { q: "Where should I keep my .blend files?", a: RESET_ANSWER },
     ],
-    related: ["cloud-workstation-vs-render-farm", "d5-render-cloud-workstation", "3ds-max-cloud-workstation", "twinmotion-cloud-workstation"],
+    related: ["video-animation-rendering", "cloud-workstation-vs-render-farm", "d5-render-cloud-workstation", "3ds-max-cloud-workstation", "twinmotion-cloud-workstation"],
   },
 
   {
@@ -433,7 +433,7 @@ function buildSoftwarePages(cur: Currency): SoftwarePage[] {
       },
       { q: "What happens to my project files after a session?", a: RESET_ANSWER },
     ],
-    related: ["cloud-workstation-vs-render-farm", "blender-cloud-workstation", "gpu-workstation-rental-india"],
+    related: ["video-animation-rendering", "cloud-workstation-vs-render-farm", "blender-cloud-workstation", "gpu-workstation-rental-india"],
   },
 
   {
@@ -540,7 +540,7 @@ function buildSoftwarePages(cur: Currency): SoftwarePage[] {
       },
       { q: "Do my Unreal projects persist between sessions?", a: RESET_ANSWER },
     ],
-    related: ["twinmotion-cloud-workstation", "d5-render-cloud-workstation", "blender-cloud-workstation", "gpu-workstation-rental-india"],
+    related: ["video-animation-rendering", "twinmotion-cloud-workstation", "d5-render-cloud-workstation", "blender-cloud-workstation", "gpu-workstation-rental-india"],
     lastUpdated: "18 October 2026",
   },
   ];

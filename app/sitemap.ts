@@ -56,6 +56,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // Added 10 Oct 2026: answers "render farm vs cloud workstation", a query
     // every result for which was a competitor's blog.
     { url: `${BASE}/cloud-workstation-vs-render-farm`, lastModified: lm("/cloud-workstation-vs-render-farm"), changeFrequency: "monthly", priority: 0.8 },
+    // Video and animation rendering (19 Oct 2026): After Effects, Premiere, Blender animation, walkthroughs.
+    { url: `${BASE}/video-animation-rendering`, lastModified: lm("/video-animation-rendering"), changeFrequency: "monthly", priority: 0.8 },
 
     // COREFRAME STUDIO. Missing entirely until now, which is most of why it is
     // in no index: /studio on this host is a permanent 301 to the app

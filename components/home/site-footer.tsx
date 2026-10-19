@@ -103,6 +103,7 @@ export function SiteFooter({ currency = "INR" }: { currency?: Currency }) {
             <div className="mt-3 flex flex-col gap-0">
               {[
                 { label: "Cloud rendering for architects", href: "/cloud-rendering-for-architects" },
+                { label: "Video and animation rendering", href: "/video-animation-rendering" },
                 { label: `Rent an ${NODE.gpu} in India`, href: "/software/gpu-workstation-rental-india" },
                 { label: "Workstations and storage for studios", href: "/solutions" },
                 { label: "Is 8 GB of VRAM enough?", href: "/vram-for-architectural-rendering" },

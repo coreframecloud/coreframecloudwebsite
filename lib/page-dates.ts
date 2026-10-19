@@ -19,6 +19,7 @@ export const PAGE_UPDATED: Record<string, string> = {
   "/vram-for-architectural-rendering": "2026-10-11",
   "/cloud-rendering-for-architects": "2026-10-18",
   "/cloud-workstation-vs-render-farm": "2026-10-11",
+  "/video-animation-rendering": "2026-10-19",
   "/floor-plan-to-render": "2026-10-18",
   "/floor-plan-to-render/3bhk-example": "2026-10-18",
   "/enterprise": "2026-10-18",
