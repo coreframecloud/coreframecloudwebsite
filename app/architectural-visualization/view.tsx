@@ -424,6 +424,7 @@ export default async function ArchvizView({ currency }: { currency: Currency }) 
                 ["/vram-for-architectural-rendering", "Is 8 GB of VRAM enough for architectural rendering?"],
                 ["/blog/can-my-laptop-run-d5-render-or-lumion", "Can your laptop run D5 Render or Lumion?"],
                 ["/cloud-workstation-vs-render-farm", "Cloud workstation vs render farm"],
+                ["/video-animation-rendering", "Video and animation rendering: After Effects, Premiere, Blender"],
                 ["/blog/cloud-workstation-vs-render-farm-vs-buying-cost-india", "Workstation, render farm or a new PC: what each costs"],
                 ["/how-to-use", "How a Coreframe session works"],
               ].map(([href, label]) => (

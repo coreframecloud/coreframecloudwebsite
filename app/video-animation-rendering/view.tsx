@@ -105,8 +105,8 @@ const WORK: Card[] = [
     name: "Architectural walkthroughs",
     tag: "D5 · Lumion · Twinmotion · Unreal",
     body: "Export the walkthrough from D5 Render, Lumion, Twinmotion or Unreal, then finish it in After Effects or Premiere on the same workstation: no upload and download between machines.",
-    href: "/d5-render-cloud-workstation",
-    link: "D5 Render on Coreframe",
+    href: "/architectural-visualization",
+    link: "Architectural visualization on Coreframe",
   },
 ];
 

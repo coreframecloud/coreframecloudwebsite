@@ -21,7 +21,7 @@ import {
   preprocessFee,
   preprocessLarge,
 } from "@/lib/cfd-prices";
-import { CFD_HOME, CLINIC_CASE, HVAC_PAGE } from "@/lib/cfd-pages";
+import { CFD_HOME, CLINIC_CASE, HVAC_PAGE, HVAC_SERVICE } from "@/lib/cfd-pages";
 import { PageByline } from "@/components/seo/page-byline";
 import { getVisiblePost } from "@/lib/blog";
 import { VERIFICATION_POST_SLUG } from "@/lib/blog/posts/verification-vs-validation-cfd";
@@ -811,7 +811,8 @@ export default async function CfdView({ currency }: { currency: Currency }) {
               </table>
             </div>
             <p className="mt-4 text-[14px] leading-6 text-ink-3">
-              Rooms and HVAC airflow jobs are quoted the same way, with a Draft or Fine mesh:{" "}
+              Rooms and HVAC airflow jobs are quoted the same way, with a Draft or Fine mesh: see the{" "}
+              <Link href={HVAC_SERVICE.path} className="underline underline-offset-4">HVAC simulation service</Link> and the guide to{" "}
               <Link href={HVAC_PAGE.path} className="underline underline-offset-4">room airflow CFD for HVAC</Link>.
             </p>
           </div>
@@ -892,6 +893,9 @@ export default async function CfdView({ currency }: { currency: Currency }) {
             <ul className="mt-4 space-y-2 text-[15.5px] leading-6">
               <li>
                 <Link href={VERIFIED.path} className="text-ink underline underline-offset-4">Mesh independence study (GCI): a worked example on our bend</Link>
+              </li>
+              <li>
+                <Link href={HVAC_SERVICE.path} className="text-ink underline underline-offset-4">HVAC simulation service: one room, set up from a form</Link>
               </li>
               <li>
                 <Link href={HVAC_PAGE.path} className="text-ink underline underline-offset-4">Room airflow CFD for HVAC: comfort, ADPI and draught</Link>

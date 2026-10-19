@@ -2,7 +2,7 @@ import { type Currency, type UsdRateCard } from "@/lib/money";
 import { CFD_EXPRESS, CFD_NORMAL_HOURS, preprocessFee } from "@/lib/cfd-prices";
 import { VERIFIED, verifiedFromAmount } from "@/lib/cfd-verified";
 import { ROOMS_VALIDATION } from "@/lib/cfd-rooms";
-import { HVAC_PAGE } from "@/lib/cfd-pages";
+import { HVAC_PAGE, HVAC_SERVICE } from "@/lib/cfd-pages";
 
 /**
  * The three CFD service tiles (owner, 19 Oct 2026: "build the three-tile
@@ -104,7 +104,7 @@ export function cfdServiceTiles(cur: Currency, usd: UsdRateCard): CfdServiceTile
       sample: ROOMS_SAMPLE_REPORT_LIVE
         ? { href: ROOMS_SAMPLE_REPORT, label: "See a sample report", pdf: true }
         : { href: HVAC_PAGE.path, label: "See what the report shows", pdf: false },
-      details: { href: HVAC_PAGE.path, label: "Details" },
+      details: { href: HVAC_SERVICE.path, label: "Details" },
       validation: { short: firstSentence(ROOMS_VALIDATION), full: ROOMS_VALIDATION },
     },
   ];
