@@ -1,6 +1,6 @@
 import { type Currency, type UsdRateCard } from "@/lib/money";
 import { CFD_EXPRESS, CFD_NORMAL_HOURS, preprocessFee } from "@/lib/cfd-prices";
-import { VERIFIED, verifiedFrom } from "@/lib/cfd-verified";
+import { VERIFIED, verifiedFromAmount } from "@/lib/cfd-verified";
 import { ROOMS_VALIDATION } from "@/lib/cfd-rooms";
 import { HVAC_PAGE } from "@/lib/cfd-pages";
 
@@ -36,13 +36,17 @@ export type CfdServiceTile = {
   /** One plain line under the name. */
   purpose: string;
   bullets: string[];
-  turnaround: string;
-  price: string;
+  /** The two figures the tile leads with (owner, 19 Oct 2026: "We are betting only on this. We need to highlight it."). */
+  turnaround: Figure;
+  price: Figure;
   sample: { href: string; label: string; pdf: boolean };
   details: { href: string; label: string };
   /** Rooms: one short line, with the full claim under a Details disclosure. */
   validation?: { short: string; full: string };
 };
+
+/** A figure shown big ("24 h", "₹599"), with a small word before it ("within", "from") and a short qualifier under it. */
+export type Figure = { pre?: string; figure: string; after?: string };
 
 /** "Validated against three published benchmark rooms." from the full claim. */
 function firstSentence(t: string): string {
@@ -51,7 +55,8 @@ function firstSentence(t: string): string {
 }
 
 export function cfdServiceTiles(cur: Currency, usd: UsdRateCard): CfdServiceTile[] {
-  const meshCheck = `Starts with the mesh check, ${preprocessFee(cur, usd)}; the run is quoted after it.`;
+  const meshCheck: Figure = { figure: preprocessFee(cur, usd), after: "mesh check, then the run is quoted" };
+  const day = { pre: "within", figure: `${CFD_NORMAL_HOURS} h` };
   return [
     {
       id: "standard",
@@ -63,8 +68,8 @@ export function cfdServiceTiles(cur: Currency, usd: UsdRateCard): CfdServiceTile
         "PDF report you can attach for your client",
         "3D results viewer and the data files",
       ],
-      turnaround: `Within ${CFD_NORMAL_HOURS} h, or Express in ${CFD_EXPRESS.hours} h at ${CFD_EXPRESS.multiple}× the price`,
-      price: `${meshCheck} A cheaper Draft run, for comparing design options early, is on the quote too.`,
+      turnaround: { ...day, after: `or Express in ${CFD_EXPRESS.hours} h at ${CFD_EXPRESS.multiple}× the price` },
+      price: { ...meshCheck, after: `${meshCheck.after}; a cheaper Draft run is on the quote too` },
       sample: { href: "/cfd/sample-report.pdf", label: "See a sample report", pdf: true },
       details: { href: "#packages", label: "Details" },
     },
@@ -78,8 +83,8 @@ export function cfdServiceTiles(cur: Currency, usd: UsdRateCard): CfdServiceTile
         "Mesh-independence study with the grid convergence index (GCI)",
         "The result with its error band, in one line",
       ],
-      turnaround: `Within ${VERIFIED.deliveryHours} h (no Express)`,
-      price: `${verifiedFrom(cur).replace(/^from/, "From")}${cur === "USD" ? ", no GST" : ""}, plus the mesh check.`,
+      turnaround: { pre: "within", figure: `${VERIFIED.deliveryHours} h`, after: "no Express" },
+      price: { pre: "from", figure: verifiedFromAmount(cur), after: "plus the mesh check; scales with your mesh" },
       sample: { href: `${VERIFIED.path}#example`, label: "See a worked example", pdf: false },
       details: { href: "#verified", label: "Details" },
     },
@@ -93,7 +98,7 @@ export function cfdServiceTiles(cur: Currency, usd: UsdRateCard): CfdServiceTile
         "Temperature and air-speed maps",
         "PDF report; describe the room, no geometry file needed",
       ],
-      turnaround: `Within ${CFD_NORMAL_HOURS} h of accepting the quote`,
+      turnaround: { ...day, after: "of accepting the quote" },
       price: meshCheck,
       sample: ROOMS_SAMPLE_REPORT_LIVE
         ? { href: ROOMS_SAMPLE_REPORT, label: "See a sample report", pdf: true }

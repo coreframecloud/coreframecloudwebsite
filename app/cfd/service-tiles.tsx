@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useSyncExternalStore } from "react";
 import type { CfdServiceId, CfdServiceTile } from "@/lib/cfd-services";
+import { CfxFigure } from "@/components/cfd-explainer/figure";
 
 /**
  * The three CFD service tiles (lib/cfd-services.ts builds their words on the
@@ -103,16 +104,10 @@ export function ServiceTiles({ tiles, variant }: { tiles: CfdServiceTile[]; vari
                 <p className="mt-2">{t.validation.full}</p>
               </details>
             ) : null}
-            <dl className="mt-5 space-y-2 border-t border-dashed border-ink/25 pt-4 text-[14px] leading-[1.5]">
-              <div>
-                <dt className="font-semibold text-ink">Turnaround</dt>
-                <dd className="text-ink-2">{t.turnaround}</dd>
-              </div>
-              <div>
-                <dt className="font-semibold text-ink">Price</dt>
-                <dd className="text-ink-2">{t.price}</dd>
-              </div>
-            </dl>
+            <div className="cfx-figs mt-5 border-t border-dashed border-ink/25 pt-4">
+              <CfxFigure label="Price" {...t.price} />
+              <CfxFigure label="Turnaround" tone="coral" {...t.turnaround} />
+            </div>
             <p className="mt-4 flex flex-wrap gap-x-4 gap-y-1 text-[14px] leading-6">
               {t.sample.pdf ? (
                 <a href={t.sample.href} target="_blank" rel="noopener" className="text-ink underline underline-offset-4">

@@ -122,7 +122,7 @@ export function ContinuePanel({
   const iters = Math.max(1, Math.min(c.max_iterations, parseInt(n, 10) || 0));
   return (
     <Card title="Run it longer">
-      <Fine>{c.note.replace(/plus GST/, cur === "USD" ? "no GST" : "plus GST")}</Fine>
+      <Fine>{c.note}</Fine>
       {c.express ? (
         <label className="mt-3 flex cursor-pointer items-start gap-3 text-[14px] text-ink-2">
           <input
@@ -170,12 +170,11 @@ export function ContinuePanel({
 export function BillingLine({ job, cur }: { job: CfdJob; cur: Currency }) {
   const b = job.billing;
   if (!b) return null;
-  const usd = cur === "USD";
   const items: [string, string][] = [];
   if (b.quote_fee?.amount_inr)
     items.push([
       "Pre-processing",
-      `${money(b.quote_fee.amount_inr, cur)}${usd ? "" : " incl. GST"}${b.quote_fee.state === "refunded" ? " (refunded)" : ""}`,
+      `${money(b.quote_fee.amount_inr, cur)}${b.quote_fee.state === "refunded" ? " (refunded)" : ""}`,
     ]);
   if (Number(b.on_hold_inr) > 0) items.push(["On hold for the run", money(b.on_hold_inr, cur)]);
   if (Number(b.charged_inr) > 0) items.push(["Charged for the run", money(b.charged_inr, cur)]);

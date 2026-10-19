@@ -11,7 +11,9 @@ import CfdStart from "./cfd-start";
 import { getRateCard, otherCurrencyLine } from "@/lib/rate-card";
 import { cellsLabel, formatMoney, usdRates, type Currency, type UsdRateCard } from "@/lib/money";
 import { VerifiedCard } from "@/components/cfd-explainer/verified-card";
-import { VERIFIED, verifiedFrom } from "@/lib/cfd-verified";
+import { VERIFIED, VERIFIED_INR_ALL_IN, verifiedFrom, verifiedFromAmount } from "@/lib/cfd-verified";
+import { CfxFigure } from "@/components/cfd-explainer/figure";
+import type { Figure } from "@/lib/cfd-services";
 import {
   CFD_EXPRESS,
   CFD_NORMAL_HOURS,
@@ -48,7 +50,7 @@ import { ServiceTiles } from "./service-tiles";
  *
  * VERIFIED (owner, 16 Oct 2026): the mesh-independence study (GCI), built as
  * the API's "validated" package, is on sale and is the one package whose
- * starting price is published (lib/cfd-verified.ts: from ₹5,999 + GST, from $99
+ * starting price is published (lib/cfd-verified.ts: from ₹7,079 all-in, from $99
  * outside India). Never call it "Validated" here: a GCI study is verification,
  * not validation. Landing page: /cfd/mesh-independence-study.
  *
@@ -71,8 +73,12 @@ import { ServiceTiles } from "./service-tiles";
  *
  * 15 Oct 2026: rendered twice, as /cfd (INR) and /usd/cfd (USD, for visitors
  * outside India; proxy.ts rewrites to it, the browser keeps /cfd). The USD
- * copy shows the pre-processing charge from the rate card's `usd` block with no GST and
+ * copy shows the pre-processing charge from the rate card's `usd` block and
  * says runs are quoted in US dollars after the mesh, never a run price.
+ *
+ * ONE all-in price, no tax words (owner, 19 Oct 2026): rupee figures are what
+ * the wallet is charged (lib/cfd-prices.ts inrAllIn); the terms page alone
+ * mentions tax and the invoice.
  */
 
 const CFD_OG_IMAGE = {
@@ -173,7 +179,7 @@ const STEPS = [
     body: "Closed solid, units, and the flat end caps that become your inlet and outlets. You confirm which opening is the inlet on your job page.",
   },
   {
-    title: "Pay for pre-processing / mesh check (₹599 incl. GST for most models)",
+    title: "Pay for pre-processing / mesh check (₹599 for most models)",
     body: "We check your geometry, build a wall-resolved mesh and verify its quality; your exact run price comes with it. You get a one-page mesh report and a quote with packages to choose from, by email.",
   },
   {
@@ -213,11 +219,11 @@ const FAQ = [
   },
   {
     q: "What does it cost to start?",
-    a: "Pre-processing / mesh check is ₹599 (incl. GST) for most duct and pipe models and ₹1,499 for very large models (over 5 million cells), paid from your Coreframe wallet. We check your geometry, build a wall-resolved mesh and verify its quality; your exact run price comes with it. The size is estimated from your STL before you pay, so you see which price applies on your job page. You get a one-page mesh report and a quote with packages. Pre-processing is a separate charge for that work and is not deducted from the run. You pay for the run only if you accept the quote. The quoted amount is held in your wallet, you are charged for what the run actually used, and the rest goes back to your wallet.",
+    a: "Pre-processing / mesh check is ₹599 for most duct and pipe models and ₹1,499 for very large models (over 5 million cells), paid from your Coreframe wallet. We check your geometry, build a wall-resolved mesh and verify its quality; your exact run price comes with it. The size is estimated from your STL before you pay, so you see which price applies on your job page. You get a one-page mesh report and a quote with packages. Pre-processing is a separate charge for that work and is not deducted from the run. You pay for the run only if you accept the quote. The quoted amount is held in your wallet, you are charged for what the run actually used, and the rest goes back to your wallet.",
   },
   {
     q: "Do you offer CFD meshing as a service?",
-    a: "Not as a separate product. Meshing is part of pre-processing / mesh check (₹599 incl. GST for most models): we build a wall-resolved mesh of your geometry, run a mesh quality check on it and send you a one-page Mesh report with your exact run price. The mesh files themselves come in the case download after a run, in an open format.",
+    a: "Not as a separate product. Meshing is part of pre-processing / mesh check (₹599 for most models): we build a wall-resolved mesh of your geometry, run a mesh quality check on it and send you a one-page Mesh report with your exact run price. The mesh files themselves come in the case download after a run, in an open format.",
   },
   {
     q: "Do you check mesh independence?",
@@ -255,7 +261,7 @@ const FAQ = [
 
 /** The mesh-independence answer; only the price differs by currency. */
 function verifiedFaq(cur: Currency): string {
-  return `Yes, with the Verified package (${verifiedFrom(cur)}${cur === "USD" ? ", no GST" : ""}): a mesh-independence study that runs your case on three meshes, coarse, medium and fine, and reports the grid convergence index (GCI) on the pressure drop, for example "Mesh-independent: static pressure drop = 12.30 Pa ± 0.13 % (fine mesh)". Internal flow up to about ${VERIFIED.maxMcells} million cells, results within ${VERIFIED.deliveryHours} hours. ${VERIFIED.meaning} The Draft and Standard packages run one wall-resolved mesh that has passed our mesh quality check.`;
+  return `Yes, with the Verified package (${verifiedFrom(cur)}): a mesh-independence study that runs your case on three meshes, coarse, medium and fine, and reports the grid convergence index (GCI) on the pressure drop, for example "Mesh-independent: static pressure drop = 12.30 Pa ± 0.13 % (fine mesh)". Internal flow up to about ${VERIFIED.maxMcells} million cells, results within ${VERIFIED.deliveryHours} hours. ${VERIFIED.meaning} The Draft and Standard packages run one wall-resolved mesh that has passed our mesh quality check.`;
 }
 
 
@@ -263,7 +269,7 @@ const PACKAGES_Q = "What are the Draft, Standard and Verified packages?";
 
 /** Draft / Standard / Verified / Express in one answer, in the page's currency. */
 function packagesFaq(cur: Currency): string {
-  return `Three packages, shown on your quote after the mesh check. Draft is the cheaper one, for comparing design options early; Standard is the number you put in a client report. Both run your case on one wall-resolved mesh that has passed our mesh quality check; Standard holds the pressure to a tighter convergence target than Draft. Both are priced on your quote. Verified is Standard on three meshes with a ± band: it reports the grid convergence index, ${verifiedFrom(cur)}${cur === "USD" ? ", no GST" : ""}. Express, results in ${CFD_EXPRESS.hours} hours at ${CFD_EXPRESS.multiple}x the price, is offered on Draft and Standard where the model fits.`;
+  return `Three packages, shown on your quote after the mesh check. Draft is the cheaper one, for comparing design options early; Standard is the number you put in a client report. Both run your case on one wall-resolved mesh that has passed our mesh quality check; Standard holds the pressure to a tighter convergence target than Draft. Both are priced on your quote. Verified is Standard on three meshes with a ± band: it reports the grid convergence index, ${verifiedFrom(cur)}. Express, results in ${CFD_EXPRESS.hours} hours at ${CFD_EXPRESS.multiple}x the price, is offered on Draft and Standard where the model fits.`;
 }
 
 /**
@@ -308,16 +314,15 @@ function serviceLdFor(u: UsdRateCard, cur: Currency) {
         inr: CFD_PREPROCESS_INR.small,
         usd: u.cfd_quote_fee_small,
         url,
-        description: `For most duct and pipe models. Geometry check, wall-resolved mesh and mesh-quality check, with a mesh report and the exact run price. Very large models (over ${cells} cells) are ${cur === "USD" ? formatMoney(u.cfd_quote_fee_large, "USD") : `${formatMoney(CFD_PREPROCESS_INR.large, "INR")} incl. GST`}. The run is quoted separately and paid only if you accept.`,
+        description: `For most duct and pipe models. Geometry check, wall-resolved mesh and mesh-quality check, with a mesh report and the exact run price. Very large models (over ${cells} cells) are ${cur === "USD" ? formatMoney(u.cfd_quote_fee_large, "USD") : formatMoney(CFD_PREPROCESS_INR.large, "INR")}. The run is quoted separately and paid only if you accept.`,
       }),
       ...regionalOffers({
         name: "Verified: mesh-independence study (GCI)",
-        inr: VERIFIED.fromInr,
+        inr: VERIFIED_INR_ALL_IN.from,
         usd: VERIFIED.fromUsd,
         url: `${SITE}${VERIFIED.path}`,
-        inrTaxIncluded: false,
         from: true,
-        description: `Three meshes and the grid convergence index on the pressure drop, ${verifiedFrom(cur)}${cur === "USD" ? ", no GST" : ""}. Results within ${VERIFIED.deliveryHours} hours.`,
+        description: `Three meshes and the grid convergence index on the pressure drop, ${verifiedFrom(cur)}. Results within ${VERIFIED.deliveryHours} hours.`,
       }),
       {
         "@type": "Offer",
@@ -330,8 +335,7 @@ function serviceLdFor(u: UsdRateCard, cur: Currency) {
   };
 }
 
-/** The pre-processing sentences for a visitor outside India. No GST: an export of
- *  services. Run prices are never shown; runs are quoted after the mesh. */
+/** The pre-processing sentences for a visitor outside India. Run prices are never shown; runs are quoted after the mesh. */
 function usdCopy(u: UsdRateCard) {
   const small = formatMoney(u.cfd_quote_fee_small, "USD");
   const large = formatMoney(u.cfd_quote_fee_large, "USD");
@@ -344,7 +348,7 @@ function usdSteps(u: UsdRateCard) {
   return STEPS.map((s, i) =>
     i === 2
       ? {
-          title: `Pay for pre-processing / mesh check (${small} for most models, no GST)`,
+          title: `Pay for pre-processing / mesh check (${small} for most models)`,
           body: "We check your geometry, build a wall-resolved mesh and verify its quality; your exact run price comes with it. You get a one-page mesh report and a quote in US dollars with packages to choose from, by email.",
         }
       : s,
@@ -357,24 +361,26 @@ function usdFaq(u: UsdRateCard) {
     f.q === "Do you check mesh independence?"
       ? { q: f.q, a: verifiedFaq("USD") }
       : f.q === "Do you offer CFD meshing as a service?"
-      ? { q: f.q, a: f.a.replace("₹599 incl. GST for most models", `${small} for most models, no GST`) }
+      ? { q: f.q, a: f.a.replace("₹599 for most models", `${small} for most models`) }
       : f.q === "What does it cost to start?"
       ? {
           q: f.q,
-          a: `Pre-processing / mesh check is ${small} for most duct and pipe models and ${large} for very large models (over ${cells} cells), paid from your Coreframe wallet, with no GST (export of services). We check your geometry, build a wall-resolved mesh and verify its quality; your exact run price comes with it. The size is estimated from your STL before you pay, so you see which price applies on your job page. You get a one-page mesh report and a quote with packages. Pre-processing is a separate charge for that work and is not deducted from the run. Runs are quoted in US dollars after the mesh is built, and you pay for the run only if you accept the quote. The quoted amount is held in your wallet, you are charged for what the run actually used, and the rest goes back to your wallet.`,
+          a: `Pre-processing / mesh check is ${small} for most duct and pipe models and ${large} for very large models (over ${cells} cells), paid from your Coreframe wallet. We check your geometry, build a wall-resolved mesh and verify its quality; your exact run price comes with it. The size is estimated from your STL before you pay, so you see which price applies on your job page. You get a one-page mesh report and a quote with packages. Pre-processing is a separate charge for that work and is not deducted from the run. Runs are quoted in US dollars after the mesh is built, and you pay for the run only if you accept the quote. The quoted amount is held in your wallet, you are charged for what the run actually used, and the rest goes back to your wallet.`,
         }
       : f,
   );
 }
 
 /** The package table (SEO review 18 Oct 2026, 3.1). Draft and Standard prices are on the quote, never here. Draft is the API's "quick" package (renamed by the owner, 19 Oct 2026). */
-function packageRows(cur: Currency, u: UsdRateCard): [string, string, string, string, string][] {
-  const onQuote = `On your quote after the mesh check (${cur === "USD" ? formatMoney(u.cfd_quote_fee_small, "USD") : formatMoney(CFD_PREPROCESS_INR.small, "INR")})`;
+function packageRows(cur: Currency, u: UsdRateCard): [string, string, string, Figure, Figure][] {
+  const fee = cur === "USD" ? formatMoney(u.cfd_quote_fee_small, "USD") : formatMoney(CFD_PREPROCESS_INR.small, "INR");
+  const onQuote: Figure = { figure: "On your quote", after: `after the ${fee} mesh check` };
+  const day: Figure = { pre: "within", figure: `${CFD_NORMAL_HOURS} h`, after: "or Express" };
   return [
-    ["Draft", "1", "Cheaper, for comparing design options early. Pressure drop, loss coefficient, PDF report, 3D viewer, data files; default residual targets (10⁻³)", `Within ${CFD_NORMAL_HOURS} h, or Express`, onQuote],
-    ["Standard", "1", "The number you put in a client report. As Draft, with a tighter pressure target (10⁻⁴) and a longer iteration budget", `Within ${CFD_NORMAL_HOURS} h, or Express`, onQuote],
-    ["Verified", "3 + GCI", "Standard on three meshes, with a ± band. Mesh-independence study: three meshes, the grid convergence index and a one-line verdict", `Within ${VERIFIED.deliveryHours} h (no Express)`, `${verifiedFrom(cur).replace(/^from/, "From")}${cur === "USD" ? ", no GST" : ""}`],
-    ["Express", "—", "A delivery speed on Draft or Standard, where your quote offers it (smaller steady runs)", `${CFD_EXPRESS.hours} h`, `${CFD_EXPRESS.multiple}x the package price`],
+    ["Draft", "1", "Cheaper, for comparing design options early. Pressure drop, loss coefficient, PDF report, 3D viewer, data files; default residual targets (10⁻³)", day, onQuote],
+    ["Standard", "1", "The number you put in a client report. As Draft, with a tighter pressure target (10⁻⁴) and a longer iteration budget", day, onQuote],
+    ["Verified", "3 + GCI", "Standard on three meshes, with a ± band. Mesh-independence study: three meshes, the grid convergence index and a one-line verdict", { pre: "within", figure: `${VERIFIED.deliveryHours} h`, after: "no Express" }, { pre: "from", figure: verifiedFromAmount(cur) }],
+    ["Express", "—", "A delivery speed on Draft or Standard, where your quote offers it (smaller steady runs)", { figure: `${CFD_EXPRESS.hours} h` }, { figure: `${CFD_EXPRESS.multiple}×`, after: "the package price" }],
   ];
 }
 
@@ -500,7 +506,7 @@ export default async function CfdView({ currency }: { currency: Currency }) {
             <h2 className="cf-section-title mt-4">CFD pre-processing and mesh check</h2>
             <p className="cf-section-copy mt-3 max-w-[46rem]">
               Before any run, we check your geometry, build a wall-resolved mesh and run a mesh quality check on it. You get a one-page Mesh report and the exact price of the
-              pressure drop simulation, for {usdText ? `${usdText.small} (no GST)` : "₹599 incl. GST"} on most models.
+              pressure drop simulation, for {usdText ? usdText.small : formatMoney(CFD_PREPROCESS_INR.small, "INR")} on most models.
             </p>
             <div className="mt-8 grid gap-6 sm:grid-cols-2">
               {[
@@ -765,7 +771,22 @@ export default async function CfdView({ currency }: { currency: Currency }) {
           <div className="cf-wide">
             <p className="cf-eyebrow">Packages</p>
             <h2 className="cf-section-title mt-4">Draft, Standard, Verified, and Express when you need it fast.</h2>
-            <div className="mt-8 overflow-x-auto rounded-[6px] border-[1.5px] border-ink bg-paper">
+            {/* phones: one card per package, so turnaround and price are on screen (owner, 19 Oct 2026) */}
+            <ul className="mt-8 space-y-4 sm:hidden">
+              {packages.map(([name, meshes, what, when, price]) => (
+                <li key={name} className="rounded-[6px] border-[1.5px] border-ink bg-paper p-5">
+                  <p className="font-semibold text-ink">
+                    {name} <span className="font-normal text-ink-3">· {meshes === "—" ? "a delivery speed" : meshes === "1" ? "1 mesh" : meshes.replace(/^3 \+ /, "3 meshes + ")}</span>
+                  </p>
+                  <p className="mt-2 text-[14.5px] leading-6 text-ink-2">{what}</p>
+                  <div className="cfx-figs mt-4">
+                    <CfxFigure size="sm" label="Turnaround" tone="coral" {...when} />
+                    <CfxFigure size="sm" label="Price" {...price} />
+                  </div>
+                </li>
+              ))}
+            </ul>
+            <div className="mt-8 hidden overflow-x-auto rounded-[6px] border-[1.5px] border-ink bg-paper sm:block">
               <table className="w-full min-w-[720px] border-collapse text-left text-[14.5px] leading-6 text-ink-2">
                 <thead>
                   <tr>
@@ -782,8 +803,8 @@ export default async function CfdView({ currency }: { currency: Currency }) {
                       <th scope="row" className="px-4 py-3 font-semibold text-ink">{name}</th>
                       <td className="px-4 py-3">{meshes}</td>
                       <td className="px-4 py-3">{what}</td>
-                      <td className="px-4 py-3">{when}</td>
-                      <td className="px-4 py-3">{price}</td>
+                      <td className="px-4 py-3"><CfxFigure size="sm" tone="coral" {...when} /></td>
+                      <td className="px-4 py-3"><CfxFigure size="sm" {...price} /></td>
                     </tr>
                   ))}
                 </tbody>
@@ -801,7 +822,11 @@ export default async function CfdView({ currency }: { currency: Currency }) {
           <div className="cfx-panel cf-wide rounded-[6px] p-6 sm:p-10">
             <p className="cfx-eyebrow">What it costs to start</p>
             <h2 className="cf-section-title mt-4">
-              {usdText ? `${usdText.small} for pre-processing / mesh check.` : "₹599 incl. GST for pre-processing / mesh check."}
+              {/* the price on the watercolour wash (owner, 19 Oct 2026) */}
+              <span className="cfx-fig">
+                <span className="cfx-fig-num cfx-fig-num--inherit">{usdText ? usdText.small : formatMoney(CFD_PREPROCESS_INR.small, "INR")}</span>
+              </span>{" "}
+              for pre-processing / mesh check.
             </h2>
             <p className="mt-3 text-[15px] leading-6 text-ink-2">
               {preprocessFee(currency, card)} for most models. {preprocessLarge(currency, card)}
@@ -809,8 +834,8 @@ export default async function CfdView({ currency }: { currency: Currency }) {
             <ul className="mt-7 grid grid-cols-1 gap-5 sm:grid-cols-2">
               {[
                 usdText
-                  ? ["Pre-processing / mesh check", `${usdText.small} for most duct and pipe models; ${usdText.large} for very large models (over ${usdText.cells} cells). No GST (export of services). Paid from your Coreframe wallet. We check your geometry, build a wall-resolved mesh and verify its quality; your exact run price comes with it.`]
-                  : ["Pre-processing / mesh check", "₹599 incl. GST for most duct and pipe models; ₹1,499 for very large models (over 5 million cells). Paid from your Coreframe wallet. We check your geometry, build a wall-resolved mesh and verify its quality; your exact run price comes with it."],
+                  ? ["Pre-processing / mesh check", `${usdText.small} for most duct and pipe models; ${usdText.large} for very large models (over ${usdText.cells} cells). Paid from your Coreframe wallet. We check your geometry, build a wall-resolved mesh and verify its quality; your exact run price comes with it.`]
+                  : ["Pre-processing / mesh check", `${formatMoney(CFD_PREPROCESS_INR.small, "INR")} for most duct and pipe models; ${formatMoney(CFD_PREPROCESS_INR.large, "INR")} for very large models (over ${cellsLabel(CFD_PREPROCESS_INR.smallMaxCells)} cells). Paid from your Coreframe wallet. We check your geometry, build a wall-resolved mesh and verify its quality; your exact run price comes with it.`],
                 ["A separate charge", "Pre-processing pays for the geometry check, the mesh and its quality check. It is not deducted from the run price."],
                 usdText
                   ? ["Mesh report and quote by email", "A one-page mesh report (geometry, mesh quality checks, a picture of the mesh) and a quote in US dollars: packages to choose from, each with its iteration budget and convergence targets."]
@@ -832,7 +857,7 @@ export default async function CfdView({ currency }: { currency: Currency }) {
               </p>
             ) : (
             <p className="mt-7 text-[14px] leading-6 text-ink-3">
-              Rejected before meshing: no charge. Pre-processing that fails on our side: the charge goes back to your wallet. GST
+              Rejected before meshing: no charge. Pre-processing that fails on our side: the charge goes back to your wallet. An
               invoice on every payment.
             </p>
             )}

@@ -11,6 +11,7 @@ import { CFD_CATEGORIES, cfdCategory, type CfdCategoryId } from "@/lib/cfd-categ
 import type { CfdServiceId } from "@/lib/cfd-services";
 import { CATEGORY_FIELDS } from "./categories";
 import { ROOMS_VALIDATION } from "@/lib/cfd-rooms";
+import { CFD_PREPROCESS_INR } from "@/lib/cfd-prices";
 import { Field, inputCls, textareaCls } from "./form-ui";
 
 /**
@@ -286,9 +287,9 @@ export default function CfdJobForm({ service, token, accountEmail, onSignedOut, 
           <ol className="list-decimal space-y-1 pl-5">
             <li>{fields?.nextFirstStep ?? "Confirm which opening is the inlet (and the units, if we ask)."}</li>
             {usdFee ? (
-              <li>Pay for pre-processing / mesh check from your Coreframe wallet: {usdFee.small} for most models, {usdFee.large} for very large models (over {usdFee.cells} cells), no GST.</li>
+              <li>Pay for pre-processing / mesh check from your Coreframe wallet: {usdFee.small} for most models, {usdFee.large} for very large models (over {usdFee.cells} cells).</li>
             ) : (
-            <li>Pay for pre-processing / mesh check from your Coreframe wallet: ₹599 incl. GST for most models, ₹1,499 for very large models (over 5 million cells).</li>
+            <li>Pay for pre-processing / mesh check from your Coreframe wallet: {formatMoney(CFD_PREPROCESS_INR.small, "INR")} for most models, {formatMoney(CFD_PREPROCESS_INR.large, "INR")} for very large models (over {cellsLabel(CFD_PREPROCESS_INR.smallMaxCells)} cells).</li>
             )}
             <li>We check the geometry, build a wall-resolved mesh and verify its quality, then email you the mesh report and the quote. Pre-processing is a separate charge for that work, not deducted from the run.</li>
           </ol>
@@ -380,8 +381,8 @@ export default function CfdJobForm({ service, token, accountEmail, onSignedOut, 
               <p className="text-[13px] leading-5 text-ink-3">
                 Submitting as {accountEmail || "your Coreframe account"}. Nothing is charged when you submit. Pre-processing
                 {usdFee
-                  ? ` (${usdFee.small} for most models, ${usdFee.large} over ${usdFee.cells} cells, no GST)`
-                  : " (₹599 incl. GST for most models, ₹1,499 over 5 million cells)"} is paid later, on your job page, from your Coreframe wallet. By submitting you agree to our{" "}
+                  ? ` (${usdFee.small} for most models, ${usdFee.large} over ${usdFee.cells} cells)`
+                  : ` (${formatMoney(CFD_PREPROCESS_INR.small, "INR")} for most models, ${formatMoney(CFD_PREPROCESS_INR.large, "INR")} over ${cellsLabel(CFD_PREPROCESS_INR.smallMaxCells)} cells)`} is paid later, on your job page, from your Coreframe wallet. By submitting you agree to our{" "}
                 <a href="/terms-of-service" className="underline underline-offset-2">terms</a>.
               </p>
               <button type="submit" disabled={busy !== ""} className="cf-btn-primary shrink-0 disabled:opacity-60">

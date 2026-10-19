@@ -3,8 +3,8 @@
 /**
  * The quote (owner, 16 Oct 2026): one table, simple words, the whole
  * calculation visible. Columns are the packages (pick one by its heading);
- * rows go base fee → compute → subtotal → introductory discount → price
- * before GST → GST → total held, then the compute time, when it counts as
+ * rows go base fee → compute → subtotal → introductory discount → total
+ * held, then the compute time, when it counts as
  * converged, and the two delivery speeds with their estimated start and
  * results in the viewer's own time zone. Every number comes from the API
  * (quote.packages[].breakdown); nothing is recomputed here.
@@ -13,10 +13,17 @@
  * only; the package switch sits above it. No sideways page scroll.
  *
  * Same POST /pay body as before: {package, stop_when_settled, express}.
+ *
+ * One all-in price, no tax words (owner, 19 Oct 2026). The API's breakdown
+ * lines are ex-tax on a rupee quote, so each one is shown with the quote's own
+ * GST rate folded in (allIn), to the rupee; the total held is the API's figure,
+ * exactly what the wallet holds. The ex-tax and GST rows are gone. Dollar
+ * quotes carry no tax, so their lines are shown as they are.
  */
 import { useState } from "react";
 import Link from "next/link";
 import { type Currency } from "@/lib/money";
+import { CFD_GST_RATE, inrAllIn } from "@/lib/cfd-prices";
 import {
   fmtDate,
   fmtNumber,
@@ -112,7 +119,7 @@ export function QuotePanel({
       <Card tone="action" eyebrow="Next step" title="This quote has expired">
         <Body>
           Quotes are valid for seven days. A fresh quote is built from your existing mesh and is charged as pre-processing again
-          {job.quote_fee ? ` (${money(job.quote_fee.total, cur)}${usd ? "" : " incl. GST"})` : ""}.
+          {job.quote_fee ? ` (${money(job.quote_fee.total, cur)})` : ""}.
         </Body>
         <div className="mt-5">
           {signedIn ? (
@@ -138,6 +145,9 @@ export function QuotePanel({
   const minimumPkgs = pkgs.filter((p) => p.breakdown?.minimum_applies);
   const promiseH = dv.normal?.promise_hours ?? 24;
   const m = (v: unknown) => money(v as string, cur);
+  // ex-tax API line -> the all-in amount (rupee quotes only)
+  const taxRate = usd ? 0 : (quote.gst_rate_percent ?? CFD_GST_RATE * 100) / 100;
+  const a = (v: unknown) => (usd ? m(v) : money(inrAllIn(moneyValue(v as string), taxRate), cur));
 
   const rows: Row[] = [
     {
@@ -146,7 +156,7 @@ export function QuotePanel({
       cell: (p) =>
         p.compute_label ? p.compute_label.replace(/^Compute, up to /, "") : fmtNumber(p.iterations),
     },
-    { key: "base", label: "Base fee", cell: (p) => (p.breakdown ? m(p.breakdown.base_fee) : m(p.base_fee)) },
+    { key: "base", label: "Base fee", cell: (p) => (p.breakdown ? a(p.breakdown.base_fee) : a(p.base_fee)) },
     {
       key: "compute",
       label: (
@@ -156,27 +166,27 @@ export function QuotePanel({
       ),
       cell: (p) => {
         const b = p.breakdown;
-        if (!b) return m(p.compute_ex_gst);
+        if (!b) return a(p.compute_ex_gst);
         const f = b.compute_formula;
         if (p.levels_text) {
           // Verified (API: validated): priced per mesh, shown as the three meshes' cells
           return (
             <>
-              {m(b.compute)}
+              {a(b.compute)}
               <span className="mt-0.5 block text-[12px] leading-[1.45] text-ink-3">
                 {p.levels_text}
-                {f.rate_per_mcell_per_kiter ? ` × iterations at ${m(f.rate_per_mcell_per_kiter)}` : ""}
+                {f.rate_per_mcell_per_kiter ? ` × iterations at ${a(f.rate_per_mcell_per_kiter)}` : ""}
               </span>
             </>
           );
         }
         return (
           <>
-            {m(b.compute)}
+            {a(b.compute)}
             {f.rate_per_mcell_per_kiter && !p.compute_label ? (
               <span className="mt-0.5 block text-[12px] leading-[1.45] text-ink-3">
                 {millions(f.mcells)} M cells × {fmtNumber(f.iterations)} it.
-                {f.factor !== 1 ? ` × ${f.factor}` : ""} at {m(f.rate_per_mcell_per_kiter)}
+                {f.factor !== 1 ? ` × ${f.factor}` : ""} at {a(f.rate_per_mcell_per_kiter)}
               </span>
             ) : null}
           </>
@@ -189,26 +199,20 @@ export function QuotePanel({
             key: "adj",
             label: minimumPkgs.length ? "Minimum charge top-up*" : "Rounded up",
             cell: (p: QuotePackage) =>
-              p.breakdown?.adjustment ? m(p.breakdown.adjustment) : <span className="text-ink-3">–</span>,
+              p.breakdown?.adjustment ? a(p.breakdown.adjustment) : <span className="text-ink-3">–</span>,
           },
         ]
       : []),
     ...(anyDiscount
       ? [
-          { key: "sub", label: "Subtotal", cell: (p: QuotePackage) => m(p.breakdown?.subtotal ?? p.list_price_ex_gst) },
+          { key: "sub", label: "Subtotal", cell: (p: QuotePackage) => a(p.breakdown?.subtotal ?? p.list_price_ex_gst) },
           {
             key: "disc",
             label: `Introductory discount (${pkgs.find((p) => p.breakdown?.discount_percent)?.breakdown?.discount_percent ?? 50}%)`,
-            cell: (p: QuotePackage) => (p.breakdown?.discount ? `−${m(p.breakdown.discount)}` : "–"),
+            cell: (p: QuotePackage) => (p.breakdown?.discount ? `−${a(p.breakdown.discount)}` : "–"),
           },
         ]
       : []),
-    { key: "ex", label: usd ? "Price" : "Price before GST", cell: (p) => m(p.breakdown?.price_ex_gst ?? p.price_ex_gst) },
-    {
-      key: "gst",
-      label: usd ? "No GST (export)" : `GST ${quote.gst_rate_percent ?? 18}%`,
-      cell: (p) => (usd ? "–" : m(p.breakdown?.gst ?? p.gst)),
-    },
     {
       key: "total",
       label: "Total held in your wallet",
@@ -397,14 +401,14 @@ export function QuotePanel({
               {rate.compute_formula.rate_after_discount
                 ? usd
                   ? " (at the regular price; the introductory discount halves it)"
-                  : ` (at the regular price; after the introductory discount the rate is ${m(rate.compute_formula.rate_after_discount)})`
+                  : ` (at the regular price; after the introductory discount the rate is ${a(rate.compute_formula.rate_after_discount)})`
                 : ""}
-              {usd ? "" : ", before GST"}.
+              .
             </p>
           ) : null}
           {minimumPkgs.length ? (
             <p>
-              * {minimumPkgs.map((p) => `${p.label}: the minimum price is ${m(p.breakdown!.minimum_charge)}${usd ? "" : " before GST"}`).join("; ")}.
+              * {minimumPkgs.map((p) => `${p.label}: the minimum price is ${a(p.breakdown!.minimum_charge)}`).join("; ")}.
               Base fee plus compute come to less, so the difference is added.
             </p>
           ) : null}

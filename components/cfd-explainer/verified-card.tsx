@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { StatusBadge } from "@/components/home/redesign/offerings";
-import { VERIFIED, verifiedFrom } from "@/lib/cfd-verified";
+import { VERIFIED, VERIFIED_INR_ALL_IN, verifiedFrom } from "@/lib/cfd-verified";
 import { formatMoney, type Currency } from "@/lib/money";
 
 /**
@@ -41,8 +41,8 @@ export function VerifiedCard({
           <p className="font-heading text-[24px] leading-[1.2] font-medium text-ink">{verifiedFrom(currency)}</p>
           <p className="mt-1 text-[13px] leading-5 text-ink-3">
             {usd
-              ? "No GST (export of services). Scales with the cells in your mesh."
-              : `Scales with the cells in your mesh: about ${formatMoney(VERIFIED.inrAt2M, "INR")} + GST at 2 million cells.`}
+              ? "Scales with the cells in your mesh."
+              : `Scales with the cells in your mesh: about ${formatMoney(VERIFIED_INR_ALL_IN.at2M, "INR")} at 2 million cells.`}
           </p>
         </div>
       </div>

@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { PageByline } from "@/components/seo/page-byline";
-import { VERIFIED, verifiedPriceLine } from "@/lib/cfd-verified";
+import { VERIFIED, VERIFIED_INR_ALL_IN, verifiedPriceLine } from "@/lib/cfd-verified";
 import type { Metadata } from "next";
 import { ViewContent } from "@/components/analytics/view-content";
 import { JsonLd } from "@/components/seo/json-ld";
@@ -74,7 +74,7 @@ export async function pricingMetadata(currency: Currency): Promise<Metadata> {
  * about money and commitment, so this is where they belonged anyway.
  *
  * Every workstation figure comes from the control-plane rate card. The one
- * typed price is the CFD pre-processing charge (quote_fee, ₹599 incl. GST; ₹1,499 over 5 million cells), which is the published fee on
+ * typed price is the CFD pre-processing charge (quote_fee, ₹599 all-in; ₹1,499 over 5 million cells), which is the published fee on
  * /cfd; how a CFD run is quoted is never described here. The exception is the
  * Verified package's published starting price (lib/cfd-verified.ts, owner
  * 16 Oct 2026).
@@ -147,7 +147,7 @@ export default async function PricingView({ currency }: { currency: Currency }) 
         ? regionalOffers({ name: "RTX 5080 workstation, per GPU-hour", inr: Math.round(inrHour), usd: usd.gpu_hourly, url: `${SITE}/pricing`, unit: { unitText: "GPU-hour" } })
         : []),
       ...regionalOffers({ name: "CFD pre-processing / mesh check", inr: CFD_PREPROCESS_INR.small, usd: usd.cfd_quote_fee_small, url: `${SITE}/cfd` }),
-      ...regionalOffers({ name: "CFD Verified: mesh-independence study (GCI)", inr: VERIFIED.fromInr, usd: VERIFIED.fromUsd, url: `${SITE}${VERIFIED.path}`, inrTaxIncluded: false, from: true }),
+      ...regionalOffers({ name: "CFD Verified: mesh-independence study (GCI)", inr: VERIFIED_INR_ALL_IN.from, usd: VERIFIED.fromUsd, url: `${SITE}${VERIFIED.path}`, from: true }),
       ...regionalOffers({ name: "Studio 2K download", inr: studio.inr.k2, usd: studio.usd.k2, url: `${SITE}/floor-plan-to-render` }),
       ...regionalOffers({ name: "Studio 4K download", inr: studio.inr.k4, usd: studio.usd.k4, url: `${SITE}/floor-plan-to-render` }),
     ],
@@ -193,7 +193,7 @@ export default async function PricingView({ currency }: { currency: Currency }) 
             },
             {
               o: offering("cfd"),
-              price: `${meshSmall} pre-processing (${usdView ? "no GST" : "incl. GST"})`,
+              price: `${meshSmall} pre-processing`,
               note: `Most models; ${meshLarge} over ${cellsOver} cells. Pay for the run only if you accept`,
               href: "#cfd",
               tint: "cfx-panel",
@@ -297,9 +297,7 @@ export default async function PricingView({ currency }: { currency: Currency }) 
             <StatusBadge status="New" />
           </div>
           <h2 className="cf-section-title mt-4 max-w-[36rem]">
-            {usdView
-              ? `${meshSmall} for pre-processing / mesh check.`
-              : `${meshSmall} incl. GST for pre-processing / mesh check.`}
+            {`${meshSmall} for pre-processing / mesh check.`}
           </h2>
           <p className="cf-section-copy mt-3 max-w-[40rem]">
             Upload one STL of your duct or pipe. We check it, build the real mesh on our machine and email you a quote.
@@ -309,7 +307,7 @@ export default async function PricingView({ currency }: { currency: Currency }) 
             {[
               [
                 "Pre-processing / mesh check",
-                `${meshSmall}${usdView ? "" : " incl. GST"} for most duct and pipe models; ${meshLarge} for very large models (over ${cellsOver} cells).${usdView ? " No GST (export of services)." : ""} Paid from your Coreframe wallet. We check your geometry, build a wall-resolved mesh and verify its quality; your exact run price comes with it. A separate charge, not deducted from the run.`,
+                `${meshSmall} for most duct and pipe models; ${meshLarge} for very large models (over ${cellsOver} cells). Paid from your Coreframe wallet. We check your geometry, build a wall-resolved mesh and verify its quality; your exact run price comes with it. A separate charge, not deducted from the run.`,
               ],
               usdView
                 ? ["Mesh report and quote by email", "Runs are quoted in US dollars after the mesh is built: packages to choose from, each with its iteration budget and convergence targets."]
@@ -330,7 +328,7 @@ export default async function PricingView({ currency }: { currency: Currency }) 
           <p className="mt-6 text-[14px] leading-6 text-ink-2">
             {usdView
               ? "Rejected before meshing: no charge. An invoice in US dollars on every payment. Rooms and HVAC airflow (steady analysis): describe one room instead of uploading an STL; it is pre-processed and quoted the same way."
-              : "Rejected before meshing: no charge. A GST invoice on every payment. Rooms and HVAC airflow (steady analysis): describe one room instead of uploading an STL; it is pre-processed and quoted the same way."}
+              : "Rejected before meshing: no charge. An invoice on every payment. Rooms and HVAC airflow (steady analysis): describe one room instead of uploading an STL; it is pre-processed and quoted the same way."}
           </p>
           <div className="mt-7 flex flex-wrap gap-3">
             <TrackedLink

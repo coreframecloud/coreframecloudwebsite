@@ -6,7 +6,7 @@ import { Fold } from "@/components/visuals/fold";
 import { Callout, ExplainFigure, Hl, SectionHead } from "@/components/cfd-explainer";
 import { VerifiedCard } from "@/components/cfd-explainer/verified-card";
 import { CountUp } from "@/components/cfd-explainer/count-up";
-import { BEND_RECORD, PIPE_RECORD, VERIFIED, verifiedFrom, verifiedPriceLine } from "@/lib/cfd-verified";
+import { BEND_RECORD, PIPE_RECORD, VERIFIED, VERIFIED_INR_ALL_IN, verifiedFrom, verifiedPriceLine } from "@/lib/cfd-verified";
 import { getVisiblePost } from "@/lib/blog";
 import { VERIFICATION_POST_SLUG } from "@/lib/blog/posts/verification-vs-validation-cfd";
 import type { Currency } from "@/lib/money";
@@ -156,7 +156,7 @@ export default async function MeshStudyView({ currency }: { currency: Currency }
   const faq = faqs(currency);
   const usd = currency === "USD";
   // The same structured data on both copies (SEO review 18 Oct 2026, T2):
-  // INR (India, + GST) and USD (elsewhere) Offers, whichever copy a crawler got.
+  // INR (India, the all-in amount) and USD (elsewhere) Offers, whichever copy a crawler got.
   const serviceLd = {
     "@context": "https://schema.org",
     "@type": "Service",
@@ -172,10 +172,9 @@ export default async function MeshStudyView({ currency }: { currency: Currency }
       "The same internal-flow CFD case (pipes, ducts, fittings, manifolds) solved on three meshes, refinement ratio 1.3, with the grid convergence index per Celik et al. (2008) and a verdict on the static pressure drop in the PDF report. Results within 24 hours.",
     offers: regionalOffers({
       name: "Verified: mesh-independence study (GCI)",
-      inr: VERIFIED.fromInr,
+      inr: VERIFIED_INR_ALL_IN.from,
       usd: VERIFIED.fromUsd,
       url: `${SITE}${PATH}`,
-      inrTaxIncluded: false,
       from: true,
       // Text in the page's currency only (owner, 18 Oct 2026); the two
       // regional Offers stay.
@@ -254,8 +253,7 @@ export default async function MeshStudyView({ currency }: { currency: Currency }
                 reported as mesh-independent, {BEND_RECORD.resultPa.toFixed(2)} Pa ± {BEND_RECORD.bandPct} %.
               </p>
               <p className="mt-4 text-[15px] leading-6">
-                {verifiedFrom(currency)}
-                {usd ? " (no GST)" : ""} · results within {VERIFIED.deliveryHours} hours · internal flow up to about{" "}
+                {verifiedFrom(currency)} · results within {VERIFIED.deliveryHours} hours · internal flow up to about{" "}
                 {VERIFIED.maxMcells} M cells
               </p>
               <PageByline path={MESH_STUDY.path} published="2026-10-16" className="mt-2 text-ink-3" />

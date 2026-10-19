@@ -1,4 +1,5 @@
 import { formatMoney, type Currency } from "@/lib/money";
+import { inrAllIn } from "@/lib/cfd-prices";
 
 /**
  * VERIFIED: the CFD mesh-independence study (owner, 16 Oct 2026).
@@ -18,9 +19,9 @@ import { formatMoney, type Currency } from "@/lib/money";
  * about 6 M cells, results within 24 hours, never express.
  *
  * Prices (owner, 16 Oct 2026; minimum raised 17 Oct 2026; the API's
- * cfd_packages.validated min_charge and usd_min_charge): India from ₹5,999 + GST,
- * scaling with the cells (about ₹10,734 + GST at 2 M cells); outside India from
- * $99, no GST. Pre-processing /
+ * cfd_packages.validated min_charge and usd_min_charge): India from ₹5,999 ex-tax,
+ * scaling with the cells (about ₹10,734 ex-tax at 2 M cells); outside India from
+ * $99. Shown all-in (owner, 19 Oct 2026): VERIFIED_INR_ALL_IN. Pre-processing /
  * mesh check is a separate charge, as for every package. Never publish how
  * the price is built, our costs or margins.
  *
@@ -40,16 +41,27 @@ export const VERIFIED = {
   path: "/cfd/mesh-independence-study",
 } as const;
 
-/** "from ₹5,999 + GST" / "from $99". */
+/** The rupee figures as the wallet is charged them (fromInr / inrAt2M are the API's ex-tax figures). */
+export const VERIFIED_INR_ALL_IN = {
+  from: inrAllIn(VERIFIED.fromInr),
+  at2M: inrAllIn(VERIFIED.inrAt2M),
+} as const;
+
+/** "₹7,079" / "$99": the starting amount alone, for a big figure. */
+export function verifiedFromAmount(cur: Currency): string {
+  return cur === "USD" ? formatMoney(VERIFIED.fromUsd, "USD") : formatMoney(VERIFIED_INR_ALL_IN.from, "INR");
+}
+
+/** "from ₹7,079" / "from $99". */
 export function verifiedFrom(cur: Currency): string {
-  return cur === "USD" ? `from ${formatMoney(VERIFIED.fromUsd, "USD")}` : `from ${formatMoney(VERIFIED.fromInr, "INR")} + GST`;
+  return cur === "USD" ? `from ${formatMoney(VERIFIED.fromUsd, "USD")}` : `from ${formatMoney(VERIFIED_INR_ALL_IN.from, "INR")}`;
 }
 
 /** The price sentence with the scaling note and the tax words. */
 export function verifiedPriceLine(cur: Currency): string {
   return cur === "USD"
-    ? `From ${formatMoney(VERIFIED.fromUsd, "USD")}, no GST (export of services). The price scales with the cells in your mesh and is on your quote, next to the single-mesh packages.`
-    : `From ${formatMoney(VERIFIED.fromInr, "INR")} + GST. The price scales with the cells in your mesh: about ${formatMoney(VERIFIED.inrAt2M, "INR")} + GST at 2 million cells. It is on your quote, next to the single-mesh packages.`;
+    ? `From ${formatMoney(VERIFIED.fromUsd, "USD")}. The price scales with the cells in your mesh and is on your quote, next to the single-mesh packages.`
+    : `From ${formatMoney(VERIFIED_INR_ALL_IN.from, "INR")}. The price scales with the cells in your mesh: about ${formatMoney(VERIFIED_INR_ALL_IN.at2M, "INR")} at 2 million cells. It is on your quote, next to the single-mesh packages.`;
 }
 
 /**

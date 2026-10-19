@@ -542,7 +542,7 @@ export default async function RootLayout({
                     url: "https://www.coreframecloud.com/cfd",
                     description: usdView
                       ? `For most duct and pipe models; very large models (over 5 million cells) ${usdCard.cfd_quote_fee_large} USD. The run is quoted by email and paid only if you accept.`
-                      : `For most duct and pipe models; very large models (over 5 million cells) ${CFD_PREPROCESS_INR.large} INR incl. GST. The run is quoted by email and paid only if you accept.`,
+                      : `For most duct and pipe models; very large models (over 5 million cells) ${CFD_PREPROCESS_INR.large} INR. The run is quoted by email and paid only if you accept.`,
                   }),
                 },
                 {

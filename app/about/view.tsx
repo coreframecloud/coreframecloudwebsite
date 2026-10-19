@@ -121,8 +121,8 @@ export default async function AboutView({ currency }: { currency: Currency }) {
   const perTb = storageRatePerTb(card, currency);
   const machineCost = replacementCost(currency);
   const meshCheck = usdView
-    ? `${formatMoney(usd.cfd_quote_fee_small, "USD")}, no GST`
-    : `${formatMoney(CFD_PREPROCESS_INR.small, "INR")} incl. GST`;
+    ? formatMoney(usd.cfd_quote_fee_small, "USD")
+    : formatMoney(CFD_PREPROCESS_INR.small, "INR");
 
   const faqs: { q: string; a: string }[] = [
     {

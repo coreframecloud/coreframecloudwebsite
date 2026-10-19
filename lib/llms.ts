@@ -36,7 +36,7 @@ import { COMPANY, COMPANY_VISITING_ADDRESS_LINE } from "@/lib/company";
 import { ROOMS_DELIVERS, ROOMS_VALIDATION } from "@/lib/cfd-rooms";
 import { formatMoney, usdRates } from "@/lib/money";
 import { CFD_EXPRESS, CFD_NORMAL_HOURS, CFD_PREPROCESS_INR } from "@/lib/cfd-prices";
-import { VERIFIED, BEND_RECORD } from "@/lib/cfd-verified";
+import { VERIFIED, VERIFIED_INR_ALL_IN, BEND_RECORD } from "@/lib/cfd-verified";
 import { HVAC_PAGE, CLINIC_CASE } from "@/lib/cfd-pages";
 import { FREE_PREVIEWS_PER_DAY, studioPrices } from "@/lib/studio-prices";
 
@@ -90,12 +90,12 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
   out.push(
     `Coreframe CFD (${SITE}/cfd) calculates the pressure drop and loss coefficient of a duct or pipe fitting ` +
       "(bends, reducers, transitions, valves, manifolds) from one closed STL of the fluid volume, with no CFD licence. " +
-      `Pre-processing and a mesh check cost ${formatMoney(CFD_PREPROCESS_INR.small, "INR")} incl. GST in India or ` +
+      `Pre-processing and a mesh check cost ${formatMoney(CFD_PREPROCESS_INR.small, "INR")} in India or ` +
       `${usdMoney(usd.cfd_quote_fee_small)} elsewhere for most models (${formatMoney(CFD_PREPROCESS_INR.large, "INR")} / ` +
       `${usdMoney(usd.cfd_quote_fee_large)} over 5 million cells); you then get a quote by email with three packages. ` +
       "Draft (cheaper, for comparing design options early) and Standard (the number you put in a client report) run one " +
       "wall-resolved, quality-checked mesh (Standard holds the pressure to a tighter convergence target) and are priced on the quote. Verified is a mesh-independence study, three meshes and the " +
-      `grid convergence index, from ${formatMoney(VERIFIED.fromInr, "INR")} + GST in India or from ${usdMoney(VERIFIED.fromUsd)} elsewhere. ` +
+      `grid convergence index, from ${formatMoney(VERIFIED_INR_ALL_IN.from, "INR")} in India or from ${usdMoney(VERIFIED.fromUsd)} elsewhere. ` +
       `Results come within ${CFD_NORMAL_HOURS} hours of payment, or in ${CFD_EXPRESS.hours} hours with Express at ` +
       `${CFD_EXPRESS.multiple}x the package price where the quote offers it (Draft and Standard only). You get a PDF ` +
       "report, a 3D results viewer and the case data files. Our live Verified example (17 Oct 2026): a 90° bend gave " +
@@ -138,7 +138,7 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
   out.push(
     `- **Can Coreframe run CFD for me?** Yes, for ducts and pipes (${SITE}/cfd). ` +
       "Upload one closed STL of the fluid volume; " +
-      `pre-processing / mesh check is Rs 599 incl. GST for most duct and pipe models (Rs 1,499 for very large models over 5 million cells; outside India ${usdMoney(usd.cfd_quote_fee_small)} / ${usdMoney(usd.cfd_quote_fee_large)}, no GST); we mesh it ` +
+      `pre-processing / mesh check is Rs ${CFD_PREPROCESS_INR.small} for most duct and pipe models (Rs ${CFD_PREPROCESS_INR.large.toLocaleString("en-IN")} for very large models over 5 million cells; outside India ${usdMoney(usd.cfd_quote_fee_small)} / ${usdMoney(usd.cfd_quote_fee_large)}); we mesh it ` +
       "and email a quote; accept it and get pressure drop, loss coefficient, a PDF report, a " +
       "3D viewer and the case data files, within 24 hours (Express: 1–2 hours at 3x, where offered). No CFD licence needed. It needs a Coreframe account " +
       "(the same account and wallet as GPU workstations and Studio). Rooms and HVAC airflow (steady analysis) is also live: " +
@@ -152,8 +152,8 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
       "is solved on three meshes with a refinement ratio of 1.3; the GCI follows Celik et al. (2008) with a safety " +
       "factor of 1.25, and oscillating results are judged on 1.25 x half their spread (Stern et al. 2001). The report " +
       "states, e.g., \"Mesh-independent: static pressure drop = 12.30 Pa ± 0.13 % (fine mesh)\". Results within " +
-      "24 hours (no express). From Rs 5,999 + GST in India (about Rs 10,734 + GST at 2 million cells), from $99 outside " +
-      "India (no GST), plus pre-processing / mesh check. A GCI study is verification, not validation: " +
+      `24 hours (no express). From Rs ${VERIFIED_INR_ALL_IN.from.toLocaleString("en-IN")} in India (about Rs ${VERIFIED_INR_ALL_IN.at2M.toLocaleString("en-IN")} at 2 million cells), from ${usdMoney(VERIFIED.fromUsd)} outside ` +
+      "India, plus pre-processing / mesh check. A GCI study is verification, not validation: " +
       "mesh-independent means the mesh error is small; it does not mean the result matches experiments.",
   );
   out.push(
@@ -598,9 +598,9 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
   out.push(`- [Enscape cloud workstations](${SITE}/enscape-cloud-gpu)`);
   out.push(`- [Free IFC pre-CFD check](${SITE}/tools): no account needed.`);
   out.push(`- [Free DWG dimension check](${SITE}/dwg-check): no account needed.`);
-  out.push(`- [CFD for ducts and pipes](${SITE}/cfd): a managed, automatic CFD service. Upload one closed STL of the fluid volume; the geometry is checked automatically, pre-processing / mesh check is Rs 599 incl. GST for most duct and pipe models (Rs 1,499 for very large models over 5 million cells; ${usdMoney(usd.cfd_quote_fee_small)} / ${usdMoney(usd.cfd_quote_fee_large)} outside India), from the Coreframe wallet: a wall-resolved mesh is built and quality-checked on our machine, and a mesh report and quote are emailed. Accept it and get a PDF report with pressure drop and loss coefficient, a 3D results viewer and the data files. No CFD licence needed.`);
+  out.push(`- [CFD for ducts and pipes](${SITE}/cfd): a managed, automatic CFD service. Upload one closed STL of the fluid volume; the geometry is checked automatically, pre-processing / mesh check is Rs ${CFD_PREPROCESS_INR.small} for most duct and pipe models (Rs ${CFD_PREPROCESS_INR.large.toLocaleString("en-IN")} for very large models over 5 million cells; ${usdMoney(usd.cfd_quote_fee_small)} / ${usdMoney(usd.cfd_quote_fee_large)} outside India), from the Coreframe wallet: a wall-resolved mesh is built and quality-checked on our machine, and a mesh report and quote are emailed. Accept it and get a PDF report with pressure drop and loss coefficient, a 3D results viewer and the data files. No CFD licence needed.`);
   out.push(`- [CFD for rooms and HVAC airflow](${SITE}/cfd): steady analysis of one box-shaped room you describe (size, supply diffusers, returns, heat loads; no geometry file). Delivers room averages (mean air speed, PMV/PPD, ADPI) and temperature and air-speed maps in a PDF report. Two mesh choices: Draft (a medium mesh) for early design comparisons, Fine for final numbers; the quote and report state which was used. ${ROOMS_VALIDATION}`);
-  out.push(`- [Mesh independence study (GCI), the Verified package](${SITE}/cfd/mesh-independence-study): the same duct or pipe case on three meshes (refinement ratio 1.3) with the grid convergence index (Celik et al. 2008, Fs 1.25). Our own live Verified run (17 Oct 2026): a 90° bend (R/D 1.5, air at 4 m/s, D 50 mm) gave 12.234 / 12.292 / 12.297 Pa on 0.25 / 0.54 / 1.21 M cells: mesh-independent, 12.30 Pa ± 0.13 %, where the band is the solver's own iteration-to-iteration change, larger than the GCI (0.08 %). A straight pipe, 72 diameters long, was mesh-independent within 0.63 %, yet its friction factor sat 4.8 % below the Haaland correlation: a turbulence-model gap that verification cannot show. From Rs 5,999 + GST in India, from $99 elsewhere; internal flow up to about 6 M cells; within 24 hours.`);
+  out.push(`- [Mesh independence study (GCI), the Verified package](${SITE}/cfd/mesh-independence-study): the same duct or pipe case on three meshes (refinement ratio 1.3) with the grid convergence index (Celik et al. 2008, Fs 1.25). Our own live Verified run (17 Oct 2026): a 90° bend (R/D 1.5, air at 4 m/s, D 50 mm) gave 12.234 / 12.292 / 12.297 Pa on 0.25 / 0.54 / 1.21 M cells: mesh-independent, 12.30 Pa ± 0.13 %, where the band is the solver's own iteration-to-iteration change, larger than the GCI (0.08 %). A straight pipe, 72 diameters long, was mesh-independent within 0.63 %, yet its friction factor sat 4.8 % below the Haaland correlation: a turbulence-model gap that verification cannot show. From Rs ${VERIFIED_INR_ALL_IN.from.toLocaleString("en-IN")} in India, from ${usdMoney(VERIFIED.fromUsd)} elsewhere; internal flow up to about 6 M cells; within 24 hours.`);
   out.push(`- [HVAC CFD on a real clinic floor](${SITE}${CLINIC_CASE.path}): case study. An indicative, automated first-pass airflow run on the second floor of a real two-storey clinic (buildingSMART Medical-Dental Clinic, CC BY 4.0): 18,500 sq ft, 100 rooms and corridors, 90 real ceiling diffusers at their design flows, 80 return/exhaust grilles; 1.9 M cells, 3,000 iterations, 5.1 hours. Occupied rooms averaged 23.0 °C, ADPI (ASHRAE 113) 93 % with 56 of 59 rooms at 80 % or more, PMV (ISO 7730) -0.28; 15 % of the floor area had air above 0.25 m/s at ankle height, because in the small 3 x 3.5 m treatment rooms the ceiling jets hit the wall, drop and run back across the floor. Not a validated or engineering-grade result: an indicative whole-floor run, not the single-room Rooms / HVAC service.`);
   out.push(`- [Room airflow CFD for HVAC](${SITE}${HVAC_PAGE.path}): the Rooms / HVAC steady service on its own page: inputs (one box room 1-100 m long and wide, 2-20 m high, up to 12 supply diffusers and 12 returns, heat loads, clothing and activity), outputs (${ROOMS_DELIVERS}), Draft or Fine mesh, and what ADPI does and does not tell you.`);
   out.push(`- [3BHK floor plan to 3D render: a worked example](${SITE}/floor-plan-to-render/3bhk-example): Studio on our sample 3BHK plan, step by step, with the cost of each step.`);
