@@ -9,7 +9,7 @@
  * benchmark authors here.
  */
 export const ROOMS_VALIDATION =
-  "Validated against three published benchmark rooms. Air-flow pattern and air speeds meet the published acceptance criteria. Temperatures in the occupied zone agree with measurements to within about 0.3 K, but did not meet the strict ±5 % benchmark criterion in the heated-floor case. Air temperatures within a few centimetres of heated or cooled surfaces are less reliable.";
+  "Validated against three published benchmark rooms. Air-flow pattern and air speeds meet the published acceptance criteria. Temperatures in the occupied zone agree with measurements to within about 0.3 K, but did not meet the strict ±5 % benchmark criterion in the heated-floor case. Air temperatures within a few centimetres of heated or cooled surfaces are less reliable. Radiation between surfaces is not modelled.";
 
 /** What a Rooms job delivers (the steady analysis). */
 export const ROOMS_DELIVERS =
