@@ -23,6 +23,14 @@ export const HVAC_PAGE: CfdPage = {
   updated: "2026-10-18",
 };
 
+/** The HVAC simulation service page (owner, 19 Oct 2026: "build pages 1–4, start with HVAC").
+ *  It sells the Rooms / HVAC steady service; HVAC_PAGE is the guide behind it. */
+export const HVAC_SERVICE: CfdPage = {
+  path: "/cfd/hvac-simulation",
+  name: "HVAC simulation service",
+  updated: "2026-10-19",
+};
+
 export const CLINIC_CASE: CfdPage = {
   path: "/cfd/projects/clinic-floor-hvac",
   name: "HVAC CFD case study: a clinic floor",

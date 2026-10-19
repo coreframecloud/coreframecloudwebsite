@@ -8,7 +8,7 @@ import { Callout, ExplainFigure, Hl, SectionHead } from "@/components/cfd-explai
 import { getRateCard } from "@/lib/rate-card";
 import { usdRates, type Currency } from "@/lib/money";
 import { CFD_NORMAL_HOURS, CFD_PREPROCESS_INR, preprocessFee, preprocessLarge } from "@/lib/cfd-prices";
-import { CLINIC_CASE, HVAC_PAGE } from "@/lib/cfd-pages";
+import { CLINIC_CASE, HVAC_PAGE, HVAC_SERVICE } from "@/lib/cfd-pages";
 import { PageByline } from "@/components/seo/page-byline";
 import { ROOMS_DELIVERS, ROOMS_VALIDATION } from "@/lib/cfd-rooms";
 
@@ -322,7 +322,9 @@ export default async function RoomAirflowHvacView({ currency }: { currency: Curr
               </Fold>
             ))}
             <p className="mt-8 text-[14.5px] leading-6 text-ink-2">
-              Related: <Link href="/cfd" className="text-ink underline underline-offset-4">CFD for ducts and pipes</Link>
+              Related: <Link href={HVAC_SERVICE.path} className="text-ink underline underline-offset-4">HVAC simulation service: who it is for, price and turnaround</Link>
+              {" · "}
+              <Link href="/cfd" className="text-ink underline underline-offset-4">CFD for ducts and pipes</Link>
               {" · "}
               <Link href={CLINIC_CASE.path} className="text-ink underline underline-offset-4">Clinic floor case study</Link>
               {" · "}

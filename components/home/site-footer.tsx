@@ -112,6 +112,7 @@ export function SiteFooter({ currency = "INR" }: { currency?: Currency }) {
                 // The CFD and Studio guides (SEO review 18 Oct 2026): the
                 // clinic case study had no links in at all.
                 { label: "Mesh independence study (GCI)", href: "/cfd/mesh-independence-study" },
+                { label: "HVAC simulation service", href: "/cfd/hvac-simulation" },
                 { label: "Room airflow CFD for HVAC", href: "/cfd/room-airflow-hvac" },
                 { label: "HVAC CFD case study: a clinic floor", href: "/cfd/projects/clinic-floor-hvac" },
                 { label: "3BHK floor plan to render", href: "/floor-plan-to-render/3bhk-example" },
