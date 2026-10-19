@@ -12,6 +12,7 @@ import { CLINIC_CASE, HVAC_PAGE, HVAC_SERVICE, MESH_STUDY } from "@/lib/cfd-page
 import { VERIFICATION_POST_SLUG } from "@/lib/blog/posts/verification-vs-validation-cfd";
 import { PageByline } from "@/components/seo/page-byline";
 import { ROOMS_DELIVERS, ROOMS_VALIDATION } from "@/lib/cfd-rooms";
+import { ROOMS_SAMPLE_REPORT, ROOMS_SAMPLE_REPORT_LIVE } from "@/lib/cfd-services";
 
 /**
  * /cfd/hvac-simulation — the HVAC simulation SERVICE page (owner, 19 Oct 2026:
@@ -45,12 +46,7 @@ const PATH = HVAC_SERVICE.path;
 const ART = "/cfd/explainer";
 const CLINIC_IMG = "/cfd/projects/clinic-floor-hvac";
 
-/**
- * The Rooms sample report. The PDF is being produced separately (19 Oct 2026);
- * until it is in /public/cfd this link 404s. One constant so it can be moved
- * or swapped in one place.
- */
-export const ROOMS_SAMPLE_REPORT = "/cfd/sample-report-rooms.pdf";
+/** The Rooms sample report link: one source, lib/cfd-services.ts. */
 
 const TITLE = "HVAC Simulation Service: Room Airflow & Comfort CFD | Coreframe";
 const DESCRIPTION =
@@ -229,9 +225,11 @@ export default async function HvacSimulationView({ currency }: { currency: Curre
                 mesh check is {fee}; the run is priced on your quote.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
-                <a href={ROOMS_SAMPLE_REPORT} target="_blank" rel="noopener" className="cf-btn-secondary">
-                  Sample report (PDF)
-                </a>
+                {ROOMS_SAMPLE_REPORT_LIVE ? (
+                  <a href={ROOMS_SAMPLE_REPORT} target="_blank" rel="noopener" className="cf-btn-secondary">
+                    Sample report (PDF)
+                  </a>
+                ) : null}
                 <a href="#how" className="cf-btn-secondary">How it works</a>
               </div>
               <PageByline path={PATH} published="2026-10-19" className="mt-4 text-ink-3" />
@@ -281,12 +279,14 @@ export default async function HvacSimulationView({ currency }: { currency: Curre
                     </div>
                   ))}
                 </dl>
-                <p className="mt-6 text-[14.5px] leading-6 text-ink-2">
-                  <a href={ROOMS_SAMPLE_REPORT} target="_blank" rel="noopener" className="text-ink underline underline-offset-4">
-                    Open the sample room report (PDF)
-                  </a>{" "}
-                  to see the layout before you start.
-                </p>
+                {ROOMS_SAMPLE_REPORT_LIVE ? (
+                  <p className="mt-6 text-[14.5px] leading-6 text-ink-2">
+                    <a href={ROOMS_SAMPLE_REPORT} target="_blank" rel="noopener" className="text-ink underline underline-offset-4">
+                      Open the sample room report (PDF)
+                    </a>{" "}
+                    to see the layout before you start.
+                  </p>
+                ) : null}
               </div>
               <figure className="min-w-0">
                 <div className="overflow-hidden rounded-[20px] border border-rule bg-white p-2">

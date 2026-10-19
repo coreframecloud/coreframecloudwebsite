@@ -21,12 +21,13 @@ import { HVAC_PAGE } from "@/lib/cfd-pages";
 export type CfdServiceId = "standard" | "verified" | "rooms";
 
 /**
- * The Rooms sample report. The PDF is being produced separately (19 Oct 2026).
- * Until it is in public/cfd/, the tile links to the Rooms page instead of a
- * missing file: put the PDF in place, then set ROOMS_SAMPLE_REPORT_LIVE = true.
+ * The Rooms sample report: the one source for every page that links it (the
+ * /cfd Rooms tile and /cfd/hvac-simulation). The PDF is in public/cfd/ since
+ * 19 Oct 2026. If it is ever withdrawn, set ROOMS_SAMPLE_REPORT_LIVE = false
+ * and every link falls back to the Rooms guide instead of a missing file.
  */
 export const ROOMS_SAMPLE_REPORT = "/cfd/sample-report-rooms.pdf";
-export const ROOMS_SAMPLE_REPORT_LIVE = false;
+export const ROOMS_SAMPLE_REPORT_LIVE = true;
 
 export type CfdServiceTile = {
   id: CfdServiceId;
