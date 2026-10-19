@@ -469,7 +469,7 @@ export default async function MeshStudyView({ currency }: { currency: Currency }
               ))}
             </div>
             <p className="mt-6 text-[15px] leading-6 text-ink-2">
-              For a quick sizing number, the single-mesh Quick and Standard packages on{" "}
+              For a quick sizing number, the single-mesh Draft and Standard packages on{" "}
               <Link href="/cfd" className="text-ink underline underline-offset-4">CFD for ducts and pipes</Link> are enough: every
               mesh passes our quality check and has wall layers sized for y+ ≈ 1.
             </p>
@@ -482,7 +482,7 @@ export default async function MeshStudyView({ currency }: { currency: Currency }
             <VerifiedCard currency={currency} learnMore={false} />
             <p className="mt-5 text-[14px] leading-6 text-ink-3">
               How to order: start a duct or pipe job on <Link href="/cfd#start" className="underline underline-offset-4">/cfd</Link>.
-              After pre-processing / mesh check, Verified appears on your quote next to Quick and Standard whenever your
+              After pre-processing / mesh check, Verified appears on your quote next to Draft and Standard whenever your
               model qualifies.
             </p>
           </div>

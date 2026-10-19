@@ -6,6 +6,7 @@ import { API_BASE } from "@/lib/api-base";
 import { trackEvent } from "@/lib/analytics";
 import { rememberReturnPath } from "@/lib/return-path";
 import CfdJobForm from "./cfd-job-form";
+import { useSelectedService } from "./service-tiles";
 import type { Currency } from "@/lib/money";
 
 /**
@@ -45,6 +46,8 @@ function storedEmail(): string | null {
 
 export default function CfdStart({ currency = "INR" }: { currency?: Currency } = {}) {
   const [gate, setGate] = useState<Gate>({ kind: "loading" });
+  // The tile chosen above (app/cfd/service-tiles.tsx); null until one is picked.
+  const service = useSelectedService();
 
   const check = useCallback(async () => {
     const token = sessionMarker();
@@ -145,8 +148,19 @@ export default function CfdStart({ currency = "INR" }: { currency?: Currency } =
     );
   }
 
+  if (!service) {
+    return (
+      <div className="rounded-[24px] border border-dashed border-rule-strong bg-paper-2 p-6 sm:p-8">
+        <p className="text-[15px] leading-6 text-ink-2">
+          Choose Standard, Verified or Comfort study above, and its form opens here.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <CfdJobForm
+      service={service}
       token={gate.token}
       accountEmail={gate.email}
       currency={currency}

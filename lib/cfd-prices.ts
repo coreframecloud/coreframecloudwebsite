@@ -13,7 +13,7 @@ import { cellsLabel, formatMoney, type Currency, type UsdRateCard } from "@/lib/
  * cfd_quote_fee_small_inr_incl_gst / _large_ (apps/api/app/core/config.py);
  * the rate card publishes only the dollar block, so the rupee figures are
  * typed here, once. The dollar figures always come from the rate card's `usd`
- * block (usdRates()). Quick and Standard run prices are never published:
+ * block (usdRates()). Draft and Standard run prices are never published:
  * they are on the quote after the mesh check.
  */
 export const CFD_PREPROCESS_INR = {

@@ -8,7 +8,6 @@ import { PageHeroBg, type HeroImage } from "@/components/page-hero-bg";
 import { Callout, CheckRow, ExplainFigure, Hl, SectionHead, Stamp } from "@/components/cfd-explainer";
 import { VelocityProfileOverlay } from "@/components/cfd-explainer/velocity-profile";
 import CfdStart from "./cfd-start";
-import { StatusBadge } from "@/components/home/redesign/offerings";
 import { getRateCard, otherCurrencyLine } from "@/lib/rate-card";
 import { cellsLabel, formatMoney, usdRates, type Currency, type UsdRateCard } from "@/lib/money";
 import { VerifiedCard } from "@/components/cfd-explainer/verified-card";
@@ -25,7 +24,9 @@ import { PageByline } from "@/components/seo/page-byline";
 import { getVisiblePost } from "@/lib/blog";
 import { VERIFICATION_POST_SLUG } from "@/lib/blog/posts/verification-vs-validation-cfd";
 import { HAND_CALC_POST_SLUG } from "@/lib/blog/posts/pressure-drop-hand-calc-vs-cfd";
-import { ROOMS_DELIVERS, ROOMS_VALIDATION } from "@/lib/cfd-rooms";
+import { ROOMS_VALIDATION } from "@/lib/cfd-rooms";
+import { cfdServiceTiles } from "@/lib/cfd-services";
+import { ServiceTiles } from "./service-tiles";
 
 /**
  * /cfd — CFD for ducts and pipes (managed, automatic). Live 13 Oct 2026.
@@ -43,7 +44,7 @@ import { ROOMS_DELIVERS, ROOMS_VALIDATION } from "@/lib/cfd-rooms";
  *   - every run is judged against residual targets, and a run that did not
  *     converge is delivered marked provisional.
  * Do NOT add a bend / fitting K accuracy figure (about +-25 % today), the
- * Quick / Standard package prices or anything about how quotes are priced.
+ * Draft / Standard package prices or anything about how quotes are priced.
  *
  * VERIFIED (owner, 16 Oct 2026): the mesh-independence study (GCI), built as
  * the API's "validated" package, is on sale and is the one package whose
@@ -146,44 +147,6 @@ const CFD_HERO: HeroImage = {
   alt: "Sketch: air flowing into a duct bend, with a magnifying glass showing the mesh on its wall",
   pos: "right center",
 };
-
-const CFD_SERVICES: {
-  name: string;
-  status: "Live" | "Coming soon";
-  body: string;
-  /** Small print under the body (Rooms: the validation claim). */
-  note?: string;
-  /** Quiet follow-on links under the card (SEO review 18 Oct 2026: the clinic case study was orphaned). */
-  more?: { href: string; label: string }[];
-  href?: string;
-  cta: string;
-  tint: string;
-  art?: { src: string; alt: string };
-}[] = [
-  {
-    name: "Ducts and pipes",
-    status: "Live",
-    body: "Bends, reducers, transitions, valves, fittings and manifolds. Upload one STL; we mesh it, email a quote, and deliver pressure drop, loss coefficient, a PDF report, a 3D viewer and the data files.",
-    href: "#start",
-    cta: "Start a job",
-    tint: "bg-tint-mint",
-    art: { src: "/cfd/explainer/j-pressure-drop-gauges.webp", alt: "Sketch of a pipe with a valve and an elbow, and a pressure gauge on each side of the valve" },
-  },
-  {
-    name: "Rooms and HVAC airflow",
-    status: "Live",
-    body: `Room air movement and comfort for HVAC designers: describe one box-shaped room, its diffusers, returns and heat loads, and get ${ROOMS_DELIVERS}. No geometry file needed.`,
-    note: ROOMS_VALIDATION,
-    more: [
-      { href: HVAC_PAGE.path, label: "Room airflow CFD for HVAC: inputs, outputs, ADPI" },
-      { href: CLINIC_CASE.path, label: "Case study: a clinic floor with 90 diffusers" },
-    ],
-    href: "#start",
-    cta: "Start a room job",
-    tint: "bg-tint-blue",
-    art: { src: "/cfd/explainer/i-room-diffuser-airflow.webp", alt: "Sketch of a room cut open, with air curling down from a ceiling diffuser" },
-  },
-];
 
 const AUDIENCE = [
   {
@@ -292,15 +255,15 @@ const FAQ = [
 
 /** The mesh-independence answer; only the price differs by currency. */
 function verifiedFaq(cur: Currency): string {
-  return `Yes, with the Verified package (${verifiedFrom(cur)}${cur === "USD" ? ", no GST" : ""}): a mesh-independence study that runs your case on three meshes, coarse, medium and fine, and reports the grid convergence index (GCI) on the pressure drop, for example "Mesh-independent: static pressure drop = 12.30 Pa ± 0.13 % (fine mesh)". Internal flow up to about ${VERIFIED.maxMcells} million cells, results within ${VERIFIED.deliveryHours} hours. ${VERIFIED.meaning} The Quick and Standard packages run one wall-resolved mesh that has passed our mesh quality check.`;
+  return `Yes, with the Verified package (${verifiedFrom(cur)}${cur === "USD" ? ", no GST" : ""}): a mesh-independence study that runs your case on three meshes, coarse, medium and fine, and reports the grid convergence index (GCI) on the pressure drop, for example "Mesh-independent: static pressure drop = 12.30 Pa ± 0.13 % (fine mesh)". Internal flow up to about ${VERIFIED.maxMcells} million cells, results within ${VERIFIED.deliveryHours} hours. ${VERIFIED.meaning} The Draft and Standard packages run one wall-resolved mesh that has passed our mesh quality check.`;
 }
 
 
-const PACKAGES_Q = "What are the Quick, Standard and Verified packages?";
+const PACKAGES_Q = "What are the Draft, Standard and Verified packages?";
 
-/** Quick / Standard / Verified / Express in one answer, in the page's currency. */
+/** Draft / Standard / Verified / Express in one answer, in the page's currency. */
 function packagesFaq(cur: Currency): string {
-  return `Three packages, shown on your quote after the mesh check. Quick and Standard run your case on one wall-resolved mesh that has passed our mesh quality check; Standard holds the pressure to a tighter convergence target than Quick. Both are priced on your quote. Verified runs the case on three meshes and reports the grid convergence index, ${verifiedFrom(cur)}${cur === "USD" ? ", no GST" : ""}. Express, results in ${CFD_EXPRESS.hours} hours at ${CFD_EXPRESS.multiple}x the price, is offered on Quick and Standard where the model fits.`;
+  return `Three packages, shown on your quote after the mesh check. Draft is the cheaper one, for comparing design options early; Standard is the number you put in a client report. Both run your case on one wall-resolved mesh that has passed our mesh quality check; Standard holds the pressure to a tighter convergence target than Draft. Both are priced on your quote. Verified is Standard on three meshes with a ± band: it reports the grid convergence index, ${verifiedFrom(cur)}${cur === "USD" ? ", no GST" : ""}. Express, results in ${CFD_EXPRESS.hours} hours at ${CFD_EXPRESS.multiple}x the price, is offered on Draft and Standard where the model fits.`;
 }
 
 /**
@@ -323,7 +286,7 @@ function faqFor(cur: Currency, u: UsdRateCard): { q: string; a: string }[] {
  * The CFD Service node, the same on both copies of the page: offers in INR
  * (India) and USD (everywhere else), the Verified floor, and Express as an
  * add-on (SEO review 18 Oct 2026, 3.1). Same @id as the layout's node, so the
- * two merge. No Quick / Standard prices: they are on the quote.
+ * two merge. No Draft / Standard prices: they are on the quote.
  */
 function serviceLdFor(u: UsdRateCard, cur: Currency) {
   const url = `${SITE}/cfd`;
@@ -361,7 +324,7 @@ function serviceLdFor(u: UsdRateCard, cur: Currency) {
         name: "Express delivery (add-on)",
         url,
         category: "Add-on",
-        description: `Results in ${CFD_EXPRESS.hours} hours of payment at ${CFD_EXPRESS.multiple}x the price of the same package (Quick or Standard), where the quote offers it. Normal delivery: within ${CFD_NORMAL_HOURS} hours.`,
+        description: `Results in ${CFD_EXPRESS.hours} hours of payment at ${CFD_EXPRESS.multiple}x the price of the same package (Draft or Standard), where the quote offers it. Normal delivery: within ${CFD_NORMAL_HOURS} hours.`,
       },
     ],
   };
@@ -404,14 +367,14 @@ function usdFaq(u: UsdRateCard) {
   );
 }
 
-/** The package table (SEO review 18 Oct 2026, 3.1). Quick and Standard prices are on the quote, never here. */
+/** The package table (SEO review 18 Oct 2026, 3.1). Draft and Standard prices are on the quote, never here. Draft is the API's "quick" package (renamed by the owner, 19 Oct 2026). */
 function packageRows(cur: Currency, u: UsdRateCard): [string, string, string, string, string][] {
   const onQuote = `On your quote after the mesh check (${cur === "USD" ? formatMoney(u.cfd_quote_fee_small, "USD") : formatMoney(CFD_PREPROCESS_INR.small, "INR")})`;
   return [
-    ["Quick", "1", "Pressure drop, loss coefficient, PDF report, 3D viewer, data files; default residual targets (10⁻³)", `Within ${CFD_NORMAL_HOURS} h, or Express`, onQuote],
-    ["Standard", "1", "As Quick, with a tighter pressure target (10⁻⁴) and a longer iteration budget", `Within ${CFD_NORMAL_HOURS} h, or Express`, onQuote],
-    ["Verified", "3 + GCI", "Mesh-independence study: three meshes, the grid convergence index and a one-line verdict", `Within ${VERIFIED.deliveryHours} h (no Express)`, `${verifiedFrom(cur).replace(/^from/, "From")}${cur === "USD" ? ", no GST" : ""}`],
-    ["Express", "—", "A delivery speed on Quick or Standard, where your quote offers it (smaller steady runs)", `${CFD_EXPRESS.hours} h`, `${CFD_EXPRESS.multiple}x the package price`],
+    ["Draft", "1", "Cheaper, for comparing design options early. Pressure drop, loss coefficient, PDF report, 3D viewer, data files; default residual targets (10⁻³)", `Within ${CFD_NORMAL_HOURS} h, or Express`, onQuote],
+    ["Standard", "1", "The number you put in a client report. As Draft, with a tighter pressure target (10⁻⁴) and a longer iteration budget", `Within ${CFD_NORMAL_HOURS} h, or Express`, onQuote],
+    ["Verified", "3 + GCI", "Standard on three meshes, with a ± band. Mesh-independence study: three meshes, the grid convergence index and a one-line verdict", `Within ${VERIFIED.deliveryHours} h (no Express)`, `${verifiedFrom(cur).replace(/^from/, "From")}${cur === "USD" ? ", no GST" : ""}`],
+    ["Express", "—", "A delivery speed on Draft or Standard, where your quote offers it (smaller steady runs)", `${CFD_EXPRESS.hours} h`, `${CFD_EXPRESS.multiple}x the package price`],
   ];
 }
 
@@ -425,6 +388,7 @@ export default async function CfdView({ currency }: { currency: Currency }) {
   const steps = usd ? usdSteps(usd) : STEPS;
   const faq = faqFor(currency, card);
   const packages = packageRows(currency, card);
+  const tiles = cfdServiceTiles(currency, card);
   const post = getVisiblePost(VERIFICATION_POST_SLUG);
   const handCalc = getVisiblePost(HAND_CALC_POST_SLUG);
   return (
@@ -476,38 +440,8 @@ export default async function CfdView({ currency }: { currency: Currency }) {
           <div className="cf-wide">
             <p className="cf-eyebrow">CFD services</p>
             <h2 className="cf-section-title mt-4">Pick what you need to run.</h2>
-            <div className="mt-9 grid grid-cols-1 gap-5 md:grid-cols-2">
-              {CFD_SERVICES.map((c) => (
-                <div key={c.name} className={`flex min-w-0 flex-col rounded-[24px] p-6 sm:p-7 ${c.tint}`}>
-                  <div className="flex flex-wrap items-center gap-2">
-                    <h3 className="font-heading text-[20px] leading-[1.25] font-medium text-ink">{c.name}</h3>
-                    <StatusBadge status={c.status} />
-                  </div>
-                  <p className="mt-3 text-[15px] leading-6 text-ink-2">{c.body}</p>
-                  {c.note ? <p className="mt-3 text-[13.5px] leading-5 text-ink-3">{c.note}</p> : null}
-                  {c.more ? (
-                    <ul className="mt-3 space-y-1 text-[14px] leading-6">
-                      {c.more.map((m) => (
-                        <li key={m.href}>
-                          <Link href={m.href} className="text-ink underline underline-offset-4">{m.label}</Link>
-                        </li>
-                      ))}
-                    </ul>
-                  ) : null}
-                  {c.art ? (
-                    <figure className="mt-4">
-                      <Image src={c.art.src} alt={c.art.alt} width={1536} height={864} sizes="(max-width: 768px) 90vw, 420px" className="cfx-art mx-auto h-auto w-full max-w-[360px]" />
-                    </figure>
-                  ) : null}
-                  {c.href ? (
-                    <Link href={c.href} className="cfh-link mt-auto pt-5 text-ink">
-                      {c.cta} <span aria-hidden>→</span>
-                    </Link>
-                  ) : (
-                    <p className="mt-auto pt-5 text-[13px] font-semibold tracking-[0.04em] text-ink-3 uppercase">{c.cta}</p>
-                  )}
-                </div>
-              ))}
+            <div className="mt-9">
+              <ServiceTiles tiles={tiles} variant="overview" />
             </div>
           </div>
         </section>
@@ -825,12 +759,12 @@ export default async function CfdView({ currency }: { currency: Currency }) {
           </div>
         </section>
 
-        {/* ── Packages (SEO review 18 Oct 2026, 3.1): Quick and Standard were
+        {/* ── Packages (SEO review 18 Oct 2026, 3.1): Draft (then "Quick") and Standard were
             named only inside the FAQ. Their prices are on the quote, never here. */}
         <section id="packages" className="cf-section scroll-mt-20 px-5 pt-0">
           <div className="cf-wide">
             <p className="cf-eyebrow">Packages</p>
-            <h2 className="cf-section-title mt-4">Quick, Standard, Verified, and Express when you need it fast.</h2>
+            <h2 className="cf-section-title mt-4">Draft, Standard, Verified, and Express when you need it fast.</h2>
             <div className="mt-8 overflow-x-auto rounded-[6px] border-[1.5px] border-ink bg-paper">
               <table className="w-full min-w-[720px] border-collapse text-left text-[14.5px] leading-6 text-ink-2">
                 <thead>
@@ -910,14 +844,18 @@ export default async function CfdView({ currency }: { currency: Currency }) {
           <div className="cf-wide">
             <div className="mx-auto max-w-[720px]">
               <p className="cf-eyebrow">Start a job</p>
-              <h2 className="cf-section-title mt-4">Tell us the flow, then upload the STL.</h2>
+              <h2 className="cf-section-title mt-4">Choose the service, then tell us the flow.</h2>
               <p className="cf-section-copy mt-3">
                 A few fields and a file, from your Coreframe account. Your name, email and WhatsApp number come from the
                 account, and pre-processing is paid from its wallet on your job page.
               </p>
-              <div className="mt-8">
-                <CfdStart currency={currency} />
-              </div>
+            </div>
+            {/* Owner, 19 Oct 2026: the three tiles are the way to choose (they replaced the form's tabs). */}
+            <div className="mt-8">
+              <ServiceTiles tiles={tiles} variant="picker" />
+            </div>
+            <div id="cfd-form" className="mx-auto mt-8 max-w-[720px] scroll-mt-20">
+              <CfdStart currency={currency} />
             </div>
           </div>
         </section>

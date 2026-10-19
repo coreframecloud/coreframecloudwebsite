@@ -6,9 +6,11 @@
  * capitalised word in the customer-facing STRING VALUES of a job response.
  * Keys are never touched. The pre-processing fee was renamed "mesh check"
  * (owner, 17 Oct 2026); older API text saying "mesh validation" is rewritten too.
+ * The "quick" package is sold as "Draft" (owner, 19 Oct 2026); the API key stays
+ * "quick", and any API text still saying "Quick" is rewritten.
  */
 export function customerWords<T>(v: T): T {
-  if (typeof v === "string") return v.replace(/\bValidated\b/g, "Verified").replace(/\b([Mm])esh validation\b/g, "$1esh check") as T;
+  if (typeof v === "string") return v.replace(/\bValidated\b/g, "Verified").replace(/\b([Mm])esh validation\b/g, "$1esh check").replace(/\bQuick\b/g, "Draft") as T;
   if (Array.isArray(v)) return v.map((x) => customerWords(x)) as T;
   if (v && typeof v === "object") {
     const out: Record<string, unknown> = {};

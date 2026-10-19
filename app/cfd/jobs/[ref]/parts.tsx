@@ -46,6 +46,22 @@ export function Fine({ children, className = "" }: { children: React.ReactNode; 
   return <p className={`text-[13px] leading-[1.6] text-ink-2 ${className}`}>{children}</p>;
 }
 
+/**
+ * Long terms folded under a small "Details" line (owner, 19 Oct 2026: one plain
+ * line per package, the convergence and terms wording one click away; nothing removed).
+ */
+export function Fold({ children, summary = "Details", className = "" }: { children: React.ReactNode; summary?: string; className?: string }) {
+  return (
+    <details className={`group text-[13px] leading-[1.6] text-ink-2 ${className}`}>
+      <summary className="inline-flex min-h-11 cursor-pointer list-none items-center gap-1.5 font-medium text-ink underline underline-offset-2 [&::-webkit-details-marker]:hidden">
+        {summary}
+        <span aria-hidden className="text-ink-3 no-underline group-open:rotate-45">+</span>
+      </summary>
+      <div className="mt-1 space-y-1">{children}</div>
+    </details>
+  );
+}
+
 export function Body({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   return <p className={`text-[16px] leading-[1.6] text-ink-2 ${className}`}>{children}</p>;
 }

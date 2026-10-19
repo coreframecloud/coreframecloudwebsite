@@ -93,11 +93,11 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
       `Pre-processing and a mesh check cost ${formatMoney(CFD_PREPROCESS_INR.small, "INR")} incl. GST in India or ` +
       `${usdMoney(usd.cfd_quote_fee_small)} elsewhere for most models (${formatMoney(CFD_PREPROCESS_INR.large, "INR")} / ` +
       `${usdMoney(usd.cfd_quote_fee_large)} over 5 million cells); you then get a quote by email with three packages. ` +
-      "Quick and Standard run one wall-resolved, quality-checked mesh (Standard holds the pressure to a tighter " +
-      "convergence target) and are priced on the quote. Verified is a mesh-independence study, three meshes and the " +
+      "Draft (cheaper, for comparing design options early) and Standard (the number you put in a client report) run one " +
+      "wall-resolved, quality-checked mesh (Standard holds the pressure to a tighter convergence target) and are priced on the quote. Verified is a mesh-independence study, three meshes and the " +
       `grid convergence index, from ${formatMoney(VERIFIED.fromInr, "INR")} + GST in India or from ${usdMoney(VERIFIED.fromUsd)} elsewhere. ` +
       `Results come within ${CFD_NORMAL_HOURS} hours of payment, or in ${CFD_EXPRESS.hours} hours with Express at ` +
-      `${CFD_EXPRESS.multiple}x the package price where the quote offers it (Quick and Standard only). You get a PDF ` +
+      `${CFD_EXPRESS.multiple}x the package price where the quote offers it (Draft and Standard only). You get a PDF ` +
       "report, a 3D results viewer and the case data files. Our live Verified example (17 Oct 2026): a 90° bend gave " +
       `${BEND_RECORD.meshes.map((m) => m.dp.toFixed(3)).join(" / ")} Pa on three meshes, reported as ` +
       `"${BEND_RECORD.verdict}". Rooms and HVAC airflow (steady) is a separate live job type: describe one box room and get ` +

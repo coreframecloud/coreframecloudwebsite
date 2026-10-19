@@ -7,7 +7,8 @@ import { API_BASE } from "@/lib/api-base";
 import { useRateCard } from "@/lib/use-rate-card";
 import { cellsLabel, formatMoney, parseCurrency, usdRates, type Currency } from "@/lib/money";
 import { trackConversion, trackEvent } from "@/lib/analytics";
-import { CFD_CATEGORIES, DEFAULT_CFD_CATEGORY, cfdCategory, type CfdCategoryId } from "@/lib/cfd-categories";
+import { CFD_CATEGORIES, cfdCategory, type CfdCategoryId } from "@/lib/cfd-categories";
+import type { CfdServiceId } from "@/lib/cfd-services";
 import { CATEGORY_FIELDS } from "./categories";
 import { ROOMS_VALIDATION } from "@/lib/cfd-rooms";
 import { Field, inputCls, textareaCls } from "./form-ui";
@@ -17,7 +18,12 @@ import { Field, inputCls, textareaCls } from "./form-ui";
  * (owner, 13 Oct 2026). Name, email and WhatsApp number are NOT asked: the
  * API takes them from the account the bearer token belongs to.
  *
- * Category-driven: the tabs come from lib/cfd-categories.ts and each live
+ * Service-driven (19 Oct 2026): the three tiles above the form (service-tiles.tsx)
+ * replaced the category tabs. Standard and Verified open the ducts category,
+ * Comfort study the rooms one. POST /cfd-jobs takes no package preference, so
+ * Verified is chosen on the quote after the mesh check; the form says so.
+ *
+ * Category-driven: categories come from lib/cfd-categories.ts and each live
  * category's inputs from app/cfd/categories/. This shell owns what
  * every job has: job name, company, notes, submitting, the geometry upload
  * and the "job received" screen.
@@ -42,7 +48,9 @@ function detailMessage(body: unknown): string | null {
   return null;
 }
 
-export default function CfdJobForm({ token, accountEmail, onSignedOut, currency = "INR" }: {
+export default function CfdJobForm({ service, token, accountEmail, onSignedOut, currency = "INR" }: {
+  /** The tile chosen above the form. */
+  service: CfdServiceId;
   token: string;
   accountEmail: string | null;
   /** The API no longer accepts the session (expired, revoked, or the account is not complete). */
@@ -76,7 +84,7 @@ export default function CfdJobForm({ token, accountEmail, onSignedOut, currency 
           cells: cellsLabel(usd.cfd_quote_fee_small_max_cells),
         }
       : null;
-  const [categoryId, setCategoryId] = useState<CfdCategoryId>(DEFAULT_CFD_CATEGORY);
+  const categoryId: CfdCategoryId = service === "rooms" ? "rooms" : "ducts";
   const category = cfdCategory(categoryId);
   const fields = category.status === "live" ? CATEGORY_FIELDS[categoryId] : undefined;
 
@@ -99,6 +107,13 @@ export default function CfdJobForm({ token, accountEmail, onSignedOut, currency 
   const [errors, setErrors] = useState<string[]>([]);
   const [busy, setBusy] = useState<"" | "submitting" | "uploading">("");
   const [submitError, setSubmitError] = useState("");
+  // A different tile clears the last attempt's messages (React's "adjust state on prop change").
+  const [shownCategory, setShownCategory] = useState(categoryId);
+  if (shownCategory !== categoryId) {
+    setShownCategory(categoryId);
+    setErrors([]);
+    setSubmitError("");
+  }
 
   const [refId, setRefId] = useState("");
   const [uploadState, setUploadState] = useState<"" | "done" | "too_big" | "failed" | "skipped">("");
@@ -306,38 +321,20 @@ export default function CfdJobForm({ token, accountEmail, onSignedOut, currency 
   const Fields = fields?.Fields;
   return (
     <div className="rounded-[24px] border border-rule bg-paper-2 p-5 sm:p-8">
-      <div role="tablist" aria-label="CFD category" className="flex flex-wrap gap-2">
-        {CFD_CATEGORIES.map((c) => {
-          const selected = c.id === categoryId;
-          const soon = c.status !== "live" || !CATEGORY_FIELDS[c.id];
-          return (
-            <button
-              key={c.id}
-              type="button"
-              role="tab"
-              id={`cfd-tab-${c.id}`}
-              aria-selected={selected}
-              aria-controls="cfd-tabpanel"
-              aria-disabled={soon || undefined}
-              onClick={() => { setCategoryId(c.id); setErrors([]); setSubmitError(""); }}
-              className={`flex min-h-11 items-center gap-2 rounded-cf border px-4 text-sm transition ${
-                selected
-                  ? soon ? "border-rule-strong bg-paper font-semibold text-ink-2" : "border-blue bg-blue-soft font-semibold text-ink"
-                  : soon ? "border-rule text-ink-3" : "border-rule text-ink-2 hover:border-rule-strong"
-              }`}
-            >
-              {c.label}
-              {soon ? <span className="rounded-full bg-ink/5 px-2 py-0.5 text-[11px] font-semibold tracking-[0.04em] text-ink-3 uppercase">Coming soon</span> : null}
-            </button>
-          );
-        })}
-      </div>
-      <p className="mt-3 text-[13.5px] leading-5 text-ink-3">{category.summary}</p>
+      <p className="cf-card-label">
+        {service === "rooms" ? "Rooms & HVAC · Comfort study" : `Ducts & pipes · ${service === "verified" ? "Verified" : "Standard"}`}
+      </p>
+      <p className="text-[13.5px] leading-5 text-ink-3">{category.summary}</p>
+      {service === "verified" ? (
+        <p className="mt-2 text-[13.5px] leading-5 text-ink-3">
+          Same form as Standard. Verified is chosen on your quote, after the mesh check, next to the single-mesh packages.
+        </p>
+      ) : null}
       {categoryId === "rooms" ? (
         <p className="mt-2 text-[13px] leading-5 text-ink-3">{ROOMS_VALIDATION}</p>
       ) : null}
 
-      <div id="cfd-tabpanel" role="tabpanel" aria-labelledby={`cfd-tab-${categoryId}`} className="mt-6">
+      <div className="mt-6">
         {!Fields ? (
           <div className="rounded-cf border border-dashed border-rule bg-paper p-5">
             <p className="text-[15px] leading-6 font-semibold text-ink">{category.label} is not taking jobs yet.</p>

@@ -886,7 +886,9 @@ body:has([data-usd-view]) .cf-ticker {
   .cfx-titlecard p { margin-top: 12px; color: var(--color-ink-2); }
   @media (max-width: 640px) {
     .cfx-sechead { grid-template-columns: minmax(0, 1fr); gap: 12px; }
-    .cfx-numeral { font-size: 120px; }
+    /* justify-self: as wide as the digit, so the wash (::before, -10 % right) stays
+       on screen; full-width it gave every phone a sideways scroll (19 Oct 2026). */
+    .cfx-numeral { font-size: 120px; justify-self: start; }
     .cfx-titlecard { padding: 20px 22px; }
   }
 
@@ -985,6 +987,11 @@ body:has([data-usd-view]) .cf-ticker {
   .cfx-figure { position: relative; margin: 0; min-width: 0; }
   .cfx-figure figcaption { margin-top: 12px; font-size: 14.4px; color: var(--color-ink-3); max-width: 62ch; }
   .cfx-figure .cfx-figstamp { position: absolute; right: 6%; bottom: 12%; }
+  /* phones: a stamp waiting to press (motion.css, scale 1.6) poked past a 375 px
+     screen and gave /cfd a sideways scroll (19 Oct 2026). The pressed stamp fits. */
+  @media (max-width: 480px) {
+    .cfx-figure { overflow-x: clip; }
+  }
   .cfx-overlay { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
   .cfx-labels {
     display: flex;
