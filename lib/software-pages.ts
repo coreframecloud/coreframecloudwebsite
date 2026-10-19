@@ -361,7 +361,36 @@ function buildSoftwarePages(cur: Currency): SoftwarePage[] {
       "Rent for one project instead of buying a machine you'll keep for years.",
     ],
     licence: LICENCE_BYOL + " Rhino uses your own licence key.",
+    lastUpdated: "19 October 2026",
+    /**
+     * Grasshopper (owner, 19 Oct 2026, page 4 of "build pages 1-4"): a section
+     * here, not a page of its own. This page is already "Rhino & Grasshopper
+     * Cloud Workstation"; a separate Grasshopper page would have one fact of
+     * its own (it ships with Rhino 8) and would compete with this one for the
+     * same searches. Nothing claimed beyond what this page already says:
+     * Rhino is bring-your-own-licence, and Grasshopper comes with it.
+     */
+    callouts: [
+      {
+        h2: "Grasshopper comes with Rhino 8.",
+        body:
+          "Grasshopper ships with Rhino 8, so there is nothing extra to license or buy from us: once Rhino is on the workstation under your own licence key, type Grasshopper at the command line and it opens, the same as at your desk. Coreframe supplies the machine, never the Rhino licence.",
+      },
+    ],
+    sections: [
+      {
+        h2: "Running Grasshopper definitions on the workstation.",
+        body: [
+          `Grasshopper solves a definition on the CPU, so a heavy one works with the workstation's ${NODE.cpu} and ${NODE.ram} of RAM. The ${NODE.gpu} draws the Rhino viewport and runs the renderer you attach, such as V-Ray or Enscape, in the same session.`,
+          "Keep your .gh definitions and the files they read in your project folder on persistent storage, so they are there the next time you launch.",
+        ],
+      },
+    ],
     faqs: [
+      {
+        q: "Is Grasshopper included?",
+        a: "Grasshopper ships with Rhino 8, so it comes with your own Rhino licence: there is nothing extra to buy from us or to install separately. Coreframe supplies the workstation, not the Rhino licence.",
+      },
       {
         q: "Can I run Rhino and Grasshopper on a cloud workstation?",
         a: "Yes. It is a standard Windows desktop, and Rhino, Grasshopper and plugins run normally with your own licence. We set them up with you once, so you aren't reinstalling them every session."
