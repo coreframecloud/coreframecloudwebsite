@@ -36,8 +36,8 @@ import {
   type CfdJob,
   type WalletLine,
 } from "@/lib/cfd-job";
-import { ActionErrorView, Body, Card, ErrorLine, Fine, More, PrimaryButton, QuietButton, UploadBox, WalletRow, signInHref, type ActionError } from "./parts";
-import { QuoteDetails, QuotePanel } from "./quote-panel";
+import { ActionErrorView, Body, Card, ErrorLine, Fine, Fold, More, PrimaryButton, QuietButton, UploadBox, WalletRow, signInHref, type ActionError } from "./parts";
+import { QuoteDetails, QuotePanel, packageLine } from "./quote-panel";
 import { BillingLine, ContinuePanel, ResultsPanel } from "./results-panel";
 import { CancelLink, Cancelled, RunCard } from "./run-card";
 
@@ -454,7 +454,6 @@ function JobBody({
             )}
           </div>
           <Fine className="mt-3">
-            {cur === "USD" ? "No GST (export of services). " : `Includes GST (${money(job.quote_fee.ex_gst, cur)} + GST ${money(job.quote_fee.gst, cur)}). `}
             A separate charge for the pre-processing work, not deducted from the run. If pre-processing fails on our
             side, or the mesh turns out larger than our limit, it comes back to your wallet.
           </Fine>
@@ -690,16 +689,18 @@ function QuoteDetailsAfter({ job }: { job: CfdJob }) {
     <More summary="Your quote">
       {pkg ? (
         <Fine>
-          {pkg.label}: {money(pkg.total, cur)}
-          {cur === "USD" ? "" : " incl. GST"}, up to {fmtNumber(pkg.iterations)} iterations. {pkg.convergence}
+          {pkg.label}: {money(pkg.total, cur)}, up to {fmtNumber(pkg.iterations)} iterations; {packageLine(pkg)}
         </Fine>
       ) : null}
       {q.cells ? <Fine>Mesh: {fmtNumber(q.cells)} cells.{q.physics ? ` ${q.physics}` : ""}</Fine> : null}
-      <ul className="list-disc space-y-1 pl-5 text-[13px] leading-[1.6] text-ink-2">
-        {Object.values(q.outcomes ?? {}).map((t) => (
-          <li key={t}>{rupeeWords(t)}</li>
-        ))}
-      </ul>
+      <Fold>
+        {pkg ? <p>{pkg.convergence}</p> : null}
+        <ul className="list-disc space-y-1 pl-5">
+          {Object.values(q.outcomes ?? {}).map((t) => (
+            <li key={t}>{rupeeWords(t)}</li>
+          ))}
+        </ul>
+      </Fold>
     </More>
   );
 }

@@ -3,8 +3,8 @@
 /**
  * The quote (owner, 16 Oct 2026): one table, simple words, the whole
  * calculation visible. Columns are the packages (pick one by its heading);
- * rows go base fee → compute → subtotal → introductory discount → price
- * before GST → GST → total held, then the compute time, when it counts as
+ * rows go base fee → compute → subtotal → introductory discount → total
+ * held, then the compute time, when it counts as
  * converged, and the two delivery speeds with their estimated start and
  * results in the viewer's own time zone. Every number comes from the API
  * (quote.packages[].breakdown); nothing is recomputed here.
@@ -13,13 +13,21 @@
  * only; the package switch sits above it. No sideways page scroll.
  *
  * Same POST /pay body as before: {package, stop_when_settled, express}.
+ *
+ * One all-in price, no tax words (owner, 19 Oct 2026). The API's breakdown
+ * lines are ex-tax on a rupee quote, so each one is shown with the quote's own
+ * GST rate folded in (allIn), to the rupee; the total held is the API's figure,
+ * exactly what the wallet holds. The ex-tax and GST rows are gone. Dollar
+ * quotes carry no tax, so their lines are shown as they are.
  */
 import { useState } from "react";
 import Link from "next/link";
 import { type Currency } from "@/lib/money";
+import { CFD_GST_RATE, inrAllIn } from "@/lib/cfd-prices";
 import {
   fmtDate,
   fmtNumber,
+  firstSentence,
   money,
   moneyValue,
   rupeeWords,
@@ -30,7 +38,7 @@ import {
   type QuotePackage,
 } from "@/lib/cfd-job";
 import { type WalletLine } from "@/lib/cfd-job";
-import { ActionErrorView, Body, Card, Fine, More, PrimaryButton, WalletRow, When, signInHref, type ActionError } from "./parts";
+import { ActionErrorView, Body, Card, Fine, Fold, More, PrimaryButton, WalletRow, When, signInHref, type ActionError } from "./parts";
 
 export function hoursWords(h: { low: number; high: number }): string {
   const f = (x: number) => (x < 1 ? `${Math.max(5, Math.round((x * 60) / 5) * 5)} min` : `${Number(x.toFixed(1))} h`);
@@ -40,6 +48,25 @@ export function hoursWords(h: { low: number; high: number }): string {
 /** 1.2 → "1.2", 1 → "1": cells in millions, written simply. */
 function millions(m: number): string {
   return Number(m.toPrecision(3)).toLocaleString("en-IN");
+}
+
+/**
+ * One plain line per package (owner, 19 Oct 2026): how many meshes and when it
+ * counts as converged, from the API's own words. The long convergence and terms
+ * wording is folded under "Details", never dropped.
+ */
+const PURPOSE: Record<string, string> = {
+  // API key "quick", sold as Draft (owner, 19 Oct 2026)
+  quick: "cheaper, for comparing design options early",
+  standard: "the number you put in a client report",
+  validated: "Standard on three meshes, with a ± band",
+};
+
+export function packageLine(p: QuotePackage): string {
+  const purpose = PURPOSE[p.package];
+  const meshes = `${purpose ? `${purpose}; ` : ""}${p.levels_text ? "a mesh-independence verdict (GCI)" : "one mesh"}`;
+  const conv = p.convergence_short || firstSentence(p.convergence);
+  return conv ? `${meshes}; converged when ${conv.replace(/\.$/, "")}.` : `${meshes}.`;
 }
 
 type Row = {
@@ -92,7 +119,7 @@ export function QuotePanel({
       <Card tone="action" eyebrow="Next step" title="This quote has expired">
         <Body>
           Quotes are valid for seven days. A fresh quote is built from your existing mesh and is charged as pre-processing again
-          {job.quote_fee ? ` (${money(job.quote_fee.total, cur)}${usd ? "" : " incl. GST"})` : ""}.
+          {job.quote_fee ? ` (${money(job.quote_fee.total, cur)})` : ""}.
         </Body>
         <div className="mt-5">
           {signedIn ? (
@@ -118,6 +145,9 @@ export function QuotePanel({
   const minimumPkgs = pkgs.filter((p) => p.breakdown?.minimum_applies);
   const promiseH = dv.normal?.promise_hours ?? 24;
   const m = (v: unknown) => money(v as string, cur);
+  // ex-tax API line -> the all-in amount (rupee quotes only)
+  const taxRate = usd ? 0 : (quote.gst_rate_percent ?? CFD_GST_RATE * 100) / 100;
+  const a = (v: unknown) => (usd ? m(v) : money(inrAllIn(moneyValue(v as string), taxRate), cur));
 
   const rows: Row[] = [
     {
@@ -126,7 +156,7 @@ export function QuotePanel({
       cell: (p) =>
         p.compute_label ? p.compute_label.replace(/^Compute, up to /, "") : fmtNumber(p.iterations),
     },
-    { key: "base", label: "Base fee", cell: (p) => (p.breakdown ? m(p.breakdown.base_fee) : m(p.base_fee)) },
+    { key: "base", label: "Base fee", cell: (p) => (p.breakdown ? a(p.breakdown.base_fee) : a(p.base_fee)) },
     {
       key: "compute",
       label: (
@@ -136,27 +166,27 @@ export function QuotePanel({
       ),
       cell: (p) => {
         const b = p.breakdown;
-        if (!b) return m(p.compute_ex_gst);
+        if (!b) return a(p.compute_ex_gst);
         const f = b.compute_formula;
         if (p.levels_text) {
           // Verified (API: validated): priced per mesh, shown as the three meshes' cells
           return (
             <>
-              {m(b.compute)}
+              {a(b.compute)}
               <span className="mt-0.5 block text-[12px] leading-[1.45] text-ink-3">
                 {p.levels_text}
-                {f.rate_per_mcell_per_kiter ? ` × iterations at ${m(f.rate_per_mcell_per_kiter)}` : ""}
+                {f.rate_per_mcell_per_kiter ? ` × iterations at ${a(f.rate_per_mcell_per_kiter)}` : ""}
               </span>
             </>
           );
         }
         return (
           <>
-            {m(b.compute)}
+            {a(b.compute)}
             {f.rate_per_mcell_per_kiter && !p.compute_label ? (
               <span className="mt-0.5 block text-[12px] leading-[1.45] text-ink-3">
                 {millions(f.mcells)} M cells × {fmtNumber(f.iterations)} it.
-                {f.factor !== 1 ? ` × ${f.factor}` : ""} at {m(f.rate_per_mcell_per_kiter)}
+                {f.factor !== 1 ? ` × ${f.factor}` : ""} at {a(f.rate_per_mcell_per_kiter)}
               </span>
             ) : null}
           </>
@@ -169,26 +199,20 @@ export function QuotePanel({
             key: "adj",
             label: minimumPkgs.length ? "Minimum charge top-up*" : "Rounded up",
             cell: (p: QuotePackage) =>
-              p.breakdown?.adjustment ? m(p.breakdown.adjustment) : <span className="text-ink-3">–</span>,
+              p.breakdown?.adjustment ? a(p.breakdown.adjustment) : <span className="text-ink-3">–</span>,
           },
         ]
       : []),
     ...(anyDiscount
       ? [
-          { key: "sub", label: "Subtotal", cell: (p: QuotePackage) => m(p.breakdown?.subtotal ?? p.list_price_ex_gst) },
+          { key: "sub", label: "Subtotal", cell: (p: QuotePackage) => a(p.breakdown?.subtotal ?? p.list_price_ex_gst) },
           {
             key: "disc",
             label: `Introductory discount (${pkgs.find((p) => p.breakdown?.discount_percent)?.breakdown?.discount_percent ?? 50}%)`,
-            cell: (p: QuotePackage) => (p.breakdown?.discount ? `−${m(p.breakdown.discount)}` : "–"),
+            cell: (p: QuotePackage) => (p.breakdown?.discount ? `−${a(p.breakdown.discount)}` : "–"),
           },
         ]
       : []),
-    { key: "ex", label: usd ? "Price" : "Price before GST", cell: (p) => m(p.breakdown?.price_ex_gst ?? p.price_ex_gst) },
-    {
-      key: "gst",
-      label: usd ? "No GST (export)" : `GST ${quote.gst_rate_percent ?? 18}%`,
-      cell: (p) => (usd ? "–" : m(p.breakdown?.gst ?? p.gst)),
-    },
     {
       key: "total",
       label: "Total held in your wallet",
@@ -273,6 +297,14 @@ export function QuotePanel({
         </div>
       ) : null}
 
+      <ul className="mb-5 space-y-1 text-[14px] leading-[1.55] text-ink-2">
+        {pkgs.map((p) => (
+          <li key={p.package}>
+            <span className="font-medium text-ink">{p.label}:</span> {packageLine(p)}
+          </li>
+        ))}
+      </ul>
+
       <div className="-mx-1 overflow-x-auto px-1">
         <table className="w-full border-collapse text-[14px] text-ink-2">
           <thead>
@@ -300,11 +332,6 @@ export function QuotePanel({
                     </label>
                     {p.package === quote.default_package && pkgs.length > 1 ? (
                       <span className="mt-1 block font-mono text-[11px] tracking-[0.12em] text-ink-3 uppercase">Suggested</span>
-                    ) : null}
-                    {p.adds ? (
-                      <span className="mt-1 block max-w-[16rem] text-[12px] leading-[1.45] font-normal text-ink-3 sm:ml-auto">
-                        {p.adds}
-                      </span>
                     ) : null}
                   </th>
                 );
@@ -353,35 +380,48 @@ export function QuotePanel({
       </div>
 
       <div className="mt-3 space-y-1">
-        {rate ? (
-          <Fine>
-            Compute = million cells × thousands of iterations × the rate per million cells per 1,000 iterations
-            {rate.compute_formula.rate_after_discount
-              ? usd
-                ? " (at the regular price; the introductory discount halves it)"
-                : ` (at the regular price; after the introductory discount the rate is ${m(rate.compute_formula.rate_after_discount)})`
-              : ""}
-            {usd ? "" : ", before GST"}.
-          </Fine>
-        ) : null}
-        {minimumPkgs.length ? (
-          <Fine>
-            * {minimumPkgs.map((p) => `${p.label}: the minimum price is ${m(p.breakdown!.minimum_charge)}${usd ? "" : " before GST"}`).join("; ")}.
-            Base fee plus compute come to less, so the difference is added.
-          </Fine>
-        ) : null}
         {dv.express && !dv.express.available && dv.express.unavailable ? <Fine>{dv.express.unavailable}</Fine> : null}
         {quote.validated_unavailable ? <Fine>{quote.validated_unavailable}</Fine> : null}
         {quote.mesh_choice ? <Fine>Mesh: {quote.mesh_choice.text}</Fine> : null}
-        {quote.validation_note ? <Fine>{quote.validation_note}</Fine> : null}
-        {pkgs.some((p) => p.levels_text) ? (
-          <Fine>
-            Verified is a mesh-independence study (GCI): your case on three meshes, a coarser one, the quoted one and a
-            finer one (coarser and finer sizes are estimates; you pay for the cells and iterations actually run, never
-            more than the total held). Mesh-independent means the mesh error is small; it does not mean the result
-            matches experiments. Not offered as express.
-          </Fine>
-        ) : null}
+        {quote.validation_note ? <Fine>{firstSentence(quote.validation_note)}</Fine> : null}
+        <Fold>
+          {pkgs.filter((p) => p.adds).map((p) => (
+            <p key={`adds-${p.package}`}>
+              <span className="font-medium text-ink">{p.label}:</span> {p.adds}
+            </p>
+          ))}
+          {pkgs.map((p) => (
+            <p key={`conv-${p.package}`}>
+              <span className="font-medium text-ink">{p.label}, converged when:</span> {p.convergence}
+            </p>
+          ))}
+          {rate ? (
+            <p>
+              Compute = million cells × thousands of iterations × the rate per million cells per 1,000 iterations
+              {rate.compute_formula.rate_after_discount
+                ? usd
+                  ? " (at the regular price; the introductory discount halves it)"
+                  : ` (at the regular price; after the introductory discount the rate is ${a(rate.compute_formula.rate_after_discount)})`
+                : ""}
+              .
+            </p>
+          ) : null}
+          {minimumPkgs.length ? (
+            <p>
+              * {minimumPkgs.map((p) => `${p.label}: the minimum price is ${a(p.breakdown!.minimum_charge)}`).join("; ")}.
+              Base fee plus compute come to less, so the difference is added.
+            </p>
+          ) : null}
+          {quote.validation_note ? <p>{quote.validation_note}</p> : null}
+          {pkgs.some((p) => p.levels_text) ? (
+            <p>
+              Verified is a mesh-independence study (GCI): your case on three meshes, a coarser one, the quoted one and a
+              finer one (coarser and finer sizes are estimates; you pay for the cells and iterations actually run, never
+              more than the total held). Mesh-independent means the mesh error is small; it does not mean the result
+              matches experiments. Not offered as express.
+            </p>
+          ) : null}
+        </Fold>
       </div>
 
       {ex && exPkg ? (

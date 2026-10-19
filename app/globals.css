@@ -886,9 +886,53 @@ body:has([data-usd-view]) .cf-ticker {
   .cfx-titlecard p { margin-top: 12px; color: var(--color-ink-2); }
   @media (max-width: 640px) {
     .cfx-sechead { grid-template-columns: minmax(0, 1fr); gap: 12px; }
-    .cfx-numeral { font-size: 120px; }
+    /* justify-self: as wide as the digit, so the wash (::before, -10 % right) stays
+       on screen; full-width it gave every phone a sideways scroll (19 Oct 2026). */
+    .cfx-numeral { font-size: 120px; justify-self: start; }
     .cfx-titlecard { padding: 20px 22px; }
   }
+
+  /* price / turnaround figure (owner, 19 Oct 2026): the number big on a soft
+     wash, the qualifier small. components/cfd-explainer/figure.tsx */
+  .cfx-figs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 20px; }
+  .cfx-fig { min-width: 0; --cfx-wash: var(--cfx-wash-aqua); }
+  .cfx-fig--coral { --cfx-wash: #f6b9a6; }
+  .cfx-fig-label {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-ink-3);
+  }
+  .cfx-fig-line { margin-top: 6px; line-height: 1.1; }
+  .cfx-fig-pre { font-size: 15px; color: var(--color-ink-2); }
+  .cfx-fig-num {
+    position: relative;
+    isolation: isolate;
+    display: inline-block;
+    padding: 0 0.12em;
+    font-family: var(--font-heading);
+    font-weight: 500;
+    font-size: 28px;
+    letter-spacing: -0.01em;
+    color: var(--color-ink);
+    white-space: nowrap;
+  }
+  .cfx-fig-num::before {
+    content: "";
+    position: absolute;
+    inset: 22% -10% -8% -8%;
+    z-index: -1;
+    border-radius: 46% 54% 60% 40% / 50% 40% 60% 50%;
+    background: radial-gradient(farthest-side, var(--cfx-wash) 0%, var(--cfx-wash) 45%, transparent 100%);
+    opacity: 0.75;
+    filter: blur(1.5px);
+  }
+  .cfx-fig-after { margin-top: 6px; font-size: 13.5px; line-height: 1.45; color: var(--color-ink-2); }
+  .cfx-fig--sm .cfx-fig-num { font-size: 20px; }
+  .cfx-fig-num--inherit { font-size: inherit; letter-spacing: inherit; }
+  .cfx-fig--sm .cfx-fig-line { margin-top: 2px; }
+  .cfx-fig--sm .cfx-fig-after { margin-top: 2px; font-size: 13px; }
 
   /* 2. callout card */
   .cfx-callout {
@@ -985,6 +1029,11 @@ body:has([data-usd-view]) .cf-ticker {
   .cfx-figure { position: relative; margin: 0; min-width: 0; }
   .cfx-figure figcaption { margin-top: 12px; font-size: 14.4px; color: var(--color-ink-3); max-width: 62ch; }
   .cfx-figure .cfx-figstamp { position: absolute; right: 6%; bottom: 12%; }
+  /* phones: a stamp waiting to press (motion.css, scale 1.6) poked past a 375 px
+     screen and gave /cfd a sideways scroll (19 Oct 2026). The pressed stamp fits. */
+  @media (max-width: 480px) {
+    .cfx-figure { overflow-x: clip; }
+  }
   .cfx-overlay { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
   .cfx-labels {
     display: flex;

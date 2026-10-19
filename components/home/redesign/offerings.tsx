@@ -35,9 +35,7 @@ export function offeringPrices(card: RateCard | null, currency: Currency): Offer
   return {
     currency,
     cfdFee:
-      currency === "USD"
-        ? `${m(usd.cfd_quote_fee_small)}, no GST`
-        : `${m(CFD_PREPROCESS_INR.small)} incl. GST`,
+      m(currency === "USD" ? usd.cfd_quote_fee_small : CFD_PREPROCESS_INR.small),
     cfdLargeFee: m(currency === "USD" ? usd.cfd_quote_fee_large : CFD_PREPROCESS_INR.large),
     cfdCells: cellsLabel(currency === "USD" ? usd.cfd_quote_fee_small_max_cells : CFD_PREPROCESS_INR.smallMaxCells),
     studio: { extraPreview: m(st.extraPreview), edit: m(st.edit), k2: m(st.k2), k4: m(st.k4) },
