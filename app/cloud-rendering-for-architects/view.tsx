@@ -336,6 +336,7 @@ export default async function ArchitectsView({ currency }: { currency: Currency 
           <div className="cf-col flex flex-wrap gap-x-6 gap-y-1 text-sm">
             {[
               ["/", "Home"],
+              ["/architectural-visualization", "Every archviz tool, by job"],
               ["/d5-render-cloud-workstation", "D5 Render"],
               ["/lumion-cloud-gpu", "Lumion"],
               ["/enscape-cloud-gpu", "Enscape"],

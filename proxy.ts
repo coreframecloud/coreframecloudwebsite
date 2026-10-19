@@ -68,6 +68,7 @@ const PAGES = new Set([
   "/coreframe-vs-irender",
   "/vram-for-architectural-rendering",
   "/cloud-rendering-for-architects",
+  "/architectural-visualization",
   "/cloud-workstation-vs-render-farm",
   // The sign-up page quotes the intro offer and the hourly rate (18 Oct 2026).
   "/signup",

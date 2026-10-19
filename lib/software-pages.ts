@@ -208,7 +208,7 @@ function buildSoftwarePages(cur: Currency): SoftwarePage[] {
         a: "On ad-hoc hourly sessions, yes, because the machine resets to a clean image each time and the setup time is billed like any other minute. On a committed monthly plan we build your applications into the baseline image on your nodes, so they are there when you sign in. If you tell us what you use before your first session, we install it beforehand so your first hours test your real workflow instead of paying for setup.",
       },
     ],
-    related: ["vray-cloud-rendering", "cloud-workstation-vs-render-farm", "revit-cloud-workstation", "sketchup-cloud-workstation"],
+    related: ["architectural-visualization", "vray-cloud-rendering", "cloud-workstation-vs-render-farm", "revit-cloud-workstation", "sketchup-cloud-workstation"],
   },
 
   {
@@ -238,7 +238,7 @@ function buildSoftwarePages(cur: Currency): SoftwarePage[] {
       },
       { q: "Do my models persist between sessions?", a: RESET_ANSWER },
     ],
-    related: ["enscape-cloud-gpu", "d5-render-cloud-workstation", "revit-cloud-workstation", "vray-cloud-rendering", "twinmotion-cloud-workstation"],
+    related: ["architectural-visualization", "enscape-cloud-gpu", "d5-render-cloud-workstation", "revit-cloud-workstation", "vray-cloud-rendering", "twinmotion-cloud-workstation"],
   },
 
   /**
@@ -311,7 +311,7 @@ function buildSoftwarePages(cur: Currency): SoftwarePage[] {
       },
       { q: "Do my Twinmotion projects persist?", a: RESET_ANSWER },
     ],
-    related: ["unreal-engine-cloud-workstation", "blender-cloud-workstation", "revit-cloud-workstation", "vray-cloud-rendering"],
+    related: ["architectural-visualization", "unreal-engine-cloud-workstation", "blender-cloud-workstation", "revit-cloud-workstation", "vray-cloud-rendering"],
   },
 
   {
@@ -342,7 +342,7 @@ function buildSoftwarePages(cur: Currency): SoftwarePage[] {
       },
       { q: "Is this the same as Chaos Cloud?", a: "No. Chaos Cloud is a render service you submit jobs to. Coreframe rents you an interactive workstation, so you set up and render in one place and can use any software you like on the same machine." },
     ],
-    related: ["3ds-max-cloud-workstation", "sketchup-cloud-workstation", "rhino-cloud-workstation"],
+    related: ["architectural-visualization", "3ds-max-cloud-workstation", "sketchup-cloud-workstation", "rhino-cloud-workstation"],
   },
 
   {
