@@ -74,6 +74,9 @@ const PAGES = new Set([
   "/video-animation-rendering",
   // The sign-up page quotes the intro offer and the hourly rate (18 Oct 2026).
   "/signup",
+  // The paid landing pages (owner, 20 Oct 2026): one price, in the visitor's currency.
+  "/go/gpu",
+  "/go/cfd",
 ]);
 
 /** Dynamic routes with a /usd copy: exactly one segment after the prefix, so

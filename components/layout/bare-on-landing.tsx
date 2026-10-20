@@ -3,6 +3,15 @@
 import { usePathname } from "next/navigation";
 
 /**
+ * The paid-ad landing pages (owner, 20 Oct 2026: "send ad traffic to a page
+ * with ONE job — clear promise, short video, one button; no menu/blog/careers").
+ * They lose the strip, the header and the floating button like /signup, and
+ * the site footer as well (NoFooterOnAdPages): their own footer carries only
+ * the legal links. /signup keeps the site footer, as before.
+ */
+const AD_LANDING_PATHS = new Set(["/go/gpu", "/go/cfd"]);
+
+/**
  * Hides the site chrome on paid landing pages.
  *
  * On 20 Sep 2026 a campaign put 87 people on /signup and not one of them
@@ -26,7 +35,7 @@ import { usePathname } from "next/navigation";
  * browsing path, so it only makes sense for a page whose entire job is one
  * action.
  */
-const BARE = new Set(["/signup"]);
+const BARE = new Set(["/signup", ...AD_LANDING_PATHS]);
 
 export function BareOnLanding({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -44,5 +53,12 @@ const NO_STRIP_PREFIXES = ["/cfd/jobs", "/my-activity", "/studio"];
 export function NoStripOnAppPages({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   if (pathname && NO_STRIP_PREFIXES.some((p) => pathname === p || pathname.startsWith(p + "/"))) return null;
+  return <>{children}</>;
+}
+
+/** Drops the site footer (menus, guides, blog) on the paid-ad landing pages only. */
+export function NoFooterOnAdPages({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+  if (pathname && AD_LANDING_PATHS.has(pathname)) return null;
   return <>{children}</>;
 }

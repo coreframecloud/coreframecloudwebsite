@@ -29,7 +29,7 @@ type QA = { q: string; a: string };
  * outside India pay in US dollars, and a team billed in dollars gets a dollar
  * invoice (everything is global, owner 15 Oct 2026).
  */
-function buildFaq(storage: StorageTerms, intro: IntroOffer | null, adhocRate?: string, currency: Currency = "INR"): QA[] {
+export function buildFaq(storage: StorageTerms, intro: IntroOffer | null, adhocRate?: string, currency: Currency = "INR"): QA[] {
   const usdView = currency === "USD";
   const items: QA[] = [
     {
