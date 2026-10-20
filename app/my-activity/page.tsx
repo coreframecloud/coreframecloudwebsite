@@ -13,7 +13,8 @@ import { announceWallet } from "@/components/wallet/wallet-events";
 import MyCfdJobs from "@/components/cfd/my-cfd-jobs";
 import MyStudioProjects from "@/components/studio/my-studio-projects";
 import SignInSecurity from "@/components/account/sign-in-security";
-import { apiFetch, forgetLocalSession, isSignedIn, sessionMarker } from "@/lib/session";
+import MyTeamCard from "@/components/team/my-team-card";
+import { apiFetch, forgetLocalSession, isSignedIn, rememberUser, sessionMarker } from "@/lib/session";
 import { trackEvent } from "@/lib/analytics";
 import {
   introOfferFor,
@@ -988,6 +989,22 @@ export default function MyActivityPage() {
             <p className="mt-1 text-xs text-ink-2">Managed by your org admin</p>
           </div>
         )}
+
+        {/* Teams v2 (20 Oct 2026): "Your team" for a member, "Connect with my
+            team" for anyone in no team, and invites with Accept / Decline.
+            Joining or leaving changes which wallet pays, so it refreshes. */}
+        <MyTeamCard
+          onTeamChanged={(t) => {
+            // The cached account says which wallet layout to show; a team
+            // joined here makes this a company (b2b) account with that role.
+            if (t?.organization && user) {
+              const next = { ...user, role: t.role ?? user.role, customer_type: "b2b" };
+              setUser(next);
+              rememberUser(next);
+            }
+            void refresh();
+          }}
+        />
 
         {/* Disk. Rendered for every segment: a B2B engineer on the org's
             pooled wallet still has their own storage. */}
