@@ -5,9 +5,10 @@ import { usePathname } from "next/navigation";
 /**
  * The paid-ad landing pages (owner, 20 Oct 2026: "send ad traffic to a page
  * with ONE job — clear promise, short video, one button; no menu/blog/careers").
- * They lose the strip, the header and the floating button like /signup, and
- * the site footer as well (NoFooterOnAdPages): their own footer carries only
- * the legal links. /signup keeps the site footer, as before.
+ * They lose the strip and the header like /signup, and the site footer as well
+ * (NoFooterOnAdPages): their own footer carries only the legal links. They
+ * KEEP the floating WhatsApp button (owner, 20 Oct 2026: leave the site's
+ * WhatsApp button as it is), so that one uses FloatOffOnSignup.
  */
 const AD_LANDING_PATHS = new Set(["/go/gpu", "/go/cfd"]);
 
@@ -60,5 +61,12 @@ export function NoStripOnAppPages({ children }: { children: React.ReactNode }) {
 export function NoFooterOnAdPages({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   if (pathname && AD_LANDING_PATHS.has(pathname)) return null;
+  return <>{children}</>;
+}
+
+/** The floating WhatsApp button: hidden on /signup only (owner 20 Oct 2026: keep it everywhere else, ad pages too). */
+export function FloatOffOnSignup({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+  if (pathname === "/signup") return null;
   return <>{children}</>;
 }

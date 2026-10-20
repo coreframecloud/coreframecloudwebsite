@@ -40,7 +40,7 @@ import { WhatsAppButton } from "@/components/home/whatsapp-button";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 import { SiteHeader } from "@/components/home/site-header";
-import { BareOnLanding, NoFooterOnAdPages, NoStripOnAppPages } from "@/components/layout/bare-on-landing";
+import { BareOnLanding, FloatOffOnSignup, NoFooterOnAdPages, NoStripOnAppPages } from "@/components/layout/bare-on-landing";
 import { SiteFooter } from "@/components/home/site-footer";
 import { ScrollReveal } from "@/components/scroll-reveal";
 import { IntroStrip } from "@/components/home/intro-strip";
@@ -585,11 +585,11 @@ export default async function RootLayout({
         </NoFooterOnAdPages>
         <ScrollReveal />
 
-        {/* Floating WhatsApp button — every page except the paid landing
-            pages, where it covers the terms line and offers a way out. */}
-        <BareOnLanding>
+        {/* Floating WhatsApp button — every page except /signup, where it
+            covers the terms line. The ad landing pages keep it (owner, 20 Oct). */}
+        <FloatOffOnSignup>
         <WhatsAppButton />
-        </BareOnLanding>
+        </FloatOffOnSignup>
         <SpeedInsights />
       </body>
     </html>
