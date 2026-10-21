@@ -21,7 +21,7 @@ import {
   preprocessFee,
   preprocessLarge,
 } from "@/lib/cfd-prices";
-import { CFD_HOME, CLINIC_CASE, HVAC_PAGE, HVAC_SERVICE } from "@/lib/cfd-pages";
+import { CFD_DEMO, CFD_HOME, CLINIC_CASE, HVAC_PAGE, HVAC_SERVICE } from "@/lib/cfd-pages";
 import { PageByline } from "@/components/seo/page-byline";
 import { getVisiblePost } from "@/lib/blog";
 import { VERIFICATION_POST_SLUG } from "@/lib/blog/posts/verification-vs-validation-cfd";
@@ -29,6 +29,7 @@ import { HAND_CALC_POST_SLUG } from "@/lib/blog/posts/pressure-drop-hand-calc-vs
 import { ROOMS_VALIDATION } from "@/lib/cfd-rooms";
 import { cfdServiceTiles } from "@/lib/cfd-services";
 import { ServiceTiles } from "./service-tiles";
+import { HvacEngineers } from "./hvac-engineers";
 
 /**
  * /cfd — CFD for ducts and pipes (managed, automatic). Live 13 Oct 2026.
@@ -609,6 +610,9 @@ export default async function CfdView({ currency }: { currency: Currency }) {
               All images are from our own end-to-end test runs: 50 mm pipes, water at 4 m/s, a 90° bend (0.91 M cells) and
               a reducer (1.49 M cells), solved on our machine and reported exactly as a customer receives them.
             </p>
+            <p className="cfx-quiet mt-4">
+              <Link href={CFD_DEMO.path}>Rotate the same bend and reducer in the 3D viewer →</Link>
+            </p>
           </div>
         </section>
 
@@ -764,6 +768,9 @@ export default async function CfdView({ currency }: { currency: Currency }) {
             </div>
           </div>
         </section>
+
+        {/* ── For HVAC engineers (owner, 21 Oct 2026): inputs, steps, outputs, trust, data. */}
+        <HvacEngineers currency={currency} card={card} post={post} />
 
         {/* ── Packages (SEO review 18 Oct 2026, 3.1): Draft (then "Quick") and Standard were
             named only inside the FAQ. Their prices are on the quote, never here. */}
