@@ -29,7 +29,7 @@ import { COMPANY, COMPANY_ADDRESS_FULL } from "@/lib/company";
 export const metadata: Metadata = {
   title: "Terms of Service",
   description:
-    "The terms for using Coreframe Cloud: your account and wallet, GPU cloud workstations, CFD simulation, Studio and the free tools.",
+    "The terms for using Coreframe Cloud: your account and wallet, GPU workstations, CFD simulation, Studio and the free tools.",
   alternates: {
     canonical: "/terms-of-service",
   },
@@ -45,7 +45,7 @@ const parts: Part[] = [
     id: "about",
     title: "1. About these terms",
     blocks: [
-      `These terms are an agreement between you and ${COMPANY.displayName} ("Coreframe", "we", "us"), a company registered in Bengaluru, India (CIN ${COMPANY.cin}). They apply to everything we offer under the Coreframe Cloud name: the website, your account and wallet, GPU cloud workstations, the Coreframe Connect desktop app, CFD simulation, Studio, and our free tools (together, the "Services").`,
+      `These terms are an agreement between you and ${COMPANY.displayName} ("Coreframe", "we", "us"), a company registered in Bengaluru, India (CIN ${COMPANY.cin}). They apply to everything we offer under the Coreframe Cloud name: the website, your account and wallet, GPU workstations, the Coreframe Connect desktop app, CFD simulation, Studio, and our free tools (together, the "Services").`,
       "By creating an account, signing in, submitting a job or using a free tool, you accept these terms. If you use the Services for a company or firm, you accept them on its behalf and confirm you are authorised to do so; \"you\" then means both you and that organisation.",
       "Two other pages form part of these terms: our [Refund Policy](/refund-policy) and our [Privacy Policy](/privacy-policy). If your organisation has signed a separate service agreement or monthly plan with us, that agreement takes precedence where it differs from this page.",
     ],
@@ -91,7 +91,7 @@ const parts: Part[] = [
   },
   {
     id: "workstations",
-    title: "5. GPU cloud workstations",
+    title: "5. GPU workstations",
     blocks: [
       "A workstation is a whole remote Windows machine with a dedicated GPU (currently an RTX 5080), which you open through the Coreframe Connect desktop app. Only one session per account runs at a time, from one device.",
       {
