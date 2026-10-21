@@ -280,6 +280,30 @@ export interface CfdJob {
   results_url?: string;
   results_available?: boolean;
   convergence_state?: string | null;
+  /** 30-day file retention (21 Oct 2026). Absent on an API from before that. */
+  files?: JobFiles | null;
+}
+
+/**
+ * Customer files are kept for 30 days after the job ends, then deleted (owner,
+ * 21 Oct 2026; apps/api services/cfd_retention.py). Once deleted, every download
+ * and every step that needs the files answers 410; the job record, quote and
+ * billing stay.
+ */
+export interface JobFiles {
+  retention_days: number;
+  deleted: boolean;
+  deleted_at?: string;
+  /** When this job's files go (only once the job has ended). */
+  delete_after?: string;
+  /** The sentence to show, from the API. */
+  text: string;
+}
+
+export const FILES_KEPT_TEXT = "Files are kept for 30 days after the job ends, then deleted.";
+
+export function filesDeleted(job: Pick<CfdJob, "files"> | null | undefined): boolean {
+  return !!job?.files?.deleted;
 }
 
 export interface CancelOption {

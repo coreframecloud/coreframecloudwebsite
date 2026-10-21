@@ -81,7 +81,7 @@ export function ResultsPanel({ job }: { job: CfdJob }) {
           <QuietButton onClick={() => open(job.results_url!)}>Full case (zip)</QuietButton>
         ) : null}
       </div>
-      {!job.results_url && job.results_available === false ? (
+      {!job.results_url && job.results_available === false && !job.files?.deleted ? (
         <Fine className="mt-3">
           The full case package is too large to download here; we send it to you separately.
         </Fine>

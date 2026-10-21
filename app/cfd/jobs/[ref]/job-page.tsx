@@ -35,6 +35,8 @@ import {
   stepOf,
   type CfdJob,
   type WalletLine,
+  FILES_KEPT_TEXT,
+  filesDeleted,
 } from "@/lib/cfd-job";
 import { ActionErrorView, Body, Card, ErrorLine, Fine, Fold, More, PrimaryButton, QuietButton, UploadBox, WalletRow, signInHref, type ActionError } from "./parts";
 import { QuoteDetails, QuotePanel, packageLine } from "./quote-panel";
@@ -343,7 +345,9 @@ function JobBody({
   const email = job.payment?.account_email;
   const problems = job.geometry_problems ?? [];
   const noGeometry = problems.some((p) => p.code === "no_geometry");
-  const needsUpload = s === "mesh_failed" || s === "rejected" || noGeometry;
+  // 30-day retention (21 Oct 2026): with the files gone, no step that needs them is offered.
+  const gone = filesDeleted(job);
+  const needsUpload = !gone && (s === "mesh_failed" || s === "rejected" || noGeometry);
   const units = job.units_confirmation;
   const openings = job.openings;
   const confirmCaps = s === "new" && openings?.status === "ok" && !openings.confirmed;
@@ -364,17 +368,26 @@ function JobBody({
         </Card>
       ) : null}
 
+      {gone ? (
+        <Card eyebrow="Files" title="This job's files were deleted">
+          <Body>{job.files?.text}</Body>
+          <Fine className="mt-2">
+            The job record and its billing stay in your account. To run this model again, start a new job.
+          </Fine>
+        </Card>
+      ) : null}
+
       {/* ── 1. The one next action ─────────────────────────────────────── */}
 
-      {s === "new" && units ? (
+      {s === "new" && units && !gone ? (
         <UnitsCard job={job} busy={busy === "units"} error={errFor("units")} onConfirm={(u) => act("units", "/confirm-units", { units: u })} />
       ) : null}
 
-      {confirmCaps && !units ? (
+      {confirmCaps && !units && !gone ? (
         <InletCard job={job} busy={busy === "caps"} error={errFor("caps")} onConfirm={(id) => act("caps", "/caps", { inlet: id })} />
       ) : null}
 
-      {s === "new" && !units && !confirmCaps && !noGeometry && !otherProblems.length ? (
+      {s === "new" && !gone && !units && !confirmCaps && !noGeometry && !otherProblems.length ? (
         <Card eyebrow="In progress" title="Checking your geometry">
           <Body>We check that the model is closed, read its size and find its openings. This page updates by itself.</Body>
         </Card>
@@ -419,7 +432,7 @@ function JobBody({
         </Card>
       ) : null}
 
-      {s === "new" && otherProblems.length && !needsUpload ? (
+      {s === "new" && !gone && otherProblems.length && !needsUpload ? (
         <Card tone="action" eyebrow="Next step" title="Before we can mesh your geometry">
           <ul className="space-y-3">
             {otherProblems.map((p) => (
@@ -435,7 +448,7 @@ function JobBody({
         </Card>
       ) : null}
 
-      {s === "quote_fee_due" && job.quote_fee ? (
+      {s === "quote_fee_due" && job.quote_fee && !gone ? (
         <Card tone="action" eyebrow="Next step" title="Pay for pre-processing to get your quote">
           <Body>
             Pre-processing / mesh check: we check your geometry, build a wall-resolved mesh and verify its quality; your exact run price comes with it. The mesh report and the quote follow
@@ -473,7 +486,7 @@ function JobBody({
 
       {job.mesh_report_url && job.quote ? <MeshReportRow job={job} url={job.mesh_report_url} /> : null}
 
-      {s === "quoted" && job.quote ? (
+      {s === "quoted" && job.quote && !gone ? (
         <QuotePanel
           job={job}
           quote={job.quote}
@@ -535,12 +548,14 @@ function JobBody({
       ) : null}
       {job.quote && s !== "quoted" ? <QuoteDetailsAfter job={job} /> : null}
 
-      {REUPLOAD_OK.has(s) && !needsUpload && !(s === "new" && otherProblems.length) ? (
+      {REUPLOAD_OK.has(s) && !gone && !needsUpload && !(s === "new" && otherProblems.length) ? (
         <More summary="Upload a new version of the model">
           <Fine>A new file replaces this one and starts again from the geometry check{s === "quoted" ? "; this quote is withdrawn and the new file needs pre-processing again" : ""}.</Fine>
           <UploadBox refId={job.ref_id} primary={false} onDone={reload} />
         </More>
       ) : null}
+
+      {!gone ? <Fine className="mt-6">{job.files?.text || FILES_KEPT_TEXT}</Fine> : null}
     </>
   );
 }

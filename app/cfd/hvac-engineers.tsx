@@ -30,8 +30,11 @@ import type { Currency, UsdRateCard } from "@/lib/money";
  *    cfd_results on our server; cfd_express.py: one VM per mesh task and per
  *    run, security group with no inbound rules, deleted when the job ends;
  *    prune_case_archives: a continuable case is kept cfd_express_case_keep_days
- *    = 10 days). There is NO automatic deletion of uploads or results and no
- *    delete-on-request endpoint: do not claim either until one exists.
+ *    = 10 days; services/cfd_retention.py + scripts/cfd_retention.py: uploads,
+ *    results and case deleted cfd_file_retention_days = 30 days after the job
+ *    ends, owner 21 Oct 2026). Storage is in India, on our own storage (owner
+ *    confirmed 21 Oct 2026). There is NO delete-on-request endpoint: do not
+ *    claim one until it exists.
  * No provider names, no costs, no CPU names.
  */
 
@@ -209,7 +212,7 @@ export function HvacEngineers({
           <h3 className="cf-card-label">Your data</h3>
           <ul className="mt-4 space-y-3 text-[15px] leading-6 text-ink-2">
             <li>
-              Your STL, the report and the result files are stored on our server under your job. They open only when you are
+              Your STL, the report and the result files are stored in India, on our own storage, under your job. They open only when you are
               signed in to the account that owns the job; download links expire after five minutes. Our team can open a job
               when we support it.
             </li>
@@ -218,6 +221,10 @@ export function HvacEngineers({
               The results are copied back to our server and the machine is deleted when the job ends.
             </li>
             <li>When a run can be continued, its working case is kept for 10 days for that, then deleted.</li>
+            <li>
+              Your files are kept for 30 days after the job ends, then deleted. Download anything you want to keep; the job
+              record and its billing stay in your account.
+            </li>
           </ul>
         </div>
 
