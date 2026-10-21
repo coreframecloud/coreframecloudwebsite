@@ -369,15 +369,47 @@ export default function LoginForm({
   const [codeValue, setCodeValue] = useState("");
   const [codeLoading, setCodeLoading] = useState(false);
 
-  // A team invite links to /signup?email=<invited address>. Pre-fill both
-  // email fields so the person signs up with the address the invite is for,
-  // which is what lets the API accept the invite automatically.
+  // A team invite links to /signup#invite=<opaque token> (review M11, 21 Oct
+  // 2026). It used to be /signup?email=<invited address>, which put the
+  // address into GA4, the Meta pixel, Clarity and the CDN logs. The token is
+  // in the FRAGMENT, which browsers never send to a server; it is removed
+  // from the address bar at once and swapped for the address over a POST, so
+  // both email fields are pre-filled with the address the invite is for
+  // (that is what lets the API accept the invite automatically).
   useEffect(() => {
-    const invited = new URLSearchParams(window.location.search).get("email")?.trim() ?? "";
-    if (invited && invited.length <= 254 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(invited)) {
-      setLinkEmail(invited);
-      setCodeEmail(invited);
+    const hash = new URLSearchParams(window.location.hash.slice(1));
+    const token = hash.get("invite")?.trim() ?? "";
+    const query = new URLSearchParams(window.location.search);
+    if (token || query.has("email")) {
+      // Strip the token (and any legacy ?email=) before anything else reads the URL.
+      query.delete("email");
+      const rest = query.toString();
+      try {
+        window.history.replaceState(null, "", window.location.pathname + (rest ? `?${rest}` : ""));
+      } catch {
+        /* the token is still used; only the cleanup failed */
+      }
     }
+    if (!token || token.length > 128 || !/^[A-Za-z0-9_-]+$/.test(token)) return;
+    let cancelled = false;
+    fetch(`${API}/team-invites/preview`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ token }),
+    })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data: { email?: string } | null) => {
+        const invited = (data?.email ?? "").trim();
+        if (cancelled || !invited || invited.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(invited)) return;
+        setLinkEmail(invited);
+        setCodeEmail(invited);
+      })
+      .catch(() => {
+        /* no pre-fill; the person can still type their address */
+      });
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
 
