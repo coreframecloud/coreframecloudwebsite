@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { NODE } from "@/lib/node-spec";
-import { hoursLabel, type IntroOffer, introPrice } from "@/lib/rate-card";
+import { hoursLabel, type IntroOffer, type LadderRanges, introOfferMoreGpus, introPrice } from "@/lib/rate-card";
 import type { Currency } from "@/lib/money";
 import { Reveal } from "@/components/home/redesign/reveal";
 import { ParallaxBg } from "@/components/home/redesign/depth";
@@ -19,12 +19,19 @@ const MARQUEE_APPS = PREINSTALLED.filter((s) => s.category === "3D & rendering" 
  * session sits behind at low opacity. The one speed multiple carries its
  * source on the same line, or it does not appear at all.
  */
-export function FactsBand({ currency = "INR" }: { currency?: Currency }) {
+export function FactsBand({ currency = "INR", ladder = null }: { currency?: Currency; ladder?: LadderRanges | null }) {
   const usdView = currency === "USD";
+  // The GPU ladder from the live rate card (owner, 21 Oct 2026): one GPU
+  // today, a range once more profiles are public. Never a typed GPU name.
+  const many = (ladder?.count ?? 0) > 1;
   const facts = [
-    { k: `${NODE.gpu} · ${NODE.vram}`, v: "Current-generation graphics card" },
-    { k: NODE.cpuShort, v: "High-performance CPU" },
-    { k: `${NODE.ram} RAM`, v: "Big scenes and a lot open at once" },
+    ladder
+      ? { k: ladder.gpu, v: many ? "Your choice of GPU, a whole card each" : "A whole card, not a shared slice of one" }
+      : { k: "A dedicated GPU", v: "A whole card, not a shared slice of one" },
+    ladder
+      ? { k: `${ladder.vram} VRAM`, v: "What decides whether your scene fits" }
+      : { k: "Workstation-class VRAM", v: "What decides whether your scene fits" },
+    ladder ? { k: `${ladder.cpu} · ${ladder.ram} RAM`, v: "Big scenes and a lot open at once" } : { k: "Workstation CPU and RAM", v: "Big scenes and a lot open at once" },
     { k: NODE.stream, v: "Streamed to the laptop you own" },
     usdView
       ? { k: "Hosted in Bengaluru", v: "Billed in US dollars" }
@@ -41,10 +48,10 @@ export function FactsBand({ currency = "INR" }: { currency?: Currency }) {
         <Reveal>
           <h2 className="cfh-h2">What&rsquo;s in the box</h2>
           <p className="mt-4 max-w-[26rem] text-[17px] leading-[1.6] text-white/85">
-            The same machine for every customer, read off the hardware, not rounded up.
+            Read off the hardware, not rounded up. Every GPU on offer, with its price, is on the pricing page.
           </p>
           <p className="mt-8 max-w-[28rem] text-[14px] leading-[1.6] text-white/75">
-            In Blender Cycles the RTX 5080 scores about 3× an RTX 4060: medians of 9,138 vs 3,182
+            In Blender Cycles our base node&rsquo;s RTX 5080 scores about 3× an RTX 4060: medians of 9,138 vs 3,182
             on Blender Open Data 4.5.0, read 20 Sep 2026 (opendata.blender.org). D5, Lumion and
             Enscape are different renderers and may not scale the same way.
           </p>
@@ -125,9 +132,11 @@ export function OfferBand({
           {intro ? (
             <p className="mt-5 font-heading text-[28px] font-medium sm:text-[34px]">
               {introPrice(intro)} = {hoursLabel(intro.hours)}
+              {intro.gpuName ? <span className="text-white/75"> on the {intro.gpuName}</span> : null}
             </p>
           ) : null}
           <ul className="mt-5 space-y-2 text-[16px] leading-[1.55] text-white/85">
+            {intro && introOfferMoreGpus(intro).length ? <li>More hours on the {introOfferMoreGpus(intro).join(", ")}.</li> : null}
             {intro?.validityDays ? <li>Use it within {intro.validityDays} days.</li> : null}
             {adhocRate ? (
               <li>
@@ -153,7 +162,7 @@ export function OfferBand({
 
 /** How it works in three steps, carried by the stream diagram. */
 export function HowItWorks() {
-  const steps = ["Sign up with email and mobile", "Top up by UPI or card", "Launch the RTX 5080 from the app"];
+  const steps = ["Sign up with email and mobile", "Top up by UPI or card", "Pick a GPU and launch it from the app"];
   return (
     <section className="cfh-wrap pb-24 sm:pb-28">
       <Reveal className="grid items-center gap-10 rounded-[32px] bg-tint-blue p-7 sm:p-12 lg:grid-cols-[0.85fr_1.15fr]">

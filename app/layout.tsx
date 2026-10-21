@@ -44,11 +44,11 @@ import { BareOnLanding, FloatOffOnSignup, NoFooterOnAdPages, NoStripOnAppPages }
 import { SiteFooter } from "@/components/home/site-footer";
 import { ScrollReveal } from "@/components/scroll-reveal";
 import { IntroStrip } from "@/components/home/intro-strip";
-import { getIntroOffer, getUsdIntroOffer, hoursLabel, getRateCard, planTiers } from "@/lib/rate-card";
+import { getIntroOffer, getUsdIntroOffer, hoursLabel, getRateCard, ladderRanges, planTiers } from "@/lib/rate-card";
 import { usdRates } from "@/lib/money";
 import { requestCurrency } from "@/lib/display-currency";
 import { FREE_PREVIEWS_PER_DAY, inr, studioPrices, usd } from "@/lib/studio-prices";
-import { regionalOffers } from "@/lib/seo";
+import { gpuLadderOffers, regionalOffers } from "@/lib/seo";
 import { CFD_PREPROCESS_INR } from "@/lib/cfd-prices";
 
 /**
@@ -96,11 +96,11 @@ const CONSENT_DENIED_REGIONS = [
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.coreframecloud.com"),
   title: {
-    default: "Coreframe Cloud: RTX 5080 Workstations, CFD & Studio, India",
+    default: "Coreframe Cloud: GPU Workstations, CFD & Studio, India",
     template: "%s | Coreframe Cloud",
   },
   description:
-    "Three services from Bengaluru: RTX 5080 Windows workstations by the minute, CFD for ducts and pipes from one STL with no licence, and Studio for pre-sale concept images from a floor plan (free previews).",
+    "Three services from Bengaluru: Windows GPU workstations by the minute, CFD for ducts and pipes from one STL with no licence, and Studio for pre-sale concept images from a floor plan (free previews).",
   keywords: [
     "faster D5 Render cloud India",
     "CFD simulation faster India",
@@ -139,7 +139,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Coreframe Cloud — GPU workstations, CFD and Studio, India",
     description:
-      "Rent an RTX 5080 workstation by the minute, get CFD for your duct or pipe from one STL, and Studio for pre-sale concept images from a floor plan. Hosted in Bengaluru.",
+      "Rent a GPU workstation by the minute, get CFD for your duct or pipe from one STL, and Studio for pre-sale concept images from a floor plan. Hosted in Bengaluru.",
     url: "https://www.coreframecloud.com",
     siteName: "Coreframe Cloud",
     locale: "en_IN",
@@ -152,7 +152,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Coreframe Cloud",
     description:
-      "RTX 5080 workstations by the minute, CFD for ducts and pipes with no licence, and Studio for floor-plan concept images. Hosted in Bengaluru, India.",
+      "GPU workstations by the minute, CFD for ducts and pipes with no licence, and Studio for floor-plan concept images. Hosted in Bengaluru, India.",
   },
   other: {
     "contact:email": "admin@coreframecloud.com",
@@ -189,7 +189,6 @@ export default async function RootLayout({
   const usdView = currency === "USD";
   const rateCard = await getRateCard();
   const usdCard = usdRates(rateCard);
-  const adhoc = rateCard?.gpus.find((g) => !g.quote_on_request && g.hourly_rate_rupees != null);
   const tiers = planTiers(rateCard);
   const storagePerTb = rateCard?.storage_rate_rupees_per_tb_month ?? null;
   const intro = getIntroOffer(rateCard);
@@ -197,16 +196,9 @@ export default async function RootLayout({
   const studio = studioPrices(rateCard);
 
   const offers = [
-    // INR in India and the rate card's USD rate elsewhere (SEO review 18 Oct 2026, T2).
-    ...(adhoc?.hourly_rate_rupees != null
-      ? regionalOffers({
-          name: "Ad-hoc GPU-hour",
-          inr: Math.round(adhoc.hourly_rate_rupees),
-          usd: usdCard.gpu_hourly,
-          url: "https://www.coreframecloud.com/pricing",
-          unit: { unitText: "GPU-hour" },
-        })
-      : []),
+    // One Offer pair (INR in India, USD elsewhere) per public GPU on the
+    // ladder (owner, 21 Oct 2026), each with its own dollar rate.
+    ...gpuLadderOffers(rateCard, "https://www.coreframecloud.com/pricing"),
     // Every published tier, not just the cheapest: "how much is the monthly
     // plan" has as many answers as there are tiers, and an engine given one
     // will quote it for all of them.
@@ -276,8 +268,9 @@ export default async function RootLayout({
     .filter(Boolean)
     .map((o) => ({ ...(o as object), url: "https://www.coreframecloud.com/pricing" }));
 
+  const ladder = ladderRanges(rateCard);
   const serviceDescription =
-    "On-demand Windows GPU workstations with NVIDIA RTX 5080 (16 GB GDDR7) for " +
+    `On-demand Windows GPU workstations${ladder ? ` (${ladder.gpu}, ${ladder.vram} VRAM)` : " with dedicated NVIDIA RTX GPUs"} for ` +
     "D5 Render, Lumion, Enscape, 3ds Max, Blender and Unreal Engine, hosted in Bengaluru. " +
     (usdView
       ? "Billed per minute of actual use; prices in US dollars carry no GST (export of services)."
@@ -411,7 +404,7 @@ export default async function RootLayout({
                    */
                   hasMap: COMPANY_MAPS_URL,
                   description:
-                    "Three services from Bengaluru, India: RTX 5080 GPU workstations on demand for D5 Render, Lumion, Enscape, Blender and Unreal Engine; CFD for ducts and pipes (quote by email, no licence needed); and Coreframe Studio, pre-sale concept images from a DXF floor plan (free previews).",
+                    "Three services from Bengaluru, India: GPU workstations on demand for D5 Render, Lumion, Enscape, Blender and Unreal Engine; CFD for ducts and pipes (quote by email, no licence needed); and Coreframe Studio, pre-sale concept images from a DXF floor plan (free previews).",
                   telephone: "+916366889488",
                   email: "admin@coreframecloud.com",
                   address: {
@@ -449,7 +442,7 @@ export default async function RootLayout({
                     "computational fluid dynamics",
                     "duct and pipe pressure drop",
                     "interior concept rendering from floor plans",
-                    "NVIDIA RTX 5080",
+                    "NVIDIA RTX workstation GPUs",
                   ],
                   /**
                    * The three services, in the site-wide order. Studio is
@@ -505,7 +498,7 @@ export default async function RootLayout({
                 {
                   "@type": "Service",
                   "@id": "https://www.coreframecloud.com/#gpu-workstation-service",
-                  name: "RTX 5080 Cloud GPU Workstation",
+                  name: "GPU Workstations",
                   serviceType: "Cloud GPU workstation rental",
                   category: "Cloud computing",
                   brand: { "@type": "Brand", name: "Coreframe Cloud" },

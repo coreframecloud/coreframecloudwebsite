@@ -4,12 +4,11 @@ import type { CSSProperties } from "react";
 import { Reveal } from "@/components/home/redesign/reveal";
 import { TrackedLink } from "@/components/analytics/tracked-link";
 import { OFFERINGS, type Offering, type OfferingStatus } from "@/lib/offerings";
-import { NODE } from "@/lib/node-spec";
 import { ShellFurnished } from "@/components/visuals/studio-compare";
 import { cellsLabel, formatMoney, usdRates, type Currency } from "@/lib/money";
 import { CFD_PREPROCESS_INR } from "@/lib/cfd-prices";
 import { FREE_PREVIEWS_PER_DAY, studioPrices } from "@/lib/studio-prices";
-import type { RateCard } from "@/lib/rate-card";
+import { ladderRanges, type LadderRanges, type RateCard } from "@/lib/rate-card";
 
 /**
  * The price lines on the hero cards and the bands, in ONE currency: the
@@ -25,6 +24,8 @@ export type OfferingPrices = {
   cfdLargeFee: string;
   cfdCells: string;
   studio: { extraPreview: string; edit: string; k2: string; k4: string };
+  /** The GPU ladder as ranges (owner, 21 Oct 2026), or null without a rate card. */
+  ladder: LadderRanges | null;
 };
 
 export function offeringPrices(card: RateCard | null, currency: Currency): OfferingPrices {
@@ -39,6 +40,7 @@ export function offeringPrices(card: RateCard | null, currency: Currency): Offer
     cfdLargeFee: m(currency === "USD" ? usd.cfd_quote_fee_large : CFD_PREPROCESS_INR.large),
     cfdCells: cellsLabel(currency === "USD" ? usd.cfd_quote_fee_small_max_cells : CFD_PREPROCESS_INR.smallMaxCells),
     studio: { extraPreview: m(st.extraPreview), edit: m(st.edit), k2: m(st.k2), k4: m(st.k4) },
+    ladder: ladderRanges(card),
   };
 }
 
@@ -173,11 +175,14 @@ const BAND_TINT: Record<Offering["id"], string> = {
 };
 
 /** The points each band lists. Facts only, the same ones the service pages carry. */
-const bandPoints = (currency: Currency): Record<Offering["id"], string[]> => ({
+const bandPoints = (prices: OfferingPrices): Record<Offering["id"], string[]> => ({
   gpu: [
-    `${NODE.gpu} ${NODE.vram} · ${NODE.cpuShort} · ${NODE.ram} RAM`,
+    // The GPU ladder, as ranges from the live rate card (owner, 21 Oct 2026).
+    prices.ladder
+      ? `${prices.ladder.gpu} · ${prices.ladder.vram} VRAM · ${prices.ladder.cpu} · ${prices.ladder.ram} RAM`
+      : "A dedicated GPU, a whole card to yourself",
     "Unreal Engine, D5 Render, Blender and Twinmotion preinstalled",
-    currency === "USD"
+    prices.currency === "USD"
       ? "Billed per minute, no GST; close it and billing stops"
       : "Billed per minute, GST included; close it and billing stops",
   ],
@@ -240,7 +245,7 @@ function OfferingBand({ o, flip, prices }: { o: Offering; flip: boolean; prices:
           <h2 className="cfh-h2 mt-4">{o.headline}</h2>
           <p className="mt-5 max-w-[32rem] text-[17px] leading-[1.6] text-ink-2">{BAND_BODY[o.id]}</p>
           <ul className="mt-7 space-y-3">
-            {bandPoints(prices.currency)[o.id].map((t) => (
+            {bandPoints(prices)[o.id].map((t) => (
               <li key={t} className="flex items-start gap-3 text-[15.5px] text-ink">
                 <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-ink" />
                 {t}

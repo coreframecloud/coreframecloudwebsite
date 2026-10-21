@@ -17,7 +17,7 @@ import { usePrefersReducedMotion } from "@/lib/use-reduced-motion";
 type Chip = { text: string; highlight?: boolean };
 
 const FACTS: Chip[] = [
-  { text: "RTX 5080" },
+  { text: "Workstation-class RTX GPUs" },
   { text: "64 GB RAM" },
   { text: "8-core dedicated workstation" },
   { text: "Optimized BIOS for rendering" },

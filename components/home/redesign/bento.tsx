@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { NODE } from "@/lib/node-spec";
+import type { LadderRanges } from "@/lib/rate-card";
 import { Reveal } from "@/components/home/redesign/reveal";
 import { FrameStrip } from "@/components/home/redesign/frame-strip";
 import { Drift } from "@/components/home/redesign/depth";
@@ -11,7 +12,7 @@ import { walkthroughVideoObject } from "@/components/home/landing/walkthrough-se
  * cropped inside (the SiteGround "bento"). Studio left this grid on 13 Oct
  * 2026: it has its own band above (components/home/redesign/offerings.tsx).
  */
-export function Bento({ youtubeId }: { youtubeId: string }) {
+export function Bento({ youtubeId, ladder = null }: { youtubeId: string; ladder?: LadderRanges | null }) {
   return (
     // The GPU family's cinema panel (owner, 16 Oct 2026): .cf-cine in globals.css.
     <section className="cf-cine cf-cine--band mt-16 sm:mx-3">
@@ -35,16 +36,26 @@ export function Bento({ youtubeId }: { youtubeId: string }) {
             A full Windows 11 machine that&rsquo;s yours for the session, opened from the Coreframe
             app.
           </p>
+          {/* The GPU ladder from the live rate card (owner, 21 Oct 2026); the
+              disk is a fixed fact of every node. No GPU name is typed here. */}
           <ul className="mt-6 grid grid-cols-1 gap-x-6 gap-y-2.5 text-[15px] sm:grid-cols-2">
-            <li>
-              <span className="font-semibold">{NODE.gpu}</span> · {NODE.vram}
-            </li>
-            <li>
-              <span className="font-semibold">{NODE.ram}</span> system RAM
-            </li>
-            <li>
-              <span className="font-semibold">{NODE.cpuShort}</span> CPU
-            </li>
+            {ladder ? (
+              <>
+                <li>
+                  <span className="font-semibold">{ladder.gpu}</span> · {ladder.vram} VRAM
+                </li>
+                <li>
+                  <span className="font-semibold">{ladder.ram}</span> system RAM
+                </li>
+                <li>
+                  <span className="font-semibold">{ladder.cpu}</span>
+                </li>
+              </>
+            ) : (
+              <li>
+                <span className="font-semibold">A dedicated GPU</span> · the ladder is on the pricing page
+              </li>
+            )}
             <li>
               <span className="font-semibold">{NODE.disk}</span> working disk
             </li>
@@ -102,7 +113,7 @@ export function Bento({ youtubeId }: { youtubeId: string }) {
               <h3 className="cfh-h3 mt-3">Watch a real session, start to finish</h3>
               <p className="mt-3 text-[16px] leading-[1.6] text-white/85">
                 Sign in, launch a workstation, load a Blender scene, render it and pull the result
-                back down. Recorded on our RTX 5080 in Bengaluru, condensed to under five minutes.
+                back down. Recorded on our RTX 5080 node in Bengaluru, condensed to under five minutes.
               </p>
             </div>
             <div className="overflow-hidden rounded-2xl border border-white/10">

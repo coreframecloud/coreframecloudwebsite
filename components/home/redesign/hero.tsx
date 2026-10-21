@@ -39,7 +39,7 @@ export function RedesignHero({ introLabel, prices }: { introLabel: string | null
             <br className="hidden sm:block" /> <span className="text-white/75">You keep the laptop you own.</span>
           </h1>
           <p className="mt-4 hidden max-w-[40rem] text-[16px] leading-[1.6] text-white/85 sm:block sm:text-[17px]">
-            Rent an RTX 5080 workstation by the minute, send us a duct or pipe for CFD, or turn a floor
+            Rent a GPU workstation by the minute, send us a duct or pipe for CFD, or turn a floor
             plan into concept images. Three services, one team in Bengaluru.
           </p>
         </div>

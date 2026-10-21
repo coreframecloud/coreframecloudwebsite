@@ -49,12 +49,14 @@ export const OFFERINGS: Offering[] = [
   {
     id: "gpu",
     name: "GPU workstations",
-    longName: "RTX 5080 GPU workstations",
+    longName: "GPU workstations",
     footerName: "GPU workstations",
-    blurb: "An RTX 5080 by the minute",
+    blurb: "A GPU workstation by the minute",
     status: "Live",
-    headline: "Your laptop, with an RTX 5080 behind it.",
-    line: "A Windows RTX 5080 workstation by the minute, streamed to the laptop you own. Unreal Engine, D5, Blender and Twinmotion preinstalled.",
+    // Owner, 21 Oct 2026: the GPU ladder. No GPU is named here; the GPUs on
+    // offer are whatever the rate card publishes (see <GpuLadder/>).
+    headline: "Your laptop, with a workstation-class GPU behind it.",
+    line: "A Windows GPU workstation by the minute, streamed to the laptop you own. Unreal Engine, D5, Blender and Twinmotion preinstalled.",
     href: "/software/gpu-workstation-rental-india",
     cta: { label: "Sign up", href: "/signup" },
     secondary: { label: "See pricing", href: "/pricing" },

@@ -2,6 +2,7 @@ import Link from "next/link";
 import {
   adhocRateHourly,
   introOfferFor,
+  introMoreGpusNote,
   getRateCard,
   hoursLabel,
   introPrice,
@@ -46,7 +47,7 @@ export async function IntroStrip({ currency = "INR" }: { currency?: Currency }) 
   if (!offer) return null;
   const hourly = adhocRateHourly(card, currency);
   const headline = `First top-up: ${introPrice(offer)} = ${hoursLabel(offer.hours)}`;
-  const gpu = offer.gpuName ? `of ${offer.gpuName}` : "of GPU time";
+  const gpu = offer.gpuName ? `of ${offer.gpuName}${introMoreGpusNote(offer)}` : "of GPU time";
 
   // One pass of the message. Rendered several times so the loop has no seam,
   // and so a wide monitor is never showing empty bar.

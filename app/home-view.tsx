@@ -9,17 +9,18 @@ import { OfferingBands, offeringPrices } from "@/components/home/redesign/offeri
 import type { Currency } from "@/lib/money";
 import {
   getRateCard,
-  formatHourly,
+  adhocRate as adhocRateFrom,
   introOfferFor,
   hoursLabel,
   introPrice,
+  ladderRanges,
 } from "@/lib/rate-card";
 
 /** One metadata for both copies: the description quotes no price. */
 export const homeMetadata: Metadata = {
-  title: { absolute: "RTX 5080 Workstations, CFD & Studio, India | Coreframe Cloud" },
+  title: { absolute: "GPU Workstations, CFD & Studio, India | Coreframe Cloud" },
   description:
-    "Rent a Windows RTX 5080 workstation by the minute, get CFD for your duct or pipe from one STL with no licence, and Studio concept images. From Bengaluru.",
+    "Rent a Windows GPU workstation by the minute, get CFD for your duct or pipe from one STL with no licence, and Studio concept images. From Bengaluru.",
   alternates: { canonical: "/" },
   other: { "contact:email": "admin@coreframecloud.com" },
 };
@@ -50,9 +51,11 @@ export const homeMetadata: Metadata = {
  */
 export default async function HomeView({ currency }: { currency: Currency }) {
   const rateCard = await getRateCard();
-  const entry = rateCard?.gpus.find((g) => !g.quote_on_request);
-  const hourly = entry ? formatHourly(entry, currency, rateCard) : null;
-  const adhocRate = hourly && hourly.endsWith("/hr") ? hourly.replace("/hr", "") : undefined;
+  // The "from" price: the cheapest public GPU on the ladder (owner, 21 Oct 2026).
+  const ladder = ladderRanges(rateCard);
+  const adhocBare = adhocRateFrom(rateCard, currency);
+  // "from ₹99" once more than one GPU is public; the bare rate with one.
+  const adhocRate = adhocBare ? `${ladder && ladder.count > 1 ? "from " : ""}${adhocBare}` : undefined;
   const intro = introOfferFor(rateCard, currency);
   const prices = offeringPrices(rateCard, currency);
   const introLabel = intro ? `${introPrice(intro)} = ${hoursLabel(intro.hours)}` : null;
@@ -62,10 +65,10 @@ export default async function HomeView({ currency }: { currency: Currency }) {
       <RedesignHero introLabel={introLabel} prices={prices} />
       <div className="cfh-sheet">
         <OfferingBands prices={prices} />
-        <Bento youtubeId={WALKTHROUGH_YOUTUBE_ID} />
+        <Bento youtubeId={WALKTHROUGH_YOUTUBE_ID} ladder={ladder} />
         <HowItWorks />
       </div>
-      <FactsBand currency={currency} />
+      <FactsBand currency={currency} ladder={ladder} />
       <BuiltFor />
       <Testimonials />
       <OfferBand adhocRate={adhocRate} intro={intro} currency={currency} />

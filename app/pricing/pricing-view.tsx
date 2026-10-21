@@ -4,7 +4,8 @@ import { VERIFIED, VERIFIED_INR_ALL_IN, verifiedPriceLine } from "@/lib/cfd-veri
 import type { Metadata } from "next";
 import { ViewContent } from "@/components/analytics/view-content";
 import { JsonLd } from "@/components/seo/json-ld";
-import { ORG_ID, SITE, breadcrumbList, regionalOffers } from "@/lib/seo";
+import { ORG_ID, SITE, breadcrumbList, gpuLadderOffers, regionalOffers } from "@/lib/seo";
+import { GpuLadder } from "@/components/pricing/gpu-ladder";
 import { CFD_PREPROCESS_INR } from "@/lib/cfd-prices";
 import { studioPrices } from "@/lib/studio-prices";
 import { PricingSection } from "@/components/home/pricing-section";
@@ -14,7 +15,7 @@ import { RateBars } from "@/components/visuals/diagrams";
 import { GenImage } from "@/components/visuals/media";
 import {
   getRateCard,
-  formatHourly,
+  adhocRate as adhocRateFrom,
   introOfferFor,
   billingSentence,
   bestOverageRate,
@@ -33,6 +34,7 @@ import {
   otherCurrencyLine,
   taxWords,
   introPrice,
+  publicGpus,
 } from "@/lib/rate-card";
 import { storageTerms } from "@/lib/storage-terms";
 import Link from "next/link";
@@ -51,11 +53,11 @@ export async function pricingMetadata(currency: Currency): Promise<Metadata> {
   const meshCheck =
     currency === "USD" ? formatMoney(usd.cfd_quote_fee_small, "USD") : formatMoney(CFD_PREPROCESS_INR.small, "INR");
   return {
-    title: { absolute: "Pricing: RTX 5080 by the Minute, CFD by Quote | Coreframe" },
+    title: { absolute: "Pricing: GPU Workstations by the Minute, CFD by Quote | Coreframe" },
     description:
       currency === "USD"
-        ? `RTX 5080 workstations by the minute in US dollars with no GST, team plans, CFD from a ${meshCheck} mesh check, and Studio downloads.`
-        : `RTX 5080 workstations by the minute with GST included, team plans, CFD from a ${meshCheck} mesh check, and Studio downloads.`,
+        ? `GPU workstations by the minute in US dollars with no GST, team plans, CFD from a ${meshCheck} mesh check, and Studio downloads.`
+        : `GPU workstations by the minute with GST included, team plans, CFD from a ${meshCheck} mesh check, and Studio downloads.`,
     alternates: { canonical: "/pricing" },
   };
 }
@@ -92,14 +94,18 @@ export default async function PricingView({ currency }: { currency: Currency }) 
   const usdView = currency === "USD";
   const rateCard = await getRateCard();
   const usd = usdRates(rateCard);
-  const entry = rateCard?.gpus.find((g) => !g.quote_on_request);
-  const adhocRate = usdView ? formatMoney(usd.gpu_hourly, "USD") : entry ? formatHourly(entry).replace("/hr", "") : undefined;
+  // The "from" price: the cheapest public GPU on the ladder, in the page's
+  // currency (owner, 21 Oct 2026). Each GPU's own rate is in <GpuLadder/>.
+  const ladderCount = publicGpus(rateCard).length;
+  // "from ₹99" once more than one GPU is public; the bare rate with one.
+  const adhocRate = adhocRateFrom(rateCard, currency) ?? undefined;
+  const adhocLabel = adhocRate ? `${ladderCount > 1 ? "from " : ""}${adhocRate}` : undefined;
   // The page's own currency's offer: $20 = 8 hours on the dollar copy while
   // the API publishes usd.intro_offer (owner, 18 Oct 2026), else none.
   const intro = introOfferFor(rateCard, currency);
   const storage = storageTerms(rateCard);
   // Rate bars: pay-as-you-go against the lowest plan rate, both from the card.
-  const adhocNum = usdView ? usd.gpu_hourly : adhocRateValue(rateCard);
+  const adhocNum = adhocRateValue(rateCard, currency);
   // Plans compared on what an included hour actually costs (the rate card's
   // effective_included_hourly_rupees), not the extra-hour rate.
   const lowest = lowestPublishedHourly(rateCard);
@@ -107,8 +113,10 @@ export default async function PricingView({ currency }: { currency: Currency }) 
   const effectiveFrom = lowest ? { ...lowest, storageFree: lowestPlan ? planStorageIsFree(lowestPlan) : false } : null;
   // The included-hour comparison is a rupee figure; the USD view lists the
   // plans' dollar fee and overage rate instead.
+  // Only drawn while committing is actually cheaper than the "from" rate (it
+  // is not once a GPU cheaper than any plan's included hour is public).
   const rateBars =
-    !usdView && adhocNum && effectiveFrom
+    !usdView && adhocNum && effectiveFrom && commitmentIsCheaper(rateCard)
       ? [
           { label: "Pay as you go, per hour", value: rupees(adhocNum), ratio: 1 },
           {
@@ -123,7 +131,6 @@ export default async function PricingView({ currency }: { currency: Currency }) 
   // (elsewhere) for each price: invisible, and true of both copies. Every
   // VISIBLE price is in the visitor's currency only (owner, 18 Oct 2026).
   const studio = studioPrices(rateCard);
-  const inrHour = adhocRateValue(rateCard);
   const money = (inrValue: number, usdValue: number) =>
     usdView ? formatMoney(usdValue, "USD") : formatMoney(inrValue, "INR");
   const meshSmall = money(CFD_PREPROCESS_INR.small, usd.cfd_quote_fee_small);
@@ -143,9 +150,8 @@ export default async function PricingView({ currency }: { currency: Currency }) 
     url: `${SITE}/pricing`,
     provider: { "@id": ORG_ID },
     itemListElement: [
-      ...(inrHour != null
-        ? regionalOffers({ name: "RTX 5080 workstation, per GPU-hour", inr: Math.round(inrHour), usd: usd.gpu_hourly, url: `${SITE}/pricing`, unit: { unitText: "GPU-hour" } })
-        : []),
+      // One Offer pair per public GPU on the ladder (owner, 21 Oct 2026).
+      ...gpuLadderOffers(rateCard, `${SITE}/pricing`),
       ...regionalOffers({ name: "CFD pre-processing / mesh check", inr: CFD_PREPROCESS_INR.small, usd: usd.cfd_quote_fee_small, url: `${SITE}/cfd` }),
       ...regionalOffers({ name: "CFD Verified: mesh-independence study (GCI)", inr: VERIFIED_INR_ALL_IN.from, usd: VERIFIED.fromUsd, url: `${SITE}${VERIFIED.path}`, from: true }),
       ...regionalOffers({ name: "Studio 2K download", inr: studio.inr.k2, usd: studio.usd.k2, url: `${SITE}/floor-plan-to-render` }),
@@ -182,7 +188,7 @@ export default async function PricingView({ currency }: { currency: Currency }) 
           {[
             {
               o: offering("gpu"),
-              price: adhocRate ? `${adhocRate} an hour` : "By the minute",
+              price: adhocLabel ? `${adhocLabel} an hour` : "By the minute",
               note: intro
                 ? `First top-up: ${introPrice(intro)} = ${hoursLabel(intro.hours)}${usdView ? ", no GST" : ""}`
                 : usdView
@@ -240,24 +246,38 @@ export default async function PricingView({ currency }: { currency: Currency }) 
         </div>
       </section>
 
+      {/* The GPU ladder: every public GPU from the rate card, cheapest first,
+          in this page's currency only (owner, 21 Oct 2026). One row today,
+          more as profiles go public; never a typed list. */}
+      <section className="cf-section px-5 pt-0">
+        <div className="cf-wide">
+          <p className="text-[11.5px] font-semibold tracking-[0.12em] text-ink-2 uppercase">Pick your GPU</p>
+          <h2 className="cf-section-title mt-3">
+            {ladderCount > 1 ? "One workstation, your choice of GPU." : "The workstation."}
+          </h2>
+          <p className="cf-section-copy mt-3 max-w-[40rem]">
+            {ladderCount > 1
+              ? `Every workstation is a full Windows desktop streamed to your laptop; pick the GPU for the job. Per GPU-hour, ${taxWords(currency)}, billed per minute.`
+              : `A full Windows desktop streamed to your laptop. Per GPU-hour, ${taxWords(currency)}, billed per minute.`}
+          </p>
+          <div className="mt-7">
+            <GpuLadder card={rateCard} currency={currency} />
+          </div>
+        </div>
+      </section>
+
       {usdView ? (
         <PricingSection
           currency="USD"
-          adhocRate={adhocRate}
+          adhocRate={adhocLabel}
           storage={storage}
           billingNote={
             rateCard?.billing_granularity === "per_minute"
               ? billingSentence(rateCard)
               : "Billed for the time your session actually runs."
           }
-          perMinute={
-            rateCard?.billing_granularity === "per_minute" ? formatMoney(usd.gpu_hourly / 60, "USD") : null
-          }
-          example={
-            rateCard?.billing_granularity === "per_minute"
-              ? { minutes: 20, cost: formatMoney((usd.gpu_hourly / 60) * 20, "USD") }
-              : null
-          }
+          perMinute={perMinuteRate(rateCard, "USD")}
+          example={sessionCostExample(rateCard, 20, "USD")}
           usdTopup={usd}
           intro={intro}
           bestOverage={bestOverageRateUsd(rateCard)}
@@ -266,7 +286,7 @@ export default async function PricingView({ currency }: { currency: Currency }) 
         />
       ) : (
         <PricingSection
-          adhocRate={adhocRate}
+          adhocRate={adhocLabel}
           storage={storage}
           billingNote={billingSentence(rateCard)}
           bestOverage={bestOverageRate(rateCard)}
@@ -409,7 +429,7 @@ export default async function PricingView({ currency }: { currency: Currency }) 
         </div>
       </section>
 
-      <ExplainerFaq storage={storage} intro={intro} adhocRate={adhocRate} currency={currency} />
+      <ExplainerFaq storage={storage} intro={intro} adhocRate={adhocLabel} currency={currency} />
     </main>
   );
 }

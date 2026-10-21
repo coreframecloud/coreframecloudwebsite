@@ -4,7 +4,7 @@ import { NODE } from "@/lib/node-spec";
 import { trackEvent } from "@/lib/analytics";
 import Link from "next/link";
 import { STORAGE, type StorageTerms } from "@/lib/storage-terms";
-import { hoursLabel, type IntroOffer, introPrice } from "@/lib/rate-card";
+import { hoursLabel, type IntroOffer, introMoreGpusNote, introPrice } from "@/lib/rate-card";
 import { formatMoney, type Currency, type UsdRateCard } from "@/lib/money";
 
 /**
@@ -129,10 +129,10 @@ export function PricingSection({
                 <li className="flex gap-2"><span className="text-blue">✓</span> <span><b className="text-ink">Top up from {formatMoney(usdTopup.topup_min_first, "USD")} to {formatMoney(usdTopup.topup_max, "USD")}</b>{usdTopup.bulk_topup_tiers.length ? ` · ${usdTopup.bulk_topup_tiers.map((t) => `${formatMoney(t.min, "USD")}+ adds ${t.percent}%`).join(", ")}` : ""}</span></li>
               )}
               {intro && (
-                <li className="flex gap-2"><span className="text-blue">✓</span> <span><b className="text-ink">First top-up: {introPrice(intro)} = {hoursLabel(intro.hours)}</b>{usdView ? ", no GST" : ""}{intro.validityDays ? ` · use within ${intro.validityDays} days` : ""}</span></li>
+                <li className="flex gap-2"><span className="text-blue">✓</span> <span><b className="text-ink">First top-up: {introPrice(intro)} = {hoursLabel(intro.hours)}{intro.gpuName ? ` on the ${intro.gpuName}` : ""}</b>{introMoreGpusNote(intro)}{usdView ? ", no GST" : ""}{intro.validityDays ? ` · use within ${intro.validityDays} days` : ""}</span></li>
               )}
               <li className="flex gap-2"><span className="text-blue">✓</span> Email and mobile sign-up, no paperwork</li>
-              <li className="flex gap-2"><span className="text-blue">✓</span> {NODE.gpu} · {NODE.vram} · {NODE.stream}</li>
+              <li className="flex gap-2"><span className="text-blue">✓</span> A full Windows workstation, streamed at {NODE.stream}; pick your GPU above</li>
               <li className="flex gap-2"><span className="text-blue">✓</span> {storage.paidGb} GB of your own storage, kept between sessions</li>
             </ul>
 
@@ -169,7 +169,10 @@ export function PricingSection({
               <p className="mt-2 text-sm text-blue">
                 per included hour on {effectiveFrom.planName},{" "}
                 {effectiveFrom.storageFree ? "shared storage included, free" : "plus shared storage"}
-                {adhocRate ? ` · pay as you go is ${adhocRate}/hr` : ""}
+                {/* Only while committing is actually cheaper: with a ladder whose
+                    cheapest GPU is below a plan's included hour, this aside
+                    would read as a contradiction. */}
+                {adhocRate && commitmentCheaper ? ` · pay as you go is ${adhocRate}/hr` : ""}
               </p>
             ) : null}
             <p className="mt-4 text-sm leading-6 text-ink-2">
