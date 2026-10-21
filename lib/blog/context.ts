@@ -10,6 +10,7 @@ import {
   type RateCard,
   type RateCardPlan,
   introPrice,
+  noConnectSentence,
 } from "@/lib/rate-card";
 import { formatMoney, usdRates, type Currency } from "@/lib/money";
 import { storageTerms } from "@/lib/storage-terms";
@@ -49,7 +50,8 @@ export function blogContext(card: RateCard | null, currency: Currency = "INR"): 
     // landing-page copy; the facts are the same fields of the same card.
     billing:
       card?.billing_granularity === "per_minute"
-        ? "It's billed per minute from the moment the stream starts, and preparing the machine, uploading files and failed connections cost nothing." +
+        ? "It's billed per minute from when you connect, and preparing the machine and uploading files cost nothing. If a connection fails on our side, nothing is charged." +
+          (noConnectSentence(card) ? ` ${noConnectSentence(card)}` : "") +
           (card.minimum_billable_minutes > 1 ? ` There is a ${card.minimum_billable_minutes}-minute minimum.` : "")
         : billingSentence(card, currency),
     intro,

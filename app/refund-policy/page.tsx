@@ -49,7 +49,7 @@ const policySections: { title: string; body: string }[] = [
   {
     title: "GPU workstations",
     body:
-      "Session time and storage you have used are non-refundable. Sessions are billed per minute from the moment your workstation starts streaming; provisioning time and failed connections are never charged. If a workstation fails through a fault on our side, we credit the affected session time back to your wallet. Where an outage is significant we may issue additional service credit at our discretion.",
+      "Session time and storage you have used are non-refundable. Sessions are billed per minute from when you connect; preparing the workstation is never charged. If you don't connect within 10 minutes of your workstation being ready, it shuts down and those 10 minutes are charged. If a connection fails on our side, nothing is charged. If a workstation fails through a fault on our side, we credit the affected session time back to your wallet. Where an outage is significant we may issue additional service credit at our discretion.",
   },
   {
     title: "CFD: pre-processing / mesh check",

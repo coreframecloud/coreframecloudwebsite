@@ -24,6 +24,8 @@ import {
   minFirstTopup,
   planTiers,
   billingSentence,
+  noConnectMinutes,
+  noConnectSentence,
   cpuSpec,
   storageSpec,
   type RateCard,
@@ -232,7 +234,7 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
       "it yourself, the way you would a workstation under your desk.",
   );
   out.push("- Operated from India by Coreframe Compute Labs Private Limited, Bengaluru.");
-  out.push("- Sessions start in about two minutes; billing begins only when the stream does.");
+  out.push("- Sessions start in about two minutes; billing starts when you connect.");
   out.push("");
 
   // ── Hardware and price, from the live rate card ───────────────────────────
@@ -299,7 +301,7 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
         card.prices_include_gst ? `include ${card.gst_rate_percent}% GST` : "exclude GST"
       }. Billing is ${card.billing_granularity?.replace("_", "-") ?? "per-minute"}; ${
         card.billing_starts ?? "billing starts when the remote stream begins"
-      }.`,
+      }.${noConnectSentence(card) ? ` ${noConnectSentence(card)}` : ""} If a connection fails on our side, nothing is charged.`,
     );
     out.push("");
     for (const gpu of card.gpus) {
@@ -640,8 +642,10 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
   out.push("- Region: machines are in Bengaluru, India. Accounts in India pay in Indian rupees with GST included; accounts outside India pay in US dollars with no GST, by international card.");
   out.push("- One customer per machine and one GPU per machine: you do not share the card and do not get a slice of it.");
   out.push("- Sessions run as a standard Windows user, not an administrator.");
-  out.push("- Billing granularity: per minute, starting when the stream starts, not at booking.");
-  out.push("- Provisioning time and failed connections are not billed.");
+  out.push("- Billing granularity: per minute, starting when you connect (the stream starts), not at booking.");
+  out.push(
+    `- If you don't connect within ${noConnectMinutes(card) ?? 10} minutes of your workstation being ready, it shuts down and those minutes are charged. If a connection fails on our side, nothing is charged. Preparing the workstation is free.`,
+  );
   out.push("- Storage persists between sessions; the workstation itself does not.");
   out.push("- No identity documents are required. A verified email and mobile number and a paid top-up are required before a machine can be launched.");
   out.push(

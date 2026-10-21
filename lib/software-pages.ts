@@ -184,7 +184,7 @@ function buildSoftwarePages(cur: Currency): SoftwarePage[] {
         body: [
           `You get a full ${NODE.os} desktop. You install 3ds Max and your renderer with your own Autodesk and Chaos accounts, open your scene from persistent storage and get on with it. The viewport, material editor and render setup all work the same as on a machine under your desk.`,
           "The machine resets to a clean image when the session ends. That's how we can promise nothing from another studio's work is on it when you get it. Your scene files don't live on that machine. They sit on storage that persists between sessions, so a session you open on Friday picks up where Monday's stopped, with nothing copied around. On a committed monthly plan we build your applications into the baseline image on your nodes, so they are already there when you sign in.",
-          "Billing runs per minute from the moment the stream starts. We don't bill for provisioning, uploads or a connection that drops.",
+          "Billing runs per minute from when you connect. Preparing the machine and uploads are free. If you don't connect within 10 minutes of your workstation being ready, it shuts down and those 10 minutes are charged; if a connection fails on our side, nothing is charged.",
         ],
       },
     ],

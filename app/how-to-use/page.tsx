@@ -49,7 +49,7 @@ const STEPS = [
   },
   {
     title: "5. Press Connect.",
-    body: `Pick your machine and press Connect. A workstation is prepared for you and the desktop appears in about two minutes, streamed at ${NODE.stream}. Billing doesn't start until the stream does, and we never charge for provisioning time or failed connections.`,
+    body: `Pick your machine and press Connect. A workstation is prepared for you and the desktop appears in about two minutes, streamed at ${NODE.stream}. Billing starts when you connect. If you don't connect within 10 minutes of your workstation being ready, it shuts down and those 10 minutes are charged. If a connection fails on our side, nothing is charged.`,
   },
   {
     title: "6. Work, then end the session.",
@@ -64,7 +64,7 @@ const FAQS = [
   },
   {
     q: "How is Coreframe billed?",
-    a: "Per minute, and only while the stream is running. Billing starts when the remote desktop appears and stops when you end the session. We don't charge for provisioning time, failed connections or uploads. Prices include GST, and you get a tax invoice for every payment.",
+    a: "Per minute, while the stream is running. Billing starts when you connect and stops when you end the session. Preparing the workstation and uploads are free. If you don't connect within 10 minutes of your workstation being ready, it shuts down and those 10 minutes are charged. If a connection fails on our side, nothing is charged. Prices include GST, and you get a tax invoice for every payment.",
   },
   {
     q: "Do I need my own software licences?",

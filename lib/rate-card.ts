@@ -147,6 +147,10 @@ export type RateCard = {
   sac_code: string;
   billing_granularity: string;
   billing_starts: string;
+  /** Owner, 21 Oct 2026: a ready workstation nobody connects to shuts down
+   *  after this many minutes, and those minutes are charged. Optional: a
+   *  control plane from before the rule omits it. */
+  no_connect_timeout_minutes?: number;
   minimum_billable_minutes: number;
   wallet: {
     min_topup_rupees: number;
@@ -607,10 +611,30 @@ export function billingSentence(card: RateCard | null, cur: Currency = "INR"): s
   }
   const min = card.minimum_billable_minutes;
   const minimum = min && min > 1 ? ` There is a ${min}-minute minimum.` : "";
+  const noConnect = noConnectSentence(card);
   return (
-    "Billed per minute from the moment the stream starts, not per whole hour. " +
-    `Provisioning, uploads and failed connections are free.${minimum}`
+    "Billed per minute from when you connect, not per whole hour. " +
+    "Preparing the workstation and uploads are free." +
+    (noConnect ? ` ${noConnect}` : "") +
+    ` If a connection fails on our side, nothing is charged.${minimum}`
   );
+}
+
+/** The no-connect window from the rate card, or null when the API omits it or it is off. */
+export function noConnectMinutes(card: RateCard | null): number | null {
+  const n = Number(card?.no_connect_timeout_minutes);
+  return Number.isFinite(n) && n > 0 ? Math.round(n) : null;
+}
+
+/**
+ * The no-connect rule in one sentence (owner, 21 Oct 2026), or "" when the
+ * rate card does not carry it. Same words as Connect and the terms.
+ */
+export function noConnectSentence(card: RateCard | null): string {
+  const n = noConnectMinutes(card);
+  return n
+    ? `If you don't connect within ${n} minutes of your workstation being ready, it shuts down and those ${n} minutes are charged.`
+    : "";
 }
 
 /**

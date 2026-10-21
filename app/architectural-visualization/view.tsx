@@ -395,7 +395,7 @@ export default async function ArchvizView({ currency }: { currency: Currency }) 
                   <li>you already work in D5, Lumion, Enscape, Twinmotion, Unreal, V-Ray or Blender;</li>
                   <li>you need your own model, materials and camera, frame by frame;</li>
                   <li>you are rendering a walkthrough or a set of stills for a client;</li>
-                  <li>you want a full Windows desktop, billed only while it runs.</li>
+                  <li>you want a full Windows desktop, billed per minute from when you connect.</li>
                 </ul>
               </div>
               <div className="cf-card min-w-0">

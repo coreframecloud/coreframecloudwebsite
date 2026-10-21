@@ -225,7 +225,7 @@ export const costWorkstationFarmBuy: BlogPost = {
     ctx.hourly
       ? {
           q: "How is Coreframe billed?",
-          a: `${ctx.hourly} ${ctx.taxIncl}, billed per minute from the moment the stream starts. Uploads and preparing the machine are free. Committed monthly Team plans are available for studios.`,
+          a: `${ctx.hourly} ${ctx.taxIncl}, billed per minute from when you connect. Uploads and preparing the machine are free; if you don't connect within 10 minutes of the workstation being ready, those 10 minutes are charged. Committed monthly Team plans are available for studios.`,
         }
       : null,
     {
