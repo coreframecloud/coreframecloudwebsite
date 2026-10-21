@@ -93,7 +93,7 @@ const parts: Part[] = [
     id: "workstations",
     title: "5. GPU workstations",
     blocks: [
-      "A workstation is a whole remote Windows machine with a dedicated GPU (currently an RTX 5080), which you open through the Coreframe Connect desktop app. Only one session per account runs at a time, from one device.",
+      "A workstation is a whole remote Windows machine with a dedicated GPU, chosen from the GPUs listed on our pricing page, which you open through the Coreframe Connect desktop app. Only one session per account runs at a time, from one device.",
       {
         list: [
           "Billing is per minute, from when you connect (the moment the remote stream starts) until the session ends. Part-minutes count as a full minute. Setting up the machine is not charged.",

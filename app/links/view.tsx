@@ -22,8 +22,8 @@
 
 import type { Metadata } from "next";
 import { COMPANY } from "@/lib/company";
-import { NODE, NODE_SUMMARY } from "@/lib/node-spec";
-import { getRateCard, adhocRate, billingSentence, introOfferHeadline, taxWords } from "@/lib/rate-card";
+import { NODE } from "@/lib/node-spec";
+import { getRateCard, adhocRate, billingSentence, introOfferHeadline, ladderRanges, taxWords } from "@/lib/rate-card";
 import type { Currency } from "@/lib/money";
 
 export const linksMetadata = (currency: Currency): Metadata => ({
@@ -35,14 +35,14 @@ export const linksMetadata = (currency: Currency): Metadata => ({
   // twice, while billing had been ₹299 for days — and an unconditional "free
   // trial" here would outlive the day the trial is switched off.
   description:
-    `${NODE.gpu} GPU workstations for architects and creative studios. Billed per minute, ${taxWords(currency)}. Hosted in ${NODE.location}.`,
+    `GPU workstations for architects and creative studios. Billed per minute, ${taxWords(currency)}. Hosted in ${NODE.location}.`,
   alternates: { canonical: "/links" },
   // The Instagram link-in-bio page: a list of links to pages that are indexed
   // in their own right. Indexing it only gives Google a thin duplicate.
   robots: { index: false, follow: true },
   openGraph: {
     title: "Coreframe Cloud",
-    description: `GPU workstations for architects. ${NODE.gpu}, billed per minute, hosted in ${NODE.location}.`,
+    description: `GPU workstations for architects, billed per minute, hosted in ${NODE.location}.`,
     url: "https://www.coreframecloud.com/links",
     siteName: "Coreframe Cloud",
     // public/og-image.png does not exist — the draft pointed at it, which would
@@ -111,6 +111,7 @@ function bioLinks(rate: string | null, introHeadline: string | null): BioLink[] 
 export default async function LinksView({ currency }: { currency: Currency }) {
   const card = await getRateCard();
   const rate = adhocRate(card, currency);
+  const ladder = ladderRanges(card);
   const introHeadline = introOfferHeadline(card, currency);
 
   return (
@@ -125,18 +126,21 @@ export default async function LinksView({ currency }: { currency: Currency }) {
           <h1 className="cf-display mt-3">A render machine you rent by the minute.</h1>
 
           <p className="cf-lead mt-4">
-            One {NODE.gpu} workstation in {NODE.location}, streamed at {NODE.stream} to the
+            A GPU workstation in {NODE.location}, streamed at {NODE.stream} to the
             laptop you already own. Start it when a deadline lands. Stop it when the render is
             done.
           </p>
 
-          <p className="mt-5 font-mono text-[12.5px] leading-[1.7] break-words text-ink-3">
-            {NODE_SUMMARY}
-          </p>
+          {/* The GPU ladder from the live rate card (owner, 21 Oct 2026), not NODE_SUMMARY. */}
+          {ladder ? (
+            <p className="mt-5 font-mono text-[12.5px] leading-[1.7] break-words text-ink-3">
+              {ladder.gpu} · {ladder.vram} VRAM · {ladder.cpu} · {ladder.ram} RAM
+            </p>
+          ) : null}
 
           {rate ? (
             <p className="mt-1 font-mono text-[12.5px] leading-[1.7] break-words text-ink-2">
-              {rate} an hour
+              {ladder && ladder.count > 1 ? "from " : ""}{rate} an hour
               {currency === "USD" ? ", no GST" : card?.prices_include_gst ? ", GST included" : ""}
             </p>
           ) : null}

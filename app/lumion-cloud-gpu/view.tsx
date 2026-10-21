@@ -9,7 +9,8 @@ import { JsonLd } from "@/components/seo/json-ld";
 import { breadcrumbList } from "@/lib/seo";
 import { BackgroundGlow } from "@/components/home/background-glow";
 import { PricingCards } from "@/components/pricing/pricing-cards";
-import { getRateCard, pricingFaqAnswer, taxSentence } from "@/lib/rate-card";
+import { getRateCard, ladderPhrase, ladderRanges, pricingFaqAnswer, taxSentence } from "@/lib/rate-card";
+import { GpuLadder } from "@/components/pricing/gpu-ladder";
 import { storageTerms } from "@/lib/storage-terms";
 import { NODE } from "@/lib/node-spec";
 import Link from "next/link";
@@ -18,9 +19,9 @@ import { LastUpdated, SpecTable } from "@/components/gpu/spec-table";
 export function lumionMetadata(currency: Currency): Metadata {
   const usdView = currency === "USD";
   return {
-  title: "Lumion Cloud GPU Workstation, RTX 5080",
+  title: "Lumion GPU Workstation, by the minute",
   description:
-    `Run Lumion on an RTX 5080 cloud workstation in India. Real-time rendering on the GPU, billed per minute${usdView ? " in US dollars, no GST" : " with GST included"}. BYOL — bring your own Lumion licence.`,
+    `Run Lumion on a GPU workstation in India. Real-time rendering on the GPU, billed per minute${usdView ? " in US dollars, no GST" : " with GST included"}. BYOL — bring your own Lumion licence.`,
   keywords: [
     "Lumion cloud GPU India",
     "Lumion cloud rendering India",
@@ -41,11 +42,9 @@ export function lumionMetadata(currency: Currency): Metadata {
  * now is one that came from NODE — the Lumion-specific rows below describe the
  * software, not the hardware.
  */
-const SPECS: [string, string][] = [
-  ["GPU", NODE.gpu],
-  ["VRAM", `${NODE.vram} · ${NODE.memoryBandwidth}`],
-  ["System RAM", NODE.ram],
-  ["CPU", NODE.cpu],
+/** The GPU, VRAM, CPU and RAM rows come from the live rate card's ladder
+ *  (ladderSpecRows; owner, 21 Oct 2026); the rest are fixed facts of every node. */
+const FIXED_SPECS: [string, string][] = [
   ["Disk", NODE.disk],
   ["OS", NODE.os],
   ["Access", `Coreframe Connect app, streamed at ${NODE.stream}`],
@@ -54,8 +53,8 @@ const SPECS: [string, string][] = [
 ];
 
 /** VRAM is the number to compare (13 Oct audit: as a real table, not prose). */
-const VRAM_COMPARE: [string, string][] = [
-  ["This workstation", NODE.vram],
+const vramCompare = (vram: string): [string, string][] => [
+  ["Coreframe workstations", vram],
   ["Many laptops and entry desktops sold for design work", "6 to 8 GB"],
 ];
 
@@ -63,6 +62,8 @@ export default async function LumionView({ currency }: { currency: Currency }) {
   const card = await getRateCard();
   const storage = storageTerms(card);
   const priceAnswer = pricingFaqAnswer(card, currency);
+  const ladder = ladderRanges(card);
+  const vram = ladder?.vram ?? NODE.vram;
 
   /**
    * One array, rendered twice — as the visible questions and as the FAQPage
@@ -72,11 +73,11 @@ export default async function LumionView({ currency }: { currency: Currency }) {
   const faqs: { q: string; a: string }[] = [
     {
       q: "Does Lumion work on a cloud GPU?",
-      a: `Yes, on a card with a WDDM display driver. That rules out the compute-only datacentre cards most GPU rentals hand you, because Lumion won't start on them. A Coreframe workstation is a ${NODE.os} machine with a consumer ${NODE.gpu} and the full WDDM driver, so Lumion installs and runs the way it does on a desktop under your table. You reach the machine through the Coreframe Connect app, streamed to you at ${NODE.stream}.`,
+      a: `Yes, on a card with a WDDM display driver. That rules out the compute-only datacentre cards most GPU rentals hand you, because Lumion won't start on them. A Coreframe workstation is a ${NODE.os} machine with a dedicated NVIDIA RTX GPU and the full WDDM driver, so Lumion installs and runs the way it does on a desktop under your table. You reach the machine through the Coreframe Connect app, streamed to you at ${NODE.stream}.`,
     },
     {
       q: "What is in the workstation?",
-      a: `${NODE.gpu} with ${NODE.vram}, ${NODE.ram} of system memory, an ${NODE.cpu} and ${NODE.disk}, running ${NODE.os} in ${NODE.location}. One customer per node. Nobody shares the card, and it isn't sliced into a virtual GPU.`,
+      a: `${ladderPhrase(card) ? `${ladderPhrase(card)!.charAt(0).toUpperCase()}${ladderPhrase(card)!.slice(1)}` : "A dedicated NVIDIA RTX GPU"}, with ${NODE.disk}, running ${NODE.os} in ${NODE.location}. The GPUs on offer and their prices are on the pricing page. One customer per node. Nobody shares the card, and it isn't sliced into a virtual GPU.`,
     },
     {
       q: "Do I need my own Lumion licence?",
@@ -118,11 +119,11 @@ export default async function LumionView({ currency }: { currency: Currency }) {
           <div className="min-w-0 max-w-[620px]">
             <p className="cf-eyebrow mb-5">Lumion · Cloud GPU · Bengaluru</p>
             <h1 className="cf-display">
-              Run Lumion on an RTX 5080.
+              Run Lumion on a GPU workstation.
               <br className="hidden md:block" /> Nothing to buy.
             </h1>
             <p className="cf-lead mt-[22px]">
-            Lumion needs a strong GPU. Run your own Lumion licence on an RTX&nbsp;5080 while your laptop stays free.
+            Lumion needs a strong GPU. Run your own Lumion licence on a workstation-class RTX GPU while your laptop stays free.
           </p>
             <p className="cf-section-copy mt-5">
               You reach it through the Coreframe Connect app, streamed at{" "}
@@ -157,7 +158,7 @@ export default async function LumionView({ currency }: { currency: Currency }) {
               {[
                 {
                   title: "VRAM is the ceiling",
-                  body: `Geometry, textures and vegetation all have to fit on the card. This one carries ${NODE.vram}. Many laptops and entry desktops sold for design work have 6 to 8 GB, and that's what forces you to cut a scene down.`,
+                  body: `Geometry, textures and vegetation all have to fit on the card. Coreframe workstations carry ${vram} of VRAM. Many laptops and entry desktops sold for design work have 6 to 8 GB, and that's what forces you to cut a scene down.`,
                 },
                 {
                   title: "Consumer RTX drivers",
@@ -180,8 +181,10 @@ export default async function LumionView({ currency }: { currency: Currency }) {
         <section className="cf-section px-5 pt-0">
           <div className="cf-wide">
             <h2 className="cf-section-title">The machine.</h2>
-            <SpecTable rows={SPECS} caption="The Lumion workstation: hardware and access" />
-            <SpecTable rows={VRAM_COMPARE} caption="VRAM compared" showCaption />
+            {/* The GPU ladder from the live rate card (owner, 21 Oct 2026). */}
+            <div className="mt-6"><GpuLadder card={card} currency={currency} compact /></div>
+            <SpecTable rows={FIXED_SPECS} caption="The Lumion workstation: hardware and access" />
+            <SpecTable rows={vramCompare(vram)} caption="VRAM compared" showCaption />
             <p className="cf-section-copy mt-5">
               Each node has one GPU and one customer at a time. We don&rsquo;t publish
               render times because they depend on your scene and your settings.
@@ -230,8 +233,8 @@ export default async function LumionView({ currency }: { currency: Currency }) {
             <ul className="mt-8 space-y-1">
               {[
                 ["/", "Home"],
-                ["/d5-render-cloud-workstation", "D5 Render on a cloud RTX 5080"],
-                ["/enscape-cloud-gpu", "Enscape on a cloud RTX 5080"],
+                ["/d5-render-cloud-workstation", "D5 Render on a GPU workstation"],
+                ["/enscape-cloud-gpu", "Enscape on a GPU workstation"],
                 ["/cloud-workstation-vs-render-farm", "Cloud workstation vs render farm"],
                 ["/vram-for-architectural-rendering", "Is 8 GB of VRAM enough?"],
               ].map(([href, label]) => (

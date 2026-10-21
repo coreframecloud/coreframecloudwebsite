@@ -22,7 +22,7 @@ export type WorkstationFrame = {
 
 export const WORKSTATION_FRAMES: WorkstationFrame[] = [
   { src: "/home/app-01-sign-in.webp", width: 2240, height: 1400, caption: "Sign in to Coreframe Connect", alt: "The Coreframe Connect sign-in screen" },
-  { src: "/home/app-02-pick-gpu.webp", width: 2240, height: 1400, caption: "Pick the RTX 5080 and launch", alt: "The RTX 5080 workstation tile with its Launch button" },
+  { src: "/home/app-02-pick-gpu.webp", width: 2240, height: 1400, caption: "Pick your workstation and launch", alt: "The RTX 5080 workstation tile with its Launch button" },
   { src: "/home/app-03-starting.webp", width: 2240, height: 1400, caption: "Your workstation starts", alt: "The app assigning a GPU and starting the Windows session" },
   { src: "/home/app-04-preparing.webp", width: 2240, height: 1400, caption: "Ready in about 3 minutes", alt: "The app preparing the streaming desktop" },
   { src: "/home/app-05-ready.webp", width: 2240, height: 1400, caption: "Connect with one click", alt: "The Ready to stream screen with the Connect button" },

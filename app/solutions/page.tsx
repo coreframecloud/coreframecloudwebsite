@@ -36,7 +36,7 @@ export const metadata: Metadata = {
  */
 
 const solutions = [
-  { icon: MonitorSmartphone, title: "A workstation each.", text: `A full ${NODE.os} desktop with an ${NODE.gpu}, on the laptop you already have.` },
+  { icon: MonitorSmartphone, title: "A workstation each.", text: `A full ${NODE.os} desktop with a workstation-class GPU, on the laptop you already have.` },
   { icon: Workflow, title: "Nobody queues.", text: "Renders run on our machines, so laptops stay free and everyone renders at once." },
   { icon: HardDrive, title: "One set of files.", text: "Everyone opens the same project from shared storage. No pen drives." },
   { icon: ShieldCheck, title: "Set up once, with you.", text: "Your software and who gets access, set up once for every machine." },
@@ -46,10 +46,10 @@ const solutions = [
 const trustItems = ["Everything stays in Bengaluru", `Streamed at ${NODE.stream}, not over RDP`, "A clean machine for every session"];
 
 export default function SolutionsPage() {
+  // No GPU is named here (owner, 21 Oct 2026): the GPUs on offer, with VRAM,
+  // vCPU and RAM, are the live ladder on /pricing.
   const spec = [
-    `${NODE.gpu} · ${NODE.vram}`,
-    `${NODE.ram} RAM`,
-    NODE.cpuShort,
+    "Your choice of GPU: see pricing",
     NODE.disk,
     NODE.os,
     NODE.location,

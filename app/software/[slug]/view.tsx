@@ -12,16 +12,18 @@ import {
 } from "@/lib/software-pages";
 import {
   adhocRate,
-  cpuSpec,
+  cheapestGpu,
   getRateCard,
   hoursLabel,
   introOfferFaq,
   introOfferFor,
+  ladderRanges,
   pricingFaqAnswer,
   storageSpec,
   type RateCard,
   introPrice,
 } from "@/lib/rate-card";
+import { GpuLadder } from "@/components/pricing/gpu-ladder";
 import type { Currency } from "@/lib/money";
 import { NODE } from "@/lib/node-spec";
 import { LastUpdated, SpecTable } from "@/components/gpu/spec-table";
@@ -41,8 +43,8 @@ import { GPU_HEROES } from "@/lib/gpu-heroes";
  */
 const LANDING_LINKS: Record<string, string> = {
   "d5-render-cloud-workstation": "D5 Render cloud workstation",
-  "lumion-cloud-gpu": "Lumion on a cloud RTX 5080",
-  "enscape-cloud-gpu": "Enscape on a cloud RTX 5080",
+  "lumion-cloud-gpu": "Lumion on a GPU workstation",
+  "enscape-cloud-gpu": "Enscape on a GPU workstation",
   "cloud-rendering-for-architects": "Cloud rendering for architects",
   "architectural-visualization": "Architectural visualization: every tool, by job",
   "video-animation-rendering": "Video and animation rendering",
@@ -131,30 +133,31 @@ function rentalAnswer(card: RateCard | null, currency: Currency): string | null 
   const r = liveRate(card, currency);
   if (!r) return null;
   const intro = introOfferFor(card, currency);
-  const gpu = card?.gpus.find((g) => !g.quote_on_request && g.hourly_rate_rupees != null);
-  const machine = `a ${NODE.os} ${gpu?.name ?? NODE.gpu} workstation (${gpu ? `${gpu.vram_gb} GB` : NODE.vram})`;
+  // The ladder (owner, 21 Oct 2026): "from" the cheapest public GPU's rate.
+  const ladder = ladderRanges(card);
+  const many = (ladder?.count ?? 0) > 1;
+  const gpu = cheapestGpu(card);
+  const machine = many
+    ? `a ${NODE.os} GPU workstation (${ladder!.gpu}, ${ladder!.vram} VRAM)`
+    : `a ${NODE.os} ${gpu?.name ?? "GPU"} workstation (${ladder?.vram ?? NODE.vram})`;
   const billed = r.perMinute ? ", billed per minute" : "";
+  const from = many ? "from " : "";
   return [
     intro
-      ? `Your first ${introPrice(intro)} top-up buys ${hoursLabel(intro.hours)} of ${machine}. After that it is ${r.rate} an hour ${r.tax}${billed}.`
-      : `${machine.charAt(0).toUpperCase()}${machine.slice(1)} costs ${r.rate} an hour, ${r.tax}${billed}.`,
+      ? `Your first ${introPrice(intro)} top-up buys ${hoursLabel(intro.hours)} of ${many ? `a ${NODE.os} ${gpu?.name ?? "GPU"} workstation` : machine}. After that it is ${from}${r.rate} an hour ${r.tax}${billed}.`
+      : `${machine.charAt(0).toUpperCase()}${machine.slice(1)} costs ${from}${r.rate} an hour, ${r.tax}${billed}.`,
     `Hosted in ${NODE.location.split(",")[0]}, streamed to your laptop with the Coreframe Connect app.`,
   ].join(" ");
 }
 
-/** The machine, from the rate card's own row; NODE when it is unreachable. */
-function specRows(card: RateCard | null, currency: Currency): [string, string][] {
-  const gpu = card?.gpus.find((g) => !g.quote_on_request && g.hourly_rate_rupees != null);
-  const r = liveRate(card, currency);
+/** The fixed facts of every node; the GPU rows and prices are the ladder
+ *  (<GpuLadder/>, from the rate card; owner, 21 Oct 2026). */
+function specRows(card: RateCard | null): [string, string][] {
+  const gpu = cheapestGpu(card);
   return [
-    ["GPU", gpu ? `${gpu.gpu_count}× ${gpu.name}` : NODE.gpu],
-    ["VRAM", gpu ? `${gpu.vram_gb} GB` : NODE.vram],
-    ["CPU", gpu ? cpuSpec(gpu) : NODE.cpuShort],
-    ["System RAM", gpu ? `${gpu.ram_gb} GB` : NODE.ram],
     ["Storage", gpu ? `${storageSpec(gpu.storage_gb)} NVMe` : NODE.disk],
     ["Operating system", NODE.os],
     ["Location", NODE.location],
-    ...(r ? ([["Price", `${r.rate}/hr, ${r.tax}`]] as [string, string][]) : []),
   ];
 }
 
@@ -250,7 +253,8 @@ export default async function SoftwareView({ slug, currency }: { slug: string; c
       {page.livePrice === "answer" ? (
         <section className="cf-col">
           <h2 className="cf-section-title">The machine.</h2>
-          <SpecTable rows={specRows(card, currency)} caption="The workstation you rent: hardware, location and price" />
+          <div className="mt-6"><GpuLadder card={card} currency={currency} compact /></div>
+          <SpecTable rows={specRows(card)} caption="The workstation you rent: storage, system and location" />
         </section>
       ) : null}
 

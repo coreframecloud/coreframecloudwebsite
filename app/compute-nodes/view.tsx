@@ -5,7 +5,8 @@ import { JsonLd } from "@/components/seo/json-ld";
 import { breadcrumbList } from "@/lib/seo";
 import Link from "next/link";
 import { BackgroundGlow } from "@/components/home/background-glow";
-import { getRateCard, adhocRateHourly, adhocRate, billingSentence, taxWords } from "@/lib/rate-card";
+import { getRateCard, adhocRateHourly, adhocRate, billingSentence, ladderRanges, taxWords } from "@/lib/rate-card";
+import { GpuLadder } from "@/components/pricing/gpu-ladder";
 import type { Currency } from "@/lib/money";
 import { storageTerms } from "@/lib/storage-terms";
 import { NODE } from "@/lib/node-spec";
@@ -13,9 +14,9 @@ import { NODE } from "@/lib/node-spec";
 export const computeNodesMetadata = (currency: Currency): Metadata => ({
   // No price in the title or description: both are cached by search engines
   // and quoted by answer engines for months after a rate changes.
-  title: "RTX 5080 Workstation Specs — Compute Nodes",
+  title: "GPU Workstation Specs — Compute Nodes",
   description:
-    `One node, one GPU: RTX 5080 with 16 GB GDDR7, 64 GB RAM and an 8-core, 16-thread CPU. Billed per minute from stream start, ${taxWords(currency)}. Bengaluru.`,
+    `One node, one GPU, one customer: the GPUs on offer, their VRAM, vCPU and RAM, from the live rate card. Billed per minute from stream start, ${taxWords(currency)}. Bengaluru.`,
   alternates: { canonical: "/compute-nodes" },
 });
 
@@ -23,7 +24,9 @@ const whatsapp = (message: string) =>
   `https://wa.me/916366889488?text=${encodeURIComponent(message)}`;
 
 /**
- * The spec list is BUILT FROM `lib/node-spec`, not typed here.
+ * The GPU, VRAM, CPU and RAM rows are the ladder from the live rate card
+ * (<GpuLadder/>; owner, 21 Oct 2026). The fixed facts below are BUILT FROM
+ * `lib/node-spec`, not typed here.
  *
  * This page used to carry its own copy — including "500 GB NVMe", which
  * disagreed with the 1 TB of NVMe that is actually in the machine, and a
@@ -32,11 +35,6 @@ const whatsapp = (message: string) =>
  * and a fleet change edits one file.
  */
 const SPECS: { label: string; value: string }[] = [
-  { label: "GPU", value: NODE.gpu },
-  { label: "VRAM", value: NODE.vram },
-  { label: "Memory bandwidth", value: NODE.memoryBandwidth },
-  { label: "System RAM", value: NODE.ram },
-  { label: "CPU", value: NODE.cpu },
   { label: "Working disk", value: NODE.disk },
   { label: "Operating system", value: NODE.os },
   { label: "Stream", value: NODE.stream },
@@ -74,6 +72,7 @@ export default async function ComputeNodesView({ currency }: { currency: Currenc
   const storage = storageTerms(card);
   const nodePrice = adhocRateHourly(card, currency);
   const rate = adhocRate(card, currency);
+  const ladder = ladderRanges(card);
 
   return (
     <div className="relative min-h-screen bg-paper text-ink">
@@ -87,7 +86,9 @@ export default async function ComputeNodesView({ currency }: { currency: Currenc
             <div className="cf-eyebrow">Compute nodes</div>
             <h1 className="cf-display mt-3">One node. One GPU. Nothing to configure.</h1>
             <p className="cf-lead mt-5 max-w-[680px]">
-            One machine for everyone: {NODE.gpu}, {NODE.vram}, {NODE.ram} of RAM, in {NODE.location}. One price, nothing to pick wrong.
+            {ladder && ladder.count > 1
+              ? `Pick a GPU and press connect: ${ladder.gpu}, ${ladder.vram} of VRAM, ${ladder.ram} of RAM, in ${NODE.location}. One price per GPU, nothing else to configure.`
+              : `One machine for everyone${ladder ? `: ${ladder.gpu}, ${ladder.vram} of VRAM, ${ladder.ram} of RAM` : ""}, in ${NODE.location}. One price, nothing to pick wrong.`}
           </p>
             <PageByline path="/compute-nodes" className="mt-4 opacity-75" />
           </div>
@@ -107,7 +108,9 @@ export default async function ComputeNodesView({ currency }: { currency: Currenc
                 {/* Label above value, never beside it. A two-column row put
                     the CPU line opposite its label and ran off a
                     390px screen; stacked, nothing can overflow. */}
-                <dl className="grid grid-cols-1 gap-x-8 gap-y-5 sm:grid-cols-2">
+                {/* The GPU ladder from the live rate card (owner, 21 Oct 2026). */}
+                <GpuLadder card={card} currency={currency} compact />
+                <dl className="mt-8 grid grid-cols-1 gap-x-8 gap-y-5 sm:grid-cols-2">
                   {SPECS.map((spec) => (
                     <div key={spec.label} className="min-w-0 border-t border-rule pt-3">
                       <dt className="cf-card-label">{spec.label}</dt>
@@ -121,7 +124,7 @@ export default async function ComputeNodesView({ currency }: { currency: Currenc
                 <div className="mt-10 border-t border-rule pt-6">
                   <div className="cf-card-label">Pay as you go</div>
                   <div className="mt-2 text-[34px] leading-none font-semibold text-ink">
-                    {nodePrice ?? "On request"}
+                    {nodePrice ? `${ladder && ladder.count > 1 ? "from " : ""}${nodePrice}` : "On request"}
                   </div>
                   <p className="mt-3 text-sm leading-6 text-ink-2">
                     {usdView
@@ -130,7 +133,7 @@ export default async function ComputeNodesView({ currency }: { currency: Currenc
                   </p>
                   <a
                     href={whatsapp(
-                      "Hi Coreframe Cloud, I want to reserve an RTX 5080 node for a 3D rendering / visualization workload."
+                      "Hi Coreframe Cloud, I want to reserve a GPU workstation for a 3D rendering / visualization workload."
                     )}
                     target="_blank"
                     rel="noreferrer"
@@ -148,10 +151,10 @@ export default async function ComputeNodesView({ currency }: { currency: Currenc
                     <span className="font-medium text-ink">
                       {usdView
                         ? rate
-                          ? `${rate} per GPU-hour, no GST.`
+                          ? `${ladder && ladder.count > 1 ? "From " : ""}${rate} per GPU-hour, no GST.`
                           : "No GST on prices in US dollars."
                         : rate
-                          ? `${rate} per GPU-hour, GST included.`
+                          ? `${ladder && ladder.count > 1 ? "From " : ""}${rate} per GPU-hour, GST included.`
                           : "GST is inside the published rate."}
                     </span>{" "}
                     {usdView
@@ -216,7 +219,7 @@ export default async function ComputeNodesView({ currency }: { currency: Currenc
             <div className="mt-8 flex flex-wrap items-center gap-4">
               <a
                 href={whatsapp(
-                  "Hi Coreframe Cloud, I'd like to talk about RTX 5080 compute nodes for my team."
+                  "Hi Coreframe Cloud, I'd like to talk about GPU workstations for my team."
                 )}
                 target="_blank"
                 rel="noreferrer"

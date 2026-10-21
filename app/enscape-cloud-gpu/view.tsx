@@ -9,7 +9,8 @@ import { JsonLd } from "@/components/seo/json-ld";
 import { breadcrumbList } from "@/lib/seo";
 import { BackgroundGlow } from "@/components/home/background-glow";
 import { PricingCards } from "@/components/pricing/pricing-cards";
-import { getRateCard, pricingFaqAnswer, taxSentence } from "@/lib/rate-card";
+import { getRateCard, ladderPhrase, ladderRanges, pricingFaqAnswer, taxSentence } from "@/lib/rate-card";
+import { GpuLadder } from "@/components/pricing/gpu-ladder";
 import { storageTerms } from "@/lib/storage-terms";
 import { NODE, replacementCost } from "@/lib/node-spec";
 import Link from "next/link";
@@ -18,9 +19,9 @@ import { LastUpdated, SpecTable } from "@/components/gpu/spec-table";
 export function enscapeMetadata(currency: Currency): Metadata {
   const usdView = currency === "USD";
   return {
-  title: "Enscape Cloud GPU Workstation, RTX 5080",
+  title: "Enscape GPU Workstation, by the minute",
   description:
-    `Run Enscape on an RTX 5080 cloud workstation in India, with Revit, SketchUp or Rhino on the same desktop. Billed per minute, ${usdView ? "in US dollars, no GST" : "GST included"}. Your own licence.`,
+    `Run Enscape on a GPU workstation in India, with Revit, SketchUp or Rhino on the same desktop. Billed per minute, ${usdView ? "in US dollars, no GST" : "GST included"}. Your own licence.`,
   keywords: [
     "Enscape cloud GPU India",
     "Enscape cloud rendering India",
@@ -40,11 +41,9 @@ export function enscapeMetadata(currency: Currency): Metadata {
  * over: the machine is reached through the Coreframe Connect app, and remote
  * desktop is the thing the homepage positions against.
  */
-const SPECS: [string, string][] = [
-  ["GPU", NODE.gpu],
-  ["VRAM", `${NODE.vram} · ${NODE.memoryBandwidth}`],
-  ["System RAM", NODE.ram],
-  ["CPU", NODE.cpu],
+/** The GPU, VRAM, CPU and RAM rows come from the live rate card's ladder
+ *  (ladderSpecRows; owner, 21 Oct 2026); the rest are fixed facts of every node. */
+const FIXED_SPECS: [string, string][] = [
   ["Disk", NODE.disk],
   ["OS", NODE.os],
   ["Access", `Coreframe Connect app, streamed at ${NODE.stream}`],
@@ -54,8 +53,8 @@ const SPECS: [string, string][] = [
 ];
 
 /** VRAM is the number to compare (13 Oct audit: as a real table, not prose). */
-const VRAM_COMPARE: [string, string][] = [
-  ["This workstation", NODE.vram],
+const vramCompare = (vram: string): [string, string][] => [
+  ["Coreframe workstations", vram],
   ["Many laptops and entry desktops sold for design work", "6 to 8 GB"],
 ];
 
@@ -64,11 +63,13 @@ export default async function EnscapeView({ currency }: { currency: Currency }) 
   const storage = storageTerms(card);
   const priceAnswer = pricingFaqAnswer(card, currency);
   const machineCost = replacementCost(currency);
+  const ladder = ladderRanges(card);
+  const vram = ladder?.vram ?? NODE.vram;
 
   const faqs: { q: string; a: string }[] = [
     {
       q: "Does Enscape work on a cloud GPU?",
-      a: `Yes, on a card with a WDDM display driver and RT cores. A Coreframe workstation is a ${NODE.os} machine with a consumer ${NODE.gpu} and the full WDDM driver, so Enscape installs, finds the RT cores and ray-traces the way it does on a desktop machine. You reach it through the Coreframe Connect app, streamed at ${NODE.stream}.`,
+      a: `Yes, on a card with a WDDM display driver and RT cores. A Coreframe workstation is a ${NODE.os} machine with a dedicated NVIDIA RTX GPU and the full WDDM driver, so Enscape installs, finds the RT cores and ray-traces the way it does on a desktop machine. You reach it through the Coreframe Connect app, streamed at ${NODE.stream}.`,
     },
     {
       q: "Can I use Enscape with Revit or SketchUp on a cloud workstation?",
@@ -76,7 +77,7 @@ export default async function EnscapeView({ currency }: { currency: Currency }) 
     },
     {
       q: "What is in the workstation?",
-      a: `${NODE.gpu} with ${NODE.vram}, ${NODE.ram} of system memory, an ${NODE.cpu} and ${NODE.disk}, running ${NODE.os} in ${NODE.location}. One customer per node. Nobody shares the card, and it isn't sliced into a virtual GPU.`,
+      a: `${ladderPhrase(card) ? `${ladderPhrase(card)!.charAt(0).toUpperCase()}${ladderPhrase(card)!.slice(1)}` : "A dedicated NVIDIA RTX GPU"}, with ${NODE.disk}, running ${NODE.os} in ${NODE.location}. The GPUs on offer and their prices are on the pricing page. One customer per node. Nobody shares the card, and it isn't sliced into a virtual GPU.`,
     },
     {
       q: "Do I need my own Enscape licence?",
@@ -114,11 +115,11 @@ export default async function EnscapeView({ currency }: { currency: Currency }) 
           <div className="min-w-0 max-w-[620px]">
             <p className="cf-eyebrow mb-5">Enscape · Cloud GPU · Bengaluru</p>
             <h1 className="cf-display">
-              Run Enscape on an RTX 5080.
+              Run Enscape on a GPU workstation.
               <br className="hidden md:block" /> Ray tracing included.
             </h1>
             <p className="cf-lead mt-[22px]">
-            Enscape needs VRAM your modelling laptop doesn&rsquo;t have. Run it on an RTX&nbsp;5080 and walk the client through the building.
+            Enscape needs VRAM your modelling laptop doesn&rsquo;t have. Run it on a workstation-class RTX GPU and walk the client through the building.
           </p>
             <p className="cf-section-copy mt-5">
               You reach it through the Coreframe Connect app, streamed at{" "}
@@ -153,7 +154,7 @@ export default async function EnscapeView({ currency }: { currency: Currency }) 
               {[
                 {
                   title: "Real RT cores",
-                  body: "Enscape's ray-traced reflections, shadows and global illumination run on the RTX 5080's dedicated RT cores, the same silicon a local RTX machine uses.",
+                  body: "Enscape's ray-traced reflections, shadows and global illumination run on the GPU's dedicated RT cores, the same silicon a local RTX machine uses.",
                 },
                 {
                   title: "Your host app, same desktop",
@@ -176,11 +177,13 @@ export default async function EnscapeView({ currency }: { currency: Currency }) 
         <section className="cf-section px-5 pt-0">
           <div className="cf-wide">
             <h2 className="cf-section-title">The machine.</h2>
-            <SpecTable rows={SPECS} caption="The Enscape workstation: hardware and access" />
-            <SpecTable rows={VRAM_COMPARE} caption="VRAM compared" showCaption />
+            {/* The GPU ladder from the live rate card (owner, 21 Oct 2026). */}
+            <div className="mt-6"><GpuLadder card={card} currency={currency} compact /></div>
+            <SpecTable rows={FIXED_SPECS} caption="The Enscape workstation: hardware and access" />
+            <SpecTable rows={vramCompare(vram)} caption="VRAM compared" showCaption />
             <p className="cf-section-copy mt-5">
               Each node has one GPU and one customer at a time. The number to
-              compare is VRAM: {NODE.vram}, against the 6 to 8 GB in most laptops
+              compare is VRAM: {vram}, against the 6 to 8 GB in most laptops
               sold for design work. VRAM decides whether a scene loads at full
               texture resolution or has to be cut down.
             </p>
@@ -234,8 +237,8 @@ export default async function EnscapeView({ currency }: { currency: Currency }) 
             <ul className="mt-8 space-y-1">
               {[
                 ["/", "Home"],
-                ["/d5-render-cloud-workstation", "D5 Render on a cloud RTX 5080"],
-                ["/lumion-cloud-gpu", "Lumion on a cloud RTX 5080"],
+                ["/d5-render-cloud-workstation", "D5 Render on a GPU workstation"],
+                ["/lumion-cloud-gpu", "Lumion on a GPU workstation"],
                 ["/software/revit-cloud-workstation", "Revit on a cloud workstation"],
                 ["/vram-for-architectural-rendering", "Is 8 GB of VRAM enough?"],
               ].map(([href, label]) => (

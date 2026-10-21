@@ -12,7 +12,7 @@ import {
   introPrice,
   noConnectSentence,
 } from "@/lib/rate-card";
-import { formatMoney, usdRates, type Currency } from "@/lib/money";
+import { formatMoney, type Currency } from "@/lib/money";
 import { storageTerms } from "@/lib/storage-terms";
 import { replacementCost, replacementCostValue } from "@/lib/node-spec";
 import type { BlogContext } from "./types";
@@ -31,8 +31,10 @@ import type { BlogContext } from "./types";
  */
 export function blogContext(card: RateCard | null, currency: Currency = "INR"): BlogContext {
   const usd = currency === "USD";
-  const rupeeRate = adhocRateValue(card);
-  const rate = rupeeRate == null ? null : usd ? usdRates(card).gpu_hourly : rupeeRate;
+  // The "from" rate: the cheapest public GPU on the ladder, in the page's
+  // currency (its own dollar rate since 21 Oct 2026; usd.gpu_hourly on an
+  // older API).
+  const rate = adhocRateValue(card, currency);
   const intro = introOfferFor(card, currency);
   const money = (v: number) => (usd ? formatMoney(Math.round(v * 100) / 100, "USD") : rupees(v));
   const replacement = replacementCostValue(currency);

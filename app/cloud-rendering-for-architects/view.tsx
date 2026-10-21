@@ -18,8 +18,10 @@ import {
   adhocRate,
   storageRatePerTb,
   billingSentence,
+  ladderRanges,
   taxSentence,
 } from "@/lib/rate-card";
+import { GpuLadder } from "@/components/pricing/gpu-ladder";
 import { storageTerms } from "@/lib/storage-terms";
 
 export function architectsMetadata(): Metadata {
@@ -27,7 +29,7 @@ export function architectsMetadata(): Metadata {
   return {
   title: "Cloud Rendering for Architects in India",
   description:
-    "RTX 5080 cloud workstations for architecture studios: D5 Render, Lumion, Enscape and Revit, persistent project storage, named seats, hosted in Bengaluru.",
+    "GPU workstations for architecture studios: D5 Render, Lumion, Enscape and Revit, persistent project storage, named seats, hosted in Bengaluru.",
   keywords: [
     "cloud rendering for architects India",
     "cloud GPU architecture India",
@@ -69,7 +71,7 @@ const useCases = [
   },
   {
     title: "Lumion scenes with heavy assets.",
-    body: `${NODE.vram} on the card. High-resolution textures, dense vegetation and animated water fit without you having to turn the quality setting down.`,
+    body: "Workstation-class VRAM on the card. High-resolution textures, dense vegetation and animated water fit without you having to turn the quality setting down.",
   },
   {
     title: "Handoffs without a pen drive.",
@@ -87,7 +89,7 @@ const useCases = [
 
 const workflow = [
   { n: "01", title: "Open the account.", body: "Sign up, verify your email, add credit to the wallet." },
-  { n: "02", title: "Launch a workstation.", body: `One click. A ${NODE.gpu} machine running ${NODE.os} boots and hands you a desktop.` },
+  { n: "02", title: "Launch a workstation.", body: `One click. A GPU workstation running ${NODE.os} boots and hands you a desktop.` },
   { n: "03", title: "Sign in to your software.", body: "D5 Render, Twinmotion, Unreal and Blender are on the image already. We set up Revit, AutoCAD, Lumion and Enscape with you once, and after that they're on every workstation you launch, running on your own licence." },
   { n: "04", title: "Move the project across.", body: "Drag the scene and its assets in. You don't need FTP, a VPN or a shared drive." },
   { n: "05", title: "Render.", body: "The node does the work. On a committed plan the files stay on NAS, so the next person to open the job has them." },
@@ -139,6 +141,7 @@ const jsonLd = {
 export default async function ArchitectsView({ currency }: { currency: Currency }) {
   const card = await getRateCard();
   const storage = storageTerms(card);
+  const ladder = ladderRanges(card);
   const usdView = currency === "USD";
   const storageRate = storageRatePerTb(card, currency);
   const adhoc = adhocRate(card, currency);
@@ -200,7 +203,7 @@ export default async function ArchitectsView({ currency }: { currency: Currency 
               Nobody should be waiting for the render desk.
             </h1>
             <p className="cf-lead mt-6">
-            {NODE.gpu} workstations by the minute for D5 Render, Lumion, Enscape and Revit. Everyone renders at once, from shared project files.
+            GPU workstations by the minute for D5 Render, Lumion, Enscape and Revit. Everyone renders at once, from shared project files.
           </p>
             <PageByline path="/cloud-rendering-for-architects" className="mt-4 opacity-75" />
 
@@ -227,13 +230,18 @@ export default async function ArchitectsView({ currency }: { currency: Currency 
 
         <section className="cf-section px-5">
           <div className="cf-wide">
+            {/* The GPU ladder from the live rate card (owner, 21 Oct 2026). */}
+            <GpuLadder card={card} currency={currency} compact title="The GPUs you can rent" />
             <SpecBlock label="The machine you are renting">
               <C># one workstation, per seat</C>
               {"\n\n"}
-              {"  "}<K>gpu</K>{"            "}<V>{NODE.gpu}</V> · <V>{NODE.vram}</V>{"\n"}
-              {"  "}<K>bandwidth</K>{"      "}<V>{NODE.memoryBandwidth}</V> memory bandwidth on the card{"\n"}
-              {"  "}<K>memory</K>{"         "}<V>{NODE.ram}</V> system RAM{"\n"}
-              {"  "}<K>cpu</K>{"            "}<V>{NODE.cpu}</V>{"\n"}
+              {ladder ? (
+                <>
+                  {"  "}<K>gpu</K>{"            "}<V>{ladder.gpu}</V> · <V>{ladder.vram} VRAM</V>{"\n"}
+                  {"  "}<K>memory</K>{"         "}<V>{ladder.ram}</V> system RAM{"\n"}
+                  {"  "}<K>cpu</K>{"            "}<V>{ladder.cpu}</V>{"\n"}
+                </>
+              ) : null}
               {"  "}<K>working disk</K>{"   "}<V>{NODE.disk}</V>{"\n"}
               {"  "}<K>os</K>{"             "}<V>{NODE.os}</V>, a full desktop you work on{"\n"}
               {"  "}<K>access</K>{"         "}Coreframe Connect app, streamed at <V>{NODE.stream}</V>{"\n"}

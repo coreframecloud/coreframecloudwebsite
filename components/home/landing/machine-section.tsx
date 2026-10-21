@@ -1,5 +1,6 @@
 import { SpecBlock, K, V, C } from "@/components/home/spec-block";
 import { NODE } from "@/lib/node-spec";
+import type { LadderRanges } from "@/lib/rate-card";
 import type { StorageTerms } from "@/lib/storage-terms";
 import { BANDWIDTH_SENTENCE } from "@/lib/streaming-terms";
 
@@ -20,9 +21,12 @@ import { BANDWIDTH_SENTENCE } from "@/lib/streaming-terms";
 export function MachineSection({
   adhocRate,
   storage,
+  ladder = null,
 }: {
   adhocRate?: string;
   storage: StorageTerms;
+  /** The GPU ladder as ranges from the live rate card (owner, 21 Oct 2026). */
+  ladder?: LadderRanges | null;
 }) {
   return (
     <section className="cf-section px-5">
@@ -33,9 +37,13 @@ export function MachineSection({
           <span className="b">$</span> coreframe connect &rarr; <V>Launch workstation</V>
           {"\n\n"}
           {"  "}<K>node</K>{"            "}gpu-node-01 · Bengaluru{"\n"}
-          {"  "}<K>gpu</K>{"             "}{NODE.gpu} · <V>{NODE.vram}</V> · current generation{"\n"}
-          {"  "}<K>memory</K>{"          "}<V>{NODE.ram}</V> system RAM, enough for big scenes and a lot open{"\n"}
-          {"  "}<K>bandwidth</K>{"       "}<V>{NODE.memoryBandwidth}</V> memory bandwidth on the card{"\n"}
+          {ladder ? (
+            <>
+              {"  "}<K>gpu</K>{"             "}{ladder.gpu} · <V>{ladder.vram} VRAM</V> · your choice from the rate card{"\n"}
+              {"  "}<K>memory</K>{"          "}<V>{ladder.ram}</V> system RAM, enough for big scenes and a lot open{"\n"}
+              {"  "}<K>cpu</K>{"             "}<V>{ladder.cpu}</V>{"\n"}
+            </>
+          ) : null}
           {"  "}<K>working disk</K>{"    "}<V>{NODE.disk}</V> on the workstation for scratch,{"\n"}
           {"                  "}cache and the project files you&rsquo;re working on{"\n"}
           {"  "}<K>transfer</K>{"        "}<V>{storage.paidGb} GB</V> kept between sessions, for moving{"\n"}

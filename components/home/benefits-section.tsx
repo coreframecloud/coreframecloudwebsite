@@ -38,7 +38,7 @@ export function BenefitsSection({ storage }: { storage: StorageTerms }) {
           </>
         }
         points={[
-          "RTX 5080 with 16 GB GDDR7 — a whole card, not a shared slice of one",
+          "A workstation-class RTX GPU — a whole card, not a shared slice of one",
           "The render runs there, so your own computer stays free to keep working",
           "Nothing to buy, house, insure or depreciate",
         ]}
@@ -47,7 +47,7 @@ export function BenefitsSection({ storage }: { storage: StorageTerms }) {
             <strong className="font-semibold text-ink">
               Where the speed difference is published.
             </strong>{" "}
-            In Blender&rsquo;s own public benchmark the RTX 5080&rsquo;s median
+            In Blender&rsquo;s own public benchmark our base node&rsquo;s RTX 5080 has a median
             score is <strong className="text-ink">9,138</strong> (1,429
             results), against <strong className="text-ink">3,182</strong>{" "}
             for an RTX 4060 (441) and{" "}

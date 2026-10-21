@@ -8,13 +8,13 @@ import { GenImage } from "@/components/visuals/media";
 import { StreamDiagram } from "@/components/visuals/diagrams";
 import { Fold } from "@/components/visuals/fold";
 import { SpecTable } from "@/components/gpu/spec-table";
-import { AREA_SERVED_WORLD, ORG_ID, SITE, breadcrumbList, faqPage, regionalOffers } from "@/lib/seo";
+import { GpuLadder } from "@/components/pricing/gpu-ladder";
+import { AREA_SERVED_WORLD, ORG_ID, SITE, breadcrumbList, faqPage, gpuLadderOffers } from "@/lib/seo";
 import { NODE } from "@/lib/node-spec";
-import { usdRates, type Currency } from "@/lib/money";
+import type { Currency } from "@/lib/money";
 import {
   adhocRate,
-  adhocRateValue,
-  cpuSpec,
+  cheapestGpu,
   getRateCard,
   hoursLabel,
   introOfferFaq,
@@ -53,9 +53,9 @@ import { FREE_PREVIEWS_PER_DAY, studioMoney, studioPrices } from "@/lib/studio-p
 
 const PATH = "/architectural-visualization";
 
-const TITLE = "Architectural Visualization on a Cloud RTX 5080 | Coreframe";
+const TITLE = "Architectural Visualization on a GPU Workstation | Coreframe";
 const DESCRIPTION =
-  "D5 Render, Lumion, Enscape, Twinmotion, V-Ray, Unreal, Revit, SketchUp and 3ds Max on one Windows RTX 5080 workstation, billed per minute. Which tool, which page.";
+  "D5 Render, Lumion, Enscape, Twinmotion, V-Ray, Unreal, Revit, SketchUp and 3ds Max on one Windows GPU workstation, billed per minute. Which tool, which page.";
 
 export const archvizMetadata: Metadata = {
   title: { absolute: TITLE },
@@ -70,10 +70,10 @@ export const archvizMetadata: Metadata = {
   ],
   alternates: { canonical: PATH },
   openGraph: {
-    title: "Architectural visualization on a cloud RTX 5080 — Coreframe Cloud",
+    title: "Architectural visualization on a GPU workstation — Coreframe Cloud",
     description: "Every archviz tool we support, grouped by job, on one rented Windows workstation.",
     url: `${SITE}${PATH}`,
-    images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "Coreframe Cloud: Windows RTX 5080 workstations, rented by the minute" }],
+    images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "Coreframe Cloud: Windows GPU workstations, rented by the minute" }],
   },
 };
 
@@ -182,19 +182,15 @@ function priceAnswer(card: RateCard | null, cur: Currency): string | null {
     : `The workstation is ${rate} an hour, ${tax}${billed}.`;
 }
 
-function specRows(card: RateCard | null, cur: Currency): [string, string][] {
-  const gpu = card?.gpus.find((g) => !g.quote_on_request && g.hourly_rate_rupees != null);
-  const rate = adhocRate(card, cur);
+/** The fixed facts of every node; the GPU rows and prices are the ladder
+ *  (<GpuLadder/>, from the rate card; owner, 21 Oct 2026). */
+function specRows(card: RateCard | null): [string, string][] {
+  const gpu = cheapestGpu(card);
   return [
-    ["GPU", gpu ? `${gpu.gpu_count}× ${gpu.name}` : NODE.gpu],
-    ["VRAM", gpu ? `${gpu.vram_gb} GB` : NODE.vram],
-    ["CPU", gpu ? cpuSpec(gpu) : NODE.cpuShort],
-    ["System RAM", gpu ? `${gpu.ram_gb} GB` : NODE.ram],
     ["Storage", gpu ? `${storageSpec(gpu.storage_gb)} NVMe` : NODE.disk],
     ["Operating system", NODE.os],
     ["Streamed to you", `${NODE.stream}, through the Coreframe Connect app`],
     ["Location", NODE.location],
-    ...(rate ? ([["Price", `${rate}/hr, ${cur === "USD" ? "no GST" : "GST included"}`]] as [string, string][]) : []),
   ];
 }
 
@@ -204,8 +200,8 @@ export default async function ArchvizView({ currency }: { currency: Currency }) 
   const studio = studioMoney(studioPrices(card), currency);
   const priceFaq = pricingFaqAnswer(card, currency);
   const introFaq = introOfferFaq(card, currency);
-  const inrHour = adhocRateValue(card);
-  const usd = usdRates(card);
+  // One Offer pair per public GPU on the ladder (owner, 21 Oct 2026).
+  const ladderOffers = gpuLadderOffers(card, `${SITE}${PATH}`);
 
   const faqs = [
     {
@@ -241,18 +237,8 @@ export default async function ArchvizView({ currency }: { currency: Currency }) 
     provider: { "@id": ORG_ID },
     areaServed: AREA_SERVED_WORLD,
     url: `${SITE}${PATH}`,
-    description: `A Windows ${NODE.gpu} workstation (${NODE.vram}) rented by the minute for D5 Render, Lumion, Enscape, Twinmotion, Unreal Engine, V-Ray, 3ds Max, Blender, Revit, SketchUp and Rhino. D5 Render, Twinmotion, Unreal Engine and Blender are preinstalled; the others run on your own licence.`,
-    ...(inrHour != null
-      ? {
-          offers: regionalOffers({
-            name: `${NODE.gpu} workstation, per GPU-hour`,
-            inr: Math.round(inrHour),
-            usd: usd.gpu_hourly,
-            url: `${SITE}${PATH}`,
-            unit: { unitText: "GPU-hour" },
-          }),
-        }
-      : {}),
+    description: `A Windows GPU workstation rented by the minute for D5 Render, Lumion, Enscape, Twinmotion, Unreal Engine, V-Ray, 3ds Max, Blender, Revit, SketchUp and Rhino. D5 Render, Twinmotion, Unreal Engine and Blender are preinstalled; the others run on your own licence.`,
+    ...(ladderOffers.length ? { offers: ladderOffers } : {}),
   };
 
   return (
@@ -269,9 +255,9 @@ export default async function ArchvizView({ currency }: { currency: Currency }) 
           <div className="cf-wide grid items-center gap-10 lg:grid-cols-[1.05fr_1fr]">
             <div className="min-w-0">
               <p className="cf-eyebrow mb-5">Architectural visualization</p>
-              <h1 className="cf-display">Architectural visualization on a cloud {NODE.gpu}</h1>
+              <h1 className="cf-display">Architectural visualization on a GPU workstation</h1>
               <p className="cf-lead mt-6">
-                One Windows workstation with an {NODE.gpu} and {NODE.vram}, rented by the minute, for the tools architects
+                One Windows workstation with a workstation-class GPU, rented by the minute, for the tools architects
                 and visualisers already use: D5 Render, Lumion, Enscape, Twinmotion, Unreal, V-Ray, 3ds Max, Blender, Revit,
                 SketchUp and Rhino. Pick your tool below for the details.
               </p>
@@ -372,7 +358,8 @@ export default async function ArchvizView({ currency }: { currency: Currency }) 
                 The same machine whichever tool you open. It runs in {NODE.location.split(",")[0]} and streams its desktop to
                 your laptop; your laptop only shows the picture.
               </p>
-              <SpecTable rows={specRows(card, currency)} caption="The workstation you rent: hardware, location and price" />
+              <div className="mt-6"><GpuLadder card={card} currency={currency} compact /></div>
+              <SpecTable rows={specRows(card)} caption="The workstation you rent: storage, system and location" />
             </div>
             <div className="min-w-0 rounded-[24px] bg-tint-blue p-6">
               <p className="mb-3 text-[13px] font-semibold tracking-[0.06em] text-ink-2 uppercase">Your laptop, our workstation</p>

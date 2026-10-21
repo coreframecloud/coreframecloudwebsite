@@ -18,7 +18,7 @@
  * here; hardware and behaviour claims must match what the machines do.
  */
 
-import { NODE, replacementCost } from "./node-spec";
+import { GPU_CLASS, NODE, replacementCost } from "./node-spec";
 import type { Currency } from "./money";
 
 export type SoftwarePage = {
@@ -100,7 +100,7 @@ function buildSoftwarePages(cur: Currency): SoftwarePage[] {
     description:
       "Run Autodesk Revit on a Windows GPU workstation in India, billed per minute. Bring your Autodesk licence, open large models, and render without buying hardware.",
     intro:
-      `Revit is hard on underpowered machines. Big federated models crawl, views take seconds to regenerate, and a render ties up the only computer you have. A Coreframe workstation gives you an ${NODE.gpu} and ${NODE.ram} of system memory for as long as you need it, billed by the minute.`,
+      `Revit is hard on underpowered machines. Big federated models crawl, views take seconds to regenerate, and a render ties up the only computer you have. A Coreframe workstation gives you a ${GPU_CLASS} and workstation RAM for as long as you need it, billed by the minute.`,
     problem:
       "Your laptop copes with small models but stalls on the coordinated one the whole team works in. And buying a workstation for the two weeks a year you need one doesn't add up.",
     why: [
@@ -138,7 +138,7 @@ function buildSoftwarePages(cur: Currency): SoftwarePage[] {
     // 19 Oct 2026: "3ds max cloud rendering (service)" and "cloud rendering
     // for 3ds max" (~64 impressions, no clicks) lead the title now. Was
     // "3ds Max Cloud Workstation & Rendering, RTX 5080 | Coreframe".
-    absoluteTitle: "3ds Max Cloud Rendering, RTX 5080 Workstation | Coreframe",
+    absoluteTitle: "3ds Max Cloud Rendering, GPU Workstation by the Minute | Coreframe",
     callouts: [
       {
         h2: "3ds Max cloud rendering: workstation or render farm?",
@@ -149,7 +149,7 @@ function buildSoftwarePages(cur: Currency): SoftwarePage[] {
     teamPlansLink: true,
     lastUpdated: "18 October 2026",
     description:
-      "3ds Max cloud rendering on a rented RTX 5080 workstation: V-Ray GPU and Chaos Vantage with 16 GB VRAM, your own licence, billed per minute.",
+      "3ds Max cloud rendering on a rented GPU workstation: V-Ray GPU and Chaos Vantage on a workstation-class RTX card, your own licence, billed per minute.",
     intro:
       "3ds Max with V-Ray or Corona is the classic case for renting a GPU, because the work comes in bursts. You need serious hardware for a few days before a deadline and almost none for the rest of the month.",
     problem:
@@ -166,8 +166,8 @@ function buildSoftwarePages(cur: Currency): SoftwarePage[] {
         h2: "Which renderer you use changes the answer.",
         body: [
           "What we'd recommend for 3ds Max depends on what you render with. It's worth getting this right, because the wrong assumption costs you money.",
-          `V-Ray GPU and Chaos Vantage do their work on the graphics card. Those are the cases a rented ${NODE.gpu} is built for: ${NODE.vram} is the ceiling on how much scene fits, against the 6 to 8 GB in most laptops and entry desktops sold for design work. When a GPU render fails or forces you to cut texture resolution, VRAM is almost always why.`,
-          `Corona is a CPU renderer. So is V-Ray's CPU engine, which many studios still use for final frames. A Coreframe node has an ${NODE.cpu}. That's a sensible CPU for driving a viewport and a GPU renderer, but it isn't a render node for CPU work. If your final frames come out of Corona, a rented workstation won't change that, and we'd rather tell you here than have you find out in your first session.`,
+          `V-Ray GPU and Chaos Vantage do their work on the graphics card. Those are the cases a rented ${GPU_CLASS} is built for: VRAM is the ceiling on how much scene fits, and every Coreframe GPU has far more than the 6 to 8 GB in most laptops and entry desktops sold for design work. When a GPU render fails or forces you to cut texture resolution, VRAM is almost always why.`,
+          `Corona is a CPU renderer. So is V-Ray's CPU engine, which many studios still use for final frames. A Coreframe node has a high-performance desktop CPU (the vCPU count is on the pricing page). That's a sensible CPU for driving a viewport and a GPU renderer, but it isn't a render node for CPU work. If your final frames come out of Corona, a rented workstation won't change that, and we'd rather tell you here than have you find out in your first session.`,
           "Most studios are somewhere in between. They model and light interactively on the GPU in Vantage or V-Ray GPU and keep CPU final frames wherever they already run. That works well, and it's easier if you plan for it from the start.",
         ],
       },
@@ -200,11 +200,11 @@ function buildSoftwarePages(cur: Currency): SoftwarePage[] {
       { q: "What happens to my scene files after the session?", a: RESET_ANSWER },
       {
         q: "Will Corona render faster on a Coreframe workstation?",
-        a: `Probably not, and it's better to know that now. Corona is a CPU renderer, and a Coreframe node has an ${NODE.cpu}. That's enough to drive the application and a GPU renderer, but it isn't a CPU render node, so if your final frames come out of Corona the machine won't change that. It helps with V-Ray GPU and Chaos Vantage, which render on the graphics card.`,
+        a: `Probably not, and it's better to know that now. Corona is a CPU renderer, and a Coreframe node has a high-performance desktop CPU, not a render-node CPU. That's enough to drive the application and a GPU renderer, but it isn't a CPU render node, so if your final frames come out of Corona the machine won't change that. It helps with V-Ray GPU and Chaos Vantage, which render on the graphics card.`,
       },
       {
         q: "How much VRAM do I need for 3ds Max GPU rendering?",
-        a: `VRAM sets a limit on what fits. Geometry, textures and lightmaps all have to fit on the card, and when they don't, a GPU render fails or you have to cut texture resolution. A Coreframe node has ${NODE.vram}, against the 6 to 8 GB in many laptops and entry desktops sold for design work. We can't predict how your particular scene will behave, so open it in a session and watch the VRAM meter.`,
+        a: `VRAM sets a limit on what fits. Geometry, textures and lightmaps all have to fit on the card, and when they don't, a GPU render fails or you have to cut texture resolution. Every Coreframe GPU has far more than the 6 to 8 GB in many laptops and entry desktops sold for design work. We can't predict how your particular scene will behave, so open it in a session and watch the VRAM meter.`,
       },
       {
         q: "Do I need to reinstall 3ds Max every session?",
@@ -237,7 +237,7 @@ function buildSoftwarePages(cur: Currency): SoftwarePage[] {
       },
       {
         q: "Is a cloud workstation fast enough for real-time rendering?",
-        a: `Yes. The rendering happens on the ${NODE.gpu} in the workstation and only the resulting video comes back to you, streamed at ${NODE.stream} through the Coreframe Connect app. So what your own laptop can do makes almost no difference to the image. A steady connection matters more than a fast one, and latency matters more than bandwidth.`,
+        a: `Yes. The rendering happens on the workstation's GPU and only the resulting video comes back to you, streamed at ${NODE.stream} through the Coreframe Connect app. So what your own laptop can do makes almost no difference to the image. A steady connection matters more than a fast one, and latency matters more than bandwidth.`,
       },
       { q: "Do my models persist between sessions?", a: RESET_ANSWER },
     ],
@@ -286,14 +286,14 @@ function buildSoftwarePages(cur: Currency): SoftwarePage[] {
   {
     slug: "twinmotion-cloud-workstation",
     title: "Twinmotion Cloud Workstation for architects",
-    metaTitle: "Twinmotion Cloud Workstation, RTX 5080",
+    metaTitle: "Twinmotion Cloud Workstation, by the minute",
     // 19 Oct 2026: "twinmotion workstation" (29 impressions, no clicks) leads
     // the <title>. Was "Twinmotion Cloud Workstation, RTX 5080 | Coreframe Cloud".
-    absoluteTitle: "Twinmotion Workstation in the Cloud, RTX 5080 | Coreframe",
+    absoluteTitle: "Twinmotion Workstation in the Cloud, by the Minute | Coreframe",
     description:
-      "Rent a Twinmotion workstation by the minute: an RTX 5080 with 16 GB VRAM and 64 GB RAM, Twinmotion preinstalled, streamed to your own computer.",
+      "Rent a Twinmotion workstation by the minute: a workstation-class RTX GPU with Twinmotion preinstalled, streamed to your own computer.",
     intro:
-      "Twinmotion is preinstalled on every Coreframe workstation, and its free tier covers most individual users. All you rent is the RTX 5080 that makes it run properly, by the minute.",
+      "Twinmotion is preinstalled on every Coreframe workstation, and its free tier covers most individual users. All you rent is the GPU workstation that makes it run properly, by the minute.",
     livePrice: "line",
     lastUpdated: "18 October 2026",
     problem:
@@ -387,7 +387,7 @@ function buildSoftwarePages(cur: Currency): SoftwarePage[] {
       {
         h2: "Running Grasshopper definitions on the workstation.",
         body: [
-          `Grasshopper solves a definition on the CPU, so a heavy one works with the workstation's ${NODE.cpu} and ${NODE.ram} of RAM. The ${NODE.gpu} draws the Rhino viewport and runs the renderer you attach, such as V-Ray or Enscape, in the same session.`,
+          `Grasshopper solves a definition on the CPU, so a heavy one works with the workstation's CPU and RAM. The GPU draws the Rhino viewport and runs the renderer you attach, such as V-Ray or Enscape, in the same session.`,
           "Keep your .gh definitions and the files they read in your project folder on persistent storage, so they are there the next time you launch.",
         ],
       },
@@ -420,14 +420,14 @@ function buildSoftwarePages(cur: Currency): SoftwarePage[] {
     title: "After Effects and Premiere Pro on a rented RTX workstation",
     metaTitle: "After Effects & Premiere Cloud Workstation",
     description:
-      "Run Adobe After Effects and Premiere Pro on a Windows RTX 5080 cloud workstation in India, billed per minute. Your own Adobe licence; files persist.",
+      "Run Adobe After Effects and Premiere Pro on a Windows GPU workstation in India, billed per minute. Your own Adobe licence; files persist.",
     intro:
-      `Coreframe rents a full ${NODE.os} desktop with an NVIDIA ${NODE.gpu} (${NODE.vram}) and ${NODE.ram} of RAM, streamed to the laptop you already own and billed by the minute. After Effects and Premiere Pro run on it with your own Adobe account, so a heavy comp or an export runs there while your own machine stays free.`,
+      `Coreframe rents a full ${NODE.os} desktop with a dedicated NVIDIA RTX GPU and workstation RAM, streamed to the laptop you already own and billed by the minute. After Effects and Premiere Pro run on it with your own Adobe account, so a heavy comp or an export runs there while your own machine stays free.`,
     problem:
       "After Effects previews crawl and Premiere exports tie up your laptop for the evening, and a machine that copes costs far more than the few weeks a year you really need it.",
     why: [
-      `Both applications use the GPU for playback, effects and encoding, and an ${NODE.gpu} has ${NODE.vram} for them to work in.`,
-      `${NODE.ram} of system RAM, which After Effects uses for RAM preview.`,
+      "Both applications use the GPU for playback, effects and encoding, and a workstation-class RTX GPU has the VRAM for them to work in.",
+      "Workstation RAM, which After Effects uses for RAM preview.",
       "Export and render on the rented machine while your own computer stays usable.",
       "Pay for the busy weeks only. Per-minute billing stops when you end the session.",
     ],
@@ -452,7 +452,7 @@ function buildSoftwarePages(cur: Currency): SoftwarePage[] {
     faqs: [
       {
         q: "Can I run After Effects and Premiere Pro on a cloud PC in India?",
-        a: `Yes. A Coreframe workstation is a full ${NODE.os} desktop with an NVIDIA ${NODE.gpu}, hosted in ${NODE.location}, and After Effects, Premiere Pro and Media Encoder run on it with your own Adobe account. You reach it through the Coreframe Connect app and it is billed per minute of streaming.`,
+        a: `Yes. A Coreframe workstation is a full ${NODE.os} desktop with a dedicated NVIDIA RTX GPU, hosted in ${NODE.location}, and After Effects, Premiere Pro and Media Encoder run on it with your own Adobe account. You reach it through the Coreframe Connect app and it is billed per minute of streaming.`,
       },
       {
         q: "Does Coreframe provide an Adobe licence?",
@@ -474,15 +474,15 @@ function buildSoftwarePages(cur: Currency): SoftwarePage[] {
   {
     slug: "gpu-workstation-rental-india",
     title: "GPU Workstation Rental in India — per-minute RTX workstations",
-    metaTitle: "Rent an RTX 5080 Workstation in India",
-    absoluteTitle: "GPU on Rent in India: RTX 5080 by the Minute | Coreframe",
-    h1: "Rent a GPU workstation in India: RTX 5080 by the minute",
+    metaTitle: "Rent a GPU Workstation in India",
+    absoluteTitle: "GPU on Rent in India: RTX Workstations by the Minute | Coreframe",
+    h1: "Rent a GPU workstation in India, by the minute",
     livePrice: "answer",
     lastUpdated: "18 October 2026",
     callouts: [
       {
         h2: "Running your own CFD software?",
-        body: `Bring your own licence. A Coreframe workstation is a full ${NODE.os} desktop with an ${NODE.gpu} (${NODE.vram}) and ${NODE.ram} of RAM, so you install your CFD or simulation package and run it the way you would on a machine under your desk. If you only need the pressure drop of a duct or pipe, we can run it for you instead.`,
+        body: `Bring your own licence. A Coreframe workstation is a full ${NODE.os} desktop with a ${GPU_CLASS} and workstation RAM, so you install your CFD or simulation package and run it the way you would on a machine under your desk. If you only need the pressure drop of a duct or pipe, we can run it for you instead.`,
         link: { href: "/cfd", label: "CFD for ducts and pipes" },
       },
     ],
@@ -515,8 +515,8 @@ function buildSoftwarePages(cur: Currency): SoftwarePage[] {
       // The price question is appended by the page from the live rate card
       // ("How much does a Coreframe workstation cost?"), so no figure is typed here.
       {
-        q: "Can I rent an RTX 5080 in India by the hour?",
-        a: `Yes. Every Coreframe workstation has one NVIDIA ${NODE.gpu} with ${NODE.vram}, ${NODE.ram} of RAM and an ${NODE.cpu}, running ${NODE.os} in ${NODE.location}. You rent the whole machine, not a slice of the card, and billing is per minute of streaming rather than per whole hour.`,
+        q: "Can I rent an RTX GPU in India by the hour?",
+        a: `Yes. Every Coreframe workstation has one dedicated NVIDIA RTX GPU, running ${NODE.os} in ${NODE.location}; the GPUs on offer, with their VRAM, vCPU and RAM, are listed with their prices on the pricing page. You rent the whole machine, not a slice of the card, and billing is per minute of streaming rather than per whole hour.`,
       },
       {
         q: "Do I need to buy software licences too?",
@@ -543,17 +543,17 @@ function buildSoftwarePages(cur: Currency): SoftwarePage[] {
     // standard image (owner confirmed 13 Oct 2026; lib/software-catalogue.ts).
     // No render-time or frame-rate claims: they depend on the project.
     slug: "unreal-engine-cloud-workstation",
-    title: "Unreal Engine Cloud Workstation — preinstalled on a rented RTX 5080",
-    metaTitle: "Unreal Engine Cloud Workstation, RTX 5080",
+    title: "Unreal Engine Cloud Workstation — preinstalled on a rented RTX GPU",
+    metaTitle: "Unreal Engine Cloud Workstation, by the minute",
     description:
-      "Unreal Engine 5.8 with Quixel Bridge, preinstalled on a Windows RTX 5080 workstation in India and billed per minute. Sign in with your Epic account.",
+      "Unreal Engine 5.8 with Quixel Bridge, preinstalled on a Windows GPU workstation in India and billed per minute. Sign in with your Epic account.",
     intro:
-      `Unreal Engine 5.8 with Quixel Bridge is preinstalled on every Coreframe workstation. You sign in with your own Epic account, open your project from persistent storage and work on an ${NODE.gpu} with ${NODE.vram}, billed by the minute.`,
+      `Unreal Engine 5.8 with Quixel Bridge is preinstalled on every Coreframe workstation. You sign in with your own Epic account, open your project from persistent storage and work on a ${GPU_CLASS}, billed by the minute.`,
     problem:
       "Unreal wants a strong GPU and a lot of VRAM, and the laptop you take to client meetings has neither.",
     why: [
       "Preinstalled: no multi-gigabyte engine download before you can start.",
-      `${NODE.vram} of VRAM for Nanite geometry, Lumen lighting and high-resolution textures.`,
+      "Workstation-class VRAM for Nanite geometry, Lumen lighting and high-resolution textures.",
       "Datasmith imports from Revit and SketchUp, and Twinmotion is on the same machine.",
       "Project files stay on persistent NAS storage between sessions.",
       "Rent it for the weeks a project needs it and stop paying when it ships.",
@@ -571,7 +571,7 @@ function buildSoftwarePages(cur: Currency): SoftwarePage[] {
       },
       {
         q: "How fast will my Unreal project run?",
-        a: `We don't quote frame rates or render times, because they depend on your project and settings. The machine has an ${NODE.gpu} with ${NODE.vram}, ${NODE.ram} of RAM and an ${NODE.cpu}. Open your heaviest level in a session and see.`,
+        a: `We don't quote frame rates or render times, because they depend on your project and settings. The GPUs on offer, with their VRAM, vCPU and RAM, are on the pricing page. Open your heaviest level in a session and see.`,
       },
       { q: "Do my Unreal projects persist between sessions?", a: RESET_ANSWER },
     ],

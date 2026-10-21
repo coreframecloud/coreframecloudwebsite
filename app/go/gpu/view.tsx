@@ -4,7 +4,7 @@ import { buildFaq } from "@/components/home/explainer-faq";
 import { NODE } from "@/lib/node-spec";
 import type { Currency } from "@/lib/money";
 import { storageTerms } from "@/lib/storage-terms";
-import { adhocRate, adhocRateHourly, getRateCard, hoursLabel, introOfferFor, introPrice } from "@/lib/rate-card";
+import { adhocRate, adhocRateHourly, getRateCard, hoursLabel, introOfferFor, introMoreGpusNote, introPrice, ladderRanges, withArticle } from "@/lib/rate-card";
 
 /**
  * /go/gpu — the paid landing page for the GPU workstation ads (owner, 20 Oct
@@ -26,10 +26,10 @@ export async function gpuLandingMetadata(currency: Currency): Promise<Metadata> 
   const card = await getRateCard();
   const offer = introOfferFor(card, currency);
   return {
-    title: `Your laptop, with an ${NODE.gpu} behind it`,
+    title: "Your laptop, with a workstation-class GPU behind it",
     description: offer
-      ? `A Windows ${NODE.gpu} workstation by the minute, streamed to the laptop you own. First top-up: ${introPrice(offer)} = ${hoursLabel(offer.hours)}.`
-      : `A Windows ${NODE.gpu} workstation by the minute, streamed to the laptop you own.`,
+      ? `A Windows GPU workstation by the minute, streamed to the laptop you own. First top-up: ${introPrice(offer)} = ${hoursLabel(offer.hours)}.`
+      : `A Windows GPU workstation by the minute, streamed to the laptop you own.`,
     robots: { index: false, follow: false },
   };
 }
@@ -38,6 +38,7 @@ export default async function GpuLandingView({ currency }: { currency: Currency 
   const card = await getRateCard();
   const intro = introOfferFor(card, currency);
   const hourly = adhocRateHourly(card, currency);
+  const ladder = ladderRanges(card);
   const faq = buildFaq(storageTerms(card), intro, adhocRate(card, currency) ?? undefined, currency).filter((f) =>
     FAQ_PICK.includes(f.q),
   );
@@ -45,8 +46,8 @@ export default async function GpuLandingView({ currency }: { currency: Currency 
   const price = intro ? (
     <>
       First top-up: <b className="font-semibold">{introPrice(intro)} = {hoursLabel(intro.hours)}</b>
-      {intro.gpuName ? ` of ${intro.gpuName}` : ""}
-      {hourly ? <span className="text-ink-2"> · {hourly} after that</span> : null}
+      {intro.gpuName ? ` of ${intro.gpuName}` : ""}{introMoreGpusNote(intro)}
+      {hourly ? <span className="text-ink-2"> · {ladder && ladder.count > 1 ? "from " : ""}{hourly} after that</span> : null}
     </>
   ) : hourly ? (
     <>
@@ -56,10 +57,10 @@ export default async function GpuLandingView({ currency }: { currency: Currency 
 
   return (
     <AdLanding
-      eyebrow={`${NODE.gpu} workstations`}
+      eyebrow="GPU workstations"
       title={
         <>
-          Your laptop, with an <span className="cfx-hl">{NODE.gpu}</span> behind it.
+          Your laptop, with a <span className="cfx-hl">workstation-class GPU</span> behind it.
         </>
       }
       lead="Open D5, Lumion, Blender or Twinmotion on a full Windows workstation from the laptop you already own, streamed in 4K."
@@ -67,14 +68,15 @@ export default async function GpuLandingView({ currency }: { currency: Currency 
       cta={{ href: "/signup", label: "Get started", event: "go_gpu_cta" }}
       ctaNote="Sign up with your email and a WhatsApp code. No monthly plan."
       points={[
-        `${NODE.gpu} ${NODE.vram} · ${NODE.cpuShort} · ${NODE.ram} RAM`,
+        // The GPU ladder as ranges from the live rate card (owner, 21 Oct 2026).
+        ladder ? `${ladder.gpu} · ${ladder.vram} VRAM · ${ladder.cpu} · ${ladder.ram} RAM` : "A dedicated GPU, a whole card to yourself",
         "Unreal Engine, D5 Render, Blender and Twinmotion preinstalled",
         "Billed per minute; close it and billing stops",
       ]}
       video={{
         src: currency === "USD" ? "/go/gpu-reel-usd.mp4" : "/go/gpu-reel-inr.mp4",
         poster: "/go/gpu-poster.webp",
-        label: `A real session: an ${NODE.gpu} workstation opens from a laptop, Blender renders the scene, and the render is sent to the client.`,
+        label: `A real session: ${withArticle(NODE.gpu)} workstation opens from a laptop, Blender renders the scene, and the render is sent to the client.`,
       }}
       faq={faq}
       viewContent={{ name: "Ad landing: GPU workstation", category: "workstation" }}

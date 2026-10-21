@@ -1,4 +1,4 @@
-import { usdRates, type Currency } from "@/lib/money";
+import type { Currency } from "@/lib/money";
 import { VramDiagram } from "@/components/visuals/diagrams";
 import { PageByline } from "@/components/seo/page-byline";
 import { GenImage } from "@/components/visuals/media";
@@ -12,8 +12,10 @@ import { SpecBlock, K, B } from "@/components/home/spec-block";
 import { NODE, replacementCost, replacementCostValue } from "@/lib/node-spec";
 import {
   getRateCard,
-  adhocRateHourly,
-  adhocRateValue,
+  cheapestGpu,
+  formatHourly,
+  hourlyValue,
+  publicGpus,
   billingSentence,
   introOfferFor,
   hoursLabel,
@@ -78,11 +80,13 @@ const pad = (s: string, n: number) => s + " ".repeat(Math.max(1, n - s.length));
 export default async function D5VsLocalView({ currency }: { currency: Currency }) {
   const card = await getRateCard();
   const usdView = currency === "USD";
-  const hourly = adhocRateHourly(card, currency);
-  // The hourly rate in the page's currency, from the rate card (usd.gpu_hourly
-  // on the dollar copy). Never typed here.
-  const rupeeRate = adhocRateValue(card);
-  const rate = rupeeRate == null ? null : usdView ? usdRates(card).gpu_hourly : rupeeRate;
+  // This page weighs renting against BUYING our base node's GPU (NODE.gpu,
+  // the ₹6,00,000 estimate), so it uses that GPU's own row on the rate card
+  // (its own dollar rate since the ladder, 21 Oct 2026), falling back to the
+  // cheapest public GPU. Never typed here.
+  const baseGpu = publicGpus(card).find((g) => g.name === NODE.gpu) ?? cheapestGpu(card);
+  const hourly = baseGpu ? formatHourly(baseGpu, currency, card) : null;
+  const rate = baseGpu ? hourlyValue(baseGpu, currency, card) : null;
   const intro = introOfferFor(card, currency);
   // The hardware estimate in the page's currency (lib/node-spec: ₹6,00,000 in
   // India, $6,000 elsewhere, owner 18 Oct 2026). The figure and the number the

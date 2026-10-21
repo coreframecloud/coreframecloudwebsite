@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { NODE } from "@/lib/node-spec";
 import type { Currency } from "@/lib/money";
 import {
   adhocRateHourly,
@@ -7,6 +6,8 @@ import {
   getRateCard,
   hoursLabel,
   introPrice,
+  introMoreGpusNote,
+  withArticle,
 } from "@/lib/rate-card";
 import LoginForm from "../login/login-form";
 
@@ -42,11 +43,11 @@ export async function signupMetadata(currency: Currency): Promise<Metadata> {
   // The root layout appends " | Coreframe Cloud" via its title template.
   return {
     title: offer
-      ? `Sign up — ${introPrice(offer)} = ${hoursLabel(offer.hours)} on an ${NODE.gpu}`
+      ? `Sign up — ${introPrice(offer)} = ${hoursLabel(offer.hours)}${offer.gpuName ? ` on ${withArticle(offer.gpuName)}` : ""}`
       : `Create your Coreframe account`,
     description: offer
-      ? `Sign up with your email and mobile, no paperwork. Your first top-up of ${introPrice(offer)} buys ${hoursLabel(offer.hours)} on an ${NODE.gpu}.${hourly ? ` Billed by the minute, ${hourly} after that.` : " Billed by the minute."}`
-      : `Create a Coreframe account and run an ${NODE.gpu} workstation from the laptop you already own.${hourly ? ` Billed by the minute, from ${hourly}.` : " Billed by the minute."}`,
+      ? `Sign up with your email and mobile, no paperwork. Your first top-up of ${introPrice(offer)} buys ${hoursLabel(offer.hours)}${offer.gpuName ? ` on ${withArticle(offer.gpuName)}` : ""}.${hourly ? ` Billed by the minute, ${hourly} after that.` : " Billed by the minute."}`
+      : `Create a Coreframe account and run a GPU workstation from the laptop you already own.${hourly ? ` Billed by the minute, from ${hourly}.` : " Billed by the minute."}`,
     alternates: { canonical: "/signup" },
   };
 }
@@ -59,7 +60,7 @@ export default async function SignupView({ currency }: { currency: Currency }) {
 
   const offer = intro
     ? [
-        `First top-up: ${introPrice(intro)} = ${hoursLabel(intro.hours)}${intro.gpuName ? ` of ${intro.gpuName}` : ""}`,
+        `First top-up: ${introPrice(intro)} = ${hoursLabel(intro.hours)}${intro.gpuName ? ` of ${intro.gpuName}` : ""}${introMoreGpusNote(intro)}`,
         "no paperwork",
         hourly ? `${hourly} after that${usdView ? ", no GST" : ""}` : null,
       ]
@@ -96,7 +97,7 @@ export default async function SignupView({ currency }: { currency: Currency }) {
               <li>
                 <b className="font-medium text-ink">3. Add funds.</b>{" "}
                 {intro
-                  ? `Your first top-up of ${introPrice(intro)} buys ${hoursLabel(intro.hours)}${intro.gpuName ? ` of ${intro.gpuName}` : ""}.`
+                  ? `Your first top-up of ${introPrice(intro)} buys ${hoursLabel(intro.hours)}${intro.gpuName ? ` of ${intro.gpuName}` : ""}${introMoreGpusNote(intro)}.`
                   : "Top up your wallet and start a session."}{" "}
                 {usdView
                   ? "Pay by card in US dollars, with no GST, and the invoice is issued automatically."

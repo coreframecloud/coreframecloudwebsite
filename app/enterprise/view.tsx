@@ -19,7 +19,7 @@ import { Clock, Cloud, UserRound, ReceiptText } from "lucide-react";
 import { GenImage } from "@/components/visuals/media";
 import { TeamStorageDiagram } from "@/components/visuals/diagrams";
 
-const TITLE = "Team Plans: Shared RTX 5080 Hours for Studios | Coreframe";
+const TITLE = "Team Plans: Shared GPU Hours for Studios | Coreframe";
 const KEYWORDS = [
   "team GPU plan India",
   "cloud GPU plan India",
@@ -51,7 +51,7 @@ export async function enterpriseMetadata(currency: Currency): Promise<Metadata> 
   const fee = entryPlanFee(card, currency);
   const storage = storageRange(planTiers(card));
   const description =
-    `Monthly team plans for design studios: one shared pool of RTX 5080 hours, ${storage ? `${storage} shared storage` : "shared storage"}, ` +
+    `Monthly team plans for design studios: one shared pool of GPU workstation hours, ${storage ? `${storage} shared storage` : "shared storage"}, ` +
     `a login per person and one ${currency === "USD" ? "invoice, no GST" : "GST invoice"}.${fee ? ` From ${fee}/month.` : ""}`;
   return {
     title: { absolute: TITLE },
@@ -147,7 +147,7 @@ export default async function EnterpriseView({ currency }: { currency: Currency 
     "@context": "https://schema.org",
     "@type": "Service",
     "@id": `${SITE}/enterprise#team-plans`,
-    name: "Team plans: shared RTX 5080 hours for studios",
+    name: "Team plans: shared GPU workstation hours for studios",
     serviceType: "Monthly cloud GPU workstation plan",
     provider: { "@id": ORG_ID },
     url: `${SITE}/enterprise`,
@@ -195,14 +195,14 @@ export default async function EnterpriseView({ currency }: { currency: Currency 
               {usdView ? (
                 fromFee ? (
                   <p className="mt-4 max-w-[52ch] text-[15.5px] leading-7 text-ink-2">
-                    Team plans give a studio one shared pool of {NODE.gpu} hours, shared cloud storage and one invoice.
+                    Team plans give a studio one shared pool of GPU hours, shared cloud storage and one invoice.
                     Plans start at {fromFee} a month, no GST
                     {entry?.usd_overage_hourly_rate ? `, with extra hours at ${formatMoney(entry.usd_overage_hourly_rate, "USD")}` : ""}.
                   </p>
                 ) : null
               ) : fromFee ? (
                 <p className="mt-4 max-w-[52ch] text-[15.5px] leading-7 text-ink-2">
-                  Team plans give a studio one shared pool of {NODE.gpu} hours, shared cloud storage and one GST invoice. Plans
+                  Team plans give a studio one shared pool of GPU hours, shared cloud storage and one GST invoice. Plans
                   start at {fromFee} a month incl. GST
                   {entry?.effective_included_hourly_rupees != null && adhocText
                     ? ` (about ${inr(entry.effective_included_hourly_rupees)} per included hour against ${adhocText} pay-as-you-go)`
@@ -266,7 +266,7 @@ export default async function EnterpriseView({ currency }: { currency: Currency 
         <section id="plans" className="cf-section scroll-mt-24 px-5 pt-0">
           <div className="cf-wide">
             <h2 className="cf-section-title">Pick a plan.</h2>
-            <p className="cf-section-copy mt-2">Every plan runs on the same {NODE.gpu} workstations in {NODE.location}.</p>
+            <p className="cf-section-copy mt-2">Every plan runs on the same GPU workstations in {NODE.location}.</p>
             {plans.length === 0 ? (
               /* Figures only ever come from the rate card. If it is unreachable
                  the page says so rather than inventing numbers. */

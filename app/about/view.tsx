@@ -20,7 +20,10 @@ import {
   introOfferFor,
   hoursLabel,
   introPrice,
+  ladderPhrase,
+  ladderRanges,
 } from "@/lib/rate-card";
+import { GpuLadder } from "@/components/pricing/gpu-ladder";
 import { formatMoney, usdRates, type Currency } from "@/lib/money";
 import { CFD_PREPROCESS_INR } from "@/lib/cfd-prices";
 import { BANDWIDTH_SENTENCE } from "@/lib/streaming-terms";
@@ -53,7 +56,7 @@ export const aboutMetadata: Metadata = {
   title: { absolute: "What is Coreframe Cloud? Company, machines, prices" },
   description:
     // Under 160 characters (SEO review 18 Oct 2026, T9).
-    "Coreframe Cloud, by Coreframe Compute Labs, Bengaluru: RTX 5080 workstations by the minute, CFD for ducts, pipes and rooms, and Studio floor-plan renders.",
+    "Coreframe Cloud, by Coreframe Compute Labs, Bengaluru: GPU workstations by the minute, CFD for ducts, pipes and rooms, and Studio floor-plan renders.",
   alternates: { canonical: "/about" },
   openGraph: {
     images: [OG_IMAGE],
@@ -86,11 +89,8 @@ const COMPANY = [
  * whose whole job is to be checkable.
  */
 const SPECS = [
-  ["GPU", `NVIDIA ${NODE.gpu}`],
-  ["VRAM", NODE.vram],
-  ["Memory bandwidth", NODE.memoryBandwidth],
-  ["System RAM", NODE.ram],
-  ["CPU", NODE.cpu],
+  // The GPU, VRAM, CPU and RAM rows are the ladder from the live rate card
+  // (<GpuLadder/>; owner, 21 Oct 2026). These are the fixed facts of every node.
   ["Working disk", NODE.disk],
   ["Operating system", `${NODE.os}, a full interactive desktop`],
   ["Stream", `${NODE.stream}, through the Coreframe Connect app`],
@@ -116,6 +116,7 @@ export default async function AboutView({ currency }: { currency: Currency }) {
   const introFaq = introOfferFaq(card, currency);
   const hourly = adhocRateHourly(card, currency);
   const intro = introOfferFor(card, currency);
+  const ladder = ladderRanges(card);
   const usd = usdRates(card);
   const planFrom = entryPlanFee(card, currency);
   const perTb = storageRatePerTb(card, currency);
@@ -127,11 +128,11 @@ export default async function AboutView({ currency }: { currency: Currency }) {
   const faqs: { q: string; a: string }[] = [
     {
       q: "What is Coreframe Cloud?",
-      a: `Coreframe Cloud is run by Coreframe Compute Labs Private Limited, a company registered in Bengaluru, Karnataka, India, and offers three services. GPU workstations: full ${NODE.os} desktops on NVIDIA ${NODE.gpu} graphics cards, streamed over the internet and billed by the minute, for architects, interior designers, visualisation studios, 3D artists and engineers who need a GPU but don't want to buy a workstation. CFD for ducts and pipes: upload one STL, get a quote by email, and get the pressure drop, a PDF report, a 3D viewer and the data files, with the solver running on our machines so you need no CFD licence. And Coreframe Studio: pre-sale concept images generated from a DXF floor plan, for interior designers.`,
+      a: `Coreframe Cloud is run by Coreframe Compute Labs Private Limited, a company registered in Bengaluru, Karnataka, India, and offers three services. GPU workstations: full ${NODE.os} desktops on dedicated NVIDIA RTX graphics cards, streamed over the internet and billed by the minute, for architects, interior designers, visualisation studios, 3D artists and engineers who need a GPU but don't want to buy a workstation. CFD for ducts and pipes: upload one STL, get a quote by email, and get the pressure drop, a PDF report, a 3D viewer and the data files, with the solver running on our machines so you need no CFD licence. And Coreframe Studio: pre-sale concept images generated from a DXF floor plan, for interior designers.`,
     },
     {
       q: "What makes Coreframe Cloud different from other cloud GPU services?",
-      a: `Mostly the combination. You get a whole dedicated ${NODE.gpu}, with no sharing and no virtualised slice, so all ${NODE.vram} of it is yours. Billing is per minute from the moment the stream starts, so a forty-minute Lumion pass costs you forty minutes, not a month.${
+      a: `Mostly the combination. You get a whole dedicated GPU, with no sharing and no virtualised slice, so all of its VRAM is yours. Billing is per minute from the moment the stream starts, so a forty-minute Lumion pass costs you forty minutes, not a month.${
         usdView
           ? " Accounts billed outside India pay in US dollars, with no GST. GPU clouds built for AI training run headless Linux on datacentre cards no architect needs; this is a Windows desktop you drive yourself."
           : " And it's priced for India: rupees, 18% GST already included, and a tax invoice your studio can claim input credit against. The services on either side of us each miss something. GPU clouds built for AI training run headless Linux on datacentre cards no architect needs. International cloud-workstation services bill in dollars and can't issue an Indian GST invoice."
@@ -147,7 +148,7 @@ export default async function AboutView({ currency }: { currency: Currency }) {
     },
     {
       q: "What technology does Coreframe Cloud run on?",
-      a: `The workstations run ${NODE.os} on dedicated NVIDIA ${NODE.gpu} GPUs, with ${NODE.vram}, ${NODE.ram} of RAM and an ${NODE.cpu}. The desktop streams at ${NODE.stream} over an encrypted private network, which keeps latency low enough for real-time viewport work. D5 Render, Blender, Twinmotion and Unreal Engine ship on the standard image. The website runs on Next.js and Vercel behind Cloudflare, the control plane is Dockerised services on PostgreSQL, and project files live on NAS storage in the same Bengaluru facility. Payments run through Razorpay, and sign-in codes are sent by email and WhatsApp.`,
+      a: `The workstations run ${NODE.os} on dedicated NVIDIA RTX GPUs: ${ladderPhrase(card) ?? "the GPUs on offer, with their VRAM, vCPU and RAM, are listed on the pricing page"}. The desktop streams at ${NODE.stream} over an encrypted private network, which keeps latency low enough for real-time viewport work. D5 Render, Blender, Twinmotion and Unreal Engine ship on the standard image. The website runs on Next.js and Vercel behind Cloudflare, the control plane is Dockerised services on PostgreSQL, and project files live on NAS storage in the same Bengaluru facility. Payments run through Razorpay, and sign-in codes are sent by email and WhatsApp.`,
     },
     {
       q: "Is a Coreframe workstation faster than the machine I already have?",
@@ -155,7 +156,7 @@ export default async function AboutView({ currency }: { currency: Currency }) {
       // Open Data medians and turn them into "roughly three times" — a number
       // about a benchmark scene being read as a number about the reader's
       // file. Nobody here has seen their file.
-      a: `It depends on your scene, your renderer and your settings, and nobody who hasn't opened your file can put a number on it. Two things you can check. The card has ${NODE.vram}, and VRAM decides what fits rather than how fast it goes: geometry, textures and lightmaps have to fit on it, and when they don't, the work gets cut down. Also, the render doesn't run on your laptop, so your own machine stays usable while it finishes. Your own heaviest project, opened in a session, will tell you more than any benchmark.`,
+      a: `It depends on your scene, your renderer and your settings, and nobody who hasn't opened your file can put a number on it. Two things you can check. VRAM decides what fits rather than how fast it goes: geometry, textures and lightmaps have to fit on it, and when they don't, the work gets cut down. Also, the render doesn't run on your laptop, so your own machine stays usable while it finishes. Your own heaviest project, opened in a session, will tell you more than any benchmark.`,
     },
     {
       q: "Can I use Coreframe from a construction site or a client's office?",
@@ -239,7 +240,7 @@ export default async function AboutView({ currency }: { currency: Currency }) {
               <h1 className="cf-display mt-3">What is Coreframe Cloud?</h1>
           
               <p className="cf-lead mt-6">
-                Three services: {NODE.gpu} workstations streamed to the laptop you own and billed by the
+                Three services: GPU workstations streamed to the laptop you own and billed by the
                 minute, CFD for ducts and pipes, and Studio for floor-plan concept images.
                 Run by Coreframe Compute Labs Private Limited, Bengaluru.
               </p>
@@ -247,9 +248,9 @@ export default async function AboutView({ currency }: { currency: Currency }) {
               {/* Answer-first, with live prices in the visitor's currency (owner, 18 Oct 2026). */}
               <p className="mt-4 max-w-[56ch] text-[15.5px] leading-7 text-ink-2">
                 Coreframe Cloud is run by Coreframe Compute Labs Private Limited, Bengaluru (founded 2026). It offers three
-                services: Windows {NODE.gpu} workstations rented by the minute
+                services: Windows GPU workstations rented by the minute
                 {hourly
-                  ? ` (${hourly}, ${usdView ? "no GST" : "incl. GST"}${intro ? `; first ${introPrice(intro)} = ${hoursLabel(intro.hours)}` : ""})`
+                  ? ` (${ladder && ladder.count > 1 ? "from " : ""}${hourly}, ${usdView ? "no GST" : "incl. GST"}${intro ? `; first ${introPrice(intro)} = ${hoursLabel(intro.hours)}` : ""})`
                   : ""}
                 , CFD pressure-drop and room-airflow reports from one STL or a room description (mesh check{" "}
                 {meshCheck}), and Studio concept
@@ -298,7 +299,9 @@ export default async function AboutView({ currency }: { currency: Currency }) {
               Each node has one GPU and goes to one customer at a time. You don&rsquo;t share the
               card with anyone, and you don&rsquo;t get a virtualised slice of it.
             </p>
-            <dl className="mt-6 divide-y divide-rule rounded-cf border border-rule bg-paper-2">
+            {/* The GPU ladder from the live rate card (owner, 21 Oct 2026). */}
+            <div className="mt-6"><GpuLadder card={card} currency={currency} compact /></div>
+            <dl className="mt-4 divide-y divide-rule rounded-cf border border-rule bg-paper-2">
               {SPECS.map(([k, v]) => (
                 <div key={k} className="flex flex-col gap-1 px-5 py-4 sm:flex-row sm:gap-6">
                   <dt className="shrink-0 text-sm text-ink-2 sm:w-52">{k}</dt>
@@ -323,8 +326,8 @@ export default async function AboutView({ currency }: { currency: Currency }) {
               1. Getting at the hardware.
             </h3>
             <p className="cf-section-copy mt-3">
-              An {NODE.gpu} with {NODE.vram} is not a card most design studios in India own. A
-              workstation built around one lands at about {machineCost}, and the
+              A workstation-class GPU with {ladder?.vram ?? "16 GB"} of VRAM is not a card most design studios in India own. A
+              workstation built around our base node&rsquo;s {NODE.gpu} lands at about {machineCost}, and the
               machines people actually work on commonly ship with 6 to 8 GB. That number limits
               what fits on the card. Geometry, textures and lightmaps all have to fit, and when
               they don&rsquo;t, the work gets cut down to size and your 4K still comes out

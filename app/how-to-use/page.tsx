@@ -60,7 +60,7 @@ const STEPS = [
 const FAQS = [
   {
     q: "What is Coreframe?",
-    a: `Coreframe rents Windows GPU workstations by the minute, hosted in India. You stream a real ${NODE.gpu} desktop to the laptop you already own and use it like a workstation under your desk, for D5 Render, Lumion, Enscape, Revit, 3ds Max, Blender, CFD work or anything else that needs a GPU. You drive the machine yourself. There's no job queue, because it isn't a render farm.`,
+    a: `Coreframe rents Windows GPU workstations by the minute, hosted in India. You stream a real GPU workstation desktop to the laptop you already own and use it like a workstation under your desk, for D5 Render, Lumion, Enscape, Revit, 3ds Max, Blender, CFD work or anything else that needs a GPU. You drive the machine yourself. There's no job queue, because it isn't a render farm.`,
   },
   {
     q: "How is Coreframe billed?",
@@ -133,11 +133,11 @@ export default function HowToUsePage() {
             <div className="cf-eyebrow">How to use Coreframe</div>
             <h1 className="cf-display mt-3">From sign-up to your first render.</h1>
             <p className="cf-lead mt-5">
-            Rent a Windows {NODE.gpu} desktop by the minute and stream it to the computer you own. Here&apos;s the whole thing, start to finish.
+            Rent a Windows GPU workstation by the minute and stream it to the computer you own. Here&apos;s the whole thing, start to finish.
           </p>
             <PageByline path="/how-to-use" className="mt-4 opacity-75" />
       </div>
-          <OwnImage src="/home/wt-launch.webp" alt="The Coreframe app with the RTX 5080 ready to launch" width={1000} height={698} caption="Step one: pick the RTX 5080 and launch." sizes="(max-width: 1024px) 100vw, 480px" />
+          <OwnImage src="/home/wt-launch.webp" alt="The Coreframe app with the RTX 5080 ready to launch" width={1000} height={698} caption="Step one: pick your workstation and launch." sizes="(max-width: 1024px) 100vw, 480px" />
         </div>
     </section>
       <section className="cf-section px-5 pb-0">

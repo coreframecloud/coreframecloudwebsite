@@ -15,8 +15,10 @@ import {
   introOfferFaq,
   adhocRateHourly,
   billingSentence,
+  ladderRanges,
   pricingFaqAnswer,
 } from "@/lib/rate-card";
+import { GpuLadder } from "@/components/pricing/gpu-ladder";
 import { NODE, replacementCost } from "@/lib/node-spec";
 import { BANDWIDTH_SENTENCE } from "@/lib/streaming-terms";
 
@@ -45,33 +47,31 @@ import { BANDWIDTH_SENTENCE } from "@/lib/streaming-terms";
 // The description has no currency or tax words, so both copies share it.
 export function d5Metadata(): Metadata {
   return {
-  title: { absolute: "Run D5 Render in the Cloud on an RTX 5080 | Coreframe Cloud" },
+  title: { absolute: "Run D5 Render on a GPU Workstation by the Minute | Coreframe Cloud" },
   description:
-    "D5 Render in the cloud: a Windows RTX 5080 workstation with D5 preinstalled, billed per minute. Sign in with your D5 account; your files persist.",
+    "D5 Render on a Windows GPU workstation with D5 preinstalled, billed per minute. Sign in with your D5 account; your files persist.",
   keywords: [
     "D5 Render cloud workstation",
     "D5 Render cloud GPU India",
     "run D5 Render without a gaming laptop",
-    "D5 Render RTX 5080",
+    "D5 Render GPU workstation",
     "cloud PC for D5 Render",
   ],
   alternates: { canonical: "/d5-render-cloud-workstation" },
   openGraph: {
     images: [OG_IMAGE],
-    title: "D5 Render Cloud Workstation — RTX 5080 by the minute",
+    title: "D5 Render GPU Workstation — by the minute",
     description:
-      "A full Windows desktop with an RTX 5080, D5 Render preinstalled, billed per minute from Bengaluru.",
+      "A full Windows desktop with a workstation-class GPU, D5 Render preinstalled, billed per minute from Bengaluru.",
     url: "https://www.coreframecloud.com/d5-render-cloud-workstation",
     type: "article",
   },
   };
 }
 
-const SPECS: [string, string][] = [
-  ["GPU", NODE.gpu],
-  ["VRAM", `${NODE.vram} · ${NODE.memoryBandwidth}`],
-  ["System RAM", NODE.ram],
-  ["CPU", NODE.cpu],
+/** The GPU, VRAM, CPU and RAM rows come from the live rate card's ladder
+ *  (ladderSpecRows; owner, 21 Oct 2026); the rest are fixed facts of every node. */
+const FIXED_SPECS: [string, string][] = [
   ["Disk", NODE.disk],
   ["OS", NODE.os],
   ["Access", `Coreframe Connect app, streamed at ${NODE.stream}`],
@@ -88,11 +88,12 @@ export default async function D5View({ currency }: { currency: Currency }) {
   const hourly = adhocRateHourly(card, currency);
   const priceAnswer = pricingFaqAnswer(card, currency);
   const machineCost = replacementCost(currency);
+  const ladder = ladderRanges(card);
 
   const faqs: { q: string; a: string }[] = [
     {
       q: "Can I run D5 Render on a cloud workstation?",
-      a: `Yes. Coreframe gives you a full ${NODE.os} desktop with an NVIDIA ${NODE.gpu}, and D5 Render is already installed on it. You sign in with your own D5 account, open your project and work in the live viewport the same way you would on a local machine. It's the full desktop application. You reach it through the Coreframe Connect app rather than a remote desktop, and the stream runs at ${NODE.stream}.`,
+      a: `Yes. Coreframe gives you a full ${NODE.os} desktop with a dedicated NVIDIA RTX GPU, and D5 Render is already installed on it. You sign in with your own D5 account, open your project and work in the live viewport the same way you would on a local machine. It's the full desktop application. You reach it through the Coreframe Connect app rather than a remote desktop, and the stream runs at ${NODE.stream}.`,
     },
     {
       q: "Is D5 Render included, or do I need my own licence?",
@@ -104,7 +105,7 @@ export default async function D5View({ currency }: { currency: Currency }) {
     },
     {
       q: "How much VRAM does D5 Render need?",
-      a: `VRAM is the ceiling on scene size in any GPU renderer: geometry, textures and lightmaps all have to fit on the card. The ${NODE.gpu} in a Coreframe workstation has ${NODE.vram}. Many laptops and entry desktops sold for design work ship with 6 to 8 GB, which is what forces people to cut texture resolution or split a scene. We can't tell you how your particular scene will behave, so run it in a session and watch the VRAM meter yourself.`,
+      a: `VRAM is the ceiling on scene size in any GPU renderer: geometry, textures and lightmaps all have to fit on the card. A Coreframe workstation has ${ladder?.vram ?? NODE.vram} of VRAM${ladder && ladder.count > 1 ? " depending on the GPU you pick" : ""}. Many laptops and entry desktops sold for design work ship with 6 to 8 GB, which is what forces people to cut texture resolution or split a scene. We can't tell you how your particular scene will behave, so run it in a session and watch the VRAM meter yourself.`,
     },
     {
       q: "What happens to my D5 project files when the session ends?",
@@ -148,11 +149,11 @@ export default async function D5View({ currency }: { currency: Currency }) {
           <div className="min-w-0 max-w-[620px]">
             <p className="cf-eyebrow mb-5">D5 Render · Cloud GPU · Bengaluru</p>
             <h1 className="cf-display">
-              Run D5 Render on a rented RTX 5080.
+              Run D5 Render on a GPU workstation.
             </h1>
           
             <p className="cf-lead mt-[22px]">
-            A full Windows desktop with an RTX 5080 and D5 Render installed, streamed to your laptop and billed by the minute. Sign in with your own D5 account.
+            A full Windows desktop with a workstation-class GPU and D5 Render installed, streamed to your laptop and billed by the minute. Sign in with your own D5 account.
           </p>
             <PageByline path="/d5-render-cloud-workstation" className="mt-4 opacity-75" />
         </div>
@@ -193,8 +194,10 @@ export default async function D5View({ currency }: { currency: Currency }) {
 
         <section className="mt-14">
           <h2 className="cf-section-title">The machine.</h2>
-          <dl className="mt-6 divide-y divide-rule overflow-hidden rounded-cf border border-rule bg-paper-2">
-            {SPECS.map(([k, v]) => (
+          {/* The GPU ladder from the live rate card (owner, 21 Oct 2026). */}
+          <div className="mt-6"><GpuLadder card={card} currency={currency} compact /></div>
+          <dl className="mt-4 divide-y divide-rule overflow-hidden rounded-cf border border-rule bg-paper-2">
+            {FIXED_SPECS.map(([k, v]) => (
               <div key={k} className="flex flex-col gap-1 px-5 py-4 sm:flex-row sm:gap-6">
                 <dt className="text-sm text-ink-2 sm:w-52 sm:shrink-0">{k}</dt>
                 <dd className="text-sm break-words text-ink">{v}</dd>
@@ -204,7 +207,7 @@ export default async function D5View({ currency }: { currency: Currency }) {
           <p className="mt-5 leading-8 text-ink-2">
             Each node has one GPU and one customer at a time. You don&rsquo;t share the
             card, and you don&rsquo;t get a virtualised slice of it. The number we&rsquo;d
-            compare is VRAM: this card has {NODE.vram}, while many laptops and
+            compare is VRAM: {ladder ? `${ladder.vram} here` : "16 GB or more here"}, while many laptops and
             entry desktops sold for design work have 6 to 8 GB. VRAM decides
             whether a scene loads at full texture resolution or has to be cut
             down. We don&rsquo;t publish render times because they depend entirely on
@@ -314,10 +317,10 @@ export default async function D5View({ currency }: { currency: Currency }) {
           <p className="cf-eyebrow mb-4">Related</p>
           <ul className="space-y-1">
             {[
-              ["/d5-render-vs-local-gpu", "Renting a workstation vs buying an RTX 5080"],
+              ["/d5-render-vs-local-gpu", "Renting a workstation vs buying one"],
               ["/cloud-rendering-for-architects", "Cloud rendering for architecture studios"],
               ["/software/twinmotion-cloud-workstation", "Twinmotion cloud workstation"],
-              ["/lumion-cloud-gpu", "Lumion on a cloud RTX 5080"],
+              ["/lumion-cloud-gpu", "Lumion on a GPU workstation"],
               ["/apps", "Everything preinstalled on a workstation"],
               ["/cloud-workstation-vs-render-farm", "Cloud workstation vs render farm"],
               ["/vram-for-architectural-rendering", "Is 8 GB of VRAM enough?"],

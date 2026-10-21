@@ -30,7 +30,7 @@ const initialState: FormState = {
 // the admin rate card. The option only has to identify what they want; the
 // pricing section above already shows the live figures.
 const renderingGpuOptions = [
-  "RTX 5080 16GB — ad-hoc, pay as you go",
+  "GPU workstation — ad-hoc, pay as you go",
   // Team plans (renamed from "Studio plans" 18 Oct 2026; Studio is the
   // floor-plan render product). Labels only: nothing parses these strings.
   "Team plan — Small Team",

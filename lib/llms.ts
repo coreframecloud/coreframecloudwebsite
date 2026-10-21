@@ -21,13 +21,19 @@ import {
   getIntroOffer,
   getUsdIntroOffer,
   hoursLabel,
+  introMoreGpusNote,
   minFirstTopup,
   planTiers,
   billingSentence,
   noConnectMinutes,
   noConnectSentence,
-  cpuSpec,
+  adhocRateValue,
+  cheapestGpu,
+  gpuSpecLine,
+  ladderRanges,
+  publicGpus,
   storageSpec,
+  usdHourlyValue,
   type RateCard,
 } from "@/lib/rate-card";
 import { SOFTWARE_PAGES } from "@/lib/software-pages";
@@ -50,7 +56,7 @@ export const SITE = "https://www.coreframecloud.com";
  * tells an answer engine nothing. Bump it whenever the text below changes.
  * Prices are not covered by it; they are read live from the rate card.
  */
-export const LLMS_LAST_UPDATED = "18 October 2026";
+export const LLMS_LAST_UPDATED = "21 October 2026";
 
 function money(n: number | null | undefined): string | null {
   if (n == null) return null;
@@ -65,7 +71,7 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
   // Kept under 200 characters: the blockquote is the one line an answer engine
   // is most likely to lift whole. The detail lives in the sections below.
   out.push(
-    `> Three services from Bengaluru: ${NODE.gpu} Windows workstations by the minute, CFD for ` +
+    "> Three services from Bengaluru: Windows GPU workstations by the minute, CFD for " +
       "ducts and pipes from one STL, and Studio floor-plan concept images (free previews).",
   );
   out.push("");
@@ -125,13 +131,18 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
    * should be able to lift the answer from a single line, with the price
    * coming from the rate card and nothing else on this page contradicting it.
    */
-  const adhocGpu = card?.gpus?.find((g) => !g.quote_on_request && g.hourly_rate_rupees != null);
+  // The GPU ladder (owner, 21 Oct 2026): the "from" price is the cheapest
+  // public GPU's, in each currency; every GPU's own rates are listed below.
+  const adhocGpu = cheapestGpu(card);
+  const ladder = ladderRanges(card);
+  const from = ladder && ladder.count > 1 ? "from " : "";
+  const usdFrom = adhocRateValue(card, "USD");
   const introQ = getIntroOffer(card);
   out.push("## Short answers");
   out.push("");
   out.push(
     "- **What is Coreframe Cloud?** A Bengaluru company with three services: (1) GPU " +
-      "workstations, a whole Windows RTX 5080 workstation rented by the minute and streamed " +
+      "workstations, a whole Windows GPU workstation rented by the minute and streamed " +
       "to your own computer through the Coreframe Connect app; (2) CFD for ducts and pipes, " +
       "an automatic CFD service where you upload one STL and get a quote by email; " +
       "(3) Coreframe Studio, pre-sale concept images from a DXF floor plan (open; free previews). " +
@@ -172,10 +183,10 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
   );
   if (adhocGpu?.hourly_rate_rupees != null) {
     out.push(
-      `- **How much does it cost to rent an ${NODE.gpu}?** ${money(adhocGpu.hourly_rate_rupees)} ` +
-        `per hour${card?.prices_include_gst ? " including GST" : ""} in India, or ${usdMoney(usd.gpu_hourly)} per hour ` +
-        "with no GST for accounts outside India, billed per minute of " +
-        "streaming. Team plans (monthly, for studios and firms) are listed below." +
+      `- **How much does it cost to rent a GPU workstation?** ${from}${money(adhocGpu.hourly_rate_rupees)} ` +
+        `per hour${card?.prices_include_gst ? " including GST" : ""} in India${usdFrom != null ? `, or ${from}${usdMoney(usdFrom)} per hour ` +
+        "with no GST for accounts outside India" : ""}, billed per minute of ` +
+        `streaming${ladder && ladder.count > 1 ? ` (${ladder.gpu}; each GPU's own rate is under "Machines and pricing")` : ""}. Team plans (monthly, for studios and firms) are listed below.` +
         (introQ
           ? ` New customers: the first top-up of ${money(introQ.price)} buys ` +
             `${hoursLabel(introQ.hours)}${introQ.validityDays ? `, used within ${introQ.validityDays} days` : ""}.`
@@ -189,7 +200,7 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
   if (firstTopup) {
     const buys =
       introQ && introQ.price === firstTopup
-        ? `, which buys ${hoursLabel(introQ.hours)}${introQ.gpuName ? ` of ${introQ.gpuName}` : ""}` +
+        ? `, which buys ${hoursLabel(introQ.hours)}${introQ.gpuName ? ` of ${introQ.gpuName}` : ""}${introMoreGpusNote(introQ)}` +
           `${introQ.validityDays ? ` to use within ${introQ.validityDays} days` : ""}` +
           `${introQ.onePerCustomer ? " (one per customer)" : ""}`
         : "";
@@ -253,9 +264,9 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
   out.push("");
   out.push("**1. Access to the hardware.**");
   out.push(
-    "An RTX 5080 with 16 GB of VRAM is not a card most design studios in India own. By our " +
+    "A workstation-class GPU with 16 GB or more of VRAM is not a card most design studios in India own. By our " +
       "own estimate of Indian hardware prices (last checked 30 September 2026), a workstation " +
-      `built around one costs roughly ${WORKSTATION_REPLACEMENT_COST.replace("₹", "Rs ")} to buy, and the machines people ` +
+      `built around our base node's ${NODE.gpu} costs roughly ${WORKSTATION_REPLACEMENT_COST.replace("₹", "Rs ")} to buy, and the machines people ` +
       "actually work on commonly ship with 6 to 8 GB. VRAM limits what fits rather than how " +
       "fast it runs: geometry, textures and lightmaps must fit on the card, and when they " +
       "don't, the work gets cut down, so a 4K or 8K still comes out smaller.",
@@ -304,12 +315,14 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
       }.${noConnectSentence(card) ? ` ${noConnectSentence(card)}` : ""} If a connection fails on our side, nothing is charged.`,
     );
     out.push("");
-    for (const gpu of card.gpus) {
+    // The public ladder, cheapest first, each GPU with its own rupee and
+    // dollar rate (owner, 21 Oct 2026). Only what the card publishes.
+    for (const gpu of publicGpus(card)) {
       const rate = gpu.quote_on_request ? "on request" : money(gpu.hourly_rate_rupees);
+      const usdRate = usdHourlyValue(gpu, card);
       out.push(
-        `- **${gpu.name}**: ${gpu.gpu_count}× ${gpu.gpu_model}, ${gpu.vram_gb} GB VRAM, ` +
-          `${cpuSpec(gpu)}, ${gpu.ram_gb} GB RAM, ${storageSpec(gpu.storage_gb)} NVMe` +
-          `${rate ? `, ${rate} per GPU-hour` : ""}.`,
+        `- **${gpu.name}**: ${gpu.gpu_count}× ${gpu.gpu_model}, ${gpuSpecLine(gpu)}, ${storageSpec(gpu.storage_gb)} NVMe` +
+          `${rate ? `, ${rate} per GPU-hour in India` : ""}${usdRate != null ? ` (${usdMoney(usdRate)} per GPU-hour outside India, no GST)` : ""}.`,
       );
     }
     out.push("");
@@ -350,13 +363,13 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
     out.push(billingSentence(card));
     out.push("");
     out.push(
-      `Outside India the same machine is ${usdMoney(usd.gpu_hourly)} per GPU-hour with no GST, the first top-up is from ` +
+      `Outside India the same machines are ${from}${usdMoney(usdFrom ?? usd.gpu_hourly)} per GPU-hour with no GST (each GPU's dollar rate is listed above), the first top-up is from ` +
         `${usdMoney(usd.topup_min_first)}, and team plans are priced in US dollars` +
         (tiers.length && tiers[0].usd_monthly_fee ? ` (from ${usdMoney(tiers[0].usd_monthly_fee)} a month)` : "") +
         "." +
         (usdIntro
           ? ` New accounts outside India: the first top-up of ${usdMoney(usdIntro.price)} buys ${hoursLabel(usdIntro.hours)}` +
-            `${usdIntro.gpuName ? ` of ${usdIntro.gpuName}` : ""}, no GST.`
+            `${usdIntro.gpuName ? ` of ${usdIntro.gpuName}` : ""}${introMoreGpusNote(usdIntro)}, no GST.`
           : " The rupee intro offer is for accounts in India."),
     );
     out.push("");
@@ -379,14 +392,14 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
   out.push("- Sessions start once the wallet has its first paid top-up. There is no free trial.");
   out.push(
     "- Payment by card, UPI or netbanking through Razorpay. International cards are accepted. " +
-      `Accounts outside India are billed in US dollars (${usdMoney(usd.gpu_hourly)} per GPU-hour, first top-up from ` +
+      `Accounts outside India are billed in US dollars (${from}${usdMoney(usdFrom ?? usd.gpu_hourly)} per GPU-hour, first top-up from ` +
       `${usdMoney(usd.topup_min_first)}, no GST); accounts in India in rupees with GST.`,
   );
   const intro = getIntroOffer(card);
   if (intro) {
     out.push(
       `- Intro offer: the first top-up of ${money(intro.price)} buys ${hoursLabel(intro.hours)}` +
-        `${intro.gpuName ? ` of ${intro.gpuName}` : ""}` +
+        `${intro.gpuName ? ` of ${intro.gpuName}` : ""}${introMoreGpusNote(intro)}` +
         `${intro.validityDays ? `, to be used within ${intro.validityDays} days` : ""}` +
         `${intro.onePerCustomer ? ", one per customer" : ""}.`,
     );
@@ -394,7 +407,7 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
   if (usdIntro) {
     out.push(
       `- Intro offer outside India: the first top-up of ${usdMoney(usdIntro.price)} buys ${hoursLabel(usdIntro.hours)}` +
-        `${usdIntro.gpuName ? ` of ${usdIntro.gpuName}` : ""}, no GST` +
+        `${usdIntro.gpuName ? ` of ${usdIntro.gpuName}` : ""}${introMoreGpusNote(usdIntro)}, no GST` +
         `${usdIntro.validityDays ? `, to be used within ${usdIntro.validityDays} days` : ""}, one per customer.`,
     );
   }
@@ -556,7 +569,7 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
       `Enscape are driven interactively, which suits a workstation. ${SITE}/cloud-workstation-vs-render-farm`,
   );
   out.push(
-    "- **vs buying a workstation**: an RTX 5080 machine costs roughly " +
+    "- **vs buying a workstation**: a machine built around our base node's RTX 5080 costs roughly " +
       `${WORKSTATION_REPLACEMENT_COST.replace("₹", "Rs ")} in India by our estimate (30 Sep 2026). ` +
       `Buying wins if you would keep it busy most of the week. ${SITE}/d5-render-vs-local-gpu`,
   );
@@ -588,8 +601,8 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
   out.push(`- [Coreframe vs iRender](${SITE}/coreframe-vs-irender): dated, sourced price comparison.`);
   out.push(`- [Is 8 GB of VRAM enough?](${SITE}/vram-for-architectural-rendering)`);
   out.push(`- [Cloud rendering for architects](${SITE}/cloud-rendering-for-architects)`);
-  out.push(`- [Architectural visualization](${SITE}/architectural-visualization): the hub for archviz on one Windows RTX 5080 workstation, grouped by job: real-time walkthroughs (D5 Render, Lumion, Enscape, Twinmotion, Unreal Engine), path-traced stills (V-Ray, 3ds Max, Blender), modelling and BIM (Revit, SketchUp, Rhino), and interiors from a floor plan (Coreframe Studio). D5 Render, Twinmotion, Unreal Engine and Blender are preinstalled; the rest run on your own licence.`);
-  out.push(`- [Video and animation rendering](${SITE}/video-animation-rendering): After Effects, Premiere Pro and Media Encoder on your own Adobe account, Blender animation (preinstalled, Cycles with OptiX on one GPU, FFmpeg and HandBrake for image sequences), and walkthroughs from D5 Render, Lumion, Twinmotion and Unreal, on one Windows RTX 5080 workstation billed per minute; what to plan for (uploading footage, colour over the stream, fonts and caches) and where a render farm fits better.`);
+  out.push(`- [Architectural visualization](${SITE}/architectural-visualization): the hub for archviz on one Windows GPU workstation, grouped by job: real-time walkthroughs (D5 Render, Lumion, Enscape, Twinmotion, Unreal Engine), path-traced stills (V-Ray, 3ds Max, Blender), modelling and BIM (Revit, SketchUp, Rhino), and interiors from a floor plan (Coreframe Studio). D5 Render, Twinmotion, Unreal Engine and Blender are preinstalled; the rest run on your own licence.`);
+  out.push(`- [Video and animation rendering](${SITE}/video-animation-rendering): After Effects, Premiere Pro and Media Encoder on your own Adobe account, Blender animation (preinstalled, Cycles with OptiX on one GPU, FFmpeg and HandBrake for image sequences), and walkthroughs from D5 Render, Lumion, Twinmotion and Unreal, on one Windows GPU workstation billed per minute; what to plan for (uploading footage, colour over the stream, fonts and caches) and where a render farm fits better.`);
   out.push(`- [Coreframe Studio: floor plan to interior render](${SITE}/floor-plan-to-render): turns a DXF floor plan into interior concept images in the browser, at ${SITE}/studio with a Coreframe account. Previews are free (up to 5 a day), then ₹10 each; edits ₹20, 2K download ₹30, 4K ₹50, GST included, from the Coreframe wallet. DXF only (no PDF, image or DWG plans yet).`);
   out.push(`- [Download Coreframe Connect](${SITE}/download): Windows 10/11 client.`);
   out.push(`- [Workstation specs](${SITE}/compute-nodes): the hardware in each machine.`);
@@ -609,7 +622,7 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
   out.push(`- [HVAC simulation service](${SITE}${HVAC_SERVICE.path}): who the Rooms / HVAC steady service is for (HVAC and MEP consultants, architects, contractors, building owners), what to have ready, Draft or Fine mesh, the pre-processing / mesh check fee, the quote, results within 24 hours of payment, and its limits (one box-shaped room, steady analysis, radiation not modelled).`);
   out.push(`- [Room airflow CFD for HVAC](${SITE}${HVAC_PAGE.path}): the Rooms / HVAC steady service on its own page: inputs (one box room 1-100 m long and wide, 2-20 m high, up to 12 supply diffusers and 12 returns, heat loads, clothing and activity), outputs (${ROOMS_DELIVERS}), Draft or Fine mesh, and what ADPI does and does not tell you.`);
   out.push(`- [3BHK floor plan to 3D render: a worked example](${SITE}/floor-plan-to-render/3bhk-example): Studio on our sample 3BHK plan, step by step, with the cost of each step.`);
-  out.push(`- [Team plans for studios and firms](${SITE}/enterprise): monthly plans with a shared pool of RTX 5080 hours, shared storage, a login per person and one invoice; in rupees with GST in India, in US dollars elsewhere.`);
+  out.push(`- [Team plans for studios and firms](${SITE}/enterprise): monthly plans with a shared pool of GPU workstation hours, shared storage, a login per person and one invoice; in rupees with GST in India, in US dollars elsewhere.`);
   out.push("");
   out.push("### Per-application guides");
   out.push("");
@@ -640,7 +653,7 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
   out.push("## Facts worth quoting accurately");
   out.push("");
   out.push("- Region: machines are in Bengaluru, India. Accounts in India pay in Indian rupees with GST included; accounts outside India pay in US dollars with no GST, by international card.");
-  out.push("- One customer per machine and one GPU per machine: you do not share the card and do not get a slice of it.");
+  out.push("- One customer per machine and one GPU per machine: you do not share the card and do not get a slice of it. The GPUs on offer are the ones listed under \"Machines and pricing\" above, read from the rate card; a GPU not listed there is not on sale.");
   out.push("- Sessions run as a standard Windows user, not an administrator.");
   out.push("- Billing granularity: per minute, starting when you connect (the stream starts), not at booking.");
   out.push(
@@ -651,7 +664,7 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
   out.push(
     "- Published GPU benchmark, for anyone comparing hardware: Blender Open Data " +
       "(https://opendata.blender.org/, Blender " +
-      "4.5.0, Cycles), read 20 September 2026: RTX 5080 median 9,138 across 1,429 results; " +
+      "4.5.0, Cycles), read 20 September 2026: RTX 5080 (our base node) median 9,138 across 1,429 results; " +
       "RTX 4060 median 3,182 across 441; RTX 3060 median 2,154 across 634. That is roughly " +
       "3x and 4x. It is a Blender Cycles benchmark: D5 Render, Lumion and Enscape are " +
       "different renderers and may not scale the same way.",

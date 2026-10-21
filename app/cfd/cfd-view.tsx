@@ -924,7 +924,7 @@ export default async function CfdView({ currency }: { currency: Currency }) {
                 <Link href="/tools" className="text-ink underline underline-offset-4">Free IFC checker: find what breaks a CFD conversion</Link>
               </li>
               <li>
-                <Link href="/software/gpu-workstation-rental-india" className="text-ink underline underline-offset-4">Running your own CFD software? Rent an RTX 5080 workstation</Link>
+                <Link href="/software/gpu-workstation-rental-india" className="text-ink underline underline-offset-4">Running your own CFD software? Rent a GPU workstation</Link>
               </li>
             </ul>
           </div>

@@ -1,4 +1,4 @@
-import { formatMoney, usdRates, type Currency } from "@/lib/money";
+import { formatMoney, type Currency } from "@/lib/money";
 import { BillingMeter } from "@/components/visuals/billing-meter";
 import { PageByline } from "@/components/seo/page-byline";
 import { GenImage } from "@/components/visuals/media";
@@ -11,8 +11,10 @@ import { SpecBlock, K, B } from "@/components/home/spec-block";
 import { NODE } from "@/lib/node-spec";
 import {
   getRateCard,
-  adhocRateHourly,
-  adhocRateValue,
+  cheapestGpu,
+  formatHourly,
+  hourlyValue,
+  publicGpus,
   introOfferFor,
   bestOverageRate,
   firstTopupBonus,
@@ -20,6 +22,8 @@ import {
   lowestPublishedHourly,
   gstClause,
   introPrice,
+  introMoreGpusNote,
+  withArticle,
 } from "@/lib/rate-card";
 
 /**
@@ -109,10 +113,13 @@ const pad = (s: string, n: number) => (s.length >= n ? s : s + " ".repeat(n - s.
 export default async function VsIrenderView({ currency }: { currency: Currency }) {
   const card = await getRateCard();
   const usdView = currency === "USD";
-  const rate = adhocRateHourly(card, currency);
-  const rupeeRate = adhocRateValue(card);
-  // The rate in the page's currency, for the meter and the percentage.
-  const rateValue = rupeeRate == null ? null : usdView ? usdRates(card).gpu_hourly : rupeeRate;
+  // This page compares OUR BASE NODE (NODE.gpu) with iRender's cards, so it
+  // uses that GPU's own row on the rate card (its own dollar rate since the
+  // ladder, 21 Oct 2026), not the ladder's "from" price. Falls back to the
+  // cheapest public GPU if the base node is not public.
+  const baseGpu = publicGpus(card).find((g) => g.name === NODE.gpu) ?? cheapestGpu(card);
+  const rate = baseGpu ? formatHourly(baseGpu, currency, card) : null;
+  const rateValue = baseGpu ? hourlyValue(baseGpu, currency, card) : null;
   const intro = introOfferFor(card, currency);
   /** iRender's dollar list price in the page's currency: as listed, or converted at FX. */
   const theirs = (usd: number) => (usdView ? formatMoney(usd, "USD") : inr(usd));
@@ -137,7 +144,7 @@ export default async function VsIrenderView({ currency }: { currency: Currency }
         "Billed per minute from a prepaid wallet in US dollars, with no GST (export of services) and nothing added at checkout.",
         "D5 Render, Twinmotion and Blender are already installed when the machine starts. Lumion, Enscape, 3ds Max and Revit run on your own licence: we set them up with you once, and after that they're on every workstation you launch.",
         intro
-          ? `A first top-up of ${introPrice(intro)} (no GST) buys ${hoursLabel(intro.hours)}${intro.gpuName ? ` on an ${intro.gpuName}` : ""}, so you can judge it on your own project. (Theirs: ${IRENDER.firstChargeBonus}.)`
+          ? `A first top-up of ${introPrice(intro)} (no GST) buys ${hoursLabel(intro.hours)}${intro.gpuName ? ` on ${withArticle(intro.gpuName)}` : ""}${introMoreGpusNote(intro)}, so you can judge it on your own project. (Theirs: ${IRENDER.firstChargeBonus}.)`
           : "Billed per minute, so trying it on your own project costs you minutes instead of a month.",
         "Sign-up takes an email and a WhatsApp code, with no ID documents, and we accept international cards.",
       ]
@@ -150,7 +157,7 @@ export default async function VsIrenderView({ currency }: { currency: Currency }
     "Your files stay on storage in India.",
     "D5 Render, Twinmotion and Blender are already installed when the machine starts. Lumion, Enscape, 3ds Max and Revit run on your own licence: we set them up with you once, and after that they're on every workstation you launch.",
     intro
-      ? `A first top-up of ${introPrice(intro)} buys ${hoursLabel(intro.hours)}${intro.gpuName ? ` on an ${intro.gpuName}` : ""}, so you can judge it on your own project. (Theirs: ${IRENDER.firstChargeBonus}.)`
+      ? `A first top-up of ${introPrice(intro)} buys ${hoursLabel(intro.hours)}${intro.gpuName ? ` on ${withArticle(intro.gpuName)}` : ""}${introMoreGpusNote(intro)}, so you can judge it on your own project. (Theirs: ${IRENDER.firstChargeBonus}.)`
       : "Billed per minute, so trying it on your own project costs you minutes instead of a month.",
     "Sign-up takes an email and a WhatsApp code, with no ID documents, and we accept international cards.",
       ];

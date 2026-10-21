@@ -12,6 +12,7 @@
  */
 
 import Link from "next/link";
+import { ladderSpecRows, type RateCard } from "@/lib/rate-card";
 import type { StorageTerms } from "@/lib/storage-terms";
 
 /** Slugs verified against the built route list, not guessed.
@@ -33,10 +34,10 @@ const APPS: { label: string; href?: string }[] = [
   { label: "Paint.NET" },
 ];
 
-export function MachineSpecSection({ storage }: { storage: StorageTerms }) {
+export function MachineSpecSection({ storage, card = null }: { storage: StorageTerms; card?: RateCard | null }) {
+  // The GPU rows come from the live rate card's ladder (owner, 21 Oct 2026).
   const specs: [string, string][] = [
-    ["GPU", "NVIDIA RTX 5080"],
-    ["VRAM", "16 GB GDDR7"],
+    ...ladderSpecRows(card),
     ["Network", "Dedicated 1 Gbps"],
     ["Location", "Bengaluru, India"],
     ["Storage", `${storage.paidGb} GB persistent, included`],
@@ -46,7 +47,7 @@ export function MachineSpecSection({ storage }: { storage: StorageTerms }) {
   return (
     <section id="specs" className="mx-auto max-w-7xl scroll-mt-24 px-4 py-20 sm:px-6 lg:px-8">
       <p className="cf-eyebrow">What you actually get</p>
-      <h2 className="cf-section-title mt-4">One machine. Fully loaded.</h2>
+      <h2 className="cf-section-title mt-4">One workstation. Fully loaded.</h2>
       <p className="mt-5 max-w-2xl text-base leading-7 text-ink-2">
         Every session is a complete Windows workstation — not a render queue, not
         a web app. You see a desktop and you use it.

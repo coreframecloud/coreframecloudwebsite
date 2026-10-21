@@ -16,7 +16,7 @@ import { breadcrumbList } from "@/lib/seo";
 export const metadata: Metadata = {
   title: "Download Coreframe Connect for Windows",
   description:
-    "Coreframe Connect is the free Windows 10/11 app that streams your rented RTX 5080 workstation to your own PC. Sign in to download.",
+    "Coreframe Connect is the free Windows 10/11 app that streams your Coreframe GPU workstation to your own PC. Sign in to download.",
   alternates: { canonical: "/download" },
 };
 
@@ -27,7 +27,7 @@ const connectApp = {
   applicationCategory: "UtilitiesApplication",
   operatingSystem: "Windows 10, Windows 11 (64-bit)",
   description:
-    "Desktop client that signs in to Coreframe Cloud and streams a rented Windows RTX 5080 workstation to your own computer.",
+    "Desktop client that signs in to Coreframe Cloud and streams a Windows GPU workstation to your own computer.",
   url: "https://www.coreframecloud.com/download",
   publisher: { "@id": "https://www.coreframecloud.com/#organization" },
   offers: {

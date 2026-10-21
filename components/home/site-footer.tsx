@@ -15,7 +15,6 @@ import {
   COMPANY_INSTAGRAM_HANDLE,
 } from "@/lib/company";
 import { visiblePosts } from "@/lib/blog";
-import { NODE } from "@/lib/node-spec";
 import { OFFERINGS } from "@/lib/offerings";
 import type { Currency } from "@/lib/money";
 
@@ -38,7 +37,7 @@ export function SiteFooter({ currency = "INR" }: { currency?: Currency }) {
               <CoreframeWordmarkAtlas variant="light" iconSize={40} animated={false} />
             </Link>
             <p className="mt-3 max-w-xs text-xs leading-5 text-ink-2">
-              RTX 5080 GPU workstations, CFD for ducts and pipes, and Studio for floor-plan concept
+              GPU workstations, CFD for ducts and pipes, and Studio for floor-plan concept
               images. Hosted in Bengaluru, India.
             </p>
             <Link
@@ -105,7 +104,7 @@ export function SiteFooter({ currency = "INR" }: { currency?: Currency }) {
                 { label: "Architectural visualization", href: "/architectural-visualization" },
                 { label: "Cloud rendering for architects", href: "/cloud-rendering-for-architects" },
                 { label: "Video and animation rendering", href: "/video-animation-rendering" },
-                { label: `Rent an ${NODE.gpu} in India`, href: "/software/gpu-workstation-rental-india" },
+                { label: "Rent a GPU workstation in India", href: "/software/gpu-workstation-rental-india" },
                 { label: "Workstations and storage for studios", href: "/solutions" },
                 { label: "Is 8 GB of VRAM enough?", href: "/vram-for-architectural-rendering" },
                 { label: "Coreframe vs iRender", href: "/coreframe-vs-irender" },

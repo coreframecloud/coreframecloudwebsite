@@ -13,6 +13,7 @@ import {
   adhocRateHourly,
   billingSentence,
   introOfferFaq,
+  ladderPhrase,
   pricingFaqAnswer,
 } from "@/lib/rate-card";
 import { NODE, replacementCost } from "@/lib/node-spec";
@@ -89,7 +90,7 @@ export default async function WorkstationVsFarmView({ currency }: { currency: Cu
     },
     {
       q: "When is a cloud workstation the better choice?",
-      a: `When you are still working on the scene, when you use a real-time renderer, or when your own laptop cannot run the application at all. Coreframe gives you a full ${NODE.os} desktop with an NVIDIA ${NODE.gpu} (${NODE.vram}) and ${NODE.ram} of RAM in ${NODE.location}, streamed to the laptop you already own.`,
+      a: `When you are still working on the scene, when you use a real-time renderer, or when your own laptop cannot run the application at all. Coreframe gives you a full ${NODE.os} desktop with ${ladderPhrase(card) ?? "a dedicated NVIDIA RTX GPU"} in ${NODE.location}, streamed to the laptop you already own.`,
     },
     {
       q: "Can I use both?",
@@ -178,8 +179,8 @@ export default async function WorkstationVsFarmView({ currency }: { currency: Cu
               to a queue.
             </p>
             <p className="mt-4 leading-8 text-ink-2">
-              A Coreframe workstation is a full {NODE.os} desktop with an NVIDIA{" "}
-              {NODE.gpu} ({NODE.vram}), {NODE.ram} of RAM and an {NODE.cpu},
+              A Coreframe workstation is a full {NODE.os} desktop with{" "}
+              {ladderPhrase(card) ?? "a dedicated NVIDIA RTX GPU"},
               hosted in {NODE.location} and streamed to the laptop you already
               own. Your project files sit on a drive that persists between
               sessions. We don&rsquo;t publish render times, because they depend
@@ -230,8 +231,8 @@ export default async function WorkstationVsFarmView({ currency }: { currency: Cu
           <section className="mt-14 rounded-cf border border-blue/20 bg-blue/[0.05] p-6">
             <h2 className="cf-section-title">Try it with your own scene.</h2>
             <p className="mt-3 leading-7 text-ink-2">
-              Open the project your laptop struggles with on a rented{" "}
-              {NODE.gpu} and see how it behaves. That tells you more than any
+              Open the project your laptop struggles with on a Coreframe GPU
+              workstation and see how it behaves. That tells you more than any
               comparison page can.
             </p>
             <Link href="/signup" className="cf-btn-primary mt-6">
@@ -243,8 +244,8 @@ export default async function WorkstationVsFarmView({ currency }: { currency: Cu
             <p className="cf-eyebrow mb-4">Related</p>
             <ul className="space-y-1">
               {[
-                ["/d5-render-cloud-workstation", "D5 Render on a cloud RTX 5080"],
-                ["/lumion-cloud-gpu", "Lumion on a cloud RTX 5080"],
+                ["/d5-render-cloud-workstation", "D5 Render on a GPU workstation"],
+                ["/lumion-cloud-gpu", "Lumion on a GPU workstation"],
                 ["/software/3ds-max-cloud-workstation", "3ds Max, V-Ray and Corona"],
                 ["/software/after-effects-premiere-cloud-workstation", "After Effects and Premiere Pro"],
                 ["/coreframe-vs-irender", "Coreframe vs iRender"],

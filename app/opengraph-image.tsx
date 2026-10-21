@@ -15,7 +15,7 @@ import { join } from "node:path";
  * Slack for weeks; a rupee figure baked into a PNG is exactly the hardcoded
  * price the rate-card module exists to prevent.
  */
-export const alt = "Coreframe Cloud: RTX 5080 workstations, CFD for ducts and pipes, and Studio";
+export const alt = "Coreframe Cloud: GPU workstations, CFD for ducts and pipes, and Studio";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -45,7 +45,7 @@ export default async function Image() {
             GPU workstations. CFD. Studio.
           </div>
           <div style={{ fontSize: 30, color: "#5b6068" }}>
-            Rent an RTX 5080 by the minute, get CFD for your duct or pipe from one STL, and pre-sale
+            Rent a GPU workstation by the minute, get CFD for your duct or pipe from one STL, and pre-sale
             concept images from a floor plan. Hosted in Bengaluru.
           </div>
         </div>

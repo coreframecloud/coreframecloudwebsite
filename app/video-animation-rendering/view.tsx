@@ -8,14 +8,15 @@ import { BackgroundGlow } from "@/components/home/background-glow";
 import { GenImage } from "@/components/visuals/media";
 import { Fold } from "@/components/visuals/fold";
 import { SpecTable } from "@/components/gpu/spec-table";
-import { AREA_SERVED_WORLD, ORG_ID, SITE, breadcrumbList, faqPage, regionalOffers } from "@/lib/seo";
+import { GpuLadder } from "@/components/pricing/gpu-ladder";
+import { AREA_SERVED_WORLD, ORG_ID, SITE, breadcrumbList, faqPage, gpuLadderOffers } from "@/lib/seo";
 import { NODE } from "@/lib/node-spec";
 import { STREAM_BANDWIDTH } from "@/lib/streaming-terms";
-import { usdRates, type Currency } from "@/lib/money";
+import type { Currency } from "@/lib/money";
 import {
   adhocRate,
-  adhocRateValue,
-  cpuSpec,
+  cheapestGpu,
+  ladderPhrase,
   getRateCard,
   hoursLabel,
   introOfferFaq,
@@ -53,9 +54,9 @@ import {
 
 const PATH = "/video-animation-rendering";
 
-const TITLE = "Video & Animation Rendering on a Cloud RTX 5080 | Coreframe";
+const TITLE = "Video & Animation Rendering on a GPU Workstation | Coreframe";
 const DESCRIPTION =
-  "After Effects, Premiere Pro, Blender animation and walkthrough exports on a Windows RTX 5080 workstation, billed per minute. What works, what to plan for.";
+  "After Effects, Premiere Pro, Blender animation and walkthrough exports on a Windows GPU workstation, billed per minute. What works, what to plan for.";
 
 export const videoMetadata: Metadata = {
   title: { absolute: TITLE },
@@ -70,10 +71,10 @@ export const videoMetadata: Metadata = {
   ],
   alternates: { canonical: PATH },
   openGraph: {
-    title: "Video and animation rendering on a cloud RTX 5080 — Coreframe Cloud",
+    title: "Video and animation rendering on a GPU workstation — Coreframe Cloud",
     description: "After Effects, Premiere Pro, Blender and walkthrough exports on one rented Windows workstation.",
     url: `${SITE}${PATH}`,
-    images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "Coreframe Cloud: Windows RTX 5080 workstations, rented by the minute" }],
+    images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "Coreframe Cloud: Windows GPU workstations, rented by the minute" }],
   },
 };
 
@@ -140,19 +141,15 @@ function priceAnswer(card: RateCard | null, cur: Currency): string | null {
     : `The workstation is ${rate} an hour, ${tax}${billed}.`;
 }
 
-function specRows(card: RateCard | null, cur: Currency): [string, string][] {
-  const gpu = card?.gpus.find((g) => !g.quote_on_request && g.hourly_rate_rupees != null);
-  const rate = adhocRate(card, cur);
+/** The fixed facts of every node; the GPU rows and prices are the ladder
+ *  (<GpuLadder/>, from the rate card; owner, 21 Oct 2026). */
+function specRows(card: RateCard | null): [string, string][] {
+  const gpu = cheapestGpu(card);
   return [
-    ["GPU", gpu ? `${gpu.gpu_count}× ${gpu.name}` : NODE.gpu],
-    ["VRAM", gpu ? `${gpu.vram_gb} GB` : NODE.vram],
-    ["CPU", gpu ? cpuSpec(gpu) : NODE.cpuShort],
-    ["System RAM", gpu ? `${gpu.ram_gb} GB` : NODE.ram],
     ["Storage", gpu ? `${storageSpec(gpu.storage_gb)} NVMe` : NODE.disk],
     ["Operating system", NODE.os],
     ["Streamed to you", `${NODE.stream}, through the Coreframe Connect app`],
     ["Location", NODE.location],
-    ...(rate ? ([["Price", `${rate}/hr, ${cur === "USD" ? "no GST" : "GST included"}`]] as [string, string][]) : []),
   ];
 }
 
@@ -161,13 +158,13 @@ export default async function VideoView({ currency }: { currency: Currency }) {
   const answer = priceAnswer(card, currency);
   const priceFaq = pricingFaqAnswer(card, currency);
   const introFaq = introOfferFaq(card, currency);
-  const inrHour = adhocRateValue(card);
-  const usd = usdRates(card);
+  // One Offer pair per public GPU on the ladder (owner, 21 Oct 2026).
+  const ladderOffers = gpuLadderOffers(card, `${SITE}${PATH}`);
 
   const faqs = [
     {
       q: "Can I render video and animation on a Coreframe workstation?",
-      a: `Yes. It is a full ${NODE.os} desktop with an ${NODE.gpu} (${NODE.vram}) and ${NODE.ram} of RAM. After Effects, Premiere Pro and Media Encoder run on your own Adobe account; Blender, FFmpeg and HandBrake are preinstalled; D5 Render, Twinmotion and Unreal Engine are installed for walkthroughs.`,
+      a: `Yes. It is a full ${NODE.os} desktop with ${ladderPhrase(card) ?? "a workstation-class GPU"}. After Effects, Premiere Pro and Media Encoder run on your own Adobe account; Blender, FFmpeg and HandBrake are preinstalled; D5 Render, Twinmotion and Unreal Engine are installed for walkthroughs.`,
     },
     {
       q: "Does Coreframe provide an Adobe licence?",
@@ -202,18 +199,8 @@ export default async function VideoView({ currency }: { currency: Currency }) {
     provider: { "@id": ORG_ID },
     areaServed: AREA_SERVED_WORLD,
     url: `${SITE}${PATH}`,
-    description: `A Windows ${NODE.gpu} workstation (${NODE.vram}, ${NODE.ram} RAM) rented by the minute for After Effects, Premiere Pro and Media Encoder on your own Adobe account, Blender animation (preinstalled), and walkthrough exports from D5 Render, Lumion, Twinmotion and Unreal Engine.`,
-    ...(inrHour != null
-      ? {
-          offers: regionalOffers({
-            name: `${NODE.gpu} workstation, per GPU-hour`,
-            inr: Math.round(inrHour),
-            usd: usd.gpu_hourly,
-            url: `${SITE}${PATH}`,
-            unit: { unitText: "GPU-hour" },
-          }),
-        }
-      : {}),
+    description: `A Windows GPU workstation rented by the minute for After Effects, Premiere Pro and Media Encoder on your own Adobe account, Blender animation (preinstalled), and walkthrough exports from D5 Render, Lumion, Twinmotion and Unreal Engine.`,
+    ...(ladderOffers.length ? { offers: ladderOffers } : {}),
   };
 
   return (
@@ -230,7 +217,7 @@ export default async function VideoView({ currency }: { currency: Currency }) {
           <div className="cf-wide grid items-center gap-10 lg:grid-cols-[1.05fr_1fr]">
             <div className="min-w-0">
               <p className="cf-eyebrow mb-5">Video and animation</p>
-              <h1 className="cf-display">Video and animation rendering on a cloud {NODE.gpu}</h1>
+              <h1 className="cf-display">Video and animation rendering on a GPU workstation</h1>
               <p className="cf-lead mt-6">
                 Comps, edits, exports and animation frames run on a rented Windows workstation while your laptop shows the
                 stream and stays free. After Effects and Premiere Pro on your own Adobe account; Blender preinstalled;
@@ -301,7 +288,7 @@ export default async function VideoView({ currency }: { currency: Currency }) {
               <div className="overflow-hidden rounded-[20px] border border-rule bg-paper-2">
                 <Image
                   src="/blog/blender-interior-render-on-cloud-rtx-5080/blender-optix.webp"
-                  alt="Blender Preferences, System tab, with OptiX selected and the RTX 5080 ticked. Render properties show Cycles and GPU Compute."
+                  alt="Blender Preferences, System tab, with OptiX selected and the workstation's RTX 5080 ticked. Render properties show Cycles and GPU Compute."
                   width={1546}
                   height={782}
                   sizes="(max-width: 1024px) 100vw, 600px"
@@ -365,7 +352,8 @@ export default async function VideoView({ currency }: { currency: Currency }) {
             <div className="min-w-0">
               <p className="cf-eyebrow mb-5">The machine</p>
               <h2 className="cf-section-title">What you are renting.</h2>
-              <SpecTable rows={specRows(card, currency)} caption="The workstation you rent: hardware, location and price" />
+              <div className="mt-6"><GpuLadder card={card} currency={currency} compact /></div>
+              <SpecTable rows={specRows(card)} caption="The workstation you rent: storage, system and location" />
             </div>
           </div>
         </section>

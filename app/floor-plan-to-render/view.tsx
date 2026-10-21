@@ -7,7 +7,6 @@ import { Fold } from "@/components/visuals/fold";
 import Image from "next/image";
 import { PlanImage, ShellFurnished } from "@/components/visuals/studio-compare";
 import { PageHeroBg, type HeroImage } from "@/components/page-hero-bg";
-import { NODE } from "@/lib/node-spec";
 import { SITE } from "@/lib/seo";
 import { getRateCard } from "@/lib/rate-card";
 import { Hl } from "@/components/cfd-explainer";
@@ -409,7 +408,7 @@ export default async function FloorPlanToRenderView({ currency }: { currency: Cu
               <p className="mt-3 text-white/70">
                 Need a whole machine for your own software instead?{" "}
                 <Link href="/" className="text-[#a9c4ff] underline underline-offset-4">
-                  Rent an {NODE.gpu} by the minute
+                  Rent a GPU workstation by the minute
                 </Link>
                 .
               </p>

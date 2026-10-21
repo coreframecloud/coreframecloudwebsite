@@ -45,7 +45,7 @@ function Tower({ x, y, label }: { x: number; y: number; label: string }) {
       <circle cx="68" cy="100" r="5" fill="#3ddc84" className="cfv-blink" />
       <rect x="12" y="56" width="62" height="28" rx="6" fill={BLUE} opacity="0.9" />
       <text x="43" y="74" textAnchor="middle" fontSize="11" fontWeight="600" fill="#fff" fontFamily="var(--font-inter)">
-        RTX 5080
+        GPU
       </text>
       <text x="43" y="142" textAnchor="middle" fontSize="12" fill={MUTED} fontFamily="var(--font-inter)">
         {label}

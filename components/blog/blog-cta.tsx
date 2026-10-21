@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { NODE } from "@/lib/node-spec";
 import type { BlogContext } from "@/lib/blog/types";
+import { introMoreGpusNote, withArticle } from "@/lib/rate-card";
 
 /**
  * The soft call to action at the foot of every post.
@@ -15,11 +15,11 @@ export function BlogCta({ ctx }: { ctx: BlogContext }) {
     <section className="mt-16 rounded-cf border border-blue/20 bg-blue/[0.05] p-6 sm:p-8">
       <p className="cf-eyebrow mb-4">Try it on your own project</p>
       <h2 className="font-display text-[26px] leading-tight font-semibold text-ink">
-        Open your heaviest scene on an {NODE.gpu}.
+        Open your heaviest scene on a Coreframe GPU workstation.
       </h2>
       <p className="mt-3 text-[16px] leading-7 text-ink-2">
         {o && ctx.introPrice && ctx.introHours
-          ? `New accounts: your first top-up of ${ctx.introPrice} buys ${ctx.introHours}${o.gpuName ? ` on an ${o.gpuName}` : ""}${o.validityDays ? `, to use within ${o.validityDays} days` : ""}. `
+          ? `New accounts: your first top-up of ${ctx.introPrice} buys ${ctx.introHours}${o.gpuName ? ` on ${withArticle(o.gpuName)}` : ""}${introMoreGpusNote(o)}${o.validityDays ? `, to use within ${o.validityDays} days` : ""}. `
           : ctx.hourly
             ? `${ctx.hourly} ${ctx.taxIncl}, billed per minute. `
             : ""}

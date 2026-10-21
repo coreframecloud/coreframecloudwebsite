@@ -22,7 +22,7 @@ const STEPS = [
   {
     n: "2",
     title: "Launch a workstation",
-    body: "One click. A machine with an RTX 5080 starts up, with your software already installed, and appears on your screen in under a minute.",
+    body: "One click. A GPU workstation starts up, with your software already installed, and appears on your screen in under a minute.",
     link: null,
   },
   {
