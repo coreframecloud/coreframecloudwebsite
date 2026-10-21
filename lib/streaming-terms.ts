@@ -16,15 +16,19 @@ export const STREAM_BANDWIDTH = {
   comfortable1080pMbps: 20,
 } as const;
 
-const NBSP = " ";
+// A non-breaking space keeps "50 Mbps" on one line. Written as an escape and
+// joined with +, not inside a template literal: the production bundler dropped
+// the words after a raw U+00A0 inside a template, and /download showed
+// "About 20 50 and holds up at 35" (21 Oct 2026).
+const nb = "\u00a0";
 const B = STREAM_BANDWIDTH;
 
 /** The full statement, for prose and FAQ answers. */
 export const BANDWIDTH_SENTENCE =
-  `4K at 60${NBSP}fps looks its best on about ${B.best4kMbps}${NBSP}Mbps and still holds up at ` +
-  `${B.workable4kMbps}. 1080p is comfortable on ${B.comfortable1080pMbps}${NBSP}Mbps.`;
+  "4K at 60" + nb + "fps looks its best on about " + B.best4kMbps + nb + "Mbps and still holds up at " +
+  B.workable4kMbps + nb + "Mbps. 1080p is comfortable on " + B.comfortable1080pMbps + nb + "Mbps.";
 
 /** One line, for a bullet list. */
 export const BANDWIDTH_SHORT =
-  `About ${B.comfortable1080pMbps}${NBSP}Mbps for 1080p. 4K looks best on about ` +
-  `${B.best4kMbps} and holds up at ${B.workable4kMbps}`;
+  "Internet: about " + B.comfortable1080pMbps + nb + "Mbps for 1080p. 4K looks best at " +
+  B.best4kMbps + nb + "Mbps and holds up at " + B.workable4kMbps + nb + "Mbps.";
