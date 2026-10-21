@@ -369,6 +369,17 @@ export default function LoginForm({
   const [codeValue, setCodeValue] = useState("");
   const [codeLoading, setCodeLoading] = useState(false);
 
+  // A team invite links to /signup?email=<invited address>. Pre-fill both
+  // email fields so the person signs up with the address the invite is for,
+  // which is what lets the API accept the invite automatically.
+  useEffect(() => {
+    const invited = new URLSearchParams(window.location.search).get("email")?.trim() ?? "";
+    if (invited && invited.length <= 254 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(invited)) {
+      setLinkEmail(invited);
+      setCodeEmail(invited);
+    }
+  }, []);
+
 
   function storeAndRedirect(data: { access_token?: string; user: unknown }) {
     // The session is the HttpOnly cookie the API just set (lib/session.ts);

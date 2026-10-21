@@ -5,6 +5,10 @@ import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { API_BASE } from "@/lib/api-base";
 import { parseCurrency, type Currency } from "@/lib/money";
+import AddPeople from "@/components/team/add-people";
+import Approvals, { type PendingMember } from "@/components/team/approvals";
+import Members, { type TeamMember } from "@/components/team/members";
+import type { TeamInvite } from "@/lib/team";
 
 const API = API_BASE;
 
@@ -47,66 +51,18 @@ interface Usage {
   member_count: number;
 }
 
-interface PendingMember {
-  user_id: number;
-  full_name: string;
-  email: string;
-  requested_at: string | null;
-  identity_verified: boolean;
-  identity_name: string | null;
-  account_status: string;
-}
-
-interface TeamMember {
-  id: number;
-  email: string;
-  full_name: string;
-  role: string;
-  status: string;
-  customer_type: string;
-  identity_provider: string | null;
-  enrolled_at: string;
-  last_login_at: string | null;
-  session_count: number;
-  billable_hours: number;
-  storage_bytes: number;
-  wallet_balance_rupees: number;
-}
-
-function ago(ts: string | null): string {
-  if (!ts) return "Never";
-  const d = Math.floor((Date.now() - new Date(ts).getTime()) / 1000);
-  if (d < 60) return `${d}s ago`;
-  if (d < 3600) return `${Math.floor(d / 60)}m ago`;
-  if (d < 86400) return `${Math.floor(d / 3600)}h ago`;
-  return `${Math.floor(d / 86400)}d ago`;
-}
-
-function formatBytes(bytes: number): string {
-  if (bytes === 0) return "—";
-  if (bytes < 1024 ** 3) return (bytes / 1024 ** 2).toFixed(1) + " MB";
-  return (bytes / 1024 ** 3).toFixed(2) + " GB";
-}
-
 export default function OrgAdminPage() {
   const [token, setToken] = useState<string | null>(null);
   const [orgInfo, setOrgInfo] = useState<OrgInfo | null>(null);
   const [team, setTeam] = useState<TeamMember[]>([]);
-  // Colleagues who signed up on the company email domain and are waiting on
-  // this admin to say whether their usage should bill to the company.
+  // People who asked to join (Teams v2: "Connect with my team") and are
+  // waiting on an admin to approve them with a spending limit.
   const [pending, setPending] = useState<PendingMember[]>([]);
+  // Invites sent and not accepted yet (Teams v2, 20 Oct 2026).
+  const [invites, setInvites] = useState<TeamInvite[]>([]);
   const [usage, setUsage] = useState<Usage | null>(null);
-  const [decidingId, setDecidingId] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [search, setSearch] = useState("");
-
-  // Invite modal state
-  const [showInvite, setShowInvite] = useState(false);
-  const [inviteEmail, setInviteEmail] = useState("");
-  const [inviteName, setInviteName] = useState("");
-  const [inviteLoading, setInviteLoading] = useState(false);
-  const [inviteMsg, setInviteMsg] = useState<{ ok: boolean; text: string } | null>(null);
 
   // Wallet topup modal state
   const [showTopup, setShowTopup] = useState(false);
@@ -125,9 +81,10 @@ export default function OrgAdminPage() {
   const [billingLoading, setBillingLoading] = useState(false);
   const [billingMsg, setBillingMsg] = useState<{ ok: boolean; text: string } | null>(null);
 
-  // The organisation's currency: the admin's own wallet is the one that pays,
-  // so its `billing_currency` from the wallet status (an older API: INR).
-  // Every amount on this page is in it (owner, 18 Oct 2026).
+  // The organisation's currency. Teams v2 sends it as `currency` on every
+  // member and invite; before that, the admin's own wallet is the one that
+  // pays, so its `billing_currency` (an older API: INR). Every amount on this
+  // page is in it (owner, 18 Oct 2026).
   const [orgCur, setOrgCur] = useState<Currency>("INR");
   const sym = orgCur === "USD" ? "$" : "₹";
   const locale = orgCur === "USD" ? "en-US" : "en-IN";
@@ -139,13 +96,18 @@ export default function OrgAdminPage() {
       apiFetch(`${API}/org-admin/pending-members`),
       apiFetch(`${API}/org-admin/usage`),
       apiFetch(`${API}/me/wallet`).catch(() => null),
-    ]).then(async ([meRes, teamRes, pendingRes, usageRes, walletRes]) => {
+      apiFetch(`${API}/org-admin/invites`).catch(() => null),
+    ]).then(async ([meRes, teamRes, pendingRes, usageRes, walletRes, invitesRes]) => {
       if (meRes.status === 401) throw new Error("token_expired");
       if (meRes.status === 403) throw new Error("access_denied");
       if (meRes.status === 404) throw new Error("not_deployed");
       if (!meRes.ok) throw new Error(`api_error_${meRes.status}`);
       const me: OrgInfo = await meRes.json();
-      const members: TeamMember[] = teamRes.ok ? await teamRes.json() : [];
+      // A list; tolerate a {members: [...]} wrapper too.
+      const teamBody = teamRes.ok ? await teamRes.json().catch(() => []) : [];
+      const members: TeamMember[] = Array.isArray(teamBody)
+        ? teamBody
+        : Array.isArray(teamBody?.members) ? teamBody.members : [];
       setOrgInfo(me);
       setTeam(members);
       // Tolerate a 404 here so the page still works against an older API.
@@ -156,7 +118,15 @@ export default function OrgAdminPage() {
       // failing wholesale over a stat card.
       setUsage(usageRes.ok ? await usageRes.json() : null);
       const w = walletRes?.ok ? await walletRes.json().catch(() => null) : null;
-      setOrgCur(parseCurrency(w?.billing_currency) ?? parseCurrency(w?.wallet_currency) ?? "INR");
+      const invBody = invitesRes?.ok ? await invitesRes.json().catch(() => null) : null;
+      const invList: TeamInvite[] = Array.isArray(invBody?.invites) ? invBody.invites : [];
+      setInvites(invList.filter((i) => !i.status || i.status === "pending"));
+      setOrgCur(
+        parseCurrency(members.find((m) => m.currency)?.currency) ??
+          parseCurrency(w?.billing_currency) ??
+          parseCurrency(w?.wallet_currency) ??
+          "INR",
+      );
     });
   }, []);
 
@@ -166,30 +136,6 @@ export default function OrgAdminPage() {
     setToken(tok);
     loadData().catch((e) => setError(e.message)).finally(() => setLoading(false));
   }, [loadData]);
-
-  async function handleInvite(e: React.FormEvent) {
-    e.preventDefault();
-    if (!token) return;
-    setInviteLoading(true);
-    setInviteMsg(null);
-    try {
-      const res = await apiFetch(`${API}/org-admin/invite`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: inviteEmail.trim(), full_name: inviteName.trim() }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.detail || "Failed");
-      setInviteMsg({ ok: true, text: data.message });
-      setInviteEmail("");
-      setInviteName("");
-      loadData().catch(() => {});
-    } catch (e: unknown) {
-      setInviteMsg({ ok: false, text: e instanceof Error ? e.message : "Error" });
-    } finally {
-      setInviteLoading(false);
-    }
-  }
 
   async function handleTopup(e: React.FormEvent) {
     e.preventDefault();
@@ -262,61 +208,6 @@ export default function OrgAdminPage() {
       setBillingLoading(false);
     }
   }
-
-  async function decideMembership(member: PendingMember, approve: boolean) {
-    if (!token) return;
-    const verb = approve ? "approve" : "decline";
-    const note = window.prompt(
-      approve
-        ? `Approve ${member.full_name || member.email}?\n\nTheir usage will be billed to the company account.\n\nOptional note:`
-        : `Decline ${member.full_name || member.email}?\n\nThey keep their own account and can pay for their own usage — this only stops company billing.\n\nOptional note:`
-    );
-    if (note === null) return;
-
-    setDecidingId(member.user_id);
-    try {
-      const res = await apiFetch(`${API}/org-admin/members/${member.user_id}/${verb === "approve" ? "approve-membership" : "reject-membership"}`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ note: note || null }),
-        }
-      );
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        throw new Error(body.detail || `Could not ${verb} this member.`);
-      }
-      setPending((prev) => prev.filter((p) => p.user_id !== member.user_id));
-      await loadData();
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : `Could not ${verb} this member.`);
-    } finally {
-      setDecidingId(null);
-    }
-  }
-
-  async function toggleMemberStatus(member: TeamMember) {
-    if (!token) return;
-    const newStatus = member.status === "active" ? "inactive" : "active";
-    if (!confirm(`${newStatus === "inactive" ? "Deactivate" : "Reactivate"} ${member.full_name}?`)) return;
-    try {
-      const res = await apiFetch(`${API}/org-admin/members/${member.id}/status`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status: newStatus }),
-      });
-      if (!res.ok) { const d = await res.json(); alert(d.detail || "Failed"); return; }
-      loadData().catch(() => {});
-    } catch {
-      alert("Failed to update member status");
-    }
-  }
-
-  const filtered = team.filter((m) => {
-    if (!search) return true;
-    const q = search.toLowerCase();
-    return m.email.toLowerCase().includes(q) || m.full_name.toLowerCase().includes(q);
-  });
 
   if (loading) {
     return (
@@ -412,9 +303,8 @@ export default function OrgAdminPage() {
     );
   }
 
-  const totalHours = team.reduce((s, m) => s + m.billable_hours, 0);
+  const totalHours = team.reduce((s, m) => s + (m.billable_hours ?? 0), 0);
   const activeCount = team.filter((m) => m.status === "active").length;
-  const recentCount = team.filter((m) => m.last_login_at && Date.now() - new Date(m.last_login_at).getTime() < 7 * 86400000).length;
 
   return (
     <div className="relative min-h-screen text-ink">
@@ -427,11 +317,6 @@ export default function OrgAdminPage() {
             <h1 className="cf-section-title break-words">{orgInfo?.org_name}</h1>
           </div>
           <div className="flex flex-wrap items-center gap-3">
-            {orgInfo?.email_domain && (
-              <span className="rounded-full border border-blue/25 bg-blue-soft px-2.5 py-1 text-xs font-medium break-all text-blue">
-                @{orgInfo.email_domain}
-              </span>
-            )}
             {orgInfo?.gstin ? (
               <button
                 onClick={() => { setBillingGstin(orgInfo.gstin || ""); setBillingState(orgInfo.billing_state || ""); setBillingMsg(null); setShowBilling(true); }}
@@ -555,7 +440,7 @@ export default function OrgAdminPage() {
           {[
             { label: "Members", value: team.length },
             { label: "Active", value: activeCount },
-            { label: "Active (7d)", value: recentCount },
+            { label: "Waiting for you", value: pending.length },
             { label: "GPU Hours", value: totalHours.toFixed(1) + " h" },
           ].map((s) => (
             <div key={s.label} className="cf-glass px-5 py-4">
@@ -662,211 +547,31 @@ export default function OrgAdminPage() {
           </div>
         )}
 
-        {/* Invite modal */}
-        {showInvite && (
-          <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto overscroll-contain bg-ink/30 px-4 py-6 backdrop-blur-sm sm:items-center">
-            <div className="cf-glass max-h-[calc(100dvh-3rem)] w-full max-w-sm overflow-y-auto p-5 sm:p-6">
-              <h2 className="cf-section-title mb-1">Invite someone.</h2>
-              {orgInfo?.email_domain && (
-                <p className="mb-5 text-[13px] leading-5 text-ink-2">
-                  Only <span className="break-all text-ink">@{orgInfo.email_domain}</span> addresses can be invited.
-                </p>
-              )}
-              <form onSubmit={handleInvite} className="space-y-3">
-                <div>
-                  <label className="mb-1.5 block cf-eyebrow">Full name</label>
-                  <input
-                    type="text" required
-                    value={inviteName} onChange={(e) => setInviteName(e.target.value)}
-                    placeholder="Jane Smith"
-                    className="h-11 w-full rounded-cf border border-rule bg-paper px-4 text-base text-ink outline-none placeholder:text-ink-3 focus:border-blue md:h-10 md:text-sm"
-                  />
-                </div>
-                <div>
-                  <label className="mb-1.5 block cf-eyebrow">Work email</label>
-                  <input
-                    type="email" required
-                    value={inviteEmail} onChange={(e) => setInviteEmail(e.target.value)}
-                    placeholder={`jane@${orgInfo?.email_domain ?? "yourcompany.com"}`}
-                    className="h-11 w-full rounded-cf border border-rule bg-paper px-4 text-base text-ink outline-none placeholder:text-ink-3 focus:border-blue md:h-10 md:text-sm"
-                  />
-                </div>
-                {inviteMsg && (
-                  <p className={`rounded-cf px-3 py-2 text-xs leading-5 break-words ${inviteMsg.ok ? "border border-blue/25 bg-blue-soft text-blue" : "border border-destructive/30 bg-destructive/5 text-destructive"}`}>
-                    {inviteMsg.text}
-                  </p>
-                )}
-                <div className="flex flex-col gap-3 pt-1 sm:flex-row">
-                  <button type="submit" disabled={inviteLoading}
-                    className="cf-btn-primary w-full sm:flex-1 disabled:opacity-50">
-                    {inviteLoading ? "Sending…" : "Send invite"}
-                  </button>
-                  <button type="button" onClick={() => { setShowInvite(false); setInviteMsg(null); }}
-                    className="cf-btn-secondary w-full sm:w-auto">
-                    Cancel
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        )}
+        {/* Teams v2 (owner approved 20 Oct 2026): invite anyone with a
+            monthly limit and a role, approve people who asked to join, and
+            manage roles, limits and access. */}
+        <AddPeople
+          currency={orgCur}
+          adminEmail={orgInfo?.email ?? null}
+          invites={invites}
+          onChanged={() => void loadData().catch(() => {})}
+        />
 
-        {/* Pending membership requests — only rendered when there are any, so
-            the page is unchanged for an org with nothing waiting. */}
-        {pending.length > 0 && (
-          <div className="cf-glass mb-6 overflow-hidden border-l-2! border-l-blue!">
-            <div className="border-b border-rule px-4 py-4 sm:px-5">
-              <p className="mb-2 font-mono text-[11.5px] leading-none font-medium tracking-[0.2em] uppercase text-ink-2">Action needed</p>
-              <h2 className="cf-section-title text-ink">
-                Waiting for your approval ({pending.length}).
-              </h2>
-              <p className="mt-2 text-[13px] leading-5 text-ink-2">
-                These people signed up with your company&apos;s email domain. Approving them
-                bills their usage to the company account. They can already use Coreframe on
-                their own wallet — this decision is only about who pays.
-              </p>
-            </div>
-            <div className="divide-y divide-rule">
-              {pending.map((m) => (
-                <div key={m.user_id} className="flex flex-wrap items-center gap-3 px-4 py-4 sm:px-5">
-                  <div className="min-w-0 flex-1">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <span className="text-sm font-medium break-words text-ink">
-                        {m.full_name || m.email}
-                      </span>
-                      {/* Legacy KYC flag. Identity checks were retired on
-                          10 Oct 2026, so only a past verification is shown —
-                          "pending" would describe a step nobody can take. */}
-                      {m.identity_verified ? (
-                        <span className="rounded-full border border-blue/25 bg-blue-soft px-2 py-0.5 text-[10px] font-medium whitespace-nowrap text-blue">
-                          Verified
-                        </span>
-                      ) : null}
-                    </div>
-                    <div className="mt-0.5 text-xs break-all text-ink-2">{m.email}</div>
-                    {m.identity_name && m.identity_name !== m.full_name && (
-                      <div className="mt-0.5 text-xs text-ink-3">
-                        Verified as {m.identity_name}
-                      </div>
-                    )}
-                    <div className="mt-0.5 text-[11px] text-ink-3">
-                      Requested {ago(m.requested_at)}
-                    </div>
-                  </div>
-                  <div className="flex w-full items-center gap-2 sm:w-auto">
-                    <button
-                      onClick={() => decideMembership(m, true)}
-                      disabled={decidingId === m.user_id}
-                      className="inline-flex min-h-11 flex-1 items-center justify-center rounded-cf bg-blue px-4 text-xs font-semibold text-white transition hover:bg-blue-ink disabled:opacity-50 sm:flex-none"
-                    >
-                      {decidingId === m.user_id ? "…" : "Approve"}
-                    </button>
-                    <button
-                      onClick={() => decideMembership(m, false)}
-                      disabled={decidingId === m.user_id}
-                      className="inline-flex min-h-11 flex-1 items-center justify-center rounded-cf border border-rule-strong px-4 text-xs font-semibold text-ink-2 transition hover:bg-paper-2 disabled:opacity-50 sm:flex-none"
-                    >
-                      Decline
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
+        <Approvals
+          pending={pending}
+          currency={orgCur}
+          onChanged={() => void loadData().catch(() => {})}
+        />
 
-        {/* Team table */}
-        <div className="cf-glass overflow-hidden">
-          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-rule px-4 py-4 sm:px-5">
-            <h2 className="cf-section-title">Team members.</h2>
-            <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
-              <input
-                type="text"
-                placeholder="Search name or email…"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="h-11 w-full rounded-cf border border-rule bg-paper px-3 text-base text-ink outline-none placeholder:text-ink-3 focus:border-blue sm:w-56 md:h-10 md:text-sm"
-              />
-              <button
-                onClick={() => { setShowInvite(true); setInviteMsg(null); }}
-                className="cf-btn-primary w-full sm:w-auto"
-              >
-                Invite
-              </button>
-            </div>
-          </div>
-
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[860px] text-sm">
-              <thead>
-                <tr className="border-b border-rule text-left font-mono text-[11px] tracking-[0.14em] text-ink-3 uppercase">
-                  {/* Name and email in ONE column. Eleven columns overflowed
-                      horizontally, and the two that identify the person were the
-                      first to scroll out of view — leaving a table of numbers
-                      with no way to tell whose they were. */}
-                  {["Member", "Role", "Status", "Sign-in", "Enrolled", "Last Login", "Sessions", "GPU hrs", "Storage", "Actions"].map((h) => (
-                    <th key={h} className="px-4 py-3 font-medium whitespace-nowrap">{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-rule">
-                {filtered.length === 0 ? (
-                  <tr>
-                    <td colSpan={10} className="px-4 py-8 text-center text-sm text-ink-3">
-                      {search ? "No members match your search." : "No team members yet. Use '+ Invite' to add someone."}
-                    </td>
-                  </tr>
-                ) : (
-                  filtered.map((m) => (
-                    <tr key={m.id} className={`transition hover:bg-paper-2 ${m.status !== "active" ? "opacity-60" : ""}`}>
-                      <td className="px-4 py-3 whitespace-nowrap">
-                        <div className="font-medium text-ink">{m.full_name || "—"}</div>
-                        <div className="text-xs break-all text-ink-2">{m.email}</div>
-                      </td>
-                      <td className="px-4 py-3">
-                        <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[11px] font-medium whitespace-nowrap ${m.role === "org_admin" ? "border-blue/25 bg-blue-soft text-blue" : "border-rule-strong bg-paper-2 text-ink-2"}`}>
-                          {m.role}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 whitespace-nowrap">
-                        <span className={`mr-1.5 inline-block h-2 w-2 rounded-full ${m.status === "active" ? "bg-blue" : "bg-destructive"}`} />
-                        <span className="text-xs capitalize text-ink-2">{m.status}</span>
-                      </td>
-                      <td className="px-4 py-3 text-xs whitespace-nowrap text-ink-2 capitalize">
-                        {m.identity_provider === "google" ? "Google" : m.identity_provider === "local" || m.identity_provider === "invited" ? "Email" : m.identity_provider ?? "—"}
-                      </td>
-                      <td className="px-4 py-3 text-xs whitespace-nowrap tabular-nums text-ink-2">
-                        {new Date(m.enrolled_at).toLocaleDateString()}
-                      </td>
-                      <td className="px-4 py-3 whitespace-nowrap">
-                        {m.last_login_at
-                          ? <span className="text-xs tabular-nums text-ink-2">{ago(m.last_login_at)}</span>
-                          : <span className="text-xs text-ink-3">Never</span>}
-                      </td>
-                      <td className="px-4 py-3 text-center text-xs tabular-nums text-ink-2">{m.session_count}</td>
-                      <td className="px-4 py-3 text-center text-xs tabular-nums text-ink-2">{m.billable_hours.toFixed(1)}</td>
-                      <td className="px-4 py-3 text-xs whitespace-nowrap tabular-nums text-ink-2">{formatBytes(m.storage_bytes)}</td>
-                      <td className="px-4 py-3">
-                        {m.role !== "org_admin" && (
-                          <button
-                            onClick={() => toggleMemberStatus(m)}
-                            className={`inline-flex min-h-11 items-center justify-center rounded-cf border px-3 text-xs font-semibold whitespace-nowrap transition ${m.status === "active" ? "border-destructive/30 text-destructive hover:bg-destructive/5" : "border-blue/30 text-blue hover:bg-blue-soft"}`}
-                          >
-                            {m.status === "active" ? "Deactivate" : "Activate"}
-                          </button>
-                        )}
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
+        <Members
+          members={team}
+          selfId={orgInfo?.user_id ?? null}
+          currency={orgCur}
+          onChanged={() => void loadData().catch(() => {})}
+        />
 
         <p className="text-center text-xs leading-5 text-ink-2">
-          New users with <strong className="break-all text-ink">@{orgInfo?.email_domain}</strong> emails are enrolled on signup.
-          For billing or domain changes email{" "}
+          Nobody joins the team without an admin&apos;s yes. For billing changes email{" "}
           <a href="mailto:support@coreframecloud.com" className="break-all text-blue hover:text-blue-ink">support@coreframecloud.com</a>.
         </p>
       </div>
