@@ -65,7 +65,8 @@ function StatusBadge({ status }: { status: string }) {
   );
 }
 
-/** Make admin / member, edit the monthly limit, deactivate / activate. */
+/** Make admin / member, edit the monthly limit, remove from the team (or activate someone
+ *  an admin deactivated before 21 Oct 2026). */
 function ManagePanel({
   m,
   isSelf,
@@ -134,14 +135,32 @@ function ManagePanel({
     );
   }
 
-  function toggleStatus() {
-    const next = m.status === "active" ? "inactive" : "active";
-    if (!window.confirm(`${next === "inactive" ? "Deactivate" : "Activate"} ${name}?`)) return;
+  // Remove from the team, not "Deactivate" (review M9, 21 Oct 2026): deactivating disabled
+  // the person's whole Coreframe account, their own wallet and files included. Removing ends
+  // their team session and moves them to a personal account they keep.
+  function removeFromTeam() {
+    if (
+      !window.confirm(
+        `Remove ${name} from the team? They can no longer use the company wallet or files drive. Their own account, wallet and personal files stay theirs.`,
+      )
+    )
+      return;
+    void run(
+      "status",
+      `/org-admin/members/${m.id}/remove`,
+      { method: "POST" },
+      `${name} is no longer in the team.`,
+      "Couldn't remove this member.",
+    );
+  }
+
+  function activate() {
+    if (!window.confirm(`Activate ${name}?`)) return;
     void run(
       "status",
       `/org-admin/members/${m.id}/status`,
-      jsonBody("PATCH", { status: next }),
-      next === "inactive" ? `${name} is deactivated.` : `${name} is active again.`,
+      jsonBody("PATCH", { status: "active" }),
+      `${name} is active again.`,
       "Couldn't update the status.",
     );
   }
@@ -180,11 +199,11 @@ function ManagePanel({
         {!isSelf && (
           <button
             type="button"
-            onClick={toggleStatus}
+            onClick={m.status === "active" ? removeFromTeam : activate}
             disabled={busy !== null}
             className={`${quietBtn} flex-1 sm:flex-none ${m.status === "active" ? "text-destructive! hover:bg-destructive/5" : ""}`}
           >
-            {busy === "status" ? "Saving…" : m.status === "active" ? "Deactivate" : "Activate"}
+            {busy === "status" ? "Saving…" : m.status === "active" ? "Remove from team" : "Activate"}
           </button>
         )}
         <button type="button" onClick={onClose} className={`${quietBtn} flex-1 sm:flex-none`}>
