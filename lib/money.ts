@@ -73,11 +73,16 @@ export type UsdIntroOfferApi = {
   bonus?: number | null;
   validity_days?: number | null;
   gpu_name?: string | null;
+  /** Every GPU the hours may be spent on, cheapest first (owner, 21 Oct 2026). */
+  eligible_gpus?: string[];
+  eligible_slugs?: string[];
 };
 
 /** The `usd` block of GET /public/rate-card. */
 export type UsdRateCard = {
   currency: "USD";
+  /** The CHEAPEST public GPU's dollar rate per hour (the ladder's "from"
+   *  price, 21 Oct 2026); each GPU's own rate is `gpus[].usd_hourly_rate`. */
   gpu_hourly: number;
   cfd_quote_fee_small: number;
   cfd_quote_fee_large: number;
@@ -103,7 +108,9 @@ export type UsdRateCard = {
  */
 export const USD_FALLBACK: UsdRateCard = {
   currency: "USD",
-  gpu_hourly: 5.99,
+  /** The cheapest public GPU's rate ("from $X"); 3.49 since the GPU ladder
+   *  of 21 Oct 2026 (was 5.99). Per-GPU rates come from `gpus[].usd_hourly_rate`. */
+  gpu_hourly: 3.49,
   cfd_quote_fee_small: 15,
   cfd_quote_fee_large: 39,
   cfd_quote_fee_small_max_cells: 5_000_000,

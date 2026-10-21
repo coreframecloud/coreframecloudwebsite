@@ -61,7 +61,7 @@ export type BlogContext = {
   taxIncl: string;
   /** "GST included" / "no GST", in brackets after a price. */
   taxShort: string;
-  /** "₹399/hr" / "$5.99/hr", or null when the control plane is unreachable. */
+  /** "₹229/hr" / "$3.49/hr" (the ladder's "from" rate), or null when the control plane is unreachable. */
   hourly: string | null;
   rate: number | null;
   /** "₹6.65", or null unless billing is per minute. */

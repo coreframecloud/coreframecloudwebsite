@@ -7,6 +7,8 @@
  * cannot emit an apex or http:// URL by accident (the canonical host is www).
  */
 
+import { gpuSpecLine, hourlyValue, publicGpus, usdHourlyValue, type RateCard } from "@/lib/rate-card";
+
 export const SITE = "https://www.coreframecloud.com";
 
 export type Crumb = { name: string; path: string };
@@ -48,7 +50,7 @@ export const OG_IMAGE = {
   url: "/opengraph-image",
   width: 1200,
   height: 630,
-  alt: "Coreframe Cloud: Windows RTX 5080 workstations, rented by the minute",
+  alt: "Coreframe Cloud: Windows GPU workstations, rented by the minute",
 };
 
 /** The Organization node in the layout's @graph; every page's schema points at it. */
@@ -66,7 +68,9 @@ const INDIA = { "@type": "Country", name: "IN" } as const;
 export function regionalOffers(o: {
   name: string;
   inr: number;
-  usd: number;
+  /** Null when there is no dollar price for this item (a ladder GPU an older
+   *  API publishes no `usd_hourly_rate` for): only the INR Offer is emitted. */
+  usd: number | null;
   url: string;
   description?: string;
   /** Default true. Verified is quoted "+ GST", so it passes false. */
@@ -100,7 +104,31 @@ export function regionalOffers(o: {
       : {}),
     valueAddedTaxIncluded: vat,
   });
-  return [one(o.inr, "INR", o.inrTaxIncluded ?? true), one(o.usd, "USD", false)];
+  return [
+    one(o.inr, "INR", o.inrTaxIncluded ?? true),
+    ...(o.usd != null && o.usd > 0 ? [one(o.usd, "USD", false)] : []),
+  ];
+}
+
+/**
+ * One Offer pair per public GPU on the ladder (owner, 21 Oct 2026), from the
+ * rate card: never a typed GPU name or price. Empty when the control plane
+ * is unreachable, so a Service node is emitted without offers rather than
+ * with a stale one.
+ */
+export function gpuLadderOffers(card: RateCard | null, url: string) {
+  return publicGpus(card).flatMap((g) => {
+    const inr = hourlyValue(g, "INR", card);
+    if (inr == null) return [];
+    return regionalOffers({
+      name: `${g.name} workstation, per GPU-hour`,
+      inr: Math.round(inr),
+      usd: usdHourlyValue(g, card),
+      url,
+      description: gpuSpecLine(g),
+      unit: { unitText: "GPU-hour" },
+    });
+  });
 }
 
 /** areaServed for a service sold in India and abroad. */

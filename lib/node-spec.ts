@@ -22,7 +22,25 @@
 
 import { formatMoney } from "./money";
 
+/**
+ * THE GPU LADDER (owner, 21 Oct 2026). The site sells GPU workstations, and
+ * which GPUs are on offer is decided by the control plane: /public/rate-card
+ * lists the public profiles, and every GPU list on the site renders that
+ * (`publicGpus()` in lib/rate-card.ts, <GpuLadder/>). So no page may say the
+ * RTX 5080 is THE workstation any more, and no page may name a GPU the card
+ * does not publish yet. Where prose needs a noun with no rate card to hand,
+ * use GPU_CLASS ("a workstation-class GPU"); where a list fits, render the
+ * ladder.
+ *
+ * `NODE` below stays as the record of the BASE node that the dated material
+ * on the site was made on: the benchmark figures, the walkthrough video, the
+ * app screenshots and the hardware estimate. Those describe that machine and
+ * stay true. Use NODE.gpu for them only.
+ */
+export const GPU_CLASS = "workstation-class GPU";
+
 export const NODE = {
+  /** The base node (see above). Not "the" GPU: the ladder is the rate card. */
   gpu: "RTX 5080",
   vram: "16 GB GDDR7",
   /** 256-bit at 30 Gbps. Memory bandwidth on the card — NOT a disk figure. */

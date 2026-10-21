@@ -49,15 +49,16 @@ export type RateCardGpu = {
   gpu_count: number;
   vram_gb: number;
   /**
-   * Legacy key: the same number as `cpu_cores`. It was labelled "vCPU", but a
-   * Coreframe rental is a whole machine with dedicated physical cores (owner,
-   * 12 Oct 2026). Print it through `cpuSpec()`, never as "vCPU" by hand.
+   * Legacy key: the same number as `cpu_cores`. Print it through `cpuSpec()`,
+   * which uses whatever label the API publishes ("vCPU" since the GPU ladder
+   * of 21 Oct 2026; "CPU cores" on the API before it), never a label typed
+   * by hand.
    */
   vcpu: number;
   /** Added 12 Oct 2026. Absent on an older API; `cpuSpec()` falls back. */
   cpu_cores?: number;
   cpu_kind?: string;
-  /** e.g. "CPU cores". */
+  /** e.g. "vCPU". */
   cpu_label?: string;
   ram_gb: number;
   storage_gb: number;
@@ -65,6 +66,23 @@ export type RateCardGpu = {
   hourly_rate_rupees: number | null;
   quote_on_request: boolean;
   tax_breakdown?: { taxable_rupees: number; gst_rupees: number };
+  /**
+   * The GPU ladder (owner, 21 Oct 2026). All three are optional because the
+   * API before the ladder does not send them: gpuSpecChips() then omits the
+   * architecture and CUDA chips, and usdHourlyValue() falls back to the one
+   * global `usd.gpu_hourly` for the cheapest public GPU only.
+   */
+  /** e.g. "Blackwell". */
+  architecture?: string | null;
+  /** e.g. 10752. */
+  cuda_cores?: number | null;
+  /** This profile's own US-dollar rate per hour (no GST), e.g. 3.49; null
+   *  when quote-on-request. */
+  usd_hourly_rate?: number | null;
+  /** May the intro offer's hours be spent on this GPU? True for the offer's
+   *  reference GPU and every cheaper public card; false for a dearer one,
+   *  which bills at list from the first minute (owner, 21 Oct 2026). */
+  intro_eligible?: boolean;
 };
 
 export type TrialTerms = {
@@ -91,6 +109,11 @@ export type IntroOfferApi = {
   bonus_rupees?: number;
   validity_days?: number;
   one_per_customer?: boolean;
+  /** The GPU the hours are counted on (owner, 21 Oct 2026), and every GPU
+   *  the hours may be spent on, cheapest first. Optional until deployed. */
+  gpu_name?: string | null;
+  eligible_gpus?: string[];
+  eligible_slugs?: string[];
 };
 
 /** How an account becomes usable. Replaced KYC on 10 Oct 2026: email + mobile
@@ -290,8 +313,40 @@ export type IntroOffer = {
   bonus: number | null;
   validityDays: number | null;
   onePerCustomer: boolean;
+  /** The GPU the hours are counted on. */
   gpuName: string | null;
+  /** Every GPU the hours may be spent on, cheapest first (includes gpuName).
+   *  Empty on an API that predates the ladder. */
+  eligibleGpus: string[];
 };
+
+/** The GPUs the intro hours also apply to, besides the one they are counted on. */
+export function introOfferMoreGpus(o: IntroOffer): string[] {
+  return o.eligibleGpus.filter((n) => n !== o.gpuName);
+}
+
+/**
+ * " (more hours on the RTX A4000, RTX A5000)" when the intro hours may be
+ * spent on cheaper GPUs too, else "". Built from the rate card, never typed.
+ */
+export function introMoreGpusNote(o: IntroOffer): string {
+  const more = introOfferMoreGpus(o);
+  return more.length ? ` (more hours on the ${more.join(", ")})` : "";
+}
+
+/** Names of the public GPUs the intro hours may be spent on, cheapest first. */
+function eligibleGpuNames(card: RateCard | null, api: { eligible_gpus?: string[] } | null | undefined): string[] {
+  if (api?.eligible_gpus?.length) return api.eligible_gpus;
+  return publicGpus(card).filter((g) => g.intro_eligible === true).map((g) => g.name);
+}
+
+/** Is this GPU one the intro hours (in `cur`) may be spent on? */
+export function gpuIntroEligible(gpu: RateCardGpu, card: RateCard | null, cur: Currency = "INR"): boolean {
+  const o = introOfferFor(card, cur);
+  if (!o) return false;
+  if (gpu.intro_eligible != null) return gpu.intro_eligible;
+  return o.eligibleGpus.includes(gpu.name);
+}
 
 /**
  * The RUPEE first-top-up offer, or null when there is nothing honest to
@@ -317,7 +372,9 @@ export function getIntroOffer(card: RateCard | null): IntroOffer | null {
     }
   }
   if (!hours || hours <= 0) return null;
-  const gpu = card?.gpus.find((g) => !g.quote_on_request && g.hourly_rate_rupees != null);
+  // The reference GPU: published since the ladder; derived from the credit
+  // on an older API.
+  const gpuName = io.gpu_name ?? introOfferGpu(card, io.price_rupees + (io.bonus_rupees ?? 0), hours)?.name ?? null;
   return {
     currency: "INR",
     price: io.price_rupees,
@@ -325,7 +382,8 @@ export function getIntroOffer(card: RateCard | null): IntroOffer | null {
     bonus: io.bonus_rupees ?? null,
     validityDays: io.validity_days ?? null,
     onePerCustomer: io.one_per_customer ?? true,
-    gpuName: gpu?.name ?? null,
+    gpuName,
+    eligibleGpus: eligibleGpuNames(card, io),
   };
 }
 
@@ -339,7 +397,7 @@ export function getIntroOffer(card: RateCard | null): IntroOffer | null {
 export function getUsdIntroOffer(card: RateCard | null): IntroOffer | null {
   const io = card?.usd?.intro_offer;
   if (!io || !(io.price > 0) || !(io.hours > 0)) return null;
-  const gpu = card?.gpus.find((g) => !g.quote_on_request && g.hourly_rate_rupees != null);
+  const gpuName = io.gpu_name ?? introOfferGpu(card, io.price + (io.bonus ?? 0), io.hours, "USD")?.name ?? null;
   return {
     currency: "USD",
     price: io.price,
@@ -347,8 +405,33 @@ export function getUsdIntroOffer(card: RateCard | null): IntroOffer | null {
     bonus: io.bonus ?? null,
     validityDays: io.validity_days ?? null,
     onePerCustomer: true,
-    gpuName: io.gpu_name ?? gpu?.name ?? null,
+    gpuName,
+    eligibleGpus: eligibleGpuNames(card, io),
   };
+}
+
+/**
+ * Which GPU the intro offer's hours are counted on: the public GPU whose
+ * hourly rate times the offer's hours equals what is credited (price +
+ * bonus), within rounding. The control plane prices the offer on one profile
+ * and publishes the credit, not the profile, so with a ladder of several
+ * GPUs this is how the site names the right one ("8 hours of RTX 5080", not
+ * of the cheapest). Falls back to the cheapest public GPU when nothing
+ * matches (an API without the bonus field, or a credit that fits no rate).
+ */
+function introOfferGpu(card: RateCard | null, credited: number, hours: number, cur: Currency = "INR"): RateCardGpu | null {
+  const gpus = publicGpus(card).filter(isPricedGpu);
+  if (!gpus.length) return null;
+  const target = credited / hours;
+  let best: { gpu: RateCardGpu; off: number } | null = null;
+  for (const g of gpus) {
+    const rate = hourlyValue(g, cur, card);
+    if (rate == null || rate <= 0) continue;
+    const off = Math.abs(rate - target) / rate;
+    if (!best || off < best.off) best = { gpu: g, off };
+  }
+  // Within 2%: the hours are a rounded figure (floor to 0.1 h) on the API.
+  return best && best.off <= 0.02 ? best.gpu : cheapestGpu(card);
 }
 
 /** "₹1,000" / "$20": the offer's price in its own currency. */
@@ -378,11 +461,11 @@ export function introOfferFor(card: RateCard | null, cur: Currency = "INR"): Int
   return cur === "USD" ? getUsdIntroOffer(card) : getIntroOffer(card);
 }
 
-/** "₹1,000 = 8 hours of RTX 5080" / "$20 = 8 hours of RTX 5080", or null when no offer is live. */
+/** "₹1,000 = 8 hours of <cheapest GPU>" / "$20 = 8 hours of <cheapest GPU>", or null when no offer is live. */
 export function introOfferHeadline(card: RateCard | null, cur: Currency = "INR"): string | null {
   const o = introOfferFor(card, cur);
   if (!o) return null;
-  return `${introPrice(o)} = ${hoursLabel(o.hours)}${o.gpuName ? ` of ${o.gpuName}` : ""}`;
+  return `${introPrice(o)} = ${hoursLabel(o.hours)}${o.gpuName ? ` of ${o.gpuName}` : ""}${introMoreGpusNote(o)}`;
 }
 
 /**
@@ -427,7 +510,7 @@ export function introOfferFaq(card: RateCard | null, cur: Currency = "INR"): { q
     q: "Is there an offer for new customers?",
     a:
       `Yes. Your first top-up of ${introPrice(o)}${o.currency === "USD" ? " (no GST)" : ""} buys ${hoursLabel(o.hours)}` +
-      `${o.gpuName ? ` on an ${o.gpuName}` : ""}${o.validityDays ? `, to use within ${o.validityDays} days` : ""}, ` +
+      `${o.gpuName ? ` on ${withArticle(o.gpuName)}` : ""}${introMoreGpusNote(o)}${o.validityDays ? `, to use within ${o.validityDays} days` : ""}, ` +
       "one per customer. You sign up with an email and a WhatsApp code to your mobile, with no ID documents, " +
       "and international cards work. We won't say what you can finish in that time, because it " +
       "depends entirely on your scene.",
@@ -476,7 +559,7 @@ export function lowestPublishedHourly(
   return { rupees: best.effective_included_hourly_rupees!, planName: best.name };
 }
 
-/** "₹399/hr, GST included" — or without the clause if the card says otherwise. */
+/** "₹229/hr, GST included" — or without the clause if the card says otherwise. */
 export function gstClause(card: RateCard | null): string | null {
   if (!card) return null;
   return card.prices_include_gst
@@ -491,20 +574,182 @@ export function firstTopupBonus(card: RateCard | null): FirstTopupBonus | null {
   return { percent, capRupees: cap };
 }
 
-/**
- * "₹399/hr" / "$5.99/hr", or "On request" where no public price is set.
+/* ────────────────────────────────────────────────────────────────────────────
+ * The GPU ladder (owner, 21 Oct 2026).
  *
- * The USD block publishes ONE GPU rate (`usd.gpu_hourly`), which is the rate
- * of the one publicly priced GPU; a USD view of any other priced GPU would be
- * a number we never set, so it says "On request".
+ * The API's /public/rate-card lists only the profiles an admin has made
+ * public, so `gpus[]` is the ladder as customers may see it: one GPU today,
+ * five once the others go public. Nothing here names a GPU; every list on the
+ * site renders whatever the card returns, cheapest first.
+ * ──────────────────────────────────────────────────────────────────────────── */
+
+/** True for a GPU the site may quote a rupee price for. */
+export function isPricedGpu(gpu: RateCardGpu): boolean {
+  return !gpu.quote_on_request && gpu.hourly_rate_rupees != null;
+}
+
+/**
+ * The public ladder, cheapest rupee rate first; quote-on-request profiles
+ * last, in the API's order. Empty when the control plane is unreachable.
+ */
+export function publicGpus(card: RateCard | null): RateCardGpu[] {
+  const gpus = card?.gpus ?? [];
+  const priced = gpus.filter(isPricedGpu).sort((a, b) => a.hourly_rate_rupees! - b.hourly_rate_rupees!);
+  const onRequest = gpus.filter((g) => !isPricedGpu(g));
+  return [...priced, ...onRequest];
+}
+
+/** The cheapest publicly priced GPU: the one "from ₹X" and the intro offer refer to. */
+export function cheapestGpu(card: RateCard | null): RateCardGpu | null {
+  return publicGpus(card).find(isPricedGpu) ?? null;
+}
+
+/**
+ * This GPU's US-dollar rate per hour, or null.
+ *
+ * Each public profile carries its own `usd_hourly_rate` since the ladder. An
+ * older API publishes one global `usd.gpu_hourly` only, which was the rate of
+ * the one public GPU, so on that API it is used for the CHEAPEST public GPU
+ * and nothing else: a dollar price for any other GPU would be a number we
+ * never set.
+ */
+export function usdHourlyValue(gpu: RateCardGpu, card: RateCard | null): number | null {
+  if (!isPricedGpu(gpu)) return null;
+  if (gpu.usd_hourly_rate != null && gpu.usd_hourly_rate > 0) return gpu.usd_hourly_rate;
+  const anyOwnRate = (card?.gpus ?? []).some((g) => g.usd_hourly_rate != null && g.usd_hourly_rate > 0);
+  if (anyOwnRate) return null;
+  return cheapestGpu(card)?.slug === gpu.slug ? usdRates(card).gpu_hourly : null;
+}
+
+/** The hourly rate as a number in `cur`, or null. */
+export function hourlyValue(gpu: RateCardGpu, cur: Currency, card: RateCard | null): number | null {
+  if (!isPricedGpu(gpu)) return null;
+  return cur === "USD" ? usdHourlyValue(gpu, card) : gpu.hourly_rate_rupees;
+}
+
+/**
+ * "₹229/hr" / "$3.49/hr", or "On request" where no public price is set in
+ * that currency.
  */
 export function formatHourly(gpu: RateCardGpu, cur: Currency = "INR", card: RateCard | null = null): string {
-  if (gpu.hourly_rate_rupees == null) return "On request";
-  if (cur === "USD") {
-    const first = card?.gpus.find((g) => !g.quote_on_request && g.hourly_rate_rupees != null);
-    return card && first?.slug === gpu.slug ? `${formatMoney(usdRates(card).gpu_hourly, "USD")}/hr` : "On request";
+  const v = hourlyValue(gpu, cur, card);
+  if (v == null) return "On request";
+  return cur === "USD" ? `${formatMoney(v, "USD")}/hr` : `₹${Math.round(v).toLocaleString("en-IN")}/hr`;
+}
+
+/** "₹229" / "$3.49" (no unit), or null. */
+export function formatHourlyBare(gpu: RateCardGpu, cur: Currency = "INR", card: RateCard | null = null): string | null {
+  const v = hourlyValue(gpu, cur, card);
+  if (v == null) return null;
+  return cur === "USD" ? formatMoney(v, "USD") : `₹${Math.round(v).toLocaleString("en-IN")}`;
+}
+
+/** "10,752 CUDA cores" style thousands grouping, locale-neutral for specs. */
+function groupThousands(n: number): string {
+  return Math.round(n).toLocaleString("en-US");
+}
+
+/**
+ * The spec chips for one ladder row, in the owner's order (21 Oct 2026):
+ * architecture, CUDA cores, VRAM, vCPU, RAM. The first two are omitted when
+ * the API does not publish them, so an older control plane still renders a
+ * correct, shorter line.
+ */
+export function gpuSpecChips(gpu: RateCardGpu): string[] {
+  const chips: string[] = [];
+  if (gpu.architecture) chips.push(gpu.architecture);
+  if (gpu.cuda_cores != null && gpu.cuda_cores > 0) chips.push(`${groupThousands(gpu.cuda_cores)} CUDA cores`);
+  chips.push(`${gpu.vram_gb} GB VRAM`);
+  chips.push(cpuSpec(gpu));
+  chips.push(`${gpu.ram_gb} GB RAM`);
+  return chips;
+}
+
+/** "Blackwell · 10,752 CUDA cores · 16 GB VRAM · 16 vCPU · 64 GB RAM". */
+export function gpuSpecLine(gpu: RateCardGpu): string {
+  return gpuSpecChips(gpu).join(" · ");
+}
+
+/**
+ * "RTX 5080" with one public GPU; "RTX A4000 to RTX PRO 6000" with more.
+ * Names only what the card actually publishes, so the site never promises a
+ * GPU that is not yet public. Null without a rate card.
+ */
+export function gpuRangeLabel(card: RateCard | null): string | null {
+  return ladderRanges(card)?.gpu ?? null;
+}
+
+/**
+ * The ladder summarised as ranges, for spec tables and fact tiles that have
+ * one line per attribute rather than one row per GPU: "16 to 96 GB" VRAM,
+ * "16 to 32 vCPU", "64 to 176 GB" RAM. With one public GPU each is just that
+ * GPU's figure. Null without a rate card, so a page falls back to saying
+ * nothing (or NODE, the base node) rather than inventing a range.
+ */
+export type LadderRanges = {
+  count: number;
+  /** "RTX 5080" / "RTX A4000 to RTX PRO 6000". */
+  gpu: string;
+  /** "16 GB" / "16 to 96 GB". */
+  vram: string;
+  /** "16 vCPU" / "16 to 32 vCPU". */
+  cpu: string;
+  /** "64 GB" / "64 to 176 GB". */
+  ram: string;
+};
+
+export function ladderRanges(card: RateCard | null): LadderRanges | null {
+  const gpus = publicGpus(card);
+  if (!gpus.length) return null;
+  const range = (vals: number[], unit: string) => {
+    const lo = Math.min(...vals), hi = Math.max(...vals);
+    return lo === hi ? `${lo} ${unit}` : `${lo} to ${hi} ${unit}`;
+  };
+  const cpuLabel = gpus[0].cpu_label ?? "vCPU";
+  return {
+    count: gpus.length,
+    gpu: gpus.length === 1 ? gpus[0].name : `${gpus[0].name} to ${gpus[gpus.length - 1].name}`,
+    vram: range(gpus.map((g) => g.vram_gb), "GB"),
+    cpu: range(gpus.map((g) => g.cpu_cores ?? g.vcpu), cpuLabel),
+    ram: range(gpus.map((g) => g.ram_gb), "GB"),
+  };
+}
+
+/**
+ * The ladder as spec-table rows (GPU, VRAM, CPU, System RAM), from
+ * ladderRanges(). Empty without a rate card, so a page's table simply has no
+ * GPU rows rather than a typed GPU.
+ */
+export function ladderSpecRows(card: RateCard | null): [string, string][] {
+  const l = ladderRanges(card);
+  if (!l) return [];
+  return [
+    ["GPU", l.gpu],
+    ["VRAM", l.vram],
+    ["CPU", l.cpu],
+    ["System RAM", l.ram],
+  ];
+}
+
+/**
+ * "an RTX 5080 with 16 GB of VRAM, 64 GB of RAM and 16 vCPU" / "your choice
+ * of GPU from the RTX A4000 to the RTX PRO 6000, with 16 to 96 GB of VRAM,
+ * 64 to 176 GB of RAM and 16 to 32 vCPU": the machine in one phrase, for FAQ
+ * answers. Null without a rate card.
+ */
+export function ladderPhrase(card: RateCard | null): string | null {
+  const l = ladderRanges(card);
+  if (!l) return null;
+  const gpus = publicGpus(card);
+  if (l.count === 1) {
+    return `${withArticle(l.gpu)} with ${l.vram} of VRAM, ${l.ram} of RAM and ${l.cpu}`;
   }
-  return `₹${Math.round(gpu.hourly_rate_rupees).toLocaleString("en-IN")}/hr`;
+  return `your choice of GPU from the ${gpus[0].name} to the ${gpus[gpus.length - 1].name}, with ${l.vram} of VRAM, ${l.ram} of RAM and ${l.cpu}`;
+}
+
+/** "an RTX 5080" / "a Quadro": the article English wants before a GPU name. */
+export function withArticle(name: string): string {
+  return /^(RTX|A\d|[AEIOU]|[FHLMNRSX]\b)/i.test(name) ? `an ${name}` : `a ${name}`;
 }
 
 /* ────────────────────────────────────────────────────────────────────────────
@@ -521,17 +766,17 @@ export function formatHourly(gpu: RateCardGpu, cur: Currency = "INR", card: Rate
  * ──────────────────────────────────────────────────────────────────────────── */
 
 /**
- * "₹399" (INR) / "$5.99" (USD, the rate card's `usd.gpu_hourly`) — the
- * cheapest publicly-priced GPU, or null if none has a price.
+ * "₹229" (INR) / "$3.49" (USD) — the cheapest publicly-priced GPU in that
+ * currency (the "from" price of the ladder), or null if none has a price.
  */
 export function adhocRate(card: RateCard | null, cur: Currency = "INR"): string | null {
-  const gpu = card?.gpus.find((g) => !g.quote_on_request && g.hourly_rate_rupees != null);
-  if (!gpu || gpu.hourly_rate_rupees == null) return null;
-  if (cur === "USD") return formatMoney(usdRates(card).gpu_hourly, "USD");
-  return `₹${Math.round(gpu.hourly_rate_rupees).toLocaleString("en-IN")}`;
+  const v = adhocRateValue(card, cur);
+  if (v == null) return null;
+  if (cur === "USD") return formatMoney(v, "USD");
+  return `₹${Math.round(v).toLocaleString("en-IN")}`;
 }
 
-/** "₹399/hr" / "$5.99/hr", or null. */
+/** "₹229/hr" / "$3.49/hr", or null. */
 export function adhocRateHourly(card: RateCard | null, cur: Currency = "INR"): string | null {
   const r = adhocRate(card, cur);
   return r ? `${r}/hr` : null;
@@ -576,7 +821,7 @@ export function entryPlanFeeUsd(card: RateCard | null): string | null {
   return fee != null && fee > 0 ? formatMoney(fee, "USD") : null;
 }
 
-/** "$5.99" — the best overage rate across plans in US dollars, or null. */
+/** "$4.99" — the best overage rate across plans in US dollars, or null. */
 export function bestOverageRateUsd(card: RateCard | null): string | null {
   const rates = planTiers(card)
     .map((p) => p.usd_overage_hourly_rate)
@@ -690,9 +935,16 @@ export function pricingFaqAnswer(card: RateCard | null, cur: Currency = "INR"): 
  * so the comparison simply was not made — and the site asserted "every tier
  * bills below the ad-hoc rate" on the strength of both strings merely existing.
  */
-export function adhocRateValue(card: RateCard | null): number | null {
-  const gpu = card?.gpus.find((g) => !g.quote_on_request && g.hourly_rate_rupees != null);
-  return gpu?.hourly_rate_rupees ?? null;
+export function adhocRateValue(card: RateCard | null, cur: Currency = "INR"): number | null {
+  const gpu = cheapestGpu(card);
+  if (!gpu) return null;
+  if (cur === "INR") return gpu.hourly_rate_rupees;
+  // USD: the lowest own rate across the public priced GPUs; on an API before
+  // the ladder, the one global rate (usdHourlyValue handles both).
+  const rates = publicGpus(card)
+    .map((g) => usdHourlyValue(g, card))
+    .filter((v): v is number => v != null && v > 0);
+  return rates.length ? Math.min(...rates) : null;
 }
 
 /**
@@ -729,9 +981,9 @@ export function commitmentIsCheaper(card: RateCard | null): boolean {
  * the headline is not what most sessions cost.
  */
 export function perMinuteRate(card: RateCard | null, cur: Currency = "INR"): string | null {
-  const adhoc = adhocRateValue(card);
+  const adhoc = adhocRateValue(card, cur);
   if (adhoc == null || card?.billing_granularity !== "per_minute") return null;
-  if (cur === "USD") return `$${(usdRates(card).gpu_hourly / 60).toFixed(2)}`;
+  if (cur === "USD") return `$${(adhoc / 60).toFixed(2)}`;
   return `₹${(adhoc / 60).toFixed(2)}`;
 }
 
@@ -746,11 +998,11 @@ export function sessionCostExample(
   minutes = 20,
   cur: Currency = "INR",
 ): { minutes: number; cost: string } | null {
-  const adhoc = adhocRateValue(card);
+  const adhoc = adhocRateValue(card, cur);
   if (adhoc == null || card?.billing_granularity !== "per_minute") return null;
   // Dollars to the cent: "$2", "$1.20". Whole rupees for INR (see above).
   if (cur === "USD") {
-    return { minutes, cost: formatMoney(Math.round((usdRates(card).gpu_hourly / 60) * minutes * 100) / 100, "USD") };
+    return { minutes, cost: formatMoney(Math.round((adhoc / 60) * minutes * 100) / 100, "USD") };
   }
   return {
     minutes,
@@ -784,8 +1036,9 @@ export function planStorageIsFree(plan: RateCardPlan): boolean {
 }
 
 /**
- * "8 CPU cores" from the rate card. Uses the label the API publishes; an older
- * API without `cpu_label` gets the old "vCPU" wording rather than a made-up one.
+ * "16 vCPU" from the rate card. Uses the label the API publishes ("vCPU"
+ * since the GPU ladder, "CPU cores" on the API before it); an API without
+ * `cpu_label` at all gets "vCPU" rather than a made-up label.
  */
 export function cpuSpec(gpu: Pick<RateCardGpu, "vcpu" | "cpu_cores" | "cpu_label">): string {
   const count = gpu.cpu_cores ?? gpu.vcpu;
