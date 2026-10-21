@@ -9,7 +9,10 @@
  */
 export type CfdPage = { path: string; name: string; updated: string };
 
-export const CFD_HOME: CfdPage = { path: "/cfd", name: "CFD for ducts and pipes", updated: "2026-10-18" };
+export const CFD_HOME: CfdPage = { path: "/cfd", name: "CFD for ducts and pipes", updated: "2026-10-21" };
+
+/** The public 3D results demo (owner, 21 Oct 2026): the sample bend and reducer in the customer viewer. */
+export const CFD_DEMO: CfdPage = { path: "/cfd/demo", name: "CFD results in 3D: live demo", updated: "2026-10-21" };
 
 export const MESH_STUDY: CfdPage = {
   path: "/cfd/mesh-independence-study",
