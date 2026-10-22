@@ -58,7 +58,17 @@ export type Attribution = {
    *  data on their own; the Conversions API matches on them. */
   fbp?: string | null;
   fbc?: string | null;
+  /** First top-up A/B (owner approved 22 Oct 2026). Drawn ONCE, 50/50, the
+   *  first time this browser lands on a /go/* page, and never changed: the
+   *  page shows "or start with ₹500 = 3 hours" only to "intro500", and the
+   *  flag goes to the API with the sign-up so the account is guaranteed the
+   *  same offer. The API honours it only for paid traffic
+   *  (services/intro_ab.py); for anyone else it is ignored. Null until a
+   *  /go/* landing. */
+  intro_variant?: IntroVariant | null;
 };
+
+export type IntroVariant = "intro500" | "control";
 
 export type LastTouch = {
   utm_source: string | null;
@@ -100,8 +110,17 @@ function empty(): Attribution {
     utm_content: null, utm_term: null, fbclid: null,
     gclid: null, gbraid: null, wbraid: null,
     landing_path: null, referrer: null, first_seen_at: null,
-    utm_id: null, last_touch: null,
+    utm_id: null, last_touch: null, intro_variant: null,
   };
+}
+
+/** The /go/* share of the "intro500" arm. Mirrors the API's default
+ *  intro500_share_percent (50); the API's own hash split uses its setting,
+ *  this only decides what a landing page shows and sends. */
+const INTRO500_SHARE = 0.5;
+
+function isAdLanding(pathname: string): boolean {
+  return pathname === "/go" || pathname.startsWith("/go/") || pathname.startsWith("/usd/go/");
 }
 
 function readCookie(name: string): string | null {
@@ -183,6 +202,13 @@ export function captureAttribution(): void {
       if (v) { a[k] = v; touched = true; }
     }
 
+    // First top-up A/B: the arm is drawn on the first /go/* landing and then
+    // frozen, so the copy a visitor is shown is the offer their account gets.
+    if (!a.intro_variant && isAdLanding(window.location.pathname)) {
+      a.intro_variant = Math.random() < INTRO500_SHARE ? "intro500" : "control";
+      touched = true;
+    }
+
     // Last touch: any visit that arrives with campaign params replaces it.
     const p = (k: string) => clean(params.get(k));
     if (CAMPAIGN_KEYS.some((k) => params.get(k))) {
@@ -218,11 +244,28 @@ export function readAttribution(): Attribution | null {
   return hasAnything ? a : null;
 }
 
-/** The fields the API stores on the user row (services/attribution.py). */
+/**
+ * The arm this browser was drawn into on a /go/* landing, or null. Runs the
+ * capture first (idempotent), so a landing page can ask right after
+ * hydration without depending on the root layout's effect having run.
+ */
+export function readIntroVariant(): IntroVariant | null {
+  if (typeof window === "undefined") return null;
+  try {
+    captureAttribution();
+    const v = load()?.intro_variant;
+    return v === "intro500" || v === "control" ? v : null;
+  } catch {
+    return null;
+  }
+}
+
+/** The fields the API stores on the user row (services/attribution.py),
+ *  plus the A/B landing flag it decides on. */
 const SIGNUP_KEYS = [
   "utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term",
   "fbclid", "gclid", "gbraid", "wbraid",
-  "landing_path", "referrer", "first_seen_at",
+  "landing_path", "referrer", "first_seen_at", "intro_variant",
 ] as const;
 
 /**

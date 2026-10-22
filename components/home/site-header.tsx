@@ -6,7 +6,7 @@ import { useState, useEffect, useRef, useSyncExternalStore, MouseEvent } from "r
 import { Menu, X } from "lucide-react";
 import { CoreframeWordmarkAtlas } from "@/components/brand/coreframe-wordmark-atlas";
 import { trackEvent } from "@/lib/analytics";
-import { hoursLabel, introOfferFor } from "@/lib/rate-card";
+import { hoursLabel, introOfferFor, introOfferForAccount } from "@/lib/rate-card";
 import { formatMoney, parseCurrency, type Currency } from "@/lib/money";
 import { useRateCard } from "@/lib/use-rate-card";
 import { API_BASE } from "@/lib/api-base";
@@ -78,6 +78,12 @@ interface WalletData {
   paid_access?: boolean;
   intro_offer_available?: boolean;
   min_topup_rupees_now?: number;
+  // First top-up A/B (22 Oct 2026): this account's own offer (arm, price,
+  // hours, bonus); the button quotes these, never the rate card's numbers.
+  intro_variant?: string | null;
+  intro_offer_price_rupees_now?: number | null;
+  intro_offer_hours_now?: number | null;
+  intro_offer_bonus_rupees_now?: number | null;
   // Unified wallet (13 Oct 2026): one wallet for GPU, CFD and Studio. Part of
   // the balance may be the intro bonus, which only GPU time can spend.
   spendable_everywhere_rupees?: number;
@@ -316,7 +322,10 @@ export function SiteHeader() {
   // account's currency: the rupee one, or the dollar one while the API
   // publishes usd.intro_offer.
   const card = useRateCard(needsTopup && auth?.wallet?.intro_offer_available === true);
-  const intro = auth?.wallet?.intro_offer_available === true ? introOfferFor(card, accountCur) : null;
+  // ... with this account's own price and hours (first top-up A/B, 22 Oct 2026).
+  const intro = auth?.wallet?.intro_offer_available === true
+    ? introOfferForAccount(introOfferFor(card, accountCur), auth.wallet)
+    : null;
   const topupAmount = auth?.wallet?.min_topup_rupees_now ?? intro?.price ?? null;
   const topupLabel = topupAmount
     ? `Add ${formatMoney(topupAmount, accountCur)}${intro && intro.price === topupAmount ? ` · ${hoursLabel(intro.hours, true)}` : ""}`
