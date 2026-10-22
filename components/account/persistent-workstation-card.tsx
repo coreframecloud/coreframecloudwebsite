@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { formatMoney, parseCurrency, type Currency } from "@/lib/money";
-import { errMsg, errorText, jsonBody, okMsg, quietBtn, readJson, shortDate, solidBtn, teamApi } from "@/lib/team";
+import { errMsg, errorText, inputCls, jsonBody, okMsg, quietBtn, readJson, shortDate, solidBtn, teamApi } from "@/lib/team";
 
 /**
  * My Activity: "Persistent workstation" (owner, 22 Oct 2026). The customer's own
@@ -46,6 +46,7 @@ interface Status {
   available_on: string[];
   available_on_text: string;
   grace_days: number;
+  remove_confirm_word?: string;
   workstation: Workstation | null;
   wallet_pooled: boolean;
 }
@@ -57,6 +58,7 @@ const STATUS_TEXT: Record<string, string> = {
   ready: "Ready",
   in_use: "In use",
   grace: "Payment due",
+  quarantined: "Needs a check",
   deleting: "Being removed",
 };
 
@@ -66,6 +68,7 @@ export default function PersistentWorkstationCard({ onChanged }: { onChanged?: (
   const [size, setSize] = useState<number | null>(null);
   const [confirmSetup, setConfirmSetup] = useState(false);
   const [confirmRemove, setConfirmRemove] = useState(false);
+  const [typed, setTyped] = useState("");
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
 
@@ -122,11 +125,14 @@ export default function PersistentWorkstationCard({ onChanged }: { onChanged?: (
     }
   };
 
+  const confirmWord = status?.remove_confirm_word ?? "DELETE";
+
   const remove = async () => {
+    if (typed.trim() !== confirmWord) return;
     setBusy(true);
     setMsg(null);
     try {
-      const res = await teamApi("/me/persistent-workstation", { method: "DELETE" });
+      const res = await teamApi("/me/persistent-workstation", jsonBody("DELETE", { confirm: typed.trim() }));
       const body = await readJson(res);
       if (!res.ok) {
         setMsg({ ok: false, text: errorText(body, "The persistent workstation could not be removed.") });
@@ -134,6 +140,7 @@ export default function PersistentWorkstationCard({ onChanged }: { onChanged?: (
       }
       setStatus(body as Status);
       setConfirmRemove(false);
+      setTyped("");
       setMsg({ ok: true, text: "Removed. Everything on the disk is deleted; the month already paid is not refunded." });
       onChanged?.();
     } catch {
@@ -183,7 +190,7 @@ export default function PersistentWorkstationCard({ onChanged }: { onChanged?: (
             after that the disk, with everything on it, is deleted. To change the size, remove the disk and set up a new one;
             files are not kept.
           </p>
-          {ws.status !== "deleting" && (
+          {ws.status !== "deleting" && ws.status !== "quarantined" && (
             confirmRemove ? (
               <div className="cf-glass-inset border-l-2! border-l-destructive! px-4 py-3">
                 <p className="text-sm font-semibold text-ink">Remove this persistent workstation?</p>
@@ -191,11 +198,27 @@ export default function PersistentWorkstationCard({ onChanged }: { onChanged?: (
                   Everything on it is deleted: the applications you installed and any files saved on it. Your Coreframe
                   drive (N:) is not affected. The month already paid is not refunded.
                 </p>
+                <label className="mt-3 block text-xs text-ink-2">
+                  Type <b className="font-mono text-ink">{confirmWord}</b> to confirm
+                  <input
+                    className={`${inputCls} mt-1 font-mono`}
+                    value={typed}
+                    onChange={(e) => setTyped(e.target.value)}
+                    autoComplete="off"
+                    spellCheck={false}
+                    aria-label={`Type ${confirmWord} to confirm`}
+                  />
+                </label>
                 <div className="mt-3 flex flex-wrap gap-2">
-                  <button type="button" className={`${solidBtn} bg-destructive! hover:bg-destructive!`} disabled={busy} onClick={() => void remove()}>
-                    {busy ? "Removing…" : "Yes, remove it"}
+                  <button
+                    type="button"
+                    className={`${solidBtn} bg-destructive! hover:bg-destructive!`}
+                    disabled={busy || typed.trim() !== confirmWord}
+                    onClick={() => void remove()}
+                  >
+                    {busy ? "Removing…" : "Remove it"}
                   </button>
-                  <button type="button" className={quietBtn} disabled={busy} onClick={() => setConfirmRemove(false)}>
+                  <button type="button" className={quietBtn} disabled={busy} onClick={() => { setConfirmRemove(false); setTyped(""); }}>
                     Keep it
                   </button>
                 </div>
