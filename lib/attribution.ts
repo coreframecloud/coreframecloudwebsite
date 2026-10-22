@@ -235,10 +235,13 @@ const SIGNUP_KEYS = [
  * /auth/google; the API carries it through Google in its signed state and
  * writes it only when the callback creates the account.
  *
- * Only the stored fields are sent (not last_touch, fbp/fbc) to keep the URL
- * short. Called at click time, never during render: localStorage does not
- * exist on the server, and reading it while rendering would make the server
- * and client markup disagree.
+ * Only the stored fields are sent (not last_touch) to keep the URL short,
+ * plus the pixel's _fbp/_fbc ids (22 Oct 2026): the API's Conversions API
+ * copy of CompleteRegistration (services/meta_capi.py) matches on them, and
+ * the Google door is the one place the browser cookie cannot reach otherwise.
+ * Called at click time, never during render: localStorage does not exist on
+ * the server, and reading it while rendering would make the server and
+ * client markup disagree.
  */
 export function googleSignInUrl(api: string): string {
   const base = `${api}/auth/google`;
@@ -246,7 +249,7 @@ export function googleSignInUrl(api: string): string {
     const a = readAttribution();
     if (!a) return base;
     const slim: Record<string, string> = {};
-    for (const k of SIGNUP_KEYS) {
+    for (const k of [...SIGNUP_KEYS, "fbp", "fbc"] as const) {
       const v = a[k];
       if (typeof v === "string" && v) slim[k] = v;
     }
