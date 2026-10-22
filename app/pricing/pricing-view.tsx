@@ -257,8 +257,8 @@ export default async function PricingView({ currency }: { currency: Currency }) 
           </h2>
           <p className="cf-section-copy mt-3 max-w-[40rem]">
             {ladderCount > 1
-              ? `Every workstation is a full Windows desktop streamed to your laptop; pick the GPU for the job. Per GPU-hour, ${taxWords(currency)}, billed per minute.`
-              : `A full Windows desktop streamed to your laptop. Per GPU-hour, ${taxWords(currency)}, billed per minute.`}
+              ? `Every workstation is a full Windows desktop streamed to your laptop, with the applications installed, that you drive yourself through the Connect app; it is not a Linux server you SSH into. Pick the GPU for the job. Per GPU-hour, ${taxWords(currency)}, billed per minute.`
+              : `A full Windows desktop streamed to your laptop, with the applications installed, that you drive yourself; not a Linux server you SSH into. Per GPU-hour, ${taxWords(currency)}, billed per minute.`}
           </p>
           <div className="mt-7">
             <GpuLadder card={rateCard} currency={currency} />

@@ -256,7 +256,7 @@ export const FAQ = [
   },
   {
     q: "Is my geometry kept private?",
-    a: "Your job belongs to your Coreframe account. Its page, results and files open only when you are signed in to that account; the links in our emails take you to the job page, which asks you to sign in first.",
+    a: "Your job belongs to your Coreframe account. Its page, results and files open only when you are signed in to that account; the links in our emails take you to the job page, which asks you to sign in first. Your data stays in India: the STL, the mesh, the case and the results are stored and processed on our own machines and our own NAS in India, and nothing is sent to a third-party service abroad.",
   },
 ];
 

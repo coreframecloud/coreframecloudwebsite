@@ -37,12 +37,16 @@ export function buildFaq(storage: StorageTerms, intro: IntroOffer | null, adhocR
       a: "No. A render farm takes your finished file and sends back images. Coreframe gives you the whole machine: you open D5 or Lumion, move around the viewport, change the lighting and see it live. If all you need is unattended batch rendering, a render farm really is cheaper, and we'll tell you so.",
     },
     {
+      q: "Is it a Linux GPU server I connect to over SSH?",
+      a: "No. Each workstation is a Windows desktop with the applications installed (D5 Render, Blender, Twinmotion, Unreal Engine; Lumion and Enscape on your own licence), streamed to your own laptop through the Coreframe Connect app, with no browser and no terminal. If you need a Linux box, root access or SSH for training or batch jobs, Coreframe isn't the right tool and a GPU cloud built for AI will serve you better.",
+    },
+    {
       q: "What internet speed do I need?",
       a: `${BANDWIDTH_SENTENCE} Stable latency matters as much as speed. On a weaker connection it gets frustrating, and we'd rather tell you now than take your money. The real test is trying it on the connection you'd actually use.`,
     },
     {
       q: "Where do my files live, and who can see them?",
-      a: `On Coreframe storage in India, tied to your account, with ${storage.paidGb} GB included. After every session the workstation is wiped and restored to a clean image, so nothing you worked on is left for the next person. That's also why software you install yourself only lasts for that session.`,
+      a: `On Coreframe storage in India, tied to your account, with ${storage.paidGb} GB included. All customer data stays in India: the control server is in Panvel, Maharashtra, the GPU workstations are in Mumbai, and project files sit on our own NAS; nothing is stored or processed outside the country. After every session the workstation is wiped and restored to a clean image, so nothing you worked on is left for the next person. That's also why software you install yourself only lasts for that session.`,
     },
     {
       q: "Do I need to install anything?",

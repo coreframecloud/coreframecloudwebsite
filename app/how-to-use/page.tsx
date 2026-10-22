@@ -60,7 +60,7 @@ const STEPS = [
 const FAQS = [
   {
     q: "What is Coreframe?",
-    a: `Coreframe rents Windows GPU workstations by the minute, hosted in India. You stream a real GPU workstation desktop to the laptop you already own and use it like a workstation under your desk, for D5 Render, Lumion, Enscape, Revit, 3ds Max, Blender, CFD work or anything else that needs a GPU. You drive the machine yourself. There's no job queue, because it isn't a render farm.`,
+    a: `Coreframe rents Windows GPU workstations by the minute, hosted in India. You stream a real Windows desktop, with the applications already installed, to the laptop you already own through the Coreframe Connect app (no browser, no terminal) and use it like a workstation under your desk, for D5 Render, Lumion, Enscape, Revit, 3ds Max, Blender, CFD work or anything else that needs a GPU. You drive the machine yourself. There's no job queue, because it isn't a render farm, and it isn't a Linux GPU server you reach over SSH: if you need root, SSH or Linux, a GPU cloud built for AI is the better fit.`,
   },
   {
     q: "How is Coreframe billed?",
@@ -92,7 +92,7 @@ const FAQS = [
   },
   {
     q: "Where are the machines located?",
-    a: `In ${NODE.location}. That keeps latency low for Indian users, and it means your data and your invoices stay within Indian jurisdiction.`,
+    a: "In India, and only in India. The control server is in Panvel, Maharashtra, the GPU workstations are in Mumbai, in a data centre whose operator publishes an Uptime Institute Tier III certification, and your project files sit on our own NAS. That keeps latency low for Indian users, and it means your data and your invoices stay within Indian jurisdiction.",
   },
   {
     q: "How do I get my files onto the workstation?",
@@ -137,7 +137,11 @@ export default function HowToUsePage() {
           </p>
             <PageByline path="/how-to-use" className="mt-4 opacity-75" />
       </div>
-          <OwnImage src="/home/wt-launch.webp" alt="The Coreframe app with the RTX 5080 ready to launch" width={1000} height={698} caption="Step one: pick your workstation and launch." sizes="(max-width: 1024px) 100vw, 480px" />
+          {/* Connect 1.3.1's catalogue (owner screenshot, 22 Oct 2026): the
+              GPU ladder with VRAM and the live per-hour price on every card.
+              The previous image was the 0.3 app with one GPU at a rate that
+              is no longer charged. */}
+          <OwnImage src="/home/connect-131-catalogue.webp" alt="Coreframe Connect: choose a workstation, with the RTX A4000, RTX A5000 and RTX 5080 cards showing VRAM and the price per hour" width={1076} height={270} caption="Step one: pick your workstation and launch." sizes="(max-width: 1024px) 100vw, 480px" />
         </div>
     </section>
       <section className="cf-section px-5 pb-0">
