@@ -233,7 +233,7 @@ function BandMedia({ o }: { o: Offering }) {
 
 function OfferingBand({ o, flip, prices }: { o: Offering; flip: boolean; prices: OfferingPrices }) {
   return (
-    <section id={o.id} className="scroll-mt-20">
+    <section id={o.id} className="scroll-mt-20" data-cf-section={`offer-${o.id}`}>
       <Reveal
         className={`grid items-center gap-10 overflow-hidden rounded-[32px] p-7 sm:p-12 lg:grid-cols-2 ${BAND_TINT[o.id]}`}
       >

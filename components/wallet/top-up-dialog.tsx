@@ -51,6 +51,7 @@
 import { apiFetch, sessionMarker } from "@/lib/session";
 import { useCallback, useEffect, useState } from "react";
 import { trackConversion } from "@/lib/analytics";
+import { flush as flushWebEvents, track as trackWebEvent } from "@/lib/web-events";
 import { hoursLabel, type IntroOffer } from "@/lib/rate-card";
 import { useRateCard } from "@/lib/use-rate-card";
 import { formatMoney, parseCurrency, usdRates, type Currency } from "@/lib/money";
@@ -220,6 +221,16 @@ export default function TopUpDialog({
   const intro = introOffer && introOffer.currency === currency ? introOffer : null;
   const [states, setStates] = useState<GstState[]>([]);
   const [amount, setAmount] = useState<string>("");
+  // Funnel: the dialog opened (the step after mobile verification).
+  useEffect(() => {
+    if (open) trackWebEvent("topup_dialog_open", { first: Boolean(isFirstTopup), currency: walletCurrency ?? undefined });
+  }, [open, isFirstTopup, walletCurrency]);
+  const pickAmount = (v: number | string, preset: boolean) => {
+    setAmount(String(v));
+    setError("");
+    const n = Number(v);
+    if (Number.isFinite(n) && n > 0) trackWebEvent("topup_amount_selected", { amount: n, currency: walletCurrency ?? undefined, preset });
+  };
   const [name, setName] = useState(user?.full_name ?? "");
   // Bundled list until the API answers; then the API's list (every country a
   // sign-up could have chosen) with the bundled ones kept, so it never shrinks.
@@ -440,6 +451,12 @@ export default function TopUpDialog({
         );
       }
 
+      // Funnel: the checkout is about to open (the API writes the same step
+      // when the order is created; a visitor counts once). Flushed now: the
+      // Razorpay window takes the page's attention.
+      trackWebEvent("topup_amount_selected", { amount: rupees, currency, preset: presets.includes(rupees) });
+      trackWebEvent("payment_started", { provider: "razorpay", amount: rupees, currency, first: Boolean(isFirstTopup) });
+      flushWebEvents();
       await new Promise<void>((resolve, reject) => {
         const rzp = new window.Razorpay!({
           key: order.key_id,
@@ -491,9 +508,11 @@ export default function TopUpDialog({
               // Razorpay. "pending" (not confirmed yet; the webhook credits it)
               // and "held_for_review" come back 200 with a message to show.
               if (v?.status && v.status !== "success") {
+                trackWebEvent("payment_result", { result: String(v.status), amount: rupees, currency });
                 onPending?.();
                 throw new Error(v?.message ?? "Payment received; your wallet updates within a few minutes.");
               }
+              trackWebEvent("payment_result", { result: "paid", amount: rupees, currency });
               // Server-confirmed payment, so this is a real purchase. Value is
               // what the customer paid (GST included), not the net credit; the
               // payment id deduplicates across GA4, Google Ads and Meta.
@@ -524,7 +543,15 @@ export default function TopUpDialog({
               reject(e instanceof Error ? e : new Error("Verification failed."));
             }
           },
-          modal: { ondismiss: () => reject(new Error("__dismissed__")) },
+          modal: {
+            ondismiss: () => {
+              // Closed without paying: the leak the funnel audit found (6 of
+              // 13 orders in 30 days). Flushed: the dialog may be closed next.
+              trackWebEvent("payment_result", { result: "closed", amount: rupees, currency });
+              flushWebEvents();
+              reject(new Error("__dismissed__"));
+            },
+          },
         });
         rzp.open();
       });
@@ -533,6 +560,7 @@ export default function TopUpDialog({
       if (msg === "__dismissed__") {
         setError("");
       } else if (msg.includes("confirm that payment")) {
+        trackWebEvent("payment_result", { result: "unconfirmed", amount: rupees, currency });
         onPending?.();
         setError(
           "Your payment went through, but we couldn't confirm it here. It'll be credited automatically within a few minutes. Refresh this page, and contact us if it hasn't appeared.",
@@ -543,7 +571,7 @@ export default function TopUpDialog({
     } finally {
       setBusy(false);
     }
-  }, [amount, city, config, countryIso, currency, isFirstTopup, isIndia, isUsd, name, onCredited, onPending, pincode, stateCode, user, starterMode, starterOffer]);
+  }, [amount, city, config, countryIso, currency, isFirstTopup, isIndia, isUsd, name, onCredited, onPending, pincode, presets, stateCode, user, starterMode, starterOffer]);
 
   if (!open) return null;
 
@@ -734,7 +762,7 @@ export default function TopUpDialog({
                       currency={currency}
                       amount={typedRupeesForBonus(amount)}
                       dimmed={Boolean(intro)}
-                      onPick={(v) => { setAmount(String(v)); setError(""); }}
+                      onPick={(v) => pickAmount(v, true)}
                     />
                     {intro && (
                       <p className="mt-2 text-xs leading-5 text-ink-2">
@@ -752,7 +780,7 @@ export default function TopUpDialog({
                       <button
                         key={p}
                         type="button"
-                        onClick={() => { setAmount(String(p)); setError(""); }}
+                        onClick={() => pickAmount(p, true)}
                         className={`inline-flex min-h-11 flex-col items-center justify-center rounded-cf border px-3.5 py-1 text-sm font-semibold tabular-nums transition sm:px-4 ${
                           amount === String(p)
                             ? "border-blue bg-blue-soft text-blue"

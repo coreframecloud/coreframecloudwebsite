@@ -2,6 +2,7 @@
 
 import { useSyncExternalStore } from "react";
 import { trackEvent } from "@/lib/analytics";
+import { flush as flushWebEvents } from "@/lib/web-events";
 
 /**
  * The one button on a paid landing page (/go/*), carrying the page's own
@@ -48,7 +49,7 @@ export function KeepQueryLink({
     <a
       href={withQuery(href, search)}
       className={className}
-      onClick={() => trackEvent(event, { link_url: href })}
+      onClick={() => { trackEvent(event, { link_url: href }); flushWebEvents(); }}
     >
       {children}
     </a>

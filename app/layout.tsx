@@ -36,6 +36,7 @@ import Script from "next/script";
 import { headers } from "next/headers";
 import { AttributionCapture } from "@/components/attribution-capture";
 import { WhatsAppClickTracker } from "@/components/analytics/whatsapp-click-tracker";
+import { WebEvents } from "@/components/analytics/web-events";
 import { WhatsAppButton } from "@/components/home/whatsapp-button";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
@@ -183,6 +184,11 @@ export default async function RootLayout({
   // 'strict-dynamic'. Reading it makes the page render per request: the
   // deliberate price of a CSP with no 'unsafe-inline' (owner, 17 Oct 2026).
   const nonce = (await headers()).get("x-nonce") ?? undefined;
+  // The funnel beacon's consent flag (proxy.ts sets x-cf-country from
+  // CF-IPCountry): the same regions the Google tag starts denied for, so a
+  // visitor there gets no visitor cookie and no identifying row.
+  const visitorCountry = (await headers()).get("x-cf-country") ?? "";
+  const consentDenied = CONSENT_DENIED_REGIONS.includes(visitorCountry);
   // The visitor's display currency (proxy.ts): the strip, the footer's tax
   // line and the text fields below show that currency only (owner, 18 Oct 2026).
   const currency = await requestCurrency();
@@ -571,6 +577,7 @@ export default async function RootLayout({
           <SiteHeader />
         </BareOnLanding>
         <AttributionCapture />
+        <WebEvents consentDenied={consentDenied} />
         <WhatsAppClickTracker />
         {children}
         <NoFooterOnAdPages>

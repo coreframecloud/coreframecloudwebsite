@@ -1,6 +1,7 @@
 "use client";
 
 import { API_BASE } from "@/lib/api-base";
+import { flush as flushWebEvents, track as trackWebEvent } from "@/lib/web-events";
 import { apiFetch, isSignedIn } from "@/lib/session";
 import { useEffect, useState } from "react";
 import Image from "next/image";
@@ -59,6 +60,8 @@ export default function DownloadPage() {
 
   function handleDownload() {
     if (!info?.url) return;
+    trackWebEvent("download_click", { platform: "windows", version: info.version ?? undefined });
+    flushWebEvents();
     setDownloading(true);
     const a = document.createElement("a");
     a.href = info.url;

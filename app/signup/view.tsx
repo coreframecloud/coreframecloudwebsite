@@ -78,11 +78,13 @@ export default async function SignupView({ currency }: { currency: Currency }) {
               657px viewport, so 87 people landed and none reached the field.
               It is one line under the headline now, rendered from the live
               rate card. Nothing else goes above the form on this page. */}
-          <LoginForm variant="start" offer={offer} />
+          <div data-cf-section="signup_form">
+            <LoginForm variant="start" offer={offer} />
+          </div>
 
           {/* Quiet, like the card above it: an inset panel and a small heading,
               not a section-sized title competing with "Create your account". */}
-          <section className="cf-glass-inset mt-6 p-5 sm:p-6">
+          <section className="cf-glass-inset mt-6 p-5 sm:p-6" data-cf-section="how">
             <h2 className="font-display text-lg leading-snug font-medium text-ink">How sign-up works</h2>
             <ol className="mt-4 space-y-3 text-sm leading-6 text-ink-2">
               <li>

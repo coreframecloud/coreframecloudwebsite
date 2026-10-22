@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { isWhatsAppUrl, trackWhatsAppLead } from "@/lib/analytics";
+import { flush as flushWebEvents, track as trackWebEvent } from "@/lib/web-events";
 
 /**
  * Counts every click on a WhatsApp link as a lead (GA4 generate_lead, Meta
@@ -26,6 +27,8 @@ export function WhatsAppClickTracker() {
       const a = target?.closest?.("a[href]") as HTMLAnchorElement | null;
       if (!a || !isWhatsAppUrl(a.getAttribute("href"))) return;
       trackWhatsAppLead(window.location.pathname);
+      trackWebEvent("whatsapp_click", { where: window.location.pathname });
+      flushWebEvents();
     };
     document.addEventListener("click", onClick, true);
     document.addEventListener("auxclick", onClick, true);
