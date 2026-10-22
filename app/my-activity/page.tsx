@@ -13,6 +13,7 @@ import { announceWallet } from "@/components/wallet/wallet-events";
 import MyCfdJobs from "@/components/cfd/my-cfd-jobs";
 import MyStudioProjects from "@/components/studio/my-studio-projects";
 import SignInSecurity from "@/components/account/sign-in-security";
+import MobileNumberCard from "@/components/account/mobile-number-card";
 import MyTeamCard from "@/components/team/my-team-card";
 import PersistentWorkstationCard from "@/components/account/persistent-workstation-card";
 import { apiFetch, forgetLocalSession, isSignedIn, rememberUser, sessionMarker } from "@/lib/session";
@@ -1053,7 +1054,8 @@ export default function MyActivityPage() {
         />
       </div>
 
-      <div className="mt-6">
+      <div className="mt-6 grid gap-6">
+        <MobileNumberCard />
         <SignInSecurity />
       </div>
 
