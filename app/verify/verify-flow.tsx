@@ -28,7 +28,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { OtpInput } from "@/components/ui/otp-input";
-import { CheckCircle2, Clock, Loader2, Mail, MessageCircle, Phone } from "lucide-react";
+import { CheckCircle2, Clock, Loader2, Mail, MessageCircle, MessageSquare, Phone } from "lucide-react";
 import {
   COUNTRIES,
   INDIA,
@@ -55,6 +55,25 @@ const errorBox =
 
 type NextStep = "email" | "mobile" | "done";
 
+/* How a mobile code can travel (22 Oct 2026). The API decides what is on
+   offer for the number on file: outside India SMS is the default and WhatsApp
+   the alternative; in India WhatsApp stays the default and SMS is offered after
+   the first send, and automatically when a WhatsApp send fails. A control
+   plane from before this field existed is still handled: WhatsApp only. */
+type Channel = "whatsapp" | "sms";
+interface OtpChannels {
+  default: Channel;
+  available: Channel[];
+}
+const WHATSAPP_ONLY: OtpChannels = { default: "whatsapp", available: ["whatsapp"] };
+
+function channelName(c: Channel): string {
+  return c === "sms" ? "SMS" : "WhatsApp";
+}
+function viaChannel(c: Channel): string {
+  return c === "sms" ? "by SMS" : "on WhatsApp";
+}
+
 interface VerificationStatus {
   next_step?: NextStep;
   account_status?: string;
@@ -66,8 +85,17 @@ interface VerificationStatus {
   phone_masked?: string | null;
   // The declared country (null for a Google sign-up that has not chosen one).
   country_code?: string | null;
+  otp_channels?: OtpChannels;
   access_token?: string;
   user?: unknown;
+}
+
+interface SendResult {
+  sent?: boolean;
+  channel?: Channel;
+  fallback_from?: Channel | null;
+  otp_channels?: OtpChannels;
+  detail?: unknown;
 }
 
 type Phase = "loading" | "email" | "phone" | "otp" | "done" | "held" | "error";
@@ -121,6 +149,12 @@ export default function VerifyFlow() {
   const [phone, setPhone] = useState("");
   const [otpSent, setOtpSent] = useState(false);
   const [otpCode, setOtpCode] = useState("");
+  // The channel the customer picked (null = the API's default for the number),
+  // the one that actually carried the last code, and the one that failed first
+  // when the API fell back to the other.
+  const [channel, setChannel] = useState<Channel | null>(null);
+  const [sentVia, setSentVia] = useState<Channel | null>(null);
+  const [fallbackFrom, setFallbackFrom] = useState<Channel | null>(null);
   const [emailResent, setEmailResent] = useState(false);
   // Where "done" goes: the page that sent them to sign up, if any. Only read
   // once the done card renders, which is always after the status fetch.
@@ -224,19 +258,31 @@ export default function VerifyFlow() {
     }
   }
 
-  // ── WhatsApp code ─────────────────────────────────────────────────────────
-  async function sendCode() {
+  // ── the mobile code (WhatsApp or SMS) ─────────────────────────────────────
+  const channels: OtpChannels = status?.otp_channels ?? WHATSAPP_ONLY;
+  const chosen: Channel = channel ?? channels.default;
+  const otherChannel: Channel | null = channels.available.find((c) => c !== (sentVia ?? chosen)) ?? null;
+
+  async function sendCode(which?: Channel) {
+    const want = which ?? chosen;
+    setChannel(want);
     setError("");
+    setFallbackFrom(null);
     setBusy(true);
     try {
       const res = await apiFetch(`${API}/verification/mobile-otp/send`, {
         method: "POST",
         headers: authHeaders(),
+        body: JSON.stringify({ channel: want }),
       });
-      const data = await res.json();
-      // A 503 is the server saying it could not DELIVER — a real answer.
+      const data = (await res.json()) as SendResult;
+      // A 503 is the server saying it could not DELIVER — a real answer. A 429
+      // is the resend cooldown, and the other channel is still on offer.
       if (!res.ok) throw new Error(typeof data.detail === "string" ? data.detail : `Error ${res.status}`);
       setOtpSent(true);
+      setSentVia(data.channel ?? want);
+      setFallbackFrom(data.fallback_from ?? null);
+      if (data.otp_channels) setStatus((s) => (s ? { ...s, otp_channels: data.otp_channels } : s));
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Could not send the code. Try again.");
     } finally {
@@ -261,14 +307,14 @@ export default function VerifyFlow() {
       // Oct 2026: one customer sent eight codes and typed nine, got rate
       // limited, and the page kept saying the code was wrong).
       if (res.status === 429) {
-        throw new Error("Too many tries for now. Wait ten minutes, then press \"Send a new code\" and type the newest code WhatsApp shows you.");
+        throw new Error("Too many tries for now. Wait ten minutes, then press \"Send a new code\" and type the newest code you receive.");
       }
       if (!res.ok) throw new Error(typeof data.detail === "string" ? data.detail : `Error ${res.status}`);
       setOtpCode("");
       setOtpSent(false);
       apply({ ...data, mobile_verified: data.mobile_verified ?? true });
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "That code did not work. Each new code replaces the last one, so type the newest message.");
+      setError(err instanceof Error ? err.message : "That code did not work. Type the newest code you received.");
     } finally {
       setBusy(false);
     }
@@ -412,8 +458,8 @@ export default function VerifyFlow() {
           title="Add your mobile number."
           sub={
             status?.country_code === "IN"
-              ? `We'll send a code on WhatsApp, because Indian regulations (CERT-In) require a verified contact number for compute rental. ${INDIAN_MOBILE_HINT}`
-              : "We'll send a code on WhatsApp, because Indian regulations (CERT-In) require a verified contact number for compute rental. Any country code works."
+              ? `We'll send a one-time code to confirm it, because Indian regulations (CERT-In) require a verified contact number for compute rental. ${INDIAN_MOBILE_HINT}`
+              : "We'll send a one-time code to confirm it, because Indian regulations (CERT-In) require a verified contact number for compute rental. Any country code works."
           }
         />
         <form onSubmit={submitPhone} className="grid gap-4">
@@ -461,28 +507,54 @@ export default function VerifyFlow() {
   }
 
   // phase === "otp"
+  const current: Channel = sentVia ?? chosen;
+  const number = <span className="font-medium text-ink">{status?.phone_masked ?? "the number on your account"}</span>;
+  const switchLabel = otherChannel ? `Send ${viaChannel(otherChannel)} instead` : null;
   return (
     <Card>
       <Header
-        icon={<MessageCircle className="h-5 w-5" />}
+        icon={current === "sms" ? <MessageSquare className="h-5 w-5" /> : <MessageCircle className="h-5 w-5" />}
         title="Confirm your mobile."
         sub={
-          <>
-            We&apos;ll send a 6-digit code on WhatsApp to{" "}
-            <span className="font-medium text-ink">{status?.phone_masked ?? "the number on your account"}</span>.
-          </>
+          otpSent ? (
+            <>
+              We sent a 6-digit code {viaChannel(current)} to {number}. It works for ten minutes.
+            </>
+          ) : (
+            <>
+              We&apos;ll send a 6-digit code {viaChannel(current)} to {number}.
+            </>
+          )
         }
       />
       {!otpSent ? (
-        <div className="grid gap-4">
+        <div className="grid gap-3">
           {error && <p className={errorBox}>{error}</p>}
-          <Button onClick={sendCode} disabled={busy} className={btnPrimary}>
+          <Button onClick={() => sendCode(chosen)} disabled={busy} className={btnPrimary}>
             {busy ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-            Send code on WhatsApp
+            Send code {viaChannel(chosen)}
           </Button>
+          {/* The alternative is always one tap away before the first send,
+              and after a failed send it is the obvious next thing to try. */}
+          {otherChannel && (
+            <button
+              type="button"
+              onClick={() => sendCode(otherChannel)}
+              disabled={busy}
+              className="cf-btn-secondary min-h-11 w-full disabled:opacity-60"
+            >
+              {switchLabel}
+            </button>
+          )}
         </div>
       ) : (
         <form onSubmit={submitCode} className="grid gap-4">
+          {fallbackFrom && (
+            <p className="cf-glass-inset border-l-2 border-l-blue px-4 py-3 text-sm leading-6 text-ink-2">
+              {channelName(fallbackFrom)} did not go through to that number, so we sent the code{" "}
+              {viaChannel(current)} instead.
+            </p>
+          )}
           <OtpInput
             value={otpCode}
             onChange={(v) => {
@@ -496,14 +568,31 @@ export default function VerifyFlow() {
             {busy ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
             Confirm
           </Button>
-          <button
-            type="button"
-            onClick={sendCode}
-            disabled={busy}
-            className="inline-flex min-h-11 items-center self-start text-[13px] text-ink-3 hover:text-ink-2"
-          >
-            Send a new code
-          </button>
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-1">
+            <button
+              type="button"
+              onClick={() => sendCode(current)}
+              disabled={busy}
+              className="inline-flex min-h-11 items-center text-[13px] text-ink-3 hover:text-ink-2"
+            >
+              Send a new code {viaChannel(current)}
+            </button>
+            {otherChannel && (
+              <button
+                type="button"
+                onClick={() => sendCode(otherChannel)}
+                disabled={busy}
+                className="inline-flex min-h-11 items-center text-[13px] text-blue hover:underline"
+              >
+                {switchLabel}
+              </button>
+            )}
+          </div>
+          <p className="text-xs leading-5 text-ink-3">
+            {current === "sms"
+              ? "Nothing after a minute? Check the number above, then try the other way."
+              : "Nothing after a minute? Check that this number has WhatsApp, or try the other way."}
+          </p>
         </form>
       )}
     </Card>

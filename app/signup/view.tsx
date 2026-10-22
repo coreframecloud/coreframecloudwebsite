@@ -25,7 +25,7 @@ import LoginForm from "../login/login-form";
  *  3. The page that answered the ad did not repeat the ad's promise.
  *
  * PAID-FIRST (10 Oct 2026). The free trial and the identity-document check are
- * gone: sign-up is email + a WhatsApp code to the mobile, and paying is the
+ * gone: sign-up is email + a one-time code to the mobile, and paying is the
  * filter. The offer line is the intro offer from the live rate card — never a
  * typed number — and says nothing when the control plane publishes no offer.
  *
@@ -91,7 +91,7 @@ export default async function SignupView({ currency }: { currency: Currency }) {
               </li>
               <li>
                 <b className="font-medium text-ink">2. Your mobile.</b> We send a one-time code
-                on WhatsApp, because Indian regulations (CERT-In) require a verified contact number
+                to confirm it, because Indian regulations (CERT-In) require a verified contact number
                 for compute rental. Any country code works.
               </li>
               <li>

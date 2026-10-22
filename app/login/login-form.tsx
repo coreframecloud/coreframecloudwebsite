@@ -914,7 +914,7 @@ export default function LoginForm({
                     />
                   </div>
                   <p className="mt-0.5 text-xs leading-5 text-ink-3">
-                    We&apos;ll send a code on WhatsApp, because Indian regulations
+                    We&apos;ll send a one-time code to confirm it, because Indian regulations
                     require us to hold a verified contact number for compute rental.
                     {homeCountry.iso === "IN" && <> {INDIAN_MOBILE_HINT}</>}
                   </p>
