@@ -165,7 +165,7 @@ export default async function PricingView({ currency }: { currency: Currency }) 
       <JsonLd data={catalogLd} />
       <ViewContent name="Pricing" category="pricing" />
       <JsonLd data={breadcrumbList([{ name: "Pricing", path: "/pricing" }])} />
-      <section className="cf-section px-5 pb-0 cf-pagehero" data-cf-dots="">
+      <section className="cf-section px-5 pb-0 cf-pagehero" data-cf-dots="" data-cf-section="hero">
         {/* The site's one animated background (app/motion.css, section 7). */}
         <span className="cf-dotgrid" aria-hidden="true" />
         <div className="cf-col">
@@ -250,7 +250,7 @@ export default async function PricingView({ currency }: { currency: Currency }) 
       {/* The GPU ladder: every public GPU from the rate card, cheapest first,
           in this page's currency only (owner, 21 Oct 2026). One row today,
           more as profiles go public; never a typed list. */}
-      <section className="cf-section px-5 pt-0">
+      <section className="cf-section px-5 pt-0" data-cf-section="ladder">
         <div className="cf-wide">
           <p className="text-[11.5px] font-semibold tracking-[0.12em] text-ink-2 uppercase">Pick your GPU</p>
           <h2 className="cf-section-title mt-3">
@@ -302,7 +302,7 @@ export default async function PricingView({ currency }: { currency: Currency }) 
       )}
 
       {/* CFD for ducts and pipes. Only the published facts from /cfd. */}
-      <section id="cfd" className="cf-section scroll-mt-20 px-5">
+      <section id="cfd" className="cf-section scroll-mt-20 px-5" data-cf-section="cfd">
         <div className="cfx-panel cf-wide relative overflow-hidden rounded-[28px] p-6 sm:p-10">
           {/* The CFD explainer sketch, as on /cfd (16 Oct 2026). */}
           <Image
@@ -368,7 +368,7 @@ export default async function PricingView({ currency }: { currency: Currency }) 
 
       {/* Studio: open since 16 Oct 2026. Prices from lib/studio-prices.ts
           (apps/tools' live defaults; the rate card's usd.studio block). */}
-      <section id="studio" className="cf-section scroll-mt-20 px-5 pt-0">
+      <section id="studio" className="cf-section scroll-mt-20 px-5 pt-0" data-cf-section="studio">
         <div className="cf-warm cf-wide grid items-center gap-8 rounded-[28px] p-6 sm:p-10 lg:grid-cols-[1.2fr_0.8fr]">
           <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2.5">

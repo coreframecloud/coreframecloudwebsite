@@ -71,7 +71,7 @@ export function AdLanding({
         </div>
 
         <div className="mt-6 grid gap-8 lg:mt-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,420px)] lg:items-center lg:gap-14">
-          <section>
+          <section data-cf-section="hero">
             <p className="cf-eyebrow">{eyebrow}</p>
             <h1 className="mt-4 font-heading text-[clamp(30px,5vw,52px)] leading-[1.1] font-medium tracking-[-0.02em] text-ink [text-wrap:balance]">
               {title}
@@ -90,7 +90,7 @@ export function AdLanding({
             </div>
 
             {trust?.length ? (
-              <ul className="mt-4 flex flex-wrap gap-x-4 gap-y-1 text-[12.5px] leading-5 text-ink-3">
+              <ul className="mt-4 flex flex-wrap gap-x-4 gap-y-1 text-[12.5px] leading-5 text-ink-3" data-cf-section="trust">
                 {trust.map((t) => (
                   <li key={t} className="flex items-center gap-1.5">
                     <span aria-hidden className="h-1 w-1 shrink-0 rounded-full bg-ink-3" />
@@ -109,7 +109,7 @@ export function AdLanding({
               ))}
             </ul>
 
-            {ladder ? <div className="mt-6 sm:max-w-[560px]">{ladder}</div> : null}
+            {ladder ? <div className="mt-6 sm:max-w-[560px]" data-cf-section="ladder">{ladder}</div> : null}
           </section>
 
           <figure className="mx-auto w-full max-w-[420px]">
@@ -131,7 +131,7 @@ export function AdLanding({
         </div>
 
         {faq.length ? (
-          <section className="mt-14 max-w-[760px]">
+          <section className="mt-14 max-w-[760px]" data-cf-section="faq">
             <h2 className="font-heading text-[22px] leading-tight font-medium text-ink">Questions</h2>
             <div className="mt-4 flex flex-col gap-2.5">
               {faq.map((f) => (

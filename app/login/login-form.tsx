@@ -19,6 +19,7 @@ import {
 } from "@/lib/validation";
 import { goToGoogleSignIn, readAttribution } from "@/lib/attribution";
 import { markPendingSignup, trackSignupIfNew } from "@/lib/analytics";
+import { flush as flushWebEvents, track as trackWebEvent } from "@/lib/web-events";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { OtpInput } from "@/components/ui/otp-input";
@@ -31,6 +32,13 @@ const API = API_BASE;
 type Tab = "link" | "code";
 type LinkStep = "email" | "details" | "sent";
 type CodeStep = "email" | "code" | "done";
+
+/** Funnel: the Google door was taken (the API then records magic_link_opened
+ *  when its hand-off token is redeemed). Flushed now: the page is leaving. */
+function googleClicked(where: "signup" | "login"): void {
+  trackWebEvent("signup_google_clicked", { where });
+  flushWebEvents();
+}
 
 // ── Google icon ────────────────────────────────────────────────────────────────
 function GoogleIcon() {
@@ -66,7 +74,7 @@ function GoogleBlock({ api, below = false }: { api: string; below?: boolean }) {
       </div>
       <a
         href={`${api}/auth/google`}
-        onClick={(e) => goToGoogleSignIn(e, api)}
+        onClick={(e) => { googleClicked("signup"); goToGoogleSignIn(e, api); }}
         className="flex min-h-11 w-full items-center justify-center gap-3 rounded-cf border border-rule-strong bg-paper py-3 text-sm font-medium text-ink shadow-[0_1px_2px_rgba(16,17,19,0.06)] transition hover:bg-paper-2"
       >
         <GoogleIcon />
@@ -471,6 +479,7 @@ export default function LoginForm({
       const data = await res.json();
       if (res.status === 422 && data.detail?.includes("full_name")) {
         // Server says new user — need details
+        trackWebEvent("signup_email_submitted", { door: "link", step: "email" });
         setLinkIsNew(true);
         setLinkStep("details");
         return;
@@ -546,6 +555,7 @@ export default function LoginForm({
       // NOT a conversion yet: no account exists until the link is redeemed.
       // This only lets /auth/magic recognise that redemption as a new signup.
       markPendingSignup(linkEmail);
+      trackWebEvent("signup_email_submitted", { door: "link", step: "details" });
       setLinkStep("sent");
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Something went wrong.");
@@ -577,6 +587,7 @@ export default function LoginForm({
         const data = await res.json();
         throw new Error(data.detail ?? `Error ${res.status}`);
       }
+      trackWebEvent("signup_email_submitted", { door: "code", step: "email" });
       setCodeStep("code");
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Something went wrong.");
@@ -689,7 +700,7 @@ export default function LoginForm({
           <>
             <a
               href={`${API}/auth/google`}
-              onClick={(e) => goToGoogleSignIn(e, API)}
+              onClick={(e) => { googleClicked("login"); goToGoogleSignIn(e, API); }}
               className="flex min-h-11 w-full items-center justify-center gap-3 rounded-cf border border-rule bg-paper py-3 text-sm font-medium text-ink transition hover:bg-paper-2"
             >
               <GoogleIcon />

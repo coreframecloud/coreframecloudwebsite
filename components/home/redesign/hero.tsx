@@ -20,7 +20,7 @@ import { HeroOfferingCards, type OfferingPrices } from "@/components/home/redesi
  */
 export function RedesignHero({ introLabel, prices }: { introLabel: string | null; prices: OfferingPrices }) {
   return (
-    <section className="relative isolate overflow-hidden bg-night text-white">
+    <section className="relative isolate overflow-hidden bg-night text-white" data-cf-section="hero">
       <HeroBackdrop
         src="/heroes/interior-rendergrid-2560.webp"
         alt="A calm living room with a white sofa, a woven leather chair, an olive tree and a garden through the windows"

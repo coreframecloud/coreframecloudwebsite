@@ -2,6 +2,9 @@ import { NextResponse, type NextRequest } from "next/server";
 import { newNonce, pageCsp } from "@/lib/csp";
 import { CURRENCY_HEADER, currencyForCountry, parseCurrency } from "@/lib/money";
 
+/** Request header carrying CF-IPCountry to the root layout (see proxy()). */
+export const COUNTRY_HEADER = "x-cf-country";
+
 /**
  * Visitor currency — DISPLAY ONLY (owner, 15 Oct 2026).
  *
@@ -119,6 +122,10 @@ export function proxy(request: NextRequest) {
     parseCurrency(request.nextUrl.searchParams.get("currency")) ??
     currencyForCountry(request.headers.get("cf-ipcountry"));
   headers.set(CURRENCY_HEADER, currency);
+  // The visitor's country (Cloudflare), always overwritten so a client cannot
+  // set it. The root layout turns it into the funnel beacon's consent flag
+  // (components/analytics/web-events.tsx): EEA/UK/CH get no visitor cookie.
+  headers.set(COUNTRY_HEADER, (request.headers.get("cf-ipcountry") || "").trim().toUpperCase().slice(0, 2));
   if (currency === "USD" && hasUsdCopy(pathname)) {
     const target = request.nextUrl.clone();
     target.pathname = pathname === "/" ? "/usd" : `/usd${pathname}`;

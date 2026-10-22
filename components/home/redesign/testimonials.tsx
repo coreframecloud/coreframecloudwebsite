@@ -40,7 +40,7 @@ export function Testimonials({
   const reduce = usePrefersReducedMotion();
   if (items.length === 0) return null;
   return (
-    <section className={`overflow-hidden ${className}`} role="region" aria-roledescription="carousel" aria-label="What customers say">
+    <section className={`overflow-hidden ${className}`} role="region" aria-roledescription="carousel" aria-label="What customers say" data-cf-section="trust">
       <div className="cfh-wrap">
         <Reveal>
           <h2 className="cfh-h2">{title}</h2>

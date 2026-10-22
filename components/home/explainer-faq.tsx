@@ -102,7 +102,7 @@ export function ExplainerFaq({
   const faq = buildFaq(storage, intro, adhocRate, currency);
 
   return (
-    <section id="faq" className="cf-wide scroll-mt-24 px-5 py-20">
+    <section id="faq" className="cf-wide scroll-mt-24 px-5 py-20" data-cf-section="faq">
       <p className="cf-eyebrow">Questions people actually ask</p>
       <h2 className="cf-section-title mt-4">Straight answers.</h2>
 
