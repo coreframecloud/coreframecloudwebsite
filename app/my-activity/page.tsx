@@ -14,6 +14,7 @@ import MyCfdJobs from "@/components/cfd/my-cfd-jobs";
 import MyStudioProjects from "@/components/studio/my-studio-projects";
 import SignInSecurity from "@/components/account/sign-in-security";
 import MyTeamCard from "@/components/team/my-team-card";
+import PersistentWorkstationCard from "@/components/account/persistent-workstation-card";
 import { apiFetch, forgetLocalSession, isSignedIn, rememberUser, sessionMarker } from "@/lib/session";
 import { trackEvent } from "@/lib/analytics";
 import {
@@ -1020,6 +1021,12 @@ export default function MyActivityPage() {
         {/* Disk. Rendered for every segment: a B2B engineer on the org's
             pooled wallet still has their own storage. */}
         <UsageCards wallet={wallet} />
+
+        {/* Persistent workstation (22 Oct 2026): the customer's own Windows disk on
+            the per-session workstations. Paid from the wallet, so a change here
+            re-reads the balance and the ledger. Renders nothing while the API has
+            the feature switched off. */}
+        <PersistentWorkstationCard onChanged={() => void refresh()} />
 
         {/* CFD jobs (16 Oct 2026): the account's simulations, each opening its
             job page with the session. Above Activity: a job waiting on the
