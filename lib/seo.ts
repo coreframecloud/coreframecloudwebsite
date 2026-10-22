@@ -8,6 +8,7 @@
  */
 
 import { gpuSpecLine, hourlyValue, publicGpus, usdHourlyValue, type RateCard } from "@/lib/rate-card";
+import { SOFTWARE_FACTS } from "@/lib/software-facts";
 
 export const SITE = "https://www.coreframecloud.com";
 
@@ -136,6 +137,54 @@ export const AREA_SERVED_WORLD = [
   { "@type": "Country", name: "India" },
   { "@type": "Place", name: "Worldwide" },
 ];
+
+/**
+ * The Service node for one software landing page (SEO plan, 22 Oct 2026).
+ *
+ * Every /software page and the D5, Lumion and Enscape pages carried FAQPage
+ * and BreadcrumbList but nothing that said WHAT is for sale on the page, so a
+ * search engine saw a FAQ about D5 Render rather than a GPU workstation
+ * rental for D5 Render. This node names the service, points `provider` at the
+ * Organization in the layout, carries the live GPU ladder as regional Offers
+ * (never a typed price) and names the application through `about`, which is
+ * what ties the page to the product entity people search for.
+ */
+export function softwareServiceLd(o: {
+  slug: string;
+  path: string;
+  name: string;
+  description: string;
+  card: RateCard | null;
+}) {
+  const facts = SOFTWARE_FACTS[o.slug];
+  const url = `${SITE}${o.path}`;
+  const offers = gpuLadderOffers(o.card, url);
+  return {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    "@id": `${url}#service`,
+    name: o.name,
+    serviceType: "Cloud GPU workstation rental",
+    category: "Cloud computing",
+    url,
+    description: o.description,
+    provider: { "@id": ORG_ID },
+    brand: { "@type": "Brand", name: "Coreframe Cloud" },
+    areaServed: AREA_SERVED_WORLD,
+    ...(facts
+      ? {
+          about: {
+            "@type": "SoftwareApplication",
+            name: facts.app,
+            ...(facts.vendorUrl ? { url: facts.vendorUrl } : {}),
+            applicationCategory: "DesignApplication",
+            operatingSystem: "Windows",
+          },
+        }
+      : {}),
+    ...(offers.length ? { offers } : {}),
+  };
+}
 
 /** HowTo from plain steps (name + text). */
 export function howTo(name: string, steps: { title: string; body: string }[], extra: object = {}) {

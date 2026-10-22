@@ -58,7 +58,7 @@ export default function BlogIndexPage() {
                   <div className="overflow-hidden rounded-cf border border-rule bg-paper-2">
                     <Image
                       src={p.hero.src}
-                      alt=""
+                      alt={p.hero.alt}
                       width={p.hero.width}
                       height={p.hero.height}
                       sizes="(max-width: 640px) 100vw, 460px"

@@ -7,7 +7,9 @@ import { GpuCineBand } from "@/components/gpu-cine-band";
 import { GPU_HEROES } from "@/lib/gpu-heroes";
 import type { Metadata } from "next";
 import { JsonLd } from "@/components/seo/json-ld";
-import { breadcrumbList, OG_IMAGE } from "@/lib/seo";
+import { breadcrumbList, OG_IMAGE, softwareServiceLd } from "@/lib/seo";
+import { MeasuredFacts } from "@/components/gpu/measured-facts";
+import { SOFTWARE_FACTS } from "@/lib/software-facts";
 import Link from "next/link";
 import { BackgroundGlow } from "@/components/home/background-glow";
 import {
@@ -44,10 +46,12 @@ import { BANDWIDTH_SENTENCE } from "@/lib/streaming-terms";
  */
 // 19 Oct 2026: "d5 cloud" ranked around position 6 with no clicks, so the
 // title now says it plainly. Was "D5 Render Cloud Workstation, RTX 5080".
+// 22 Oct 2026: the "| Coreframe Cloud" suffix made it 66 characters and
+// Google cut it; "| Coreframe" keeps the whole promise inside 60.
 // The description has no currency or tax words, so both copies share it.
 export function d5Metadata(): Metadata {
   return {
-  title: { absolute: "Run D5 Render on a GPU Workstation by the Minute | Coreframe Cloud" },
+  title: { absolute: "Run D5 Render on a GPU Workstation by the Minute | Coreframe" },
   description:
     "D5 Render on a Windows GPU workstation with D5 preinstalled, billed per minute. Sign in with your D5 account; your files persist.",
   keywords: [
@@ -137,6 +141,16 @@ export default async function D5View({ currency }: { currency: Currency }) {
     <div className="relative min-h-screen text-ink">
       <ViewContent name="D5 Render cloud workstation" category="workstation" />
       <JsonLd data={breadcrumbList([{ name: "D5 Render cloud workstation", path: "/d5-render-cloud-workstation" }])} />
+      <JsonLd
+        data={softwareServiceLd({
+          slug: "d5-render-cloud-workstation",
+          path: "/d5-render-cloud-workstation",
+          name: "D5 Render on a GPU workstation, by the minute",
+          description:
+            "A Windows GPU workstation with D5 Render preinstalled, streamed to your laptop and billed per minute. Sign in with your own D5 account; project files persist.",
+          card,
+        })}
+      />
       <BackgroundGlow />
       <script
         type="application/ld+json"
@@ -210,10 +224,12 @@ export default async function D5View({ currency }: { currency: Currency }) {
             compare is VRAM: {ladder ? `${ladder.vram} here` : "16 GB or more here"}, while many laptops and
             entry desktops sold for design work have 6 to 8 GB. VRAM decides
             whether a scene loads at full texture resolution or has to be cut
-            down. We don&rsquo;t publish render times because they depend entirely on
-            your scene and your settings.
+            down. We publish a render time only once we have measured it on
+            this hardware ourselves; the table below says which ones we have.
           </p>
         </section>
+
+        <MeasuredFacts app="D5 Render" rows={SOFTWARE_FACTS["d5-render-cloud-workstation"].measured} className="mt-14" />
 
         <section className="mt-14">
           <h2 className="cf-section-title">
@@ -266,7 +282,7 @@ export default async function D5View({ currency }: { currency: Currency }) {
 
         {hourly ? (
           <section className="mt-14">
-            <h2 className="cf-section-title">What it costs.</h2>
+            <h2 className="cf-section-title">What D5 Render costs per hour here.</h2>
             <p className="mt-4 leading-8 text-ink-2">
               <strong className="font-semibold text-ink">{hourly}</strong>,{" "}
               {usdView

@@ -51,8 +51,9 @@ export async function enterpriseMetadata(currency: Currency): Promise<Metadata> 
   const fee = entryPlanFee(card, currency);
   const storage = storageRange(planTiers(card));
   const description =
-    `Monthly team plans for design studios: one shared pool of GPU workstation hours, ${storage ? `${storage} shared storage` : "shared storage"}, ` +
-    `a login per person and one ${currency === "USD" ? "invoice, no GST" : "GST invoice"}.${fee ? ` From ${fee}/month.` : ""}`;
+    // Kept under 160 characters (22 Oct 2026): it was 162 and truncated.
+    `Team plans for design studios: one shared pool of GPU workstation hours, ${storage ? `${storage} shared storage` : "shared storage"}, ` +
+    `a login per person, one ${currency === "USD" ? "invoice, no GST" : "GST invoice"}.${fee ? ` From ${fee}/month.` : ""}`;
   return {
     title: { absolute: TITLE },
     description,

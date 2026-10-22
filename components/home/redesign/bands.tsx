@@ -8,6 +8,8 @@ import { ParallaxBg } from "@/components/home/redesign/depth";
 import { StreamDiagram } from "@/components/visuals/diagrams";
 import { Marquee } from "@/components/motion/marquee";
 import { PREINSTALLED } from "@/lib/software-catalogue";
+import { SOFTWARE_DIRECTORY } from "@/lib/software-facts";
+import { visiblePosts } from "@/lib/blog";
 
 /** Creative apps from the live software catalogue (lib/software-catalogue). */
 const MARQUEE_APPS = PREINSTALLED.filter((s) => s.category === "3D & rendering" || s.category === "Images & textures").map(
@@ -69,13 +71,43 @@ export function FactsBand({ currency = "INR", ladder = null }: { currency?: Curr
   );
 }
 
-/** Who it's for: one quiet row, the software each kind of user opens. */
+/**
+ * Who it's for: one quiet row, the software each kind of user opens. Each
+ * application is a link to its own page (SEO plan, 22 Oct 2026): the
+ * homepage is the most-linked page on the site and until now sent no link to
+ * the /software pages, which is where the non-brand searches land.
+ */
 export function BuiltFor() {
-  const rows = [
-    { who: "Interior designers", apps: "D5 Render · Lumion" },
-    { who: "Architects", apps: "Twinmotion · Enscape · Revit" },
-    { who: "3D visualisers", apps: "Blender · 3ds Max" },
-    { who: "Motion designers", apps: "After Effects · Premiere Pro" },
+  const rows: { who: string; apps: [string, string][] }[] = [
+    {
+      who: "Interior designers",
+      apps: [
+        ["D5 Render", "/d5-render-cloud-workstation"],
+        ["Lumion", "/lumion-cloud-gpu"],
+      ],
+    },
+    {
+      who: "Architects",
+      apps: [
+        ["Twinmotion", "/software/twinmotion-cloud-workstation"],
+        ["Enscape", "/enscape-cloud-gpu"],
+        ["Revit", "/software/revit-cloud-workstation"],
+      ],
+    },
+    {
+      who: "3D visualisers",
+      apps: [
+        ["Blender", "/software/blender-cloud-workstation"],
+        ["3ds Max", "/software/3ds-max-cloud-workstation"],
+      ],
+    },
+    {
+      who: "Motion designers",
+      apps: [
+        ["After Effects", "/software/after-effects-premiere-cloud-workstation"],
+        ["Premiere Pro", "/software/after-effects-premiere-cloud-workstation"],
+      ],
+    },
   ];
   return (
     <section className="cfh-wrap py-24 sm:py-28">
@@ -89,13 +121,82 @@ export function BuiltFor() {
         {rows.map((r, i) => (
           <Reveal key={r.who} delay={0.06 * i} className="rounded-2xl border border-rule p-6">
             <p className="font-heading text-[18px] font-medium">{r.who}</p>
-            <p className="mt-2 text-[14px] leading-[1.55] text-ink-2">{r.apps}</p>
+            <p className="mt-2 text-[14px] leading-[1.55] text-ink-2">
+              {r.apps.map(([label, href], j) => (
+                <span key={label}>
+                  {j > 0 ? " · " : ""}
+                  <Link href={href} className="underline decoration-rule underline-offset-4 transition hover:text-ink hover:decoration-ink">
+                    {label}
+                  </Link>
+                </span>
+              ))}
+            </p>
           </Reveal>
         ))}
       </div>
       <Reveal className="mt-10">
         <p className="text-[11.5px] font-semibold tracking-[0.12em] text-ink-2 uppercase">Preinstalled on every workstation</p>
         <Marquee items={MARQUEE_APPS} label="Preinstalled on every workstation" className="mt-4 font-heading text-[17px] text-ink sm:text-[19px]" />
+      </Reveal>
+      {/* The full directory, one line, quiet: every application page on the site. */}
+      <Reveal className="mt-8">
+        <p className="text-[14px] leading-[1.7] text-ink-2">
+          <span className="text-ink-3">Also on a Coreframe workstation: </span>
+          {SOFTWARE_DIRECTORY.filter((s) => !["d5-render-cloud-workstation", "lumion-cloud-gpu", "enscape-cloud-gpu", "twinmotion-cloud-workstation", "revit-cloud-workstation", "blender-cloud-workstation", "3ds-max-cloud-workstation", "after-effects-premiere-cloud-workstation"].some((slug) => s.href.endsWith(slug))).map((s, j) => (
+            <span key={s.href}>
+              {j > 0 ? " · " : ""}
+              <Link href={s.href} className="underline decoration-rule underline-offset-4 transition hover:text-ink hover:decoration-ink">
+                {s.short}
+              </Link>
+            </span>
+          ))}
+          {" · "}
+          <Link href="/apps" className="underline decoration-rule underline-offset-4 transition hover:text-ink hover:decoration-ink">
+            everything preinstalled
+          </Link>
+        </p>
+      </Reveal>
+    </section>
+  );
+}
+
+/**
+ * The three newest posts (SEO plan, 22 Oct 2026). Blog posts had 2-5
+ * internal links each and the homepage none; a post that answers a question
+ * people type ("can my laptop run D5 Render") deserves a link from the page
+ * every crawler starts on. Renders nothing until there is a post to show.
+ */
+export function LatestPosts() {
+  const posts = visiblePosts()
+    .slice()
+    .sort((a, b) => new Date(b.datePublished).getTime() - new Date(a.datePublished).getTime())
+    .slice(0, 3);
+  if (!posts.length) return null;
+  return (
+    <section className="cfh-wrap pb-24 sm:pb-28">
+      <Reveal className="max-w-[40rem]">
+        <h2 className="cfh-h2">From the blog</h2>
+        <p className="mt-4 text-[17px] leading-[1.6] text-ink-2">
+          What needs a GPU, what it costs to rent one, and full sessions on a cloud workstation.
+        </p>
+      </Reveal>
+      <ul className="mt-10 grid gap-4 sm:grid-cols-3">
+        {posts.map((p, i) => (
+          <li key={p.slug}>
+            <Reveal delay={0.06 * i} className="h-full rounded-2xl border border-rule p-6">
+              <p className="text-[11.5px] font-semibold tracking-[0.12em] text-ink-2 uppercase">{p.eyebrow}</p>
+              <Link href={`/blog/${p.slug}`} className="mt-3 block font-heading text-[18px] leading-[1.3] font-medium text-ink hover:underline">
+                {p.title}
+              </Link>
+              <p className="mt-3 text-[14px] leading-[1.55] text-ink-2">{p.description}</p>
+            </Reveal>
+          </li>
+        ))}
+      </ul>
+      <Reveal className="mt-8">
+        <Link href="/blog" className="cfh-link text-ink">
+          All posts <span aria-hidden>↗</span>
+        </Link>
       </Reveal>
     </section>
   );

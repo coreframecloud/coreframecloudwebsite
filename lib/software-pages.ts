@@ -96,7 +96,7 @@ function buildSoftwarePages(cur: Currency): SoftwarePage[] {
     title: "Revit Cloud Workstation — run Revit on a rented RTX GPU",
     metaTitle: "Revit Cloud Workstation, rented RTX GPU",
     teamPlansLink: true,
-    lastUpdated: "18 October 2026",
+    lastUpdated: "22 October 2026",
     description:
       "Run Autodesk Revit on a Windows GPU workstation in India, billed per minute. Bring your Autodesk licence, open large models, and render without buying hardware.",
     intro:
@@ -138,7 +138,7 @@ function buildSoftwarePages(cur: Currency): SoftwarePage[] {
     // 19 Oct 2026: "3ds max cloud rendering (service)" and "cloud rendering
     // for 3ds max" (~64 impressions, no clicks) lead the title now. Was
     // "3ds Max Cloud Workstation & Rendering, RTX 5080 | Coreframe".
-    absoluteTitle: "3ds Max Cloud Rendering, GPU Workstation by the Minute | Coreframe",
+    absoluteTitle: "3ds Max Cloud Rendering on a GPU Workstation | Coreframe",
     callouts: [
       {
         h2: "3ds Max cloud rendering: workstation or render farm?",
@@ -147,7 +147,7 @@ function buildSoftwarePages(cur: Currency): SoftwarePage[] {
       },
     ],
     teamPlansLink: true,
-    lastUpdated: "18 October 2026",
+    lastUpdated: "22 October 2026",
     description:
       "3ds Max cloud rendering on a rented GPU workstation: V-Ray GPU and Chaos Vantage on a workstation-class RTX card, your own licence, billed per minute.",
     intro:
@@ -289,13 +289,13 @@ function buildSoftwarePages(cur: Currency): SoftwarePage[] {
     metaTitle: "Twinmotion Cloud Workstation, by the minute",
     // 19 Oct 2026: "twinmotion workstation" (29 impressions, no clicks) leads
     // the <title>. Was "Twinmotion Cloud Workstation, RTX 5080 | Coreframe Cloud".
-    absoluteTitle: "Twinmotion Workstation in the Cloud, by the Minute | Coreframe",
+    absoluteTitle: "Twinmotion Cloud Workstation, by the Minute | Coreframe",
     description:
       "Rent a Twinmotion workstation by the minute: a workstation-class RTX GPU with Twinmotion preinstalled, streamed to your own computer.",
     intro:
       "Twinmotion is preinstalled on every Coreframe workstation, and its free tier covers most individual users. All you rent is the GPU workstation that makes it run properly, by the minute.",
     livePrice: "line",
-    lastUpdated: "18 October 2026",
+    lastUpdated: "22 October 2026",
     problem:
       "Twinmotion looks great in demos and stutters on your own laptop, especially with vegetation and reflections turned up.",
     why: [
@@ -367,7 +367,7 @@ function buildSoftwarePages(cur: Currency): SoftwarePage[] {
       "Rent for one project instead of buying a machine you'll keep for years.",
     ],
     licence: LICENCE_BYOL + " Rhino uses your own licence key.",
-    lastUpdated: "19 October 2026",
+    lastUpdated: "22 October 2026",
     /**
      * Grasshopper (owner, 19 Oct 2026, page 4 of "build pages 1-4"): a section
      * here, not a page of its own. This page is already "Rhino & Grasshopper
@@ -475,10 +475,10 @@ function buildSoftwarePages(cur: Currency): SoftwarePage[] {
     slug: "gpu-workstation-rental-india",
     title: "GPU Workstation Rental in India — per-minute RTX workstations",
     metaTitle: "Rent a GPU Workstation in India",
-    absoluteTitle: "GPU on Rent in India: RTX Workstations by the Minute | Coreframe",
+    absoluteTitle: "GPU on Rent in India, Workstations by the Minute | Coreframe",
     h1: "Rent a GPU workstation in India, by the minute",
     livePrice: "answer",
-    lastUpdated: "18 October 2026",
+    lastUpdated: "22 October 2026",
     callouts: [
       {
         h2: "Running your own CFD software?",
@@ -545,6 +545,8 @@ function buildSoftwarePages(cur: Currency): SoftwarePage[] {
     slug: "unreal-engine-cloud-workstation",
     title: "Unreal Engine Cloud Workstation — preinstalled on a rented RTX GPU",
     metaTitle: "Unreal Engine Cloud Workstation, by the minute",
+    // 22 Oct 2026: the suffix made the title 64 characters; 58 with the short brand.
+    absoluteTitle: "Unreal Engine Cloud Workstation by the Minute | Coreframe",
     description:
       "Unreal Engine 5.8 with Quixel Bridge, preinstalled on a Windows GPU workstation in India and billed per minute. Sign in with your Epic account.",
     intro:
@@ -576,7 +578,7 @@ function buildSoftwarePages(cur: Currency): SoftwarePage[] {
       { q: "Do my Unreal projects persist between sessions?", a: RESET_ANSWER },
     ],
     related: ["video-animation-rendering", "twinmotion-cloud-workstation", "d5-render-cloud-workstation", "blender-cloud-workstation", "gpu-workstation-rental-india"],
-    lastUpdated: "18 October 2026",
+    lastUpdated: "22 October 2026",
   },
   ];
 }

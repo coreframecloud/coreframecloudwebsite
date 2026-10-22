@@ -10,10 +10,10 @@ import { CFD_DEMO, CFD_HOME, CLINIC_CASE, HVAC_PAGE, HVAC_SERVICE, MESH_STUDY } 
  * their own (lib/cfd-pages.ts, blog posts, software pages).
  */
 export const PAGE_UPDATED: Record<string, string> = {
-  "/": "2026-10-18",
+  "/": "2026-10-22",
   "/lumion-cloud-gpu": "2026-10-18",
   "/enscape-cloud-gpu": "2026-10-18",
-  "/d5-render-cloud-workstation": "2026-10-16",
+  "/d5-render-cloud-workstation": "2026-10-22",
   "/d5-render-vs-local-gpu": "2026-10-18",
   "/coreframe-vs-irender": "2026-10-13",
   "/vram-for-architectural-rendering": "2026-10-11",
@@ -51,4 +51,4 @@ export function pageUpdated(path: string): string | null {
 }
 
 /** Visible content date of a software page without its own lastUpdated (last edited 11 Oct 2026). */
-export const SOFTWARE_CONTENT_DATE = "11 October 2026";
+export const SOFTWARE_CONTENT_DATE = "22 October 2026";

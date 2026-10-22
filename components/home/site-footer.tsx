@@ -16,6 +16,7 @@ import {
 } from "@/lib/company";
 import { visiblePosts } from "@/lib/blog";
 import { OFFERINGS } from "@/lib/offerings";
+import { SOFTWARE_DIRECTORY } from "@/lib/software-facts";
 import type { Currency } from "@/lib/money";
 
 /** `currency`: the visitor's display currency (proxy.ts via the layout). */
@@ -29,7 +30,7 @@ export function SiteFooter({ currency = "INR" }: { currency?: Currency }) {
       <div className="mx-auto max-w-7xl px-4 pt-16 pb-28 sm:px-6 lg:px-8">
 
         {/* Main row */}
-        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-[minmax(170px,1fr)_auto_auto_auto_auto_auto]">
+        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-[minmax(170px,1fr)_auto_auto_auto_auto_auto_auto]">
 
           {/* Brand + tagline */}
           <div>
@@ -74,14 +75,28 @@ export function SiteFooter({ currency = "INR" }: { currency?: Currency }) {
             </div>
           </div>
 
-          {/* Software pages, free tools and the company. */}
+          {/* Every application page (SEO plan, 22 Oct 2026). Until now the
+              footer linked D5, Lumion and Enscape only, so the nine /software
+              pages had 2-7 internal links each and Google reached them late.
+              One column, generated from lib/software-facts.ts, so a new page
+              cannot be published and left out. */}
+          <div>
+            <h2 className="cf-eyebrow">Software</h2>
+            <div className="mt-3 flex flex-col gap-0">
+              {SOFTWARE_DIRECTORY.map((s) => (
+                <Link key={s.href} href={s.href} className="flex min-h-11 items-center text-[13.5px] text-ink-2 transition hover:text-ink">
+                  {s.short}
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          {/* Free tools and the company. */}
           <div>
             <h2 className="cf-eyebrow">Explore</h2>
             <div className="mt-3 flex flex-col gap-0">
               {[
-                { label: "D5 Render", href: "/d5-render-cloud-workstation" },
-                { label: "Lumion", href: "/lumion-cloud-gpu" },
-                { label: "Enscape", href: "/enscape-cloud-gpu" },
+                { label: "Everything preinstalled", href: "/apps" },
                 { label: "Free IFC check", href: "/tools" },
                 { label: "About Coreframe", href: "/about" },
                 // Only when /blog exists on this build: published posts on the

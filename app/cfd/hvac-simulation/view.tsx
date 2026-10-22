@@ -48,7 +48,8 @@ const CLINIC_IMG = "/cfd/projects/clinic-floor-hvac";
 
 /** The Rooms sample report link: one source, lib/cfd-services.ts. */
 
-const TITLE = "HVAC Simulation Service: Room Airflow & Comfort CFD | Coreframe";
+// 22 Oct 2026: was 63 characters; 52 fits a result title whole.
+const TITLE = "HVAC Simulation Service: Room Airflow CFD | Coreframe";
 const DESCRIPTION =
   "An HVAC CFD simulation of one room, set up from a form: air speed, temperature, PMV/PPD and ADPI in a PDF report. Draft or Fine mesh, quoted after a mesh check.";
 

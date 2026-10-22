@@ -53,7 +53,8 @@ export async function pricingMetadata(currency: Currency): Promise<Metadata> {
   const meshCheck =
     currency === "USD" ? formatMoney(usd.cfd_quote_fee_small, "USD") : formatMoney(CFD_PREPROCESS_INR.small, "INR");
   return {
-    title: { absolute: "Pricing: GPU Workstations by the Minute, CFD by Quote | Coreframe" },
+    // 22 Oct 2026: 65 characters was cut in results; 51 keeps both services.
+    title: { absolute: "Pricing: GPU by the Minute, CFD by Quote | Coreframe" },
     description:
       currency === "USD"
         ? `GPU workstations by the minute in US dollars with no GST, team plans, CFD from a ${meshCheck} mesh check, and Studio downloads.`

@@ -29,7 +29,10 @@ import { NODE } from "@/lib/node-spec";
 import { LastUpdated, SpecTable } from "@/components/gpu/spec-table";
 import { SOFTWARE_CONTENT_DATE } from "@/lib/page-dates";
 import { JsonLd } from "@/components/seo/json-ld";
-import { breadcrumbList, faqPage, OG_IMAGE } from "@/lib/seo";
+import { breadcrumbList, faqPage, OG_IMAGE, softwareServiceLd } from "@/lib/seo";
+import { MeasuredFacts } from "@/components/gpu/measured-facts";
+import { softwareFacts } from "@/lib/software-facts";
+import { billingSentence } from "@/lib/rate-card";
 import { GpuCineBand } from "@/components/gpu-cine-band";
 import { GPU_HEROES } from "@/lib/gpu-heroes";
 
@@ -193,6 +196,9 @@ export default async function SoftwareView({ slug, currency }: { slug: string; c
 
   const hero = HERO_BY_SLUG[page.slug] ?? HERO_BY_SLUG.default;
   const heroBg = GPU_HEROES[page.slug];
+  // The application's identity and its measured-facts rows (lib/software-facts.ts).
+  const facts = softwareFacts(page.slug);
+  const appName = facts?.app ?? "it";
   return (
     <>
     <section className="cf-section cf-pagehero px-5">
@@ -249,6 +255,15 @@ export default async function SoftwareView({ slug, currency }: { slug: string; c
       <ViewContent name={page.metaTitle ?? page.title} category="workstation" />
       <JsonLd data={faqPage(faqs)} />
       <JsonLd data={breadcrumbList([{ name: page.metaTitle ?? page.title, path: `/software/${page.slug}` }])} />
+      <JsonLd
+        data={softwareServiceLd({
+          slug: page.slug,
+          path: `/software/${page.slug}`,
+          name: page.metaTitle ?? page.title,
+          description: page.description,
+          card,
+        })}
+      />
 
       {page.livePrice === "answer" ? (
         <section className="cf-col">
@@ -275,6 +290,34 @@ export default async function SoftwareView({ slug, currency }: { slug: string; c
           </p>
         </section>
       ))}
+
+      {/* What it costs per hour, on every software page (SEO plan 22 Oct
+          2026): the GPU ladder from the live rate card, the visitor's currency
+          only, and the billing sentence from the API's own fields. The GPU
+          rental page already shows the ladder in its answer passage. */}
+      {page.livePrice !== "answer" ? (
+        <section className="cf-col mt-16">
+          <h2 className="cf-section-title">What {appName} costs per hour here.</h2>
+          <p className="cf-section-copy mt-4">
+            One price per GPU-hour{currency === "USD" ? ", in US dollars" : ", in rupees"}; you pick the GPU when you launch.
+            {facts?.preinstalled
+              ? ` ${appName} is already on the machine, so no paid minutes go on installing it.`
+              : ` You sign in to ${appName} with your own licence; the price is for the machine.`}
+          </p>
+          <div className="mt-6">
+            <GpuLadder card={card} currency={currency} compact />
+          </div>
+          <p className="mt-4 text-[14px] leading-6 text-ink-2">
+            {billingSentence(card, currency)}{" "}
+            <Link href="/pricing" className="text-ink underline underline-offset-4">
+              Full pricing
+            </Link>
+            .
+          </p>
+        </section>
+      ) : null}
+
+      {facts ? <MeasuredFacts app={facts.app} rows={facts.measured} className="cf-col mt-16" /> : null}
 
       {page.sections?.length ? (
         <section className="cf-col mt-16">

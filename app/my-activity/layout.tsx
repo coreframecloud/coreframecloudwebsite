@@ -1,15 +1,15 @@
 import type { Metadata } from "next";
+import type { ReactNode } from "react";
 
 /**
- * Signed-in screens. Client components cannot export metadata, so this layout
- * does it: without it the page inherited the homepage title and description
- * and was indexable, which put an empty account shell in search results.
+ * A signed-in account page (the page itself is a client component, so the
+ * robots rule lives here). Nothing on it is for a search index; /login
+ * already carries the same rule (SEO plan, 22 Oct 2026).
  */
 export const metadata: Metadata = {
-  title: "Your account",
-  robots: { index: false, follow: false },
+  robots: { index: false, follow: true },
 };
 
-export default function Layout({ children }: { children: React.ReactNode }) {
+export default function Layout({ children }: { children: ReactNode }) {
   return children;
 }

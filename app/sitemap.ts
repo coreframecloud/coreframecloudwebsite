@@ -13,7 +13,7 @@ import { CFD_DEMO, HVAC_PAGE, HVAC_SERVICE } from "@/lib/cfd-pages";
 const BASE = "https://www.coreframecloud.com";
 
 /** Fallback for a software page with no lastUpdated of its own. */
-const SOFTWARE_DEFAULT = "2026-10-11";
+const SOFTWARE_DEFAULT = "2026-10-22";
 
 function lm(path: string): Date {
   const d = UPDATED[path];

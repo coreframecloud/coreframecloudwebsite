@@ -3,7 +3,7 @@ import { PageByline } from "@/components/seo/page-byline";
 import { WALKTHROUGH_YOUTUBE_ID } from "@/components/home/landing/walkthrough-section";
 import { RedesignHero } from "@/components/home/redesign/hero";
 import { Bento } from "@/components/home/redesign/bento";
-import { FactsBand, BuiltFor, OfferBand, HowItWorks } from "@/components/home/redesign/bands";
+import { FactsBand, BuiltFor, OfferBand, HowItWorks, LatestPosts } from "@/components/home/redesign/bands";
 import { Testimonials } from "@/components/home/redesign/testimonials";
 import { OfferingBands, offeringPrices } from "@/components/home/redesign/offerings";
 import type { Currency } from "@/lib/money";
@@ -71,6 +71,7 @@ export default async function HomeView({ currency }: { currency: Currency }) {
       <FactsBand currency={currency} ladder={ladder} />
       <BuiltFor />
       <Testimonials />
+      <LatestPosts />
       <OfferBand adhocRate={adhocRate} intro={intro} currency={currency} />
       {/* Who and when (GEO check 18 Oct 2026, G-DATES / G-BYLINE). */}
       <div className="cf-wide px-5 py-6">
