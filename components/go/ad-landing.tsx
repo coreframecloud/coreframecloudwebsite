@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { preload } from "react-dom";
 import { CoreframeWordmarkAtlas } from "@/components/brand/coreframe-wordmark-atlas";
 import { ViewContent } from "@/components/analytics/view-content";
 import { KeepQueryLink } from "./keep-query-link";
@@ -31,6 +32,8 @@ export function AdLanding({
   price,
   cta,
   ctaNote,
+  trust,
+  ladder,
   video,
   faq,
   viewContent,
@@ -43,10 +46,21 @@ export function AdLanding({
   price: React.ReactNode | null;
   cta: { href: string; label: string; event: string };
   ctaNote?: string;
+  /** Three short trust facts under the button (signed app, Indian company,
+   *  refunds), so the first screen answers "who are these people" before the
+   *  reel does. Funnel audit, 22 Oct 2026: the page had no trust signal above
+   *  the fold. */
+  trust?: string[];
+  /** The GPU ladder as cards, after the proof points (owner, 22 Oct 2026). */
+  ladder?: React.ReactNode;
   video: { src: string; poster: string; label: string };
   faq: LandingFaq[];
   viewContent: { name: string; category: string };
 }) {
+  // The poster is the page's LCP element on a phone (Lighthouse, 22 Oct 2026:
+  // 5.4 s on simulated 4G). Ask for it before the stylesheet and script
+  // chain have finished rather than when the <video> is discovered.
+  preload(video.poster, { as: "image", fetchPriority: "high" });
   return (
     <div className="relative min-h-screen overflow-x-clip text-ink">
       <div className="cf-aurora" />
@@ -75,6 +89,17 @@ export function AdLanding({
               {ctaNote ? <p className="text-[13px] leading-5 text-ink-3">{ctaNote}</p> : null}
             </div>
 
+            {trust?.length ? (
+              <ul className="mt-4 flex flex-wrap gap-x-4 gap-y-1 text-[12.5px] leading-5 text-ink-3">
+                {trust.map((t) => (
+                  <li key={t} className="flex items-center gap-1.5">
+                    <span aria-hidden className="h-1 w-1 shrink-0 rounded-full bg-ink-3" />
+                    {t}
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+
             <ul className="mt-8 grid gap-3 sm:max-w-[560px]">
               {points.map((p) => (
                 <li key={p} className="flex gap-3 text-[15px] leading-6 text-ink-2">
@@ -83,6 +108,8 @@ export function AdLanding({
                 </li>
               ))}
             </ul>
+
+            {ladder ? <div className="mt-6 sm:max-w-[560px]">{ladder}</div> : null}
           </section>
 
           <figure className="mx-auto w-full max-w-[420px]">

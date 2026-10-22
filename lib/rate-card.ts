@@ -83,6 +83,9 @@ export type RateCardGpu = {
    *  reference GPU and every cheaper public card; false for a dearer one,
    *  which bills at list from the first minute (owner, 21 Oct 2026). */
   intro_eligible?: boolean;
+  /** The one-phrase tag the control plane publishes for the card (gpu_profiles.badge):
+   *  "Entry", "More memory", "Fast rendering", "Big scenes". Shown as given, never typed here. */
+  badge?: string | null;
 };
 
 export type TrialTerms = {
@@ -330,8 +333,19 @@ export function introOfferMoreGpus(o: IntroOffer): string[] {
  * spent on cheaper GPUs too, else "". Built from the rate card, never typed.
  */
 export function introMoreGpusNote(o: IntroOffer): string {
-  const more = introOfferMoreGpus(o);
+  const more = introOfferMoreGpus(o).map(shortGpuName);
   return more.length ? ` (more hours on the ${more.join(", ")})` : "";
+}
+
+/**
+ * "NVIDIA RTX A4000 16 GB" -> "RTX A4000". The rate card names a profile
+ * with its maker and memory so the ladder rows are self-contained; inside a
+ * sentence that is three nouns too many (funnel audit, 22 Oct 2026: the
+ * sign-up offer line ran to four lines on a phone). The VRAM is shown where
+ * the GPUs are listed as cards, never dropped from there.
+ */
+export function shortGpuName(name: string): string {
+  return name.replace(/^NVIDIA\s+/i, "").replace(/\s+\d+\s*GB$/i, "").trim() || name;
 }
 
 /** Names of the public GPUs the intro hours may be spent on, cheapest first. */

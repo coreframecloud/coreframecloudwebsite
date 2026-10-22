@@ -70,6 +70,14 @@ export function GpuLadder({
                     {g.gpu_count > 1 ? `${g.gpu_count}× ` : ""}
                     {g.name}
                   </span>
+                  {g.badge ? (
+                    // The card's tag from the control plane (Entry / More
+                    // memory / Fast rendering / Big scenes), the same word
+                    // Connect shows on the tile (owner, 22 Oct 2026).
+                    <span className="rounded-full border border-rule bg-paper px-2.5 py-0.5 font-sans text-[11.5px] font-semibold tracking-[0.04em] text-ink-2">
+                      {g.badge}
+                    </span>
+                  ) : null}
                   {introApplies ? (
                     <span className="rounded-full bg-tint-blue px-2.5 py-0.5 font-sans text-[11.5px] font-semibold tracking-[0.04em] text-blue-ink">
                       Intro hours apply

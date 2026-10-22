@@ -5,25 +5,22 @@ import { trackViewContent } from "@/lib/analytics";
 
 /**
  * Fires one ViewContent (Meta) / view_item (GA4) per product page view.
- * The pixel and gtag load after hydration, so the call waits briefly for
- * either to appear; if neither does (blocked), nothing happens.
+ *
+ * FUNNEL AUDIT, 22 Oct 2026. The old version waited up to five seconds for
+ * the pixel and then sent anyway. gtag (afterInteractive) is there within a
+ * second; the pixel (lazyOnload) is not there within five on a phone on 4G,
+ * so the event went to GA4 only and Meta recorded 2 ViewContents against
+ * 3,657 landing-page views in 30 days. Now the GA4 half goes straight away
+ * and the Meta half is parked in the pixel's replay queue (lib/analytics.ts),
+ * which the pixel snippet in app/layout.tsx flushes right after init, on
+ * this page or the next. Nothing is dropped for being early.
  */
 export function ViewContent({ name, category }: { name: string; category: string }) {
   useEffect(() => {
-    let tries = 0;
-    let sent = false;
-    const id = window.setInterval(() => {
-      tries += 1;
-      if (!sent && (typeof window.fbq === "function" || typeof window.gtag === "function")) {
-        // Give the lazily loaded pixel a little longer than gtag before sending.
-        if (typeof window.fbq === "function" || tries >= 10) {
-          sent = true;
-          trackViewContent(name, category);
-        }
-      }
-      if (sent || tries >= 20) window.clearInterval(id);
-    }, 500);
-    return () => window.clearInterval(id);
+    // One short wait so gtag, which is nearly always present by then, gets
+    // the view_item directly instead of being missed on a fast navigation.
+    const id = window.setTimeout(() => trackViewContent(name, category), 800);
+    return () => window.clearTimeout(id);
   }, [name, category]);
   return null;
 }

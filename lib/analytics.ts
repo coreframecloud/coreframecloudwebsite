@@ -260,11 +260,17 @@ export function trackSignupIfNew(
 export function trackViewContent(contentName: string, contentCategory: string): void {
   if (typeof window === "undefined") return;
   trackEvent("view_item", { item_name: contentName, item_category: contentCategory });
+  const params = {
+    content_name: contentName,
+    content_category: contentCategory,
+    content_type: "product",
+  };
   if (typeof window.fbq === "function") {
-    window.fbq("track", "ViewContent", {
-      content_name: contentName,
-      content_category: contentCategory,
-      content_type: "product",
-    });
+    window.fbq("track", "ViewContent", params);
+  } else {
+    // The pixel loads lazyOnload and is usually not there yet on a phone
+    // (funnel audit, 22 Oct 2026: 2 ViewContents against 3,657 landing-page
+    // views). Park it; the pixel snippet replays the queue right after init.
+    queueMetaEvent("ViewContent", params);
   }
 }

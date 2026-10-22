@@ -4,7 +4,8 @@ import { buildFaq } from "@/components/home/explainer-faq";
 import { NODE } from "@/lib/node-spec";
 import type { Currency } from "@/lib/money";
 import { storageTerms } from "@/lib/storage-terms";
-import { adhocRate, adhocRateHourly, getRateCard, hoursLabel, introOfferFor, introMoreGpusNote, introPrice, ladderRanges, withArticle } from "@/lib/rate-card";
+import { GpuCards } from "@/components/go/gpu-cards";
+import { adhocRate, adhocRateHourly, getRateCard, hoursLabel, introOfferFor, introOfferMoreGpus, introPrice, ladderRanges, publicGpus, shortGpuName, withArticle } from "@/lib/rate-card";
 
 /**
  * /go/gpu — the paid landing page for the GPU workstation ads (owner, 20 Oct
@@ -43,10 +44,15 @@ export default async function GpuLandingView({ currency }: { currency: Currency 
     FAQ_PICK.includes(f.q),
   );
 
+  // The price line, kept to one sentence (funnel audit, 22 Oct 2026: with
+  // the full GPU names it ran to four lines on a phone and the button sat
+  // under them). The cards below carry every GPU's name, VRAM and rate.
+  const more = intro ? introOfferMoreGpus(intro).length : 0;
   const price = intro ? (
     <>
       First top-up: <b className="font-semibold">{introPrice(intro)} = {hoursLabel(intro.hours)}</b>
-      {intro.gpuName ? ` of ${intro.gpuName}` : ""}{introMoreGpusNote(intro)}
+      {intro.gpuName ? ` on the ${shortGpuName(intro.gpuName)}` : ""}
+      {more ? ", more hours on the cheaper cards" : ""}
       {hourly ? <span className="text-ink-2"> · {ladder && ladder.count > 1 ? "from " : ""}{hourly} after that</span> : null}
     </>
   ) : hourly ? (
@@ -55,24 +61,37 @@ export default async function GpuLandingView({ currency }: { currency: Currency 
     </>
   ) : null;
 
+  // The biggest capability on the ladder, first (owner, 22 Oct 2026). Read
+  // from the rate card: the largest VRAM among the public cards.
+  const maxVram = Math.max(0, ...publicGpus(card).map((g) => g.vram_gb));
+
   return (
     <AdLanding
-      eyebrow="GPU workstations"
+      eyebrow={maxVram ? `GPU workstations · up to ${maxVram} GB of GPU memory` : "GPU workstations"}
       title={
         <>
           Your laptop, with a <span className="cfx-hl">workstation-class GPU</span> behind it.
         </>
       }
-      lead="Open D5, Lumion, Blender or Twinmotion on a full Windows workstation from the laptop you already own, streamed in 4K."
+      lead={
+        maxVram
+          ? `Open D5, Lumion, Blender or Twinmotion on a full Windows workstation from the laptop you already own, streamed in 4K. Pick the card by the scene, ${Math.min(...publicGpus(card).map((g) => g.vram_gb))} GB to ${maxVram} GB.`
+          : "Open D5, Lumion, Blender or Twinmotion on a full Windows workstation from the laptop you already own, streamed in 4K."
+      }
       price={price}
       cta={{ href: "/signup", label: "Get started", event: "go_gpu_cta" }}
-      ctaNote="Sign up with your email and a WhatsApp code. No monthly plan."
+      ctaNote="Email, a WhatsApp code, then your first top-up. No monthly plan, no ID documents."
+      trust={[
+        "Signed Windows app (Coreframe Compute Labs)",
+        currency === "USD" ? "Indian company, invoice in US dollars" : "Indian company, GST invoice",
+        "Failed connections are never charged",
+      ]}
       points={[
-        // The GPU ladder as ranges from the live rate card (owner, 21 Oct 2026).
-        ladder ? `${ladder.gpu} · ${ladder.vram} VRAM · ${ladder.cpu} · ${ladder.ram} RAM` : "A dedicated GPU, a whole card to yourself",
+        "A Windows desktop with the apps installed, not a Linux box you SSH into",
         "Unreal Engine, D5 Render, Blender and Twinmotion preinstalled",
         "Billed per minute; close it and billing stops",
       ]}
+      ladder={<GpuCards card={card} currency={currency} />}
       video={{
         src: currency === "USD" ? "/go/gpu-reel-usd.mp4" : "/go/gpu-reel-inr.mp4",
         poster: "/go/gpu-poster.webp",

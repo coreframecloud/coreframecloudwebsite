@@ -257,12 +257,18 @@ export default function VerifyFlow() {
         body: JSON.stringify({ code: value }),
       });
       const data = await res.json();
+      // 429 is the server's attempt cap, not a wrong digit (funnel audit, 22
+      // Oct 2026: one customer sent eight codes and typed nine, got rate
+      // limited, and the page kept saying the code was wrong).
+      if (res.status === 429) {
+        throw new Error("Too many tries for now. Wait ten minutes, then press \"Send a new code\" and type the newest code WhatsApp shows you.");
+      }
       if (!res.ok) throw new Error(typeof data.detail === "string" ? data.detail : `Error ${res.status}`);
       setOtpCode("");
       setOtpSent(false);
       apply({ ...data, mobile_verified: data.mobile_verified ?? true });
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "That code did not work.");
+      setError(err instanceof Error ? err.message : "That code did not work. Each new code replaces the last one, so type the newest message.");
     } finally {
       setBusy(false);
     }

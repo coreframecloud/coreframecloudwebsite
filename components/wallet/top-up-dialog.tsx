@@ -451,6 +451,26 @@ export default function TopUpDialog({
           description: `Wallet top-up ${formatMoney(rupees, currency)}`,
           prefill: { name: name || user?.full_name || "", email: user?.email || "" },
           theme: { color: "#22d3ee" },
+          // UPI FIRST FOR RUPEE PAYMENTS (funnel audit, 22 Oct 2026). Of the
+          // last four Indian first top-ups that reached this window, two were
+          // closed unpaid; the two that paid, paid by UPI. Razorpay's checkout
+          // otherwise opens on whatever method it last saw, so a phone shows
+          // cards first. The block pins UPI to the top and leaves every other
+          // method below it (show_default_blocks). Dollar orders are card-only
+          // and get Razorpay's default layout.
+          ...(isUsd
+            ? {}
+            : {
+                config: {
+                  display: {
+                    blocks: {
+                      upi: { name: "Pay by UPI", instruments: [{ method: "upi" }] },
+                    },
+                    sequence: ["block.upi"],
+                    preferences: { show_default_blocks: true },
+                  },
+                },
+              }),
           // Razorpay hands us three fields; the SERVER decides whether they
           // constitute a paid order. Nothing is credited on this side.
           handler: async (resp: Record<string, string>) => {

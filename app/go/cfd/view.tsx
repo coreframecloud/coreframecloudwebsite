@@ -54,7 +54,12 @@ export default async function CfdLandingView({ currency }: { currency: Currency 
         </>
       }
       cta={{ href: "/cfd#start", label: "Start a job", event: "go_cfd_cta" }}
-      ctaNote="A few fields and a file, from your Coreframe account."
+      ctaNote="A few fields and a file, from your Coreframe account. The mesh check is the only charge before you see a quote."
+      trust={[
+        "Indian company; your STL and results stay in India",
+        currency === "USD" ? "Invoice in US dollars" : "GST invoice",
+        "Pay for the run only if you accept the quote",
+      ]}
       points={[
         "Pressure drop and loss coefficient, inlet to outlet",
         "A PDF report and a 3D results viewer that runs in your browser",
