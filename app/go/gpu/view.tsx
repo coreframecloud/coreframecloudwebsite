@@ -5,7 +5,8 @@ import { NODE } from "@/lib/node-spec";
 import type { Currency } from "@/lib/money";
 import { storageTerms } from "@/lib/storage-terms";
 import { GpuCards } from "@/components/go/gpu-cards";
-import { adhocRate, adhocRateHourly, getRateCard, hoursLabel, introOfferFor, introOfferMoreGpus, introPrice, ladderRanges, publicGpus, shortGpuName, withArticle } from "@/lib/rate-card";
+import { IntroAltLine } from "@/components/go/intro-alt-line";
+import { adhocRate, adhocRateHourly, getRateCard, hoursLabel, introOfferFor, introOfferMoreGpus, introOfferVariant, introPrice, ladderRanges, publicGpus, shortGpuName, withArticle } from "@/lib/rate-card";
 
 /**
  * /go/gpu — the paid landing page for the GPU workstation ads (owner, 20 Oct
@@ -48,12 +49,18 @@ export default async function GpuLandingView({ currency }: { currency: Currency 
   // the full GPU names it ran to four lines on a phone and the button sat
   // under them). The cards below carry every GPU's name, VRAM and rate.
   const more = intro ? introOfferMoreGpus(intro).length : 0;
+  // First top-up A/B (owner approved 22 Oct 2026), rupee page only: the
+  // "intro500" arm's line, shown after mount to the visitors this browser
+  // drew into that arm on landing (components/go/intro-alt-line.tsx). The
+  // standing line above it is unchanged for everyone.
+  const alt = currency === "INR" && intro ? introOfferVariant(card) : null;
   const price = intro ? (
     <>
       First top-up: <b className="font-semibold">{introPrice(intro)} = {hoursLabel(intro.hours)}</b>
       {intro.gpuName ? ` on the ${shortGpuName(intro.gpuName)}` : ""}
       {more ? ", more hours on the cheaper cards" : ""}
       {hourly ? <span className="text-ink-2"> · {ladder && ladder.count > 1 ? "from " : ""}{hourly} after that</span> : null}
+      <IntroAltLine offer={alt} />
     </>
   ) : hourly ? (
     <>

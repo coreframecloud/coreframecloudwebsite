@@ -18,6 +18,7 @@ import { apiFetch, forgetLocalSession, isSignedIn, rememberUser, sessionMarker }
 import { trackEvent } from "@/lib/analytics";
 import {
   introOfferFor,
+  introOfferForAccount,
   hoursLabel,
   minFirstTopup,
   rupees,
@@ -86,6 +87,14 @@ interface WalletData {
   paid_access?: boolean;
   intro_offer_available?: boolean;
   min_topup_rupees_now?: number;
+  /** First top-up A/B (22 Oct 2026): this account's own offer — the arm and
+   *  the price / hours / bonus it is served. The intro card and the top-up
+   *  dialog show these, never the public rate card's numbers. Absent on an
+   *  older control plane, which then means the rate card's offer. */
+  intro_variant?: string | null;
+  intro_offer_price_rupees_now?: number | null;
+  intro_offer_hours_now?: number | null;
+  intro_offer_bonus_rupees_now?: number | null;
   /** ISO-3166 alpha-2 from sign-up; preselects the billing country. */
   country_code?: string | null;
   /** 15 Oct 2026: "INR" | "USD" (null: no country yet). Every `*_rupees`
@@ -492,8 +501,10 @@ export default function MyActivityPage() {
   const card = useRateCard();
   // The offer in the ACCOUNT's currency: the rupee one, or the dollar one
   // ($20 = 8 hours, owner 18 Oct 2026) while the API publishes it. Shown only
-  // when the wallet status says this account can still claim it.
-  const introOffer = introOfferFor(card, cur);
+  // when the wallet status says this account can still claim it -- and with
+  // THIS account's own price and hours (first top-up A/B, 22 Oct 2026: an
+  // intro500 account sees ₹500 = 3 hours; everyone else the standing offer).
+  const introOffer = introOfferForAccount(introOfferFor(card, cur), wallet);
 
   const apply = useCallback((d: ActivityData) => {
     if (d.wallet) {

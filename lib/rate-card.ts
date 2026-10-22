@@ -117,7 +117,49 @@ export type IntroOfferApi = {
   gpu_name?: string | null;
   eligible_gpus?: string[];
   eligible_slugs?: string[];
+  /** First top-up A/B (owner approved 22 Oct 2026): the "intro500" arm's
+   *  terms (₹500 = 3 hours at the same rate, GPU and validity), published only
+   *  while the test runs. Read by ONE logged-out surface, the /go/* landing
+   *  page, and only for a visitor it has drawn into that arm
+   *  (lib/attribution.ts readIntroVariant). Every other logged-out page keeps
+   *  the standing offer above. */
+  intro500?: {
+    price_rupees: number;
+    hours: number;
+    bonus_rupees?: number;
+    share_percent?: number;
+  } | null;
 };
+
+/**
+ * What the control plane says about a SIGNED-IN account's own first-top-up
+ * offer (first top-up A/B, 22 Oct 2026), on /auth/user/me, /me/wallet and
+ * /payments/config: the arm and the price / hours / bonus that account is
+ * served, in its wallet currency. Absent on an older control plane.
+ */
+export type AccountIntroOffer = {
+  intro_variant?: string | null;
+  intro_offer_price_rupees_now?: number | null;
+  intro_offer_hours_now?: number | null;
+  intro_offer_bonus_rupees_now?: number | null;
+};
+
+/**
+ * The intro offer for a signed-in account: the rate card's offer in the
+ * account's currency, with the price, hours and bonus replaced by what the
+ * control plane says THIS account is served (an intro500 account sees
+ * ₹500 = 3 hours; control and every USD account see the standing offer).
+ * Without the per-account fields (older control plane) the rate card's
+ * offer stands, exactly as before the test.
+ */
+export function introOfferForAccount(base: IntroOffer | null, account: AccountIntroOffer | null | undefined): IntroOffer | null {
+  if (!base || !account) return base;
+  const price = account.intro_offer_price_rupees_now;
+  const hours = account.intro_offer_hours_now;
+  if (price == null || hours == null || price <= 0 || hours <= 0) return base;
+  if (price === base.price && hours === base.hours) return base;
+  return { ...base, price, hours, bonus: account.intro_offer_bonus_rupees_now ?? null };
+}
 
 /** How an account becomes usable. Replaced KYC on 10 Oct 2026: email + mobile
  *  OTP, then paying is the filter. */
@@ -322,6 +364,19 @@ export type IntroOffer = {
    *  Empty on an API that predates the ladder. */
   eligibleGpus: string[];
 };
+
+/**
+ * The "intro500" arm of the first top-up A/B as a rupee IntroOffer (same GPU,
+ * validity and eligible cards as the standing offer; its own price, hours and
+ * bonus), or null while the control plane does not publish it. For the /go/*
+ * landing page only; see IntroOfferApi.intro500.
+ */
+export function introOfferVariant(card: RateCard | null): IntroOffer | null {
+  const base = getIntroOffer(card);
+  const v = card?.intro_offer?.intro500;
+  if (!base || !v || !(v.price_rupees > 0) || !(v.hours > 0)) return null;
+  return { ...base, price: v.price_rupees, hours: v.hours, bonus: v.bonus_rupees ?? null };
+}
 
 /** The GPUs the intro hours also apply to, besides the one they are counted on. */
 export function introOfferMoreGpus(o: IntroOffer): string[] {
