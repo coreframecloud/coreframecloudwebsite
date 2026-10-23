@@ -238,8 +238,10 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
       "Windows 10 and 11 (64-bit) only.",
   );
   out.push(
-    "- **How fast will my render be?** Coreframe does not quote render times; they depend " +
-      "on the scene. The machine has 16 GB of VRAM, which decides what fits on the card.",
+    "- **How fast will my render be?** Coreframe does not quote render times for your scene; they depend " +
+      "on the scene. The machine has 16 GB of VRAM, which decides what fits on the card. Reference runs " +
+      "measured on our RTX 5080 16 GB (23 Oct 2026, Blender 5.2.2, Cycles OptiX, 3840 x 2160, scene's saved " +
+      "samples, no denoiser, median of 3): Blender's classroom demo scene 32.8 s, junkshop 22.6 s.",
   );
   out.push("");
 
@@ -691,9 +693,10 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
       "different renderers and may not scale the same way.",
   );
   out.push(
-    "- Coreframe does not quote a render time or a speed multiple for any specific scene. " +
+    "- Coreframe does not quote a render time or a speed multiple for a customer's scene. " +
       "Render time depends on the scene, settings and geometry, and the real test is the " +
-      "customer's own file in a session.",
+      "customer's own file in a session. The software pages list reference runs measured on " +
+      "our own workstation (public Blender demo scenes), each with the GPU, date and settings.",
   );
   out.push("- Operator: Coreframe Compute Labs Private Limited, Bengaluru, Karnataka, India.");
   out.push("");

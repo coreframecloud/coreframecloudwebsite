@@ -19,6 +19,11 @@
  *      own measured tests). When a value is filled, also fill `measuredOn`
  *      (the GPU) and `measuredAt` (ISO date), or the row stays "on request".
  *
+ * Filled so far (23 Oct 2026): the Blender rows, measured headless on an RTX
+ * 5080 16 GB with public Blender Open Data scenes. Every other application
+ * still needs a timed interactive session; the steps are listed in
+ * ~/coreframe/plans/software-facts-20261023/README.md.
+ *
  * Why null rather than leaving the rows out: the page then says, visibly and
  * truthfully, which figures we have not measured yet, which is a better
  * answer than silence and far better than a borrowed number.
@@ -145,12 +150,40 @@ export const SOFTWARE_FACTS: Record<string, SoftwareFacts> = {
     preinstalled: true,
     href: "/software/blender-cloud-workstation",
     measured: [
-      // TODO(owner): measure on gpu-node-01 and fill value + measuredOn + measuredAt.
-      // The RenderGrid timings in ~/coreframe/rendergrid-tests-20261007 are
-      // RenderGrid (Cycles on node-01), not a Connect session: do not reuse them here.
-      { label: "Blender Cycles 4K still, our reference interior scene, OptiX", value: null },
-      { label: "Blender Open Data median for this GPU (public benchmark, Cycles)", value: null },
-      { label: "Peak VRAM used by that reference scene", value: null },
+      // Measured 23 Oct 2026 on an RTX 5080 16 GB workstation (Blender 5.2.2,
+      // driver 616.92), headless `blender -b`, public Blender Open Data scenes.
+      // Raw logs, nvidia-smi samples and scripts:
+      // ~/coreframe/plans/software-facts-20261023/. The RenderGrid timings in
+      // ~/coreframe/rendergrid-tests-20261007 are a different job: not reused.
+      {
+        label: "Blender Cycles 4K still, classroom interior scene, OptiX",
+        value: "32.8 s",
+        measuredOn: "RTX 5080 16 GB",
+        measuredAt: "2026-10-23",
+        method: "Blender 5.2.2, 3840 × 2160, the scene's saved 300 samples, no denoiser; median of 3 renders",
+      },
+      {
+        label: "Blender Cycles 4K still, junkshop scene, OptiX",
+        value: "22.6 s",
+        measuredOn: "RTX 5080 16 GB",
+        measuredAt: "2026-10-23",
+        method: "Blender 5.2.2, 3840 × 2160, the scene's saved 240 samples, no denoiser; median of 3 renders",
+      },
+      {
+        label: "Blender Benchmark score on this workstation (Cycles, OptiX)",
+        value: "9,615",
+        measuredOn: "RTX 5080 16 GB",
+        measuredAt: "2026-10-23",
+        method: "Official Blender Benchmark 3.3.0, Blender 5.2.0: monster 4,077 + junkshop 3,065 + classroom 2,473 samples/min; median of 3 runs",
+      },
+      {
+        label: "Peak VRAM used by the classroom 4K render",
+        value: "3.0 GB of 16 GB",
+        measuredOn: "RTX 5080 16 GB",
+        measuredAt: "2026-10-23",
+        method: "Whole-GPU peak from nvidia-smi, sampled every ~0.2 s during the render (junkshop 4K peaks at 6.1 GB)",
+      },
+      // TODO(owner): needs a timed customer session; see plans/software-facts-20261023/README.md.
       { label: "Workstation ready after Launch (sign-in to desktop)", value: null },
     ],
   },
@@ -195,7 +228,8 @@ export const SOFTWARE_FACTS: Record<string, SoftwareFacts> = {
     preinstalled: true,
     href: "/software/unreal-engine-cloud-workstation",
     measured: [
-      // TODO(owner): measure on gpu-node-01 and fill value + measuredOn + measuredAt.
+      // TODO(owner): Unreal is not on gpu-node-01 (checked 23 Oct 2026); time it in a
+      // customer-image session, steps in plans/software-facts-20261023/README.md.
       { label: "Time to open and compile shaders for our reference archviz level", value: null },
       { label: "Movie Render Queue: 10-second 4K sequence from that level", value: null },
       { label: "Peak VRAM used by that level", value: null },
