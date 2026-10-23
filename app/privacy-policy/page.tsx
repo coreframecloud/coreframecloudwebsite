@@ -25,7 +25,7 @@ export default function PrivacyPolicyPage() {
       <div className="cf-wide">
             <div className="text-sm font-semibold uppercase tracking-widest text-blue">Legal</div>
             <h1 className="cf-display mt-3">Privacy Policy</h1>
-            <p className="mt-2 text-sm text-ink-3">Last Updated: 18 October 2026 · Effective: 18 October 2026</p>
+            <p className="mt-2 text-sm text-ink-3">Last Updated: 23 October 2026 · Effective: 23 October 2026</p>
       </div>
     </section>
     <main className="relative min-h-screen border-b border-rule text-ink">
@@ -91,6 +91,7 @@ export default function PrivacyPolicyPage() {
               <li><strong className="text-ink">Resend</strong>: transactional email delivery</li>
               <li><strong className="text-ink">WhatsApp</strong>: delivery of verification codes and messages to your mobile</li>
               <li><strong className="text-ink">Google</strong>: if you use &ldquo;Sign in with Google&rdquo;, your Google profile email and name are shared with us via OAuth</li>
+              <li><strong className="text-ink">YouTube</strong>: we publish our own videos to our YouTube channel through the YouTube API Services, and read aggregate statistics (views, watch time, subscriber counts) for that channel only. We do not collect, store or use any data about YouTube viewers or your YouTube account through these services. YouTube&rsquo;s use of data is governed by the <Link href="https://www.youtube.com/t/terms" target="_blank" rel="noreferrer" className="text-blue hover:underline">YouTube Terms of Service</Link> and the <Link href="https://policies.google.com/privacy" target="_blank" rel="noreferrer" className="text-blue hover:underline">Google Privacy Policy</Link></li>
               <li><strong className="text-ink">Computing infrastructure providers</strong>: the machines that run CFD jobs. Each job runs on a machine started for it alone and deleted when the job ends</li>
               <li><strong className="text-ink">An outside AI service</strong>: for Studio Plus and Pro ray-traced renders only, the plan, prompt and any reference image needed to make that image. All other Studio images are made on our own machines</li>
               <li>Government or regulatory authorities, if legally required</li>
@@ -102,7 +103,7 @@ export default function PrivacyPolicyPage() {
           </Section>
 
           <Section title="6. Data security">
-            <p>We use TLS 1.2+ encryption for all data in transit. Sensitive credentials and tokens are stored encrypted at rest. Your CFD jobs and Studio projects open only when you are signed in to your account. GPU workstations are wiped and restored to a clean image after every session. In the event of a personal data breach, we will notify affected users and the Data Protection Board of India as the DPDP Act requires, and in any case tell affected users within 72 hours of our becoming aware of the incident.</p>
+            <p>We use TLS 1.2+ encryption for all data in transit. Sensitive credentials and tokens are stored encrypted at rest. Your CFD jobs and Studio projects open only when you are signed in to your account. GPU workstations are wiped and restored to a clean image after every session, unless you choose a persistent workstation, whose disk is kept for you alone until you remove it. In the event of a personal data breach, we will notify affected users and the Data Protection Board of India as the DPDP Act requires, and in any case tell affected users within 72 hours of our becoming aware of the incident.</p>
           </Section>
 
           <Section title="7. Data retention">
