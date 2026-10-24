@@ -240,7 +240,7 @@ export default async function PricingView({ currency }: { currency: Currency }) 
           <div>
             <p className="text-[11.5px] font-semibold tracking-[0.12em] text-ink-2 uppercase">GPU workstations</p>
             <h2 className="cf-section-title mt-3">Pay for the minutes you use.</h2>
-            <p className="cf-section-copy mt-3">Close the window and billing stops.</p>
+            <p className="cf-section-copy mt-3">End the session and billing stops.</p>
             {rateBars.length ? <div className="mt-7"><RateBars rows={rateBars} /></div> : null}
           </div>
         </div>

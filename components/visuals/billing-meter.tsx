@@ -62,7 +62,7 @@ export function BillingMeter({
       <div className="mt-6 h-2 overflow-hidden rounded-full bg-white/10">
         <div className="h-full rounded-full bg-blue transition-[width] duration-500" style={{ width: `${(mins / RUN) * 100}%` }} />
       </div>
-      <p className="mt-3 text-[12.5px] text-white/55">Charged per minute. Close the window and it stops.</p>
+      <p className="mt-3 text-[12.5px] text-white/55">Charged per minute. End the session and it stops.</p>
     </div>
   );
 }
