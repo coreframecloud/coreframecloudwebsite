@@ -445,9 +445,11 @@ export function introMoreGpusNote(o: IntroOffer): string {
  * card, the pricing tiles): main "₹1,000 = 8 h on RTX 5080", alt "or about
  * 18 h on RTX A4000" (the cheapest eligible card), or alt null.
  */
-export function introOfferShort(o: IntroOffer): { main: string; alt: string | null } {
+export function introOfferShort(o: IntroOffer): { main: string; alt: string | null; bare: string } {
   const cheapest = introHoursOnCheaper(o)[0];
   return {
+    /** "₹1,000 = 8 h": no GPU, for the one-line hero card. */
+    bare: `${introPrice(o)} = ${o.hours} h`,
     main: `${introPrice(o)} = ${o.hours} h${o.gpuName ? ` on ${shortGpuName(o.gpuName)}` : ""}`,
     alt: cheapest ? `or about ${cheapest.hours} h on ${cheapest.name}` : null,
   };

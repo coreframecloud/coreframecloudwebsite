@@ -31,7 +31,7 @@ export type OfferingPrices = {
 };
 
 /** The first-top-up offer, short: introOfferShort() in the page's currency. */
-export type IntroShort = { main: string; alt: string | null };
+export type IntroShort = { main: string; alt: string | null; bare: string };
 
 /** "from ₹99/hour" -> "From ₹99/hour". */
 function cap(s: string): string {
@@ -154,13 +154,18 @@ function HeroCard({ o, introLabel, prices, i }: { o: Offering; introLabel: Intro
           </div>
           {o.id === "gpu" && introLabel ? (
             <p className="mt-2.5 text-[12.5px] text-white/80 sm:mt-3 sm:text-[13px]">
-              {/* Phones: the price lead, as the line above is hidden there.
-                  sm and up: the line above carries the lineup and price, so
-                  this names the hours on the cheaper card instead. Each
-                  stays within the line count it had (owner, 24 Oct 2026). */}
-              {prices.lineup?.from ? <span className="sm:hidden">{cap(prices.lineup.from)}. </span> : null}
-              First top-up <span className="font-semibold text-white">{introLabel.main}</span>
-              {introLabel.alt ? <span className="hidden sm:inline">, {introLabel.alt}</span> : null}
+              {/* One line at every width (owner, 24 Oct 2026): the lowest live
+                  price, then the offer without its GPU. The strip and the
+                  card's line above carry the lineup and the cheaper-card hours. */}
+              {prices.lineup?.from ? (
+                <>
+                  {/* "/hr" and "1st" on phones keep the line to one at 390 px. */}
+                  <span className="sm:hidden">{cap(prices.lineup.from).replace(/\/hour$/, "/hr")}</span>
+                  <span className="hidden sm:inline">{cap(prices.lineup.from)}</span> ·{" "}
+                </>
+              ) : null}
+              <span className="sm:hidden">1st</span><span className="hidden sm:inline">First</span> top-up{" "}
+              <span className="font-semibold text-white">{introLabel.bare}</span>
             </p>
           ) : null}
           {o.id === "cfd" ? (
