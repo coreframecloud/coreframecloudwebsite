@@ -8,6 +8,8 @@ import {
   introPrice,
   introMoreGpusNote,
   withArticle,
+  introOfferShort,
+  ladderRanges,
 } from "@/lib/rate-card";
 import LoginForm from "../login/login-form";
 
@@ -57,12 +59,15 @@ export default async function SignupView({ currency }: { currency: Currency }) {
   const card = await getRateCard();
   const intro = introOfferFor(card, currency);
   const hourly = adhocRateHourly(card, currency);
+  // "from ₹99/hr" once more than one GPU is public: the bare cheapest rate
+  // after the offer would read as the rate for the card the hours are on.
+  const fromHourly = (ladderRanges(card)?.count ?? 0) > 1 ? "from " : "";
 
   const offer = intro
     ? [
-        `First top-up: ${introPrice(intro)} = ${hoursLabel(intro.hours)}${intro.gpuName ? ` of ${intro.gpuName}` : ""}${introMoreGpusNote(intro)}`,
+        `First top-up ${introOfferShort(intro).main}${introOfferShort(intro).alt ? `, ${introOfferShort(intro).alt}` : ""}`,
         "no paperwork",
-        hourly ? `${hourly} after that${usdView ? ", no GST" : ""}` : null,
+        hourly ? `${fromHourly}${hourly} after that${usdView ? ", no GST" : ""}` : null,
       ]
         .filter(Boolean)
         .join(" · ")

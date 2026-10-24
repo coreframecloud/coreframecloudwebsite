@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { NODE } from "@/lib/node-spec";
-import { hoursLabel, type IntroOffer, type LadderRanges, introOfferMoreGpus, introPrice } from "@/lib/rate-card";
+import { hoursLabel, type IntroOffer, type LadderRanges, introMoreGpusNote, introPrice } from "@/lib/rate-card";
 import type { Currency } from "@/lib/money";
 import { Reveal } from "@/components/home/redesign/reveal";
 import { ParallaxBg } from "@/components/home/redesign/depth";
@@ -36,8 +36,8 @@ export function FactsBand({ currency = "INR", ladder = null }: { currency?: Curr
     ladder ? { k: `${ladder.cpu} · ${ladder.ram} RAM`, v: "Big scenes and a lot open at once" } : { k: "Workstation CPU and RAM", v: "Big scenes and a lot open at once" },
     { k: NODE.stream, v: "Streamed to the laptop you own" },
     usdView
-      ? { k: "Hosted in Bengaluru", v: "Billed in US dollars" }
-      : { k: "Hosted in Bengaluru", v: "Close to you, billed in rupees" },
+      ? { k: "Hosted in India", v: "Billed in US dollars" }
+      : { k: "Hosted in India", v: "Close to you, billed in rupees" },
     usdView
       ? { k: "No GST", v: "Charged per minute, nothing to cancel" }
       : { k: "GST included", v: "Charged per minute, nothing to cancel" },
@@ -237,7 +237,7 @@ export function OfferBand({
             </p>
           ) : null}
           <ul className="mt-5 space-y-2 text-[16px] leading-[1.55] text-white/85">
-            {intro && introOfferMoreGpus(intro).length ? <li>More hours on the {introOfferMoreGpus(intro).join(", ")}.</li> : null}
+            {intro && introMoreGpusNote(intro) ? <li>{cap(introMoreGpusNote(intro).trim().replace(/^\(|\)$/g, ""))}.</li> : null}
             {intro?.validityDays ? <li>Use it within {intro.validityDays} days.</li> : null}
             {adhocRate ? (
               <li>
@@ -284,4 +284,9 @@ export function HowItWorks() {
       </Reveal>
     </section>
   );
+}
+
+/** "or about 18 hours ..." -> "Or about 18 hours ...". */
+function cap(s: string): string {
+  return s.charAt(0).toUpperCase() + s.slice(1);
 }

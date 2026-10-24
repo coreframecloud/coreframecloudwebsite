@@ -46,7 +46,7 @@ export default async function Image() {
           </div>
           <div style={{ fontSize: 30, color: "#5b6068" }}>
             Rent a GPU workstation by the minute, get CFD for your duct or pipe from one STL, and pre-sale
-            concept images from a floor plan. Hosted in Bengaluru.
+            concept images from a floor plan. Hosted in India.
           </div>
         </div>
         <div style={{ display: "flex", fontSize: 26, color: "#2f6be0" }}>www.coreframecloud.com</div>

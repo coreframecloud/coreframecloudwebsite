@@ -140,7 +140,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Coreframe Cloud — GPU workstations, CFD and Studio, India",
     description:
-      "Rent a GPU workstation by the minute, get CFD for your duct or pipe from one STL, and Studio for pre-sale concept images from a floor plan. Hosted in Bengaluru.",
+      "Rent a GPU workstation by the minute, get CFD for your duct or pipe from one STL, and Studio for pre-sale concept images from a floor plan. Hosted in India.",
     url: "https://www.coreframecloud.com",
     siteName: "Coreframe Cloud",
     locale: "en_IN",
@@ -153,7 +153,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Coreframe Cloud",
     description:
-      "GPU workstations by the minute, CFD for ducts and pipes with no licence, and Studio for floor-plan concept images. Hosted in Bengaluru, India.",
+      "GPU workstations by the minute, CFD for ducts and pipes with no licence, and Studio for floor-plan concept images. Hosted in India.",
   },
   other: {
     "contact:email": "admin@coreframecloud.com",
@@ -277,7 +277,7 @@ export default async function RootLayout({
   const ladder = ladderRanges(rateCard);
   const serviceDescription =
     `On-demand Windows GPU workstations${ladder ? ` (${ladder.gpu}, ${ladder.vram} VRAM)` : " with dedicated NVIDIA RTX GPUs"} for ` +
-    "D5 Render, Lumion, Enscape, 3ds Max, Blender and Unreal Engine, hosted in Bengaluru. " +
+    "D5 Render, Lumion, Enscape, 3ds Max, Blender and Unreal Engine, hosted in India. " +
     (usdView
       ? "Billed per minute of actual use; prices in US dollars carry no GST (export of services)."
       : "Billed per minute of actual use, with 18% GST included in every published rate.");

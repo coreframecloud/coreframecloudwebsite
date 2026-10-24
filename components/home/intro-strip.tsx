@@ -1,12 +1,5 @@
 import Link from "next/link";
-import {
-  adhocRateHourly,
-  introOfferFor,
-  introMoreGpusNote,
-  getRateCard,
-  hoursLabel,
-  introPrice,
-} from "@/lib/rate-card";
+import { introOfferFor, getRateCard, introOfferShort, ladderLead } from "@/lib/rate-card";
 import type { Currency } from "@/lib/money";
 
 /**
@@ -45,19 +38,24 @@ export async function IntroStrip({ currency = "INR" }: { currency?: Currency }) 
   const card = await getRateCard();
   const offer = introOfferFor(card, currency);
   if (!offer) return null;
-  const hourly = adhocRateHourly(card, currency);
-  const headline = `First top-up: ${introPrice(offer)} = ${hoursLabel(offer.hours)}`;
-  const gpu = offer.gpuName ? `of ${offer.gpuName}${introMoreGpusNote(offer)}` : "of GPU time";
+  // Lead with the lineup and its lowest live price, then the offer phrased so
+  // the cheaper cards are obvious (owner, 24 Oct 2026: the bar used to lead
+  // with the RTX 5080 alone).
+  const lead = ladderLead(card, currency);
+  const short = introOfferShort(offer);
+  const headline = `First top-up ${short.main}`;
+  const gpu = short.alt ?? "";
 
   // One pass of the message. Rendered several times so the loop has no seam,
   // and so a wide monitor is never showing empty bar.
   const segments = [
+    ...(lead?.from ? [{ strong: lead.range, rest: lead.from }] : []),
     { strong: headline, rest: gpu },
     { strong: "No paperwork", rest: "just your email and mobile number" },
     { strong: "International cards", rest: "accepted" },
     // One all-in price, no tax words in the banner (owner, 19 Oct 2026); the
     // GST invoice already carries the split.
-    { strong: "Billed by the minute", rest: hourly ? `${hourly} after that` : "for the minutes you use" },
+    { strong: "Billed by the minute", rest: "for the minutes you use" },
   ];
 
   const pass = (key: string) => (
@@ -86,7 +84,7 @@ export async function IntroStrip({ currency = "INR" }: { currency?: Currency }) 
     <Link
       href="/signup"
       className="cf-ticker group block bg-blue"
-      aria-label={`${headline} ${gpu}. No paperwork. Billed by the minute.`}
+      aria-label={`${lead?.from ? `${lead.range}, ${lead.from}. ` : ""}${headline}${gpu ? `, ${gpu}` : ""}. No paperwork. Billed by the minute.`}
     >
       <div className="cf-ticker-track">
         {pass("a")}

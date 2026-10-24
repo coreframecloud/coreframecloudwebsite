@@ -29,7 +29,7 @@ export function architectsMetadata(): Metadata {
   return {
   title: "Cloud Rendering for Architects in India",
   description:
-    "GPU workstations for architecture studios: D5 Render, Lumion, Enscape and Revit, persistent project storage, named seats, hosted in Bengaluru.",
+    "GPU workstations for architecture studios: D5 Render, Lumion, Enscape and Revit, persistent project storage, named seats, hosted in India.",
   keywords: [
     "cloud rendering for architects India",
     "cloud GPU architecture India",

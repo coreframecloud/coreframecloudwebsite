@@ -8,7 +8,7 @@ import { ShellFurnished } from "@/components/visuals/studio-compare";
 import { cellsLabel, formatMoney, usdRates, type Currency } from "@/lib/money";
 import { CFD_PREPROCESS_INR } from "@/lib/cfd-prices";
 import { FREE_PREVIEWS_PER_DAY, studioPrices } from "@/lib/studio-prices";
-import { ladderRanges, type LadderRanges, type RateCard } from "@/lib/rate-card";
+import { ladderLead, ladderRanges, type LadderRanges, type RateCard } from "@/lib/rate-card";
 
 /**
  * The price lines on the hero cards and the bands, in ONE currency: the
@@ -26,7 +26,17 @@ export type OfferingPrices = {
   studio: { extraPreview: string; edit: string; k2: string; k4: string };
   /** The GPU ladder as ranges (owner, 21 Oct 2026), or null without a rate card. */
   ladder: LadderRanges | null;
+  /** The lineup and its lowest live price in `currency` (owner, 24 Oct 2026). */
+  lineup: ReturnType<typeof ladderLead>;
 };
+
+/** The first-top-up offer, short: introOfferShort() in the page's currency. */
+export type IntroShort = { main: string; alt: string | null };
+
+/** "from ₹99/hour" -> "From ₹99/hour". */
+function cap(s: string): string {
+  return s.charAt(0).toUpperCase() + s.slice(1);
+}
 
 export function offeringPrices(card: RateCard | null, currency: Currency): OfferingPrices {
   const usd = usdRates(card);
@@ -41,6 +51,7 @@ export function offeringPrices(card: RateCard | null, currency: Currency): Offer
     cfdCells: cellsLabel(currency === "USD" ? usd.cfd_quote_fee_small_max_cells : CFD_PREPROCESS_INR.smallMaxCells),
     studio: { extraPreview: m(st.extraPreview), edit: m(st.edit), k2: m(st.k2), k4: m(st.k4) },
     ladder: ladderRanges(card),
+    lineup: ladderLead(card, currency),
   };
 }
 
@@ -78,7 +89,13 @@ function ctaEvent(href: string) {
  * One hero card. Phones: a compact row (thumbnail beside the text) so all
  * three fit on the first screen. sm and up: image on top, equal-height cards.
  */
-function HeroCard({ o, introLabel, prices, i }: { o: Offering; introLabel: string | null; prices: OfferingPrices; i: number }) {
+function HeroCard({ o, introLabel, prices, i }: { o: Offering; introLabel: IntroShort | null; prices: OfferingPrices; i: number }) {
+  // The GPU card leads with the lineup and its lowest live price (owner,
+  // 24 Oct 2026), in place of the static line; same element, same size.
+  const line =
+    o.id === "gpu" && prices.lineup?.from
+      ? `A Windows GPU workstation by the minute: ${prices.lineup.list}, ${prices.lineup.from}.`
+      : o.line;
   return (
     <div
       data-cf-spot=""
@@ -116,7 +133,7 @@ function HeroCard({ o, introLabel, prices, i }: { o: Offering; introLabel: strin
           <h2 className="mt-1.5 font-heading text-[19px] leading-[1.2] font-medium text-white sm:mt-2 sm:text-[21px] lg:text-[23px]">
             {o.headline}
           </h2>
-          <p className="mt-2 hidden text-[13.5px] leading-[1.5] text-white/80 sm:block">{o.line}</p>
+          <p className="mt-2 hidden text-[13.5px] leading-[1.5] text-white/80 sm:block">{line}</p>
           <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 sm:mt-auto sm:pt-4">
             <TrackedLink
               href={o.cta.href}
@@ -137,7 +154,13 @@ function HeroCard({ o, introLabel, prices, i }: { o: Offering; introLabel: strin
           </div>
           {o.id === "gpu" && introLabel ? (
             <p className="mt-2.5 text-[12.5px] text-white/80 sm:mt-3 sm:text-[13px]">
-              First top-up: <span className="font-semibold text-white">{introLabel}</span>
+              {/* Phones: the price lead, as the line above is hidden there.
+                  sm and up: the line above carries the lineup and price, so
+                  this names the hours on the cheaper card instead. Each
+                  stays within the line count it had (owner, 24 Oct 2026). */}
+              {prices.lineup?.from ? <span className="sm:hidden">{cap(prices.lineup.from)}. </span> : null}
+              First top-up <span className="font-semibold text-white">{introLabel.main}</span>
+              {introLabel.alt ? <span className="hidden sm:inline">, {introLabel.alt}</span> : null}
             </p>
           ) : null}
           {o.id === "cfd" ? (
@@ -156,7 +179,7 @@ function HeroCard({ o, introLabel, prices, i }: { o: Offering; introLabel: strin
   );
 }
 
-export function HeroOfferingCards({ introLabel, prices }: { introLabel: string | null; prices: OfferingPrices }) {
+export function HeroOfferingCards({ introLabel, prices }: { introLabel: IntroShort | null; prices: OfferingPrices }) {
   return (
     <div className="grid gap-3 sm:grid-cols-3 sm:gap-4 lg:gap-5">
       {OFFERINGS.map((o, i) => (
@@ -179,7 +202,7 @@ const bandPoints = (prices: OfferingPrices): Record<Offering["id"], string[]> =>
   gpu: [
     // The GPU ladder, as ranges from the live rate card (owner, 21 Oct 2026).
     prices.ladder
-      ? `${prices.ladder.gpu} · ${prices.ladder.vram} VRAM · ${prices.ladder.cpu} · ${prices.ladder.ram} RAM`
+      ? `${prices.lineup?.range ?? prices.ladder.gpu} · ${prices.ladder.vram} VRAM · ${prices.ladder.cpu} · ${prices.ladder.ram} RAM`
       : "A dedicated GPU, a whole card to yourself",
     "Unreal Engine, D5 Render, Blender and Twinmotion preinstalled",
     prices.currency === "USD"
@@ -199,7 +222,7 @@ const bandPoints = (prices: OfferingPrices): Record<Offering["id"], string[]> =>
 });
 
 const BAND_BODY: Record<Offering["id"], string> = {
-  gpu: "Open D5, Lumion, Blender or Twinmotion on a full Windows workstation from the laptop you already own, streamed in 4K. Your project files stay on storage in Bengaluru between sessions.",
+  gpu: "Open D5, Lumion, Blender or Twinmotion on a full Windows workstation from the laptop you already own, streamed in 4K. Your project files stay on storage in India between sessions.",
   cfd: "Pressure drop for your duct or pipe, from one STL. The solver runs on our machines, so you need no CFD licence and your own computer stays free. You pay for the run only if you accept the quote.",
   studio:
     "Show the client the room before the project is signed. Upload a 2D DXF floor plan, pick a room and say how it should feel; Studio gives you concept images to pitch with.",

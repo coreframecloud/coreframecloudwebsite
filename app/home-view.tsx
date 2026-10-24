@@ -11,8 +11,7 @@ import {
   getRateCard,
   adhocRate as adhocRateFrom,
   introOfferFor,
-  hoursLabel,
-  introPrice,
+  introOfferShort,
   ladderRanges,
 } from "@/lib/rate-card";
 
@@ -58,7 +57,7 @@ export default async function HomeView({ currency }: { currency: Currency }) {
   const adhocRate = adhocBare ? `${ladder && ladder.count > 1 ? "from " : ""}${adhocBare}` : undefined;
   const intro = introOfferFor(rateCard, currency);
   const prices = offeringPrices(rateCard, currency);
-  const introLabel = intro ? `${introPrice(intro)} = ${hoursLabel(intro.hours)}` : null;
+  const introLabel = intro ? introOfferShort(intro) : null;
 
   return (
     <main className="text-ink">

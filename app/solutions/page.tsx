@@ -12,7 +12,7 @@ import { StreamDiagram, TeamStorageDiagram } from "@/components/visuals/diagrams
 export const metadata: Metadata = {
   title: "GPU Workstations and Storage for Studios",
   description:
-    "How Coreframe fits a design studio: remote Windows RTX workstations, centralised rendering and shared project storage, hosted in Bengaluru and billed in INR.",
+    "How Coreframe fits a design studio: remote Windows RTX workstations, centralised rendering and shared project storage, hosted in India and billed in INR.",
   alternates: { canonical: "/solutions" },
 };
 

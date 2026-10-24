@@ -39,7 +39,7 @@ export function SiteFooter({ currency = "INR" }: { currency?: Currency }) {
             </Link>
             <p className="mt-3 max-w-xs text-xs leading-5 text-ink-2">
               GPU workstations, CFD for ducts and pipes, and Studio for floor-plan concept
-              images. Hosted in Bengaluru, India.
+              images. Hosted in India.
             </p>
             <Link
               href={COMPANY.whatsapp}

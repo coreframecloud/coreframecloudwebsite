@@ -1,5 +1,5 @@
 import { HeroBackdrop } from "@/components/home/redesign/depth";
-import { HeroOfferingCards, type OfferingPrices } from "@/components/home/redesign/offerings";
+import { HeroOfferingCards, type IntroShort, type OfferingPrices } from "@/components/home/redesign/offerings";
 
 /**
  * Full-bleed hero on a living room rendered on our own machine (a RenderGrid
@@ -18,7 +18,7 @@ import { HeroOfferingCards, type OfferingPrices } from "@/components/home/redesi
  * The intro offer line is passed in from the live rate card and disappears
  * when the offer is switched off. No workstation price is typed here.
  */
-export function RedesignHero({ introLabel, prices }: { introLabel: string | null; prices: OfferingPrices }) {
+export function RedesignHero({ introLabel, prices }: { introLabel: IntroShort | null; prices: OfferingPrices }) {
   return (
     <section className="relative isolate overflow-hidden bg-night text-white" data-cf-section="hero">
       <HeroBackdrop

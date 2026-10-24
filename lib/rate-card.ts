@@ -363,6 +363,10 @@ export type IntroOffer = {
   /** Every GPU the hours may be spent on, cheapest first (includes gpuName).
    *  Empty on an API that predates the ladder. */
   eligibleGpus: string[];
+  /** Each eligible GPU's list rate per hour in `currency`, by name, from the
+   *  rate card (owner, 24 Oct 2026: show how far the credit goes on the
+   *  cheaper cards). Empty when the card publishes no rate for them. */
+  rates: Record<string, number>;
 };
 
 /**
@@ -383,13 +387,89 @@ export function introOfferMoreGpus(o: IntroOffer): string[] {
   return o.eligibleGpus.filter((n) => n !== o.gpuName);
 }
 
+/** Hourly rates in `cur` for the named GPUs, from the rate card. */
+function eligibleRates(card: RateCard | null, names: string[], cur: Currency): Record<string, number> {
+  const out: Record<string, number> = {};
+  for (const g of publicGpus(card)) {
+    if (!names.includes(g.name)) continue;
+    const r = hourlyValue(g, cur, card);
+    if (r != null && r > 0) out[g.name] = r;
+  }
+  return out;
+}
+
 /**
- * " (more hours on the RTX A4000, RTX A5000)" when the intro hours may be
- * spent on cheaper GPUs too, else "". Built from the rate card, never typed.
+ * What the offer credits, in its currency: price + bonus, or, without a
+ * published bonus, its hours at the reference GPU's list rate. Null when
+ * neither is known.
+ */
+export function introCredit(o: IntroOffer): number | null {
+  if (o.bonus != null) return o.price + o.bonus;
+  const r = o.gpuName ? o.rates[o.gpuName] : undefined;
+  return r ? o.hours * r : null;
+}
+
+/**
+ * The same credit on the cheaper eligible cards, cheapest first: whole hours
+ * at each card's list rate, FLOORED (never round up an hour the wallet will
+ * not cover). [{ name: "RTX A4000", hours: 18 }, { name: "RTX A5000", hours: 12 }]
+ * with the live card. Empty when no rate or credit is published.
+ */
+export function introHoursOnCheaper(o: IntroOffer): { name: string; hours: number }[] {
+  const credit = introCredit(o);
+  if (credit == null) return [];
+  return introOfferMoreGpus(o)
+    .filter((n) => o.rates[n] > 0)
+    .sort((a, b) => o.rates[a] - o.rates[b])
+    .map((n) => ({ name: shortGpuName(n), hours: Math.floor(credit / o.rates[n] + 1e-9) }))
+    .filter((x) => x.hours > o.hours);
+}
+
+/**
+ * " (or about 18 hours on the RTX A4000, 12 on the RTX A5000)" when the intro
+ * credit may be spent on cheaper GPUs too; the older " (more hours on the
+ * RTX A4000, RTX A5000)" when their rates are unknown; else "". Built from
+ * the rate card, never typed.
  */
 export function introMoreGpusNote(o: IntroOffer): string {
+  const hrs = introHoursOnCheaper(o);
+  if (hrs.length) {
+    return ` (or about ${hrs.map((x, i) => `${i === 0 ? hoursLabel(x.hours) : x.hours} on the ${x.name}`).join(", ")})`;
+  }
   const more = introOfferMoreGpus(o).map(shortGpuName);
   return more.length ? ` (more hours on the ${more.join(", ")})` : "";
+}
+
+/**
+ * The offer in two short parts, for one-line spots (the top strip, the hero
+ * card, the pricing tiles): main "₹1,000 = 8 h on RTX 5080", alt "or about
+ * 18 h on RTX A4000" (the cheapest eligible card), or alt null.
+ */
+export function introOfferShort(o: IntroOffer): { main: string; alt: string | null } {
+  const cheapest = introHoursOnCheaper(o)[0];
+  return {
+    main: `${introPrice(o)} = ${o.hours} h${o.gpuName ? ` on ${shortGpuName(o.gpuName)}` : ""}`,
+    alt: cheapest ? `or about ${cheapest.hours} h on ${cheapest.name}` : null,
+  };
+}
+
+/**
+ * The lineup, cheapest first, priced cards only (a quote-on-request or
+ * staff-only profile is never named): range "RTX A4000 to RTX 6000 Ada",
+ * list "RTX A4000 16 GB, RTX A5000 24 GB, RTX 5080 16 GB, RTX 6000 Ada 48 GB",
+ * from "from ₹99/hour" / "from $1.49/hour" (the visitor's currency only).
+ * Null without a rate card.
+ */
+export function ladderLead(card: RateCard | null, cur: Currency = "INR"): { range: string; list: string; from: string | null } | null {
+  const gpus = publicGpus(card).filter(isPricedGpu);
+  if (!gpus.length) return null;
+  const short = gpus.map((g) => shortGpuName(g.name));
+  const bare = adhocRate(card, cur);
+  return {
+    range: short.length === 1 ? short[0] : `${short[0]} to ${short[short.length - 1]}`,
+    list: gpus.map((g, i) => `${short[i]} ${g.vram_gb} GB`).join(", "),
+    from: bare ? `${short.length > 1 ? "from " : ""}${bare}/hour` : null,
+  };
 }
 
 /**
@@ -453,6 +533,7 @@ export function getIntroOffer(card: RateCard | null): IntroOffer | null {
     onePerCustomer: io.one_per_customer ?? true,
     gpuName,
     eligibleGpus: eligibleGpuNames(card, io),
+    rates: eligibleRates(card, eligibleGpuNames(card, io), "INR"),
   };
 }
 
@@ -476,6 +557,7 @@ export function getUsdIntroOffer(card: RateCard | null): IntroOffer | null {
     onePerCustomer: true,
     gpuName,
     eligibleGpus: eligibleGpuNames(card, io),
+    rates: eligibleRates(card, eligibleGpuNames(card, io), "USD"),
   };
 }
 

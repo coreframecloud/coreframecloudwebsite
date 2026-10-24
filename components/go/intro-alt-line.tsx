@@ -2,7 +2,7 @@
 
 import { useSyncExternalStore } from "react";
 import { readIntroVariant } from "@/lib/attribution";
-import { hoursLabel, introPrice, type IntroOffer } from "@/lib/rate-card";
+import { introOfferShort, type IntroOffer } from "@/lib/rate-card";
 
 /**
  * The one line of the first top-up A/B a logged-out page may show (owner
@@ -24,8 +24,8 @@ export function IntroAltLine({ offer }: { offer: IntroOffer | null }) {
   if (!offer || variant !== "intro500") return null;
   return (
     <span className="mt-1 block text-[13.5px] leading-5 text-ink-2">
-      Or start with <b className="font-semibold text-ink">{introPrice(offer)} = {hoursLabel(offer.hours)}</b>
-      {offer.gpuName ? " on the same card" : ""}.
+      Or start with <b className="font-semibold text-ink">{introOfferShort(offer).main}</b>
+      {introOfferShort(offer).alt ? `, ${introOfferShort(offer).alt}` : ""}.
     </span>
   );
 }

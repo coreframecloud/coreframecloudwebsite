@@ -6,7 +6,7 @@ import type { Currency } from "@/lib/money";
 import { storageTerms } from "@/lib/storage-terms";
 import { GpuCards } from "@/components/go/gpu-cards";
 import { IntroAltLine } from "@/components/go/intro-alt-line";
-import { adhocRate, adhocRateHourly, getRateCard, hoursLabel, introOfferFor, introOfferMoreGpus, introOfferVariant, introPrice, ladderRanges, publicGpus, shortGpuName, withArticle } from "@/lib/rate-card";
+import { adhocRate, adhocRateHourly, getRateCard, introOfferFor, introOfferMoreGpus, introOfferShort, introOfferVariant, ladderRanges, publicGpus, withArticle } from "@/lib/rate-card";
 
 /**
  * /go/gpu — the paid landing page for the GPU workstation ads (owner, 20 Oct
@@ -30,7 +30,7 @@ export async function gpuLandingMetadata(currency: Currency): Promise<Metadata> 
   return {
     title: "Your laptop, with a workstation-class GPU behind it",
     description: offer
-      ? `A Windows GPU workstation by the minute, streamed to the laptop you own. First top-up: ${introPrice(offer)} = ${hoursLabel(offer.hours)}.`
+      ? `A Windows GPU workstation by the minute, streamed to the laptop you own. First top-up ${introOfferShort(offer).main}${introOfferShort(offer).alt ? `, ${introOfferShort(offer).alt}` : ""}.`
       : `A Windows GPU workstation by the minute, streamed to the laptop you own.`,
     robots: { index: false, follow: false },
   };
@@ -56,9 +56,7 @@ export default async function GpuLandingView({ currency }: { currency: Currency 
   const alt = currency === "INR" && intro ? introOfferVariant(card) : null;
   const price = intro ? (
     <>
-      First top-up: <b className="font-semibold">{introPrice(intro)} = {hoursLabel(intro.hours)}</b>
-      {intro.gpuName ? ` on the ${shortGpuName(intro.gpuName)}` : ""}
-      {more ? ", more hours on the cheaper cards" : ""}
+      First top-up <b className="font-semibold">{introOfferShort(intro).main}</b>{introOfferShort(intro).alt ? `, ${introOfferShort(intro).alt}` : more ? ", more hours on the cheaper cards" : ""}
       {hourly ? <span className="text-ink-2"> · {ladder && ladder.count > 1 ? "from " : ""}{hourly} after that</span> : null}
       <IntroAltLine offer={alt} />
     </>
