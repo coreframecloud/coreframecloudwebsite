@@ -491,7 +491,7 @@ function buildSoftwarePages(cur: Currency): SoftwarePage[] {
         ? "Rent a Windows RTX GPU workstation in India by the minute for 3D rendering, CAD and simulation. No hardware purchase, billed in US dollars, persistent NAS storage."
         : "Rent a Windows RTX GPU workstation in India by the minute for 3D rendering, CAD and simulation. No hardware purchase, GST invoices, persistent NAS storage.",
     intro:
-      "Coreframe rents Windows GPU workstations by the minute from infrastructure in India. You stream a real RTX desktop to the computer you already own and pay only while the stream is running.",
+      "Coreframe rents Windows GPU workstations by the minute from infrastructure in India. You stream a real RTX desktop to the computer you already own and pay only for the minutes you use.",
     problem:
       usd
         ? `A workstation that would handle your rendering lands at about ${machineCost}, depreciates the day it arrives, and sits idle most of the week.`
