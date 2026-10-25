@@ -53,7 +53,7 @@ const STEPS = [
   },
   {
     title: "6. Work, then end the session.",
-    body: "You get a full Windows desktop with the professional applications already installed. Your storage is mapped as drive N:, labelled Coreframe Datalake. Save project files there and nowhere else. When you're done, end the session from Connect. Billing stops right then, and everything on N: stays where you left it. You can also close the stream and leave it rendering. We end the session 15 minutes after your workstation's GPU goes idle, or when your wallet runs out. Rendering on the CPU only? Keep the stream open, or the session can end.",
+    body: "You get a full Windows desktop with the professional applications already installed. Your storage is mapped as drive N:, labelled Coreframe Datalake. Save project files there and nowhere else. When you're done, end the session from Connect. Billing stops right then, and everything on N: stays where you left it. You can also close the stream, or switch off your own computer, and leave your work running. The session keeps running, and billing continues, until you end it in Connect or your wallet runs out.",
   },
 ];
 
@@ -64,7 +64,7 @@ const FAQS = [
   },
   {
     q: "How is Coreframe billed?",
-    a: "Per minute. Billing starts when you connect and stops when you end the session. If you close the stream and leave a render running, the session ends 15 minutes after your workstation's GPU goes idle (billed to that point), or when your wallet runs out. A CPU-only render doesn't keep the GPU busy, so keep the stream open for those. Preparing the workstation and uploads are free. If you don't connect within 10 minutes of your workstation being ready, it shuts down and those 10 minutes are charged. If a connection fails on our side, nothing is charged. Prices include GST, and you get a tax invoice for every payment.",
+    a: "Per minute. Billing starts when you connect and stops when you end the session. If you close the stream and leave work running, on the GPU or the CPU, the session keeps running and is billed until you end it in Connect or your wallet runs out. So remember to end it when you're done. Preparing the workstation and uploads are free. If you don't connect within 10 minutes of your workstation being ready, it shuts down and those 10 minutes are charged. If a connection fails on our side, nothing is charged. Prices include GST, and you get a tax invoice for every payment.",
   },
   {
     q: "Do I need my own software licences?",
