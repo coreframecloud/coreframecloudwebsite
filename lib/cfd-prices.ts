@@ -54,6 +54,18 @@ export function expressFromAmount(cur: Currency): string {
   return cur === "USD" ? formatMoney(CFD_EXPRESS_FROM.usd, "USD") : formatMoney(inrAllIn(CFD_EXPRESS_FROM.inrExTax), "INR");
 }
 
+/**
+ * The smallest HVAC room study (Standard, one small room on the form), for "from" lines on
+ * /go/hvac. Read from a live quote (build_quote mode=hvac, 60-150 k cells, 26 Oct 2026; our
+ * sample office is 109,551 cells): ₹1,499 ex-tax (₹1,769 charged) / $25.
+ */
+export const HVAC_ROOM_FROM = { inrExTax: 1499, usd: 25 } as const;
+
+/** "₹1,769" / "$25". */
+export function hvacRoomFromAmount(cur: Currency): string {
+  return cur === "USD" ? formatMoney(HVAC_ROOM_FROM.usd, "USD") : formatMoney(inrAllIn(HVAC_ROOM_FROM.inrExTax), "INR");
+}
+
 /** Normal delivery, hours after payment. */
 export const CFD_NORMAL_HOURS = 24;
 

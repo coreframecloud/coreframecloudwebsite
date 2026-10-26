@@ -10,7 +10,7 @@ import { usePathname } from "next/navigation";
  * KEEP the floating WhatsApp button (owner, 20 Oct 2026: leave the site's
  * WhatsApp button as it is), so that one uses FloatOffOnSignup.
  */
-const AD_LANDING_PATHS = new Set(["/go/gpu", "/go/cfd"]);
+const AD_LANDING_PATHS = new Set(["/go/gpu", "/go/cfd", "/go/hvac"]);
 
 /**
  * Hides the site chrome on paid landing pages.

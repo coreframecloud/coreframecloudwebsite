@@ -125,6 +125,16 @@ export default async function CfdLandingView({ currency }: { currency: Currency 
           </section>
         </div>
 
+        {/* HVAC rooms (owner, 26 Oct 2026: "we also have HVAC"): one quiet card to its own page. */}
+        <KeepQueryLink href="/go/hvac" event="go_cfd_to_hvac" cta="hvac card"
+          className="mt-6 flex max-w-[760px] items-center justify-between gap-3 rounded-[16px] border border-rule bg-paper-2 px-4 py-3.5 transition hover:border-blue/40">
+          <span className="min-w-0">
+            <span className="block text-[12px] font-semibold tracking-[0.06em] text-ink-3 uppercase">Also: HVAC rooms</span>
+            <span className="block text-[15.5px] leading-snug font-medium text-ink">Room airflow and comfort: ADPI, PMV/PPD and draught maps</span>
+          </span>
+          <span aria-hidden className="shrink-0 text-xl text-blue">→</span>
+        </KeepQueryLink>
+
         <section className="mt-8 max-w-[760px]" data-cf-section="deliverables">
           <h2 className="font-heading text-[22px] leading-tight font-medium text-ink">What you get</h2>
           <ul className="mt-4 grid gap-2.5 sm:grid-cols-3">

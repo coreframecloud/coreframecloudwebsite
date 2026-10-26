@@ -80,6 +80,7 @@ const PAGES = new Set([
   // The paid landing pages (owner, 20 Oct 2026): one price, in the visitor's currency.
   "/go/gpu",
   "/go/cfd",
+  "/go/hvac",
 ]);
 
 /** Dynamic routes with a /usd copy: exactly one segment after the prefix, so
