@@ -43,7 +43,7 @@ import { NODE, WORKSTATION_REPLACEMENT_COST } from "@/lib/node-spec";
 import { COMPANY, COMPANY_VISITING_ADDRESS_LINE } from "@/lib/company";
 import { ROOMS_DELIVERS, ROOMS_VALIDATION } from "@/lib/cfd-rooms";
 import { formatMoney, usdRates } from "@/lib/money";
-import { CFD_EXPRESS, CFD_NORMAL_HOURS, CFD_PREPROCESS_INR } from "@/lib/cfd-prices";
+import { CFD_EXPRESS, CFD_NORMAL_HOURS, CFD_PREPROCESS_INR, expressFromAmount, hvacRoomFromAmount } from "@/lib/cfd-prices";
 import { VERIFIED, VERIFIED_INR_ALL_IN, BEND_RECORD } from "@/lib/cfd-verified";
 import { HVAC_PAGE, HVAC_SERVICE, CLINIC_CASE } from "@/lib/cfd-pages";
 import { FREE_PREVIEWS_PER_DAY, studioPrices } from "@/lib/studio-prices";
@@ -56,7 +56,7 @@ export const SITE = "https://www.coreframecloud.com";
  * tells an answer engine nothing. Bump it whenever the text below changes.
  * Prices are not covered by it; they are read live from the rate card.
  */
-export const LLMS_LAST_UPDATED = "21 October 2026";
+export const LLMS_LAST_UPDATED = "26 October 2026";
 
 function money(n: number | null | undefined): string | null {
   if (n == null) return null;
@@ -72,7 +72,7 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
   // is most likely to lift whole. The detail lives in the sections below.
   out.push(
     "> Three services from Bengaluru: Windows GPU workstations by the minute, CFD for " +
-      "ducts and pipes from one STL, and Studio floor-plan concept images (free previews).",
+      "ducts, pipes and HVAC rooms, and Studio floor-plan concept images (free previews).",
   );
   out.push("");
   out.push(`Last updated: ${LLMS_LAST_UPDATED}. Prices on this page are read live from our rate card.`);
@@ -104,8 +104,8 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
       "Draft (cheaper, for comparing design options early) and Standard (the number you put in a client report) run one " +
       "wall-resolved, quality-checked mesh (Standard holds the pressure to a tighter convergence target) and are priced on the quote. Verified is a mesh-independence study, three meshes and the " +
       `grid convergence index, from ${formatMoney(VERIFIED_INR_ALL_IN.from, "INR")} in India or from ${usdMoney(VERIFIED.fromUsd)} elsewhere. ` +
-      `Results come within ${CFD_NORMAL_HOURS} hours of payment, or in ${CFD_EXPRESS.hours} hours with Express at ` +
-      `${CFD_EXPRESS.multiple}x the package price where the quote offers it (Draft and Standard only). You get a PDF ` +
+      `Results come within ${CFD_NORMAL_HOURS} hours of payment, or in ${CFD_EXPRESS.hours} hours with Express, from ` +
+      `${expressFromAmount("INR")} in India or ${expressFromAmount("USD")} elsewhere for a small model, where the quote offers it (Draft and Standard only). You get a PDF ` +
       "report, a 3D results viewer and the case data files. Our live Verified example (17 Oct 2026): a 90° bend gave " +
       `${BEND_RECORD.meshes.map((m) => m.dp.toFixed(3)).join(" / ")} Pa on three meshes, reported as ` +
       `"${BEND_RECORD.verdict}". Rooms and HVAC airflow (steady) is a separate live job type: describe one box room and get ` +
@@ -143,8 +143,8 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
   out.push(
     "- **What is Coreframe Cloud?** A Bengaluru company with three services: (1) GPU " +
       "workstations, a whole Windows GPU workstation rented by the minute and streamed " +
-      "to your own computer through the Coreframe Connect app; (2) CFD for ducts and pipes, " +
-      "an automatic CFD service where you upload one STL and get a quote by email; " +
+      "to your own computer through the Coreframe Connect app; (2) CFD for ducts, pipes and HVAC rooms, " +
+      "an automatic CFD service: upload one STL (ducts, pipes) or describe a room on a form (HVAC) and get a quote by email; " +
       "(3) Coreframe Studio, pre-sale concept images from a DXF floor plan (open; free previews). " +
       "Operated by Coreframe Compute Labs Private Limited, Bengaluru.",
   );
@@ -164,14 +164,15 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
       "is stored or processed outside India, and invoices are issued from India.",
   );
   out.push(
-    `- **Can Coreframe run CFD for me?** Yes, for ducts and pipes (${SITE}/cfd). ` +
-      "Upload one closed STL of the fluid volume; " +
+    `- **Can Coreframe run CFD for me?** Yes, for ducts, pipes and HVAC rooms (${SITE}/cfd). For ducts and pipes, ` +
+      "upload one closed STL of the fluid volume; " +
       `pre-processing / mesh check is Rs ${CFD_PREPROCESS_INR.small} for most duct and pipe models (Rs ${CFD_PREPROCESS_INR.large.toLocaleString("en-IN")} for very large models over 5 million cells; outside India ${usdMoney(usd.cfd_quote_fee_small)} / ${usdMoney(usd.cfd_quote_fee_large)}); we mesh it ` +
       "and email a quote; accept it and get pressure drop, loss coefficient, a PDF report, a " +
-      "3D viewer and the case data files, within 24 hours (Express: 1–2 hours at 3x, where offered). No CFD licence needed. It needs a Coreframe account " +
+      `3D viewer and the case data files, within 24 hours (Express: 1–2 hours, from ${expressFromAmount("INR")} / ${expressFromAmount("USD")} for a small model, where offered). No CFD licence needed. It needs a Coreframe account ` +
       "(the same account and wallet as GPU workstations and Studio). Rooms and HVAC airflow (steady analysis) is also live: " +
       "describe one box-shaped room, its diffusers, returns and heat loads, and get room averages (mean air speed, PMV/PPD, ADPI) " +
-      `and temperature and air-speed maps in a PDF report. ${ROOMS_VALIDATION}`,
+      `and temperature and air-speed maps in a PDF report, from ${hvacRoomFromAmount("INR")} in India or ${hvacRoomFromAmount("USD")} elsewhere for a small room ` +
+      `(${SITE}/go/hvac). ${ROOMS_VALIDATION}`,
   );
   out.push(
     `- **Does Coreframe do mesh independence (grid independence) studies?** Yes: the Verified package, a ` +
@@ -230,8 +231,14 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
       `animation split across many machines, a render farm is the better tool (${SITE}/cloud-workstation-vs-render-farm).`,
   );
   out.push(
-    "- **Is there a free trial?** No. You sign up with an email and a WhatsApp code to " +
-      "your mobile, with no ID documents, and sessions start after the first paid top-up.",
+    "- **Is there a free trial?** No. You sign up with an email and a one-time code to " +
+      "your mobile (WhatsApp or SMS), with no ID documents, and sessions start after the first paid top-up.",
+  );
+  out.push(
+    "- **Can I close my laptop while a render runs on the workstation?** Yes. When you launch, " +
+      "Coreframe Connect asks what to do when you close the stream; with \"keep running until I end it\" " +
+      "the session and the render keep going until you end the session or your wallet runs out. " +
+      "Billing is per minute while the session runs.",
   );
   out.push(
     "- **Does it work from a Mac?** The Coreframe Connect client is published for " +
@@ -407,7 +414,7 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
   out.push("## Getting started");
   out.push("");
   out.push(
-    "- Sign-up is an email address plus a one-time code to your mobile on WhatsApp (any " +
+    "- Sign-up is an email address plus a one-time code to your mobile on WhatsApp or by SMS (any " +
       "country code). We don't ask for Aadhaar, a passport or any other ID document. Indian " +
       "regulations (CERT-In) require a verified contact number, and that's what the code is for.",
   );
@@ -477,7 +484,7 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
 
   out.push("## How a session works");
   out.push("");
-  out.push("1. Sign up with email and mobile (WhatsApp code), then add credit.");
+  out.push("1. Sign up with email and mobile (a code on WhatsApp or by SMS), then add credit.");
   out.push("2. Install Coreframe Connect, the Windows client, and sign in.");
   out.push("3. Press Connect. A workstation is provisioned and the desktop streams to you.");
   out.push("4. Work as normal. Project files live on your NAS drive, mapped inside the session.");
