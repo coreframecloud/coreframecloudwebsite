@@ -165,9 +165,9 @@ export default function DownloadPage() {
             <button
               onClick={handleDownload}
               disabled={downloading}
-              className="cf-btn-primary min-h-[44px] w-full"
+              className="cf-btn-go cf-btn-flash w-full disabled:opacity-60"
             >
-              {downloading ? "Starting download" : `Download v${info.version}`}
+              {downloading ? "Starting download" : `Download Coreframe Connect v${info.version}`}
             </button>
 
             {/* SHA-256. Sixty-four characters with no break opportunity in
