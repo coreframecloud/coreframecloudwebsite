@@ -48,6 +48,18 @@ export async function gpuLandingMetadata(currency: Currency): Promise<Metadata> 
       ? `A real Blender render in 1:28 on an RTX 5080, streamed to the laptop you own. First top-up ${introOfferShort(offer).main}.`
       : "A real Blender render in 1:28 on an RTX 5080, streamed to the laptop you own.",
     robots: { index: false, follow: false },
+    // Its own share card (owner, 26 Oct 2026: a /go/gpu link sent on WhatsApp
+    // showed the homepage card). No price on the image, so one card serves
+    // both the ₹ and the $ copy; absolute URL so the /usd rewrite cannot break it.
+    openGraph: {
+      title: "A living room, rendered in 1:28",
+      description: "On an RTX 5080 workstation, streamed to the laptop you already own. Billed by the minute.",
+      url: "https://www.coreframecloud.com/go/gpu",
+      siteName: "Coreframe Cloud",
+      type: "website",
+      images: [{ url: "https://www.coreframecloud.com/og/go-gpu.jpg", width: 1200, height: 630, alt: "A living room rendered in 1:28 on a Coreframe RTX 5080 workstation" }],
+    },
+    twitter: { card: "summary_large_image", images: ["https://www.coreframecloud.com/og/go-gpu.jpg"] },
   };
 }
 

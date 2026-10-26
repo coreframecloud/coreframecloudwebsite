@@ -40,6 +40,18 @@ export async function cfdLandingMetadata(currency: Currency): Promise<Metadata> 
     title: "Pressure drop, verified on three meshes | Coreframe CFD",
     description: `Upload one STL of your duct or pipe. We check it, mesh it and quote; results within ${CFD_NORMAL_HOURS} hours of payment. Mesh check ${fee} for most models.`,
     robots: { index: false, follow: false },
+    // Its own share card (owner, 26 Oct 2026: a landing link sent on WhatsApp
+    // showed the homepage card). No price on the image, so one card serves
+    // both the ₹ and the $ copy; absolute URL so the /usd rewrite cannot break it.
+    openGraph: {
+      title: "Pressure drop, verified on three meshes",
+      description: "Duct and pipe CFD from one STL. Express results in 1–2 hours. No CFD licence needed.",
+      url: "https://www.coreframecloud.com/go/cfd",
+      siteName: "Coreframe Cloud",
+      type: "website",
+      images: [{ url: "https://www.coreframecloud.com/og/go-cfd.jpg", width: 1200, height: 630, alt: "Mesh independence check on a 90° bend: 12.30 Pa ± 0.13 %" }],
+    },
+    twitter: { card: "summary_large_image", images: ["https://www.coreframecloud.com/og/go-cfd.jpg"] },
   };
 }
 
