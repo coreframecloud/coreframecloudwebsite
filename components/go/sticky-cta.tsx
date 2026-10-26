@@ -11,7 +11,7 @@ import { KeepQueryLink } from "./keep-query-link";
  * fold on a short phone (owner's 6-inch iPhone, 26 Oct 2026). So a button is
  * always on screen and the two never show together, and sets body[data-cf-sticky] so the WhatsApp bubble lifts above it.
  */
-export function StickyCta({ href, label, offer }: { href: string; label: string; offer?: string }) {
+export function StickyCta({ href, label, offer, event = "go_gpu_cta_sticky" }: { href: string; label: string; offer?: string; event?: string }) {
   const [show, setShow] = useState(false);
   useEffect(() => {
     const hero = document.getElementById("cf-hero-cta");
@@ -32,7 +32,7 @@ export function StickyCta({ href, label, offer }: { href: string; label: string;
     >
       <div className="mx-auto flex max-w-[560px] items-center gap-3">
         {offer ? <p className="min-w-0 flex-1 text-[14px] leading-5 font-semibold text-ink">{offer}</p> : null}
-        <KeepQueryLink href={href} event="go_gpu_cta_sticky" cta="sticky" className="cf-btn-go shrink-0 px-6">
+        <KeepQueryLink href={href} event={event} cta="sticky" className="cf-btn-go shrink-0 px-6">
           {label}
         </KeepQueryLink>
       </div>

@@ -24,7 +24,7 @@ import { adhocRate, adhocRateHourly, getRateCard, introOfferFor, introOfferShort
  *
  * So, in order: the result the ads promise (the real 1:28 Blender render, with
  * Blender's own timer strip as proof), the first top-up offer in big type, one
- * big button, three steps, the GPU cards (each one a link to sign-up), the
+ * big button, the GPU cards (each one a link to sign-up), the
  * reel, three questions. On a phone a bar with the button follows the reader
  * once the hero button has scrolled away (components/go/sticky-cta.tsx).
  *
@@ -131,20 +131,7 @@ export default async function GpuLandingView({ currency }: { currency: Currency 
           </section>
         </div>
 
-        {/* Show the way: what happens after the tap. */}
-        <section className="mt-10 max-w-[760px]" data-cf-section="steps">
-          <h2 className="font-heading text-[22px] leading-tight font-medium text-ink">How to start</h2>
-          <ol className="mt-4 grid gap-2.5 sm:grid-cols-3">
-            {["Sign up with your email", "Verify your phone with a code", "Top up and launch your GPU"].map((s, i) => (
-              <li key={s} className="flex items-center gap-3 rounded-cf border border-rule bg-paper-2 px-4 py-3">
-                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue text-[15px] font-bold text-white">{i + 1}</span>
-                <span className="text-[15.5px] leading-snug font-medium text-ink">{s}</span>
-              </li>
-            ))}
-          </ol>
-        </section>
-
-        <section className="mt-10 max-w-[760px]" data-cf-section="ladder">
+        <section className="mt-8 max-w-[760px]" data-cf-section="ladder">
           <h2 className="font-heading text-[22px] leading-tight font-medium text-ink">Pick your GPU</h2>
           <p className="mt-1 text-[14.5px] text-ink-2">D5, Twinmotion, Unreal and Blender are already installed on every one.</p>
           <div className="mt-4">
