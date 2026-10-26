@@ -89,14 +89,14 @@ export default async function CfdLandingView({ currency }: { currency: Currency 
                 <p className="font-heading text-[24px] leading-tight font-semibold text-ink">
                   <span className="text-[14px] font-medium text-ink-2">from </span>{verifiedFromAmount(currency)}
                 </p>
-                <p className="mt-0.5 text-[12.5px] leading-4 text-ink-2">3 meshes, uncertainty band · {VERIFIED.deliveryHours} h</p>
+                <p className="mt-0.5 text-[12.5px] leading-4 text-ink-2">Mesh-independence check on 3 meshes · {VERIFIED.deliveryHours} h</p>
               </div>
               <div className="rounded-[16px] border border-rule bg-paper-2 px-3.5 py-3">
                 <p className="text-[12px] font-semibold tracking-[0.06em] text-ink-3 uppercase">Express</p>
                 <p className="font-heading text-[24px] leading-tight font-semibold text-ink">
                   <span className="text-[14px] font-medium text-ink-2">from </span>{expressFromAmount(currency)}
                 </p>
-                <p className="mt-0.5 text-[12.5px] leading-4 text-ink-2">Results in {CFD_EXPRESS.hours} hours</p>
+                <p className="mt-0.5 text-[12.5px] leading-4 text-ink-2">Pressure drop on one mesh · {CFD_EXPRESS.hours} h</p>
               </div>
             </div>
 
