@@ -1347,3 +1347,22 @@ body:has([data-usd-view]) .cf-ticker {
 .cf-btn-go:hover { background: var(--color-blue-ink); }
 /* The WhatsApp bubble rises above the sticky sign-up bar while it shows. */
 body[data-cf-sticky] a[aria-label*="WhatsApp" i] { bottom: 5.5rem; }
+
+/* Download Connect on My Activity (owner 26 Oct 2026: "flash it so it catches the eye"):
+   a moving brand gradient and a soft pulse ring; still when the visitor asks for less motion. */
+.cf-btn-flash {
+  position: relative;
+  background: linear-gradient(110deg, #2f6be0, #7b5cff, #19b3c9, #2f6be0);
+  background-size: 300% 100%;
+  animation: cf-flash-bg 3.5s linear infinite, cf-flash-ring 2s ease-out infinite;
+}
+.cf-btn-flash:hover { filter: brightness(1.08); }
+@keyframes cf-flash-bg { from { background-position: 0% 50%; } to { background-position: 300% 50%; } }
+@keyframes cf-flash-ring {
+  0% { box-shadow: 0 0 0 0 color-mix(in srgb, #2f6be0 55%, transparent); }
+  70% { box-shadow: 0 0 0 12px color-mix(in srgb, #2f6be0 0%, transparent); }
+  100% { box-shadow: 0 0 0 0 transparent; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cf-btn-flash { animation: none; background-position: 0% 50%; }
+}

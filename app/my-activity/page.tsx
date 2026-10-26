@@ -1,5 +1,6 @@
 "use client";
 
+import { TutorialCard } from "@/components/my-activity/tutorial-card";
 import { useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
 import TopUpDialog, { type BulkTier } from "@/components/wallet/top-up-dialog";
@@ -745,9 +746,11 @@ export default function MyActivityPage() {
               not by payment, and someone signing in from a different machine
               needs the installer again — so this is not onboarding that should
               disappear once they have used it. */}
+          {/* Owner, 26 Oct 2026: "too plain ... add flashing colours so it catches the eye".
+              Moving brand gradient + a soft pulse; still for prefers-reduced-motion (globals.css). */}
           <Link
             href="/download"
-            className="cf-btn-secondary w-full gap-2 sm:w-auto"
+            className="cf-btn-go cf-btn-flash w-full gap-2 px-6 sm:w-auto"
           >
             <svg viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4" aria-hidden="true">
               <path d="M10 2a1 1 0 0 1 1 1v8.586l2.293-2.293a1 1 0 1 1 1.414 1.414l-4 4a1 1 0 0 1-1.414 0l-4-4a1 1 0 1 1 1.414-1.414L9 11.586V3a1 1 0 0 1 1-1Z" />
@@ -756,6 +759,8 @@ export default function MyActivityPage() {
             Download Coreframe Connect
           </Link>
         </div>
+
+        <TutorialCard />
 
         {/* Saving your work. Above the wallet on purpose: a customer who
             loses a project cares about nothing else on this page. Named the
