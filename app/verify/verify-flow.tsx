@@ -463,7 +463,9 @@ export default function VerifyFlow() {
           }
         />
         <form onSubmit={submitPhone} className="grid gap-4">
-          <div className="flex gap-2">
+          {/* Fixed columns (26 Oct 2026, customer on a phone: the number box was squeezed off-screen
+              because the select's w-full beat its w-[112px]). The select never takes the width. */}
+          <div className="grid grid-cols-[7.5rem_minmax(0,1fr)] gap-2 sm:grid-cols-[9rem_minmax(0,1fr)]">
             <select
               value={phoneCountry.iso}
               onChange={(e) => {
@@ -471,7 +473,7 @@ export default function VerifyFlow() {
                 if (next) setPhoneCountry(next);
                 setError("");
               }}
-              className={`${inputCls} w-[112px] shrink-0 cursor-pointer sm:w-36`}
+              className={`${inputCls.replace("w-full ", "")} w-full cursor-pointer truncate`}
               aria-label="Country dialling code"
             >
               {countries.map((c) => (
