@@ -37,6 +37,7 @@ export const PAGE_UPDATED: Record<string, string> = {
   "/privacy-policy": "2026-10-18",
   "/terms-of-service": "2026-10-18",
   "/refund-policy": "2026-10-18",
+  "/support": "2026-10-26",
   [CFD_HOME.path]: CFD_HOME.updated,
   [CFD_DEMO.path]: CFD_DEMO.updated,
   [MESH_STUDY.path]: MESH_STUDY.updated,

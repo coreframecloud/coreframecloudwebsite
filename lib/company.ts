@@ -36,6 +36,8 @@ export const COMPANY = {
   },
 
   email: "admin@coreframecloud.com",
+  // Customer support (owner, 26 Oct 2026): the /support page and store listings.
+  supportEmail: "hello@coreframecloud.com",
   phone: "+91 6366889488",
   whatsapp: "https://wa.me/916366889488",
 } as const;

@@ -161,6 +161,9 @@ export function SiteFooter({ currency = "INR" }: { currency?: Currency }) {
                   so a screen reader reads the contact once rather than twice.
                   They inherit currentColor, so the hover state comes free and
                   there is nothing to update when the palette moves. */}
+              <Link href="/support" className="flex min-h-11 items-center text-[13.5px] font-medium text-ink transition hover:text-blue">
+                Support
+              </Link>
               <Link href={`mailto:${COMPANY.email}`} className="flex min-h-11 items-center gap-2 text-[13.5px] text-ink-2 transition hover:text-ink">
                 <MailIcon className="h-[15px] w-[15px]" />
                 {COMPANY.email}

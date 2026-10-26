@@ -147,6 +147,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
     // /contact is NOT here: it is a redirect to /request-demo, and a sitemap
     // should list destinations, not hops.
+    { url: `${BASE}/support`, lastModified: lm("/support"), changeFrequency: "yearly", priority: 0.4 },
     { url: `${BASE}/request-demo`, lastModified: lm("/request-demo"), changeFrequency: "yearly", priority: 0.5 },
 
     { url: `${BASE}/privacy-policy`, lastModified: lm("/privacy-policy"), changeFrequency: "yearly", priority: 0.3 },
