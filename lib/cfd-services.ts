@@ -99,7 +99,7 @@ export function cfdServiceTiles(cur: Currency, usd: UsdRateCard): CfdServiceTile
         "Temperature and air-speed maps",
         "PDF report; describe the room, no geometry file needed",
       ],
-      turnaround: { ...day, after: "of accepting the quote" },
+      turnaround: { ...day, after: "of payment" },
       price: meshCheck,
       sample: ROOMS_SAMPLE_REPORT_LIVE
         ? { href: ROOMS_SAMPLE_REPORT, label: "See a sample report", pdf: true }

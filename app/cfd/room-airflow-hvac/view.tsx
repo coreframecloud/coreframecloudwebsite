@@ -164,7 +164,7 @@ export default async function RoomAirflowHvacView({ currency }: { currency: Curr
               <p className="cf-lead mt-5 max-w-[52ch]">
                 Describe one room, its supply diffusers, returns and heat loads, and Coreframe runs a steady CFD of the air in
                 it. You get the mean air speed, PMV/PPD and ADPI, temperature and air-speed maps and a PDF report within{" "}
-                {CFD_NORMAL_HOURS} hours of accepting the quote. Pre-processing / mesh check is {fee}; the run price is
+                {CFD_NORMAL_HOURS} hours of payment. Pre-processing / mesh check is {fee}; the run price is
                 on your quote.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">

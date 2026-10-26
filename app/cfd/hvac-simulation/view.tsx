@@ -187,7 +187,7 @@ export default async function HvacSimulationView({ currency }: { currency: Curre
     url: `${SITE}${PATH}`,
     isRelatedTo: [{ "@id": `${SITE}/#cfd-service` }, { "@id": `${SITE}${HVAC_PAGE.path}#service` }],
     audience: { "@type": "BusinessAudience", audienceType: "HVAC and MEP consultants, architects, contractors, building owners" },
-    description: `Steady CFD of one box-shaped room described on a form (size, supply diffusers, returns, heat loads, comfort inputs): ${ROOMS_DELIVERS}. Draft or Fine mesh. Results within ${CFD_NORMAL_HOURS} hours of accepting the quote. No geometry file or CFD licence needed.`,
+    description: `Steady CFD of one box-shaped room described on a form (size, supply diffusers, returns, heat loads, comfort inputs): ${ROOMS_DELIVERS}. Draft or Fine mesh. Results within ${CFD_NORMAL_HOURS} hours of payment. No geometry file or CFD licence needed.`,
     offers: regionalOffers({
       name: "Pre-processing / mesh check",
       inr: CFD_PREPROCESS_INR.small,
@@ -222,7 +222,7 @@ export default async function HvacSimulationView({ currency }: { currency: Curre
               <p className="cf-lead mt-5 max-w-[52ch]">
                 Coreframe runs a steady CFD simulation of the air in a room you describe: its size, supply diffusers,
                 returns and heat loads. You get the comfort numbers (mean air speed, PMV/PPD, ADPI), temperature and
-                air-speed maps and a PDF report within {CFD_NORMAL_HOURS} hours of accepting the quote. Pre-processing /
+                air-speed maps and a PDF report within {CFD_NORMAL_HOURS} hours of payment. Pre-processing /
                 mesh check is {fee}; the run is priced on your quote.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
