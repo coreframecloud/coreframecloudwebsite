@@ -1327,3 +1327,23 @@ body:has([data-usd-view]) .cf-ticker {
     background: linear-gradient(100deg, rgb(11 13 17 / 0.93) 0%, rgb(11 13 17 / 0.9) 48%, rgb(11 13 17 / 0.5) 76%, rgb(11 13 17 / 0.2) 100%);
   }
 }
+
+/* ── Paid landing (/go/gpu, owner 26 Oct 2026): one big blue button ── */
+.cf-btn-go {
+  display: inline-flex;
+  min-height: 3.5rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 9999px;
+  background: var(--color-blue);
+  color: #fff;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  box-shadow: 0 12px 28px -14px color-mix(in srgb, var(--color-blue) 80%, transparent);
+  transition: background-color 0.15s;
+}
+.cf-btn-go:hover { background: var(--color-blue-ink); }
+/* The WhatsApp bubble rises above the sticky sign-up bar while it shows. */
+body[data-cf-sticky] a[aria-label*="WhatsApp" i] { bottom: 5.5rem; }

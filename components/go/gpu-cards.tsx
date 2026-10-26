@@ -1,4 +1,5 @@
 import { formatMoney, type Currency } from "@/lib/money";
+import { KeepQueryLink } from "./keep-query-link";
 import {
   gpuIntroEligible,
   hourlyValue,
@@ -21,7 +22,19 @@ import {
  * here types a price or a GPU, so a card the owner retires disappears on
  * the next rate-card fetch and a staff-only card never shows.
  */
-export function GpuCards({ card, currency }: { card: RateCard | null; currency: Currency }) {
+export function GpuCards({
+  card,
+  currency,
+  href,
+  showIntro = true,
+}: {
+  card: RateCard | null;
+  currency: Currency;
+  /** When set, every card is a link there (owner, 26 Oct 2026: the cards are
+   *  where a visitor decides, so each one leads straight to sign-up). */
+  href?: string;
+  showIntro?: boolean;
+}) {
   // publicGpus() is cheapest first, which is also the order Connect and
   // /pricing use (16 GB entry, 24 GB, 16 GB fast, 48 GB); the reader climbs
   // the price, not the memory, and the VRAM is bold on every card.
@@ -33,7 +46,8 @@ export function GpuCards({ card, currency }: { card: RateCard | null; currency: 
         const rate = hourlyValue(g, currency, card);
         const intro = gpuIntroEligible(g, card, currency);
         return (
-          <li key={g.slug} className="rounded-cf border border-rule bg-paper-2 px-4 py-3.5">
+          <li key={g.slug}>
+            <CardShell href={href} cta={`card ${shortGpuName(g.name)}`}>
             <div className="flex items-baseline justify-between gap-3">
               <p className="font-heading text-[17px] font-medium text-ink">{shortGpuName(g.name)}</p>
               {g.badge ? (
@@ -54,10 +68,23 @@ export function GpuCards({ card, currency }: { card: RateCard | null; currency: 
                 </p>
               ) : null}
             </div>
-            {intro ? <p className="mt-1.5 text-[12.5px] leading-5 text-blue-ink">Intro hours apply</p> : null}
+            {intro && showIntro ? <p className="mt-1.5 text-[12.5px] leading-5 text-blue-ink">Intro hours apply</p> : null}
+            {href ? <p className="mt-2 text-[13px] font-semibold text-blue">Start on this GPU →</p> : null}
+            </CardShell>
           </li>
         );
       })}
     </ul>
+  );
+}
+
+const CARD = "block rounded-cf border border-rule bg-paper-2 px-4 py-3.5";
+
+function CardShell({ href, cta, children }: { href?: string; cta: string; children: React.ReactNode }) {
+  if (!href) return <div className={CARD}>{children}</div>;
+  return (
+    <KeepQueryLink href={href} event="go_gpu_card" cta={cta} className={`${CARD} transition hover:border-blue/40 active:bg-tint-blue`}>
+      {children}
+    </KeepQueryLink>
   );
 }

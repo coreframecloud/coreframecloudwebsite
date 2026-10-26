@@ -32,12 +32,15 @@ export function KeepQueryLink({
   href,
   event,
   className,
+  cta,
   children,
 }: {
   href: string;
   /** GA4 event name sent on click (no-op when gtag is absent). */
   event: string;
   className?: string;
+  /** Label for the site beacon's cta_click (data-cf-cta), when the text is not enough. */
+  cta?: string;
   children: React.ReactNode;
 }) {
   const search = useSyncExternalStore(
@@ -49,6 +52,7 @@ export function KeepQueryLink({
     <a
       href={withQuery(href, search)}
       className={className}
+      data-cf-cta={cta}
       onClick={() => { trackEvent(event, { link_url: href }); flushWebEvents(); }}
     >
       {children}
