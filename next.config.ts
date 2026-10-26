@@ -114,6 +114,14 @@ const nextConfig: NextConfig = {
     return [
       { source: "/:path*", headers: securityHeaders },
       /**
+       * Share cards (26 Oct 2026): public marketing images that other sites and mail apps
+       * embed by design (WhatsApp/LinkedIn previews, the sign-up follow-up emails). The
+       * catch-all's CORP same-site made mail apps that load images directly (Apple Mail,
+       * Outlook) show a broken picture. Only /og/*; everything else keeps same-site.
+       * Listed after the catch-all so this value wins.
+       */
+      { source: "/og/:path*", headers: [{ key: "Cross-Origin-Resource-Policy", value: "cross-origin" }] },
+      /**
        * The CFD job page (16 Oct 2026): private to whoever holds the job's link.
        * Never cached, never indexed, and no Referer leaves it (the job token is
        * in the #fragment, which browsers do not send anyway; this is belt and
