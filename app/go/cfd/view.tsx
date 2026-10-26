@@ -7,8 +7,8 @@ import { KeepQueryLink } from "@/components/go/keep-query-link";
 import { StickyCta } from "@/components/go/sticky-cta";
 import { getRateCard } from "@/lib/rate-card";
 import { usdRates, type Currency } from "@/lib/money";
-import { CFD_EXPRESS, CFD_NORMAL_HOURS, preprocessFee } from "@/lib/cfd-prices";
-import { BEND_RECORD, VERIFIED, verifiedFrom } from "@/lib/cfd-verified";
+import { CFD_EXPRESS, CFD_NORMAL_HOURS, expressFromAmount, preprocessFee } from "@/lib/cfd-prices";
+import { BEND_RECORD, VERIFIED, verifiedFromAmount } from "@/lib/cfd-verified";
 
 /**
  * /go/cfd — the paid landing page for the CFD ads. Paid traffic only, so
@@ -16,10 +16,11 @@ import { BEND_RECORD, VERIFIED, verifiedFrom } from "@/lib/cfd-verified";
  *
  * Rebuilt 26 Oct 2026 like /go/gpu (owner: less text, big button, show the
  * offer and the way in; 93% of ad landings never tapped the old button).
- * Owner, same day: lead with Express and the Verified mesh-independence
- * check; the mesh-check fee and 24-hour Standard as one bold line under them.
+ * Owner, same day: Verified (mesh independence) is the headline, Express
+ * beside it; both as "from" the smallest run (never the multiplier); the
+ * mesh-check fee and 24-hour Standard as one bold line under them.
  * In order: our live Verified bend run (three meshes, 12.30 Pa ± 0.13 %),
- * "pressure drop in 1–2 hours", Express and Verified side by side, the fee
+ * "verified on three meshes", Verified and Express side by side, the fee
  * line, one big button to the job form on /cfd (#start), what you get,
  * two more result images, three of /cfd's own questions
  * (the old Friday-night reel was a problem-first story, against the
@@ -36,7 +37,7 @@ const START = "/cfd#start";
 export async function cfdLandingMetadata(currency: Currency): Promise<Metadata> {
   const fee = preprocessFee(currency, usdRates(await getRateCard()));
   return {
-    title: "Duct and pipe pressure drop in 1–2 hours (Express)",
+    title: "Pressure drop, verified on three meshes | Coreframe CFD",
     description: `Upload one STL of your duct or pipe. We check it, mesh it and quote; results within ${CFD_NORMAL_HOURS} hours of payment. Mesh check ${fee} for most models.`,
     robots: { index: false, follow: false },
   };
@@ -78,20 +79,24 @@ export default async function CfdLandingView({ currency }: { currency: Currency 
 
           <section data-cf-section="hero" className="lg:order-1">
             <h1 className="font-heading text-[clamp(30px,6vw,56px)] leading-[1.05] font-medium tracking-[-0.02em] text-ink [text-wrap:balance]">
-              Duct and pipe pressure drop in <span className="cfx-hl whitespace-nowrap">{CFD_EXPRESS.hours} hours</span>.
+              Pressure drop, <span className="cfx-hl">verified</span> on three meshes.
             </h1>
-            <p className="mt-2 text-[16px] leading-[1.4] text-ink-2 sm:text-[19px]">Upload one STL. No CFD software or licence.</p>
+            <p className="mt-2 text-[16px] leading-[1.4] text-ink-2 sm:text-[19px]">Or Express, in {CFD_EXPRESS.hours} hours. Upload one STL; no CFD licence.</p>
 
             <div className="mt-3 grid grid-cols-2 gap-2.5" data-cf-section="offer">
               <div className="rounded-[16px] border border-blue/30 bg-tint-blue px-3.5 py-3">
-                <p className="text-[12px] font-semibold tracking-[0.06em] text-blue-ink uppercase">Express</p>
-                <p className="font-heading text-[24px] leading-tight font-semibold text-ink">{CFD_EXPRESS.hours} hours</p>
-                <p className="mt-0.5 text-[12.5px] leading-4 text-ink-2">{CFD_EXPRESS.multiple}× the Standard price, where your quote offers it</p>
+                <p className="text-[12px] font-semibold tracking-[0.06em] text-blue-ink uppercase">{VERIFIED.name}</p>
+                <p className="font-heading text-[24px] leading-tight font-semibold text-ink">
+                  <span className="text-[14px] font-medium text-ink-2">from </span>{verifiedFromAmount(currency)}
+                </p>
+                <p className="mt-0.5 text-[12.5px] leading-4 text-ink-2">3 meshes, uncertainty band · {VERIFIED.deliveryHours} h</p>
               </div>
               <div className="rounded-[16px] border border-rule bg-paper-2 px-3.5 py-3">
-                <p className="text-[12px] font-semibold tracking-[0.06em] text-ink-3 uppercase">{VERIFIED.name}</p>
-                <p className="font-heading text-[24px] leading-tight font-semibold text-ink">3 meshes</p>
-                <p className="mt-0.5 text-[12.5px] leading-4 text-ink-2">Uncertainty band · {verifiedFrom(currency)} · {VERIFIED.deliveryHours} h</p>
+                <p className="text-[12px] font-semibold tracking-[0.06em] text-ink-3 uppercase">Express</p>
+                <p className="font-heading text-[24px] leading-tight font-semibold text-ink">
+                  <span className="text-[14px] font-medium text-ink-2">from </span>{expressFromAmount(currency)}
+                </p>
+                <p className="mt-0.5 text-[12.5px] leading-4 text-ink-2">Results in {CFD_EXPRESS.hours} hours</p>
               </div>
             </div>
 
@@ -176,7 +181,7 @@ export default async function CfdLandingView({ currency }: { currency: Currency 
         </div>
       </footer>
 
-      <StickyCta href={START} label="Start a job" offer={`Express ${CFD_EXPRESS.hours} h · ${fee} to start`} event="go_cfd_cta_sticky" />
+      <StickyCta href={START} label="Start a job" offer={`Verified from ${verifiedFromAmount(currency)}`} event="go_cfd_cta_sticky" />
     </div>
   );
 }

@@ -40,6 +40,20 @@ export function inrAllIn(exTax: number, rate: number = CFD_GST_RATE): number {
 /** Express: results in 1–2 hours at this multiple of the package price. */
 export const CFD_EXPRESS = { multiple: 3, hours: "1–2" } as const;
 
+/**
+ * The smallest Express price, for "from" lines (owner, 26 Oct 2026: show
+ * "from" the smallest run, never the multiplier). Read from a live quote
+ * (build_quote, 250 k cells, 26 Oct 2026): Draft x3 = ₹2,997 ex-tax
+ * (₹3,536 charged) / $50. Re-read it if the package minimums or the Express
+ * multiplier change.
+ */
+export const CFD_EXPRESS_FROM = { inrExTax: 2997, usd: 50 } as const;
+
+/** "from ₹3,536" / "from $50". */
+export function expressFromAmount(cur: Currency): string {
+  return cur === "USD" ? formatMoney(CFD_EXPRESS_FROM.usd, "USD") : formatMoney(inrAllIn(CFD_EXPRESS_FROM.inrExTax), "INR");
+}
+
 /** Normal delivery, hours after payment. */
 export const CFD_NORMAL_HOURS = 24;
 
