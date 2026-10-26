@@ -6,16 +6,17 @@ import { KeepQueryLink } from "./keep-query-link";
 /**
  * A phone-only bar pinned to the bottom of a paid landing page, with the offer
  * and the button (owner, 26 Oct 2026: 93% of ad visitors scrolled past the one
- * button at the top and never came back to it). It shows once the hero button
- * (#cf-hero-cta) has scrolled out of view, so the two never sit on screen
- * together, and sets body[data-cf-sticky] so the WhatsApp bubble lifts above it.
+ * button at the top and never came back to it). It shows whenever the hero
+ * button (#cf-hero-cta) is out of view: scrolled past, or still below the
+ * fold on a short phone (owner's 6-inch iPhone, 26 Oct 2026). So a button is
+ * always on screen and the two never show together, and sets body[data-cf-sticky] so the WhatsApp bubble lifts above it.
  */
 export function StickyCta({ href, label, offer }: { href: string; label: string; offer?: string }) {
   const [show, setShow] = useState(false);
   useEffect(() => {
     const hero = document.getElementById("cf-hero-cta");
     if (!hero || !("IntersectionObserver" in window)) return;
-    const io = new IntersectionObserver(([e]) => setShow(!e.isIntersecting && e.boundingClientRect.top < 0), { threshold: 0 });
+    const io = new IntersectionObserver(([e]) => setShow(e.intersectionRatio < 0.9), { threshold: [0, 0.9, 1] });
     io.observe(hero);
     return () => io.disconnect();
   }, []);

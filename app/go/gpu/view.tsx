@@ -71,12 +71,12 @@ export default async function GpuLandingView({ currency }: { currency: Currency 
     <div className="relative min-h-screen overflow-x-clip text-ink">
       <div className="cf-aurora" />
       <ViewContent name="Ad landing: GPU workstation" category="workstation" />
-      <main className="relative mx-auto w-full max-w-[1120px] px-4 pt-4 pb-28 sm:px-5 sm:pt-8 lg:px-8 lg:pb-12">
+      <main className="relative mx-auto w-full max-w-[1120px] px-4 pt-3 pb-28 sm:px-5 sm:pt-8 lg:px-8 lg:pb-12">
         <div className="flex items-center" aria-label="Coreframe Cloud">
-          <CoreframeWordmarkAtlas iconSize={40} animated={false} />
+          <CoreframeWordmarkAtlas iconSize={32} animated={false} />
         </div>
 
-        <div className="mt-4 grid gap-6 lg:mt-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,480px)] lg:items-start lg:gap-14">
+        <div className="mt-3 grid gap-4 lg:mt-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,480px)] lg:items-start lg:gap-14">
           {/* The result first: the ads promise it, so the page opens on it. */}
           <figure className="relative overflow-hidden rounded-[20px] bg-night shadow-[0_24px_60px_-28px_rgba(16,17,19,0.55)] lg:order-2">
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -85,32 +85,32 @@ export default async function GpuLandingView({ currency }: { currency: Currency 
               alt="A living-room interior rendered in Blender Cycles on a Coreframe RTX 5080 workstation"
               width={1200}
               height={900}
-              className="aspect-[4/3] w-full object-cover"
+              className="aspect-[16/10] w-full object-cover lg:aspect-[4/3]"
               fetchPriority="high"
             />
-            <figcaption className="absolute inset-x-0 bottom-0 flex flex-col gap-1.5 bg-gradient-to-t from-black/75 to-transparent px-3.5 pt-10 pb-3">
+            <figcaption className="absolute inset-x-0 bottom-0 flex flex-col gap-1.5 bg-gradient-to-t from-black/75 to-transparent px-3 pt-8 pb-2.5">
               {/* Blender's own status strip from the session: the proof. */}
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/go/lr1-timer.png" alt="Blender status bar: Frame 0, Time 01:28.58" width={300} height={42} className="h-[21px] w-auto self-start rounded-[4px]" />
-              <span className="text-[12.5px] font-medium text-white/85">Blender Cycles · RTX 5080 · 600 samples · real session</span>
+              <img src="/go/lr1-timer.png" alt="Blender status bar: Frame 0, Time 01:28.58" width={300} height={42} className="h-[18px] w-auto self-start rounded-[4px]" />
+              <span className="text-[11.5px] font-medium text-white/85">Blender Cycles · RTX 5080 · 600 samples · real session</span>
             </figcaption>
           </figure>
 
           <section data-cf-section="hero" className="lg:order-1">
-            <h1 className="font-heading text-[clamp(32px,6vw,56px)] leading-[1.05] font-medium tracking-[-0.02em] text-ink [text-wrap:balance]">
+            <h1 className="font-heading text-[clamp(30px,6vw,56px)] leading-[1.05] font-medium tracking-[-0.02em] text-ink [text-wrap:balance]">
               A living room, rendered in <span className="cfx-hl">1:28</span>.
             </h1>
-            <p className="mt-3 text-[17px] leading-[1.45] text-ink-2 sm:text-[19px]">
+            <p className="mt-2 text-[16px] leading-[1.4] text-ink-2 sm:text-[19px]">
               On an RTX 5080 workstation, streamed to the laptop you already own.
             </p>
 
             {intro && short ? (
-              <div className="mt-5 rounded-[18px] border border-rule bg-paper-2 px-5 py-4" data-cf-section="offer">
-                <p className="text-[13px] font-semibold tracking-[0.06em] text-ink-3 uppercase">Your first top-up</p>
-                <p className="mt-1 font-heading text-[30px] leading-tight font-semibold text-ink sm:text-[34px]">
+              <div className="mt-3 rounded-[16px] border border-rule bg-paper-2 px-4 py-3 sm:mt-5 sm:px-5 sm:py-4" data-cf-section="offer">
+                <p className="text-[12px] font-semibold tracking-[0.06em] text-ink-3 uppercase">Your first top-up</p>
+                <p className="font-heading text-[28px] leading-tight font-semibold text-ink sm:text-[34px]">
                   {introPrice(intro)} = {intro.hours} hours
                 </p>
-                <p className="mt-1 text-[15px] leading-6 text-ink-2">
+                <p className="text-[14.5px] leading-5 text-ink-2">
                   {intro.gpuName ? `on ${shortGpuName(intro.gpuName)}` : null}
                   {short.alt ? `, ${short.alt}` : null}
                 </p>
@@ -120,7 +120,7 @@ export default async function GpuLandingView({ currency }: { currency: Currency 
               <p className="mt-5 text-[22px] font-semibold text-ink">{hourly}, billed by the minute</p>
             ) : null}
 
-            <div id="cf-hero-cta" className="mt-4">
+            <div id="cf-hero-cta" className="mt-3 sm:mt-4">
               <KeepQueryLink href={SIGNUP} event="go_gpu_cta" cta="hero" className="cf-btn-go w-full sm:w-auto sm:px-12">
                 Get started <span aria-hidden>→</span>
               </KeepQueryLink>
