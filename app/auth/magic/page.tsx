@@ -9,6 +9,7 @@ import { trackSignupIfNew } from "@/lib/analytics";
 import { API_BASE } from "@/lib/api-base";
 import { goAfterSignIn } from "@/lib/session-cookie";
 import { SESSION_MODE_HEADERS, rememberUser } from "@/lib/session";
+import { apiErrorText } from "@/lib/api-error";
 
 const API = API_BASE;
 
@@ -69,10 +70,12 @@ function MagicLinkVerifier() {
       headers: { "Content-Type": "application/json", ...SESSION_MODE_HEADERS },
       body: JSON.stringify({ token }),
     })
-      .then((res) => res.json().then((data) => ({ ok: res.ok, data })))
-      .then(({ ok, data }) => {
+      .then((res) => res.json().catch(() => null).then((data) => ({ ok: res.ok, status: res.status, data })))
+      .then(({ ok, status, data }) => {
         if (!ok) {
-          setErrorMsg(data.detail ?? "Invalid or expired link. Please request a new one.");
+          setErrorMsg(typeof data?.detail === "string" || Array.isArray(data?.detail)
+            ? apiErrorText(status, data)
+            : "Invalid or expired link. Please request a new one.");
           setStatus("error");
           return;
         }

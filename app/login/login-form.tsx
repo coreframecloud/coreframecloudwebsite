@@ -26,6 +26,8 @@ import { OtpInput } from "@/components/ui/otp-input";
 // CheckCircle went with the password tab's "signed in" state.
 import { Loader2, Mail, ArrowRight, Check, LogIn, UserPlus } from "lucide-react";
 import { API_BASE } from "@/lib/api-base";
+import { apiErrorText, caughtErrorText, looksLikeEmail } from "@/lib/api-error";
+import { suggestEmail } from "@/lib/email-typo";
 
 const API = API_BASE;
 
@@ -181,6 +183,23 @@ function TabBtn({ active, onClick, children }: { active: boolean; onClick: () =>
 }
 
 // ── Error box ──────────────────────────────────────────────────────────────────
+/** "Did you mean name@gmail.com?" under an email box (27 Oct 2026). A typo'd
+ * domain sends the code or link nowhere. Suggests only; never changes what was typed. */
+function EmailSuggestion({ value, onAccept }: { value: string; onAccept: (v: string) => void }) {
+  const suggestion = suggestEmail(value);
+  if (!suggestion) return null;
+  return (
+    <p className="-mt-2 text-sm text-ink-2" role="status">
+      Did you mean{" "}
+      <button type="button" onClick={() => onAccept(suggestion)}
+              className="break-all font-medium text-blue underline underline-offset-2">
+        {suggestion}
+      </button>
+      ?
+    </p>
+  );
+}
+
 function ErrorBox({ msg }: { msg: string }) {
   return (
     <p className="rounded-cf border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm break-words text-destructive">
@@ -469,6 +488,7 @@ export default function LoginForm({
     e.preventDefault();
     setError("");
     if (!linkEmail.trim()) return setError("Enter your email address.");
+    if (!looksLikeEmail(linkEmail)) return setError("Enter a full email address, like name@gmail.com.");
     setLinkLoading(true);
     try {
       const res = await fetch(`${API}/auth/request-magic-link`, {
@@ -476,18 +496,18 @@ export default function LoginForm({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: linkEmail.trim() }),
       });
-      const data = await res.json();
-      if (res.status === 422 && data.detail?.includes("full_name")) {
+      const data = await res.json().catch(() => null);
+      if (res.status === 422 && typeof data?.detail === "string" && data.detail.includes("full_name")) {
         // Server says new user — need details
         trackWebEvent("signup_email_submitted", { door: "link", step: "email" });
         setLinkIsNew(true);
         setLinkStep("details");
         return;
       }
-      if (!res.ok) throw new Error(data.detail ?? `Error ${res.status}`);
+      if (!res.ok) throw new Error(apiErrorText(res.status, data));
       setLinkStep("sent");
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Something went wrong.");
+      setError(caughtErrorText(err, "Something went wrong."));
     } finally {
       setLinkLoading(false);
     }
@@ -550,15 +570,15 @@ export default function LoginForm({
           attribution: readAttribution() ?? undefined,
         }),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.detail ?? `Error ${res.status}`);
+      const data = await res.json().catch(() => null);
+      if (!res.ok) throw new Error(apiErrorText(res.status, data));
       // NOT a conversion yet: no account exists until the link is redeemed.
       // This only lets /auth/magic recognise that redemption as a new signup.
       markPendingSignup(linkEmail);
       trackWebEvent("signup_email_submitted", { door: "link", step: "details" });
       setLinkStep("sent");
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Something went wrong.");
+      setError(caughtErrorText(err, "Something went wrong."));
     } finally {
       setLinkLoading(false);
     }
@@ -570,27 +590,28 @@ export default function LoginForm({
     e.preventDefault();
     setError("");
     if (!codeEmail.trim()) return setError("Enter your email address.");
+    if (!looksLikeEmail(codeEmail)) return setError("Enter a full email address, like name@gmail.com.");
     setCodeLoading(true);
     try {
       const res = await fetch(`${API}/auth/request-login-code`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        // This call CREATES the account for an unknown address, so it is a
-        // sign-up door too and carries the same first-touch record. The API
-        // ignores it for an existing account.
+        // For an unknown address this starts a sign-up (the account is created
+        // when the code is verified), so it carries the same first-touch record.
+        // The API ignores it for an existing account.
         body: JSON.stringify({
           email: codeEmail.trim(),
           attribution: readAttribution() ?? undefined,
         }),
       });
       if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.detail ?? `Error ${res.status}`);
+        const data = await res.json().catch(() => null);
+        throw new Error(apiErrorText(res.status, data));
       }
       trackWebEvent("signup_email_submitted", { door: "code", step: "email" });
       setCodeStep("code");
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Something went wrong.");
+      setError(caughtErrorText(err, "Something went wrong."));
     } finally {
       setCodeLoading(false);
     }
@@ -610,12 +631,12 @@ export default function LoginForm({
         headers: { "Content-Type": "application/json", ...SESSION_MODE_HEADERS },
         body: JSON.stringify({ email: codeEmail.trim(), code: codeValue.trim() }),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.detail ?? `Error ${res.status}`);
+      const data = await res.json().catch(() => null);
+      if (!res.ok) throw new Error(apiErrorText(res.status, data));
       trackSignupIfNew(data, "email_code");
       storeAndRedirect(data);
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Invalid or expired code.");
+      setError(caughtErrorText(err, "Invalid or expired code."));
     } finally {
       setCodeLoading(false);
     }
@@ -750,6 +771,7 @@ export default function LoginForm({
                     required
                   />
                 </Field>
+                <EmailSuggestion value={linkEmail} onAccept={(v) => { setLinkEmail(v); setError(""); }} />
                 {error && <ErrorBox msg={error} />}
                 {isStart ? (
                   <p className="-mt-1 text-xs leading-5 text-ink-2">
@@ -994,6 +1016,7 @@ export default function LoginForm({
                     required
                   />
                 </Field>
+                <EmailSuggestion value={codeEmail} onAccept={(v) => { setCodeEmail(v); setError(""); }} />
                 {error && <ErrorBox msg={error} />}
                 <Button type="submit" disabled={codeLoading} className="cf-btn-primary min-h-11 w-full disabled:opacity-60">
                   {codeLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}

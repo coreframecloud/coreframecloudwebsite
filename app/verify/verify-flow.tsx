@@ -41,6 +41,7 @@ import { API_BASE } from "@/lib/api-base";
 import { peekReturnPath, takeReturnPath } from "@/lib/return-path";
 import { goAfterSignIn } from "@/lib/session-cookie";
 import { apiFetch, isSignedIn, rememberUser } from "@/lib/session";
+import { apiErrorText, caughtErrorText } from "@/lib/api-error";
 
 const API = API_BASE;
 const DONE_URL = "/my-activity?topup=1";
@@ -211,7 +212,7 @@ export default function VerifyFlow() {
       return;
     }
     loadStatus().catch((err: unknown) => {
-      setError(err instanceof Error ? err.message : "Something went wrong.");
+      setError(caughtErrorText(err, "Something went wrong."));
       setPhase("error");
     });
     fetchCountries(API).then((list) => {
@@ -246,13 +247,13 @@ export default function VerifyFlow() {
         headers: authHeaders(),
         body: JSON.stringify({ phone_number: check.value }),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(typeof data.detail === "string" ? data.detail : `Error ${res.status}`);
+      const data = await res.json().catch(() => null);
+      if (!res.ok) throw new Error(apiErrorText(res.status, data));
       // The response is a status; keep any next_step it carries, and if it is
       // an older shape without the phone flag, the number is now on file.
       apply({ ...data, has_phone_number: data.has_phone_number ?? true });
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Could not save that number. Try again.");
+      setError(caughtErrorText(err, "Could not save that number. Try again."));
     } finally {
       setBusy(false);
     }
@@ -275,16 +276,17 @@ export default function VerifyFlow() {
         headers: authHeaders(),
         body: JSON.stringify({ channel: want }),
       });
-      const data = (await res.json()) as SendResult;
+      const data = (await res.json().catch(() => null)) as SendResult | null;
       // A 503 is the server saying it could not DELIVER — a real answer. A 429
       // is the resend cooldown, and the other channel is still on offer.
-      if (!res.ok) throw new Error(typeof data.detail === "string" ? data.detail : `Error ${res.status}`);
+      if (!res.ok) throw new Error(apiErrorText(res.status, data));
       setOtpSent(true);
-      setSentVia(data.channel ?? want);
-      setFallbackFrom(data.fallback_from ?? null);
-      if (data.otp_channels) setStatus((s) => (s ? { ...s, otp_channels: data.otp_channels } : s));
+      setSentVia(data?.channel ?? want);
+      setFallbackFrom(data?.fallback_from ?? null);
+      const channels = data?.otp_channels;
+      if (channels) setStatus((s) => (s ? { ...s, otp_channels: channels } : s));
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Could not send the code. Try again.");
+      setError(caughtErrorText(err, "Could not send the code. Try again."));
     } finally {
       setBusy(false);
     }
@@ -302,19 +304,19 @@ export default function VerifyFlow() {
         headers: authHeaders(),
         body: JSON.stringify({ code: value }),
       });
-      const data = await res.json();
+      const data = await res.json().catch(() => null);
       // 429 is the server's attempt cap, not a wrong digit (funnel audit, 22
       // Oct 2026: one customer sent eight codes and typed nine, got rate
       // limited, and the page kept saying the code was wrong).
       if (res.status === 429) {
         throw new Error("Too many tries for now. Wait ten minutes, then press \"Send a new code\" and type the newest code you receive.");
       }
-      if (!res.ok) throw new Error(typeof data.detail === "string" ? data.detail : `Error ${res.status}`);
+      if (!res.ok) throw new Error(apiErrorText(res.status, data));
       setOtpCode("");
       setOtpSent(false);
       apply({ ...data, mobile_verified: data.mobile_verified ?? true });
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "That code did not work. Type the newest code you received.");
+      setError(caughtErrorText(err, "That code did not work. Type the newest code you received."));
     } finally {
       setBusy(false);
     }
@@ -340,11 +342,11 @@ export default function VerifyFlow() {
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        throw new Error(typeof data.detail === "string" ? data.detail : `Error ${res.status}`);
+        throw new Error(apiErrorText(res.status, data));
       }
       setEmailResent(true);
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Could not send the link. Try again.");
+      setError(caughtErrorText(err, "Could not send the link. Try again."));
     } finally {
       setBusy(false);
     }
@@ -356,7 +358,7 @@ export default function VerifyFlow() {
     try {
       await loadStatus();
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Something went wrong.");
+      setError(caughtErrorText(err, "Something went wrong."));
     } finally {
       setBusy(false);
     }
