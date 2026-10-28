@@ -152,6 +152,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
     { url: `${BASE}/privacy-policy`, lastModified: lm("/privacy-policy"), changeFrequency: "yearly", priority: 0.3 },
     { url: `${BASE}/terms-of-service`, lastModified: lm("/terms-of-service"), changeFrequency: "yearly", priority: 0.3 },
+    { url: `${BASE}/fair-use-policy`, lastModified: lm("/fair-use-policy"), changeFrequency: "yearly", priority: 0.3 },
     { url: `${BASE}/refund-policy`, lastModified: lm("/refund-policy"), changeFrequency: "yearly", priority: 0.3 },
   ];
 }

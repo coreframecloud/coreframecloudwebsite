@@ -594,6 +594,9 @@ export default function MyActivityPage() {
       // sign-up and the header's "Add ₹… · … hrs" button.
       const params = new URLSearchParams(window.location.search);
       if (window.location.hash === "#add-funds" || params.get("topup") === "1") {
+        // &amount= from a checkout follow-up link (/pay/<token>): preselect it.
+        const preset = Number(params.get("amount"));
+        if (Number.isFinite(preset) && preset > 0 && preset <= 1_000_000) setTopUpPreset(preset);
         setTopUpOpen(true);
       }
       if (params.get("studio") === "1") setStudioCtx(true);

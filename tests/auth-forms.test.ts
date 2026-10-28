@@ -3,6 +3,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { apiErrorText, caughtErrorText, looksLikeEmail } from "../lib/api-error.ts";
 import { suggestEmail } from "../lib/email-typo.ts";
+import { isTermsRequired, topUpHref } from "../lib/signup-consent.ts";
 
 test("a validation list never reaches the person as [object Object]", () => {
   const body = { detail: [{ loc: ["body", "email"], msg: "value is not a valid email address" }] };
@@ -41,4 +42,17 @@ test("did you mean", () => {
   assert.equal(suggestEmail("a@coreframecloud.com"), null);
   assert.equal(suggestEmail("a@gmx.com"), null);
   assert.equal(suggestEmail("gautham.acer"), null);
+});
+
+test("terms_required is recognised; other errors are not", () => {
+  assert.equal(isTermsRequired({ detail: { code: "terms_required", message: "x" } }), true);
+  assert.equal(isTermsRequired({ detail: "Invalid or expired code" }), false);
+  assert.equal(isTermsRequired(null), false);
+});
+
+test("pay link opens the top-up with the amount preselected", () => {
+  assert.equal(topUpHref(1000), "/my-activity?topup=1&amount=1000");
+  assert.equal(topUpHref(20.5), "/my-activity?topup=1&amount=20.5");
+  assert.equal(topUpHref(NaN), "/my-activity?topup=1");
+  assert.equal(topUpHref(-5), "/my-activity?topup=1");
 });

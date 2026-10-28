@@ -28,6 +28,7 @@ import { Loader2, Mail, ArrowRight, Check, LogIn, UserPlus } from "lucide-react"
 import { API_BASE } from "@/lib/api-base";
 import { apiErrorText, caughtErrorText, looksLikeEmail } from "@/lib/api-error";
 import { suggestEmail } from "@/lib/email-typo";
+import { TERMS_REQUIRED_TEXT, TermsConsent, isTermsRequired } from "@/components/account/terms-consent";
 
 const API = API_BASE;
 
@@ -82,7 +83,21 @@ function GoogleBlock({ api, below = false }: { api: string; below?: boolean }) {
         <GoogleIcon />
         Continue with Google
       </a>
+      <GoogleTermsNote />
     </>
+  );
+}
+
+/* Google has no box on its round trip, so a new account made this way is
+   recorded as "google_continue_notice" (services/signup_consent.py): this line. */
+function GoogleTermsNote() {
+  return (
+    <p className="mt-2 text-center text-xs leading-5 text-ink-3">
+      By continuing with Google, you agree to our{" "}
+      <a href="/terms-of-service" target="_blank" rel="noopener" className="text-blue hover:underline">Terms of Service</a>{" "}
+      and{" "}
+      <a href="/fair-use-policy" target="_blank" rel="noopener" className="text-blue hover:underline">Fair Use Policy</a>.
+    </p>
   );
 }
 
@@ -389,6 +404,12 @@ export default function LoginForm({
   // A ref, not state: the "Yes" button sets it and submits in the same click.
   const indiaConfirmed = useRef(false);
   const [linkLoading, setLinkLoading] = useState(false);
+  // Sign-up boxes (components/account/terms-consent.tsx): Terms required, offers optional.
+  const [termsOk, setTermsOk] = useState(false);
+  const [waOffers, setWaOffers] = useState(false);
+  // The code door creates an account too; the API answers 409 terms_required
+  // for a NEW address, and only then are the boxes shown.
+  const [codeNeedsTerms, setCodeNeedsTerms] = useState(false);
 
   // ── Email Code state ────────────────────────────────────────────────────────
   const [codeStep, setCodeStep] = useState<CodeStep>("email");
@@ -545,6 +566,7 @@ export default function LoginForm({
       const gstinCheck = validateGstin(linkGstin);
       if (!gstinCheck.ok) return setError(gstinCheck.error);
     }
+    if (!termsOk) return setError(TERMS_REQUIRED_TEXT);
     setLinkLoading(true);
     try {
       const res = await fetch(`${API}/auth/request-magic-link`, {
@@ -568,9 +590,12 @@ export default function LoginForm({
           // which is different from empty: the server can then tell "we
           // looked and found none" from "this client never looked".
           attribution: readAttribution() ?? undefined,
+          accept_terms: termsOk,
+          whatsapp_marketing_opt_in: waOffers,
         }),
       });
       const data = await res.json().catch(() => null);
+      if (isTermsRequired(data)) throw new Error(TERMS_REQUIRED_TEXT);
       if (!res.ok) throw new Error(apiErrorText(res.status, data));
       // NOT a conversion yet: no account exists until the link is redeemed.
       // This only lets /auth/magic recognise that redemption as a new signup.
@@ -629,9 +654,20 @@ export default function LoginForm({
         // (lib/session.ts); the header asks for exactly that.
         credentials: "include",
         headers: { "Content-Type": "application/json", ...SESSION_MODE_HEADERS },
-        body: JSON.stringify({ email: codeEmail.trim(), code: codeValue.trim() }),
+        body: JSON.stringify({
+          email: codeEmail.trim(),
+          code: codeValue.trim(),
+          // Ignored for an existing account. For a new one, false until the box
+          // is ticked: the API then answers terms_required and keeps the code valid.
+          accept_terms: codeNeedsTerms && termsOk,
+          whatsapp_marketing_opt_in: codeNeedsTerms ? waOffers : undefined,
+        }),
       });
       const data = await res.json().catch(() => null);
+      if (isTermsRequired(data)) {
+        setCodeNeedsTerms(true);
+        throw new Error("This creates a new account. " + TERMS_REQUIRED_TEXT);
+      }
       if (!res.ok) throw new Error(apiErrorText(res.status, data));
       trackSignupIfNew(data, "email_code");
       storeAndRedirect(data);
@@ -727,6 +763,7 @@ export default function LoginForm({
               <GoogleIcon />
               Continue with Google
             </a>
+            <GoogleTermsNote />
             <div className="my-5 flex items-center gap-3">
               <div className="h-px flex-1 bg-rule" />
               <span className="text-xs text-ink-3">or</span>
@@ -973,8 +1010,15 @@ export default function LoginForm({
                     </div>
                   </div>
                 )}
+                <TermsConsent
+                  idPrefix="link"
+                  terms={termsOk}
+                  onTerms={(v) => { setTermsOk(v); setError(""); }}
+                  offers={waOffers}
+                  onOffers={setWaOffers}
+                />
                 {error && <ErrorBox msg={error} />}
-                <Button type="submit" disabled={linkLoading} className="cf-btn-primary min-h-11 w-full disabled:opacity-60">
+                <Button type="submit" disabled={linkLoading || !termsOk} className="cf-btn-primary min-h-11 w-full disabled:opacity-60">
                   {linkLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ArrowRight className="mr-2 h-4 w-4" />}
                   {linkLoading ? "Creating account…" : "Create account & send link"}
                 </Button>
@@ -1041,10 +1085,19 @@ export default function LoginForm({
                     autoFocus
                   />
                 </Field>
+                {codeNeedsTerms && (
+                  <TermsConsent
+                    idPrefix="code"
+                    terms={termsOk}
+                    onTerms={(v) => { setTermsOk(v); setError(""); }}
+                    offers={waOffers}
+                    onOffers={setWaOffers}
+                  />
+                )}
                 {error && <ErrorBox msg={error} />}
-                <Button type="submit" disabled={codeLoading || codeValue.length < 6} className="cf-btn-primary min-h-11 w-full disabled:opacity-60">
+                <Button type="submit" disabled={codeLoading || codeValue.length < 6 || (codeNeedsTerms && !termsOk)} className="cf-btn-primary min-h-11 w-full disabled:opacity-60">
                   {codeLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                  {codeLoading ? "Verifying…" : "Sign in"}
+                  {codeLoading ? "Verifying…" : codeNeedsTerms ? "Create my account" : "Sign in"}
                 </Button>
                 <button type="button" onClick={() => { setCodeStep("email"); setCodeValue(""); setError(""); }} className="inline-flex min-h-11 items-center self-start text-[13px] text-ink-3 hover:text-ink-2">
                   ← Use a different email
@@ -1072,7 +1125,8 @@ export default function LoginForm({
       {/* Footer */}
       <p className="mt-6 text-center text-xs leading-6 text-ink-3">
         {isStart ? "By creating an account, you agree to our" : "By signing in, you agree to our"}{" "}
-        <a href="/terms-of-service" className="text-blue hover:underline">Terms and Conditions</a>,{" "}
+        <a href="/terms-of-service" className="text-blue hover:underline">Terms of Service</a>,{" "}
+        <a href="/fair-use-policy" className="text-blue hover:underline">Fair Use Policy</a>,{" "}
         <a href="/privacy-policy" className="text-blue hover:underline">Privacy Policy</a>, and{" "}
         <a href="/refunds" className="text-blue hover:underline">Refunds and chargebacks</a>.
       </p>

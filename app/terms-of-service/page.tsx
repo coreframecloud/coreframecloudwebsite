@@ -35,7 +35,7 @@ export const metadata: Metadata = {
   },
 };
 
-const LAST_UPDATED = "18 October 2026";
+const LAST_UPDATED = "28 October 2026";
 
 type Block = string | { list: string[] };
 type Part = { id: string; title: string; blocks: Block[] };
@@ -46,8 +46,8 @@ const parts: Part[] = [
     title: "1. About these terms",
     blocks: [
       `These terms are an agreement between you and ${COMPANY.displayName} ("Coreframe", "we", "us"), a company registered in Bengaluru, India (CIN ${COMPANY.cin}). They apply to everything we offer under the Coreframe Cloud name: the website, your account and wallet, GPU workstations, the Coreframe Connect desktop app, CFD simulation, Studio, and our free tools (together, the "Services").`,
-      "By creating an account, signing in, submitting a job or using a free tool, you accept these terms. If you use the Services for a company or firm, you accept them on its behalf and confirm you are authorised to do so; \"you\" then means both you and that organisation.",
-      "Two other pages form part of these terms: our [Refund Policy](/refund-policy) and our [Privacy Policy](/privacy-policy). If your organisation has signed a separate service agreement or monthly plan with us, that agreement takes precedence where it differs from this page.",
+      "When you create an account you are asked to tick a box to accept these terms and the Fair Use Policy. By creating an account, signing in, submitting a job or using a free tool, you accept these terms. If you use the Services for a company or firm, you accept them on its behalf and confirm you are authorised to do so; \"you\" then means both you and that organisation.",
+      "Three other pages form part of these terms: our [Fair Use Policy](/fair-use-policy), our [Refund Policy](/refund-policy) and our [Privacy Policy](/privacy-policy). If your organisation has signed a separate service agreement or monthly plan with us, that agreement takes precedence where it differs from this page.",
     ],
   },
   {

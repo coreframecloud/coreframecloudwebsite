@@ -146,6 +146,7 @@ export function SiteFooter({ currency = "INR" }: { currency?: Currency }) {
               {[
                 { label: "Privacy Policy", href: "/privacy-policy" },
                 { label: "Terms of Service", href: "/terms-of-service" },
+                { label: "Fair Use Policy", href: "/fair-use-policy" },
                 { label: "Refund Policy", href: "/refund-policy" },
               ].map((l) => (
                 <Link key={l.href} href={l.href} className="flex min-h-11 items-center text-[13.5px] text-ink-2 transition hover:text-ink">{l.label}</Link>
