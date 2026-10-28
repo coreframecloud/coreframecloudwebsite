@@ -5,7 +5,7 @@ import { BackgroundGlow } from "@/components/home/background-glow";
 import { COMPANY } from "@/lib/company";
 
 /**
- * Fair Use Policy for GPU workstations (DRAFT, 28 Oct 2026 - for the owner's
+ * Fair Use Policy for GPU workstations (28 Oct 2026, approved by the owner;
  * review before it is linked from the sign-up boxes in production).
  *
  * Part of the Terms of Service (section 1 lists it). Every account accepts it
