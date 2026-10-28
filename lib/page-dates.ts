@@ -32,6 +32,7 @@ export const PAGE_UPDATED: Record<string, string> = {
   "/apps": "2026-10-11",
   "/download": "2026-10-17",
   "/tools": "2026-10-18",
+  "/tools/render-time": "2026-10-28",
   "/dwg-check": "2026-10-18",
   "/request-demo": "2026-10-11",
   "/privacy-policy": "2026-10-18",

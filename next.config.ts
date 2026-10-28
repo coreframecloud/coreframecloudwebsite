@@ -154,7 +154,9 @@ const nextConfig: NextConfig = {
         headers: [{ key: "Content-Security-Policy", value: STUDIO_CSP }],
       },
       // The other control-plane pages www rewrites: no inline script either.
-      ...["/tools", "/tools/:path*", "/dwg-check", "/r/:token"].map((source) => ({
+      // /tools/render-time is a page of this site (28 Oct 2026) with the
+      // nonce CSP from proxy.ts, so it is left out of the control plane's policy.
+      ...["/tools", "/tools/:path((?!render-time$).*)", "/dwg-check", "/r/:token"].map((source) => ({
         source,
         headers: [{ key: "Content-Security-Policy", value: STUDIO_CSP }],
       })),

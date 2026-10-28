@@ -124,6 +124,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // discover -- it has to be listed by hand or it is never crawled at all.
     // /cfd is the conversion step behind it and was likewise missing.
     { url: `${BASE}/tools`, lastModified: lm("/tools"), changeFrequency: "monthly", priority: 0.8 },
+    // The free render-time calculator (28 Oct 2026), a page of this site.
+    { url: `${BASE}/tools/render-time`, lastModified: lm("/tools/render-time"), changeFrequency: "monthly", priority: 0.7 },
 
     // The free DWG dimension checker, added 2 Oct 2026. Same situation as
     // /tools above: served from the control plane through a rewrite, so Next
