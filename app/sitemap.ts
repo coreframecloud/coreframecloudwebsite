@@ -129,6 +129,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // a control-plane page behind a rewrite). /cfd is the conversion step
     // behind it.
     { url: `${BASE}/tools`, lastModified: lm("/tools"), changeFrequency: "monthly", priority: 0.8 },
+    // The free render-time calculator (28 Oct 2026), a page of this site.
+    { url: `${BASE}/tools/render-time`, lastModified: lm("/tools/render-time"), changeFrequency: "monthly", priority: 0.7 },
 
     // The free DWG dimension checker, added 2 Oct 2026 (app/dwg-check since
     // 6 Nov 2026). Priority 0.9 -- it answers a question people type verbatim

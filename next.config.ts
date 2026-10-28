@@ -159,7 +159,8 @@ const nextConfig: NextConfig = {
       // inline script): it gets the same policy. /tools and /dwg-check are
       // pages of this site since 6 Nov 2026 and get the nonce CSP from
       // proxy.ts like every other page.
-      ...["/tools/:path*", "/r/:token"].map((source) => ({
+      // /tools/render-time (calculator, 11 Nov 2026) is a page here too: left out.
+      ...["/tools", "/tools/:path((?!render-time$).*)", "/r/:token"].map((source) => ({
         source,
         headers: [{ key: "Content-Security-Policy", value: STUDIO_CSP }],
       })),
