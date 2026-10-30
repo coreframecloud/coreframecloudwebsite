@@ -1,19 +1,29 @@
 "use client";
 
 /**
- * Finish sign-up: the one or two contact checks left before an account is
- * active. Website only.
+ * Finish sign-up: the checks left before an account is active. Website only.
  *
  * PAID-FIRST ONBOARDING (10 Oct 2026). This used to be a 1,900-line identity
- * flow — DigiLocker, Indian passport file numbers, legal-name correction, GSTIN
- * and a bank-account penny check. The owner retired all of it: paying is the
- * filter now, and the only checks left are the ones CERT-In requires of us —
- * a confirmed email and a confirmed mobile number. So this page asks for
- * exactly the step the server says is left, and then sends the customer to add
- * funds.
+ * flow. The owner retired the PERSONAL identity checks — DigiLocker, Indian
+ * passport file numbers, legal-name correction — because paying is the filter
+ * now. Every account still confirms its email and mobile number (CERT-In).
+ *
+ * BUSINESS ACCOUNTS STILL VERIFY THE ENTITY (restored 30 Oct 2026). The 10 Oct
+ * rewrite dropped the GSTIN and bank steps from this page too, but the owner
+ * only retired identity KYC: the API never stopped requiring them, so a b2b
+ * sign-up sat in pending_approval with nothing on screen to do about it. A
+ * business (customer_type "b2b") now does two more steps after email + mobile:
+ *   1. GSTIN, checked against the GST register (POST /verification/gstin);
+ *   2. control of the company bank account — a reverse penny drop: they send
+ *      Rs 1 by UPI from the company account and it is refunded
+ *      (POST /verification/bank/start, then /verification/bank/complete).
+ * Both are Cashfree lookups on the server. Individuals never see them.
  *
  * Driven by `next_step` from GET /verification/status ("email" | "mobile" |
- * "done"). A control plane from before that field existed is still handled:
+ * "done"), which counts the contact checks only, then — for a business — by
+ * the `customer_type` and `business` block the same response carries (GST and
+ * bank state, the GSTIN given at sign-up, attempts used) and `max_attempts`.
+ * A control plane from before `next_step` existed is still handled:
  * the mobile step is shown whenever the number is not yet verified, and an
  * account that is neither active nor missing a contact check gets an honest
  * "we are finishing your account" screen instead of a redirect loop.
@@ -28,12 +38,24 @@
 import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { OtpInput } from "@/components/ui/otp-input";
-import { CheckCircle2, Clock, Loader2, Mail, MessageCircle, MessageSquare, Phone } from "lucide-react";
+import {
+  Building2,
+  CheckCircle2,
+  Circle,
+  Clock,
+  Landmark,
+  Loader2,
+  Mail,
+  MessageCircle,
+  MessageSquare,
+  Phone,
+} from "lucide-react";
 import {
   COUNTRIES,
   INDIA,
   INDIAN_MOBILE_HINT,
   fetchCountries,
+  validateGstin,
   validatePhone,
   type Country,
 } from "@/lib/validation";
@@ -87,8 +109,62 @@ interface VerificationStatus {
   // The declared country (null for a Google sign-up that has not chosen one).
   country_code?: string | null;
   otp_channels?: OtpChannels;
+  // Business accounts (b2b) also verify the entity: GSTIN, then the bank.
+  customer_type?: string;
+  business?: BusinessState;
+  // Per-check attempt cap shared by GST and bank (0 = unlimited).
+  max_attempts?: number;
   access_token?: string;
   user?: unknown;
+}
+
+/* `business` from GET /verification/status (business_verification_state on
+   the API). `gstin` is what they typed at sign-up until the register confirms
+   it; `attempts` counts paid lookups against `max_attempts`. */
+interface BankState {
+  required: boolean;
+  verified: boolean;
+  status: string | null; // CREATED | SUCCESS | FAILURE | EXPIRED | grandfathered
+  account_masked?: string | null;
+  name_at_bank?: string | null;
+  attempts?: number | null;
+  failure_reason?: string | null;
+}
+interface BusinessState {
+  gstin_required?: boolean;
+  business_verified: boolean;
+  gstin?: string | null;
+  gstin_status?: string | null;
+  legal_name?: string | null;
+  trade_name?: string | null;
+  registered_state?: string | null;
+  attempts?: number | null;
+  failure_reason?: string | null;
+  bank?: BankState;
+}
+
+/* POST /verification/bank/start: a Rs 1 UPI collect, valid ten minutes. */
+interface BankRequest {
+  upi_link?: string | null;
+  qr_code_base64?: string | null;
+  hosted_url?: string | null;
+  expected_name?: string | null;
+  expires_in_seconds?: number;
+  already_verified?: boolean;
+}
+
+/** Tries left on a capped check, or null when uncapped/unknown. */
+function triesLeft(used: number | null | undefined, max: number | undefined): number | null {
+  if (!max || max <= 0) return null;
+  return Math.max(0, max - (used ?? 0));
+}
+
+/** Which business step is outstanding, if any. Individuals: none. */
+function businessStep(s: VerificationStatus): "gstin" | "bank" | null {
+  if (s.customer_type !== "b2b" || !s.business || s.business.gstin_required === false) return null;
+  if (!s.business.business_verified) return "gstin";
+  if (s.business.bank?.required && !s.business.bank.verified) return "bank";
+  return null;
 }
 
 interface SendResult {
@@ -99,26 +175,28 @@ interface SendResult {
   detail?: unknown;
 }
 
-type Phase = "loading" | "email" | "phone" | "otp" | "done" | "held" | "error";
+type Phase = "loading" | "email" | "phone" | "otp" | "gstin" | "bank" | "done" | "held" | "error";
 
 /** Which screen the status calls for. Pure, so the fallback is easy to read. */
 function phaseFor(s: VerificationStatus): Phase {
   if (s.account_active) return "done";
   const mobileStep: Phase = s.has_phone_number ? "otp" : "phone";
+  // Contacts are done by the server's count. A business then proves the
+  // entity; anything else not yet active is a moment behind, or a person is
+  // looking. Never loop back to /my-activity.
+  const afterContacts: Phase = businessStep(s) ?? "held";
   switch (s.next_step) {
     case "email":
       return "email";
     case "mobile":
       return mobileStep;
     case "done":
-      // Done by the server's count but not active yet — activation is a
-      // moment behind, or a person is looking. Never loop back to /my-activity.
-      return "held";
+      return afterContacts;
   }
   // Older control plane: no next_step. Ask for what is visibly missing.
   if (!s.email_verified) return "email";
   if (!s.mobile_verified) return mobileStep;
-  return "held";
+  return afterContacts;
 }
 
 function Card({ children }: { children: React.ReactNode }) {
@@ -140,6 +218,45 @@ function Header({ icon, title, sub }: { icon: React.ReactNode; title: string; su
   );
 }
 
+/** Where a business is in sign-up: contacts done, then GST, then bank. */
+function BusinessProgress({ status, current }: { status: VerificationStatus | null; current: "gstin" | "bank" }) {
+  const b = status?.business;
+  const bankRequired = b?.bank?.required !== false;
+  const steps: Array<{ label: string; done: boolean; active: boolean }> = [
+    { label: "Email and mobile confirmed", done: true, active: false },
+    { label: "GST registration", done: Boolean(b?.business_verified), active: current === "gstin" },
+  ];
+  if (bankRequired) {
+    steps.push({ label: "Company bank account", done: Boolean(b?.bank?.verified), active: current === "bank" });
+  }
+  return (
+    <ol className="mb-6 grid gap-2 text-sm" aria-label="Sign-up progress">
+      {steps.map((s) => (
+        <li
+          key={s.label}
+          className={`flex items-center gap-2.5 ${s.active ? "font-medium text-ink" : s.done ? "text-ink-2" : "text-ink-3"}`}
+          aria-current={s.active ? "step" : undefined}
+        >
+          {s.done ? (
+            <CheckCircle2 className="h-4 w-4 shrink-0 text-blue" aria-hidden />
+          ) : (
+            <Circle className={`h-4 w-4 shrink-0 ${s.active ? "text-blue" : "text-ink-3"}`} aria-hidden />
+          )}
+          {s.label}
+        </li>
+      ))}
+    </ol>
+  );
+}
+
+function whatNext(s: VerificationStatus | null): string {
+  return s?.business?.bank?.required === false
+    ? "Once this check passes, your account is ready. Then add funds to start."
+    : "Once both checks pass, your account is ready. Then add funds to start.";
+}
+const NO_TRIES_LEFT =
+  "You have used all the tries for this check. Message us on WhatsApp with the button on this page and we will clear it for you.";
+
 export default function VerifyFlow() {
   const [phase, setPhase] = useState<Phase>("loading");
   const [status, setStatus] = useState<VerificationStatus | null>(null);
@@ -157,6 +274,11 @@ export default function VerifyFlow() {
   const [sentVia, setSentVia] = useState<Channel | null>(null);
   const [fallbackFrom, setFallbackFrom] = useState<Channel | null>(null);
   const [emailResent, setEmailResent] = useState(false);
+  // Business steps: the GSTIN field (prefilled from sign-up), the live Rs 1
+  // UPI request, and a non-error note while we wait for that payment.
+  const [gstin, setGstin] = useState("");
+  const [bankReq, setBankReq] = useState<BankRequest | null>(null);
+  const [bankNote, setBankNote] = useState("");
   // Where "done" goes: the page that sent them to sign up, if any. Only read
   // once the done card renders, which is always after the status fetch.
   const [returnTo] = useState<string | null>(() => (typeof window === "undefined" ? null : peekReturnPath()));
@@ -174,6 +296,9 @@ export default function VerifyFlow() {
     (data: VerificationStatus) => {
       adoptToken(data);
       setStatus(data);
+      // The GSTIN they gave at sign-up, until they type their own.
+      const given = data.business?.gstin;
+      if (given) setGstin((g) => g || given);
       const next = phaseFor(data);
       setPhase(next);
       if (next === "done") {
@@ -352,6 +477,127 @@ export default function VerifyFlow() {
     }
   }
 
+  // ── business: GSTIN ───────────────────────────────────────────────────────
+  async function submitGstin(e: React.FormEvent) {
+    e.preventDefault();
+    setError("");
+    // Each try is a paid lookup that counts against the cap: catch typos here.
+    const check = validateGstin(gstin);
+    if (!check.ok) return setError(check.error);
+    setBusy(true);
+    try {
+      const res = await apiFetch(`${API}/verification/gstin`, {
+        method: "POST",
+        headers: authHeaders(),
+        body: JSON.stringify({ gstin: check.value }),
+      });
+      const data = await res.json().catch(() => null);
+      if (!res.ok) throw new Error(apiErrorText(res.status, data));
+      if (data?.account_active) return apply({ ...(status as VerificationStatus), ...data });
+      if (data && data.verified === false && !data.already_verified) {
+        // A real answer from the register, not a fault. Refresh the attempt
+        // count, then say what it was.
+        await loadStatus().catch(() => undefined);
+        setError(
+          data.gstin_status === "not_found"
+            ? "That GSTIN is not on the GST register. Check it against your GST certificate."
+            : `That GST registration is not active (${data.gstin_status || "unknown"}). A business account needs an active one.`,
+        );
+        return;
+      }
+      // Verified (or already was): the status decides the next step.
+      await loadStatus();
+    } catch (err: unknown) {
+      setError(caughtErrorText(err, "Could not check that GSTIN. Try again."));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  // ── business: Rs 1 from the company bank account ──────────────────────────
+  async function startBank() {
+    setError("");
+    setBankNote("");
+    setBusy(true);
+    try {
+      const res = await apiFetch(`${API}/verification/bank/start`, { method: "POST", headers: authHeaders() });
+      const data = (await res.json().catch(() => null)) as BankRequest | null;
+      if (!res.ok) throw new Error(apiErrorText(res.status, data));
+      if (data?.already_verified) {
+        await loadStatus();
+        return;
+      }
+      setBankReq(data ?? {});
+      // The attempt count moved; keep the "tries left" line honest.
+      setStatus((s) =>
+        s?.business?.bank
+          ? {
+              ...s,
+              business: {
+                ...s.business,
+                bank: { ...s.business.bank, status: "CREATED", attempts: (s.business.bank.attempts ?? 0) + 1, failure_reason: null },
+              },
+            }
+          : s,
+      );
+    } catch (err: unknown) {
+      setError(caughtErrorText(err, "Could not start the bank check. Try again."));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  const checkBank = useCallback(
+    async (quiet = false) => {
+      if (!quiet) {
+        setError("");
+        setBusy(true);
+      }
+      try {
+        const res = await apiFetch(`${API}/verification/bank/complete`, { method: "POST", headers: authHeaders() });
+        const data = await res.json().catch(() => null);
+        if (!res.ok) throw new Error(apiErrorText(res.status, data));
+        if (data?.verified) {
+          setBankReq(null);
+          setBankNote("");
+          if (data.account_active) apply({ ...(status as VerificationStatus), ...data });
+          else await loadStatus();
+          return;
+        }
+        if (data?.pending) {
+          if (!quiet) setBankNote("No payment has reached us yet. Send the ₹1, then check again.");
+          return;
+        }
+        // Expired or failed: this request is spent, start a new one.
+        setBankReq(null);
+        setBankNote("");
+        await loadStatus().catch(() => undefined);
+        setError(`${data?.reason || "That payment did not go through."} Start a new check to try again.`);
+      } catch (err: unknown) {
+        if (!quiet) setError(caughtErrorText(err, "Could not check the payment. Try again."));
+      } finally {
+        if (!quiet) setBusy(false);
+      }
+    },
+    [apply, authHeaders, loadStatus, status],
+  );
+
+  // While the UPI request is open, look for the payment every 10 s (the API
+  // allows 90 checks an hour; the request lives 10 minutes).
+  useEffect(() => {
+    if (phase !== "bank" || !bankReq) return;
+    const started = Date.now();
+    const life = (bankReq.expires_in_seconds ?? 600) * 1000;
+    const id = window.setInterval(() => {
+      if (Date.now() - started > life + 30_000) {
+        window.clearInterval(id);
+        return;
+      }
+      void checkBank(true);
+    }, 10_000);
+    return () => window.clearInterval(id);
+  }, [phase, bankReq, checkBank]);
+
   async function recheck() {
     setError("");
     setBusy(true);
@@ -404,18 +650,191 @@ export default function VerifyFlow() {
   }
 
   if (phase === "held") {
+    const isBusiness = status?.customer_type === "b2b";
     return (
       <Card>
         <Header
           icon={<Clock className="h-5 w-5" />}
-          title="Your email and mobile are confirmed."
-          sub="We're switching your account on, which usually takes a moment. Check again, or message us on WhatsApp with the button on this page if nothing changes."
+          title={isBusiness ? "Your business checks are done." : "Your email and mobile are confirmed."}
+          sub={
+            isBusiness
+              ? "We're switching your account on. If the name at your bank or on the GST register differs from the company name you gave, someone at Coreframe takes a quick look first. Check again, or message us on WhatsApp with the button on this page if nothing changes."
+              : "We're switching your account on, which usually takes a moment. Check again, or message us on WhatsApp with the button on this page if nothing changes."
+          }
         />
         {error && <p className={`${errorBox} mb-4`}>{error}</p>}
         <Button onClick={recheck} disabled={busy} className={btnPrimary}>
           {busy ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
           Check again
         </Button>
+      </Card>
+    );
+  }
+
+  if (phase === "gstin") {
+    const b = status?.business;
+    const left = triesLeft(b?.attempts, status?.max_attempts);
+    const lastTry = b?.gstin_status && b.gstin_status !== "Active" ? b.failure_reason : null;
+    return (
+      <Card>
+        <Header
+          icon={<Building2 className="h-5 w-5" />}
+          title="Verify your business."
+          sub="Business accounts need a quick check of the company before the first invoice. First, we look up your GSTIN on the GST register. It takes a few seconds and sets the place of supply on your invoices."
+        />
+        <BusinessProgress status={status} current="gstin" />
+        {left === 0 ? (
+          <p className={errorBox}>{NO_TRIES_LEFT}</p>
+        ) : (
+          <form onSubmit={submitGstin} className="grid gap-4">
+            <div className="grid gap-1.5">
+              <label htmlFor="cf-gstin" className="text-sm font-medium text-ink">
+                GSTIN
+              </label>
+              <input
+                id="cf-gstin"
+                value={gstin}
+                onChange={(e) => {
+                  setGstin(e.target.value.toUpperCase().replace(/\s/g, ""));
+                  setError("");
+                }}
+                maxLength={15}
+                placeholder="29ABCDE1234F1Z5"
+                autoComplete="off"
+                autoCapitalize="characters"
+                spellCheck={false}
+                className={`${inputCls} font-mono tracking-[0.12em]`}
+                required
+              />
+              <p className="text-xs leading-5 text-ink-3">
+                {b?.gstin ? "This is the GSTIN you gave when you signed up. Correct it if it is wrong. " : ""}
+                15 characters, exactly as printed on your GST certificate.
+              </p>
+            </div>
+            {lastTry && !error && (
+              <p className="cf-glass-inset border-l-2 border-l-blue px-4 py-3 text-sm leading-6 text-ink-2">
+                Last check: {lastTry}
+              </p>
+            )}
+            {error && <p className={errorBox}>{error}</p>}
+            <Button type="submit" disabled={busy} className={btnPrimary}>
+              {busy ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+              {busy ? "Checking the GST register…" : "Check GSTIN"}
+            </Button>
+            {left !== null && (
+              <p className="text-xs leading-5 text-ink-3">
+                {left === 1 ? "1 try left." : `${left} tries left.`} {whatNext(status)}
+              </p>
+            )}
+            {left === null && <p className="text-xs leading-5 text-ink-3">{whatNext(status)}</p>}
+          </form>
+        )}
+      </Card>
+    );
+  }
+
+  if (phase === "bank") {
+    const b = status?.business;
+    const bank = b?.bank;
+    const left = triesLeft(bank?.attempts, status?.max_attempts);
+    const company = bankReq?.expected_name || b?.legal_name || b?.trade_name || "your company";
+    // A request opened before a reload may already be paid: let them check it.
+    const openBefore = !bankReq && bank?.status === "CREATED";
+    const qr = bankReq?.qr_code_base64
+      ? bankReq.qr_code_base64.startsWith("data:")
+        ? bankReq.qr_code_base64
+        : `data:image/png;base64,${bankReq.qr_code_base64}`
+      : null;
+    return (
+      <Card>
+        <Header
+          icon={<Landmark className="h-5 w-5" />}
+          title="Confirm your company bank account."
+          sub={
+            <>
+              Send ₹1 by UPI from the bank account of{" "}
+              <span className="font-medium text-ink">{company}</span>. It proves you can operate the account, and
+              the rupee comes back to the same account within 48 hours.
+            </>
+          }
+        />
+        <BusinessProgress status={status} current="bank" />
+        {b?.business_verified && (b.legal_name || b.trade_name) && (
+          <p className="cf-glass-inset mb-4 border-l-2 border-l-blue px-4 py-3 text-sm leading-6 text-ink-2">
+            GST confirmed: <span className="font-medium text-ink">{b.legal_name || b.trade_name}</span>
+            {b.registered_state ? `, ${b.registered_state}` : ""}.
+          </p>
+        )}
+        {!bankReq ? (
+          <div className="grid gap-3">
+            {error && <p className={errorBox}>{error}</p>}
+            {left === 0 && !openBefore ? (
+              <p className={errorBox}>{NO_TRIES_LEFT}</p>
+            ) : (
+              <>
+                {openBefore && (
+                  <Button onClick={() => checkBank()} disabled={busy} className={btnPrimary}>
+                    {busy ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                    I have sent the ₹1, check it
+                  </Button>
+                )}
+                {bankNote && (
+                  <p className="cf-glass-inset border-l-2 border-l-blue px-4 py-3 text-sm leading-6 text-ink-2">
+                    {bankNote}
+                  </p>
+                )}
+                {left !== 0 && (
+                  <Button
+                    onClick={startBank}
+                    disabled={busy}
+                    className={openBefore ? "cf-btn-secondary min-h-11 w-full disabled:opacity-60" : btnPrimary}
+                  >
+                    {busy && !openBefore ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                    {openBefore ? "Start a new ₹1 request" : "Get the ₹1 UPI request"}
+                  </Button>
+                )}
+              </>
+            )}
+            <p className="text-xs leading-5 text-ink-3">
+              Use the company&apos;s own bank account, not a personal one: we match the name at the bank against
+              the GST register.
+              {left !== null && left > 0 ? ` ${left === 1 ? "1 try left." : `${left} tries left.`}` : ""} {whatNext(status)}
+            </p>
+          </div>
+        ) : (
+          <div className="grid gap-4">
+            {qr && (
+              <div className="flex flex-col items-center gap-2 rounded-cf border border-rule bg-paper p-4">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={qr} alt="UPI QR code for the ₹1 verification payment" className="h-48 w-48" />
+                <p className="text-xs text-ink-3">Scan with any UPI app signed in to the company account.</p>
+              </div>
+            )}
+            {bankReq.upi_link && (
+              <a href={bankReq.upi_link} className="cf-btn-secondary min-h-11 w-full md:hidden">
+                Open a UPI app on this phone
+              </a>
+            )}
+            {!qr && bankReq.hosted_url && (
+              <a href={bankReq.hosted_url} target="_blank" rel="noopener noreferrer" className="cf-btn-secondary min-h-11 w-full">
+                Open the payment page
+              </a>
+            )}
+            <p className="text-xs leading-5 text-ink-3">
+              The request works for ten minutes. We look for the payment every few seconds, so you can leave this page
+              open.
+            </p>
+            {bankNote && (
+              <p className="cf-glass-inset border-l-2 border-l-blue px-4 py-3 text-sm leading-6 text-ink-2">{bankNote}</p>
+            )}
+            {error && <p className={errorBox}>{error}</p>}
+            <Button onClick={() => checkBank()} disabled={busy} className={btnPrimary}>
+              {busy ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+              {busy ? "Checking…" : "I have sent it, check now"}
+            </Button>
+            <p className="text-xs leading-5 text-ink-3">{whatNext(status)}</p>
+          </div>
+        )}
       </Card>
     );
   }
