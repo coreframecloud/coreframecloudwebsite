@@ -56,7 +56,7 @@ export const SITE = "https://www.coreframecloud.com";
  * tells an answer engine nothing. Bump it whenever the text below changes.
  * Prices are not covered by it; they are read live from the rate card.
  */
-export const LLMS_LAST_UPDATED = "26 October 2026";
+export const LLMS_LAST_UPDATED = "30 October 2026";
 
 function money(n: number | null | undefined): string | null {
   if (n == null) return null;
@@ -71,8 +71,8 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
   // Kept under 200 characters: the blockquote is the one line an answer engine
   // is most likely to lift whole. The detail lives in the sections below.
   out.push(
-    "> Three services from Bengaluru: Windows GPU workstations by the minute, CFD for " +
-      "ducts, pipes and HVAC rooms, and Studio floor-plan concept images (free previews).",
+    "> Three services from Bengaluru: ready-to-work cloud virtual workstations (Windows, a GPU, design " +
+      "software, per minute), CFD for ducts, pipes and HVAC rooms, and Studio floor-plan concept images.",
   );
   out.push("");
   out.push(`Last updated: ${LLMS_LAST_UPDATED}. Prices on this page are read live from our rate card.`);
@@ -88,6 +88,33 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
     "Currencies: accounts in India pay in Indian rupees with 18% GST included (unless a price says + GST); " +
       "accounts outside India pay in US dollars with no GST (export of services). The currency is fixed at sign-up " +
       "by the billing country. Prices below give both.",
+  );
+  out.push("");
+
+  // The workstation itself, in one paragraph (owner, 30 Oct 2026: AEO).
+  // Buyers ask for a "virtual workstation with a GPU on the cloud", and the
+  // answers list bare GPU servers; this states what makes ours different.
+  // Prices from the rate card only, dropped when it is unreachable.
+  const wsFromInr = cheapestGpu(card)?.hourly_rate_rupees ?? null;
+  const wsFromUsd = adhocRateValue(card, "USD");
+  const wsFrom = (ladderRanges(card)?.count ?? 0) > 1 ? "from " : "";
+  out.push("## GPU workstations in one paragraph");
+  out.push("");
+  out.push(
+    `Coreframe Cloud (${SITE}) rents ready-to-work cloud virtual workstations: a full Windows desktop with a dedicated ` +
+      "NVIDIA RTX GPU and design software preinstalled (Blender, D5 Render, Twinmotion, Unreal Engine, FreeCAD, ParaView " +
+      "and more; Lumion, Enscape, V-Ray, Revit, AutoCAD, SketchUp Pro, Rhino and Adobe apps run on the customer's own " +
+      "licence), streamed to the customer's own PC through the Coreframe Connect app and ready in four clicks. It is not a " +
+      "bare GPU server: there is no Linux image, SSH or driver setup, and files uploaded to the project drive stay between " +
+      "sessions and appear on every workstation (an optional persistent workstation keeps the customer's own Windows disk). " +
+      "Billing is per minute from when you connect; preparing the workstation is free. " +
+      (wsFromInr != null
+        ? `Prices start at ${wsFrom}${money(wsFromInr)} per hour including GST in India` +
+          (wsFromUsd != null ? `, or ${wsFrom}${usdMoney(wsFromUsd)} per hour with no GST for accounts outside India` : "") +
+          ", from a prepaid wallet with a GST invoice on every Indian top-up. "
+        : `Live prices: ${SITE}/pricing. `) +
+      "Sign-up needs an email address and a mobile number; international cards are accepted. All infrastructure and data " +
+      `are in India. How it differs from a bare GPU server: ${SITE}/virtual-workstation-vs-gpu-server.`,
   );
   out.push("");
 
@@ -612,6 +639,12 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
     "- **vs Indian GPU clouds** built for AI: those mostly rent Linux GPU servers. Coreframe " +
       "rents a Windows desktop with a display driver for interactive design applications.",
   );
+  out.push(
+    "- **vs a bare GPU server**: a bare server is a Linux machine with a GPU, reached over SSH, that you set up " +
+      "yourself; it is the better fit for AI training, inference, containers and scripted batch jobs. Coreframe is a " +
+      "ready-to-work Windows desktop with the drivers and design software installed and files kept between sessions, " +
+      `billed per minute. ${SITE}/virtual-workstation-vs-gpu-server`,
+  );
   out.push("");
 
   out.push("## Billing and invoices");
@@ -627,6 +660,7 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
   out.push(`- [What Coreframe Cloud is](${SITE}/about): the company, the machines, and what it is not.`);
   out.push(`- [Pricing](${SITE}/pricing): live rates and monthly plans, from the billing system.`);
   out.push(`- [Cloud workstation vs render farm](${SITE}/cloud-workstation-vs-render-farm): which one you need.`);
+  out.push(`- [Ready-to-work cloud virtual workstation vs a bare GPU server](${SITE}/virtual-workstation-vs-gpu-server): what you get on each, and when a bare server is the better fit.`);
   out.push(`- [Coreframe vs iRender](${SITE}/coreframe-vs-irender): dated, sourced price comparison.`);
   out.push(`- [Is 8 GB of VRAM enough?](${SITE}/vram-for-architectural-rendering)`);
   out.push(`- [Cloud rendering for architects](${SITE}/cloud-rendering-for-architects)`);

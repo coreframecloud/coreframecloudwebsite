@@ -248,6 +248,7 @@ export default async function WorkstationVsFarmView({ currency }: { currency: Cu
                 ["/lumion-cloud-gpu", "Lumion on a GPU workstation"],
                 ["/software/3ds-max-cloud-workstation", "3ds Max, V-Ray and Corona"],
                 ["/software/after-effects-premiere-cloud-workstation", "After Effects and Premiere Pro"],
+                ["/virtual-workstation-vs-gpu-server", "Cloud virtual workstation vs a bare GPU server"],
                 ["/coreframe-vs-irender", "Coreframe vs iRender"],
                 ["/d5-render-vs-local-gpu", "Renting a workstation vs buying one"],
               ].map(([href, label]) => (

@@ -101,11 +101,13 @@ export const metadata: Metadata = {
     template: "%s | Coreframe Cloud",
   },
   description:
-    "Three services from Bengaluru: Windows GPU workstations by the minute, CFD for ducts and pipes from one STL with no licence, and Studio for pre-sale concept images from a floor plan (free previews).",
+    "Ready-to-work cloud virtual workstations from Bengaluru: a Windows desktop with an RTX GPU and design software installed, in four clicks, billed per minute. Plus CFD for ducts and pipes, and Studio concept images from a floor plan.",
   keywords: [
     "faster D5 Render cloud India",
     "CFD simulation faster India",
     "cloud GPU workstation India",
+    "cloud virtual workstation India",
+    "virtual workstation with GPU",
     "RTX rendering cloud India",
     "Lumion cloud GPU India",
     "Enscape cloud rendering India",
@@ -138,9 +140,9 @@ export const metadata: Metadata = {
   // their own `openGraph` object, which used to replace this one and leave
   // them with no image at all.
   openGraph: {
-    title: "Coreframe Cloud — GPU workstations, CFD and Studio, India",
+    title: "Coreframe Cloud — ready-to-work cloud GPU workstations, CFD and Studio",
     description:
-      "Rent a GPU workstation by the minute, get CFD for your duct or pipe from one STL, and Studio for pre-sale concept images from a floor plan. Hosted in India.",
+      "A ready-to-work cloud virtual workstation in four clicks: a Windows desktop with a GPU and your design software installed, billed per minute. Plus CFD for ducts and pipes, and Studio concept images. All infrastructure in India.",
     url: "https://www.coreframecloud.com",
     siteName: "Coreframe Cloud",
     locale: "en_IN",
@@ -153,7 +155,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Coreframe Cloud",
     description:
-      "GPU workstations by the minute, CFD for ducts and pipes with no licence, and Studio for floor-plan concept images. Hosted in India.",
+      "Ready-to-work cloud virtual workstations in four clicks: Windows, a GPU and design software, billed per minute. Plus CFD and Studio. All infrastructure in India.",
   },
   other: {
     "contact:email": "admin@coreframecloud.com",

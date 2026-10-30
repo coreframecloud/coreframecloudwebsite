@@ -261,6 +261,40 @@ export function OfferBand({
   );
 }
 
+/**
+ * "What is Coreframe?" (owner, 30 Oct 2026: answer-engine optimisation).
+ * Buyers ask assistants for a "virtual workstation with a GPU on the cloud",
+ * so the home page states what Coreframe is in the few plain sentences an
+ * answer would quote whole. Facts only; the price is the live "from" rate in
+ * the page's own currency, and the sentence drops it when there is none.
+ */
+export function WhatIsCoreframe({ fromRate, currency = "INR" }: { fromRate?: string; currency?: Currency }) {
+  const price = fromRate ? ` from ${fromRate} an hour${currency === "USD" ? "" : " including GST"}` : "";
+  return (
+    <section className="cfh-wrap pt-16 sm:pt-20" aria-labelledby="what-is-coreframe">
+      <Reveal className="max-w-[46rem]">
+        <h2 id="what-is-coreframe" className="cfh-h2">What is Coreframe?</h2>
+        <p className="mt-5 text-[17px] leading-[1.65] text-ink-2">
+          Coreframe Cloud is a ready-to-work cloud virtual workstation: a full Windows desktop with a
+          dedicated NVIDIA RTX GPU and design software such as D5 Render, Blender, Twinmotion and
+          Unreal Engine already installed, streamed to your own PC through the Coreframe Connect app.
+          It is ready in four clicks and billed per minute{price}, and the files you upload stay
+          between sessions. All infrastructure and data are in India, run by a Bengaluru company that
+          also offers CFD for ducts, pipes and HVAC rooms, and Studio concept images from a floor plan.
+        </p>
+        <p className="mt-5 text-[14px] leading-[1.6] text-ink-2">
+          <Link
+            href="/virtual-workstation-vs-gpu-server"
+            className="underline decoration-rule underline-offset-4 transition hover:text-ink hover:decoration-ink"
+          >
+            How a ready-to-work workstation differs from a bare GPU server, and common questions
+          </Link>
+        </p>
+      </Reveal>
+    </section>
+  );
+}
+
 /** How it works in three steps, carried by the stream diagram. */
 export function HowItWorks() {
   const steps = ["Sign up with email and mobile", "Top up by UPI or card", "Pick a GPU and launch it from the app"];

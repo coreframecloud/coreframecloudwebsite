@@ -3,7 +3,7 @@ import { PageByline } from "@/components/seo/page-byline";
 import { WALKTHROUGH_YOUTUBE_ID } from "@/components/home/landing/walkthrough-section";
 import { RedesignHero } from "@/components/home/redesign/hero";
 import { Bento } from "@/components/home/redesign/bento";
-import { FactsBand, BuiltFor, OfferBand, HowItWorks, LatestPosts } from "@/components/home/redesign/bands";
+import { FactsBand, BuiltFor, OfferBand, HowItWorks, LatestPosts, WhatIsCoreframe } from "@/components/home/redesign/bands";
 import { Testimonials } from "@/components/home/redesign/testimonials";
 import { OfferingBands, offeringPrices } from "@/components/home/redesign/offerings";
 import type { Currency } from "@/lib/money";
@@ -17,9 +17,9 @@ import {
 
 /** One metadata for both copies: the description quotes no price. */
 export const homeMetadata: Metadata = {
-  title: { absolute: "GPU Workstations, CFD & Studio, India | Coreframe Cloud" },
+  title: { absolute: "Cloud GPU Workstations, CFD & Studio, India | Coreframe Cloud" },
   description:
-    "Rent a Windows GPU workstation by the minute, get CFD for your duct or pipe from one STL with no licence, and Studio concept images. From Bengaluru.",
+    "A ready-to-work cloud virtual workstation in four clicks: Windows, an RTX GPU and design software installed, billed per minute. Plus CFD and Studio. India.",
   alternates: { canonical: "/" },
   other: { "contact:email": "admin@coreframecloud.com" },
 };
@@ -31,7 +31,8 @@ export const homeMetadata: Metadata = {
  *
  *   1  hero        a real render, the company line, then the THREE services
  *                  as equal cards (GPU workstations · CFD · Studio), 13 Oct 2026
- *   2  the sheet   white page slides up over the hero
+ *   2  the sheet   white page slides up over the hero, opening with
+ *                  "What is Coreframe?" in plain sentences (30 Oct 2026, AEO)
  *   3  bands       one band per service, same order as the hero cards
  *   4  bento       the workstation in detail · team plans · per-minute · walkthrough
  *   5  facts       what's in the box, facts only, with the benchmark source
@@ -63,6 +64,7 @@ export default async function HomeView({ currency }: { currency: Currency }) {
     <main className="text-ink">
       <RedesignHero introLabel={introLabel} prices={prices} />
       <div className="cfh-sheet">
+        <WhatIsCoreframe fromRate={adhocRate} currency={currency} />
         <OfferingBands prices={prices} />
         <Bento youtubeId={WALKTHROUGH_YOUTUBE_ID} ladder={ladder} />
         <HowItWorks />

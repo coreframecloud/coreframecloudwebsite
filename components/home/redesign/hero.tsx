@@ -39,8 +39,9 @@ export function RedesignHero({ introLabel, prices }: { introLabel: IntroShort | 
             <br className="hidden sm:block" /> <span className="text-white/75">You keep the laptop you own.</span>
           </h1>
           <p className="mt-4 hidden max-w-[40rem] text-[16px] leading-[1.6] text-white/85 sm:block sm:text-[17px]">
-            Rent a GPU workstation by the minute, send us a duct or pipe for CFD, or turn a floor
-            plan into concept images. Three services, one team in Bengaluru.
+            A ready-to-work cloud virtual workstation in four clicks: Windows, a GPU and your design
+            software, billed by the minute. Plus CFD for ducts and pipes, and concept images from a
+            floor plan.
           </p>
         </div>
 
