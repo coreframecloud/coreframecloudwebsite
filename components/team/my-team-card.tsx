@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useId, useState } from "react";
 import Link from "next/link";
 import SpendBar from "@/components/team/spend-bar";
+import { FormField } from "@/components/ui/form-field";
 import {
   errMsg,
   errorText,
@@ -301,11 +302,15 @@ export default function MyTeamCard({ onTeamChanged }: { onTeamChanged?: (team: M
         Type the email of your company&rsquo;s Coreframe admin. Once they approve, your company pays for
         workstation time and you get the shared project drive.
       </p>
-      <form onSubmit={sendRequest} className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-end">
-        <div className="flex-1">
-          <label htmlFor={`${id}-admin`} className="mb-1.5 block text-xs font-medium text-ink-2">
-            Your admin&rsquo;s email
-          </label>
+      {/* Form spacing system: subtitle -> field 24px, label -> input 8px,
+          field -> button 24px on a phone (side by side from sm up). */}
+      <form onSubmit={sendRequest} className="mt-6 flex flex-col gap-6 sm:flex-row sm:items-end sm:gap-3">
+        <FormField
+          className="flex-1"
+          htmlFor={`${id}-admin`}
+          label={<>Your admin&rsquo;s email</>}
+          labelClassName="block text-xs font-medium text-ink-2"
+        >
           <input
             id={`${id}-admin`}
             type="email"
@@ -315,7 +320,7 @@ export default function MyTeamCard({ onTeamChanged }: { onTeamChanged?: (team: M
             onChange={(e) => setAdminEmail(e.target.value)}
             className={inputCls}
           />
-        </div>
+        </FormField>
         <button type="submit" disabled={busy !== null} className={`${quietBtn} w-full sm:w-auto`}>
           {busy === "join" ? "Sending…" : "Send request"}
         </button>

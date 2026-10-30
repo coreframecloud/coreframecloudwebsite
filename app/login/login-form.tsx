@@ -29,6 +29,7 @@ import { API_BASE } from "@/lib/api-base";
 import { apiErrorText, caughtErrorText, looksLikeEmail } from "@/lib/api-error";
 import { suggestEmail } from "@/lib/email-typo";
 import { TERMS_REQUIRED_TEXT, TermsConsent, isTermsRequired } from "@/components/account/terms-consent";
+import { FORM, FormDivider, FormField, SocialButtons } from "@/components/ui/form-field";
 
 const API = API_BASE;
 
@@ -57,24 +58,18 @@ function GoogleIcon() {
 
 // ── Shared field ───────────────────────────────────────────────────────────────
 function Field({ label, children }: { label: React.ReactNode; children: React.ReactNode }) {
-  return (
-    // content-start: in a two-column row the taller cell (help text) must not
-    // stretch this grid, or the shorter cell's input slides down out of line.
-    <div className="grid content-start gap-1.5">
-      <label className="text-[13px] font-medium text-ink">{label}</label>
-      {children}
-    </div>
-  );
+  // The shared form spacing (components/ui/form-field.tsx): label -> input
+  // 8px, input -> helper/error 4px. A flex column never stretches its rows, so
+  // in a two-column row the shorter cell's input stays in line.
+  return <FormField label={label}>{children}</FormField>;
 }
 
 function GoogleBlock({ api, below = false }: { api: string; below?: boolean }) {
   return (
-    <>
-      <div className={`flex items-center gap-3 ${below ? "my-5" : "mb-5"}`}>
-        <div className="h-px flex-1 bg-rule" />
-        <span className="text-xs text-ink-3">or</span>
-        <div className="h-px flex-1 bg-rule" />
-      </div>
+    // Button -> divider 24px, divider -> social buttons 24px.
+    <div className={`${FORM.stack} ${below ? "mt-6" : "mb-6"}`}>
+      <FormDivider />
+      <SocialButtons>
       <a
         href={`${api}/auth/google`}
         onClick={(e) => { googleClicked("signup"); goToGoogleSignIn(e, api); }}
@@ -84,7 +79,8 @@ function GoogleBlock({ api, below = false }: { api: string; below?: boolean }) {
         Continue with Google
       </a>
       <GoogleTermsNote />
-    </>
+      </SocialButtons>
+    </div>
   );
 }
 
@@ -92,7 +88,7 @@ function GoogleBlock({ api, below = false }: { api: string; below?: boolean }) {
    recorded as "google_continue_notice" (services/signup_consent.py): this line. */
 function GoogleTermsNote() {
   return (
-    <p className="mt-2 text-center text-xs leading-5 text-ink-3">
+    <p className="text-center text-xs leading-5 text-ink-3">
       By continuing with Google, you agree to our{" "}
       <a href="/terms-of-service" target="_blank" rel="noopener" className="text-blue hover:underline">Terms of Service</a>{" "}
       and{" "}
@@ -121,16 +117,17 @@ function CardHeader({
   eyebrow,
   title,
   sub,
-  compact = false,
 }: {
   icon: React.ReactNode;
   eyebrow: string;
   title: string;
   sub?: React.ReactNode;
+  /** Kept for callers; the header gap is the same 24px on both variants now. */
   compact?: boolean;
 }) {
   return (
-    <div className={compact ? "mb-5" : "mb-6"}>
+    // Subtitle -> first field 24px on both variants (form spacing system).
+    <div className={FORM.header}>
       <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-full bg-blue/10 text-blue">
         {icon}
       </div>
@@ -138,7 +135,7 @@ function CardHeader({
       <h1 className="font-display text-[27px] leading-[1.14] tracking-[-0.01em] text-ink sm:text-[32px]">
         {title}
       </h1>
-      {sub && <p className="mt-2 text-[15px] leading-6 break-words text-ink-2">{sub}</p>}
+      {sub && <p className={`${FORM.sub} text-[15px] leading-6 break-words text-ink-2`}>{sub}</p>}
     </div>
   );
 }
@@ -204,7 +201,7 @@ function EmailSuggestion({ value, onAccept }: { value: string; onAccept: (v: str
   const suggestion = suggestEmail(value);
   if (!suggestion) return null;
   return (
-    <p className="-mt-2 text-sm text-ink-2" role="status">
+    <p className="text-sm text-ink-2" role="status">
       Did you mean{" "}
       <button type="button" onClick={() => onAccept(suggestion)}
               className="break-all font-medium text-blue underline underline-offset-2">
@@ -755,6 +752,7 @@ export default function LoginForm({
             making them scroll past an alternative to find the primary control. */}
         {!isStart && (
           <>
+            <SocialButtons>
             <a
               href={`${API}/auth/google`}
               onClick={(e) => { googleClicked("login"); goToGoogleSignIn(e, API); }}
@@ -764,10 +762,9 @@ export default function LoginForm({
               Continue with Google
             </a>
             <GoogleTermsNote />
-            <div className="my-5 flex items-center gap-3">
-              <div className="h-px flex-1 bg-rule" />
-              <span className="text-xs text-ink-3">or</span>
-              <div className="h-px flex-1 bg-rule" />
+            </SocialButtons>
+            <div className="my-6">
+              <FormDivider />
             </div>
           </>
         )}
@@ -782,7 +779,7 @@ export default function LoginForm({
             Password sign-in is gone entirely. Nothing issues a customer
             password, so the tab could only ever fail; keeping it also meant
             keeping a password surface to attack for no benefit. */}
-        {!isStart && <div className="cf-segment mb-5 flex gap-1 p-1">
+        {!isStart && <div className="cf-segment mb-6 flex gap-1 p-1">
           <TabBtn active={tab === "link"} onClick={() => switchTab("link")}>
             Email me a link
           </TabBtn>
@@ -795,7 +792,8 @@ export default function LoginForm({
         {tab === "link" && (
           <div className="grid gap-4">
             {linkStep === "email" && (
-              <form onSubmit={handleLinkEmailSubmit} className="grid gap-4">
+              <form onSubmit={handleLinkEmailSubmit} className={FORM.stack}>
+                <div className={FORM.fields}>
                 <Field label="Email address">
                   <Input
                     type="email"
@@ -807,14 +805,15 @@ export default function LoginForm({
                     autoFocus
                     required
                   />
+                  <EmailSuggestion value={linkEmail} onAccept={(v) => { setLinkEmail(v); setError(""); }} />
+                  {error && <ErrorBox msg={error} />}
+                  {isStart && (
+                    <p className="text-xs leading-5 text-ink-2">
+                      No password needed. We&apos;ll email you a link, and your account is ready once you click it.
+                    </p>
+                  )}
                 </Field>
-                <EmailSuggestion value={linkEmail} onAccept={(v) => { setLinkEmail(v); setError(""); }} />
-                {error && <ErrorBox msg={error} />}
-                {isStart ? (
-                  <p className="-mt-1 text-xs leading-5 text-ink-2">
-                    No password needed. We&apos;ll email you a link, and your account is ready once you click it.
-                  </p>
-                ) : (
+                {!isStart && (
                   <div className="cf-glass-inset px-4 py-3">
                     <p className="text-sm font-medium text-ink">Sign in with a link.</p>
                     <p className="mt-0.5 text-xs text-ink-2">
@@ -822,6 +821,7 @@ export default function LoginForm({
                     </p>
                   </div>
                 )}
+                </div>
                 <Button type="submit" disabled={linkLoading} className="cf-btn-primary min-h-11 w-full disabled:opacity-60">
                   {linkLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                   {linkLoading ? "Checking…" : isStart ? "Create my account" : "Send sign-in link"}
@@ -830,7 +830,8 @@ export default function LoginForm({
             )}
 
             {linkStep === "details" && (
-              <form onSubmit={handleLinkDetailsSubmit} className="grid gap-4">
+              <form onSubmit={handleLinkDetailsSubmit} className={FORM.stack}>
+                <div className={FORM.fields}>
                 <div className="cf-glass-inset border-l-2 border-l-blue px-4 py-3 text-sm leading-6 text-ink-2">
                   No account found for <strong className="break-all font-medium text-ink">{linkEmail}</strong>. Fill in your details below and we&apos;ll create one.
                 </div>
@@ -862,17 +863,17 @@ export default function LoginForm({
                       maxLength={15}
                       required
                     />
-                    <p className="mt-0.5 text-xs leading-5 text-ink-3">
+                    <p className="text-xs leading-5 text-ink-3">
                       We check this against the GST register. It has to be active, and
                       we read the registered name back from it. It also sets your place
                       of supply on every invoice.
                     </p>
                   </Field>
                 )}
-                <div className="grid gap-4 sm:grid-cols-2 sm:gap-3">
+                <div className="grid gap-5 sm:grid-cols-2 sm:gap-3">
                   <Field label="Full name">
                     <Input value={linkName} onChange={(e) => { setLinkName(e.target.value); setError(""); }} className={inputCls} placeholder="Rahul Sharma" required />
-                    <p className="mt-0.5 text-xs leading-5 text-ink-3">
+                    <p className="text-xs leading-5 text-ink-3">
                       Printed on your invoices.
                     </p>
                   </Field>
@@ -887,7 +888,7 @@ export default function LoginForm({
                       required={linkAccountType === "b2b"}
                     />
                     {linkAccountType === "b2b" && (
-                      <p className="mt-0.5 text-xs leading-5 text-ink-3">
+                      <p className="text-xs leading-5 text-ink-3">
                         Exactly as it appears on your GST certificate. We match it
                         against the registered name on the GST register.
                       </p>
@@ -900,7 +901,7 @@ export default function LoginForm({
                     over WhatsApp after the email link. Any country: paid-first
                     onboarding (10 Oct 2026) is open to international
                     customers. */}
-                <div className={`grid gap-4 ${homeCountry.iso === "IN" ? "sm:grid-cols-2 sm:gap-3" : ""}`}>
+                <div className={`grid gap-5 ${homeCountry.iso === "IN" ? "sm:grid-cols-2 sm:gap-3" : ""}`}>
                   <Field label="Country">
                     <select
                       value={homeCountry.iso}
@@ -983,7 +984,7 @@ export default function LoginForm({
                       required
                     />
                   </div>
-                  <p className="mt-0.5 text-xs leading-5 text-ink-3">
+                  <p className="text-xs leading-5 text-ink-3">
                     We&apos;ll send a one-time code to confirm it, because Indian regulations
                     require us to hold a verified contact number for compute rental.
                     {homeCountry.iso === "IN" && <> {INDIAN_MOBILE_HINT}</>}
@@ -1018,6 +1019,7 @@ export default function LoginForm({
                   onOffers={setWaOffers}
                 />
                 {error && <ErrorBox msg={error} />}
+                </div>
                 <Button type="submit" disabled={linkLoading || !termsOk} className="cf-btn-primary min-h-11 w-full disabled:opacity-60">
                   {linkLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ArrowRight className="mr-2 h-4 w-4" />}
                   {linkLoading ? "Creating account…" : "Create account & send link"}
@@ -1047,7 +1049,7 @@ export default function LoginForm({
         {tab === "code" && (
           <div className="grid gap-4">
             {codeStep === "email" && (
-              <form onSubmit={handleCodeEmailSubmit} className="grid gap-4">
+              <form onSubmit={handleCodeEmailSubmit} className={FORM.stack}>
                 <Field label="Email address">
                   <Input
                     type="email"
@@ -1059,9 +1061,9 @@ export default function LoginForm({
                     autoFocus
                     required
                   />
+                  <EmailSuggestion value={codeEmail} onAccept={(v) => { setCodeEmail(v); setError(""); }} />
+                  {error && <ErrorBox msg={error} />}
                 </Field>
-                <EmailSuggestion value={codeEmail} onAccept={(v) => { setCodeEmail(v); setError(""); }} />
-                {error && <ErrorBox msg={error} />}
                 <Button type="submit" disabled={codeLoading} className="cf-btn-primary min-h-11 w-full disabled:opacity-60">
                   {codeLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                   {codeLoading ? "Sending…" : "Send 6-digit code"}
@@ -1074,7 +1076,8 @@ export default function LoginForm({
             )}
 
             {codeStep === "code" && (
-              <form onSubmit={handleCodeVerify} className="grid gap-4">
+              <form onSubmit={handleCodeVerify} className={FORM.stack}>
+                <div className={FORM.fields}>
                 {/* 10, not 15: OTP_EXPIRY_MINUTES is 10 on the server and this
                     said 15, which is its own small lie to anyone who waited. */}
                 <SentCard email={codeEmail} label="6-digit code" certain expiresMinutes={10} />
@@ -1095,6 +1098,7 @@ export default function LoginForm({
                   />
                 )}
                 {error && <ErrorBox msg={error} />}
+                </div>
                 <Button type="submit" disabled={codeLoading || codeValue.length < 6 || (codeNeedsTerms && !termsOk)} className="cf-btn-primary min-h-11 w-full disabled:opacity-60">
                   {codeLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                   {codeLoading ? "Verifying…" : codeNeedsTerms ? "Create my account" : "Sign in"}

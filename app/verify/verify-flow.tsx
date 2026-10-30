@@ -44,6 +44,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { OtpInput } from "@/components/ui/otp-input";
+import { FORM, FormField } from "@/components/ui/form-field";
 import {
   Building2,
   CheckCircle2,
@@ -81,6 +82,8 @@ const DONE_URL = "/my-activity?topup=1";
 const inputCls =
   "h-11 w-full min-w-0 rounded-cf border border-rule bg-paper px-3 text-base text-ink outline-none transition placeholder:text-ink-3 focus:border-blue focus:ring-2 focus:ring-blue/20 md:h-10 md:text-sm";
 const btnPrimary = "cf-btn-primary min-h-11 w-full disabled:opacity-60";
+/* Field labels on this page are 14px (text-sm); the spacing comes from FormField. */
+const labelCls = "text-sm font-medium text-ink";
 const errorBox =
   "rounded-cf border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm leading-6 break-words text-destructive";
 
@@ -217,7 +220,7 @@ function Card({ children }: { children: React.ReactNode }) {
 
 function Header({ icon, title, sub }: { icon: React.ReactNode; title: string; sub?: React.ReactNode }) {
   return (
-    <div className="mb-6">
+    <div className={FORM.header}>
       <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-full bg-blue/10 text-blue">
         {icon}
       </div>
@@ -225,7 +228,7 @@ function Header({ icon, title, sub }: { icon: React.ReactNode; title: string; su
       <h1 className="font-display text-[27px] leading-[1.14] tracking-[-0.01em] text-ink sm:text-[32px]">
         {title}
       </h1>
-      {sub && <p className="mt-2 text-[15px] leading-6 break-words text-ink-2">{sub}</p>}
+      {sub && <p className={`${FORM.sub} text-[15px] leading-6 break-words text-ink-2`}>{sub}</p>}
     </div>
   );
 }
@@ -746,11 +749,9 @@ export default function VerifyFlow() {
         {left === 0 ? (
           <p className={errorBox}>{NO_TRIES_LEFT}</p>
         ) : (
-          <form onSubmit={submitGstin} className="grid gap-4">
-            <div className="grid gap-1.5">
-              <label htmlFor="cf-gstin" className="text-sm font-medium text-ink">
-                GSTIN
-              </label>
+          <form onSubmit={submitGstin} className={FORM.stack}>
+            <div className={FORM.fields}>
+            <FormField label="GSTIN" htmlFor="cf-gstin" labelClassName={labelCls}>
               <input
                 id="cf-gstin"
                 value={gstin}
@@ -770,13 +771,14 @@ export default function VerifyFlow() {
                 {b?.gstin ? "This is the GSTIN you gave when you signed up. Correct it if it is wrong. " : ""}
                 15 characters, exactly as printed on your GST certificate.
               </p>
-            </div>
+            </FormField>
             {lastTry && !error && (
               <p className="cf-glass-inset border-l-2 border-l-blue px-4 py-3 text-sm leading-6 text-ink-2">
                 Last check: {lastTry}
               </p>
             )}
             {error && <p className={errorBox}>{error}</p>}
+            </div>
             <Button type="submit" disabled={busy} className={btnPrimary}>
               {busy ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
               {busy ? "Checking the GST register…" : "Check GSTIN"}
@@ -817,11 +819,9 @@ export default function VerifyFlow() {
         {left === 0 ? (
           <p className={errorBox}>{NO_TRIES_LEFT}</p>
         ) : (
-          <form onSubmit={submitBav} className="grid gap-4" autoComplete="off">
-            <div className="grid gap-1.5">
-              <label htmlFor="cf-bank-account" className="text-sm font-medium text-ink">
-                Company bank account number
-              </label>
+          <form onSubmit={submitBav} className={FORM.stack} autoComplete="off">
+            <div className={FORM.fields}>
+            <FormField label="Company bank account number" htmlFor="cf-bank-account" labelClassName={labelCls}>
               <input
                 id="cf-bank-account"
                 value={bankAccount}
@@ -837,11 +837,8 @@ export default function VerifyFlow() {
                 className={`${inputCls} font-mono tracking-[0.08em]`}
                 required
               />
-            </div>
-            <div className="grid gap-1.5">
-              <label htmlFor="cf-bank-account-2" className="text-sm font-medium text-ink">
-                Type the account number again
-              </label>
+            </FormField>
+            <FormField label="Type the account number again" htmlFor="cf-bank-account-2" labelClassName={labelCls}>
               <input
                 id="cf-bank-account-2"
                 value={bankAccount2}
@@ -861,11 +858,8 @@ export default function VerifyFlow() {
               {bankAccount2.length > 0 && bankAccount2.length >= bankAccount.length && bankAccount2 !== bankAccount && (
                 <p className="text-xs leading-5 text-destructive">The two numbers do not match yet.</p>
               )}
-            </div>
-            <div className="grid gap-1.5">
-              <label htmlFor="cf-ifsc" className="text-sm font-medium text-ink">
-                IFSC
-              </label>
+            </FormField>
+            <FormField label="IFSC" htmlFor="cf-ifsc" labelClassName={labelCls}>
               <input
                 id="cf-ifsc"
                 value={ifsc}
@@ -884,13 +878,14 @@ export default function VerifyFlow() {
               <p className="text-xs leading-5 text-ink-3">
                 11 characters, on a cheque leaf or in net banking. The fifth is a zero.
               </p>
-            </div>
+            </FormField>
             {lastTry && !error && (
               <p className="cf-glass-inset border-l-2 border-l-blue px-4 py-3 text-sm leading-6 text-ink-2">
                 Last check: {lastTry}
               </p>
             )}
             {error && <p className={errorBox}>{error}</p>}
+            </div>
             <Button type="submit" disabled={busy} className={btnPrimary}>
               {busy ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
               {busy ? "Checking with your bank…" : "Send ₹1 and confirm"}
@@ -932,7 +927,7 @@ export default function VerifyFlow() {
         />
         <BusinessProgress status={status} current="bank" />
         {b?.business_verified && (b.legal_name || b.trade_name) && (
-          <p className="cf-glass-inset mb-4 border-l-2 border-l-blue px-4 py-3 text-sm leading-6 text-ink-2">
+          <p className="cf-glass-inset mb-6 border-l-2 border-l-blue px-4 py-3 text-sm leading-6 text-ink-2">
             GST confirmed: <span className="font-medium text-ink">{b.legal_name || b.trade_name}</span>
             {b.registered_state ? `, ${b.registered_state}` : ""}.
           </p>
@@ -1055,7 +1050,8 @@ export default function VerifyFlow() {
               : "We'll send a one-time code to confirm it, because Indian regulations (CERT-In) require a verified contact number for compute rental. Any country code works."
           }
         />
-        <form onSubmit={submitPhone} className="grid gap-4">
+        <form onSubmit={submitPhone} className={FORM.stack}>
+          <div className={FORM.control}>
           {/* Fixed columns (26 Oct 2026, customer on a phone: the number box was squeezed off-screen
               because the select's w-full beat its w-[112px]). The select never takes the width. */}
           <div className="grid grid-cols-[7.5rem_minmax(0,1fr)] gap-2 sm:grid-cols-[9rem_minmax(0,1fr)]">
@@ -1092,6 +1088,7 @@ export default function VerifyFlow() {
             />
           </div>
           {error && <p className={errorBox}>{error}</p>}
+          </div>
           <Button type="submit" disabled={busy} className={btnPrimary}>
             {busy ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
             Save number
@@ -1143,13 +1140,15 @@ export default function VerifyFlow() {
           )}
         </div>
       ) : (
-        <form onSubmit={submitCode} className="grid gap-4">
+        <form onSubmit={submitCode} className={FORM.stack}>
+          <div className={FORM.fields}>
           {fallbackFrom && (
             <p className="cf-glass-inset border-l-2 border-l-blue px-4 py-3 text-sm leading-6 text-ink-2">
               {channelName(fallbackFrom)} did not go through to that number, so we sent the code{" "}
               {viaChannel(current)} instead.
             </p>
           )}
+          <div className={FORM.control}>
           <OtpInput
             value={otpCode}
             onChange={(v) => {
@@ -1159,6 +1158,8 @@ export default function VerifyFlow() {
             autoFocus
           />
           {error && <p className={errorBox}>{error}</p>}
+          </div>
+          </div>
           <Button type="submit" disabled={busy || otpCode.length < 6} className={btnPrimary}>
             {busy ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
             Confirm

@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Mail, MessageCircle } from "lucide-react";
 import { trackWhatsAppLead } from "@/lib/analytics";
 import { NODE } from "@/lib/node-spec";
+import { FORM, FormField } from "@/components/ui/form-field";
 
 export default function RequestDemoForm() {
   const [email, setEmail] = useState("");
@@ -39,11 +40,12 @@ Selected GPU: ${gpu || "Not selected"}`;
   return (
     <div className="mt-10 grid gap-6 md:mt-12 md:grid-cols-[1.15fr_0.85fr] md:gap-8">
       <div className="rounded-cf border border-rule bg-paper-2 p-5 sm:p-6 md:p-8">
-        <div className="grid gap-4">
-          <div className="grid gap-1.5">
-            <label htmlFor="rd-email" className="text-[13px] font-medium text-ink">
-              Work email
-            </label>
+        <div className={FORM.stack}>
+          <div className={FORM.fields}>
+          <FormField
+            htmlFor="rd-email"
+            label="Work email"
+          >
             <Input
               id="rd-email"
               type="email"
@@ -52,12 +54,12 @@ Selected GPU: ${gpu || "Not selected"}`;
               className="h-11 rounded-cf border-rule bg-paper text-base text-ink placeholder:text-ink-3 md:text-sm"
               placeholder="you@studio.com"
             />
-          </div>
+          </FormField>
 
-          <div className="grid gap-1.5">
-            <label htmlFor="rd-mobile" className="text-[13px] font-medium text-ink">
-              Mobile number
-            </label>
+          <FormField
+            htmlFor="rd-mobile"
+            label="Mobile number"
+          >
             <Input
               id="rd-mobile"
               type="tel"
@@ -67,12 +69,12 @@ Selected GPU: ${gpu || "Not selected"}`;
               className="h-11 rounded-cf border-rule bg-paper text-base text-ink placeholder:text-ink-3 md:text-sm"
               placeholder="98765 43210"
             />
-          </div>
+          </FormField>
 
-          <div className="grid gap-1.5">
-            <label htmlFor="rd-workload" className="text-[13px] font-medium text-ink">
-              What do you run?
-            </label>
+          <FormField
+            htmlFor="rd-workload"
+            label="What do you run?"
+          >
             <select
               id="rd-workload"
               value={workload}
@@ -82,12 +84,12 @@ Selected GPU: ${gpu || "Not selected"}`;
               <option>RTX / 3D Rendering</option>
               <option>AI / Linux Workloads</option>
             </select>
-          </div>
+          </FormField>
 
-          <div className="grid gap-1.5">
-            <label htmlFor="rd-gpu" className="text-[13px] font-medium text-ink">
-              Selected GPU <span className="text-ink-3">(optional)</span>
-            </label>
+          <FormField
+            htmlFor="rd-gpu"
+            label={<>Selected GPU <span className="text-ink-3">(optional)</span></>}
+          >
             <Input
               id="rd-gpu"
               value={gpu}
@@ -95,11 +97,13 @@ Selected GPU: ${gpu || "Not selected"}`;
               className="h-11 rounded-cf border-rule bg-paper text-base text-ink placeholder:text-ink-3 md:text-sm"
               placeholder={NODE.gpu}
             />
+          </FormField>
+
           </div>
 
           <Button
             onClick={handleWhatsAppSubmit}
-            className="cf-btn-primary mt-1 min-h-11 w-full sm:w-auto sm:justify-self-start"
+            className="cf-btn-primary min-h-11 w-full sm:w-auto sm:self-start"
           >
             Send on WhatsApp
           </Button>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useId, useState } from "react";
+import { FormField } from "@/components/ui/form-field";
 import type { Currency } from "@/lib/money";
 import {
   errMsg,
@@ -102,17 +103,20 @@ export default function AddPeople({
       <div className="mt-5 grid grid-cols-1 gap-4 lg:grid-cols-[1.4fr_1fr]">
         <form onSubmit={send} className="cf-glass-inset p-4 sm:p-5" aria-labelledby={`${id}-inv`}>
           <h3 id={`${id}-inv`} className="text-[15px] font-semibold text-ink">Invite a colleague</h3>
-          <p className="mt-1.5 text-[13px] leading-5 text-ink-2">
+          <p className="mt-2 text-[13px] leading-5 text-ink-2">
             Any email works, Gmail too. If they already have a Coreframe account, the invite shows up
             in Connect and on their account page. If not, they sign up with that email and land in
             your team.
           </p>
 
-          <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-[1.5fr_1fr_0.9fr]">
-            <div>
-              <label htmlFor={`${id}-email`} className="mb-1.5 block text-xs font-medium text-ink-2">
-                Their email
-              </label>
+          {/* Form spacing system: subtitle -> fields 24px, field -> field 20px
+              stacked (12px side by side), label -> input 8px, fields -> button 24px. */}
+          <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-[1.5fr_1fr_0.9fr] sm:gap-3">
+            <FormField
+              htmlFor={`${id}-email`}
+              label="Their email"
+              labelClassName="block text-xs font-medium text-ink-2"
+            >
               <input
                 id={`${id}-email`}
                 type="email"
@@ -122,11 +126,12 @@ export default function AddPeople({
                 onChange={(e) => setEmail(e.target.value)}
                 className={inputCls}
               />
-            </div>
-            <div>
-              <label htmlFor={`${id}-limit`} className="mb-1.5 block text-xs font-medium text-ink-2">
-                Monthly spending limit ({sym})
-              </label>
+            </FormField>
+            <FormField
+              htmlFor={`${id}-limit`}
+              label={<>Monthly spending limit ({sym})</>}
+              labelClassName="block text-xs font-medium text-ink-2"
+            >
               <input
                 id={`${id}-limit`}
                 type="number"
@@ -138,11 +143,12 @@ export default function AddPeople({
                 aria-describedby={`${id}-limit-hint`}
                 className={`${inputCls} tabular-nums`}
               />
-            </div>
-            <div>
-              <label htmlFor={`${id}-role`} className="mb-1.5 block text-xs font-medium text-ink-2">
-                Role
-              </label>
+            </FormField>
+            <FormField
+              htmlFor={`${id}-role`}
+              label="Role"
+              labelClassName="block text-xs font-medium text-ink-2"
+            >
               <select
                 id={`${id}-role`}
                 value={role}
@@ -152,10 +158,10 @@ export default function AddPeople({
                 <option value="member">Member</option>
                 <option value="org_admin">Admin</option>
               </select>
-            </div>
+            </FormField>
           </div>
 
-          <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <p id={`${id}-limit-hint`} className="text-xs leading-5 text-ink-3">
               Leave the limit empty for no limit. You can change it any time.
             </p>

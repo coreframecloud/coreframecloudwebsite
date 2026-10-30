@@ -638,7 +638,7 @@ export default function TopUpDialog({
                   First, where are you billed? This sets your account&apos;s currency for good: Indian rupees (GST
                   included) for India, US dollars (no GST) for every other country.
                 </p>
-                <div className="mt-5 grid grid-cols-1 gap-3">
+                <div className="mt-6 grid grid-cols-1 gap-5">
                   <div>
                     <label className="block cf-eyebrow">
                       Country <span className="text-blue">(required)</span>
@@ -646,7 +646,7 @@ export default function TopUpDialog({
                     <select
                       value={countryIso}
                       onChange={(e) => { setCountryIso(e.target.value); setCountryTouched(true); setError(""); }}
-                      className="mt-1.5 h-11 w-full cursor-pointer rounded-cf border border-rule bg-paper px-3 text-base text-ink outline-none focus:border-blue md:h-10 md:text-sm"
+                      className="mt-2 h-11 w-full cursor-pointer rounded-cf border border-rule bg-paper px-3 text-base text-ink outline-none focus:border-blue md:h-10 md:text-sm"
                     >
                       {countryIso === "" && (
                         <option value="" className="bg-paper text-ink">
@@ -668,7 +668,7 @@ export default function TopUpDialog({
                       <select
                         value={stateCode}
                         onChange={(e) => { setStateCode(e.target.value); setError(""); }}
-                        className="mt-1.5 h-11 w-full cursor-pointer rounded-cf border border-rule bg-paper px-3 text-base text-ink outline-none focus:border-blue md:h-10 md:text-sm"
+                        className="mt-2 h-11 w-full cursor-pointer rounded-cf border border-rule bg-paper px-3 text-base text-ink outline-none focus:border-blue md:h-10 md:text-sm"
                       >
                         <option value="" className="bg-paper text-ink">
                           Select your state
@@ -683,12 +683,12 @@ export default function TopUpDialog({
                   )}
                 </div>
                 {error && (
-                  <p className="mt-4 rounded-cf border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm leading-6 break-words text-destructive">
+                  <p className="mt-5 rounded-cf border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm leading-6 break-words text-destructive">
                     {error}
                   </p>
                 )}
                 {askIndia && ipCountry ? (
-                  <div className="mt-5 rounded-cf border border-rule px-4 py-3">
+                  <div className="mt-6 rounded-cf border border-rule px-4 py-3">
                     <p className="text-sm leading-6 text-ink">{ipMismatchMessage(ipCountry)}</p>
                     <div className="mt-3 flex flex-wrap gap-2">
                       <button
@@ -710,7 +710,7 @@ export default function TopUpDialog({
                 <button
                   onClick={() => saveCountry()}
                   disabled={savingCountry || !countryIso || (isIndia && !stateCode)}
-                  className="cf-btn-primary mt-5 w-full disabled:opacity-50"
+                  className="cf-btn-primary mt-6 w-full disabled:opacity-50"
                 >
                   {savingCountry ? "Saving…" : "Continue"}
                 </button>
@@ -813,7 +813,7 @@ export default function TopUpDialog({
 
                 </>)}
                 {!starterMode && (<>
-                <label className="mt-4 block cf-eyebrow">
+                <label className="mt-5 block cf-eyebrow">
                   Amount ({isUsd ? "$" : "₹"})
                 </label>
                 <input
@@ -824,10 +824,10 @@ export default function TopUpDialog({
                   onChange={(e) => { setAmount(e.target.value); setError(""); }}
                   min={config?.min_topup_rupees ?? 500}
                   max={config?.max_topup_rupees ?? 50000}
-                  className="mt-1.5 h-12 w-full rounded-cf border border-rule bg-paper px-4 text-base tabular-nums text-ink outline-none focus:border-blue md:h-11 md:text-sm"
+                  className="mt-2 h-12 w-full rounded-cf border border-rule bg-paper px-4 text-base tabular-nums text-ink outline-none focus:border-blue md:h-11 md:text-sm"
                 />
                 {config && (amountTooLow || amountTooHigh) ? (
-                  <div className="cf-glass-inset mt-2 border-l-2! border-l-blue! px-3 py-2.5">
+                  <div className="cf-glass-inset mt-1 border-l-2! border-l-blue! px-3 py-2.5">
                     <p className="mb-1.5 font-mono text-[11.5px] leading-none font-medium tracking-[0.2em] uppercase text-ink-2">Change the amount</p>
                     <p className="text-xs leading-5 text-ink">
                       {amountTooLow
@@ -836,7 +836,7 @@ export default function TopUpDialog({
                     </p>
                   </div>
                 ) : config ? (
-                  <p className="mt-1.5 text-xs leading-5 text-ink-2">
+                  <p className="mt-1 text-xs leading-5 text-ink-2">
                     Minimum {money(config.min_topup_rupees)}, maximum {money(config.max_topup_rupees)}.{" "}
                     {isUsd
                       ? "No GST (export of services). An invoice in US dollars is issued automatically."
@@ -848,7 +848,7 @@ export default function TopUpDialog({
                 )}
                 </>)}
 
-                <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <div className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-x-3">
                   <div className="sm:col-span-2">
                     <label className="block cf-eyebrow">
                       Name on the invoice
@@ -856,7 +856,7 @@ export default function TopUpDialog({
                     <input
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      className="mt-1.5 h-11 w-full rounded-cf border border-rule bg-paper px-3 text-base text-ink outline-none focus:border-blue md:h-10 md:text-sm"
+                      className="mt-2 h-11 w-full rounded-cf border border-rule bg-paper px-3 text-base text-ink outline-none focus:border-blue md:h-10 md:text-sm"
                     />
                   </div>
                   <div className="sm:col-span-2">
@@ -866,7 +866,7 @@ export default function TopUpDialog({
                     <select
                       value={countryIso}
                       onChange={(e) => { setCountryIso(e.target.value); setCountryTouched(true); setError(""); }}
-                      className="mt-1.5 h-11 w-full cursor-pointer rounded-cf border border-rule bg-paper px-3 text-base text-ink outline-none focus:border-blue md:h-10 md:text-sm"
+                      className="mt-2 h-11 w-full cursor-pointer rounded-cf border border-rule bg-paper px-3 text-base text-ink outline-none focus:border-blue md:h-10 md:text-sm"
                     >
                       {countryIso === "" && (
                         <option value="" className="bg-paper text-ink">
@@ -888,7 +888,7 @@ export default function TopUpDialog({
                     <select
                       value={stateCode}
                       onChange={(e) => { setStateCode(e.target.value); setError(""); }}
-                      className="mt-1.5 h-11 w-full cursor-pointer rounded-cf border border-rule bg-paper px-3 text-base text-ink outline-none focus:border-blue md:h-10 md:text-sm"
+                      className="mt-2 h-11 w-full cursor-pointer rounded-cf border border-rule bg-paper px-3 text-base text-ink outline-none focus:border-blue md:h-10 md:text-sm"
                     >
                       {/* Options carry their own colours: Chrome paints the
                           native dropdown itself, so each option states the
@@ -902,7 +902,7 @@ export default function TopUpDialog({
                         </option>
                       ))}
                     </select>
-                    <p className="mt-1.5 text-xs leading-5 text-ink-2">
+                    <p className="mt-1 text-xs leading-5 text-ink-2">
                       Your state decides the GST split on the invoice, so it cannot be guessed.
                     </p>
                   </div>
@@ -914,7 +914,7 @@ export default function TopUpDialog({
                     <input
                       value={city}
                       onChange={(e) => setCity(e.target.value)}
-                      className="mt-1.5 h-11 w-full rounded-cf border border-rule bg-paper px-3 text-base text-ink outline-none focus:border-blue md:h-10 md:text-sm"
+                      className="mt-2 h-11 w-full rounded-cf border border-rule bg-paper px-3 text-base text-ink outline-none focus:border-blue md:h-10 md:text-sm"
                     />
                   </div>
                   <div>
@@ -930,13 +930,13 @@ export default function TopUpDialog({
                       onChange={(e) => { setPincode(e.target.value); setError(""); }}
                       inputMode={isIndia ? "numeric" : "text"}
                       maxLength={isIndia ? 6 : 12}
-                      className="mt-1.5 h-11 w-full rounded-cf border border-rule bg-paper px-3 text-base tabular-nums text-ink outline-none focus:border-blue md:h-10 md:text-sm"
+                      className="mt-2 h-11 w-full rounded-cf border border-rule bg-paper px-3 text-base tabular-nums text-ink outline-none focus:border-blue md:h-10 md:text-sm"
                     />
                   </div>
                 </div>
 
                 {error && (
-                  <p className="mt-4 rounded-cf border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm leading-6 break-words text-destructive">
+                  <p className="mt-5 rounded-cf border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm leading-6 break-words text-destructive">
                     {error}
                   </p>
                 )}
@@ -944,7 +944,7 @@ export default function TopUpDialog({
                 <button
                   onClick={pay}
                   disabled={busy || !config || amountTooLow || amountTooHigh}
-                  className="cf-btn-primary mt-5 w-full tabular-nums disabled:opacity-50"
+                  className="cf-btn-primary mt-6 w-full tabular-nums disabled:opacity-50"
                 >
                   {busy ? "Opening payment…" : `Pay ${money(Number(amount || 0) || 0)}`}
                 </button>

@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 
+import { FORM } from "@/components/ui/form-field";
 import { OtpInput } from "@/components/ui/otp-input";
 import { API_BASE } from "@/lib/api-base";
 import { apiFetch } from "@/lib/session";
@@ -192,13 +193,14 @@ export default function MobileNumberCard() {
 
       {step === "enter" ? (
         <form
-          className="mt-4 grid max-w-md gap-3"
+          className={`mt-6 max-w-md ${FORM.stack}`}
           onSubmit={(e) => {
             e.preventDefault();
             void send();
           }}
         >
-          <label className="grid gap-1.5 text-sm text-ink-2">
+          <div className={FORM.control}>
+          <label className={`${FORM.field} text-sm text-ink-2`}>
             New mobile number
             <input
               type="tel"
@@ -216,6 +218,7 @@ export default function MobileNumberCard() {
             is confirmed.
           </p>
           {error ? <p role="alert" className={errorBox}>{error}</p> : null}
+          </div>
           <div className="flex flex-wrap items-center gap-3">
             <button type="submit" disabled={busy} className={btnPrimary}>
               {busy ? "Sending…" : "Send code"}
@@ -228,7 +231,8 @@ export default function MobileNumberCard() {
       ) : null}
 
       {step === "code" ? (
-        <form className="mt-4 grid max-w-md gap-3" onSubmit={confirm}>
+        <form className={`mt-6 max-w-md ${FORM.stack}`} onSubmit={confirm}>
+          <div className={FORM.fields}>
           <p className="text-sm leading-6 text-ink-2">
             We sent a 6-digit code {viaChannel(current)} to{" "}
             <span className="font-medium whitespace-nowrap text-ink">{newMasked || "your new number"}</span>. It works
@@ -240,6 +244,7 @@ export default function MobileNumberCard() {
               instead.
             </p>
           ) : null}
+          <div className={FORM.control}>
           <OtpInput
             value={code}
             onChange={(v) => {
@@ -249,6 +254,8 @@ export default function MobileNumberCard() {
             autoFocus
           />
           {error ? <p role="alert" className={errorBox}>{error}</p> : null}
+          </div>
+          </div>
           <div className="flex flex-wrap items-center gap-x-5 gap-y-1">
             <button type="submit" disabled={busy || code.length < 6} className={btnPrimary}>
               {busy ? "Checking…" : "Confirm new number"}
