@@ -46,7 +46,7 @@ export function buildFaq(storage: StorageTerms, intro: IntroOffer | null, adhocR
     },
     {
       q: "Where do my files live, and who can see them?",
-      a: `On Coreframe storage in India, tied to your account, with ${storage.paidGb} GB included. All customer data stays in India: the control server is in Panvel, Maharashtra, the GPU workstations are in Mumbai, and project files sit on our own NAS; nothing is stored or processed outside the country. After every session the workstation is wiped and restored to a clean image, so nothing you worked on is left for the next person. That's also why software you install yourself only lasts for that session.`,
+      a: `On Coreframe storage in India, tied to your account, with ${storage.paidGb} GB included. All customer data stays in India: the control server and the GPU workstations are in India, and project files sit on our own NAS; nothing is stored or processed outside the country. After every session the workstation is wiped and restored to a clean image, so nothing you worked on is left for the next person. That's also why software you install yourself only lasts for that session.`,
     },
     {
       q: "Do I need to install anything?",

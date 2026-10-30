@@ -92,7 +92,7 @@ const FAQS = [
   },
   {
     q: "Where are the machines located?",
-    a: "In India, and only in India. The control server is in Panvel, Maharashtra, the GPU workstations are in Mumbai, in a data centre whose operator publishes an Uptime Institute Tier III certification, and your project files sit on our own NAS. That keeps latency low for Indian users, and it means your data and your invoices stay within Indian jurisdiction.",
+    a: "In India, and only in India. The control server and the GPU workstations are in India, in a data centre whose operator publishes an Uptime Institute Tier III certification, and your project files sit on our own NAS. That keeps latency low for Indian users, and it means your data and your invoices stay within Indian jurisdiction.",
   },
   {
     q: "How do I get my files onto the workstation?",

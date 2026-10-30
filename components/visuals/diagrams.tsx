@@ -54,12 +54,12 @@ function Tower({ x, y, label }: { x: number; y: number; label: string }) {
   );
 }
 
-/** Your laptop ⇄ the workstation in Bengaluru: frames stream in, input goes out. */
+/** Your laptop ⇄ the workstation in India: frames stream in, input goes out. */
 export function StreamDiagram() {
   const out: V = { "--cfv-dx": "236px", "--cfv-dur": "2.6s" };
   const back: V = { "--cfv-dx": "-236px", "--cfv-dur": "3.4s" };
   return (
-    <Frame viewBox="0 0 560 230" label="Your laptop streams a workstation in Bengaluru: the picture comes to you, your mouse and keys go to it">
+    <Frame viewBox="0 0 560 230" label="Your laptop streams a workstation in India: the picture comes to you, your mouse and keys go to it">
       <Laptop x={40} y={60} />
       <text x="100" y="186" textAnchor="middle" fontSize="12" fill={MUTED} fontFamily="var(--font-inter)">
         Your laptop
@@ -78,7 +78,7 @@ export function StreamDiagram() {
       <text x="298" y="146" textAnchor="middle" fontSize="11.5" fill={MUTED} fontFamily="var(--font-inter)">
         your mouse and keys
       </text>
-      <Tower x={440} y={40} label="Bengaluru" />
+      <Tower x={440} y={40} label="India" />
     </Frame>
   );
 }
