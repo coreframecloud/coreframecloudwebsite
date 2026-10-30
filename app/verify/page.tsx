@@ -16,7 +16,7 @@ export default function VerifyPage() {
        the wash and leave the glass panel floating over flat white. */
     <div className="relative min-h-screen text-ink">
       <div className="cf-aurora" />
-      <main className="relative flex min-h-screen items-center justify-center px-4 py-16 sm:py-24">
+      <main className="relative flex min-h-screen items-center justify-center px-4 pt-16 pb-28 sm:py-24">
         <VerifyFlow />
       </main>
     </div>
