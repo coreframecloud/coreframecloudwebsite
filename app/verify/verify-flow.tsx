@@ -14,9 +14,15 @@
  * sign-up sat in pending_approval with nothing on screen to do about it. A
  * business (customer_type "b2b") now does two more steps after email + mobile:
  *   1. GSTIN, checked against the GST register (POST /verification/gstin);
- *   2. control of the company bank account — a reverse penny drop: they send
- *      Rs 1 by UPI from the company account and it is refunded
- *      (POST /verification/bank/start, then /verification/bank/complete).
+ *   2. the company bank account. Two ways, picked on the server by
+ *      `business.bank.method` (BUSINESS_BANK_CHECK_METHOD, 30 Oct 2026):
+ *      - "bav" (default): penny drop. They type the account number (twice) and
+ *        IFSC, we send Rs 1 to it and the bank tells us whose name it is in
+ *        (POST /verification/bank/verify, one synchronous call);
+ *      - "rpd": reverse penny drop. They send Rs 1 by UPI from the company
+ *        account and it is refunded (POST /verification/bank/start, then
+ *        /verification/bank/complete). A control plane that does not send
+ *        `method` only knows this one.
  * Both are Cashfree lookups on the server. Individuals never see them.
  *
  * Driven by `next_step` from GET /verification/status ("email" | "mobile" |
@@ -55,7 +61,9 @@ import {
   INDIA,
   INDIAN_MOBILE_HINT,
   fetchCountries,
+  validateBankAccount,
   validateGstin,
+  validateIfsc,
   validatePhone,
   type Country,
 } from "@/lib/validation";
@@ -124,7 +132,11 @@ interface VerificationStatus {
 interface BankState {
   required: boolean;
   verified: boolean;
-  status: string | null; // CREATED | SUCCESS | FAILURE | EXPIRED | grandfathered
+  // Which check to show. Missing = an older API, which only has "rpd".
+  method?: "bav" | "rpd";
+  // CREATED | SUCCESS | FAILURE | EXPIRED (rpd), INVALID (bav), grandfathered
+  status: string | null;
+  attempts_left?: number | null;
   account_masked?: string | null;
   name_at_bank?: string | null;
   attempts?: number | null;
@@ -279,6 +291,12 @@ export default function VerifyFlow() {
   const [gstin, setGstin] = useState("");
   const [bankReq, setBankReq] = useState<BankRequest | null>(null);
   const [bankNote, setBankNote] = useState("");
+  // Penny drop (method "bav"): the account number, typed twice, and the IFSC.
+  // Never stored anywhere but these fields; the API keeps the last 4 digits.
+  const [bankAccount, setBankAccount] = useState("");
+  const [bankAccount2, setBankAccount2] = useState("");
+  const [ifsc, setIfsc] = useState("");
+  const [bankJustVerified, setBankJustVerified] = useState(false);
   // Where "done" goes: the page that sent them to sign up, if any. Only read
   // once the done card renders, which is always after the status fetch.
   const [returnTo] = useState<string | null>(() => (typeof window === "undefined" ? null : peekReturnPath()));
@@ -547,6 +565,42 @@ export default function VerifyFlow() {
     }
   }
 
+  // ── business: penny drop (we send Rs 1 to the account they type) ──────────
+  async function submitBav(e: React.FormEvent) {
+    e.preventDefault();
+    setError("");
+    // Each answer from the bank uses a try: catch typos and mismatches here.
+    const acct = validateBankAccount(bankAccount, bankAccount2);
+    if (!acct.ok) return setError(acct.error);
+    const code = validateIfsc(ifsc);
+    if (!code.ok) return setError(code.error);
+    setBusy(true);
+    try {
+      const res = await apiFetch(`${API}/verification/bank/verify`, {
+        method: "POST",
+        headers: authHeaders(),
+        body: JSON.stringify({ bank_account: acct.value, ifsc: code.value }),
+      });
+      const data = await res.json().catch(() => null);
+      if (!res.ok) throw new Error(apiErrorText(res.status, data));
+      if (data?.verified) {
+        setBankAccount("");
+        setBankAccount2("");
+        setBankJustVerified(true);
+        if (data.account_active) apply({ ...(status as VerificationStatus), ...data });
+        else await loadStatus();
+        return;
+      }
+      // The bank's answer, not a fault: refresh the tries count, then say why.
+      await loadStatus().catch(() => undefined);
+      setError(data?.reason || "The bank could not confirm this account. Check the number and IFSC.");
+    } catch (err: unknown) {
+      setError(caughtErrorText(err, "Could not check the account. Try again."));
+    } finally {
+      setBusy(false);
+    }
+  }
+
   const checkBank = useCallback(
     async (quiet = false) => {
       if (!quiet) {
@@ -639,8 +693,14 @@ export default function VerifyFlow() {
       <Card>
         <Header
           icon={<CheckCircle2 className="h-5 w-5" />}
-          title="You're all set."
-          sub={returnTo ? "Taking you back to where you were." : "Taking you to add funds. Your first session starts from there."}
+          title={bankJustVerified ? "Bank account confirmed." : "You're all set."}
+          sub={
+            bankJustVerified
+              ? "Your account is ready. Add funds to start."
+              : returnTo
+                ? "Taking you back to where you were."
+                : "Taking you to add funds. Your first session starts from there."
+          }
         />
         <a href={returnTo ?? DONE_URL} className={btnPrimary}>
           {returnTo ? "Continue" : "Add funds"}
@@ -727,6 +787,118 @@ export default function VerifyFlow() {
               </p>
             )}
             {left === null && <p className="text-xs leading-5 text-ink-3">{whatNext(status)}</p>}
+          </form>
+        )}
+      </Card>
+    );
+  }
+
+  if (phase === "bank" && status?.business?.bank?.method === "bav") {
+    const b = status.business;
+    const bank = b.bank;
+    const left =
+      typeof bank?.attempts_left === "number" ? bank.attempts_left : triesLeft(bank?.attempts, status.max_attempts);
+    const company = b.legal_name || b.trade_name || "your company";
+    const lastTry = bank?.status === "INVALID" ? bank.failure_reason : null;
+    return (
+      <Card>
+        <Header
+          icon={<Landmark className="h-5 w-5" />}
+          title="Confirm your company bank account."
+          sub={
+            <>
+              We&apos;ll send ₹1 to this account to confirm it belongs to{" "}
+              <span className="font-medium text-ink">{company}</span>. Use the company&apos;s current account, not a
+              personal one.
+            </>
+          }
+        />
+        <BusinessProgress status={status} current="bank" />
+        {left === 0 ? (
+          <p className={errorBox}>{NO_TRIES_LEFT}</p>
+        ) : (
+          <form onSubmit={submitBav} className="grid gap-4" autoComplete="off">
+            <div className="grid gap-1.5">
+              <label htmlFor="cf-bank-account" className="text-sm font-medium text-ink">
+                Company bank account number
+              </label>
+              <input
+                id="cf-bank-account"
+                value={bankAccount}
+                onChange={(e) => {
+                  setBankAccount(e.target.value.replace(/\D/g, "").slice(0, 18));
+                  setError("");
+                }}
+                inputMode="numeric"
+                autoComplete="off"
+                spellCheck={false}
+                maxLength={18}
+                placeholder="Digits only"
+                className={`${inputCls} font-mono tracking-[0.08em]`}
+                required
+              />
+            </div>
+            <div className="grid gap-1.5">
+              <label htmlFor="cf-bank-account-2" className="text-sm font-medium text-ink">
+                Type the account number again
+              </label>
+              <input
+                id="cf-bank-account-2"
+                value={bankAccount2}
+                onChange={(e) => {
+                  setBankAccount2(e.target.value.replace(/\D/g, "").slice(0, 18));
+                  setError("");
+                }}
+                onPaste={(e) => e.preventDefault()}
+                inputMode="numeric"
+                autoComplete="off"
+                spellCheck={false}
+                maxLength={18}
+                placeholder="Same number, to be sure"
+                className={`${inputCls} font-mono tracking-[0.08em]`}
+                required
+              />
+              {bankAccount2.length > 0 && bankAccount2.length >= bankAccount.length && bankAccount2 !== bankAccount && (
+                <p className="text-xs leading-5 text-destructive">The two numbers do not match yet.</p>
+              )}
+            </div>
+            <div className="grid gap-1.5">
+              <label htmlFor="cf-ifsc" className="text-sm font-medium text-ink">
+                IFSC
+              </label>
+              <input
+                id="cf-ifsc"
+                value={ifsc}
+                onChange={(e) => {
+                  setIfsc(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 11));
+                  setError("");
+                }}
+                maxLength={11}
+                placeholder="HDFC0001234"
+                autoComplete="off"
+                autoCapitalize="characters"
+                spellCheck={false}
+                className={`${inputCls} font-mono tracking-[0.12em]`}
+                required
+              />
+              <p className="text-xs leading-5 text-ink-3">
+                11 characters, on a cheque leaf or in net banking. The fifth is a zero.
+              </p>
+            </div>
+            {lastTry && !error && (
+              <p className="cf-glass-inset border-l-2 border-l-blue px-4 py-3 text-sm leading-6 text-ink-2">
+                Last check: {lastTry}
+              </p>
+            )}
+            {error && <p className={errorBox}>{error}</p>}
+            <Button type="submit" disabled={busy} className={btnPrimary}>
+              {busy ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+              {busy ? "Checking with your bank…" : "Send ₹1 and confirm"}
+            </Button>
+            <p className="text-xs leading-5 text-ink-3">
+              We match the name your bank holds against the GST register.
+              {left !== null ? ` ${left === 1 ? "1 try left." : `${left} tries left.`}` : ""} {whatNext(status)}
+            </p>
           </form>
         )}
       </Card>

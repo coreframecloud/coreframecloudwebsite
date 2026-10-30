@@ -345,3 +345,36 @@ export function ipMismatchMessage(ipCountry: string): string {
   const name = ipCountry === "T1" ? "the Tor network" : countryByIso(ipCountry)?.country ?? ipCountry;
   return `Your connection looks like it's from ${name}. Accounts outside India are billed in US dollars. Are you in India?`;
 }
+
+/* ── Company bank account (BAV penny drop, 30 Oct 2026) ──────────────────────
+   Same rules the API applies before it spends a paid lookup: an IFSC is
+   4 letters, a zero, then 6 letters or digits; an account number is 6 to 18
+   digits. Checked here first so a typo never uses one of the customer's tries. */
+const IFSC_RE = /^[A-Z]{4}0[A-Z0-9]{6}$/;
+
+export function validateIfsc(raw: string): Validation {
+  const value = (raw || "").replace(/\s/g, "").toUpperCase();
+  if (!value) return { ok: false, error: "Enter the IFSC of the branch that holds the account." };
+  if (value.length !== 11) {
+    return { ok: false, error: `An IFSC is 11 characters, like HDFC0001234. You have entered ${value.length}.` };
+  }
+  if (!IFSC_RE.test(value)) {
+    return {
+      ok: false,
+      error: "That IFSC does not look right. It starts with 4 letters, then a zero, like HDFC0001234.",
+    };
+  }
+  return { ok: true, value };
+}
+
+export function validateBankAccount(raw: string, confirm: string): Validation {
+  const value = (raw || "").replace(/[\s-]/g, "");
+  const again = (confirm || "").replace(/[\s-]/g, "");
+  if (!value) return { ok: false, error: "Enter the company's bank account number." };
+  if (!/^\d+$/.test(value)) return { ok: false, error: "The account number is digits only." };
+  if (value.length < 6 || value.length > 18) {
+    return { ok: false, error: "An account number is 6 to 18 digits. Check it against a cheque leaf or net banking." };
+  }
+  if (value !== again) return { ok: false, error: "The two account numbers do not match. Type it again in both boxes." };
+  return { ok: true, value };
+}
