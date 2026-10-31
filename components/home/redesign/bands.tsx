@@ -10,6 +10,7 @@ import { Marquee } from "@/components/motion/marquee";
 import { PREINSTALLED } from "@/lib/software-catalogue";
 import { SOFTWARE_DIRECTORY } from "@/lib/software-facts";
 import { visiblePosts } from "@/lib/blog";
+import { AtAGlance } from "@/components/home/redesign/at-a-glance";
 
 /** Creative apps from the live software catalogue (lib/software-catalogue). */
 const MARQUEE_APPS = PREINSTALLED.filter((s) => s.category === "3D & rendering" || s.category === "Images & textures").map(
@@ -48,7 +49,7 @@ export function FactsBand({ currency = "INR", ladder = null }: { currency?: Curr
       <div className="absolute inset-0 -z-10 bg-gradient-to-b from-night via-night/60 to-night" />
       <div className="cfh-wrap grid gap-14 lg:grid-cols-[0.9fr_1.1fr]">
         <Reveal>
-          <h2 className="cfh-h2">What&rsquo;s in the box</h2>
+          <h2 className="cfh-h2">What&rsquo;s <span className="cf-hl-underline">in the box</span></h2>
           <p className="mt-4 max-w-[26rem] text-[17px] leading-[1.6] text-white/85">
             Read off the hardware, not rounded up. Every GPU on offer, with its price, is on the pricing page.
           </p>
@@ -112,7 +113,7 @@ export function BuiltFor() {
   return (
     <section className="cfh-wrap py-24 sm:py-28">
       <Reveal className="max-w-[40rem]">
-        <h2 className="cfh-h2">Built for the people who wait on renders</h2>
+        <h2 className="cfh-h2">Built for the people who <span className="cf-hl-marker">wait on renders</span></h2>
         <p className="mt-4 text-[17px] leading-[1.6] text-ink-2">
           Open the tools you already use, on a machine that doesn&rsquo;t make you wait.
         </p>
@@ -248,7 +249,7 @@ export function OfferBand({
             <li>Sign up with your email and a WhatsApp code. No monthly plan.</li>
           </ul>
           <div className="mt-9 flex flex-wrap gap-3">
-            <Link href="/signup" className="cfh-pill-light">
+            <Link href="/signup" className="cfh-pill-hl">
               Sign up
             </Link>
             <Link href="/pricing" className="cfh-pill-ghost">
@@ -269,11 +270,35 @@ export function OfferBand({
  * the page's own currency, and the sentence drops it when there is none.
  */
 export function WhatIsCoreframe({ fromRate, currency = "INR" }: { fromRate?: string; currency?: Currency }) {
-  const price = fromRate ? ` from ${fromRate} an hour${currency === "USD" ? "" : " including GST"}` : "";
+  // fromRate already reads "from ₹99" when more than one GPU is public, or a
+  // bare "₹99" with one (31 Oct 2026: the sentence used to add its own "from",
+  // which printed "from from ₹99").
+  const rate = fromRate?.replace(/^from /, "");
+  const price = rate
+    ? ` ${fromRate?.startsWith("from ") ? "from" : "at"} ${rate} an hour${currency === "USD" ? "" : " including GST"}`
+    : "";
   return (
     <section className="cfh-wrap pt-16 sm:pt-20" aria-labelledby="what-is-coreframe">
       <Reveal className="max-w-[46rem]">
         <h2 id="what-is-coreframe" className="cfh-h2">What is Coreframe?</h2>
+      </Reveal>
+      {/* At a glance first (owner, 31 Oct 2026); the full answer stays in the
+          server HTML inside a native <details>, where crawlers and answer
+          engines read it and find-in-page opens it. Not display:none. */}
+      <Reveal className="mt-8 sm:mt-10">
+        <AtAGlance fromRate={fromRate} currency={currency} />
+      </Reveal>
+      <details className="cf-answer group mt-8 max-w-[46rem] border-t border-rule pt-5 sm:mt-10">
+        <summary className="inline-flex cursor-pointer list-none items-center gap-3 text-[14px] font-semibold tracking-[0.02em] text-ink uppercase [&::-webkit-details-marker]:hidden">
+          <span
+            aria-hidden
+            className="grid h-7 w-7 place-items-center rounded-full border border-ink/25 text-[17px] leading-none font-light transition-colors group-open:bg-ink group-open:text-white"
+          >
+            <span className="group-open:hidden">+</span>
+            <span className="hidden group-open:inline">−</span>
+          </span>
+          Read the full answer
+        </summary>
         <p className="mt-5 text-[17px] leading-[1.65] text-ink-2">
           Coreframe Cloud is a ready-to-work cloud virtual workstation: a full Windows desktop with a
           dedicated NVIDIA RTX GPU and design software such as D5 Render, Blender, Twinmotion and
@@ -290,7 +315,7 @@ export function WhatIsCoreframe({ fromRate, currency = "INR" }: { fromRate?: str
             How a ready-to-work workstation differs from a bare GPU server, and common questions
           </Link>
         </p>
-      </Reveal>
+      </details>
     </section>
   );
 }
@@ -302,7 +327,7 @@ export function HowItWorks() {
     <section className="cfh-wrap pb-24 sm:pb-28">
       <Reveal className="grid items-center gap-10 rounded-[32px] bg-tint-blue p-7 sm:p-12 lg:grid-cols-[0.85fr_1.15fr]">
         <div>
-          <h2 className="cfh-h2">Three steps. Then it feels local.</h2>
+          <h2 className="cfh-h2">Three steps. Then it <span className="cf-hl-marker">feels local</span>.</h2>
           <ol data-cf-steps="" className="mt-7 space-y-3">
             {steps.map((t, i) => (
               <li key={t} className="flex items-center gap-4 text-[16px] text-ink">

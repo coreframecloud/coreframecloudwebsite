@@ -21,7 +21,7 @@ export function Bento({ youtubeId, ladder = null }: { youtubeId: string; ladder?
         <p className="cf-eyebrow-dot text-[11.5px] font-semibold tracking-[0.12em] text-ink-2 uppercase">GPU workstations, in detail</p>
         <h2 className="cfh-h2 mt-3">
           A real workstation,
-          <br className="hidden sm:block" /> without buying one
+          <br className="hidden sm:block" /> <span className="cf-hl-underline">without buying one</span>
         </h2>
         <p className="mt-4 text-[17px] leading-[1.6] text-ink-2">
           Everything runs on our machines in Bengaluru. You bring the laptop and the project.
