@@ -1,0 +1,15 @@
+# Owner 31 Oct 2026 ("do what's pending on Bing"): the IndexNow ping (scripts/indexnow-ping.mjs, 18 Oct)
+# was manual and never ran; it now runs after every successful PRODUCTION deploy Vercel reports.
+name: IndexNow
+on:
+  deployment_status:
+jobs:
+  ping:
+    if: github.event.deployment_status.state == 'success' && github.event.deployment.environment == 'Production'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: node scripts/indexnow-ping.mjs
