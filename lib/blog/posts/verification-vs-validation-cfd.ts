@@ -24,9 +24,9 @@ const IMG = `/blog/${SLUG}`;
 export const verificationVsValidationCfd: BlogPost = {
   slug: SLUG,
   title: "Verification vs validation in CFD: what a mesh-independence study does (and doesn't) prove",
-  metaTitle: "Verification vs Validation in CFD",
+  metaTitle: "CFD Verification vs Validation, With GCI",
   description:
-    "A mesh-independence study shows the mesh error is small, not that CFD matches reality. A worked GCI example on a 90° bend, and the gap it cannot see.",
+    "Verification: equations solved right. Validation: the right equations. A worked GCI study on a 90° bend (±0.13 %), and what mesh independence can't prove.",
   targetQueries: [
     "CFD verification and validation",
     "verification vs validation CFD",

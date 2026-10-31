@@ -16,9 +16,9 @@ const IMG = `/blog/${SLUG}`;
 export const blenderInteriorRender: BlogPost = {
   slug: SLUG,
   title: "Rendering an interior in Blender on a cloud RTX 5080: the whole session",
-  metaTitle: "Blender Interior Render on Cloud RTX 5080",
+  metaTitle: "Blender on a Cloud RTX 5080, Step by Step",
   description:
-    "One full session: upload a .blend, launch a Windows RTX 5080 workstation, switch Cycles to OptiX, render an interior, save it and download it. Every step shown.",
+    "A real Cycles interior on a cloud RTX 5080: upload the .blend, switch to OptiX, render, download. Task Manager showed 7.4 of 16 GB VRAM. Every step shown.",
   targetQueries: [
     "blender cloud gpu",
     "render blender in the cloud",

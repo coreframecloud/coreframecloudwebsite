@@ -22,9 +22,9 @@ const IMG = `/blog/${SLUG}`;
 export const pressureDropHandCalcVsCfd: BlogPost = {
   slug: SLUG,
   title: "Pressure drop calculation for ducts and pipes: hand calc vs CFD",
-  metaTitle: "Pressure Drop Calculation: Hand vs CFD",
+  metaTitle: "Pressure Drop: Hand Calc vs CFD (Example)",
   description:
-    "Darcy–Weisbach and K factors, worked for a 50 mm water pipe. Where the hand calculation runs out, and three checks a CFD pressure drop must pass.",
+    "10 m of 50 mm water pipe and two elbows: about 37.5 kPa by Darcy–Weisbach and K factors. Where the hand calc stops being enough, and 3 checks for CFD.",
   targetQueries: [
     "pressure drop calculation",
     "pipe pressure drop calculation",
