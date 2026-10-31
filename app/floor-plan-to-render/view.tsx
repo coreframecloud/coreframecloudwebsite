@@ -199,7 +199,7 @@ function faqs(m: StudioMoney) {
   },
   {
     q: "What happens to my client's drawing?",
-    a: "It stays in your account until you delete it (there's a delete button). We don't purge on a schedule, and we don't train on your drawings unless you choose to let us (an optional tick box that earns wallet credit). Studio runs on our own machines in Bengaluru; the one exception is Plus and Pro ray-traced renders, which are processed by an outside AI service, only to make your image.",
+    a: "It stays in your account until you delete it (there's a delete button). We don't purge on a schedule, and we don't train on your drawings unless you choose to let us (an optional tick box that earns wallet credit). Studio runs on our own machines in India; the one exception is Plus and Pro ray-traced renders, which are processed by an outside AI service, only to make your image.",
   },
   ];
 }

@@ -28,7 +28,7 @@ export function Bento({ youtubeId, ladder = null, ticker = null }: { youtubeId: 
           <br className="hidden sm:block" /> <span className="cf-hl-underline">without buying one</span>
         </h2>
         <p className="mt-4 text-[17px] leading-[1.6] text-ink-2">
-          Everything runs on our machines in Bengaluru. You bring the laptop and the project.
+          Everything runs on our machines, with all infrastructure and data in India. You bring the laptop and the project.
         </p>
       </Reveal>
 
