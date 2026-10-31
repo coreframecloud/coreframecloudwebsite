@@ -78,11 +78,12 @@ const BADGE: Record<BadgeStatus, string> = {
 
 export function StatusBadge({ status, className = "" }: { status: BadgeStatus; className?: string }) {
   return (
-    <span
-      className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10.5px] leading-none font-semibold tracking-[0.1em] whitespace-nowrap uppercase ${BADGE[status]} ${className}`}
-    >
-      {status === "Live" ? <span className="cf-live-dot h-1.5 w-1.5 rounded-full" aria-hidden /> : null}
-      {status}
+    // .cf-badge (globals.css, 31 Oct 2026): fixed height, flex-centred, the
+    // text trimmed to its cap height and its trailing tracking cancelled, so
+    // the word sits in the optical middle of the pill.
+    <span className={`cf-badge ${BADGE[status]} ${className}`}>
+      {status === "Live" ? <span className="cf-live-dot cf-badge-dot" aria-hidden /> : null}
+      <span className="cf-badge-t">{status}</span>
     </span>
   );
 }

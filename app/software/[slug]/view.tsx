@@ -35,6 +35,9 @@ import { softwareFacts } from "@/lib/software-facts";
 import { billingSentence } from "@/lib/rate-card";
 import { GpuCineBand } from "@/components/gpu-cine-band";
 import { GPU_HEROES } from "@/lib/gpu-heroes";
+import { Pointers, ReadMore, type Pointer } from "@/components/visuals/pointers";
+import { AtAGlance, glanceProps } from "@/components/home/redesign/at-a-glance";
+import { Reveal } from "@/components/home/redesign/reveal";
 
 /**
  * `related` may name a top-level landing page as well as a /software slug.
@@ -153,6 +156,32 @@ function rentalAnswer(card: RateCard | null, currency: Currency): string | null 
   ].join(" ");
 }
 
+/**
+ * The GPU rental hero as pointers (owner, 31 Oct 2026: "a lot of text by the
+ * spaceship image... do it as pointers"). Every pointer restates the intro,
+ * the answer passage or the "why" list; the prices are the live rate card's,
+ * in the visitor's currency, and drop out when it is unreachable. The full
+ * wording stays below in a <details>.
+ */
+function rentalPointers(card: RateCard | null, currency: Currency): Pointer[] {
+  const r = liveRate(card, currency);
+  const intro = introOfferFor(card, currency);
+  const many = (ladderRanges(card)?.count ?? 0) > 1;
+  const usd = currency === "USD";
+  return [
+    { lead: `A real ${NODE.os.split(" ")[0]} RTX desktop`, line: "Streamed to the computer you already own." },
+    ...(r
+      ? [{ lead: `${many ? "From " : ""}${r.rate} an hour`, line: `${r.tax.charAt(0).toUpperCase()}${r.tax.slice(1)}${r.perMinute ? ", billed per minute" : ""}.` }]
+      : []),
+    ...(intro ? [{ lead: `${introPrice(intro)} = ${hoursLabel(intro.hours)}`, line: "On your first top-up." }] : []),
+    usd
+      ? { lead: "Hosted in India", line: "Low latency in and near India, billed in US dollars." }
+      : { lead: "Hosted in India", line: "Low latency for Indian users, GST invoices." },
+    { lead: "Your files stay", line: "Persistent NAS storage between sessions." },
+    { lead: "No setup fee", line: "No monthly minimum on pay-as-you-go." },
+  ];
+}
+
 /** The fixed facts of every node; the GPU rows and prices are the ladder
  *  (<GpuLadder/>, from the rate card; owner, 21 Oct 2026). */
 function specRows(card: RateCard | null): [string, string][] {
@@ -189,6 +218,8 @@ export default async function SoftwareView({ slug, currency }: { slug: string; c
   ];
 
   const answer = page.livePrice === "answer" ? rentalAnswer(card, currency) : null;
+  // The GPU rental page (the nav's "GPU workstations"): pointers + bubbles.
+  const pointers = page.livePrice === "answer" ? rentalPointers(card, currency) : null;
   const rates = page.livePrice === "line" ? liveRate(card, currency) : null;
   const priceLine = rates
     ? `${rates.rate} an hour, ${rates.tax}${rates.perMinute ? ", billed per minute" : ""}.`
@@ -206,8 +237,20 @@ export default async function SoftwareView({ slug, currency }: { slug: string; c
       <div className={heroBg ? "cf-wide" : "cf-wide grid items-center gap-10 lg:grid-cols-[1.05fr_1fr]"}>
         <div className={heroBg ? "min-w-0 max-w-[620px]" : "min-w-0"}>
           <h1 className="cf-display">{page.h1 ?? page.title}</h1>
-          <p className="cf-lead mt-[22px]">{page.intro}</p>
-          {answer ? <p className="cf-section-copy mt-5">{answer}</p> : null}
+          {pointers ? (
+            <>
+              <Pointers items={pointers} className="mt-7" />
+              <ReadMore className="mt-5">
+                <p className="cf-lead mt-2">{page.intro}</p>
+                {answer ? <p className="cf-section-copy mt-4">{answer}</p> : null}
+              </ReadMore>
+            </>
+          ) : (
+            <>
+              <p className="cf-lead mt-[22px]">{page.intro}</p>
+              {answer ? <p className="cf-section-copy mt-5">{answer}</p> : null}
+            </>
+          )}
           {priceLine ? <p className="cf-section-copy mt-5">{priceLine}</p> : null}
           <div className="mt-8 flex flex-wrap gap-3">
             <Link href="/signup" className="cf-btn-primary">Sign up</Link>
@@ -224,7 +267,19 @@ export default async function SoftwareView({ slug, currency }: { slug: string; c
         )}
       </div>
     </section>
-    {/* The cinema band (owner, 16 Oct 2026): the sci-fi hero's look carried
+    {pointers ? (
+      // The home page's at-a-glance bubbles (owner, 31 Oct 2026), same
+      // component, same live price and VRAM range.
+      <section className="cf-section px-5" aria-labelledby="at-a-glance">
+        <div className="cf-wide">
+          <h2 id="at-a-glance" className="cf-section-title">At a glance.</h2>
+          <Reveal className="mt-8">
+            <AtAGlance {...glanceProps(card, currency)} />
+          </Reveal>
+        </div>
+      </section>
+    ) : null}
+        {/* The cinema band (owner, 16 Oct 2026): the sci-fi hero's look carried
         down the page. Details and FAQ below stay light. */}
     <GpuCineBand page={page.slug}>
       <section className="cf-wide">

@@ -7,6 +7,9 @@ import { breadcrumbList, OG_IMAGE } from "@/lib/seo";
 import Link from "next/link";
 import { OfferingsStrip } from "@/components/home/redesign/offerings";
 import { Fold } from "@/components/visuals/fold";
+import { ReadMore } from "@/components/visuals/pointers";
+import { AtAGlance, glanceProps } from "@/components/home/redesign/at-a-glance";
+import { Reveal } from "@/components/home/redesign/reveal";
 import { BackgroundGlow } from "@/components/home/background-glow";
 import { COMPANY_ADDRESS_FULL, COMPANY_VISITING_ADDRESS_LINE } from "@/lib/company";
 import { NODE, replacementCost } from "@/lib/node-spec";
@@ -245,8 +248,11 @@ export default async function AboutView({ currency }: { currency: Currency }) {
                 Run by Coreframe Compute Labs Private Limited, Bengaluru.
               </p>
               <PageByline path="/about" className="mt-4 opacity-75" />
-              {/* Answer-first, with live prices in the visitor's currency (owner, 18 Oct 2026). */}
-              <p className="mt-4 max-w-[56ch] text-[15.5px] leading-7 text-ink-2">
+              {/* Answer-first, with live prices in the visitor's currency (owner, 18 Oct 2026).
+                  Behind "Read the full answer" since 31 Oct 2026 (owner: "too much
+                  to read"); still in the server HTML. */}
+              <ReadMore label="Read the full answer" className="mt-4">
+              <p className="mt-2 max-w-[56ch] text-[15.5px] leading-7 text-ink-2">
                 Coreframe Cloud is run by Coreframe Compute Labs Private Limited, Bengaluru (founded 2026). It offers three
                 services: Windows GPU workstations rented by the minute
                 {hourly
@@ -256,6 +262,7 @@ export default async function AboutView({ currency }: { currency: Currency }) {
                 {meshCheck}), and Studio concept
                 renders from a DXF floor plan (previews free).
               </p>
+              </ReadMore>
         </div>
           <GenImage src="/visuals/gen-team-review-16x9.webp" alt="A small design studio team reviewing an interior image together" width={1600} height={914} sizes="(max-width: 1024px) 100vw, 480px" parallax priority />
         </div>
@@ -266,6 +273,15 @@ export default async function AboutView({ currency }: { currency: Currency }) {
           <div className="mt-6">
             <OfferingsStrip location="about_services" />
           </div>
+        </div>
+      </section>
+      {/* GPU workstations at a glance: the home page's bubbles (owner, 31 Oct 2026). */}
+      <section className="cf-section px-5 pb-0" aria-labelledby="gpu-at-a-glance">
+        <div className="cf-wide">
+          <h2 id="gpu-at-a-glance" className="cf-section-title">GPU workstations at a glance.</h2>
+          <Reveal className="mt-8">
+            <AtAGlance {...glanceProps(card, currency)} />
+          </Reveal>
         </div>
       </section>
       <main className="relative cf-section px-5">
@@ -281,8 +297,7 @@ export default async function AboutView({ currency }: { currency: Currency }) {
             stops.
           </p>
 
-          <section className="mt-14">
-            <h2 className="cf-section-title">The company.</h2>
+          <Fold title="The company.">
             <dl className="mt-6 divide-y divide-rule rounded-cf border border-rule bg-paper-2">
               {COMPANY.map(([k, v]) => (
                 <div key={k} className="flex flex-col gap-1 px-5 py-4 sm:flex-row sm:gap-6">
@@ -291,10 +306,9 @@ export default async function AboutView({ currency }: { currency: Currency }) {
                 </div>
               ))}
             </dl>
-          </section>
+          </Fold>
 
-          <section className="mt-14">
-            <h2 className="cf-section-title">What the machine is.</h2>
+          <Fold title="What the machine is.">
             <p className="cf-section-copy mt-4">
               Each node has one GPU and goes to one customer at a time. You don&rsquo;t share the
               card with anyone, and you don&rsquo;t get a virtualised slice of it.
@@ -318,7 +332,7 @@ export default async function AboutView({ currency }: { currency: Currency }) {
               </Link>
               .
             </p>
-          </section>
+          </Fold>
 
           <Fold title="The four problems this solves.">
 
@@ -445,12 +459,17 @@ export default async function AboutView({ currency }: { currency: Currency }) {
 
           <section className="mt-14">
             <h2 className="cf-section-title">Questions.</h2>
-            <div className="mt-6 space-y-7">
+            {/* An accordion since 31 Oct 2026 (owner: "too much to read"); every
+                answer stays in the HTML and matches the FAQPage schema above. */}
+            <div className="mt-6 divide-y divide-rule rounded-[24px] border border-rule">
               {faqs.map((f) => (
-                <div key={f.q}>
-                  <h3 className="font-semibold break-words text-ink">{f.q}</h3>
-                  <p className="mt-2 leading-7 break-words text-ink-2">{f.a}</p>
-                </div>
+                <details key={f.q} className="group px-6 py-5">
+                  <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-semibold break-words text-ink [&::-webkit-details-marker]:hidden">
+                    {f.q}
+                    <span aria-hidden className="shrink-0 text-ink-3 transition group-open:rotate-45">+</span>
+                  </summary>
+                  <p className="mt-3 leading-7 break-words text-ink-2">{f.a}</p>
+                </details>
               ))}
             </div>
           </section>
