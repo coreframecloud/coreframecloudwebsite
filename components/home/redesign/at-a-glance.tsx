@@ -1,18 +1,7 @@
 import type { CSSProperties, ReactNode } from "react";
-import { Bricolage_Grotesque } from "next/font/google";
+import { bubbleFont } from "@/lib/fonts-bubble";
 import type { Currency } from "@/lib/money";
 
-// The bubbles' one face (owner, 31 Oct 2026: "creative fonts", but very
-// clear in a small space). Bricolage Grotesque, SIL OFL 1.1, chosen over
-// Manrope and Sora in a side-by-side (plans/aeo-bubbles-20261031/fonts-*):
-// the most character, and narrow enough that every line keeps its inset.
-// Loaded here, so only pages with the cluster fetch it.
-const bricolage = Bricolage_Grotesque({
-  subsets: ["latin"],
-  weight: ["500", "600", "700", "800"],
-  variable: "--font-bubble",
-  display: "swap",
-});
 
 /**
  * "What is Coreframe?" at a glance (owner, 31 Oct 2026: "too much to read;
@@ -38,7 +27,16 @@ type Bubble = {
   body: ReactNode;
 };
 
-export function AtAGlance({ fromRate, currency = "INR" }: { fromRate?: string; currency?: Currency }) {
+export function AtAGlance({
+  fromRate,
+  currency = "INR",
+  vramRange,
+}: {
+  fromRate?: string;
+  currency?: Currency;
+  /** "16–48 GB" from the public GPU line-up (vramRangeLabel), or none. */
+  vramRange?: string;
+}) {
   // fromRate is the page's live "from" price ("from ₹99" / "$1.49"), or none.
   const rate = fromRate?.replace(/^from /, "");
   const priceBody = rate ? (
@@ -88,7 +86,7 @@ export function AtAGlance({ fromRate, currency = "INR" }: { fromRate?: string; c
       ),
     },
     { key: "windows", tone: "ink", size: "sm", m: { x: 42.1, y: 92.9, d: 28 }, w: { x: 12.45, y: 22.5, d: 16.5 }, body: "Full Windows desktop" },
-    { key: "gpu", tone: "deep", size: "sm", m: { x: 86, y: 75.9, d: 28 }, w: { x: 72.55, y: 35.8, d: 16.5 }, body: "Dedicated RTX\u00a0GPU" },
+    { key: "gpu", tone: "deep", size: "sm", m: { x: 86, y: 75.9, d: 28 }, w: { x: 72.55, y: 35.8, d: 16.5 }, body: vramRange ? `Dedicated RTX\u00a0GPU, ${vramRange.replace(/ /g, "\u00a0")}` : "Dedicated RTX\u00a0GPU" },
     {
       key: "india",
       tone: "teal",
@@ -102,7 +100,7 @@ export function AtAGlance({ fromRate, currency = "INR" }: { fromRate?: string; c
   ];
 
   return (
-    <ul className={`cf-bubbles ${bricolage.variable}`} aria-label="Coreframe at a glance">
+    <ul className={`cf-bubbles ${bubbleFont.variable}`} aria-label="Coreframe at a glance">
       {bubbles.map((b, i) => (
         <li
           key={b.key}

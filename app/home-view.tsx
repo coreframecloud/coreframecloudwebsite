@@ -13,6 +13,7 @@ import {
   introOfferFor,
   introOfferShort,
   ladderRanges,
+  vramRangeLabel,
 } from "@/lib/rate-card";
 
 /** One metadata for both copies: the description quotes no price. */
@@ -64,7 +65,7 @@ export default async function HomeView({ currency }: { currency: Currency }) {
     <main className="text-ink">
       <RedesignHero introLabel={introLabel} prices={prices} />
       <div className="cfh-sheet">
-        <WhatIsCoreframe fromRate={adhocRate} currency={currency} />
+        <WhatIsCoreframe fromRate={adhocRate} currency={currency} vramRange={vramRangeLabel(prices.vramSteps)} />
         <OfferingBands prices={prices} />
         <Bento youtubeId={WALKTHROUGH_YOUTUBE_ID} ladder={ladder} />
         <HowItWorks />

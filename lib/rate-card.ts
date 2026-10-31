@@ -752,6 +752,29 @@ export function publicGpus(card: RateCard | null): RateCardGpu[] {
   return [...priced, ...onRequest];
 }
 
+/** Used only when the rate card is unreachable: the public card sizes as of
+ *  31 Oct 2026 (owner's counter brief). */
+export const VRAM_STEPS_FALLBACK = [16, 24, 48, 96];
+
+/**
+ * The distinct GPU memory sizes on the public ladder, smallest first
+ * (16, 24, 48 ...): the steps of the hero's GPU-memory counter. The API
+ * publishes public profiles only, so a staff-only card never shows up here.
+ * Falls back to VRAM_STEPS_FALLBACK without a rate card.
+ */
+export function vramSteps(card: RateCard | null): number[] {
+  const sizes = [...new Set(publicGpus(card).map((g) => g.vram_gb).filter((v) => Number.isFinite(v) && v > 0))].sort(
+    (a, b) => a - b,
+  );
+  return sizes.length ? sizes : VRAM_STEPS_FALLBACK;
+}
+
+/** "16–48 GB" (en dash), or "16 GB" with one size. */
+export function vramRangeLabel(steps: number[]): string {
+  const lo = steps[0], hi = steps[steps.length - 1];
+  return lo === hi ? `${lo} GB` : `${lo}–${hi} GB`;
+}
+
 /** The cheapest publicly priced GPU: the one "from ₹X" and the intro offer refer to. */
 export function cheapestGpu(card: RateCard | null): RateCardGpu | null {
   return publicGpus(card).find(isPricedGpu) ?? null;
