@@ -105,9 +105,10 @@ const HERO: HeroImage = {
   credit: "Generated image",
 };
 
-/** More rooms from the same sample plan, each a Studio 4K export (16 Oct 2026). */
+/** More rooms, each a Studio export: two from the same sample plan (16 Oct 2026) and, in place of the
+ * kitchen (owner 31 Oct 2026: "very bad"), the industrial bedroom from the Studio Pro slideshow. */
 const STUDIO_ROOMS = [
-  { src: "/studio-renders/studio-kitchen-2048.webp", cap: "The kitchen.", alt: "The kitchen from our sample plan: sage-green cabinets, a stone-topped island with a fruit bowl, open shelves with copper jars and brass taps" },
+  { src: "/studio-renders/studio-pro-bedroom-industrial-1024.webp", cap: "An industrial bedroom, from Studio Pro.", alt: "An industrial bedroom from Studio Pro: board-formed concrete walls, a leather bed with grey linen, brass lamps and a garden window" },
   { src: "/studio-renders/studio-masterbed-2048.webp", cap: "The master bedroom.", alt: "The master bedroom from our sample plan: a teak bed with a rust throw, a tall louvred wardrobe, a patterned rug, a palm and sheer curtains" },
   { src: "/studio-renders/studio-balcony-2048.webp", cap: "The balcony, looking back into a bedroom.", alt: "The balcony from our sample plan at dusk: potted plants, a cane chair and a railing over trees, with a lit bedroom through the door" },
 ];
