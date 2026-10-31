@@ -31,7 +31,7 @@ const bricolage = Bricolage_Grotesque({
 type Spot = { x: number; y: number; d: number };
 type Bubble = {
   key: string;
-  tone: "core" | "hl" | "ink" | "deep" | "tint" | "line" | "paper" | "outline";
+  tone: "core" | "hl" | "ink" | "deep" | "teal" | "lilac" | "coral" | "sky";
   size: "xl" | "md" | "sm";
   m: Spot;
   w: Spot;
@@ -72,7 +72,7 @@ export function AtAGlance({ fromRate, currency = "INR" }: { fromRate?: string; c
     { key: "price", tone: "hl", size: "md", m: { x: 18.6, y: 67.1, d: 36 }, w: { x: 28.65, y: 11.5, d: 21 }, body: priceBody },
     {
       key: "software",
-      tone: "tint",
+      tone: "lilac",
       size: "md",
       m: { x: 55.6, y: 62.4, d: 36 },
       w: { x: 29.05, y: 33.5, d: 21 },
@@ -91,14 +91,14 @@ export function AtAGlance({ fromRate, currency = "INR" }: { fromRate?: string; c
     { key: "gpu", tone: "deep", size: "sm", m: { x: 86, y: 75.9, d: 28 }, w: { x: 72.55, y: 35.8, d: 16.5 }, body: "Dedicated RTX\u00a0GPU" },
     {
       key: "india",
-      tone: "outline",
+      tone: "teal",
       size: "sm",
       m: { x: 74.9, y: 31.2, d: 34 },
       w: { x: 73.55, y: 9, d: 17.5 },
       body: "All infrastructure and data in India",
     },
-    { key: "files", tone: "paper", size: "sm", m: { x: 70.3, y: 100.5, d: 28 }, w: { x: 84.25, y: 22.9, d: 16 }, body: "Files stay between sessions" },
-    { key: "clicks", tone: "line", size: "sm", m: { x: 14.7, y: 99.5, d: 26 }, w: { x: 90.95, y: 7.8, d: 15.5 }, body: "Ready in 4\u00a0clicks" },
+    { key: "files", tone: "coral", size: "sm", m: { x: 70.3, y: 100.5, d: 28 }, w: { x: 84.25, y: 22.9, d: 16 }, body: "Files stay between sessions" },
+    { key: "clicks", tone: "sky", size: "sm", m: { x: 14.7, y: 99.5, d: 26 }, w: { x: 90.95, y: 7.8, d: 15.5 }, body: "Ready in 4\u00a0clicks" },
   ];
 
   return (

@@ -1529,12 +1529,14 @@ body[data-cf-sticky] a[aria-label*="WhatsApp" i] { bottom: 5.5rem; }
 .cf-bubble--hl { background: var(--color-hl); color: var(--color-hl-ink); box-shadow: 0 20px 44px -26px rgb(120 90 0 / 0.55); }
 .cf-bubble--ink { background: var(--color-ink); color: #fff; }
 .cf-bubble--deep { background: var(--color-blue-ink); color: #fff; }
-.cf-bubble--tint { background: var(--color-tint-blue); color: var(--color-ink); }
-.cf-bubble--paper { background: var(--color-paper-2); color: var(--color-ink); box-shadow: inset 0 0 0 1px var(--color-rule-strong); }
-.cf-bubble--outline { background: var(--color-paper); color: var(--color-ink); box-shadow: inset 0 0 0 1.5px var(--color-ink); }
-.cf-bubble--line { background: var(--color-paper); color: var(--color-ink); box-shadow: inset 0 0 0 2px var(--color-blue); }
-.cf-bubble--tint .cf-bubble-label,
-.cf-bubble--paper .cf-bubble-label { color: var(--color-ink-2); }
+/* Four richer fills from the brand family (owner, 31 Oct 2026: "a little
+   more colour"; they were white / pale grey). All carry ink text, labels
+   included: ink on each is 8.2-9.4:1 (AA needs 4.5). No two neighbours share
+   a fill at either layout. */
+.cf-bubble--teal { background: #5ec4b6; color: var(--color-ink); }  /* 9.04:1 */
+.cf-bubble--lilac { background: #b8a6f2; color: var(--color-ink); } /* 8.79:1 */
+.cf-bubble--coral { background: #ff8a6b; color: var(--color-ink); } /* 8.19:1 */
+.cf-bubble--sky { background: #8fb8ff; color: var(--color-ink); }   /* 9.42:1 */
 
 @media (min-width: 1024px) {
   .cf-bubbles {
