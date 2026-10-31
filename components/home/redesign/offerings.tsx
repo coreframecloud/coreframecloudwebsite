@@ -64,10 +64,12 @@ export function offeringPrices(card: RateCard | null, currency: Currency): Offer
 type BadgeStatus = OfferingStatus | "Coming soon";
 
 const BADGE: Record<BadgeStatus, string> = {
-  Live: "bg-[#15803d] text-white",
+  // Live wears the highlight yellow (31 Oct 2026); the "soon" states went
+  // neutral so they no longer read as a second, paler yellow.
+  Live: "cf-hl-fill",
   New: "bg-[#2f6be0] text-white",
-  "Opening soon": "bg-[#ffd166] text-ink",
-  "Coming soon": "bg-[#ffd166] text-ink",
+  "Opening soon": "bg-[#e9ebef] text-[#101113]",
+  "Coming soon": "bg-[#e9ebef] text-[#101113]",
 };
 
 export function StatusBadge({ status, className = "" }: { status: BadgeStatus; className?: string }) {
@@ -75,7 +77,7 @@ export function StatusBadge({ status, className = "" }: { status: BadgeStatus; c
     <span
       className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10.5px] leading-none font-semibold tracking-[0.1em] whitespace-nowrap uppercase ${BADGE[status]} ${className}`}
     >
-      {status === "Live" ? <span className="h-1.5 w-1.5 rounded-full bg-white" aria-hidden /> : null}
+      {status === "Live" ? <span className="cf-live-dot h-1.5 w-1.5 rounded-full" aria-hidden /> : null}
       {status}
     </span>
   );
