@@ -8,7 +8,8 @@ import { ShellFurnished } from "@/components/visuals/studio-compare";
 import { cellsLabel, formatMoney, usdRates, type Currency } from "@/lib/money";
 import { CFD_PREPROCESS_INR } from "@/lib/cfd-prices";
 import { FREE_PREVIEWS_PER_DAY, studioPrices } from "@/lib/studio-prices";
-import { ladderLead, ladderRanges, type LadderRanges, type RateCard } from "@/lib/rate-card";
+import { ladderLead, ladderRanges, vramSteps, type LadderRanges, type RateCard } from "@/lib/rate-card";
+import { VramCounter } from "@/components/home/redesign/vram-counter";
 
 /**
  * The price lines on the hero cards and the bands, in ONE currency: the
@@ -28,6 +29,8 @@ export type OfferingPrices = {
   ladder: LadderRanges | null;
   /** The lineup and its lowest live price in `currency` (owner, 24 Oct 2026). */
   lineup: ReturnType<typeof ladderLead>;
+  /** Distinct public GPU memory sizes, smallest first (the hero counter). */
+  vramSteps: number[];
 };
 
 /** The first-top-up offer, short: introOfferShort() in the page's currency. */
@@ -52,6 +55,7 @@ export function offeringPrices(card: RateCard | null, currency: Currency): Offer
     studio: { extraPreview: m(st.extraPreview), edit: m(st.edit), k2: m(st.k2), k4: m(st.k4) },
     ladder: ladderRanges(card),
     lineup: ladderLead(card, currency),
+    vramSteps: vramSteps(card),
   };
 }
 
@@ -170,6 +174,9 @@ function HeroCard({ o, introLabel, prices, i }: { o: Offering; introLabel: Intro
               <span className="font-semibold text-white">{introLabel.bare}</span>
             </p>
           ) : null}
+          {/* GPU memory counter (owner, 31 Oct 2026): counts once through the
+              real card sizes, server-rendered at the largest. */}
+          {o.id === "gpu" ? <VramCounter steps={prices.vramSteps} className="mt-3 sm:mt-4" /> : null}
           {o.id === "cfd" ? (
             <p className="mt-2.5 text-[12.5px] text-white/80 sm:mt-3 sm:text-[13px]">
               Pre-processing <span className="font-semibold text-white">{prices.cfdFee}</span> for most models

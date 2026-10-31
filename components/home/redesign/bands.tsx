@@ -269,7 +269,15 @@ export function OfferBand({
  * answer would quote whole. Facts only; the price is the live "from" rate in
  * the page's own currency, and the sentence drops it when there is none.
  */
-export function WhatIsCoreframe({ fromRate, currency = "INR" }: { fromRate?: string; currency?: Currency }) {
+export function WhatIsCoreframe({
+  fromRate,
+  currency = "INR",
+  vramRange,
+}: {
+  fromRate?: string;
+  currency?: Currency;
+  vramRange?: string;
+}) {
   // fromRate already reads "from ₹99" when more than one GPU is public, or a
   // bare "₹99" with one (31 Oct 2026: the sentence used to add its own "from",
   // which printed "from from ₹99").
@@ -286,7 +294,7 @@ export function WhatIsCoreframe({ fromRate, currency = "INR" }: { fromRate?: str
           server HTML inside a native <details>, where crawlers and answer
           engines read it and find-in-page opens it. Not display:none. */}
       <Reveal className="mt-8 sm:mt-10">
-        <AtAGlance fromRate={fromRate} currency={currency} />
+        <AtAGlance fromRate={fromRate} currency={currency} vramRange={vramRange} />
       </Reveal>
       <details className="cf-answer group mt-8 max-w-[46rem] border-t border-rule pt-5 sm:mt-10">
         <summary className="inline-flex cursor-pointer list-none items-center gap-3 text-[14px] font-semibold tracking-[0.02em] text-ink uppercase [&::-webkit-details-marker]:hidden">
