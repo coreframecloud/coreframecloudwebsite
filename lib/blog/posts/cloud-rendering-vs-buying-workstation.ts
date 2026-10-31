@@ -45,9 +45,9 @@ function n(v: number): string {
 export const cloudRenderingVsBuyingWorkstation: BlogPost = {
   slug: SLUG,
   title: "Is cloud rendering cheaper than buying a render workstation?",
-  metaTitle: "Cloud Rendering vs Buying a Workstation",
+  metaTitle: "Is Cloud Rendering Cheaper? The Break-Even",
   description:
-    "Work out the break-even between buying a render workstation and renting one by the minute, with today's rates, monthly plans and your own hardware quote.",
+    "Yes, if you render fewer hours than the break-even (machine price ÷ hourly rate). Worked at today's rate, and when buying or a monthly plan wins instead.",
   targetQueries: [
     "is cloud rendering cheaper than buying a render workstation",
     "cloud vs workstation rendering",

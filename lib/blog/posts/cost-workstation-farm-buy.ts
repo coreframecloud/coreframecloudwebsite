@@ -23,11 +23,11 @@ const SCENARIOS = [10, 40, 120];
 export const costWorkstationFarmBuy: BlogPost = {
   slug: SLUG,
   title: "Cloud workstation, render farm or a new PC: what each really costs in India",
-  metaTitle: "Workstation vs Render Farm vs New PC: Cost",
+  metaTitle: "Render Farm vs Cloud vs New PC: India Cost",
   description:
-    "Buying a PC, renting by the minute and using a render farm are priced three different ways. How to compare them in rupees, with the break-even worked out.",
+    "Render farm, cloud workstation or a new RTX PC in India: pay per job, per minute or up front. Monthly costs in rupees and the break-even hours, worked out.",
   descriptionUsd:
-    "Buying a PC, renting by the minute and using a render farm are priced three different ways. How to compare them in US dollars, with the break-even worked out.",
+    "Render farm, cloud workstation or a new RTX PC: pay per job, per minute or up front. Monthly costs in US dollars and the break-even hours, worked out.",
   targetQueries: [
     "rent vs buy gpu workstation india",
     "rtx 5080 workstation price india",

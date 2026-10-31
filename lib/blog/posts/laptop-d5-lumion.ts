@@ -19,9 +19,9 @@ const VENDOR_CHECKED = "2 October 2026";
 export const laptopD5Lumion: BlogPost = {
   slug: SLUG,
   title: "Can your laptop run D5 Render or Lumion? What actually needs a GPU",
-  metaTitle: "Can Your Laptop Run D5 Render or Lumion?",
+  metaTitle: "Can My Laptop Run D5 Render or Lumion?",
   description:
-    "D5, Lumion and Enscape need a dedicated GPU with enough video memory; modelling mostly doesn't. How to check your laptop, and what to do if it falls short.",
+    "A 2-minute Task Manager check: no dedicated GPU, or 4 GB VRAM or less, means D5, Lumion and Enscape will struggle. Modelling is fine. What to do next.",
   targetQueries: [
     "can my laptop run d5 render",
     "lumion slow on laptop",

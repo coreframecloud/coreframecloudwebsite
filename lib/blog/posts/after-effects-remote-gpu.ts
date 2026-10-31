@@ -19,9 +19,9 @@ const IMG = `/blog/${SLUG}`;
 export const afterEffectsRemoteGpu: BlogPost = {
   slug: SLUG,
   title: "After Effects on a remote GPU: what works and what doesn't",
-  metaTitle: "After Effects on a Remote GPU: What Works",
+  metaTitle: "After Effects on a Cloud GPU Workstation",
   description:
-    "Motion graphics, heavy comps and exports work well on a rented RTX workstation. Camera originals and final colour need planning first.",
+    "Motion graphics, heavy comps and exports run well on a remote RTX; your laptop just shows the stream. Plan two things: footage upload and final colour.",
   targetQueries: [
     "after effects cloud pc",
     "after effects cloud render",
