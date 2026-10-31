@@ -50,6 +50,16 @@ export function InstagramIcon({ className = "" }: { className?: string }) {
   );
 }
 
+export function LinkedInIcon({ className = "" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" className={`${BASE} ${className}`} fill="none"
+      stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true">
+      <rect x="2.8" y="2.8" width="18.4" height="18.4" rx="3.2" />
+      <path d="M7.6 10.4v6.2M7.6 7.4v.1M11.2 16.6v-3.6c0-1.5 1-2.6 2.4-2.6s2.2 1 2.2 2.6v3.6M11.2 10.4v6.2" />
+    </svg>
+  );
+}
+
 export function MapPinIcon({ className = "" }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" className={`${BASE} ${className}`} fill="none"

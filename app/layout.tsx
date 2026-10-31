@@ -31,7 +31,7 @@ const plexMono = IBM_Plex_Mono({
   variable: "--font-plex-mono",
   display: "swap",
 });
-import { COMPANY_MAPS_URL, COMPANY_YOUTUBE_URL, COMPANY_INSTAGRAM_URL } from "@/lib/company";
+import { COMPANY_MAPS_URL, COMPANY_YOUTUBE_URL, COMPANY_INSTAGRAM_URL, COMPANY_LINKEDIN_URL } from "@/lib/company";
 import Script from "next/script";
 import { headers } from "next/headers";
 import { AttributionCapture } from "@/components/attribution-capture";
@@ -473,6 +473,7 @@ export default async function RootLayout({
                    */
                   sameAs: [
                     COMPANY_INSTAGRAM_URL,
+                    COMPANY_LINKEDIN_URL,
                     COMPANY_MAPS_URL,
                     COMPANY_YOUTUBE_URL,
                   ],

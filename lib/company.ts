@@ -110,6 +110,9 @@ export const COMPANY_INSTAGRAM_URL = "https://www.instagram.com/coreframecloud/"
 /** The handle on its own. People search the handle, not the word "Instagram". */
 export const COMPANY_INSTAGRAM_HANDLE = "@coreframecloud";
 
+/** The LinkedIn company page (owner 31 Oct 2026: follow links everywhere). */
+export const COMPANY_LINKEDIN_URL = "https://www.linkedin.com/company/coreframe-cloud/";
+
 export const COMPANY_YOUTUBE_URL = "https://www.youtube.com/@CoreframeCloud";
 
 /** Full postal address, for legal pages and invoices. */

@@ -4,6 +4,7 @@ import {
   MailIcon,
   WhatsAppIcon,
   InstagramIcon,
+  LinkedInIcon,
   MapPinIcon,
 } from "@/components/brand/contact-icons";
 import {
@@ -13,6 +14,7 @@ import {
   COMPANY_MAPS_URL,
   COMPANY_INSTAGRAM_URL,
   COMPANY_INSTAGRAM_HANDLE,
+  COMPANY_LINKEDIN_URL,
 } from "@/lib/company";
 import { visiblePosts } from "@/lib/blog";
 import { OFFERINGS } from "@/lib/offerings";
@@ -180,6 +182,10 @@ export function SiteFooter({ currency = "INR" }: { currency?: Currency }) {
               <Link href={COMPANY_INSTAGRAM_URL} target="_blank" rel="noreferrer" className="flex min-h-11 items-center gap-2 text-[13.5px] text-ink-2 transition hover:text-ink">
                 <InstagramIcon className="h-[15px] w-[15px]" />
                 {COMPANY_INSTAGRAM_HANDLE}
+              </Link>
+              <Link href={COMPANY_LINKEDIN_URL} target="_blank" rel="noreferrer" className="flex min-h-11 items-center gap-2 text-[13.5px] text-ink-2 transition hover:text-ink">
+                <LinkedInIcon className="h-[15px] w-[15px]" />
+                Follow us on LinkedIn
               </Link>
               {/* The building, linked to the Business Profile — this is the
                   address a visitor navigates to. The registered survey-number
