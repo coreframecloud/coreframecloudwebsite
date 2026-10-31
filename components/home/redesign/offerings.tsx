@@ -126,7 +126,7 @@ function HeroCard({ o, introLabel, prices, i }: { o: Offering; introLabel: Intro
             <StatusBadge status={o.status} />
           </span>
           {o.id === "studio" ? (
-            <span className="absolute right-2 bottom-2 hidden rounded bg-black/60 px-1.5 py-0.5 text-[10px] font-medium text-white sm:block">
+            <span className="absolute right-2 bottom-2 hidden rounded bg-black/60 px-1.5 py-0.5 text-[13px] font-medium text-white sm:block">
               Generated image
             </span>
           ) : null}
@@ -134,7 +134,7 @@ function HeroCard({ o, introLabel, prices, i }: { o: Offering; introLabel: Intro
 
         <div className="flex min-w-0 flex-1 flex-col sm:p-5">
           <div className="flex flex-wrap items-center gap-2">
-            <p className="text-[11.5px] font-semibold tracking-[0.12em] text-white/75 uppercase">{o.name}</p>
+            <p className="text-[13px] font-semibold tracking-[0.05em] sm:tracking-[0.1em] text-white/75 uppercase">{o.name}</p>
             <StatusBadge status={o.status} className="sm:hidden" />
           </div>
           <h2 className="mt-1.5 font-heading text-[19px] leading-[1.2] font-medium text-white sm:mt-2 sm:text-[21px] lg:text-[23px]">
@@ -146,7 +146,7 @@ function HeroCard({ o, introLabel, prices, i }: { o: Offering; introLabel: Intro
               href={o.cta.href}
               event={ctaEvent(o.cta.href)}
               params={{ offering: o.id, label: o.cta.label, location: "home_hero_card" }}
-              className="inline-flex min-h-10 items-center justify-center rounded-full bg-white px-4 py-2 text-[12.5px] font-semibold tracking-[0.02em] text-ink uppercase transition-colors hover:bg-[#e9ebef] sm:px-5 sm:text-[13px]"
+              className="inline-flex min-h-11 items-center justify-center rounded-full bg-white px-4 py-2 text-[13.5px] font-semibold tracking-[0.02em] text-ink uppercase transition-colors hover:bg-[#e9ebef] sm:px-5 sm:text-[14px]"
             >
               {o.cta.label}
             </TrackedLink>
@@ -154,13 +154,15 @@ function HeroCard({ o, introLabel, prices, i }: { o: Offering; introLabel: Intro
               href={o.href}
               event="offering_cta_click"
               params={{ offering: o.id, label: "Learn more", location: "home_hero_card_more" }}
-              className="hidden text-[12.5px] font-semibold tracking-[0.04em] text-white/85 uppercase hover:text-white hover:underline sm:inline-flex"
+              className="hidden min-h-11 items-center text-[13.5px] font-semibold tracking-[0.04em] text-white/85 uppercase hover:text-white hover:underline sm:inline-flex"
             >
               Learn more <span aria-hidden>&nbsp;→</span>
             </TrackedLink>
           </div>
           {o.id === "gpu" && introLabel ? (
-            <p className="mt-2.5 text-[12.5px] text-white/80 sm:mt-3 sm:text-[13px]">
+            // 13 px on phones (phone check, 31 Oct 2026), tracked in slightly
+            // so the line stays one line at 390 px.
+            <p className="mt-2.5 text-[13px] tracking-[-0.015em] text-white/80 sm:mt-3 sm:text-[14px] sm:tracking-normal">
               {/* One line at every width (owner, 24 Oct 2026): the lowest live
                   price, then the offer without its GPU. The strip and the
                   card's line above carry the lineup and the cheaper-card hours. */}
@@ -179,12 +181,12 @@ function HeroCard({ o, introLabel, prices, i }: { o: Offering; introLabel: Intro
               real card sizes, server-rendered at the largest. */}
           {o.id === "gpu" ? <VramCounter steps={prices.vramSteps} className="mt-3 sm:mt-4" /> : null}
           {o.id === "cfd" ? (
-            <p className="mt-2.5 text-[12.5px] text-white/80 sm:mt-3 sm:text-[13px]">
+            <p className="mt-2.5 text-[13px] text-white/80 sm:mt-3 sm:text-[14px]">
               Pre-processing <span className="font-semibold text-white">{prices.cfdFee}</span> for most models
             </p>
           ) : null}
           {o.id === "studio" ? (
-            <p className="mt-2.5 text-[12.5px] text-white/80 sm:mt-3 sm:text-[13px]">
+            <p className="mt-2.5 text-[13px] text-white/80 sm:mt-3 sm:text-[14px]">
               Free previews. Edits <span className="font-semibold text-white">{prices.studio.edit}</span>, 2K download {prices.studio.k2}, 4K {prices.studio.k4}
             </p>
           ) : null}
@@ -264,7 +266,7 @@ function BandMedia({ o }: { o: Offering }) {
           sizes="(min-width: 1024px) 540px, 100vw"
         />
       </div>
-      {o.image.caption ? <figcaption className="mt-3 text-[12.5px] text-ink-3">{o.image.caption}</figcaption> : null}
+      {o.image.caption ? <figcaption className="mt-3 text-[13.5px] text-ink-3">{o.image.caption}</figcaption> : null}
     </figure>
   );
 }
@@ -277,7 +279,7 @@ function OfferingBand({ o, flip, prices }: { o: Offering; flip: boolean; prices:
       >
         <div className={`min-w-0 ${flip ? "lg:order-2" : ""}`}>
           <div className="flex flex-wrap items-center gap-2.5">
-            <p className="cf-eyebrow-dot text-[11.5px] font-semibold tracking-[0.12em] text-ink-2 uppercase">{o.longName}</p>
+            <p className="cf-eyebrow-dot text-[13px] font-semibold tracking-[0.1em] text-ink-2 uppercase">{o.longName}</p>
             <StatusBadge status={o.status} />
           </div>
           <h2 className="cfh-h2 mt-4">{o.headline}</h2>
@@ -354,7 +356,7 @@ export function OfferingsStrip({ location }: { location: string }) {
       {OFFERINGS.map((o) => (
         <div key={o.id} className={`flex min-w-0 flex-col rounded-[24px] p-6 ${BAND_TINT[o.id]}`}>
           <div className="flex flex-wrap items-center gap-2">
-            <p className="text-[11.5px] font-semibold tracking-[0.12em] text-ink-2 uppercase">{o.name}</p>
+            <p className="text-[13px] font-semibold tracking-[0.1em] text-ink-2 uppercase">{o.name}</p>
             <StatusBadge status={o.status} />
           </div>
           <p className="mt-3 font-heading text-[20px] leading-[1.25] font-medium text-ink">{o.headline}</p>

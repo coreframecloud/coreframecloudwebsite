@@ -36,7 +36,7 @@ export const metadata: Metadata = {
  */
 
 const solutions = [
-  { icon: MonitorSmartphone, title: "A workstation each.", text: `A full ${NODE.os} desktop with a workstation-class GPU, on the laptop you already have.` },
+  { icon: MonitorSmartphone, title: "A workstation each.", text: `A full Windows desktop (${NODE.os}) with a workstation-class GPU, on the laptop you already have.` },
   { icon: Workflow, title: "Nobody queues.", text: "Renders run on our machines, so laptops stay free and everyone renders at once." },
   { icon: HardDrive, title: "One set of files.", text: "Everyone opens the same project from shared storage. No pen drives." },
   { icon: ShieldCheck, title: "Set up once, with you.", text: "Your software and who gets access, set up once for every machine." },
@@ -51,7 +51,7 @@ export default function SolutionsPage() {
   const spec = [
     "Your choice of GPU: see pricing",
     NODE.disk,
-    NODE.os,
+    NODE.osShort,
     NODE.location,
   ];
   return (

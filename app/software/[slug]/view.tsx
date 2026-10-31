@@ -145,13 +145,13 @@ function rentalAnswer(card: RateCard | null, currency: Currency): string | null 
   const many = (ladder?.count ?? 0) > 1;
   const gpu = cheapestGpu(card);
   const machine = many
-    ? `a ${NODE.os} GPU workstation (${ladder!.gpu}, ${ladder!.vram} VRAM)`
-    : `a ${NODE.os} ${gpu?.name ?? "GPU"} workstation (${ladder?.vram ?? NODE.vram})`;
+    ? `a GPU workstation running ${NODE.os} (${ladder!.gpu}, ${ladder!.vram} VRAM)`
+    : `a ${gpu?.name ?? "GPU"} workstation running ${NODE.os} (${ladder?.vram ?? NODE.vram})`;
   const billed = r.perMinute ? ", billed per minute" : "";
   const from = many ? "from " : "";
   return [
     intro
-      ? `Your first ${introPrice(intro)} top-up buys ${hoursLabel(intro.hours)} of ${many ? `a ${NODE.os} ${gpu?.name ?? "GPU"} workstation` : machine}. After that it is ${from}${r.rate} an hour ${r.tax}${billed}.`
+      ? `Your first ${introPrice(intro)} top-up buys ${hoursLabel(intro.hours)} of ${many ? `a ${gpu?.name ?? "GPU"} workstation running ${NODE.os}` : machine}. After that it is ${from}${r.rate} an hour ${r.tax}${billed}.`
       : `${machine.charAt(0).toUpperCase()}${machine.slice(1)} costs ${from}${r.rate} an hour, ${r.tax}${billed}.`,
     `Hosted in ${NODE.location.split(",")[0]}, streamed to your laptop with the Coreframe Connect app.`,
   ].join(" ");
@@ -189,7 +189,7 @@ function specRows(card: RateCard | null): [string, string][] {
   const gpu = cheapestGpu(card);
   return [
     ["Storage", gpu ? `${storageSpec(gpu.storage_gb)} NVMe` : NODE.disk],
-    ["Operating system", NODE.os],
+    ["Operating system", NODE.osShort],
     ["Location", NODE.location],
   ];
 }

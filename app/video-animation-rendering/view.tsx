@@ -147,7 +147,7 @@ function specRows(card: RateCard | null): [string, string][] {
   const gpu = cheapestGpu(card);
   return [
     ["Storage", gpu ? `${storageSpec(gpu.storage_gb)} NVMe` : NODE.disk],
-    ["Operating system", NODE.os],
+    ["Operating system", NODE.osShort],
     ["Streamed to you", `${NODE.stream}, through the Coreframe Connect app`],
     ["Location", NODE.location],
   ];
@@ -164,7 +164,7 @@ export default async function VideoView({ currency }: { currency: Currency }) {
   const faqs = [
     {
       q: "Can I render video and animation on a Coreframe workstation?",
-      a: `Yes. It is a full ${NODE.os} desktop with ${ladderPhrase(card) ?? "a workstation-class GPU"}. After Effects, Premiere Pro and Media Encoder run on your own Adobe account; Blender, FFmpeg and HandBrake are preinstalled; D5 Render, Twinmotion and Unreal Engine are installed for walkthroughs.`,
+      a: `Yes. It is a full Windows desktop (${NODE.os}) with ${ladderPhrase(card) ?? "a workstation-class GPU"}. After Effects, Premiere Pro and Media Encoder run on your own Adobe account; Blender, FFmpeg and HandBrake are preinstalled; D5 Render, Twinmotion and Unreal Engine are installed for walkthroughs.`,
     },
     {
       q: "Does Coreframe provide an Adobe licence?",

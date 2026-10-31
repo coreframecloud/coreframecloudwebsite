@@ -90,7 +90,7 @@ export default async function WorkstationVsFarmView({ currency }: { currency: Cu
     },
     {
       q: "When is a cloud workstation the better choice?",
-      a: `When you are still working on the scene, when you use a real-time renderer, or when your own laptop cannot run the application at all. Coreframe gives you a full ${NODE.os} desktop with ${ladderPhrase(card) ?? "a dedicated NVIDIA RTX GPU"} in ${NODE.location}, streamed to the laptop you already own.`,
+      a: `When you are still working on the scene, when you use a real-time renderer, or when your own laptop cannot run the application at all. Coreframe gives you a full Windows desktop (${NODE.os}) with ${ladderPhrase(card) ?? "a dedicated NVIDIA RTX GPU"} in ${NODE.location}, streamed to the laptop you already own.`,
     },
     {
       q: "Can I use both?",
@@ -179,7 +179,7 @@ export default async function WorkstationVsFarmView({ currency }: { currency: Cu
               to a queue.
             </p>
             <p className="mt-4 leading-8 text-ink-2">
-              A Coreframe workstation is a full {NODE.os} desktop with{" "}
+              A Coreframe workstation is a full Windows desktop ({NODE.os}) with{" "}
               {ladderPhrase(card) ?? "a dedicated NVIDIA RTX GPU"},
               hosted in {NODE.location} and streamed to the laptop you already
               own. Your project files sit on a drive that persists between

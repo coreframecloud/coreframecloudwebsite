@@ -21,7 +21,7 @@ export function PlanImage({ className = "", caption = "The plan (real drawing)" 
       <div className="overflow-hidden rounded-[20px] border border-rule bg-white p-3">
         <Image src="/home/plan-3bhk.webp" alt={PLAN_ALT} width={1800} height={1642} unoptimized className="h-auto w-full" />
       </div>
-      <figcaption className="mt-2 text-[12.5px] text-ink-3">{caption}</figcaption>
+      <figcaption className="mt-2 text-[13px] text-ink-3">{caption}</figcaption>
     </figure>
   );
 }
@@ -74,8 +74,8 @@ export function ShellFurnished({
         <div className="pointer-events-none absolute inset-0" style={{ transform: `translateX(${pos}%)` }}>
           <div className="absolute inset-y-0 left-0 w-0.5 -translate-x-1/2 bg-white shadow-[0_0_0_1px_rgba(0,0,0,0.15)]" />
         </div>
-        <span className="absolute top-3 left-3 rounded-md bg-black/60 px-2 py-1 text-[11px] font-semibold text-white">Shell</span>
-        <span className="absolute top-3 right-3 rounded-md bg-black/60 px-2 py-1 text-[11px] font-semibold text-white">Furnished</span>
+        <span className="absolute top-3 left-3 rounded-md bg-black/60 px-2 py-1 text-[13px] font-semibold text-white">Shell</span>
+        <span className="absolute top-3 right-3 rounded-md bg-black/60 px-2 py-1 text-[13px] font-semibold text-white">Furnished</span>
         <input
           type="range"
           min={0}
@@ -89,7 +89,7 @@ export function ShellFurnished({
           className="absolute inset-0 h-full w-full cursor-ew-resize opacity-0"
         />
       </div>
-      <figcaption className="mt-2 text-[12.5px] text-ink-3">{caption}</figcaption>
+      <figcaption className="mt-2 text-[13px] text-ink-3">{caption}</figcaption>
     </figure>
   );
 }

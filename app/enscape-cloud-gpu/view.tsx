@@ -45,7 +45,7 @@ export function enscapeMetadata(currency: Currency): Metadata {
  *  (ladderSpecRows; owner, 21 Oct 2026); the rest are fixed facts of every node. */
 const FIXED_SPECS: [string, string][] = [
   ["Disk", NODE.disk],
-  ["OS", NODE.os],
+  ["OS", NODE.osShort],
   ["Access", `Coreframe Connect app, streamed at ${NODE.stream}`],
   ["Display driver", "WDDM, which Enscape requires"],
   ["Host apps", "Revit, SketchUp, Rhino, Archicad"],
@@ -69,7 +69,7 @@ export default async function EnscapeView({ currency }: { currency: Currency }) 
   const faqs: { q: string; a: string }[] = [
     {
       q: "Does Enscape work on a cloud GPU?",
-      a: `Yes, on a card with a WDDM display driver and RT cores. A Coreframe workstation is a ${NODE.os} machine with a dedicated NVIDIA RTX GPU and the full WDDM driver, so Enscape installs, finds the RT cores and ray-traces the way it does on a desktop machine. You reach it through the Coreframe Connect app, streamed at ${NODE.stream}.`,
+      a: `Yes, on a card with a WDDM display driver and RT cores. A Coreframe workstation is a Windows machine (${NODE.os}) with a dedicated NVIDIA RTX GPU and the full WDDM driver, so Enscape installs, finds the RT cores and ray-traces the way it does on a desktop machine. You reach it through the Coreframe Connect app, streamed at ${NODE.stream}.`,
     },
     {
       q: "Can I use Enscape with Revit or SketchUp on a cloud workstation?",

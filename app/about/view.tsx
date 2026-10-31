@@ -95,7 +95,7 @@ const SPECS = [
   // The GPU, VRAM, CPU and RAM rows are the ladder from the live rate card
   // (<GpuLadder/>; owner, 21 Oct 2026). These are the fixed facts of every node.
   ["Working disk", NODE.disk],
-  ["Operating system", `${NODE.os}, a full interactive desktop`],
+  ["Operating system", `${NODE.osShort}, a full interactive desktop`],
   ["Stream", `${NODE.stream}, through the Coreframe Connect app`],
   ["Where it runs", NODE.location],
 ];
@@ -131,7 +131,7 @@ export default async function AboutView({ currency }: { currency: Currency }) {
   const faqs: { q: string; a: string }[] = [
     {
       q: "What is Coreframe Cloud?",
-      a: `Coreframe Cloud is run by Coreframe Compute Labs Private Limited, a company registered in Bengaluru, Karnataka, India, and offers three services. GPU workstations: full ${NODE.os} desktops on dedicated NVIDIA RTX graphics cards, streamed over the internet and billed by the minute, for architects, interior designers, visualisation studios, 3D artists and engineers who need a GPU but don't want to buy a workstation. CFD for ducts and pipes: upload one STL, get a quote by email, and get the pressure drop, a PDF report, a 3D viewer and the data files, with the solver running on our machines so you need no CFD licence. And Coreframe Studio: pre-sale concept images generated from a DXF floor plan, for interior designers.`,
+      a: `Coreframe Cloud is run by Coreframe Compute Labs Private Limited, a company registered in Bengaluru, Karnataka, India, and offers three services. GPU workstations: full Windows desktops (${NODE.os}) on dedicated NVIDIA RTX graphics cards, streamed over the internet and billed by the minute, for architects, interior designers, visualisation studios, 3D artists and engineers who need a GPU but don't want to buy a workstation. CFD for ducts and pipes: upload one STL, get a quote by email, and get the pressure drop, a PDF report, a 3D viewer and the data files, with the solver running on our machines so you need no CFD licence. And Coreframe Studio: pre-sale concept images generated from a DXF floor plan, for interior designers.`,
     },
     {
       q: "What makes Coreframe Cloud different from other cloud GPU services?",
@@ -147,7 +147,7 @@ export default async function AboutView({ currency }: { currency: Currency }) {
     },
     {
       q: "Why was Coreframe Cloud started?",
-      a: `Coreframe Compute Labs was founded in Bengaluru in 2026 around one observation. The workstation an Indian design studio needs to render comfortably costs about ${machineCost}${usdView ? "" : " landed"}. It gets bought once and then sits idle most of the week. The cloud options were either headless Linux boxes built for AI training or foreign services that bill in dollars with no Indian tax invoice. Neither suits someone who just wants to open Lumion and hit render. So we built the unglamorous version: a real ${NODE.os} machine with a real GPU, hosted in Bengaluru, rented by the minute, with a GST invoice at the end of it.`,
+      a: `Coreframe Compute Labs was founded in Bengaluru in 2026 around one observation. The workstation an Indian design studio needs to render comfortably costs about ${machineCost}${usdView ? "" : " landed"}. It gets bought once and then sits idle most of the week. The cloud options were either headless Linux boxes built for AI training or foreign services that bill in dollars with no Indian tax invoice. Neither suits someone who just wants to open Lumion and hit render. So we built the unglamorous version: a real Windows machine (${NODE.os}) with a real GPU, hosted in Bengaluru, rented by the minute, with a GST invoice at the end of it.`,
     },
     {
       q: "What technology does Coreframe Cloud run on?",
@@ -291,7 +291,7 @@ export default async function AboutView({ currency }: { currency: Currency }) {
             <StreamDiagram />
           </div>
           <p className="cf-section-copy mt-5">
-            You sign in, a {NODE.os} machine starts in about two minutes, and you use it like the
+            You sign in, a Windows machine ({NODE.os}) starts in about two minutes, and you use it like the
             computer under your desk: open the CAD file, set up the scene, render, save. Your
             project files stay on storage in India between sessions. Close the session and billing
             stops.
@@ -408,7 +408,7 @@ export default async function AboutView({ currency }: { currency: Currency }) {
               <li className="flex gap-3 leading-7 text-ink-2">
                 <span className="mt-3 h-1.5 w-1.5 shrink-0 rounded-full bg-blue" />
                 <span>
-                  It isn&rsquo;t a machine-learning GPU cloud. You get a {NODE.os} desktop for
+                  It isn&rsquo;t a machine-learning GPU cloud. You get a Windows desktop ({NODE.os}) for
                   graphics and simulation work, and there&rsquo;s no Linux container for training
                   models.
                 </span>
@@ -463,12 +463,12 @@ export default async function AboutView({ currency }: { currency: Currency }) {
                 answer stays in the HTML and matches the FAQPage schema above. */}
             <div className="mt-6 divide-y divide-rule rounded-[24px] border border-rule">
               {faqs.map((f) => (
-                <details key={f.q} className="group px-6 py-5">
-                  <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-semibold break-words text-ink [&::-webkit-details-marker]:hidden">
+                <details key={f.q} className="group px-6">
+                  <summary className="flex min-h-14 cursor-pointer list-none py-4 items-center justify-between gap-4 font-semibold break-words text-ink [&::-webkit-details-marker]:hidden">
                     {f.q}
                     <span aria-hidden className="shrink-0 text-ink-3 transition group-open:rotate-45">+</span>
                   </summary>
-                  <p className="mt-3 leading-7 break-words text-ink-2">{f.a}</p>
+                  <p className="pb-5 leading-7 break-words text-ink-2">{f.a}</p>
                 </details>
               ))}
             </div>

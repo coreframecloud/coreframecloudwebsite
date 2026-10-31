@@ -60,7 +60,14 @@ export const NODE = {
    */
   disk: "1 TB NVMe",
   stream: "4K at 60 fps",
-  os: "Windows 11",
+  /**
+   * Owner, 31 Oct 2026: "Windows 11 claim is not anymore. We are also using
+   * Server" - the workstation runs Windows 11 or Windows Server depending on
+   * the card. Use `os` in sentences, `osShort` in tight spec rows. (The
+   * customer's own PC running Connect is a different claim: Windows 10/11.)
+   */
+  os: "Windows 11 or Windows Server",
+  osShort: "Windows 11 / Windows Server",
   location: "Bengaluru, India",
 } as const;
 

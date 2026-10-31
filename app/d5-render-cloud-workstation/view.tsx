@@ -77,7 +77,7 @@ export function d5Metadata(): Metadata {
  *  (ladderSpecRows; owner, 21 Oct 2026); the rest are fixed facts of every node. */
 const FIXED_SPECS: [string, string][] = [
   ["Disk", NODE.disk],
-  ["OS", NODE.os],
+  ["OS", NODE.osShort],
   ["Access", `Coreframe Connect app, streamed at ${NODE.stream}`],
   ["Display driver", "WDDM, which D5 needs for real-time viewport work"],
   ["D5 Render", "Preinstalled; sign in with your own D5 account"],
@@ -97,7 +97,7 @@ export default async function D5View({ currency }: { currency: Currency }) {
   const faqs: { q: string; a: string }[] = [
     {
       q: "Can I run D5 Render on a cloud workstation?",
-      a: `Yes. Coreframe gives you a full ${NODE.os} desktop with a dedicated NVIDIA RTX GPU, and D5 Render is already installed on it. You sign in with your own D5 account, open your project and work in the live viewport the same way you would on a local machine. It's the full desktop application. You reach it through the Coreframe Connect app rather than a remote desktop, and the stream runs at ${NODE.stream}.`,
+      a: `Yes. Coreframe gives you a full Windows desktop (${NODE.os}) with a dedicated NVIDIA RTX GPU, and D5 Render is already installed on it. You sign in with your own D5 account, open your project and work in the live viewport the same way you would on a local machine. It's the full desktop application. You reach it through the Coreframe Connect app rather than a remote desktop, and the stream runs at ${NODE.stream}.`,
     },
     {
       q: "Is D5 Render included, or do I need my own licence?",

@@ -22,7 +22,7 @@ export function Bento({ youtubeId, ladder = null, ticker = null }: { youtubeId: 
     <section className="cf-cine cf-cine--band mt-16 sm:mx-3">
       <div className="cfh-wrap">
       <Reveal className="mx-auto max-w-[44rem] text-center">
-        <p className="cf-eyebrow-dot text-[11.5px] font-semibold tracking-[0.12em] text-ink-2 uppercase">GPU workstations, in detail</p>
+        <p className="cf-eyebrow-dot text-[13px] font-semibold tracking-[0.1em] text-ink-2 uppercase">GPU workstations, in detail</p>
         <h2 className="cfh-h2 mt-3">
           A real workstation,
           <br className="hidden sm:block" /> <span className="cf-hl-underline">without buying one</span>
@@ -105,7 +105,7 @@ export function Bento({ youtubeId, ladder = null, ticker = null }: { youtubeId: 
           />
           <div className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-center">
             <div>
-              <p className="text-[11.5px] font-semibold tracking-[0.12em] text-white/80 uppercase">
+              <p className="text-[13px] font-semibold tracking-[0.1em] text-white/80 uppercase">
                 Walkthrough
               </p>
               <h3 className="cfh-h3 mt-3">Watch a real session, start to finish</h3>

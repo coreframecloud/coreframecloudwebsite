@@ -64,7 +64,7 @@ function NavTag({ status, overHero }: { status: OfferingStatus; overHero: boolea
         ? "bg-white/15 text-white"
         : "bg-[#fff1c7] text-[#6b4e00]";
   return (
-    <span className={`rounded-full px-1.5 py-0.5 text-[9.5px] leading-none font-semibold tracking-[0.08em] uppercase ${tone}`}>
+    <span className={`rounded-full px-1.5 py-0.5 text-[11px] leading-none font-semibold tracking-[0.08em] uppercase ${tone}`}>
       {status === "Opening soon" ? "Soon" : status}
     </span>
   );
@@ -501,7 +501,7 @@ export function SiteHeader() {
       {open && (
         <div className="border-t border-rule bg-paper-2 xl:hidden">
           <div className="mx-auto flex max-w-7xl flex-col gap-1 px-4 py-4 sm:px-6">
-            <p className="px-3 pt-1 pb-1 text-[11px] font-semibold tracking-[0.12em] text-ink-3 uppercase">Services</p>
+            <p className="px-3 pt-1 pb-1 text-[12.5px] font-semibold tracking-[0.1em] text-ink-3 uppercase">Services</p>
             {serviceLinks.map((item) => (
               <Link
                 key={item.href}

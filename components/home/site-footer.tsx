@@ -39,7 +39,7 @@ export function SiteFooter({ currency = "INR" }: { currency?: Currency }) {
             <Link href="/" aria-label="COREFRAME Home" className="inline-flex min-h-11 items-center">
               <CoreframeWordmarkAtlas variant="light" iconSize={40} animated={false} />
             </Link>
-            <p className="mt-3 max-w-xs text-xs leading-5 text-ink-2">
+            <p className="mt-3 max-w-xs text-[12.5px] leading-5 text-ink-2">
               GPU workstations, CFD for ducts and pipes, and Studio for floor-plan concept
               images. Hosted in India.
             </p>
@@ -47,7 +47,7 @@ export function SiteFooter({ currency = "INR" }: { currency?: Currency }) {
               href={COMPANY.whatsapp}
               target="_blank"
               rel="noreferrer"
-              className="mt-3 inline-flex min-h-11 items-center text-xs font-medium text-blue transition hover:text-blue"
+              className="mt-3 inline-flex min-h-11 items-center text-[12.5px] font-medium text-blue transition hover:text-blue"
             >
               WhatsApp: {COMPANY.phone}
             </Link>
@@ -62,7 +62,7 @@ export function SiteFooter({ currency = "INR" }: { currency?: Currency }) {
                 <Link key={o.id} href={o.href} className="flex min-h-11 items-center gap-2 text-[13.5px] text-ink-2 transition hover:text-ink">
                   {o.footerName}
                   {o.status !== "Live" ? (
-                    <span className="rounded-full bg-white/10 px-1.5 py-0.5 text-[9.5px] leading-none font-semibold tracking-[0.08em] text-white uppercase">
+                    <span className="rounded-full bg-white/10 px-1.5 py-0.5 text-[11px] leading-none font-semibold tracking-[0.08em] text-white uppercase">
                       {o.status === "Opening soon" ? "Soon" : o.status}
                     </span>
                   ) : null}
@@ -195,7 +195,7 @@ export function SiteFooter({ currency = "INR" }: { currency?: Currency }) {
                 href={COMPANY_MAPS_URL}
                 target="_blank"
                 rel="noreferrer"
-                className="flex min-h-11 max-w-[17rem] items-start gap-2 py-1.5 text-xs leading-5 text-ink-2 transition hover:text-ink"
+                className="flex min-h-11 max-w-[17rem] items-start gap-2 py-1.5 text-[12.5px] leading-5 text-ink-2 transition hover:text-ink"
               >
                 <MapPinIcon className="mt-0.5 h-[15px] w-[15px]" />
                 <span>{COMPANY_VISITING_ADDRESS_LINE}</span>
@@ -210,10 +210,10 @@ export function SiteFooter({ currency = "INR" }: { currency?: Currency }) {
           {/* 10px at white/25 was unreadable on this background — that was the
               specific complaint about small text. 12px at white/45 stays quiet
               without being a squint. */}
-          <p className="text-xs leading-5 text-ink-2">
+          <p className="text-[12.5px] leading-5 text-ink-2">
             © {new Date().getFullYear()} {COMPANY.displayName} · CIN {COMPANY.cin}
           </p>
-          <div className="text-xs leading-5 text-ink-2 sm:text-right">
+          <div className="text-[12.5px] leading-5 text-ink-2 sm:text-right">
             <p>Registered office: {COMPANY_ADDRESS_LINE}</p>
             <p className="mt-0.5">
               GSTIN {COMPANY.gstin} · {currency === "USD" ? "Prices in US dollars, no GST" : "All prices include GST"}

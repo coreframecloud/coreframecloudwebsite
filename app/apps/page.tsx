@@ -130,7 +130,7 @@ export default function AppsPage() {
           <p className="cf-eyebrow mb-5">Software</p>
           <h1 className="cf-display">What&apos;s already on the machine.</h1>
           <p className="cf-lead mt-6">
-            A full {NODE.os} desktop with the tools already installed. Sign in with your own licences.
+            A full Windows desktop ({NODE.os}) with the tools already installed. Sign in with your own licences.
           </p>
           <PageByline path="/apps" className="mt-4 opacity-75" />
         </div>

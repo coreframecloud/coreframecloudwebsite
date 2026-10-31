@@ -46,7 +46,7 @@ export function lumionMetadata(currency: Currency): Metadata {
  *  (ladderSpecRows; owner, 21 Oct 2026); the rest are fixed facts of every node. */
 const FIXED_SPECS: [string, string][] = [
   ["Disk", NODE.disk],
-  ["OS", NODE.os],
+  ["OS", NODE.osShort],
   ["Access", `Coreframe Connect app, streamed at ${NODE.stream}`],
   ["Display driver", "WDDM, which Lumion requires"],
   ["Location", NODE.location],
@@ -73,7 +73,7 @@ export default async function LumionView({ currency }: { currency: Currency }) {
   const faqs: { q: string; a: string }[] = [
     {
       q: "Does Lumion work on a cloud GPU?",
-      a: `Yes, on a card with a WDDM display driver. That rules out the compute-only datacentre cards most GPU rentals hand you, because Lumion won't start on them. A Coreframe workstation is a ${NODE.os} machine with a dedicated NVIDIA RTX GPU and the full WDDM driver, so Lumion installs and runs the way it does on a desktop under your table. You reach the machine through the Coreframe Connect app, streamed to you at ${NODE.stream}.`,
+      a: `Yes, on a card with a WDDM display driver. That rules out the compute-only datacentre cards most GPU rentals hand you, because Lumion won't start on them. A Coreframe workstation is a Windows machine (${NODE.os}) with a dedicated NVIDIA RTX GPU and the full WDDM driver, so Lumion installs and runs the way it does on a desktop under your table. You reach the machine through the Coreframe Connect app, streamed to you at ${NODE.stream}.`,
     },
     {
       q: "What is in the workstation?",

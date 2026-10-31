@@ -182,7 +182,7 @@ function buildSoftwarePages(cur: Currency): SoftwarePage[] {
       {
         h2: "What the session is actually like.",
         body: [
-          `You get a full ${NODE.os} desktop. You install 3ds Max and your renderer with your own Autodesk and Chaos accounts, open your scene from persistent storage and get on with it. The viewport, material editor and render setup all work the same as on a machine under your desk.`,
+          `You get a full Windows desktop (${NODE.os}). You install 3ds Max and your renderer with your own Autodesk and Chaos accounts, open your scene from persistent storage and get on with it. The viewport, material editor and render setup all work the same as on a machine under your desk.`,
           "The machine resets to a clean image when the session ends. That's how we can promise nothing from another studio's work is on it when you get it. Your scene files don't live on that machine. They sit on storage that persists between sessions, so a session you open on Friday picks up where Monday's stopped, with nothing copied around. On a committed monthly plan we build your applications into the baseline image on your nodes, so they are already there when you sign in.",
           "Billing runs per minute from when you connect. Preparing the machine and uploads are free. If you don't connect within 10 minutes of your workstation being ready, it shuts down and those 10 minutes are charged; if a connection fails on our side, nothing is charged.",
         ],
@@ -422,7 +422,7 @@ function buildSoftwarePages(cur: Currency): SoftwarePage[] {
     description:
       "Run Adobe After Effects and Premiere Pro on a Windows GPU workstation in India, billed per minute. Your own Adobe licence; files persist.",
     intro:
-      `Coreframe rents a full ${NODE.os} desktop with a dedicated NVIDIA RTX GPU and workstation RAM, streamed to the laptop you already own and billed by the minute. After Effects and Premiere Pro run on it with your own Adobe account, so a heavy comp or an export runs there while your own machine stays free.`,
+      `Coreframe rents a full Windows desktop (${NODE.os}) with a dedicated NVIDIA RTX GPU and workstation RAM, streamed to the laptop you already own and billed by the minute. After Effects and Premiere Pro run on it with your own Adobe account, so a heavy comp or an export runs there while your own machine stays free.`,
     problem:
       "After Effects previews crawl and Premiere exports tie up your laptop for the evening, and a machine that copes costs far more than the few weeks a year you really need it.",
     why: [
@@ -452,7 +452,7 @@ function buildSoftwarePages(cur: Currency): SoftwarePage[] {
     faqs: [
       {
         q: "Can I run After Effects and Premiere Pro on a cloud PC in India?",
-        a: `Yes. A Coreframe workstation is a full ${NODE.os} desktop with a dedicated NVIDIA RTX GPU, hosted in ${NODE.location}, and After Effects, Premiere Pro and Media Encoder run on it with your own Adobe account. You reach it through the Coreframe Connect app and it is billed per minute of streaming.`,
+        a: `Yes. A Coreframe workstation is a full Windows desktop (${NODE.os}) with a dedicated NVIDIA RTX GPU, hosted in ${NODE.location}, and After Effects, Premiere Pro and Media Encoder run on it with your own Adobe account. You reach it through the Coreframe Connect app and it is billed per minute of streaming.`,
       },
       {
         q: "Does Coreframe provide an Adobe licence?",
@@ -482,7 +482,7 @@ function buildSoftwarePages(cur: Currency): SoftwarePage[] {
     callouts: [
       {
         h2: "Running your own CFD software?",
-        body: `Bring your own licence. A Coreframe workstation is a full ${NODE.os} desktop with a ${GPU_CLASS} and workstation RAM, so you install your CFD or simulation package and run it the way you would on a machine under your desk. If you only need the pressure drop of a duct or pipe, we can run it for you instead.`,
+        body: `Bring your own licence. A Coreframe workstation is a full Windows desktop (${NODE.os}) with a ${GPU_CLASS} and workstation RAM, so you install your CFD or simulation package and run it the way you would on a machine under your desk. If you only need the pressure drop of a duct or pipe, we can run it for you instead.`,
         link: { href: "/cfd", label: "CFD for ducts and pipes" },
       },
     ],

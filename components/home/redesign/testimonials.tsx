@@ -91,8 +91,11 @@ function Controls({ items, active, onDot, paused, onToggle }: { items: Testimoni
           aria-label={`Show quote ${i + 1}: ${t.name}`}
           aria-current={i === active || undefined}
           onClick={() => onDot(i)}
-          className={`h-1.5 rounded-full transition-all ${i === active ? "w-6 bg-ink" : "w-1.5 bg-ink/25"}`}
-        />
+          // 44 px tap target around the small dot (phone check, 31 Oct 2026).
+          className="-mx-2 grid h-11 min-w-8 place-items-center px-2"
+        >
+          <span className={`block h-1.5 rounded-full transition-all ${i === active ? "w-6 bg-ink" : "w-1.5 bg-ink/25"}`} />
+        </button>
       ))}
       {onToggle ? (
         <button

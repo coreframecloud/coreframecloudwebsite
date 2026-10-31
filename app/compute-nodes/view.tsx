@@ -37,7 +37,7 @@ const whatsapp = (message: string) =>
  */
 const SPECS: { label: string; value: string }[] = [
   { label: "Working disk", value: NODE.disk },
-  { label: "Operating system", value: NODE.os },
+  { label: "Operating system", value: NODE.osShort },
   { label: "Stream", value: NODE.stream },
   { label: "Location", value: NODE.location },
 ];
@@ -53,7 +53,7 @@ const SPECS: { label: string; value: string }[] = [
 const GOOD_FOR = [
   {
     title: "Design and visualisation.",
-    text: `D5 Render, Lumion, Enscape, Revit, AutoCAD, 3ds Max and SolidWorks on a real ${NODE.os} desktop. You open it in the Coreframe Connect app and it streams at ${NODE.stream}, so the viewport moves when you move it.`,
+    text: `D5 Render, Lumion, Enscape, Revit, AutoCAD, 3ds Max and SolidWorks on a real Windows desktop (${NODE.os}). You open it in the Coreframe Connect app and it streams at ${NODE.stream}, so the viewport moves when you move it.`,
   },
   {
     title: "Long renders and animation output.",

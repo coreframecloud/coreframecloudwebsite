@@ -31,7 +31,7 @@ export function RedesignHero({ introLabel, prices }: { introLabel: IntroShort | 
       <div className="cfh-wrap pt-24 pb-8 sm:pt-28 sm:pb-12">
         {/* Never animated: the headline is the LCP text (18 Oct 2026). */}
         <div className="max-w-[56rem]">
-          <p className="mb-4 inline-block rounded-md bg-white/12 px-3 py-1.5 text-[11px] font-semibold tracking-[0.12em] uppercase sm:mb-5 sm:text-[11.5px]">
+          <p className="mb-4 inline-block rounded-md bg-white/12 px-3 py-1.5 text-[13px] font-semibold tracking-[0.12em] uppercase sm:mb-5">
             Coreframe Cloud · Bengaluru
           </p>
           <h1 className="font-heading text-[30px] leading-[1.1] font-medium tracking-[-0.02em] sm:text-[40px] lg:text-[46px]">
@@ -52,7 +52,7 @@ export function RedesignHero({ introLabel, prices }: { introLabel: IntroShort | 
           <HeroOfferingCards introLabel={introLabel} prices={prices} />
         </div>
       </div>
-      <p className="cfh-wrap pb-20 text-[11.5px] text-white/70 sm:pb-28">
+      <p className="cfh-wrap pb-20 text-[13px] text-white/70 sm:pb-28">
         Background: a living room created with Coreframe RenderGrid.
       </p>
     </section>

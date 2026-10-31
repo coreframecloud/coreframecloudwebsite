@@ -126,7 +126,7 @@ export function BuiltFor() {
               {r.apps.map(([label, href], j) => (
                 <span key={label}>
                   {j > 0 ? " · " : ""}
-                  <Link href={href} className="underline decoration-rule underline-offset-4 transition hover:text-ink hover:decoration-ink">
+                  <Link href={href} className="py-[14px] underline decoration-rule underline-offset-4 transition hover:text-ink hover:decoration-ink">
                     {label}
                   </Link>
                 </span>
@@ -136,7 +136,7 @@ export function BuiltFor() {
         ))}
       </div>
       <Reveal className="mt-10">
-        <p className="text-[11.5px] font-semibold tracking-[0.12em] text-ink-2 uppercase">Preinstalled on every workstation</p>
+        <p className="text-[13px] font-semibold tracking-[0.1em] text-ink-2 uppercase">Preinstalled on every workstation</p>
         <Marquee items={MARQUEE_APPS} label="Preinstalled on every workstation" className="mt-4 font-heading text-[17px] text-ink sm:text-[19px]" />
       </Reveal>
       {/* The full directory, one line, quiet: every application page on the site. */}
@@ -146,7 +146,7 @@ export function BuiltFor() {
           {SOFTWARE_DIRECTORY.filter((s) => !["d5-render-cloud-workstation", "lumion-cloud-gpu", "enscape-cloud-gpu", "twinmotion-cloud-workstation", "revit-cloud-workstation", "blender-cloud-workstation", "3ds-max-cloud-workstation", "after-effects-premiere-cloud-workstation"].some((slug) => s.href.endsWith(slug))).map((s, j) => (
             <span key={s.href}>
               {j > 0 ? " · " : ""}
-              <Link href={s.href} className="underline decoration-rule underline-offset-4 transition hover:text-ink hover:decoration-ink">
+              <Link href={s.href} className="py-[14px] underline decoration-rule underline-offset-4 transition hover:text-ink hover:decoration-ink">
                 {s.short}
               </Link>
             </span>
@@ -185,7 +185,7 @@ export function LatestPosts() {
         {posts.map((p, i) => (
           <li key={p.slug}>
             <Reveal delay={0.06 * i} className="h-full rounded-2xl border border-rule p-6">
-              <p className="text-[11.5px] font-semibold tracking-[0.12em] text-ink-2 uppercase">{p.eyebrow}</p>
+              <p className="text-[13px] font-semibold tracking-[0.1em] text-ink-2 uppercase">{p.eyebrow}</p>
               <Link href={`/blog/${p.slug}`} className="mt-3 block font-heading text-[18px] leading-[1.3] font-medium text-ink hover:underline">
                 {p.title}
               </Link>
@@ -297,7 +297,7 @@ export function WhatIsCoreframe({
         <AtAGlance fromRate={fromRate} currency={currency} vramRange={vramRange} />
       </Reveal>
       <details className="cf-answer group mt-8 max-w-[46rem] border-t border-rule pt-5 sm:mt-10">
-        <summary className="inline-flex cursor-pointer list-none items-center gap-3 text-[14px] font-semibold tracking-[0.02em] text-ink uppercase [&::-webkit-details-marker]:hidden">
+        <summary className="inline-flex min-h-11 cursor-pointer list-none items-center gap-3 text-[14px] font-semibold tracking-[0.02em] text-ink uppercase [&::-webkit-details-marker]:hidden">
           <span
             aria-hidden
             className="grid h-7 w-7 place-items-center rounded-full border border-ink/25 text-[17px] leading-none font-light transition-colors group-open:bg-ink group-open:text-white"

@@ -44,10 +44,10 @@ function Tower({ x, y, label }: { x: number; y: number; label: string }) {
       <rect x="12" y="34" width="62" height="10" rx="5" fill="#1f2430" />
       <circle cx="68" cy="100" r="5" fill="#3ddc84" className="cfv-blink" />
       <rect x="12" y="56" width="62" height="28" rx="6" fill={BLUE} opacity="0.9" />
-      <text x="43" y="74" textAnchor="middle" fontSize="11" fontWeight="600" fill="#fff" fontFamily="var(--font-inter)">
+      <text x="43" y="74" textAnchor="middle" fontSize="13" fontWeight="600" fill="#fff" fontFamily="var(--font-inter)">
         GPU
       </text>
-      <text x="43" y="142" textAnchor="middle" fontSize="12" fill={MUTED} fontFamily="var(--font-inter)">
+      <text x="43" y="142" textAnchor="middle" fontSize="13" fill={MUTED} fontFamily="var(--font-inter)">
         {label}
       </text>
     </g>
@@ -61,7 +61,7 @@ export function StreamDiagram() {
   return (
     <Frame viewBox="0 0 560 230" label="Your laptop streams a workstation in India: the picture comes to you, your mouse and keys go to it">
       <Laptop x={40} y={60} />
-      <text x="100" y="186" textAnchor="middle" fontSize="12" fill={MUTED} fontFamily="var(--font-inter)">
+      <text x="100" y="186" textAnchor="middle" fontSize="13" fill={MUTED} fontFamily="var(--font-inter)">
         Your laptop
       </text>
       <line x1="176" y1="96" x2="420" y2="96" stroke="#c6d4f2" strokeWidth="2" strokeDasharray="4 6" />
@@ -72,10 +72,10 @@ export function StreamDiagram() {
       {[0, 1.1, 2.2].map((d) => (
         <circle key={d} cx="180" cy="122" r="4" fill={INK} className="cfv-slide" style={{ ...out, "--cfv-delay": `${d}s` } as V} />
       ))}
-      <text x="298" y="80" textAnchor="middle" fontSize="11.5" fill={BLUE} fontFamily="var(--font-inter)">
+      <text x="298" y="80" textAnchor="middle" fontSize="13" fill={BLUE} fontFamily="var(--font-inter)">
         4K at 60 fps
       </text>
-      <text x="298" y="146" textAnchor="middle" fontSize="11.5" fill={MUTED} fontFamily="var(--font-inter)">
+      <text x="298" y="146" textAnchor="middle" fontSize="13" fill={MUTED} fontFamily="var(--font-inter)">
         your mouse and keys
       </text>
       <Tower x={440} y={40} label="India" />
@@ -113,7 +113,7 @@ export function TeamStorageDiagram() {
         <rect x="14" y="26" width="64" height="58" rx="6" fill="#1f2430" />
         <rect x="14" y="26" width="64" height="58" rx="6" fill={BLUE} className="cfv-fill" />
       </g>
-      <text x={cx} y={cy + 72} textAnchor="middle" fontSize="12.5" fontWeight="600" fill={INK} fontFamily="var(--font-inter)">
+      <text x={cx} y={cy + 72} textAnchor="middle" fontSize="13" fontWeight="600" fill={INK} fontFamily="var(--font-inter)">
         One shared studio storage
       </text>
     </Frame>
@@ -135,14 +135,14 @@ export function FileSyncDiagram() {
             <circle cx="72" cy="7" r="6" fill="#3ddc84" className="cfv-pulse" style={{ "--cfv-delay": `${i * 0.6}s` } as V} />
           </g>
         ))}
-        <text x="55" y="142" textAnchor="middle" fontSize="12" fill={MUTED} fontFamily="var(--font-inter)">
+        <text x="55" y="142" textAnchor="middle" fontSize="13" fill={MUTED} fontFamily="var(--font-inter)">
           Project drive
         </text>
       </g>
       {files.map((f, i) => (
         <g key={f} className="cfv-slide" style={{ "--cfv-dx": "236px", "--cfv-dur": "3.6s", "--cfv-delay": `${i * 1.2}s` } as V}>
           <rect x="172" y={62 + i * 26} width="96" height="20" rx="5" fill="#fff" stroke={BLUE} />
-          <text x="220" y={76 + i * 26} textAnchor="middle" fontSize="10.5" fill={INK} fontFamily="var(--font-inter)">
+          <text x="220" y={76 + i * 26} textAnchor="middle" fontSize="13" fill={INK} fontFamily="var(--font-inter)">
             {f}
           </text>
         </g>
@@ -194,19 +194,19 @@ export function VramDiagram() {
             {need > b.cap ? (
               <g className="cfv-pulse">
                 <rect x={20 + b.cap * scale} y={b.y} width={(need - b.cap) * scale} height="34" rx="8" fill="none" stroke="#d64545" strokeWidth="2" strokeDasharray="5 4" />
-                <text x={24 + b.cap * scale + ((need - b.cap) * scale) / 2} y={b.y + 22} textAnchor="middle" fontSize="11.5" fill="#d64545" fontFamily="var(--font-inter)">
+                <text x={24 + b.cap * scale + ((need - b.cap) * scale) / 2} y={b.y + 22} textAnchor="middle" fontSize="13" fill="#d64545" fontFamily="var(--font-inter)">
                   doesn&apos;t fit
                 </text>
               </g>
             ) : (
-              <text x={28 + fit * scale} y={b.y + 22} fontSize="11.5" fill={BLUE} fontFamily="var(--font-inter)">
+              <text x={28 + fit * scale} y={b.y + 22} fontSize="13" fill={BLUE} fontFamily="var(--font-inter)">
                 fits, with room to spare
               </text>
             )}
           </g>
         );
       })}
-      <text x="20" y="208" fontSize="11" fill={MUTED} fontFamily="var(--font-inter)">
+      <text x="20" y="208" fontSize="13" fill={MUTED} fontFamily="var(--font-inter)">
         Example scene: about 11 GB of textures and geometry
       </text>
     </Frame>

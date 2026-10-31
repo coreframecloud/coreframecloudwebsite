@@ -188,7 +188,7 @@ function specRows(card: RateCard | null): [string, string][] {
   const gpu = cheapestGpu(card);
   return [
     ["Storage", gpu ? `${storageSpec(gpu.storage_gb)} NVMe` : NODE.disk],
-    ["Operating system", NODE.os],
+    ["Operating system", NODE.osShort],
     ["Streamed to you", `${NODE.stream}, through the Coreframe Connect app`],
     ["Location", NODE.location],
   ];
