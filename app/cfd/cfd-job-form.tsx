@@ -7,6 +7,7 @@ import { API_BASE } from "@/lib/api-base";
 import { useRateCard } from "@/lib/use-rate-card";
 import { cellsLabel, formatMoney, parseCurrency, usdRates, type Currency } from "@/lib/money";
 import { trackConversion, trackEvent } from "@/lib/analytics";
+import { track as trackWebEvent } from "@/lib/web-events";
 import { CFD_CATEGORIES, cfdCategory, type CfdCategoryId } from "@/lib/cfd-categories";
 import type { CfdServiceId } from "@/lib/cfd-services";
 import { CATEGORY_FIELDS } from "./categories";
@@ -85,6 +86,17 @@ export default function CfdJobForm({ service, token, accountEmail, onSignedOut, 
           cells: cellsLabel(usd.cfd_quote_fee_small_max_cells),
         }
       : null;
+  // Funnel (web_events, 31 Oct 2026): the form on screen for this tile, and
+  // the first field touched. Only the tile's id; never a field's value.
+  useEffect(() => {
+    trackWebEvent("cfd_form_view", { service });
+  }, [service]);
+  const [started, setStarted] = useState(false);
+  const onFirstInput = () => {
+    if (started) return;
+    setStarted(true);
+    trackWebEvent("cfd_form_start", { service });
+  };
   const categoryId: CfdCategoryId = service === "rooms" ? "rooms" : "ducts";
   const category = cfdCategory(categoryId);
   const fields = category.status === "live" ? CATEGORY_FIELDS[categoryId] : undefined;
@@ -151,6 +163,7 @@ export default function CfdJobForm({ service, token, accountEmail, onSignedOut, 
 
   const upload = async (ref: string, f: File) => {
     if (f.size > SINGLE_UPLOAD_MAX) {
+      trackWebEvent("cfd_error", { stage: "upload", code: "too_big" });
       setUploadState("too_big");
       return;
     }
@@ -175,6 +188,7 @@ export default function CfdJobForm({ service, token, accountEmail, onSignedOut, 
       trackEvent("cfd_stl_uploaded", { location: "cfd_intake" });
       pollValidation(ref);
     } catch (err: unknown) {
+      trackWebEvent("cfd_error", { stage: "upload", code: "upload_failed" });
       setUploadState("failed");
       setUploadError(err instanceof Error ? err.message : "The upload did not go through.");
     } finally {
@@ -189,7 +203,10 @@ export default function CfdJobForm({ service, token, accountEmail, onSignedOut, 
     if (!project.trim()) errs.push("A job name");
     errs.push(...fields.validate(catState));
     setErrors(errs);
-    if (errs.length) return;
+    if (errs.length) {
+      trackWebEvent("cfd_error", { stage: "form", code: "missing_fields" });
+      return;
+    }
     setSubmitError("");
     setBusy("submitting");
     try {
@@ -217,6 +234,7 @@ export default function CfdJobForm({ service, token, accountEmail, onSignedOut, 
           return;
         }
         const code = (body as { detail?: { code?: string } } | null)?.detail?.code;
+        trackWebEvent("cfd_error", { stage: "submit", code: (code || String(res.status)).slice(0, 40) });
         if (res.status === 403 && code === "account_incomplete") {
           onSignedOut("incomplete");
           return;
@@ -349,7 +367,7 @@ export default function CfdJobForm({ service, token, accountEmail, onSignedOut, 
             ) : null}
           </div>
         ) : (
-          <form onSubmit={submit} noValidate>
+          <form onSubmit={submit} onChangeCapture={onFirstInput} noValidate>
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
               <Field label="Job name" htmlFor="cf-project" hint="Anything that tells you which run this is, e.g. “AHU-2 supply duct, level 3”.">
                 <input id="cf-project" className={inputCls} value={project} onChange={(e) => setProject(e.target.value)} />

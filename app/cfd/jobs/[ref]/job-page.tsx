@@ -16,7 +16,7 @@
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { PageHeroBg, type HeroImage } from "@/components/page-hero-bg";
-import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import {
   LIVE,
   REUPLOAD_OK,
@@ -40,6 +40,7 @@ import {
 } from "@/lib/cfd-job";
 import { ActionErrorView, Body, Card, ErrorLine, Fine, Fold, More, PrimaryButton, QuietButton, UploadBox, WalletRow, signInHref, type ActionError } from "./parts";
 import { QuoteDetails, QuotePanel, packageLine } from "./quote-panel";
+import { track as trackWebEvent } from "@/lib/web-events";
 import { BillingLine, ContinuePanel, ResultsPanel } from "./results-panel";
 import { CancelLink, Cancelled, RunCard } from "./run-card";
 
@@ -135,10 +136,35 @@ export default function CfdJobPage({ refId }: { refId: string }) {
     };
   }, [status]);
 
+  // Funnel (web_events, 31 Oct 2026): the quote on screen, once per page load.
+  // The package and whether express is offered; never an amount.
+  // The job object is re-read on a timer, so the ref keeps it to one row.
+  const quoteShown = status === "quoted" && job?.quote ? job.quote : null;
+  const quoteTracked = useRef(false);
+  useEffect(() => {
+    if (!quoteShown || quoteTracked.current) return;
+    quoteTracked.current = true;
+    trackWebEvent("cfd_quote_shown", {
+      package: quoteShown.default_package ?? undefined,
+      express: !!quoteShown.delivery?.express?.available,
+    });
+  }, [quoteShown]);
+
   const act = useCallback(
     async (action: string, path: string, body?: unknown) => {
       setBusy(action);
       setError(null);
+      // Funnel: a payment attempt (the pre-processing fee or the run), then
+      // cfd_paid comes from the API when the wallet moved; a refusal is cfd_error.
+      const paying = action === "fee" || action === "pay";
+      if (paying) {
+        const b = (body ?? {}) as { package?: string; express?: boolean };
+        trackWebEvent("cfd_pay_start", {
+          what: action === "fee" ? "quote_fee" : "run",
+          package: b.package,
+          express: action === "pay" ? !!b.express : undefined,
+        });
+      }
       const r = await postJob(refId, path, body);
       setBusy(null);
       if (r.status === 200 && r.body?.status) {
@@ -146,6 +172,7 @@ export default function CfdJobPage({ refId }: { refId: string }) {
         return;
       }
       if (r.status === 401) setSignedOut(true);
+      if (paying || action === "requote") trackWebEvent("cfd_error", { stage: action, code: String(r.status) });
       setError({ action, e: { text: errorText(r), status: r.status } });
     },
     [refId],
