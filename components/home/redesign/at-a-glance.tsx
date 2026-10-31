@@ -1,6 +1,20 @@
 import type { CSSProperties, ReactNode } from "react";
 import { bubbleFont } from "@/lib/fonts-bubble";
 import type { Currency } from "@/lib/money";
+import { adhocRate, ladderRanges, vramRangeLabel, vramSteps, type RateCard } from "@/lib/rate-card";
+
+/** AtAGlance's live props from the rate card, the same way the home page
+ *  builds them: "from ₹99" once more than one GPU is public, the bare rate
+ *  with one, and the public VRAM range. For pages other than the home. */
+export function glanceProps(card: RateCard | null, currency: Currency): { fromRate?: string; currency: Currency; vramRange: string } {
+  const bare = adhocRate(card, currency);
+  const many = (ladderRanges(card)?.count ?? 0) > 1;
+  return {
+    fromRate: bare ? `${many ? "from " : ""}${bare}` : undefined,
+    currency,
+    vramRange: vramRangeLabel(vramSteps(card)),
+  };
+}
 
 
 /**

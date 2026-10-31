@@ -247,6 +247,33 @@ body {
     color: var(--color-hl-ink);
   }
   .cf-hl-fill .cf-live-dot { background: var(--color-hl-ink); }
+  /* Status pill (Live / New / Opening soon), owner 31 Oct 2026: "not
+     centred". Fixed height + flex centring; the label is trimmed to cap
+     height (text-box) so ascender/descender space does not push it up, and
+     its trailing letter-spacing is cancelled so it is centred left-right. */
+  .cf-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    height: 22px;
+    padding: 0 10px;
+    border-radius: 9999px;
+    font-size: 10.5px;
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    vertical-align: middle;
+    flex: none;
+  }
+  .cf-badge-t {
+    display: block;
+    margin-right: -0.1em;
+    text-box: trim-both cap alphabetic;
+  }
+  .cf-badge-dot { display: block; width: 6px; height: 6px; border-radius: 9999px; flex: none; }
   .cf-live-dot { background: #fff; }
   /* The main CTA on a dark band: a solid yellow pill with ink text. */
   .cfh-pill-hl {
@@ -1566,3 +1593,6 @@ body[data-cf-sticky] a[aria-label*="WhatsApp" i] { bottom: 5.5rem; }
   }
   .cf-reveal:not(.cf-in) .cf-bubble { opacity: 0; transform: scale(0.6); }
 }
+
+/* "Read more" / "Read the full answer" on a dark page hero (31 Oct 2026). */
+.cf-pagehero details > summary { color: #fff; }
