@@ -6,10 +6,11 @@
  * Real product frames only: no personal data (emails, names, account
  * numbers) in shot. The first frame is what shows on first paint.
  *
- * Current set: the owner's Connect app screenshots (R2 "app screenshots",
- * 11 Oct 2026), in session order. Customer name, email, account number and
- * invoice numbers are blurred; upscaled 4x (4x-UltraSharp, node-01), then each sits on a 2240x1400 canvas so the
- * 16:10 card never crops it.
+ * Current set (31 Oct 2026, owner: "the app screenshots have to be the
+ * updated ones"): Connect v1.3.12, the five screens captured for the
+ * Microsoft Store listing (plans/msstore-listing-20261031/screenshots), sample
+ * user, no prices on any screen, so they suit rupee and dollar visitors
+ * alike. 16:9 at 2048x1152; the strip's frame is 16:9 to match.
  */
 export type WorkstationFrame = {
   src: string;
@@ -21,14 +22,9 @@ export type WorkstationFrame = {
 };
 
 export const WORKSTATION_FRAMES: WorkstationFrame[] = [
-  { src: "/home/app-01-sign-in.webp", width: 2240, height: 1400, caption: "Sign in to Coreframe Connect", alt: "The Coreframe Connect sign-in screen" },
-  { src: "/home/app-02-pick-gpu.webp", width: 2240, height: 1400, caption: "Pick your workstation and launch", alt: "The RTX 5080 workstation tile with its Launch button" },
-  { src: "/home/app-03-starting.webp", width: 2240, height: 1400, caption: "Your workstation starts", alt: "The app assigning a GPU and starting the Windows session" },
-  { src: "/home/app-04-preparing.webp", width: 2240, height: 1400, caption: "Ready in about 3 minutes", alt: "The app preparing the streaming desktop" },
-  { src: "/home/app-05-ready.webp", width: 2240, height: 1400, caption: "Connect with one click", alt: "The Ready to stream screen with the Connect button" },
-  { src: "/home/app-06-desktop.webp", width: 2240, height: 1400, caption: "Your own Windows desktop", alt: "The Windows desktop of the cloud workstation" },
-  { src: "/home/app-07-files.webp", width: 2240, height: 1400, caption: "Your project files, synced", alt: "The Files tab with a Blender scene and a finished render" },
-  { src: "/home/app-08-diagnostics.webp", width: 2240, height: 1400, caption: "Connection health at a glance", alt: "The Diagnostics tab showing connection and stream status" },
-  { src: "/home/app-09-wallet.webp", width: 2240, height: 1400, caption: "Top up your wallet", alt: "The wallet with top-up amounts" },
-  { src: "/home/app-10-invoices.webp", width: 2240, height: 1400, caption: "GST invoices, automatically", alt: "The Invoices tab listing GST invoices" },
+  { src: "/home/connect-1312-01-sign-in.webp", width: 2048, height: 1152, caption: "Sign in with your email", alt: "The Coreframe Connect sign-in screen with an email field and a one-time code" },
+  { src: "/home/connect-1312-02-choose-gpu.webp", width: 2048, height: 1152, caption: "Choose a workstation", alt: "Choose a workstation: RTX A4000, RTX A5000, RTX 5080 and RTX 6000 Ada with their VRAM, CUDA cores, vCPU and RAM" },
+  { src: "/home/connect-1312-03-starting.webp", width: 2048, height: 1152, caption: "Your workstation starts", alt: "The workstation starting, each step ticking off: reserving, starting the machine, setting up Windows" },
+  { src: "/home/connect-1312-04-ready.webp", width: 2048, height: 1152, caption: "Ready to stream, one click", alt: "The Ready to stream screen with the session timer and the Connect to workstation button" },
+  { src: "/home/connect-1312-05-files.webp", width: 2048, height: 1152, caption: "Your project files stay", alt: "The Files page with personal files available on the workstation as the project drive" },
 ];

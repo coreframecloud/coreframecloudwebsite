@@ -38,6 +38,7 @@ import { GPU_HEROES } from "@/lib/gpu-heroes";
 import { Pointers, ReadMore, type Pointer } from "@/components/visuals/pointers";
 import { AtAGlance, glanceProps } from "@/components/home/redesign/at-a-glance";
 import { Reveal } from "@/components/home/redesign/reveal";
+import { HowItWorksStrip, MemoryLadder } from "@/components/visuals/gpu-infographics";
 
 /**
  * `related` may name a top-level landing page as well as a /software slug.
@@ -268,6 +269,26 @@ export default async function SoftwareView({ slug, currency }: { slug: string; c
       </div>
     </section>
     {pointers ? (
+      // The GPU list with a big Launch on every live card, right under the
+      // hero (owner, 31 Oct 2026), the memory bars above it.
+      <section className="cf-section px-5 pb-0" aria-labelledby="pick-a-gpu">
+        <div className="cf-col">
+          <h2 id="pick-a-gpu" className="cf-section-title">Pick a GPU and launch.</h2>
+          <MemoryLadder card={card} className="mt-6" />
+          <div className="mt-6"><GpuLadder card={card} currency={currency} compact launch={{ location: "gpu_page_ladder" }} /></div>
+          <details className="group mt-4 rounded-[20px] border border-rule px-5">
+            <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-4 font-medium text-ink [&::-webkit-details-marker]:hidden">
+              Storage, system and location
+              <span aria-hidden className="text-ink-3 transition group-open:rotate-45">+</span>
+            </summary>
+            <div className="pb-4">
+              <SpecTable rows={specRows(card)} caption="The workstation you rent: storage, system and location" />
+            </div>
+          </details>
+        </div>
+      </section>
+    ) : null}
+    {pointers ? (
       // The home page's at-a-glance bubbles (owner, 31 Oct 2026), same
       // component, same live price and VRAM range.
       <section className="cf-section px-5" aria-labelledby="at-a-glance">
@@ -281,7 +302,20 @@ export default async function SoftwareView({ slug, currency }: { slug: string; c
     ) : null}
         {/* The cinema band (owner, 16 Oct 2026): the sci-fi hero's look carried
         down the page. Details and FAQ below stay light. */}
-    <GpuCineBand page={page.slug}>
+    {/* The GPU workstations page drops the testimonial carousel (owner,
+        31 Oct 2026: "shorten it"); every other page keeps it. */}
+    <GpuCineBand page={page.slug} testimonials={!pointers}>
+      {pointers ? (
+        // GPU workstations page (owner, 31 Oct 2026): "Why rent a GPU for
+        // this" removed (its facts are in the hero pointers and the bubbles;
+        // it carried no schema, and llms-full.txt still lists page.why), and
+        // the two diagrams became one three-step strip.
+        <section className="cf-wide" aria-labelledby="how-it-works">
+          <h2 id="how-it-works" className="cf-section-title">How it works.</h2>
+          <HowItWorksStrip className="mt-6" />
+        </section>
+      ) : (
+        <>
       <section className="cf-wide">
         <h2 className="cf-section-title">Why rent a GPU for this.</h2>
         <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -305,6 +339,8 @@ export default async function SoftwareView({ slug, currency }: { slug: string; c
         </div>
       </section>
 
+        </>
+      )}
     </GpuCineBand>
     <main className="cf-gpu-page cf-section px-5">
       <ViewContent name={page.metaTitle ?? page.title} category="workstation" />
@@ -320,15 +356,58 @@ export default async function SoftwareView({ slug, currency }: { slug: string; c
         })}
       />
 
-      {page.livePrice === "answer" ? (
-        <section className="cf-col">
-          <h2 className="cf-section-title">The machine.</h2>
-          <div className="mt-6"><GpuLadder card={card} currency={currency} compact /></div>
-          <SpecTable rows={specRows(card)} caption="The workstation you rent: storage, system and location" />
+      {/* "The machine." moved up under the hero as "Pick a GPU and launch." (31 Oct 2026). */}
+
+      {pointers ? (
+        // One accordion for the long answers (owner, 31 Oct 2026): the
+        // callouts, the detail sections and the licensing note, all still in
+        // the HTML.
+        <section className="cf-col mt-12" aria-labelledby="more-details">
+          <h2 id="more-details" className="cf-section-title">More details.</h2>
+          <div className="mt-6 divide-y divide-rule rounded-[24px] border border-rule">
+            {page.callouts?.map((c) => (
+              <details key={c.h2} className="group px-5 sm:px-6">
+                <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 py-3 font-medium text-ink [&::-webkit-details-marker]:hidden">
+                  {c.h2}
+                  <span aria-hidden className="text-ink-3 transition group-open:rotate-45">+</span>
+                </summary>
+                <p className="pb-5 text-[15px] leading-6 break-words text-ink-2">
+                  {c.body}
+                  {c.link ? (
+                    <>
+                      {" "}
+                      <Link href={c.link.href} className="text-ink underline underline-offset-4">{c.link.label}</Link>.
+                    </>
+                  ) : null}
+                </p>
+              </details>
+            ))}
+            {page.sections?.map((section) => (
+              <details key={section.h2} className="group px-5 sm:px-6">
+                <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 py-3 font-medium text-ink [&::-webkit-details-marker]:hidden">
+                  {section.h2}
+                  <span aria-hidden className="text-ink-3 transition group-open:rotate-45">+</span>
+                </summary>
+                {section.body.map((para) => (
+                  <p key={para} className="pb-4 text-[15px] leading-6 break-words text-ink-2">{para}</p>
+                ))}
+              </details>
+            ))}
+            <details className="group px-5 sm:px-6">
+              <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 py-3 font-medium text-ink [&::-webkit-details-marker]:hidden">
+                Licensing
+                <span aria-hidden className="text-ink-3 transition group-open:rotate-45">+</span>
+              </summary>
+              <p className="text-[15px] leading-6 break-words text-ink-2">{page.licence}</p>
+              <Link href="/apps" className="mb-3 inline-flex min-h-[44px] items-center text-sm text-blue underline underline-offset-4">
+                See what is preinstalled →
+              </Link>
+            </details>
+          </div>
         </section>
       ) : null}
 
-      {page.callouts?.map((c) => (
+      {!pointers && page.callouts?.map((c) => (
         <section key={c.h2} className="cf-col mt-16">
           <h2 className="cf-section-title">{c.h2}</h2>
           <p className="cf-section-copy mt-4">
@@ -374,7 +453,7 @@ export default async function SoftwareView({ slug, currency }: { slug: string; c
 
       {facts ? <MeasuredFacts app={facts.app} rows={facts.measured} className="cf-col mt-16" /> : null}
 
-      {page.sections?.length ? (
+      {!pointers && page.sections?.length ? (
         <section className="cf-col mt-16">
           <h2 className="cf-section-title">The details.</h2>
           <div className="mt-6 divide-y divide-rule rounded-[24px] border border-rule">
@@ -395,6 +474,7 @@ export default async function SoftwareView({ slug, currency }: { slug: string; c
         </section>
       ) : null}
 
+      {pointers ? null : (
       <section className="cf-col mt-16">
         <div className="cf-note">
           <p className="text-[15px] leading-6 break-words text-ink-2"><span className="font-semibold text-ink">Licensing. </span>{page.licence}</p>
@@ -412,17 +492,18 @@ export default async function SoftwareView({ slug, currency }: { slug: string; c
           </p>
         ) : null}
       </section>
+      )}
 
-      <section className="cf-col mt-16">
+      <section className={`cf-col ${pointers ? "mt-12" : "mt-16"}`}>
         <h2 className="cf-section-title">Questions.</h2>
         <div className="mt-6 divide-y divide-rule rounded-[24px] border border-rule">
           {faqs.map((faq) => (
-            <details key={faq.q} className="group px-6 py-5">
-              <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-medium text-ink">
+            <details key={faq.q} className="group px-6">
+              <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 py-4 font-medium text-ink [&::-webkit-details-marker]:hidden">
                 {faq.q}
                 <span aria-hidden className="text-ink-3 transition group-open:rotate-45">+</span>
               </summary>
-              <p className="mt-3 text-[15px] leading-6 break-words text-ink-2">{faq.a}</p>
+              <p className="pb-5 text-[15px] leading-6 break-words text-ink-2">{faq.a}</p>
             </details>
           ))}
         </div>
@@ -438,20 +519,44 @@ export default async function SoftwareView({ slug, currency }: { slug: string; c
       </div>
 
       {related.length > 0 && (
-        <section className="cf-col mt-16 border-t border-rule pt-8">
-          <p className="cf-eyebrow mb-4">Related</p>
-          <ul className="space-y-1">
+        <section className={`cf-col border-t border-rule ${pointers ? "mt-12 pt-6" : "mt-16 pt-8"}`}>
+          {pointers ? (
+            <details className="group">
+              <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-4 font-medium text-ink [&::-webkit-details-marker]:hidden">
+                Related guides
+                <span aria-hidden className="text-ink-3 transition group-open:rotate-45">+</span>
+              </summary>
+              <ul className="mt-2 flex flex-wrap gap-2">
+                {related.map((r) => (
+                  <li key={r.href} className="min-w-0">
+                    <Link href={r.href} className="inline-flex min-h-[44px] items-center rounded-full border border-rule px-4 text-[14px] break-words text-ink hover:border-ink">
+                      {r.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </details>
+          ) : (
+          <>
+          <p className="cf-eyebrow mb-4 text-[13px]">Related</p>
+          <ul className={pointers ? "flex flex-wrap gap-2" : "space-y-1"}>
             {related.map((r) => (
-              <li key={r.href}>
+              <li key={r.href} className="min-w-0">
                 <Link
                   href={r.href}
-                  className="inline-flex min-h-[44px] items-center break-words text-blue underline-offset-4 hover:underline"
+                  className={
+                    pointers
+                      ? "inline-flex min-h-[44px] items-center rounded-full border border-rule px-4 text-[14px] break-words text-ink hover:border-ink"
+                      : "inline-flex min-h-[44px] items-center break-words text-blue underline-offset-4 hover:underline"
+                  }
                 >
                   {r.label}
                 </Link>
               </li>
             ))}
           </ul>
+          </>
+          )}
         </section>
       )}
     </main>

@@ -1596,3 +1596,23 @@ body[data-cf-sticky] a[aria-label*="WhatsApp" i] { bottom: 5.5rem; }
 
 /* "Read more" / "Read the full answer" on a dark page hero (31 Oct 2026). */
 .cf-pagehero details > summary { color: #fff; }
+
+/* "Launch" on each live GPU card (owner, 31 Oct 2026): the site's primary
+   blue, high contrast, full width on phones, 48 px+ tall. */
+.cf-launch {
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+  min-height: 52px; min-width: 0; padding: 0 20px; border-radius: 9999px;
+  background: var(--color-blue); color: #fff;
+  font-size: 16px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase;
+  box-shadow: 0 8px 22px rgba(37, 99, 235, 0.32);
+  transition: transform .15s ease, box-shadow .15s ease, background-color .15s ease;
+}
+.cf-launch:hover { transform: translateY(-1px); box-shadow: 0 12px 28px rgba(37, 99, 235, 0.42); filter: brightness(1.06); }
+.cf-launch:focus-visible { outline: 3px solid var(--color-hl); outline-offset: 3px; }
+@media (min-width: 640px) { .cf-launch { min-width: 168px; padding: 0 28px; } }
+/* The By-the-minute ticker's amount stays yellow inside the cinema panel
+   (the panel's p colour would grey it), and the frame-strip dots now sit in
+   a span inside a 44 px button (31 Oct 2026). */
+.cf-cine .cf-ticker-amount { color: var(--color-hl); }
+.cf-cine button > span.bg-ink { background: #fff; }
+.cf-cine button > span.bg-ink\/25 { background: rgb(255 255 255 / 0.3); }

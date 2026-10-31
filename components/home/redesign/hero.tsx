@@ -35,7 +35,10 @@ export function RedesignHero({ introLabel, prices }: { introLabel: IntroShort | 
             Coreframe Cloud · Bengaluru
           </p>
           <h1 className="font-heading text-[30px] leading-[1.1] font-medium tracking-[-0.02em] sm:text-[40px] lg:text-[46px]">
-            Our machines do the <span className="cf-hl-underline">heavy work</span>.
+            {/* The "heavy work" yellow underline was dropped 31 Oct 2026: the GPU
+                card's yellow memory counter takes the hero's second yellow
+                (with the Live badge). */}
+            Our machines do the heavy work.
             <br className="hidden sm:block" /> <span className="text-white/75">You keep the laptop you own.</span>
           </h1>
           <p className="mt-4 hidden max-w-[40rem] text-[16px] leading-[1.6] text-white/85 sm:block sm:text-[17px]">

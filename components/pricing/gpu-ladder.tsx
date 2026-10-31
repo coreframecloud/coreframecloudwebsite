@@ -21,12 +21,14 @@ import {
   type RateCard,
 } from "@/lib/rate-card";
 import type { Currency } from "@/lib/money";
+import { TrackedLink } from "@/components/analytics/tracked-link";
 
 export function GpuLadder({
   card,
   currency = "INR",
   title,
   compact = false,
+  launch,
 }: {
   card: RateCard | null;
   /** The visitor's display currency (proxy.ts): one currency per page. */
@@ -35,6 +37,13 @@ export function GpuLadder({
   title?: string;
   /** Tighter rows for a page section that is not the pricing table. */
   compact?: boolean;
+  /**
+   * A big "Launch" button on every live, priced card (owner, 31 Oct 2026,
+   * GPU workstations page). It goes to /signup, the same start as the hero
+   * CTA; the GPU is picked in the Connect app after sign-in, because /signup
+   * takes no GPU parameter. `location` tells the clicks apart in GA4.
+   */
+  launch?: { location: string };
 }) {
   const gpus = publicGpus(card);
   if (!gpus.length) {
@@ -74,12 +83,12 @@ export function GpuLadder({
                     // The card's tag from the control plane (Entry / More
                     // memory / Fast rendering / Big scenes), the same word
                     // Connect shows on the tile (owner, 22 Oct 2026).
-                    <span className="rounded-full border border-rule bg-paper px-2.5 py-0.5 font-sans text-[11.5px] font-semibold tracking-[0.04em] text-ink-2">
+                    <span className="rounded-full border border-rule bg-paper px-2.5 py-0.5 font-sans text-[13px] font-semibold tracking-[0.02em] text-ink-2">
                       {g.badge}
                     </span>
                   ) : null}
                   {introApplies ? (
-                    <span className="rounded-full bg-tint-blue px-2.5 py-0.5 font-sans text-[11.5px] font-semibold tracking-[0.04em] text-blue-ink">
+                    <span className="rounded-full bg-tint-blue px-2.5 py-0.5 font-sans text-[13px] font-semibold tracking-[0.02em] text-blue-ink">
                       Intro hours apply
                     </span>
                   ) : null}
@@ -93,11 +102,33 @@ export function GpuLadder({
                   ))}
                 </ul>
               </div>
-              <div className="sm:text-right">
-                <p className={`font-semibold text-ink ${compact ? "text-[19px]" : "text-[24px]"} leading-none`}>
-                  {onRequest ? "On request" : price.replace("/hr", "")}
-                </p>
-                {!onRequest ? <p className="mt-1 text-[12.5px] text-ink-3">per GPU-hour, {tax}</p> : null}
+              {/* With Launch: price and button share one row on phones, the
+                  button filling the rest of the row (52 px tall). */}
+              <div className={launch ? "flex items-center gap-4 sm:flex-col sm:items-end sm:gap-3" : "sm:text-right"}>
+                <div className={launch ? "shrink-0 sm:text-right" : undefined}>
+                  <p className={`font-semibold text-ink ${compact ? "text-[19px]" : "text-[24px]"} leading-none`}>
+                    {onRequest ? "On request" : price.replace("/hr", "")}
+                  </p>
+                  {!onRequest ? <p className="mt-1 text-[13px] text-ink-3">per GPU-hour, {tax}</p> : null}
+                </div>
+                {launch ? (
+                  onRequest ? (
+                    // Not live: a neutral label, never a button.
+                    <span className="inline-flex min-h-12 flex-1 items-center justify-center rounded-full border border-rule px-6 sm:flex-none text-[14px] font-semibold tracking-[0.04em] text-ink-3 uppercase sm:w-auto" aria-disabled="true">
+                      On request
+                    </span>
+                  ) : (
+                    <TrackedLink
+                      href="/signup"
+                      event="signup_click"
+                      params={{ location: launch.location, label: "Launch", gpu: g.slug }}
+                      className="cf-launch flex-1 sm:flex-none"
+                      aria-label={`Launch ${g.name}`}
+                    >
+                      Launch <span aria-hidden>→</span>
+                    </TrackedLink>
+                  )
+                ) : null}
               </div>
             </li>
           );

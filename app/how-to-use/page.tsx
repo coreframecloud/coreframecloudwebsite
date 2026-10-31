@@ -141,7 +141,7 @@ export default function HowToUsePage() {
               GPU ladder with VRAM and the live per-hour price on every card.
               The previous image was the 0.3 app with one GPU at a rate that
               is no longer charged. */}
-          <OwnImage src="/home/connect-131-catalogue.webp" alt="Coreframe Connect: choose a workstation, with the RTX A4000, RTX A5000 and RTX 5080 cards showing VRAM and the price per hour" width={1076} height={270} caption="Step one: pick your workstation and launch." sizes="(max-width: 1024px) 100vw, 480px" />
+          <OwnImage src="/home/connect-1312-catalogue.webp" alt="Coreframe Connect: choose a workstation, with the RTX A4000, RTX A5000, RTX 5080 and RTX 6000 Ada cards showing VRAM, CUDA cores, vCPU and RAM" width={1090} height={490} caption="Step one: pick your workstation and launch." sizes="(max-width: 1024px) 100vw, 480px" />
         </div>
     </section>
       <section className="cf-section px-5 pb-0">
