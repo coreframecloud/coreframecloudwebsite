@@ -267,7 +267,7 @@ function OfferingBand({ o, flip, prices }: { o: Offering; flip: boolean; prices:
       >
         <div className={`min-w-0 ${flip ? "lg:order-2" : ""}`}>
           <div className="flex flex-wrap items-center gap-2.5">
-            <p className="text-[11.5px] font-semibold tracking-[0.12em] text-ink-2 uppercase">{o.longName}</p>
+            <p className="cf-eyebrow-dot text-[11.5px] font-semibold tracking-[0.12em] text-ink-2 uppercase">{o.longName}</p>
             <StatusBadge status={o.status} />
           </div>
           <h2 className="cfh-h2 mt-4">{o.headline}</h2>

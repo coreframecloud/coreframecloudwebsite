@@ -44,6 +44,16 @@
   /* The owner's highlight yellow (15 Oct 2026): ONE phrase per view, behind
      ink text, never as text on paper. Used by the top-up bonus ladder. */
   --color-hl: #ffd43b;
+  /* 31 Oct 2026 (owner: "base + main + ONE highlight"): the same yellow,
+     promoted from the bonus ladder to the site's single highlight colour.
+     60/30/10: paper + ink are the base, blue/ink the main, yellow the 10%.
+     The site is light-only, so its "dark mode" is the dark bands (hero,
+     pagehero, cine, offer band): there the yellow may be a stroke, a dot or
+     a hover fill (12.9:1 on --color-night). On paper it stays a marker
+     behind ink text or a decorative dot -- never yellow text on white, and
+     never a focus ring (1.4:1). One highlight per view. */
+  --color-hl-on-dark: #ffd43b;
+  --color-hl-ink: var(--color-ink); /* text that sits ON the yellow */
 
   /* The dark monospace panel. Deliberately near-black rather than the page
      inverted: it has to read as a terminal, not as a dark card. */
@@ -207,6 +217,30 @@ body {
   /* The small tag above a heading. Every section has at most one. */
   .cf-eyebrow {
     @apply inline-block rounded-md bg-ink/[0.06] px-2.5 py-1.5 text-[11.5px] leading-none font-semibold tracking-[0.12em] text-ink-2 uppercase;
+  }
+
+  /* ── The highlight (31 Oct 2026) ──────────────────────────────────────
+     Two small tools, used sparingly; see --color-hl. */
+  /* A yellow stroke under ONE phrase of a headline on a dark band. */
+  .cf-hl-underline {
+    text-decoration-line: underline;
+    text-decoration-color: var(--color-hl-on-dark);
+    text-decoration-thickness: 0.09em;
+    text-underline-offset: 0.16em;
+    text-decoration-skip-ink: none;
+  }
+  /* A small yellow dot before a section eyebrow. Decorative only; the
+     hairline keeps it visible on the pale tints. */
+  .cf-eyebrow-dot::before {
+    content: "";
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    margin-right: 8px;
+    border-radius: 9999px;
+    background: var(--color-hl);
+    box-shadow: 0 0 0 1px rgb(16 17 19 / 0.12);
+    vertical-align: 0.12em;
   }
 
   /* ── Buttons ────────────────────────────────────────────────────────────
@@ -655,7 +689,7 @@ body {
     @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-[14px] font-semibold tracking-[0.02em] uppercase transition-colors duration-200;
   }
   .cfh-pill-dark { @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-[14px] font-semibold tracking-[0.02em] uppercase transition-colors duration-200 bg-ink text-white hover:bg-[#2a2d33]; }
-  .cfh-pill-light { @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-[14px] font-semibold tracking-[0.02em] uppercase transition-colors duration-200 bg-white text-ink hover:bg-[#e9ebef]; }
+  .cfh-pill-light { @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-[14px] font-semibold tracking-[0.02em] uppercase transition-colors duration-200 bg-white text-ink hover:bg-hl focus-visible:outline-2 focus-visible:outline-offset-[3px] focus-visible:outline-hl-on-dark; }
   .cfh-pill-ghost { @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-[14px] font-semibold tracking-[0.02em] uppercase transition-colors duration-200 border border-white/40 text-white hover:bg-white/10; }
   .cfh-link {
     @apply inline-flex items-center gap-1.5 text-[13px] font-semibold tracking-[0.04em] uppercase hover:underline;
@@ -722,7 +756,19 @@ body {
 .cf-pagehero .cf-eyebrow { background: rgb(255 255 255 / 0.12); color: #fff; }
 .cf-pagehero a:not([class*="cf-btn"]) { color: #a9c4ff; }
 .cf-pagehero .cf-btn-primary { background: #fff; color: var(--color-ink); }
-.cf-pagehero .cf-btn-primary:hover { background: #e9ebef; }
+.cf-pagehero .cf-btn-primary:hover { background: var(--color-hl-on-dark); color: var(--color-hl-ink); }
+.cf-pagehero .cf-btn-primary:focus-visible { outline-color: var(--color-hl-on-dark); }
+/* One dot of the highlight on every subpage hero's eyebrow (31 Oct 2026). */
+.cf-pagehero .cf-eyebrow::before {
+  content: "";
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  margin-right: 8px;
+  border-radius: 9999px;
+  background: var(--color-hl-on-dark);
+  vertical-align: 0.12em;
+}
 .cf-pagehero .cf-btn-secondary { border-color: rgb(255 255 255 / 0.4); color: #fff; }
 .cf-pagehero .cf-btn-secondary:hover { background: rgb(255 255 255 / 0.1); }
 .cf-pagehero .border-rule { border-color: rgb(255 255 255 / 0.15); }
@@ -1147,6 +1193,8 @@ body:has([data-usd-view]) .cf-ticker {
 .cf-pagehero--paper :is(.cf-lead, .cf-section-copy, .text-ink-2, p) { color: #3a3f47; }
 .cf-pagehero--paper .text-ink-3 { color: var(--color-ink-3); }
 .cf-pagehero--paper .cf-eyebrow { background: #10111310; color: var(--color-blue-ink); }
+.cf-pagehero--paper .cf-eyebrow::before { background: var(--color-hl); box-shadow: 0 0 0 1px rgb(16 17 19 / 0.12); }
+.cf-pagehero--paper .cf-btn-primary:focus-visible { outline-color: var(--color-ink); }
 .cf-pagehero--paper a:not([class*="cf-btn"]) { color: var(--color-blue-ink); }
 .cf-pagehero--paper .cf-btn-primary { background: var(--color-ink); color: #fff; }
 .cf-pagehero--paper .cf-btn-primary:hover { background: #2a2d33; }

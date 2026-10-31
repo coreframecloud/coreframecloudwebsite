@@ -18,7 +18,7 @@ export function Bento({ youtubeId, ladder = null }: { youtubeId: string; ladder?
     <section className="cf-cine cf-cine--band mt-16 sm:mx-3">
       <div className="cfh-wrap">
       <Reveal className="mx-auto max-w-[44rem] text-center">
-        <p className="text-[11.5px] font-semibold tracking-[0.12em] text-ink-2 uppercase">GPU workstations, in detail</p>
+        <p className="cf-eyebrow-dot text-[11.5px] font-semibold tracking-[0.12em] text-ink-2 uppercase">GPU workstations, in detail</p>
         <h2 className="cfh-h2 mt-3">
           A real workstation,
           <br className="hidden sm:block" /> without buying one
