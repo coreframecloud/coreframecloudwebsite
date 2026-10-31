@@ -8,6 +8,7 @@ import { Testimonials } from "@/components/home/redesign/testimonials";
 import { OfferingBands, offeringPrices } from "@/components/home/redesign/offerings";
 import type { Currency } from "@/lib/money";
 import {
+  adhocRateValue,
   getRateCard,
   adhocRate as adhocRateFrom,
   introOfferFor,
@@ -67,7 +68,16 @@ export default async function HomeView({ currency }: { currency: Currency }) {
       <div className="cfh-sheet">
         <WhatIsCoreframe fromRate={adhocRate} currency={currency} vramRange={vramRangeLabel(prices.vramSteps)} />
         <OfferingBands prices={prices} />
-        <Bento youtubeId={WALKTHROUGH_YOUTUBE_ID} ladder={ladder} />
+        <Bento
+          youtubeId={WALKTHROUGH_YOUTUBE_ID}
+          ladder={ladder}
+          ticker={(() => {
+            const hourly = adhocRateValue(rateCard, currency);
+            // Per-minute billing is what the ticker shows; without it, no ticker.
+            if (hourly == null || rateCard?.billing_granularity !== "per_minute") return null;
+            return { hourly, currency, taxNote: currency === "USD" ? undefined : "incl. GST" };
+          })()}
+        />
         <HowItWorks />
       </div>
       <FactsBand currency={currency} ladder={ladder} />

@@ -34,7 +34,7 @@ export function FrameStrip() {
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
     >
-      <div className="relative aspect-[16/10] overflow-hidden rounded-2xl border border-rule bg-night shadow-[0_20px_60px_rgba(16,17,19,0.18)]">
+      <div className="relative aspect-[16/9] overflow-hidden rounded-2xl border border-rule bg-night shadow-[0_20px_60px_rgba(16,17,19,0.18)]">
         {FRAMES.map((f, i) => (
           <Image
             key={f.src}
@@ -52,20 +52,23 @@ export function FrameStrip() {
           {FRAMES[shown].caption}
         </p>
       </div>
-      <div className="mt-3 flex items-center gap-2">
+      <div className="mt-1 flex items-center gap-2">
         {FRAMES.map((f, i) => (
           <button
             key={f.src}
             type="button"
             aria-label={`Show frame ${i + 1}: ${f.caption}`}
             onClick={() => setCur(i)}
-            className={`h-1.5 rounded-full transition-all ${i === shown ? "w-6 bg-ink" : "w-1.5 bg-ink/25"}`}
-          />
+            // 44 px tap target around a small dot (phone check, 31 Oct 2026).
+            className="-mx-2 grid h-11 min-w-8 place-items-center px-2"
+          >
+            <span className={`block h-1.5 rounded-full transition-all ${i === shown ? "w-6 bg-ink" : "w-1.5 bg-ink/25"}`} />
+          </button>
         ))}
         <button
           type="button"
           onClick={() => setUserPaused((p) => !p)}
-          className="ml-auto text-[12px] font-semibold tracking-[0.06em] text-ink-2 uppercase hover:text-ink"
+          className="ml-auto inline-flex min-h-11 items-center px-2 text-[13px] font-semibold tracking-[0.06em] text-ink-2 uppercase hover:text-ink"
         >
           {userPaused ? "Play" : "Pause"}
         </button>

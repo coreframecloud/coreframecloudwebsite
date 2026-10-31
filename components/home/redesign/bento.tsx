@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import { NODE } from "@/lib/node-spec";
 import type { LadderRanges } from "@/lib/rate-card";
@@ -6,13 +5,18 @@ import { Reveal } from "@/components/home/redesign/reveal";
 import { FrameStrip } from "@/components/home/redesign/frame-strip";
 import { Drift } from "@/components/home/redesign/depth";
 import { walkthroughVideoObject } from "@/components/home/landing/walkthrough-section";
+import { MinuteTicker } from "@/components/home/redesign/minute-ticker";
+import type { Currency } from "@/lib/money";
+
+/** The lowest live hourly rate for the "By the minute" ticker, or null. */
+export type TickerRate = { hourly: number; currency: Currency; taxNote?: string } | null;
 
 /**
  * The GPU workstation in detail, as glass cards in the cinema panel (16 Oct 2026; were soft tints) with real screenshots
  * cropped inside (the SiteGround "bento"). Studio left this grid on 13 Oct
  * 2026: it has its own band above (components/home/redesign/offerings.tsx).
  */
-export function Bento({ youtubeId, ladder = null }: { youtubeId: string; ladder?: LadderRanges | null }) {
+export function Bento({ youtubeId, ladder = null, ticker = null }: { youtubeId: string; ladder?: LadderRanges | null; ticker?: TickerRate }) {
   return (
     // The GPU family's cinema panel (owner, 16 Oct 2026): .cf-cine in globals.css.
     <section className="cf-cine cf-cine--band mt-16 sm:mx-3">
@@ -33,8 +37,9 @@ export function Bento({ youtubeId, ladder = null }: { youtubeId: string; ladder?
         <Reveal tilt className="cfh-card flex flex-col bg-tint-blue lg:row-span-2">
           <h3 className="cfh-h3">The workstation</h3>
           <p className="mt-3 max-w-[30rem] text-[16px] leading-[1.6] text-ink-2">
-            A full Windows 11 machine that&rsquo;s yours for the session, opened from the Coreframe
-            app.
+            {/* Owner, 31 Oct 2026: Windows 11 or Windows Server, depending on the card. */}
+            A full Windows machine, Windows 11 or Windows Server depending on the card, that&rsquo;s
+            yours for the session, opened from the Coreframe app.
           </p>
           {/* The GPU ladder from the live rate card (owner, 21 Oct 2026); the
               disk is a fixed fact of every node. No GPU name is typed here. */}
@@ -84,18 +89,11 @@ export function Bento({ youtubeId, ladder = null }: { youtubeId: string; ladder?
           <Reveal tilt delay={0.24} className="cfh-card flex flex-col bg-tint-sand">
             <h3 className="cfh-h3">By the minute</h3>
             <p className="mt-3 text-[15px] leading-[1.55] text-ink-2">
-              No monthly plan and nothing to cancel. Every session shows what it cost.
+              No monthly plan and nothing to cancel. The meter runs only while you are connected, and every session shows what it cost.
             </p>
-            <div className="mt-5 -mr-7 -mb-7 overflow-hidden rounded-tl-xl border border-rule sm:-mr-9 sm:-mb-9">
-              <Image
-                src="/home/app-billing.webp"
-                alt="Recent sessions with their duration and cost"
-                width={725}
-                height={342}
-                sizes="(max-width: 640px) 100vw, 280px"
-                className="h-auto w-full"
-              />
-            </div>
+            {/* The old billing screenshot was removed 31 Oct 2026 (owner): a
+                live-style ticker at the lowest live rate instead. */}
+            {ticker ? <MinuteTicker hourly={ticker.hourly} currency={ticker.currency} taxNote={ticker.taxNote} /> : null}
           </Reveal>
         </div>
 

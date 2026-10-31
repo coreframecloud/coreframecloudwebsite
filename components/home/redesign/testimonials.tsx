@@ -98,7 +98,7 @@ function Controls({ items, active, onDot, paused, onToggle }: { items: Testimoni
         <button
           type="button"
           onClick={onToggle}
-          className="ml-auto text-[12px] font-semibold tracking-[0.06em] text-ink-2 uppercase hover:text-ink"
+          className="ml-auto inline-flex min-h-11 items-center px-2 text-[13px] font-semibold tracking-[0.06em] text-ink-2 uppercase hover:text-ink"
         >
           {paused ? "Play" : "Pause"}
         </button>
