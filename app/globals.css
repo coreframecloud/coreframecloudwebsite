@@ -281,7 +281,7 @@ body {
     background: var(--color-hl-on-dark);
     color: var(--color-hl-ink);
   }
-  .cfh-pill-hl:hover { background: #ffe27a; }
+  @media (hover: hover) { .cfh-pill-hl:hover { background: #ffe27a; } }
   /* A small yellow dot before a section eyebrow. Decorative only; the
      hairline keeps it visible on the pale tints. */
   .cf-eyebrow-dot::before {
@@ -303,16 +303,25 @@ body {
     @apply inline-flex min-h-11 items-center justify-center rounded-full bg-ink px-6 py-3 text-[14px] leading-none font-semibold tracking-[0.02em] text-white uppercase transition-colors;
   }
 
-  .cf-btn-primary:hover {
-    @apply bg-[#2a2d33];
+  /* Hover only where a real pointer hovers (owner, 1 Nov 2026). On a phone,
+     iOS keeps :hover after a tap, so a near-white hover fill under a white
+     label on a dark section left a blank white pill ("Email us" on
+     /request-demo). Every hand-written button hover below is gated the same
+     way; Tailwind v4's hover: utilities already are. */
+  @media (hover: hover) {
+    .cf-btn-primary:hover {
+      @apply bg-[#2a2d33];
+    }
   }
 
   .cf-btn-secondary {
     @apply inline-flex min-h-11 items-center justify-center rounded-full border border-rule-strong bg-transparent px-6 py-3 text-[14px] leading-none font-semibold tracking-[0.02em] text-ink uppercase transition-colors;
   }
 
-  .cf-btn-secondary:hover {
-    @apply bg-paper-2;
+  @media (hover: hover) {
+    .cf-btn-secondary:hover {
+      @apply bg-paper-2;
+    }
   }
 
   .cf-btn-primary:focus-visible,
@@ -810,7 +819,7 @@ body {
 .cf-pagehero .cf-eyebrow { background: rgb(255 255 255 / 0.12); color: #fff; }
 .cf-pagehero a:not([class*="cf-btn"]) { color: #a9c4ff; }
 .cf-pagehero .cf-btn-primary { background: #fff; color: var(--color-ink); }
-.cf-pagehero .cf-btn-primary:hover { background: var(--color-hl-on-dark); color: var(--color-hl-ink); }
+@media (hover: hover) { .cf-pagehero .cf-btn-primary:hover { background: var(--color-hl-on-dark); color: var(--color-hl-ink); } }
 .cf-pagehero .cf-btn-primary:focus-visible { outline-color: var(--color-hl-on-dark); }
 /* One dot of the highlight on every subpage hero's eyebrow (31 Oct 2026). */
 .cf-pagehero .cf-eyebrow::before {
@@ -824,7 +833,7 @@ body {
   vertical-align: 0.12em;
 }
 .cf-pagehero .cf-btn-secondary { border-color: rgb(255 255 255 / 0.4); color: #fff; }
-.cf-pagehero .cf-btn-secondary:hover { background: rgb(255 255 255 / 0.1); }
+@media (hover: hover) { .cf-pagehero .cf-btn-secondary:hover { background: rgb(255 255 255 / 0.1); } }
 .cf-pagehero .border-rule { border-color: rgb(255 255 255 / 0.15); }
 
 /* ── Fade-up reveal, stagger, spotlight, parallax: app/motion.css ───────── */
@@ -1251,9 +1260,9 @@ body:has([data-usd-view]) .cf-ticker {
 .cf-pagehero--paper .cf-btn-primary:focus-visible { outline-color: var(--color-ink); }
 .cf-pagehero--paper a:not([class*="cf-btn"]) { color: var(--color-blue-ink); }
 .cf-pagehero--paper .cf-btn-primary { background: var(--color-ink); color: #fff; }
-.cf-pagehero--paper .cf-btn-primary:hover { background: #2a2d33; }
+@media (hover: hover) { .cf-pagehero--paper .cf-btn-primary:hover { background: #2a2d33; } }
 .cf-pagehero--paper .cf-btn-secondary { border-color: #10111355; color: var(--color-ink); }
-.cf-pagehero--paper .cf-btn-secondary:hover { background: #1011130a; }
+@media (hover: hover) { .cf-pagehero--paper .cf-btn-secondary:hover { background: #1011130a; } }
 .cf-pagehero--paper .border-rule { border-color: var(--color-rule); }
 .cf-pagehero--paper :is(.cf-glass, .cf-glass-inset, .cf-note, .bg-paper, .bg-paper-2) {
   background: var(--color-paper);
@@ -1413,7 +1422,7 @@ body:has([data-usd-view]) .cf-ticker {
 
 /* the homepage bands: the GPU band's light bits flipped for the cinema panel */
 .cf-cine .cfh-pill-dark { background: #fff; color: var(--color-ink); }
-.cf-cine .cfh-pill-dark:hover { background: #e9ebef; }
+@media (hover: hover) { .cf-cine .cfh-pill-dark:hover { background: #e9ebef; } }
 .cf-cine .border-ink\/25 { border-color: rgb(255 255 255 / 0.4); color: #fff; }
 .cf-cine li > span.bg-ink { background: #8fd3cb; }
 /* GPU pages below the cinema band: content-heavy, so light, but neutral
@@ -1446,7 +1455,7 @@ body:has([data-usd-view]) .cf-ticker {
   box-shadow: 0 12px 28px -14px color-mix(in srgb, var(--color-blue) 80%, transparent);
   transition: background-color 0.15s;
 }
-.cf-btn-go:hover { background: var(--color-blue-ink); }
+@media (hover: hover) { .cf-btn-go:hover { background: var(--color-blue-ink); } }
 /* The WhatsApp bubble rises above the sticky sign-up bar while it shows. */
 body[data-cf-sticky] a[aria-label*="WhatsApp" i] { bottom: 5.5rem; }
 
@@ -1458,7 +1467,7 @@ body[data-cf-sticky] a[aria-label*="WhatsApp" i] { bottom: 5.5rem; }
   background-size: 300% 100%;
   animation: cf-flash-bg 3.5s linear infinite, cf-flash-ring 2s ease-out infinite;
 }
-.cf-btn-flash:hover { filter: brightness(1.08); }
+@media (hover: hover) { .cf-btn-flash:hover { filter: brightness(1.08); } }
 @keyframes cf-flash-bg { from { background-position: 0% 50%; } to { background-position: 300% 50%; } }
 @keyframes cf-flash-ring {
   0% { box-shadow: 0 0 0 0 color-mix(in srgb, #2f6be0 55%, transparent); }

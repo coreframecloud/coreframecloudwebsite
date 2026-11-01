@@ -70,3 +70,13 @@ export function MapPinIcon({ className = "" }: { className?: string }) {
     </svg>
   );
 }
+
+export function PhoneIcon({ className = "" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" className={`${BASE} ${className}`} fill="none"
+      stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"
+      strokeLinejoin="round" aria-hidden="true">
+      <path d="M21 16.9v2.6a2 2 0 0 1-2.2 2A18.5 18.5 0 0 1 2.5 5.2 2 2 0 0 1 4.5 3h2.6a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.6a2 2 0 0 1-.5 2.1l-1.1 1.1a15 15 0 0 0 5.3 5.3l1.1-1.1a2 2 0 0 1 2.1-.5c.8.3 1.7.6 2.6.7a2 2 0 0 1 1.7 2Z" />
+    </svg>
+  );
+}

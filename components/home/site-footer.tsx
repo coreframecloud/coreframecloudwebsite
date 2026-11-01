@@ -6,6 +6,7 @@ import {
   InstagramIcon,
   LinkedInIcon,
   MapPinIcon,
+  PhoneIcon,
 } from "@/components/brand/contact-icons";
 import {
   COMPANY,
@@ -176,8 +177,14 @@ export function SiteFooter({ currency = "INR" }: { currency?: Currency }) {
               </Link>
               <Link href={COMPANY.whatsapp} target="_blank" rel="noreferrer" className="flex min-h-11 items-center gap-2 text-[13.5px] text-ink-2 transition hover:text-ink">
                 <WhatsAppIcon className="h-[15px] w-[15px]" />
-                {COMPANY.phone}
+                WhatsApp {COMPANY.phone}
               </Link>
+              {/* Owner, 1 Nov 2026: every contact in the footer does its job in
+                  one tap -- call dials, WhatsApp opens a chat, mail writes. */}
+              <a href={`tel:${COMPANY.phone.replace(/\s+/g, "")}`} className="flex min-h-11 items-center gap-2 text-[13.5px] text-ink-2 transition hover:text-ink">
+                <PhoneIcon className="h-[15px] w-[15px]" />
+                Call {COMPANY.phone}
+              </a>
               {/* The handle, not the word "Instagram". People search the handle,
                   and it is the only social profile in the Organization schema
                   (layout.tsx sameAs) -- a footer link is what makes that claim
@@ -201,7 +208,10 @@ export function SiteFooter({ currency = "INR" }: { currency?: Currency }) {
                 className="flex min-h-11 max-w-[17rem] items-start gap-2 py-1.5 text-[12.5px] leading-5 text-ink-2 transition hover:text-ink"
               >
                 <MapPinIcon className="mt-0.5 h-[15px] w-[15px]" />
-                <span>{COMPANY_VISITING_ADDRESS_LINE}</span>
+                <span>
+                  <span className="block font-medium text-ink">Find us on Google Maps</span>
+                  {COMPANY_VISITING_ADDRESS_LINE}
+                </span>
               </Link>
             </div>
           </div>

@@ -120,15 +120,10 @@ Selected GPU: ${gpu || "Not selected"}`;
             href="https://wa.me/916366889488?text=Hi%20Coreframe%20Cloud%2C%20I%27d%20like%20to%20talk%20about%20a%20monthly%20plan%20or%20a%20demo."
             target="_blank"
             rel="noreferrer"
-            className="mt-5 block"
+            className="cf-btn-secondary mt-5 min-h-11 w-full sm:w-auto"
           >
-            <Button
-              variant="outline"
-              className="cf-btn-secondary min-h-11 w-full sm:w-auto"
-            >
-              <MessageCircle className="mr-2 h-4 w-4" />
-              Connect on WhatsApp
-            </Button>
+            <MessageCircle className="mr-2 h-4 w-4" />
+            Connect on WhatsApp
           </a>
         </div>
 
@@ -137,14 +132,11 @@ Selected GPU: ${gpu || "Not selected"}`;
           <div className="mt-2 text-xl font-semibold break-words text-ink">
             admin@coreframecloud.com
           </div>
-          <a href="mailto:admin@coreframecloud.com" className="mt-5 block">
-            <Button
-              variant="outline"
-              className="cf-btn-secondary min-h-11 w-full sm:w-auto"
-            >
-              <Mail className="mr-2 h-4 w-4" />
-              Email us
-            </Button>
+          {/* A styled link, not a <Button> inside <a>: the outline variant's
+              white background and hover fill blanked this out on phones. */}
+          <a href="mailto:admin@coreframecloud.com" className="cf-btn-secondary mt-5 min-h-11 w-full sm:w-auto">
+            <Mail className="mr-2 h-4 w-4" />
+            Email us
           </a>
         </div>
 
