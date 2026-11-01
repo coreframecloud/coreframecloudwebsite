@@ -31,11 +31,12 @@ export const blenderInteriorRender: BlogPost = {
   eyebrow: "Walkthrough · Blender",
   // Hero swapped 16 Oct 2026 (owner): the Blender 4.1 splash frame's licence
   // for marketing use is unconfirmed, so the post opens on our own render.
+  // 1 Nov 2026 (owner): approved Studio Pro renders only (showcase pro-19, 16:9 crop).
   hero: {
-    src: `${IMG}/hero-living-room.webp`,
-    alt: "A calm living room with a white sofa, a woven leather chair, an olive tree and a garden through the windows.",
-    width: 1152,
-    height: 648,
+    src: `${IMG}/hero-studio-pro-living.webp`,
+    alt: "Industrial living room with an oxblood leather sofa and black steel windows.",
+    width: 1024,
+    height: 576,
     caption: "A living room created with Coreframe RenderGrid.",
   },
   answer: () =>

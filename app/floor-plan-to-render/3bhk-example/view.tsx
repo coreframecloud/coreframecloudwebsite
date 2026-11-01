@@ -22,10 +22,11 @@ import { formatMoney, type Currency } from "@/lib/money";
  * The demo DXF is no longer offered inside Studio (owner, 16 Oct 2026), so
  * the copy calls it "our sample plan" and never says you can open it there.
  *
- * Every image is a genuine Studio 4K export of THIS plan's rooms (16 Oct 2026,
- * the live Studio code path; prompts and seeds in
- * marketing-20261016-site-explainer/gen/runs.jsonl), the same files
- * /floor-plan-to-render shows, labelled "Generated image" as Studio labels it.
+ * IMAGES (owner 1 Nov 2026): only the approved Studio Pro renders
+ * (apps/tools/web/showcase/pro-*.webp) appear; the older exports of this
+ * plan's rooms were taken down. Those Pro renders are NOT rooms of this plan,
+ * so the page says so and never pairs the plan with a render as its output.
+ * Labelled "Generated image" as Studio labels it.
  * Facts about reading the drawing come from the Studio guide
  * (apps/tools/web/learn.html): DXF only, defaults 2.8 m / 2.1 m / 0.9-2.1 m,
  * every read free. No timings are claimed. Prices: @/lib/studio-prices.ts,
@@ -40,7 +41,7 @@ const TITLE = "3BHK floor plan to 3D render: a worked example";
 export const threeBhkMetadata: Metadata = {
   title: { absolute: "3BHK Floor Plan to 3D Render: a Worked Example | Coreframe" },
   description:
-    "One real 3BHK DXF plan through Coreframe Studio: rooms read from the drawing, free previews, and 4K concept renders of the living room, kitchen and bedroom.",
+    "One real 3BHK DXF plan through Coreframe Studio: rooms read from the drawing, free previews, and 4K concept renders, with Studio Pro examples.",
   keywords: ["3bhk house plan 3d", "3bhk floor plan 3d render", "floor plan to 3d render example", "2d floor plan to 3d render", "DXF floor plan render"],
   alternates: { canonical: PATH },
 };
@@ -48,27 +49,27 @@ export const threeBhkMetadata: Metadata = {
 const ROOMS = [
   {
     room: "Living room",
-    src: "/studio-renders/studio-living2-2048.webp",
-    alt: "The living room from the 3BHK plan, furnished: a sofa with cushions, a carved wooden cabinet, a floor lamp, plants and a rug on a stone floor, with the doors and window as drawn (generated image)",
-    got: "A wide evening view: sofa, carved cabinet, floor lamp and rug. The doors and the window are where the drawing puts them.",
+    src: "/studio-renders/studio-pro-living-stone-1024.webp",
+    alt: "Minimal living room on polished concrete (generated image)",
+    got: "A minimal living room on polished concrete: a white sofa, a jute rug and an olive tree.",
   },
   {
     room: "Kitchen",
-    src: "/studio-renders/studio-kitchen-2048.webp",
-    alt: "The kitchen from the 3BHK plan: sage-green cabinets, a stone-topped island with a fruit bowl, open shelves with copper jars and brass taps (generated image)",
-    got: "Sage-green cabinets, a stone-topped island and open shelves, inside the kitchen's walls from the plan.",
+    src: "/studio-renders/studio-pro-kitchen-industrial-1024.webp",
+    alt: "Industrial kitchen with a concrete waterfall island and brass pendants (generated image)",
+    got: "An industrial kitchen with a concrete waterfall island and brass pendants.",
   },
   {
-    room: "Master bedroom",
-    src: "/studio-renders/studio-masterbed-2048.webp",
-    alt: "The master bedroom from the 3BHK plan: a teak bed with a rust throw, a tall louvred wardrobe, a patterned rug, a palm and sheer curtains (generated image)",
-    got: "A teak bed, a louvred wardrobe and sheer curtains. Studio says on screen which furniture it placed, because none of it is in the drawing.",
+    room: "Bedroom",
+    src: "/studio-renders/studio-pro-bedroom-scandi-1024.webp",
+    alt: "Light Scandinavian bedroom with an oak bed and sheer curtains (generated image)",
+    got: "A light Scandinavian bedroom with an oak bed and sheer curtains. Studio says on screen which furniture it placed, because none of it is in a drawing.",
   },
   {
-    room: "Balcony",
-    src: "/studio-renders/studio-balcony-2048.webp",
-    alt: "The balcony from the 3BHK plan at dusk: potted plants, a cane chair and a railing over trees, with a lit bedroom through the door (generated image)",
-    got: "Dusk on the balcony, looking back into a bedroom through the door that the plan draws.",
+    room: "Dining room",
+    src: "/studio-renders/studio-pro-dining-scandi-1024.webp",
+    alt: "Scandinavian dining room with a round oak table and wishbone chairs (generated image)",
+    got: "A Scandinavian dining room with a round oak table and wishbone chairs.",
   },
 ];
 
@@ -97,7 +98,7 @@ function steps(m: StudioMoney) {
     {
       title: "Download the ones you keep",
       cost: `4K ${m.k4}`,
-      body: `Each room on this page is a 4K export (3840 × 2880). A 2K download for email is ${m.k2}. Prices: ${m.tax}.`,
+      body: `A 4K download is 3840 × 2880, for print. A 2K download for email is ${m.k2}. Prices: ${m.tax}.`,
     },
   ];
 }
@@ -110,8 +111,8 @@ function faqs(m: StudioMoney, k4: number, cur: Currency) {
       a: "No. Studio makes concept images of the rooms for pitching a design. The walls, doors and windows come from your drawing; the furniture, materials and light are generated. It does not export a 3D model file, and it does not draw or change the plan.",
     },
     {
-      q: "What did this 3BHK example cost?",
-      a: `Reading the plan and the previews were free. Done on your own account, the four 4K downloads shown here would cost ${four} × ${m.k4} = ${formatMoney(four * k4, cur)}, ${m.tax}. Previews beyond ${FREE_PREVIEWS_PER_DAY} in a day are ${m.extraPreview} each.`,
+      q: "What would this 3BHK example cost?",
+      a: `Reading the plan and the previews are free. Done on your own account, four rooms downloaded in 4K would cost ${four} × ${m.k4} = ${formatMoney(four * k4, cur)}, ${m.tax}. Previews beyond ${FREE_PREVIEWS_PER_DAY} in a day are ${m.extraPreview} each.`,
     },
     {
       q: "Do I need a DXF, or can I upload a PDF or image of the plan?",
@@ -136,7 +137,7 @@ export default async function ThreeBhkExampleView({ currency }: { currency: Curr
     "@id": `${SITE}${PATH}#article`,
     headline: TITLE,
     description:
-      "A worked example: one real 3BHK DXF floor plan taken through Coreframe Studio, from upload to 4K concept renders of four rooms, with what each step cost.",
+      "A worked example: one real 3BHK DXF floor plan taken through Coreframe Studio, from upload to 4K concept renders, with what each step costs and Studio Pro example renders.",
     url: `${SITE}${PATH}`,
     mainEntityOfPage: `${SITE}${PATH}`,
     datePublished: PUBLISHED.iso,
@@ -176,10 +177,9 @@ export default async function ThreeBhkExampleView({ currency }: { currency: Curr
             <p className="cf-eyebrow mt-6">Studio · Worked example</p>
             <h1 className="cf-display mt-5">3BHK floor plan to 3D render: a worked example.</h1>
             <p className="cf-lead mt-5">
-              One real 3BHK drawing taken through Coreframe Studio: the DXF in, the rooms read from it, and a 4K concept
-              render out for the living room, kitchen, master bedroom and balcony. Reading the plan and the previews were
-              free; each 4K download is {m.k4}, {m.tax}. The output is
-              concept images, not a 3D model.
+              One real 3BHK drawing taken through Coreframe Studio: the DXF in, the rooms read from it, then a 4K concept
+              render for each room you pick. Reading the plan and the previews are free; each 4K download is {m.k4},{" "}
+              {m.tax}. The output is concept images, not a 3D model.
             </p>
             <p className="mt-4 text-[12.5px] text-ink-3">
               Published <time dateTime={PUBLISHED.iso}>{PUBLISHED.label}</time> · Coreframe team
@@ -226,13 +226,16 @@ export default async function ThreeBhkExampleView({ currency }: { currency: Curr
 
         <section className="cf-section px-5 pt-0">
           <div className="cf-wide">
-            <h2 className="cf-section-title">What each room got.</h2>
-            <p className="cf-section-copy mt-3">Four 4K exports (3840 × 2880) from Studio, shown smaller.</p>
+            <h2 className="cf-section-title">What the renders look like.</h2>
+            <p className="cf-section-copy mt-3">
+              Four Studio Pro renders, shown smaller. They are rooms from other plans, not this one; yours keep the walls,
+              doors and windows you drew.
+            </p>
             <div className="mt-8 grid gap-8 sm:grid-cols-2">
               {ROOMS.map((r) => (
                 <figure key={r.src} className="min-w-0">
                   <div className="relative overflow-hidden rounded-[20px] bg-paper-2 shadow-[0_18px_40px_-26px_rgb(90_60_30/0.45)]">
-                    <Image src={r.src} alt={r.alt} width={2048} height={1536} sizes="(max-width: 640px) 100vw, 470px" className="h-auto w-full" />
+                    <Image src={r.src} alt={r.alt} width={1024} height={768} sizes="(max-width: 640px) 100vw, 470px" className="h-auto w-full" />
                     <span className="absolute right-2.5 bottom-2.5 rounded-md bg-black/60 px-2 py-1 text-[11px] font-semibold text-white">Generated image</span>
                   </div>
                   <figcaption className="mt-2.5">

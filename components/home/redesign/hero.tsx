@@ -2,8 +2,10 @@ import { HeroBackdrop } from "@/components/home/redesign/depth";
 import { HeroOfferingCards, type IntroShort, type OfferingPrices } from "@/components/home/redesign/offerings";
 
 /**
- * Full-bleed hero on a living room rendered on our own machine (a RenderGrid
- * test render, 7 Oct 2026), darkened so the type reads. Only here since
+ * Full-bleed hero on two Studio Pro renders made with RenderGrid on our own
+ * machine (owner 1 Nov 2026: only the approved Pro renders, never the older
+ * test renders; apps/tools/web/showcase pro-20 and pro-19, side by side),
+ * darkened so the type reads. Phones get the living room alone (a portrait crop). Only here since
  * 16 Oct 2026: /floor-plan-to-render has its own Studio export. Until 16 Oct 2026 it
  * was the Blender 4.1 splash scene, swapped out because its licence for
  * marketing use was never confirmed.
@@ -22,8 +24,9 @@ export function RedesignHero({ introLabel, prices }: { introLabel: IntroShort | 
   return (
     <section className="relative isolate overflow-hidden bg-night text-white" data-cf-section="hero">
       <HeroBackdrop
-        src="/heroes/interior-rendergrid-2560.webp"
-        alt="A calm living room with a white sofa, a woven leather chair, an olive tree and a garden through the windows"
+        src="/heroes/home-hero-pro-2560.webp"
+        alt="Two rooms side by side: a Scandinavian dining room with a round oak table and wishbone chairs, and an industrial living room with an oxblood leather sofa and black steel windows"
+        mobile={{ src: "/heroes/home-hero-pro-m780.webp", width: 780, height: 1040 }}
       />
       <div className="absolute inset-0 -z-10 bg-gradient-to-r from-[#0b0d11]/92 via-[#0b0d11]/70 to-[#0b0d11]/35" />
       <div className="absolute inset-x-0 bottom-0 -z-10 h-2/3 bg-gradient-to-t from-[#0b0d11]/85 to-transparent" />
@@ -63,7 +66,7 @@ export function RedesignHero({ introLabel, prices }: { introLabel: IntroShort | 
         </ul>
       </div>
       <p className="cfh-wrap pb-20 text-[13px] text-white/70 sm:pb-28">
-        Background: a living room created with Coreframe RenderGrid.
+        Background: two rooms created with Coreframe RenderGrid.
       </p>
     </section>
   );

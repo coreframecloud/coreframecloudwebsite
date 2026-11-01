@@ -1,4 +1,4 @@
-import Image from "next/image";
+import Image, { getImageProps } from "next/image";
 import type { ReactNode } from "react";
 
 /**
@@ -11,8 +11,49 @@ import type { ReactNode } from "react";
  * animation-timeline, and anyone with reduced motion, see a still image.
  */
 
-/** The hero render: moves slower than the page and eases back as the sheet covers it. */
-export function HeroBackdrop({ src, alt }: { src: string; alt: string }) {
+/**
+ * The hero render: moves slower than the page and eases back as the sheet covers it.
+ * `mobile` (1 Nov 2026): a portrait crop for phones, so a tall phone hero is not a
+ * small slice of the wide file blown up. Same <picture> pattern as PageHeroBg.
+ */
+export function HeroBackdrop({
+  src,
+  alt,
+  width = 2560,
+  height = 1440,
+  mobile,
+}: {
+  src: string;
+  alt: string;
+  width?: number;
+  height?: number;
+  mobile?: { src: string; width: number; height: number };
+}) {
+  if (mobile) {
+    const common = { alt, sizes: "100vw", quality: 75 };
+    const {
+      props: { srcSet: desktop, ...rest },
+    } = getImageProps({ ...common, src, width, height });
+    const phone = getImageProps({ ...common, src: mobile.src, width: mobile.width, height: mobile.height }).props.srcSet;
+    return (
+      <div className="cf-px-hero absolute inset-0 -z-20">
+        <picture>
+          <source media="(max-width: 639px)" srcSet={phone} sizes="100vw" />
+          <source media="(min-width: 640px)" srcSet={desktop} sizes="100vw" />
+          <img
+            {...rest}
+            srcSet={desktop}
+            alt={alt}
+            loading="eager"
+            fetchPriority="high"
+            decoding="async"
+            className="absolute inset-0 h-full w-full object-cover object-center"
+          />
+        </picture>
+        <div className="cf-px-dim absolute inset-0 bg-black opacity-0" />
+      </div>
+    );
+  }
   return (
     <div className="cf-px-hero absolute inset-0 -z-20">
       <Image src={src} alt={alt} fill preload sizes="100vw" className="object-cover object-center" />

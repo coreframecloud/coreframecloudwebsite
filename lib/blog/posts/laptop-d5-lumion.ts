@@ -146,10 +146,10 @@ export const laptopD5Lumion: BlogPost = {
     },
     {
       type: "figure",
-      src: `${IMG}/studio-living-room.webp`,
-      alt: "An AI-generated image of a furnished living room with a white sofa, a jute rug, a lounge chair and a window onto a garden.",
-      width: 1000,
-      height: 1250,
+      src: `${IMG}/studio-pro-living-stone.webp`,
+      alt: "An AI-generated image of a minimal living room on polished concrete, with a white sofa, a jute rug, a lounge chair and a window onto a garden.",
+      width: 1024,
+      height: 1280,
       caption: "Generated with Coreframe Studio from a floor plan. This is an AI image, not a D5, Lumion or GPU-workstation render.",
     },
 

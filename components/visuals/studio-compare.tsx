@@ -9,7 +9,10 @@ import { usePrefersReducedMotion } from "@/lib/use-reduced-motion";
  * (apps/tools/web/plan-sample.png, served lossless so the line art stays
  * crisp), then a room as Studio returns it, labelled the way Studio labels
  * it: "Shell" (your walls and openings, rendered in Cycles) and "Furnished"
- * (generated). The divider sweeps on its own until someone drags it.
+ * (generated). Since 1 Nov 2026 (owner: approved Pro renders only) the pair
+ * is a genuine one: the Cycles shell 01_living_luxe from the 7 Oct bake-off
+ * and the Studio Pro render made on it (showcase pro-15-living-stone), both
+ * cropped to the same 4:3 window. It is not a room from the 3BHK plan. The divider sweeps on its own until someone drags it.
  * Reduced motion: same markup, a slower sweep.
  */
 export const PLAN_ALT =
@@ -65,10 +68,10 @@ export function ShellFurnished({
 
   return (
     <figure className={className}>
-      <div ref={box} className="relative aspect-video overflow-hidden rounded-[20px] bg-paper-2">
-        <Image src="/home/studio-furnished-room.webp" alt="The same room, furnished (generated image)" fill sizes="(max-width: 768px) 100vw, 640px" className="object-cover" />
+      <div ref={box} className="relative aspect-[4/3] overflow-hidden rounded-[20px] bg-paper-2">
+        <Image src="/studio-renders/studio-pro-living-stone-1024.webp" alt="The same room, furnished: a minimal living room on polished concrete with a white sofa, a jute rug and an olive tree (generated image)" fill sizes="(max-width: 768px) 100vw, 640px" className="object-cover" />
         <div className="absolute inset-0" style={{ clipPath: `inset(0 ${100 - pos}% 0 0)` }}>
-          <Image src="/home/studio-shell-room.webp" alt="A room shell ray-traced from the drawing: walls, windows, light" fill sizes="(max-width: 768px) 100vw, 640px" className="object-cover" />
+          <Image src="/home/studio-pro-shell-room.webp" alt="A room shell ray-traced from the drawing: walls, a window, light on the floor" fill sizes="(max-width: 768px) 100vw, 640px" className="object-cover" />
         </div>
         {/* Moved with transform, not `left`, so the sweep is never a layout shift. */}
         <div className="pointer-events-none absolute inset-0" style={{ transform: `translateX(${pos}%)` }}>

@@ -88,29 +88,28 @@ export async function floorPlanMetadata(currency: Currency): Promise<Metadata> {
 
 /**
  * Hero picture (owner, 16 Oct 2026: "the hero image should be a very nice
- * render"). A genuine Studio 4K export of the demo plan's living room, corner
- * view, golden hour (seed 44; prompt in
- * marketing-20261016-site-explainer/gen/runs.jsonl, grade in grade.md), so it
- * carries Studio's own "Generated image" label. Different from the living-room
- * export further down (wide view, evening).
+ * render"; 1 Nov 2026: only the approved Studio Pro renders, never the older
+ * ones). Two Pro renders side by side (apps/tools/web/showcase pro-24 and
+ * pro-18); phones get the bedroom alone. Labelled "Generated image", as
+ * Studio labels it.
  */
 const HERO: HeroImage = {
-  src: "/heroes/studio-hero-living-2560.webp",
+  src: "/heroes/studio-pro-hero-2560.webp",
   w: 2560,
   h: 1440,
-  mobile: { src: "/heroes/studio-hero-living-m780.webp", w: 780, h: 1040 },
-  alt: "The living room from our sample plan at golden hour: a sand linen sofa with rust and indigo cushions, an olive tree, a carved teak cabinet and a garden through tall windows (generated image)",
+  mobile: { src: "/heroes/studio-pro-hero-m780.webp", w: 780, h: 1040 },
+  alt: "Two rooms from Studio Pro: a modern luxury dining room with green velvet chairs and a walnut table, and a bedroom with sheer curtains and lamps lit (generated image)",
   pos: "60% 50%",
   posMobile: "50% 50%",
   credit: "Generated image",
 };
 
-/** More rooms, each a Studio export: two from the same sample plan (16 Oct 2026) and, in place of the
- * kitchen (owner 31 Oct 2026: "very bad"), the industrial bedroom from the Studio Pro slideshow. */
+/** More rooms, each a Studio Pro render from the approved showcase (owner 1 Nov 2026), cropped to 4:3.
+ * None of them is a room of the sample plan above. */
 const STUDIO_ROOMS = [
-  { src: "/studio-renders/studio-pro-bedroom-industrial-1024.webp", cap: "An industrial bedroom, from Studio Pro.", alt: "An industrial bedroom from Studio Pro: board-formed concrete walls, a leather bed with grey linen, brass lamps and a garden window" },
-  { src: "/studio-renders/studio-masterbed-2048.webp", cap: "The master bedroom.", alt: "The master bedroom from our sample plan: a teak bed with a rust throw, a tall louvred wardrobe, a patterned rug, a palm and sheer curtains" },
-  { src: "/studio-renders/studio-balcony-2048.webp", cap: "The balcony, looking back into a bedroom.", alt: "The balcony from our sample plan at dusk: potted plants, a cane chair and a railing over trees, with a lit bedroom through the door" },
+  { src: "/studio-renders/studio-pro-bedroom-industrial-1024.webp", cap: "An industrial bedroom.", alt: "Industrial bedroom with board-formed concrete walls and a leather bed (generated image)" },
+  { src: "/studio-renders/studio-pro-kitchen-industrial-1024.webp", cap: "An industrial kitchen.", alt: "Industrial kitchen with a concrete waterfall island and brass pendants (generated image)" },
+  { src: "/studio-renders/studio-pro-study-minimal-1024.webp", cap: "A minimal home study.", alt: "Minimal home study with an oak desk and built-in white shelving (generated image)" },
 ];
 
 function steps(m: StudioMoney) {
@@ -259,37 +258,38 @@ export default async function FloorPlanToRenderView({ currency }: { currency: Cu
           </div>
         </section>
 
-        {/* Real Studio exports (16 Oct 2026): rooms of our sample plan through the
-            live Studio code path (plan preset, 4K) on our node; prompts and seeds
-            in marketing-20261016-site-explainer/gen/runs.jsonl. Labelled
-            "Generated image", as Studio labels it. Shown smaller than the
-            3840 x 2880 files. */}
+        {/* 1 Nov 2026 (owner: approved Studio Pro renders only). The plan is
+            shown as the kind of input Studio takes; the renders beside it are
+            Pro renders of other rooms, and the copy says so. Do not pair the
+            plan with a render as if one came from the other. Labelled
+            "Generated image", as Studio labels it. */}
         <section className="cf-section px-5">
           <div className="cf-wide">
-            <h2 className="cf-section-title">One plan, every room.</h2>
+            <h2 className="cf-section-title">Upload a 2D plan, get photoreal renders.</h2>
             <p className="cf-section-copy mt-3">
-              Our sample 3BHK plan and its rooms, each exported at 4K from Studio.{" "}
+              A 2D DXF floor plan like our sample 3BHK goes in; furnished rooms come out. The rooms here are Studio Pro
+              renders of other rooms, not of this plan.{" "}
               <Link href="/floor-plan-to-render/3bhk-example" className="text-ink underline underline-offset-4">
                 Follow the whole 3BHK example, step by step
               </Link>
               .
             </p>
             <div className="mt-8 grid items-start gap-6 lg:grid-cols-[0.75fr_1.25fr]">
-              <PlanImage caption="Our sample 3BHK plan (a real drawing)" />
+              <PlanImage caption="The input: a 2D plan like our sample 3BHK (a real drawing)" />
               <figure className="min-w-0">
                 <div className="relative overflow-hidden rounded-[20px] bg-paper-2">
                   <Image
-                    src="/studio-renders/studio-living2-2048.webp"
-                    alt="The living room from our sample plan, furnished: a sofa with cushions, a carved wooden cabinet, a floor lamp, plants and a rug on a stone floor, with the doors and window as drawn"
-                    width={2048}
-                    height={1536}
+                    src="/studio-renders/studio-pro-living-industrial-1024.webp"
+                    alt="Industrial living room with an oxblood leather sofa and black steel windows (generated image)"
+                    width={1024}
+                    height={768}
                     sizes="(max-width: 1024px) 100vw, 600px"
                     className="h-auto w-full"
                   />
                   <span className="absolute right-3 bottom-3 rounded-md bg-black/60 px-2 py-1 text-[11px] font-semibold text-white">Generated image</span>
                 </div>
                 <figcaption className="mt-2 text-[12.5px] text-ink-3">
-                  A 4K export (3840 × 2880) from Studio, shown smaller. Walls, doors and windows from the drawing; the furniture is generated.
+                  A Studio Pro render, shown smaller. The furniture, materials and light are generated.
                 </figcaption>
               </figure>
             </div>
@@ -297,7 +297,7 @@ export default async function FloorPlanToRenderView({ currency }: { currency: Cu
               {STUDIO_ROOMS.map((r) => (
                 <figure key={r.src} className="min-w-0">
                   <div className="relative overflow-hidden rounded-[20px] bg-paper-2 shadow-[0_18px_40px_-26px_rgb(90_60_30/0.45)]">
-                    <Image src={r.src} alt={r.alt} width={2048} height={1536} sizes="(max-width: 640px) 100vw, 310px" className="h-auto w-full" />
+                    <Image src={r.src} alt={r.alt} width={1024} height={768} sizes="(max-width: 640px) 100vw, 310px" className="h-auto w-full" />
                     <span className="absolute right-2.5 bottom-2.5 rounded-md bg-black/60 px-2 py-1 text-[11px] font-semibold text-white">Generated image</span>
                   </div>
                   <figcaption className="mt-2 text-[12.5px] text-ink-3">{r.cap}</figcaption>
