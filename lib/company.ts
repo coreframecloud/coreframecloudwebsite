@@ -115,6 +115,9 @@ export const COMPANY_LINKEDIN_URL = "https://www.linkedin.com/company/coreframe-
 
 export const COMPANY_YOUTUBE_URL = "https://www.youtube.com/@CoreframeCloud";
 
+/** SaaSHub listing (live since Oct 2026; resolves 200, checked 1 Nov 2026). */
+export const COMPANY_SAASHUB_URL = "https://www.saashub.com/coreframe-cloud";
+
 /** Full postal address, for legal pages and invoices. */
 export const COMPANY_ADDRESS_FULL = [
   COMPANY.address.building,

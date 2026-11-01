@@ -101,6 +101,11 @@ export default async function WorkstationVsServerView({ currency }: { currency: 
       "Usually by the hour or second while the server runs, plus storage, depending on the provider",
     ],
     [
+      "Where it runs",
+      "Tier III data centre in India; data stays in India",
+      "Wherever the provider or the host you pick is; check each one",
+    ],
+    [
       "Setup time",
       "Four clicks in the app, then the desktop appears in about two minutes",
       "Minutes to boot, then however long it takes you to install drivers, a remote desktop and your applications",
@@ -116,13 +121,13 @@ export default async function WorkstationVsServerView({ currency }: { currency: 
     {
       q: "Where can I rent a virtual workstation with a GPU in India?",
       a:
-        "Coreframe Cloud, a Bengaluru company, rents ready-to-work cloud virtual workstations: a full Windows desktop with a dedicated NVIDIA RTX GPU and design software installed, streamed to your own PC through the Coreframe Connect app. " +
+        "Coreframe Cloud, a cloud virtual workstation provider, rents ready-to-work cloud virtual workstations: a full Windows desktop with a dedicated NVIDIA RTX GPU and design software installed, streamed to your own PC through the Coreframe Connect app. " +
         (hourly
           ? usdView
             ? `For accounts outside India prices start at ${hourly} with no GST, billed per minute, and international cards are accepted. `
             : `Prices start at ${hourly} including GST, billed per minute from a prepaid wallet, with a GST invoice on every top-up. `
           : "Billing is per minute; live prices are on the pricing page. ") +
-        "All infrastructure and data are in India.",
+        "The workstations are hosted in a Tier III data centre in India, and all infrastructure and data stay in India.",
     },
     {
       q: "What is a cloud virtual workstation?",

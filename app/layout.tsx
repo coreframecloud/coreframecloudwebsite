@@ -31,7 +31,7 @@ const plexMono = IBM_Plex_Mono({
   variable: "--font-plex-mono",
   display: "swap",
 });
-import { COMPANY_MAPS_URL, COMPANY_YOUTUBE_URL, COMPANY_INSTAGRAM_URL, COMPANY_LINKEDIN_URL } from "@/lib/company";
+import { COMPANY_MAPS_URL, COMPANY_YOUTUBE_URL, COMPANY_INSTAGRAM_URL, COMPANY_LINKEDIN_URL, COMPANY_SAASHUB_URL } from "@/lib/company";
 import Script from "next/script";
 import { headers } from "next/headers";
 import { AttributionCapture } from "@/components/attribution-capture";
@@ -97,12 +97,15 @@ const CONSENT_DENIED_REGIONS = [
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.coreframecloud.com"),
   title: {
-    default: "Coreframe Cloud: GPU Workstations, CFD & Studio, India",
+    default: "Coreframe Cloud: Cloud Virtual Workstations with a GPU",
     template: "%s | Coreframe Cloud",
   },
   description:
-    "Ready-to-work cloud virtual workstations from Bengaluru: a Windows desktop with an RTX GPU and design software installed, in four clicks, billed per minute. Plus CFD for ducts and pipes, and Studio concept images from a floor plan.",
+    "Ready-to-work cloud virtual workstations: Windows, an RTX GPU and your design software preinstalled, billed per minute. Tier III data centre, data in India.",
   keywords: [
+    "cloud virtual workstation",
+    "ready-to-use Windows cloud workstation",
+    "remote GPU workstation",
     "faster D5 Render cloud India",
     "CFD simulation faster India",
     "cloud GPU workstation India",
@@ -140,9 +143,9 @@ export const metadata: Metadata = {
   // their own `openGraph` object, which used to replace this one and leave
   // them with no image at all.
   openGraph: {
-    title: "Coreframe Cloud — ready-to-work cloud GPU workstations, CFD and Studio",
+    title: "Coreframe Cloud: ready-to-work cloud virtual workstations",
     description:
-      "A ready-to-work cloud virtual workstation in four clicks: a Windows desktop with a GPU and your design software installed, billed per minute. Plus CFD for ducts and pipes, and Studio concept images. All infrastructure in India.",
+      "A ready-to-work cloud virtual workstation in four clicks: a Windows desktop with a GPU and your design software installed, billed per minute. Hosted in a Tier III data centre in India; customers worldwide.",
     url: "https://www.coreframecloud.com",
     siteName: "Coreframe Cloud",
     locale: "en_IN",
@@ -155,7 +158,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Coreframe Cloud",
     description:
-      "Ready-to-work cloud virtual workstations in four clicks: Windows, a GPU and design software, billed per minute. Plus CFD and Studio. All infrastructure in India.",
+      "Ready-to-work cloud virtual workstations in four clicks: Windows, a GPU and design software, billed per minute. Tier III data centre in India; customers worldwide.",
   },
   other: {
     "contact:email": "admin@coreframecloud.com",
@@ -279,10 +282,9 @@ export default async function RootLayout({
   const ladder = ladderRanges(rateCard);
   const serviceDescription =
     `On-demand Windows GPU workstations${ladder ? ` (${ladder.gpu}, ${ladder.vram} VRAM)` : " with dedicated NVIDIA RTX GPUs"} for ` +
-    "D5 Render, Lumion, Enscape, 3ds Max, Blender and Unreal Engine, hosted in India. " +
-    (usdView
-      ? "Billed per minute of actual use; prices in US dollars carry no GST (export of services)."
-      : "Billed per minute of actual use, with 18% GST included in every published rate.");
+    "D5 Render, Lumion, Enscape, 3ds Max, Blender and Unreal Engine, hosted in a Tier III data centre in India; " +
+    "all customer data stays in India. Billed per minute of actual use. Prices in INR with GST for India, in USD " +
+    "without GST elsewhere.";
 
   return (
     <html
@@ -367,7 +369,7 @@ export default async function RootLayout({
           `}
         </Script>
 
-        {/* Structured data — Organisation + LocalBusiness */}
+        {/* Structured data — Organisation (not LocalBusiness: owner, 1 Nov 2026, AEO plan A3) */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -375,7 +377,14 @@ export default async function RootLayout({
               "@context": "https://schema.org",
               "@graph": [
                 {
-                  "@type": ["Organization", "LocalBusiness"],
+                  /**
+                   * Organization only (AEO plan, 1 Nov 2026, A3). Typed as a
+                   * LocalBusiness, with India first in areaServed and a
+                   * rupee priceRange, answer engines read a regional shop.
+                   * The registered address stays: that is normal for a
+                   * company. areaServed is Worldwide only (India is in it).
+                   */
+                  "@type": "Organization",
                   "@id": "https://www.coreframecloud.com/#organization",
                   /**
                    * BRAND NAME FIRST, legal name beside it.
@@ -394,7 +403,7 @@ export default async function RootLayout({
                   legalName: "Coreframe Compute Labs Private Limited",
                   alternateName: ["Coreframe", "Coreframe Compute Labs"],
                   disambiguatingDescription:
-                    "Coreframe Cloud is the cloud GPU workstation, CFD and floor-plan rendering service operated by Coreframe Compute Labs Private Limited of Bengaluru, India (CIN U63119KA2026PTC220789). It is unrelated to CloudFrame, Coreframe Technologies, Coreframe Solutions, CoreFrame Studio, or the coreframe package on PyPI.",
+                    "Coreframe Cloud is the cloud virtual workstation, CFD and floor-plan rendering service operated by Coreframe Compute Labs Private Limited, India (CIN U63119KA2026PTC220789). It is unrelated to CloudFrame, Coreframe Technologies, Coreframe Solutions, CoreFrame Studio, or the coreframe package on PyPI.",
                   url: "https://www.coreframecloud.com",
                   logo: "https://www.coreframecloud.com/icon.png",
                   /**
@@ -412,7 +421,9 @@ export default async function RootLayout({
                    */
                   hasMap: COMPANY_MAPS_URL,
                   description:
-                    "Three services from Bengaluru, India: GPU workstations on demand for D5 Render, Lumion, Enscape, Blender and Unreal Engine; CFD for ducts and pipes (quote by email, no licence needed); and Coreframe Studio, pre-sale concept images from a DXF floor plan (free previews).",
+                    "Coreframe Cloud provides ready-to-work cloud virtual workstations worldwide: a Windows desktop with an NVIDIA RTX GPU and design software preinstalled, streamed through the Coreframe Connect app and billed per minute. Workstations are hosted in a Tier III data centre in India, and all customer data stays in India. Also CFD for ducts, pipes and HVAC rooms, and Coreframe Studio.",
+                  slogan: "Ready-to-work cloud virtual workstations",
+                  currenciesAccepted: "INR, USD",
                   telephone: "+916366889488",
                   email: "admin@coreframecloud.com",
                   address: {
@@ -424,12 +435,9 @@ export default async function RootLayout({
                     postalCode: "560087",
                     addressCountry: "IN",
                   },
-                  // India first, but since 10 Oct 2026 international cards are
-                  // accepted and no Indian ID is asked for.
-                  areaServed: [
-                    { "@type": "Country", name: "India" },
-                    { "@type": "Place", name: "Worldwide" },
-                  ],
+                  // Worldwide (India is inside it): international cards since
+                  // 10 Oct 2026, USD accounts since 15 Oct 2026.
+                  areaServed: [{ "@type": "Place", name: "Worldwide" }],
                   foundingDate: "2026",
                   founder: { "@type": "Person", name: "Sowjanya Pandala" },
                   /**
@@ -443,7 +451,10 @@ export default async function RootLayout({
                     { "@type": "PropertyValue", propertyID: "GSTIN", value: "29AANCC8401D1ZO" },
                   ],
                   knowsAbout: [
+                    "cloud virtual workstation",
                     "cloud GPU workstations",
+                    "desktop as a service",
+                    "remote GPU workstation",
                     "architectural visualisation",
                     "real-time rendering",
                     "GPU-accelerated CFD",
@@ -476,6 +487,7 @@ export default async function RootLayout({
                     COMPANY_LINKEDIN_URL,
                     COMPANY_MAPS_URL,
                     COMPANY_YOUTUBE_URL,
+                    COMPANY_SAASHUB_URL,
                   ],
                   contactPoint: [
                     {
@@ -483,17 +495,33 @@ export default async function RootLayout({
                       contactType: "sales",
                       email: "admin@coreframecloud.com",
                       telephone: "+916366889488",
-                      areaServed: "IN",
+                      areaServed: "Worldwide",
                       availableLanguage: ["en", "hi", "te", "kn"],
                     },
                     {
                       "@type": "ContactPoint",
                       contactType: "technical support",
                       email: "support@coreframecloud.com",
-                      areaServed: "IN",
+                      areaServed: "Worldwide",
                     },
                   ],
-                  priceRange: "₹₹",
+                },
+                /**
+                 * The Connect client as its own entity (AEO plan A3): the
+                 * thing "four clicks" happens in, which answer engines can
+                 * attach that claim to. Free download, Windows only.
+                 */
+                {
+                  "@type": "SoftwareApplication",
+                  "@id": "https://www.coreframecloud.com/#connect-app",
+                  name: "Coreframe Connect",
+                  applicationCategory: "BusinessApplication",
+                  operatingSystem: "Windows 10, Windows 11",
+                  url: "https://www.coreframecloud.com/download",
+                  description:
+                    "The Windows app that launches a Coreframe cloud virtual workstation in four clicks and streams its desktop to your own PC.",
+                  publisher: { "@id": "https://www.coreframecloud.com/#organization" },
+                  offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
                 },
                 {
                   "@type": "WebSite",
@@ -508,16 +536,13 @@ export default async function RootLayout({
                   "@type": "Service",
                   "@id": "https://www.coreframecloud.com/#gpu-workstation-service",
                   name: "GPU Workstations",
-                  serviceType: "Cloud GPU workstation rental",
+                  serviceType: "Cloud virtual workstation (Desktop as a Service)",
                   category: "Cloud computing",
                   brand: { "@type": "Brand", name: "Coreframe Cloud" },
                   url: "https://www.coreframecloud.com/pricing",
                   provider: { "@id": "https://www.coreframecloud.com/#organization" },
                   description: serviceDescription,
-                  areaServed: [
-                    { "@type": "Country", name: "India" },
-                    { "@type": "Place", name: "Worldwide" },
-                  ],
+                  areaServed: [{ "@type": "Place", name: "Worldwide" }],
                   ...(offers.length ? { offers } : {}),
                 },
                 {

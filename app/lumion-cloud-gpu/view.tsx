@@ -49,7 +49,7 @@ const FIXED_SPECS: [string, string][] = [
   ["OS", NODE.osShort],
   ["Access", `Coreframe Connect app, streamed at ${NODE.stream}`],
   ["Display driver", "WDDM, which Lumion requires"],
-  ["Location", NODE.location],
+  ["Location", NODE.locationShort],
 ];
 
 /** VRAM is the number to compare (13 Oct audit: as a real table, not prose). */
@@ -117,13 +117,13 @@ export default async function LumionView({ currency }: { currency: Currency }) {
           <PageHeroBg image={GPU_HEROES["lumion-cloud-gpu"]} />
           <div className="cf-wide">
           <div className="min-w-0 max-w-[620px]">
-            <p className="cf-eyebrow mb-5">Lumion · Cloud GPU · Bengaluru</p>
+            <p className="cf-eyebrow mb-5">Lumion · Cloud workstation</p>
             <h1 className="cf-display">
               Run Lumion on a GPU workstation.
               <br className="hidden md:block" /> Nothing to buy.
             </h1>
             <p className="cf-lead mt-[22px]">
-            Lumion needs a strong GPU. Run your own Lumion licence on a workstation-class RTX GPU while your laptop stays free.
+            A Lumion workstation in the cloud. Lumion needs a strong GPU: run your own Lumion licence on a workstation-class RTX GPU while your laptop stays free.
           </p>
             <p className="cf-section-copy mt-5">
               You reach it through the Coreframe Connect app, streamed at{" "}
@@ -166,7 +166,7 @@ export default async function LumionView({ currency }: { currency: Currency }) {
                 },
                 {
                   title: "Files stay in India",
-                  body: `The node is in ${NODE.location} and project storage sits beside it. Nothing leaves the country, and that's usually the first thing NDA clients ask about.`,
+                  body: `The node is in ${NODE.location} and project storage is in India too. Nothing leaves the country, and that's usually the first thing NDA clients ask about.`,
                 },
               ].map((c) => (
                 <div key={c.title} className="cf-card">

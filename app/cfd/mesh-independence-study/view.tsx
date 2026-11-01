@@ -40,12 +40,13 @@ import { PageByline } from "@/components/seo/page-byline";
 export const PATH = VERIFIED.path;
 const ART = "/cfd/explainer";
 
-const TITLE = "Mesh Independence Study, GCI Calculation";
+// "Grid independence" in the title (AEO plan 1 Nov 2026, A10): 77 impressions at 19.5.
+const TITLE = "Mesh (Grid) Independence Study with GCI | Coreframe CFD";
 const DESCRIPTION =
   "A mesh independence study for duct and pipe CFD: the same case on three meshes, the grid convergence index (GCI) and a plain verdict. Results in 24 hours.";
 
 export const meshStudyMetadata: Metadata = {
-  title: TITLE,
+  title: { absolute: TITLE },
   description: DESCRIPTION,
   keywords: [
     "mesh independence study",
@@ -291,6 +292,16 @@ export default async function MeshStudyView({ currency }: { currency: Currency }
                   A mesh independence study measures that movement. When the change between the two finest meshes is small
                   and shrinking the way theory says it should, the mesh is no longer what decides your number, and the grid
                   convergence index (GCI) tells you how big a band to put around it.
+                </p>
+                {/* "grid independence" (AEO plan 1 Nov 2026, A11): 77 impressions at 19.5. */}
+                <h2 id="grid-independence" className="pt-2 font-heading text-[20px] leading-7 font-medium text-ink">
+                  Grid independence study: same thing, another name.
+                </h2>
+                <p>
+                  &ldquo;Grid independence&rdquo;, &ldquo;mesh independence&rdquo; and &ldquo;mesh convergence&rdquo;
+                  describe the same check. &ldquo;Grid&rdquo; is the older word for the mesh. A grid independence study
+                  solves one case on three successively finer grids and reports the grid convergence index, which is
+                  exactly what the Verified package delivers.
                 </p>
               </div>
               <dl className="grid gap-4">

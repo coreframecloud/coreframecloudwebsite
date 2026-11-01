@@ -17,7 +17,7 @@ export const computeNodesMetadata = (currency: Currency): Metadata => ({
   title: "GPU Workstation Specs — Compute Nodes",
   description:
     // Kept under 160 characters (22 Oct 2026): it was 164 and truncated.
-    `One node, one GPU, one customer: every GPU on offer with its VRAM, vCPU and RAM, from the live rate card. Billed per minute, ${taxWords(currency)}. Bengaluru.`,
+    `One node, one GPU, one customer: every GPU on offer with its VRAM, vCPU and RAM, from the live rate card. Billed per minute, ${taxWords(currency)}. Tier III, India.`,
   alternates: { canonical: "/compute-nodes" },
 });
 
@@ -39,7 +39,7 @@ const SPECS: { label: string; value: string }[] = [
   { label: "Working disk", value: NODE.disk },
   { label: "Operating system", value: NODE.osShort },
   { label: "Stream", value: NODE.stream },
-  { label: "Location", value: NODE.location },
+  { label: "Location", value: NODE.locationShort },
 ];
 
 /**

@@ -18,7 +18,7 @@ export function walkthroughVideoObject(youtubeId: string) {
     // mismatch Google resolves by dropping the rich result, silently.
     name: "Coreframe Cloud - Renting an RTX 5080 by the minute — a full session, start to finish",
     description:
-      "A full Coreframe session, uncut: sign in, pick a workstation, upload a scene, render it, pull the result back down and close the machine. Recorded on an RTX 5080 workstation hosted in Bengaluru.",
+      "A full Coreframe session, uncut: sign in, pick a workstation, upload a scene, render it, pull the result back down and close the machine. Recorded on an RTX 5080 workstation.",
     thumbnailUrl: [`https://i.ytimg.com/vi/${youtubeId}/maxresdefault.jpg`],
     uploadDate: "2026-10-11",
     duration: "PT4M39S",

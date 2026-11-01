@@ -75,6 +75,9 @@ const PAGES = new Set([
   "/architectural-visualization",
   "/cloud-workstation-vs-render-farm",
   "/virtual-workstation-vs-gpu-server",
+  // AEO plan 1 Nov 2026 (A6): both quote the live "from" rate.
+  "/vast-ai-alternative-windows-workstation",
+  "/best-cloud-workstations-for-architects",
   "/video-animation-rendering",
   // The sign-up page quotes the intro offer and the hourly rate (18 Oct 2026).
   "/signup",

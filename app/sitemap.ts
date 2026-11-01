@@ -60,6 +60,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${BASE}/cloud-workstation-vs-render-farm`, lastModified: lm("/cloud-workstation-vs-render-farm"), changeFrequency: "monthly", priority: 0.8 },
     // Added 30 Oct 2026 (AEO): "virtual workstation with a GPU" vs a bare GPU server.
     { url: `${BASE}/virtual-workstation-vs-gpu-server`, lastModified: lm("/virtual-workstation-vs-gpu-server"), changeFrequency: "monthly", priority: 0.8 },
+    // AEO plan 1 Nov 2026 (A6, A9): the Vast.ai comparison, the category roundup, and Security and data.
+    { url: `${BASE}/vast-ai-alternative-windows-workstation`, lastModified: lm("/vast-ai-alternative-windows-workstation"), changeFrequency: "monthly", priority: 0.8 },
+    { url: `${BASE}/best-cloud-workstations-for-architects`, lastModified: lm("/best-cloud-workstations-for-architects"), changeFrequency: "monthly", priority: 0.8 },
+    { url: `${BASE}/trust`, lastModified: lm("/trust"), changeFrequency: "monthly", priority: 0.7 },
     // Video and animation rendering (19 Oct 2026): After Effects, Premiere, Blender animation, walkthroughs.
     { url: `${BASE}/video-animation-rendering`, lastModified: lm("/video-animation-rendering"), changeFrequency: "monthly", priority: 0.8 },
 

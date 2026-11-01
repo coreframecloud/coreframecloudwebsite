@@ -32,7 +32,7 @@ export function RedesignHero({ introLabel, prices }: { introLabel: IntroShort | 
         {/* Never animated: the headline is the LCP text (18 Oct 2026). */}
         <div className="max-w-[56rem]">
           <p className="mb-4 inline-block rounded-md bg-white/12 px-3 py-1.5 text-[13px] font-semibold tracking-[0.12em] uppercase sm:mb-5">
-            Coreframe Cloud · Bengaluru
+            Cloud virtual workstations · Worldwide
           </p>
           <h1 className="font-heading text-[30px] leading-[1.1] font-medium tracking-[-0.02em] sm:text-[40px] lg:text-[46px]">
             {/* The "heavy work" yellow underline was dropped 31 Oct 2026: the GPU
@@ -51,6 +51,16 @@ export function RedesignHero({ introLabel, prices }: { introLabel: IntroShort | 
         <div className="mt-6 sm:mt-8">
           <HeroOfferingCards introLabel={introLabel} prices={prices} />
         </div>
+        {/* The trust line (AEO plan 1 Nov 2026, A1): the approved hosting claim,
+            facts only. Never Tier IV, never a provider, never a city. */}
+        <ul className="mt-6 flex flex-wrap gap-x-4 gap-y-1 text-[13px] leading-6 text-white/85 sm:text-[14px]" aria-label="How it is hosted">
+          {["Tier III data centre", "Data stays in India", "Billed per minute", "Encrypted streaming"].map((t) => (
+            <li key={t} className="flex items-center gap-2">
+              <span aria-hidden className="h-1 w-1 rounded-full bg-white/60" />
+              {t}
+            </li>
+          ))}
+        </ul>
       </div>
       <p className="cfh-wrap pb-20 text-[13px] text-white/70 sm:pb-28">
         Background: a living room created with Coreframe RenderGrid.

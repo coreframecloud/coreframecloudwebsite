@@ -95,6 +95,9 @@ export type BlogPost = {
   title: string;
   /** <title>, when `title` would run past ~60 chars with the suffix. */
   metaTitle?: string;
+  /** The whole <title>, without the " | Coreframe Cloud" suffix, when the
+   *  search title needs every character (CTR rewrites, 1 Nov 2026). */
+  absoluteTitle?: string;
   description: string;
   /** The description for the dollar view, when `description` talks rupees. */
   descriptionUsd?: string;

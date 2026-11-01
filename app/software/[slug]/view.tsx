@@ -153,7 +153,7 @@ function rentalAnswer(card: RateCard | null, currency: Currency): string | null 
     intro
       ? `Your first ${introPrice(intro)} top-up buys ${hoursLabel(intro.hours)} of ${many ? `a ${gpu?.name ?? "GPU"} workstation running ${NODE.os}` : machine}. After that it is ${from}${r.rate} an hour ${r.tax}${billed}.`
       : `${machine.charAt(0).toUpperCase()}${machine.slice(1)} costs ${from}${r.rate} an hour, ${r.tax}${billed}.`,
-    `Hosted in ${NODE.location.split(",")[0]}, streamed to your laptop with the Coreframe Connect app.`,
+    `Hosted in ${NODE.location}, streamed to your laptop with the Coreframe Connect app.`,
   ].join(" ");
 }
 
@@ -190,7 +190,7 @@ function specRows(card: RateCard | null): [string, string][] {
   return [
     ["Storage", gpu ? `${storageSpec(gpu.storage_gb)} NVMe` : NODE.disk],
     ["Operating system", NODE.osShort],
-    ["Location", NODE.location],
+    ["Location", NODE.locationShort],
   ];
 }
 

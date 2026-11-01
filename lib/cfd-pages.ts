@@ -17,7 +17,7 @@ export const CFD_DEMO: CfdPage = { path: "/cfd/demo", name: "CFD results in 3D: 
 export const MESH_STUDY: CfdPage = {
   path: "/cfd/mesh-independence-study",
   name: "Mesh independence study (GCI)",
-  updated: "2026-10-18",
+  updated: "2026-11-01",
 };
 
 export const HVAC_PAGE: CfdPage = {

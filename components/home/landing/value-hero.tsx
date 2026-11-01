@@ -15,7 +15,7 @@ export function ValueHero() {
   return (
     <section className="cf-section px-5">
       <div className="cf-col">
-        <p className="cf-eyebrow mb-5">GPU workstations · Bengaluru</p>
+        <p className="cf-eyebrow mb-5">Cloud virtual workstations · Worldwide</p>
         <h1 className="cf-display">
           You&rsquo;re here, so here&rsquo;s what we&rsquo;re worth to your studio.
         </h1>

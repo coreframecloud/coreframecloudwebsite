@@ -49,7 +49,7 @@ const FIXED_SPECS: [string, string][] = [
   ["Access", `Coreframe Connect app, streamed at ${NODE.stream}`],
   ["Display driver", "WDDM, which Enscape requires"],
   ["Host apps", "Revit, SketchUp, Rhino, Archicad"],
-  ["Location", NODE.location],
+  ["Location", NODE.locationShort],
 ];
 
 /** VRAM is the number to compare (13 Oct audit: as a real table, not prose). */
@@ -113,13 +113,13 @@ export default async function EnscapeView({ currency }: { currency: Currency }) 
           <PageHeroBg image={GPU_HEROES["enscape-cloud-gpu"]} />
           <div className="cf-wide">
           <div className="min-w-0 max-w-[620px]">
-            <p className="cf-eyebrow mb-5">Enscape · Cloud GPU · Bengaluru</p>
+            <p className="cf-eyebrow mb-5">Enscape · Cloud workstation</p>
             <h1 className="cf-display">
               Run Enscape on a GPU workstation.
               <br className="hidden md:block" /> Ray tracing included.
             </h1>
             <p className="cf-lead mt-[22px]">
-            Enscape needs VRAM your modelling laptop doesn&rsquo;t have. Run it on a workstation-class RTX GPU and walk the client through the building.
+            An Enscape workstation in the cloud. Enscape needs VRAM your modelling laptop doesn&rsquo;t have. Run it on a workstation-class RTX GPU and walk the client through the building.
           </p>
             <p className="cf-section-copy mt-5">
               You reach it through the Coreframe Connect app, streamed at{" "}

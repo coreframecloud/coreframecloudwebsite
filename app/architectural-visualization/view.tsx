@@ -190,7 +190,7 @@ function specRows(card: RateCard | null): [string, string][] {
     ["Storage", gpu ? `${storageSpec(gpu.storage_gb)} NVMe` : NODE.disk],
     ["Operating system", NODE.osShort],
     ["Streamed to you", `${NODE.stream}, through the Coreframe Connect app`],
-    ["Location", NODE.location],
+    ["Location", NODE.locationShort],
   ];
 }
 
@@ -355,7 +355,7 @@ export default async function ArchvizView({ currency }: { currency: Currency }) 
               <p className="cf-eyebrow mb-5">The machine</p>
               <h2 className="cf-section-title">One workstation for all of them.</h2>
               <p className="cf-section-copy mt-4">
-                The same machine whichever tool you open. It runs in {NODE.location.split(",")[0]} and streams its desktop to
+                The same machine whichever tool you open. It runs in {NODE.location} and streams its desktop to
                 your laptop; your laptop only shows the picture.
               </p>
               <div className="mt-6"><GpuLadder card={card} currency={currency} compact /></div>

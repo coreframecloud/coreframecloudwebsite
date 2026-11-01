@@ -189,7 +189,7 @@ export default async function LinksView({ currency }: { currency: Currency }) {
           <p className="mt-7 text-sm leading-[1.6] text-ink-2">{billingSentence(card, currency)}</p>
 
           <p className="mt-7 border-t border-rule pt-5 font-mono text-[11.5px] leading-none tracking-[0.16em] text-ink-3 uppercase">
-            {NODE.location}
+            {NODE.locationShort}
           </p>
         </div>
       </section>

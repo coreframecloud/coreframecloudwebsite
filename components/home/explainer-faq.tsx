@@ -46,7 +46,11 @@ export function buildFaq(storage: StorageTerms, intro: IntroOffer | null, adhocR
     },
     {
       q: "Where do my files live, and who can see them?",
-      a: `On Coreframe storage in India, tied to your account, with ${storage.paidGb} GB included. All customer data stays in India: the control server and the GPU workstations are in India, and project files sit on our own NAS; nothing is stored or processed outside the country. After every session the workstation is wiped and restored to a clean image, so nothing you worked on is left for the next person. That's also why software you install yourself only lasts for that session.`,
+      a: `On Coreframe storage in India, tied to your account, with ${storage.paidGb} GB included. All customer data stays in India: the workstations are hosted in a Tier III data centre in India and project files are stored in India; nothing is stored or processed outside the country. After every session the workstation is wiped and restored to a clean image, so nothing you worked on is left for the next person. That's also why software you install yourself only lasts for that session.`,
+    },
+    {
+      q: "Where is my data, and how is it hosted?",
+      a: "In India. Coreframe's GPU workstations are hosted in a Tier III data centre in India, and all infrastructure and customer data stay in India. Each GPU belongs to one customer at a time, the desktop is streamed over an encrypted private network, and the workstation is wiped after every session. The security and data page has the details.",
     },
     {
       q: "Do I need to install anything?",
@@ -68,7 +72,7 @@ export function buildFaq(storage: StorageTerms, intro: IntroOffer | null, adhocR
       q: "Can I pay from outside India?",
       a: usdView
         ? "Yes. Your account's currency is set from your billing country when you sign up: accounts billed outside India pay in US dollars by international card through Razorpay, with no GST (export of services). Every top-up comes with an invoice in US dollars."
-        : "Yes. International cards are accepted through Razorpay, alongside UPI, netbanking and Indian cards. Prices are in rupees, and every top-up comes with an invoice.",
+        : "Yes. The same workstations serve customers worldwide. An account's currency is set from its billing country at sign-up: accounts billed in India pay in rupees with GST included (UPI, netbanking or cards), and accounts billed outside India pay in US dollars with no GST, by international card. Visitors outside India see this site's prices in US dollars. Every top-up comes with an invoice.",
     },
     {
       q: "Can my whole team use one account?",

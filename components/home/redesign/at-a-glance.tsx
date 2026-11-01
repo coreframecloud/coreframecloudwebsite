@@ -107,7 +107,7 @@ export function AtAGlance({
       size: "sm",
       m: { x: 74.9, y: 31.2, d: 34 },
       w: { x: 73.55, y: 9, d: 17.5 },
-      body: "All infrastructure and data in India",
+      body: "Tier III data centre, all data in India",
     },
     { key: "files", tone: "coral", size: "sm", m: { x: 70.3, y: 100.5, d: 28 }, w: { x: 84.25, y: 22.9, d: 16 }, body: "Files stay between sessions" },
     { key: "clicks", tone: "sky", size: "sm", m: { x: 14.7, y: 99.5, d: 26 }, w: { x: 90.95, y: 7.8, d: 15.5 }, body: "Ready in 4\u00a0clicks" },

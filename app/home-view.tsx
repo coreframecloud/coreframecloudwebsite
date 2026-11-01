@@ -17,11 +17,18 @@ import {
   vramRangeLabel,
 } from "@/lib/rate-card";
 
-/** One metadata for both copies: the description quotes no price. */
+/**
+ * One metadata for both copies: the description quotes no price.
+ *
+ * Global wording (AEO plan, 1 Nov 2026, A2): 82 % of impressions are outside
+ * India, where CTR was a fifth of India's under a title ending ", India".
+ * The snippet answers the one query people ask assistants ("a ready-to-use
+ * cloud workstation"); CFD and Studio keep their own pages and titles.
+ */
 export const homeMetadata: Metadata = {
-  title: { absolute: "Cloud GPU Workstations, CFD & Studio, India | Coreframe Cloud" },
+  title: { absolute: "Cloud Virtual Workstations, Ready in 4 Clicks | Coreframe" },
   description:
-    "A ready-to-work cloud virtual workstation in four clicks: Windows, an RTX GPU and design software installed, billed per minute. Plus CFD and Studio. India.",
+    "Ready-to-work cloud virtual workstations: Windows, an RTX GPU and your design software preinstalled, billed per minute. Tier III data centre, data in India.",
   alternates: { canonical: "/" },
   other: { "contact:email": "admin@coreframecloud.com" },
 };

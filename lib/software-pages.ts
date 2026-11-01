@@ -100,7 +100,7 @@ function buildSoftwarePages(cur: Currency): SoftwarePage[] {
     description:
       "Run Autodesk Revit on a Windows GPU workstation in India, billed per minute. Bring your Autodesk licence, open large models, and render without buying hardware.",
     intro:
-      `Revit is hard on underpowered machines. Big federated models crawl, views take seconds to regenerate, and a render ties up the only computer you have. A Coreframe workstation gives you a ${GPU_CLASS} and workstation RAM for as long as you need it, billed by the minute.`,
+      `A Revit cloud workstation for the models your laptop can't hold. Revit is hard on underpowered machines. Big federated models crawl, views take seconds to regenerate, and a render ties up the only computer you have. A Coreframe workstation gives you a ${GPU_CLASS} and workstation RAM for as long as you need it, billed by the minute.`,
     problem:
       "Your laptop copes with small models but stalls on the coordinated one the whole team works in. And buying a workstation for the two weeks a year you need one doesn't add up.",
     why: [
@@ -145,9 +145,15 @@ function buildSoftwarePages(cur: Currency): SoftwarePage[] {
         body: "A render farm takes a finished scene and renders its frames on many machines; you submit and wait. A cloud workstation is one machine you drive yourself: you model, light, tweak materials and render in the same session. For look development and stills, a workstation fits; for a long animation split across many machines, a farm does.",
         link: { href: "/cloud-workstation-vs-render-farm", label: "Cloud workstation vs render farm" },
       },
+      {
+        // AEO plan 1 Nov 2026, A11: "cloud desktop for 3ds max rendering", "3ds max cloud vdi provider".
+        h2: "3ds Max cloud rendering and cloud desktop (VDI)",
+        body: "A Coreframe workstation is a cloud desktop, the kind of thing IT teams call VDI: a full Windows desktop with a dedicated RTX GPU, streamed to your own PC through the Coreframe Connect app. 3ds Max, V-Ray and Vantage run on it with your own licences, you render on it directly, and billing is per minute. There is no VDI server for your IT team to build or run.",
+        link: { href: "/virtual-workstation-vs-gpu-server", label: "Cloud virtual workstation vs a GPU server" },
+      },
     ],
     teamPlansLink: true,
-    lastUpdated: "22 October 2026",
+    lastUpdated: "1 November 2026",
     description:
       "3ds Max cloud rendering on a rented GPU workstation: V-Ray GPU and Chaos Vantage on a workstation-class RTX card, your own licence, billed per minute.",
     intro:
@@ -293,7 +299,7 @@ function buildSoftwarePages(cur: Currency): SoftwarePage[] {
     description:
       "Rent a Twinmotion workstation by the minute: a workstation-class RTX GPU with Twinmotion preinstalled, streamed to your own computer.",
     intro:
-      "Twinmotion is preinstalled on every Coreframe workstation, and its free tier covers most individual users. All you rent is the GPU workstation that makes it run properly, by the minute.",
+      "A Twinmotion workstation in the cloud: Twinmotion is preinstalled on every Coreframe workstation, and its free tier covers most individual users. All you rent is the GPU workstation that makes it run properly, by the minute.",
     livePrice: "line",
     lastUpdated: "22 October 2026",
     problem:
@@ -491,7 +497,7 @@ function buildSoftwarePages(cur: Currency): SoftwarePage[] {
         ? "Rent a Windows RTX GPU workstation in India by the minute for 3D rendering, CAD and simulation. No hardware purchase, billed in US dollars, persistent NAS storage."
         : "Rent a Windows RTX GPU workstation in India by the minute for 3D rendering, CAD and simulation. No hardware purchase, GST invoices, persistent NAS storage.",
     intro:
-      "Coreframe rents Windows GPU workstations by the minute from infrastructure in India. You stream a real RTX desktop to the computer you already own and pay only for the minutes you use.",
+      "Coreframe rents Windows GPU workstations, visualization workstations for rendering and design, by the minute from a Tier III data centre in India. You stream a real RTX desktop to the computer you already own and pay only for the minutes you use.",
     problem:
       usd
         ? `A workstation that would handle your rendering lands at about ${machineCost}, depreciates the day it arrives, and sits idle most of the week.`

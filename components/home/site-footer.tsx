@@ -101,6 +101,7 @@ export function SiteFooter({ currency = "INR" }: { currency?: Currency }) {
                 { label: "Everything preinstalled", href: "/apps" },
                 { label: "Free IFC check", href: "/tools" },
                 { label: "About Coreframe", href: "/about" },
+                { label: "Security and data", href: "/trust" },
                 // Only when /blog exists on this build: published posts on the
                 // live site, drafts too on a preview. A link to a page that
                 // 404s in production is worse than no link.
@@ -125,6 +126,8 @@ export function SiteFooter({ currency = "INR" }: { currency?: Currency }) {
                 { label: "Workstations and storage for studios", href: "/solutions" },
                 { label: "Is 8 GB of VRAM enough?", href: "/vram-for-architectural-rendering" },
                 { label: "Coreframe vs iRender", href: "/coreframe-vs-irender" },
+                { label: "Vast.ai alternative for Windows", href: "/vast-ai-alternative-windows-workstation" },
+                { label: "Cloud workstations for architects", href: "/best-cloud-workstations-for-architects" },
                 { label: "Workstation specs", href: "/compute-nodes" },
                 { label: "Free DWG dimension check", href: "/dwg-check" },
                 // The CFD and Studio guides (SEO review 18 Oct 2026): the

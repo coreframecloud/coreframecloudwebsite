@@ -66,7 +66,7 @@ export function d5Metadata(): Metadata {
     images: [OG_IMAGE],
     title: "D5 Render GPU Workstation — by the minute",
     description:
-      "A full Windows desktop with a workstation-class GPU, D5 Render preinstalled, billed per minute from Bengaluru.",
+      "A full Windows desktop with a workstation-class GPU, D5 Render preinstalled, billed per minute. Tier III data centre, India.",
     url: "https://www.coreframecloud.com/d5-render-cloud-workstation",
     type: "article",
   },
@@ -82,7 +82,7 @@ const FIXED_SPECS: [string, string][] = [
   ["Display driver", "WDDM, which D5 needs for real-time viewport work"],
   ["D5 Render", "Preinstalled; sign in with your own D5 account"],
   ["Project storage", "Persistent, separate from the machine"],
-  ["Location", NODE.location],
+  ["Location", NODE.locationShort],
 ];
 
 export default async function D5View({ currency }: { currency: Currency }) {
@@ -121,7 +121,7 @@ export default async function D5View({ currency }: { currency: Currency }) {
     },
     {
       q: "What internet speed do I need to use a Coreframe workstation?",
-      a: `You're streaming a desktop, so a steady connection matters more than a fast one. ${BANDWIDTH_SENTENCE} Rendering happens on the workstation in Bengaluru, and a finished 4K or 8K still is a file you download. It isn't streamed to you frame by frame.`,
+      a: `You're streaming a desktop, so a steady connection matters more than a fast one. ${BANDWIDTH_SENTENCE} Rendering happens on the workstation in India, and a finished 4K or 8K still is a file you download. It isn't streamed to you frame by frame.`,
     },
     ...(priceAnswer ? [{ q: "How much does it cost to render in D5 on Coreframe?", a: priceAnswer }] : []),
     ...(introFaq ? [introFaq] : []),
@@ -161,7 +161,7 @@ export default async function D5View({ currency }: { currency: Currency }) {
           <PageHeroBg image={GPU_HEROES["d5-render-cloud-workstation"]} />
         <div className="cf-wide">
           <div className="min-w-0 max-w-[620px]">
-            <p className="cf-eyebrow mb-5">D5 Render · Cloud GPU · Bengaluru</p>
+            <p className="cf-eyebrow mb-5">D5 Render · Cloud workstation</p>
             <h1 className="cf-display">
               Run D5 Render on a GPU workstation.
             </h1>

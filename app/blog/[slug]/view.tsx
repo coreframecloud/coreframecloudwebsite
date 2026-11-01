@@ -57,7 +57,7 @@ export function blogMetadata(slug: string, currency: Currency): Metadata {
   const url = `/blog/${post.slug}`;
   const description = describe(post, currency);
   return {
-    title: post.metaTitle ?? post.title,
+    title: post.absoluteTitle ? { absolute: post.absoluteTitle } : (post.metaTitle ?? post.title),
     description,
     keywords: post.targetQueries,
     alternates: { canonical: url },

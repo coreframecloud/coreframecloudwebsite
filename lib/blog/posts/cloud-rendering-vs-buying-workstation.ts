@@ -46,6 +46,8 @@ export const cloudRenderingVsBuyingWorkstation: BlogPost = {
   slug: SLUG,
   title: "Is cloud rendering cheaper than buying a render workstation?",
   metaTitle: "Is Cloud Rendering Cheaper? The Break-Even",
+  // CTR rewrite (AEO plan 1 Nov 2026, A10): position 3.8, zero clicks.
+  absoluteTitle: "Cloud Rendering vs Buying a Workstation: Break-even Hours",
   description:
     "Yes, if you render fewer hours than the break-even (machine price ÷ hourly rate). Worked at today's rate, and when buying or a monthly plan wins instead.",
   targetQueries: [

@@ -82,7 +82,8 @@ const inr = (usd: number) => `₹${Math.round(usd * FX.usdInr).toLocaleString("e
 export function vsIrenderMetadata(currency: Currency): Metadata {
   const usdView = currency === "USD";
   return {
-  title: "Coreframe vs iRender — pricing compared",
+  // 1 Nov 2026 (AEO plan A10): "irender alternatives" ranks 3.8 abroad with no clicks.
+  title: { absolute: "iRender Alternative: Coreframe Cloud Workstations Compared" },
   // One currency per visitor (owner, 18 Oct 2026): the rupee copy converts
   // iRender's dollar list price, the dollar copy quotes it as listed.
   description: usdView
@@ -92,6 +93,8 @@ export function vsIrenderMetadata(currency: Currency): Metadata {
       "Coreframe bills in rupees, GST included. A dated, sourced comparison, including where iRender wins.",
   keywords: [
     "Coreframe vs iRender",
+    "iRender alternative",
+    "iRender alternatives",
     "iRender alternative India",
     "cloud rendering price India",
     "cloud GPU rental rupees GST",

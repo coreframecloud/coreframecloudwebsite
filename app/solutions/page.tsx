@@ -12,7 +12,7 @@ import { StreamDiagram, TeamStorageDiagram } from "@/components/visuals/diagrams
 export const metadata: Metadata = {
   title: "GPU Workstations and Storage for Studios",
   description:
-    "How Coreframe fits a design studio: remote Windows RTX workstations, centralised rendering and shared project storage, hosted in India and billed in INR.",
+    "How Coreframe fits a design studio: remote Windows RTX workstations, centralised rendering and shared project storage, hosted in a Tier III data centre in India.",
   alternates: { canonical: "/solutions" },
 };
 
@@ -24,11 +24,16 @@ export const metadata: Metadata = {
  *   "Enterprise-grade physical security and controlled access"
  *   "High-availability infrastructure designed for operational continuity"
  *
- * Nobody here has an Uptime Institute certificate to point at, "enterprise-
- * grade" means nothing a customer can check, and we publish no uptime figure,
- * so the third sentence promised something we do not measure. They are replaced
- * below by facts a customer can verify in their first session: where the
- * hardware is, what reaches it, and what happens to the disk when they log off.
+ * "Enterprise-grade" means nothing a customer can check, and we publish no
+ * uptime figure, so the high-availability sentence promised something we do
+ * not measure. Those two stay removed. They are replaced below by facts a
+ * customer can verify in their first session: where the hardware is, what
+ * reaches it, and what happens to the disk when they log off.
+ *
+ * THE TIER CLAIM CAME BACK, ONE TIER ONLY (owner, 1 Nov 2026): "Hosted in a
+ * Tier III data centre in India" is approved. Never Tier IV, never the
+ * provider's name, never a city. If any customer workstation is ever hosted
+ * somewhere that is not Tier III, this wording changes the same day.
  *
  * The spec comes from lib/node-spec. It is not typed here, and it never should
  * be -- eight pages once claimed server-grade memory and a server-grade CPU
@@ -43,7 +48,7 @@ const solutions = [
 ];
 
 /** Checkable in the first session. */
-const trustItems = ["Everything stays in Bengaluru", `Streamed at ${NODE.stream}, not over RDP`, "A clean machine for every session"];
+const trustItems = ["Tier III data centre in India", `Streamed at ${NODE.stream}, not over RDP`, "A clean machine for every session"];
 
 export default function SolutionsPage() {
   // No GPU is named here (owner, 21 Oct 2026): the GPUs on offer, with VRAM,
@@ -52,7 +57,7 @@ export default function SolutionsPage() {
     "Your choice of GPU: see pricing",
     NODE.disk,
     NODE.osShort,
-    NODE.location,
+    NODE.locationShort,
   ];
   return (
     <div className="min-h-screen text-ink">

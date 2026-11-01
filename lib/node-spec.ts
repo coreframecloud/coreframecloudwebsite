@@ -68,7 +68,13 @@ export const NODE = {
    */
   os: "Windows 11 or Windows Server",
   osShort: "Windows 11 / Windows Server",
-  location: "Bengaluru, India",
+  /**
+   * Where the workstations are hosted (owner, 1 Nov 2026: Tier III approved;
+   * never Tier IV, never the provider, never a city). `location` reads inside
+   * a sentence ("hosted in ${NODE.location}"), `locationShort` in spec rows.
+   */
+  location: "a Tier III data centre in India",
+  locationShort: "Tier III data centre, India",
 } as const;
 
 /**

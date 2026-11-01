@@ -111,7 +111,7 @@ export function Bento({ youtubeId, ladder = null, ticker = null }: { youtubeId: 
               <h3 className="cfh-h3 mt-3">Watch a real session, start to finish</h3>
               <p className="mt-3 text-[16px] leading-[1.6] text-white/85">
                 Sign in, launch a workstation, load a Blender scene, render it and pull the result
-                back down. Recorded on our RTX 5080 node in Bengaluru, condensed to under five minutes.
+                back down. Recorded on an RTX 5080 workstation, condensed to under five minutes.
               </p>
             </div>
             <div className="overflow-hidden rounded-2xl border border-white/10">

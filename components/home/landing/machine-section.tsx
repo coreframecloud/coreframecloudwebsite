@@ -36,7 +36,7 @@ export function MachineSection({
           {"\n"}
           <span className="b">$</span> coreframe connect &rarr; <V>Launch workstation</V>
           {"\n\n"}
-          {"  "}<K>node</K>{"            "}gpu-node-01 · Bengaluru{"\n"}
+          {"  "}<K>node</K>{"            "}rtx-workstation · Tier III, India{"\n"}
           {ladder ? (
             <>
               {"  "}<K>gpu</K>{"             "}{ladder.gpu} · <V>{ladder.vram} VRAM</V> · your choice from the rate card{"\n"}

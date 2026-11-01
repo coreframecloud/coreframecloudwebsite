@@ -13,6 +13,7 @@
 
 import Link from "next/link";
 import { ladderSpecRows, type RateCard } from "@/lib/rate-card";
+import { NODE } from "@/lib/node-spec";
 import type { StorageTerms } from "@/lib/storage-terms";
 
 /** Slugs verified against the built route list, not guessed.
@@ -39,7 +40,7 @@ export function MachineSpecSection({ storage, card = null }: { storage: StorageT
   const specs: [string, string][] = [
     ...ladderSpecRows(card),
     ["Network", "Dedicated 1 Gbps"],
-    ["Location", "Bengaluru, India"],
+    ["Location", NODE.locationShort],
     ["Storage", `${storage.paidGb} GB persistent, included`],
     ["Billing", "Per minute · GST included"],
   ];

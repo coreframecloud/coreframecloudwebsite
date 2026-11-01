@@ -36,9 +36,8 @@ export function FactsBand({ currency = "INR", ladder = null }: { currency?: Curr
       : { k: "Workstation-class VRAM", v: "What decides whether your scene fits" },
     ladder ? { k: `${ladder.cpu} · ${ladder.ram} RAM`, v: "Big scenes and a lot open at once" } : { k: "Workstation CPU and RAM", v: "Big scenes and a lot open at once" },
     { k: NODE.stream, v: "Streamed to the laptop you own" },
-    usdView
-      ? { k: "Hosted in India", v: "Billed in US dollars" }
-      : { k: "Hosted in India", v: "Close to you, billed in rupees" },
+    // The approved hosting claim (owner, 1 Nov 2026): Tier III, India, no city.
+    { k: "Tier III data centre", v: "Hosted in India, data stays in India" },
     usdView
       ? { k: "No GST", v: "Charged per minute, nothing to cancel" }
       : { k: "GST included", v: "Charged per minute, nothing to cancel" },
@@ -312,8 +311,10 @@ export function WhatIsCoreframe({
           dedicated NVIDIA RTX GPU and design software such as D5 Render, Blender, Twinmotion and
           Unreal Engine already installed, streamed to your own PC through the Coreframe Connect app.
           It is ready in four clicks and billed per minute{price}, and the files you upload stay
-          between sessions. All infrastructure and data are in India, run by a Bengaluru company that
-          also offers CFD for ducts, pipes and HVAC rooms, and Studio concept images from a floor plan.
+          between sessions. The workstations are hosted in a Tier III data centre in India, and all
+          infrastructure and customer data stay in India. Customers anywhere in the world use the same
+          workstations. Coreframe also offers CFD for ducts, pipes and HVAC rooms, and Studio concept
+          images from a floor plan.
         </p>
         <p className="mt-5 text-[14px] leading-[1.6] text-ink-2">
           <Link
@@ -321,6 +322,34 @@ export function WhatIsCoreframe({
             className="underline decoration-rule underline-offset-4 transition hover:text-ink hover:decoration-ink"
           >
             How a ready-to-work workstation differs from a bare GPU server, and common questions
+          </Link>
+        </p>
+      </details>
+      {/* Where the data is (AEO plan 1 Nov 2026, A1): the approved Tier III line,
+          as a question, in the server HTML. */}
+      <details className="cf-answer group mt-2 max-w-[46rem] border-t border-rule pt-5">
+        <summary className="inline-flex min-h-11 cursor-pointer list-none items-center gap-3 text-[14px] font-semibold tracking-[0.02em] text-ink uppercase [&::-webkit-details-marker]:hidden">
+          <span
+            aria-hidden
+            className="grid h-7 w-7 place-items-center rounded-full border border-ink/25 text-[17px] leading-none font-light transition-colors group-open:bg-ink group-open:text-white"
+          >
+            <span className="group-open:hidden">+</span>
+            <span className="hidden group-open:inline">−</span>
+          </span>
+          Where is my data, and how is it hosted?
+        </summary>
+        <p className="mt-5 text-[17px] leading-[1.65] text-ink-2">
+          In India. Coreframe&rsquo;s GPU workstations are hosted in a Tier III data centre in India, and all
+          infrastructure and customer data stay in India. Each GPU belongs to one customer at a time, the
+          desktop is streamed over an encrypted private network, and the workstation is wiped after every
+          session. Customers outside India use the same workstations and pay in US dollars.
+        </p>
+        <p className="mt-5 text-[14px] leading-[1.6] text-ink-2">
+          <Link
+            href="/trust"
+            className="underline decoration-rule underline-offset-4 transition hover:text-ink hover:decoration-ink"
+          >
+            Security and data: the facts a buyer checks
           </Link>
         </p>
       </details>

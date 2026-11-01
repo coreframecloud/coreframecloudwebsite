@@ -44,8 +44,10 @@ export const d5RenderSystemRequirementsLaptop: BlogPost = {
   slug: SLUG,
   title: "D5 Render system requirements for a laptop, and how much space it needs",
   metaTitle: "D5 Render System Requirements: Laptop & PC",
+  // CTR rewrite (AEO plan 1 Nov 2026, A10): 1,231 impressions at 0.2 % CTR.
+  absoluteTitle: "D5 Render System Requirements 2026: Laptop, PC, Minimum",
   description:
-    "D5's own minimum: GTX 1060 6GB, RX 6000 or Arc A3 on Windows 10 1809+. Recommended: RTX 2060/3060, 32 GB RAM, 40 GB free. Laptop and D5 Lite checks too.",
+    "Minimum: GTX 1060 6GB, RX 6000 or Arc A3, Windows 10 1809+. Recommended: RTX 2060/3060, 32 GB RAM, 40 GB free. Or run D5 on a cloud GPU from any laptop.",
   targetQueries: [
     "d5 render system requirements laptop",
     "d5 render requirements laptop",

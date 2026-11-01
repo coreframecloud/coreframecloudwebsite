@@ -56,16 +56,17 @@ import { BANDWIDTH_SENTENCE } from "@/lib/streaming-terms";
  */
 /** One metadata for both copies: the descriptions quote no price. */
 export const aboutMetadata: Metadata = {
-  title: { absolute: "What is Coreframe Cloud? Company, machines, prices" },
+  // CTR rewrite (AEO plan 1 Nov 2026, A10): 223 impressions at position 3.5, 1.3 % CTR.
+  title: { absolute: "What is Coreframe Cloud? Cloud workstations, Tier III, India" },
   description:
     // Under 160 characters (SEO review 18 Oct 2026, T9).
-    "Coreframe Cloud, by Coreframe Compute Labs, Bengaluru: GPU workstations by the minute, CFD for ducts, pipes and rooms, and Studio floor-plan renders.",
+    "Ready-to-work cloud virtual workstations by the minute, hosted in a Tier III data centre in India. Plus CFD for ducts, pipes and rooms, and Studio renders.",
   alternates: { canonical: "/about" },
   openGraph: {
     images: [OG_IMAGE],
     title: "What is Coreframe Cloud?",
     description:
-      "GPU workstations, CFD for ducts and pipes, and Studio, from Bengaluru, by Coreframe Compute Labs Private Limited. What it is, what it runs on, and what it is not.",
+      "Ready-to-work cloud virtual workstations, CFD for ducts and pipes, and Studio, by Coreframe Compute Labs Private Limited. What it is, what it runs on, and what it is not.",
     url: "https://www.coreframecloud.com/about",
     type: "article",
   },
@@ -79,7 +80,8 @@ const COMPANY = [
   ["Founder & CEO", "Sowjanya Pandala"],
   ["Registered office", COMPANY_ADDRESS_FULL],
   ["Office", COMPANY_VISITING_ADDRESS_LINE],
-  ["Data centre location", "Bengaluru, Karnataka, India"],
+  ["Data centre", "Tier III data centre, India"],
+  ["Customer data", "All infrastructure and customer data stay in India"],
   ["Contact", "admin@coreframecloud.com · +91 63668 89488"],
 ];
 
@@ -97,7 +99,7 @@ const SPECS = [
   ["Working disk", NODE.disk],
   ["Operating system", `${NODE.osShort}, a full interactive desktop`],
   ["Stream", `${NODE.stream}, through the Coreframe Connect app`],
-  ["Where it runs", NODE.location],
+  ["Where it runs", NODE.locationShort],
 ];
 
 const CONFUSED_WITH = [
@@ -147,11 +149,11 @@ export default async function AboutView({ currency }: { currency: Currency }) {
     },
     {
       q: "Why was Coreframe Cloud started?",
-      a: `Coreframe Compute Labs was founded in Bengaluru in 2026 around one observation. The workstation an Indian design studio needs to render comfortably costs about ${machineCost}${usdView ? "" : " landed"}. It gets bought once and then sits idle most of the week. The cloud options were either headless Linux boxes built for AI training or foreign services that bill in dollars with no Indian tax invoice. Neither suits someone who just wants to open Lumion and hit render. So we built the unglamorous version: a real Windows machine (${NODE.os}) with a real GPU, hosted in Bengaluru, rented by the minute, with a GST invoice at the end of it.`,
+      a: `Coreframe Compute Labs was founded in Bengaluru in 2026 around one observation. The workstation an Indian design studio needs to render comfortably costs about ${machineCost}${usdView ? "" : " landed"}. It gets bought once and then sits idle most of the week. The cloud options were either headless Linux boxes built for AI training or foreign services that bill in dollars with no Indian tax invoice. Neither suits someone who just wants to open Lumion and hit render. So we built the unglamorous version: a real Windows machine (${NODE.os}) with a real GPU, hosted in a Tier III data centre in India, rented by the minute, with a GST invoice at the end of it.`,
     },
     {
       q: "What technology does Coreframe Cloud run on?",
-      a: `The workstations run ${NODE.os} on dedicated NVIDIA RTX GPUs: ${ladderPhrase(card) ?? "the GPUs on offer, with their VRAM, vCPU and RAM, are listed on the pricing page"}. The desktop streams at ${NODE.stream} over an encrypted private network, which keeps latency low enough for real-time viewport work. D5 Render, Blender, Twinmotion and Unreal Engine ship on the standard image. The website runs on Next.js and Vercel behind Cloudflare, the control plane is Dockerised services on PostgreSQL, and project files live on NAS storage in the same Bengaluru facility. Payments run through Razorpay, and sign-in codes are sent by email and WhatsApp.`,
+      a: `The workstations run ${NODE.os} on dedicated NVIDIA RTX GPUs: ${ladderPhrase(card) ?? "the GPUs on offer, with their VRAM, vCPU and RAM, are listed on the pricing page"}. The desktop streams at ${NODE.stream} over an encrypted private network, which keeps latency low enough for real-time viewport work. D5 Render, Blender, Twinmotion and Unreal Engine ship on the standard image. The website runs on Next.js and Vercel behind Cloudflare, the control plane is Dockerised services on PostgreSQL, and project files live on a project drive in India. Payments run through Razorpay, and sign-in codes are sent by email and WhatsApp.`,
     },
     {
       q: "Is a Coreframe workstation faster than the machine I already have?",
@@ -167,7 +169,7 @@ export default async function AboutView({ currency }: { currency: Currency }) {
     },
     {
       q: "Do my project files stay available if I sign in from a different computer?",
-      a: "Yes. Your files don't live on the workstation. They sit on a NAS drive in the same Bengaluru facility, mapped into every session, so if you sign in from a different laptop in a different city you get the same drive and the same projects. The workstation resets to a clean image between sessions, but the drive doesn't. A colleague can carry on where you stopped without copying anything between PCs.",
+      a: "Yes. Your files don't live on the workstation. They sit on a project drive in India, mapped into every session, so if you sign in from a different laptop in a different city you get the same drive and the same projects. The workstation resets to a clean image between sessions, but the drive doesn't. A colleague can carry on where you stopped without copying anything between PCs.",
     },
     {
       q: "Who owns and runs Coreframe Cloud?",
@@ -180,8 +182,8 @@ export default async function AboutView({ currency }: { currency: Currency }) {
     {
       q: "Where are Coreframe Cloud's machines located?",
       a: usdView
-        ? "In Bengaluru, Karnataka, India. Accounts billed outside India pay in US dollars, with no GST (export of services)."
-        : "In Bengaluru, Karnataka, India. Billing is in Indian rupees with 18% GST included, and a GST tax invoice is issued.",
+        ? "In a Tier III data centre in India. All infrastructure and customer data stay in India, and customers anywhere in the world use the same workstations. Accounts billed outside India pay in US dollars, with no GST (export of services)."
+        : "In a Tier III data centre in India. All infrastructure and customer data stay in India, and customers anywhere in the world use the same workstations. Billing in India is in Indian rupees with 18% GST included, and a GST tax invoice is issued.",
     },
     {
       q: "Is Coreframe Cloud the same as CloudFrame, Coreframe Technologies or CoreFrame Studio?",
@@ -245,7 +247,7 @@ export default async function AboutView({ currency }: { currency: Currency }) {
               <p className="cf-lead mt-6">
                 Three services: GPU workstations streamed to the laptop you own and billed by the
                 minute, CFD for ducts and pipes, and Studio for floor-plan concept images.
-                Run by Coreframe Compute Labs Private Limited, Bengaluru.
+                Hosted in a Tier III data centre in India, for customers worldwide.
               </p>
               <PageByline path="/about" className="mt-4 opacity-75" />
               {/* Answer-first, with live prices in the visitor's currency (owner, 18 Oct 2026).
@@ -306,6 +308,13 @@ export default async function AboutView({ currency }: { currency: Currency }) {
                 </div>
               ))}
             </dl>
+            <p className="mt-4 text-sm leading-6 text-ink-2">
+              Hosting, data residency, isolation and invoices, in one place:{" "}
+              <Link href="/trust" className="inline-flex min-h-11 items-center text-blue underline underline-offset-4">
+                Security and data
+              </Link>
+              .
+            </p>
           </Fold>
 
           <Fold title="What the machine is.">
@@ -378,8 +387,8 @@ export default async function AboutView({ currency }: { currency: Currency }) {
               4. The files travel with you.
             </h3>
             <p className="cf-section-copy mt-3">
-              Your projects don&rsquo;t live on the workstation. They sit on a NAS drive in the same
-              Bengaluru facility, mapped into every session, so if you sign in from a different
+              Your projects don&rsquo;t live on the workstation. They sit on a project drive in
+              India, mapped into every session, so if you sign in from a different
               laptop in a different city you get the same drive with the same work on it. The
               workstation resets to a clean image between sessions, but the drive doesn&rsquo;t. A
               colleague can carry on without anything going on a pen drive.

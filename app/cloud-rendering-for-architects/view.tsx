@@ -245,7 +245,7 @@ export default async function ArchitectsView({ currency }: { currency: Currency 
               {"  "}<K>working disk</K>{"   "}<V>{NODE.disk}</V>{"\n"}
               {"  "}<K>os</K>{"             "}<V>{NODE.os}</V>, a full desktop you work on{"\n"}
               {"  "}<K>access</K>{"         "}Coreframe Connect app, streamed at <V>{NODE.stream}</V>{"\n"}
-              {"  "}<K>location</K>{"       "}<V>{NODE.location}</V>{"\n"}
+              {"  "}<K>location</K>{"       "}<V>{NODE.locationShort}</V>{"\n"}
               {"  "}<K>licences</K>{"       "}yours; we never supply one
             </SpecBlock>
           </div>
