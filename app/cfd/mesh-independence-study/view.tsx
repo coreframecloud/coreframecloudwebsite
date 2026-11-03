@@ -12,6 +12,7 @@ import { VERIFICATION_POST_SLUG } from "@/lib/blog/posts/verification-vs-validat
 import type { Currency } from "@/lib/money";
 import { CLINIC_CASE, HVAC_PAGE, MESH_STUDY } from "@/lib/cfd-pages";
 import { PageByline } from "@/components/seo/page-byline";
+import { PhoneLaterNote } from "@/components/cfd/phone-later-note";
 
 /**
  * /cfd/mesh-independence-study — the Verified package's landing page (owner,
@@ -262,6 +263,7 @@ export default async function MeshStudyView({ currency }: { currency: Currency }
                 <Link href="/cfd#start" className="cf-btn-primary">Start a job</Link>
                 <a href="#example" className="cf-btn-secondary">See a worked example</a>
               </div>
+              <PhoneLaterNote className="mt-4" />
             </div>
             <ExplainFigure
               src={HERO.src}

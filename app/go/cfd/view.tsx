@@ -9,6 +9,7 @@ import { getRateCard } from "@/lib/rate-card";
 import { usdRates, type Currency } from "@/lib/money";
 import { CFD_EXPRESS, CFD_NORMAL_HOURS, expressFromAmount, preprocessFee } from "@/lib/cfd-prices";
 import { BEND_RECORD, VERIFIED, verifiedFromAmount } from "@/lib/cfd-verified";
+import { PhoneLaterNote } from "@/components/cfd/phone-later-note";
 
 /**
  * /go/cfd — the paid landing page for the CFD ads. Paid traffic only, so
@@ -121,6 +122,7 @@ export default async function CfdLandingView({ currency }: { currency: Currency 
               <KeepQueryLink href={START} event="go_cfd_cta" cta="hero" className="cf-btn-go w-full sm:w-auto sm:px-12">
                 Start a job <span aria-hidden>→</span>
               </KeepQueryLink>
+              <PhoneLaterNote className="mt-3" />
             </div>
           </section>
         </div>

@@ -289,6 +289,20 @@ const nextConfig: NextConfig = {
         permanent: true,
       },
       /*
+       * Ad and campaign links to /studio land on the Studio landing page
+       * (funnel review, 3 Nov 2026). The app itself sends a signed-out
+       * visitor straight to /login, and 103 of 106 people who arrived from
+       * the Studio reel left on that sign-in screen. Only links carrying
+       * utm_source are moved; the site's own "Open Studio" buttons have
+       * none, so signed-in customers still go straight to the app.
+       */
+      {
+        source: "/studio",
+        has: [{ type: "query", key: "utm_source" }],
+        destination: "/floor-plan-to-render",
+        permanent: false,
+      },
+      /*
        * The /studio -> studio.coreframecloud.com redirects (13 Oct 2026) are
        * gone: Studio is served at /studio again, see rewrites() above. They
        * were sent with Cache-Control max-age=0, must-revalidate, so browsers

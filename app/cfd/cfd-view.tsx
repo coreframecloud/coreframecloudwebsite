@@ -30,6 +30,7 @@ import { ROOMS_VALIDATION } from "@/lib/cfd-rooms";
 import { cfdServiceTiles } from "@/lib/cfd-services";
 import { ServiceTiles } from "./service-tiles";
 import { HvacEngineers } from "./hvac-engineers";
+import { PhoneLaterNote } from "@/components/cfd/phone-later-note";
 
 /**
  * /cfd — CFD for ducts and pipes (managed, automatic). Live 13 Oct 2026.
@@ -429,6 +430,7 @@ export default async function CfdView({ currency }: { currency: Currency }) {
                 <a href="#start" className="cf-btn-primary">Start a job</a>
                 <a href="#sample" className="cf-btn-secondary">See a sample report</a>
               </div>
+              <PhoneLaterNote className="mt-4" />
               <p className="cfx-quiet mt-6">
                 <a href="#right">How we know the answer is right ↓</a>
               </p>
