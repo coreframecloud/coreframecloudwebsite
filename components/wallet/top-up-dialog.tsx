@@ -851,16 +851,6 @@ export default function TopUpDialog({
                 <div className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-x-3">
                   <div className="sm:col-span-2">
                     <label className="block cf-eyebrow">
-                      Name on the invoice
-                    </label>
-                    <input
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      className="mt-2 h-11 w-full rounded-cf border border-rule bg-paper px-3 text-base text-ink outline-none focus:border-blue md:h-10 md:text-sm"
-                    />
-                  </div>
-                  <div className="sm:col-span-2">
-                    <label className="block cf-eyebrow">
                       Country <span className="text-blue">(required)</span>
                     </label>
                     <select
@@ -907,32 +897,54 @@ export default function TopUpDialog({
                     </p>
                   </div>
                   )}
-                  <div>
-                    <label className="block cf-eyebrow">
-                      City
-                    </label>
-                    <input
-                      value={city}
-                      onChange={(e) => setCity(e.target.value)}
-                      className="mt-2 h-11 w-full rounded-cf border border-rule bg-paper px-3 text-base text-ink outline-none focus:border-blue md:h-10 md:text-sm"
-                    />
-                  </div>
-                  <div>
-                    <label className="block cf-eyebrow">
-                      {isIndia ? (
-                        <>PIN code <span className="normal-case tracking-normal">(optional)</span></>
-                      ) : (
-                        "Postal code"
-                      )}
-                    </label>
-                    <input
-                      value={pincode}
-                      onChange={(e) => { setPincode(e.target.value); setError(""); }}
-                      inputMode={isIndia ? "numeric" : "text"}
-                      maxLength={isIndia ? 6 : 12}
-                      className="mt-2 h-11 w-full rounded-cf border border-rule bg-paper px-3 text-base tabular-nums text-ink outline-none focus:border-blue md:h-10 md:text-sm"
-                    />
-                  </div>
+                  {/* Funnel review, 3 Nov 2026: 56 people opened this dialog and
+                      14 pressed Pay. Only country and (in India) state are
+                      needed for the invoice's GST, so the optional fields sit
+                      behind one line and Pay comes up the screen on a phone. */}
+                  <details className="group sm:col-span-2">
+                    <summary className="cursor-pointer list-none text-sm font-medium text-blue-ink">
+                      <span className="underline underline-offset-2">Add a name and address to the invoice</span>{" "}
+                      <span className="font-normal text-ink-2">(optional)</span>
+                    </summary>
+                    <div className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-x-3">
+                      <div className="sm:col-span-2">
+                        <label className="block cf-eyebrow">
+                          Name on the invoice
+                        </label>
+                        <input
+                          value={name}
+                          onChange={(e) => setName(e.target.value)}
+                          className="mt-2 h-11 w-full rounded-cf border border-rule bg-paper px-3 text-base text-ink outline-none focus:border-blue md:h-10 md:text-sm"
+                        />
+                      </div>
+                      <div>
+                        <label className="block cf-eyebrow">
+                          City
+                        </label>
+                        <input
+                          value={city}
+                          onChange={(e) => setCity(e.target.value)}
+                          className="mt-2 h-11 w-full rounded-cf border border-rule bg-paper px-3 text-base text-ink outline-none focus:border-blue md:h-10 md:text-sm"
+                        />
+                      </div>
+                      <div>
+                        <label className="block cf-eyebrow">
+                          {isIndia ? (
+                            <>PIN code <span className="normal-case tracking-normal">(optional)</span></>
+                          ) : (
+                            "Postal code"
+                          )}
+                        </label>
+                        <input
+                          value={pincode}
+                          onChange={(e) => { setPincode(e.target.value); setError(""); }}
+                          inputMode={isIndia ? "numeric" : "text"}
+                          maxLength={isIndia ? 6 : 12}
+                          className="mt-2 h-11 w-full rounded-cf border border-rule bg-paper px-3 text-base tabular-nums text-ink outline-none focus:border-blue md:h-10 md:text-sm"
+                        />
+                      </div>
+                    </div>
+                  </details>
                 </div>
 
                 {error && (
