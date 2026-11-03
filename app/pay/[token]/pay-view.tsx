@@ -37,8 +37,14 @@ export default function PayView({ token }: { token: string }) {
           if (live) setState({ kind: res.status === 404 ? "expired" : "error" });
           return;
         }
-        const data = (await res.json()) as { amount: number };
-        window.location.replace(topUpHref(Number(data.amount)));
+        const data = (await res.json()) as { amount: number; purpose?: string };
+        // The Rs 99 Studio starter reopens as the starter (?studio=1), not as a
+        // plain wallet top-up of the same amount.
+        window.location.replace(
+          data.purpose === "studio_starter"
+            ? "/my-activity?topup=1&studio=1"
+            : topUpHref(Number(data.amount)),
+        );
       } catch {
         if (live) setState({ kind: "error" });
       }
