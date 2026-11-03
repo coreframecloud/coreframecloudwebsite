@@ -45,10 +45,9 @@ export const linksMetadata = (currency: Currency): Metadata => ({
     description: `GPU workstations for architects, billed per minute, hosted in ${NODE.location}.`,
     url: "https://www.coreframecloud.com/links",
     siteName: "Coreframe Cloud",
-    // public/og-image.png does not exist — the draft pointed at it, which would
-    // have shipped a broken preview card on exactly the surface that matters
-    // most here: the WhatsApp and Instagram share sheet.
-    images: [{ url: "https://www.coreframecloud.com/logo-horizontal.png", width: 1200, height: 630 }],
+    // The WhatsApp and Instagram share sheet is the surface that matters most
+    // here. The logo is the COREFRAME wordmark only; this card carries it.
+    images: [{ url: "https://www.coreframecloud.com/og/go-gpu.jpg", width: 1200, height: 630, alt: "A living room rendered in 1:28 on a Coreframe RTX 5080 workstation" }],
   },
 });
 
