@@ -60,7 +60,7 @@ const STEPS = [
 const FAQS = [
   {
     q: "What is Coreframe?",
-    a: `Coreframe rents Windows GPU workstations by the minute, hosted in India. You stream a real Windows desktop, with the applications already installed, to the laptop you already own through the Coreframe Connect app (no browser, no terminal) and use it like a workstation under your desk, for D5 Render, Lumion, Enscape, Revit, 3ds Max, Blender, CFD work or anything else that needs a GPU. You drive the machine yourself. There's no job queue, because it isn't a render farm, and it isn't a Linux GPU server you reach over SSH: if you need root, SSH or Linux, a GPU cloud built for AI is the better fit.`,
+    a: `Coreframe rents Windows GPU workstations by the minute, hosted in India. You stream a real Windows desktop, with Unreal Engine, Twinmotion and Blender already installed, to the laptop you already own through the Coreframe Connect app (no browser, no terminal) and use it like a workstation under your desk, for D5 Render, Lumion, Enscape, Revit, 3ds Max, Blender, CFD work or anything else that needs a GPU. You drive the machine yourself. There's no job queue, because it isn't a render farm, and it isn't a Linux GPU server you reach over SSH: if you need root, SSH or Linux, a GPU cloud built for AI is the better fit.`,
   },
   {
     q: "How is Coreframe billed?",
@@ -68,7 +68,7 @@ const FAQS = [
   },
   {
     q: "Do I need my own software licences?",
-    a: "For commercial applications, yes. Lumion, Enscape, V-Ray, Revit, AutoCAD, 3ds Max and the like are licensed to you, not the machine, so we set them up with you once and you sign in with your own subscription. Already installed: D5 Render (you sign in with your own D5 account), Blender, Twinmotion, Unreal Engine, the Autodesk viewers and the usual utilities.",
+    a: "For commercial applications, yes. Lumion, Enscape, V-Ray, Revit, AutoCAD, 3ds Max and the like are licensed to you, not the machine, so we set them up with you once and you sign in with your own subscription. Already installed: Unreal Engine, Twinmotion, Blender, the Autodesk viewers and the usual utilities. Install D5 Render from d5render.com in a few minutes and sign in with your own D5 account. On a persistent workstation it stays installed between sessions.",
   },
   {
     q: "Can I install my own software on the workstation?",

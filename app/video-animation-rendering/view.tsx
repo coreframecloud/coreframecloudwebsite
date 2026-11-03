@@ -164,7 +164,7 @@ export default async function VideoView({ currency }: { currency: Currency }) {
   const faqs = [
     {
       q: "Can I render video and animation on a Coreframe workstation?",
-      a: `Yes. It is a full Windows desktop (${NODE.os}) with ${ladderPhrase(card) ?? "a workstation-class GPU"}. After Effects, Premiere Pro and Media Encoder run on your own Adobe account; Blender, FFmpeg and HandBrake are preinstalled; D5 Render, Twinmotion and Unreal Engine are installed for walkthroughs.`,
+      a: `Yes. It is a full Windows desktop (${NODE.os}) with ${ladderPhrase(card) ?? "a workstation-class GPU"}. After Effects, Premiere Pro and Media Encoder run on your own Adobe account; Blender, FFmpeg and HandBrake are preinstalled; Twinmotion and Unreal Engine are installed for walkthroughs, and D5 Render runs on your own D5 account.`,
     },
     {
       q: "Does Coreframe provide an Adobe licence?",

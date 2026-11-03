@@ -170,7 +170,7 @@ export default async function EnterpriseView({ currency }: { currency: Currency 
   const faqs = [
     { q: "How many people can use one plan?", a: "Each plan includes a set number of team logins, shown on its card. Everyone signs in with their own account." },
     { q: "What if we use more hours than the plan includes?", a: "You keep working. Extra hours are charged at the plan's lower hourly rate, shown on each card." },
-    { q: "Do we need our own software licences?", a: "For paid software, yes: Lumion and similar tools run on your own licence. D5 Render, Blender and Twinmotion come installed." },
+    { q: "Do we need our own software licences?", a: "For paid software, yes: Lumion and similar tools run on your own licence. D5 Render runs on your own D5 account. Unreal Engine, Twinmotion and Blender come installed." },
     usdView
       ? { q: "Is there GST?", a: "No. Plans billed in US dollars carry no GST (export of services), and the invoice is in US dollars." }
       : { q: "Is GST included?", a: "Yes. Every price includes 18% GST, and the invoice shows the split so you can claim input tax credit." },

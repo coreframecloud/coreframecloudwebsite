@@ -93,7 +93,7 @@ export function AtAGlance({
           {/* One name per line (owner, 31 Oct 2026); the spaces keep the
               names apart for crawlers and copy-paste. */}
           <span className="cf-bubble-list">
-            <span>D5{"\u00a0"}Render</span> <span>Blender</span> <span>Twinmotion</span> <span>Unreal{"\u00a0"}Engine</span>
+            <span>Unreal{"\u00a0"}Engine</span> <span>Twinmotion</span> <span>Blender</span>
           </span>{" "}
           <span className="cf-bubble-label">installed</span>
         </>

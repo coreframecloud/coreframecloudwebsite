@@ -221,7 +221,7 @@ const bandPoints = (prices: OfferingPrices): Record<Offering["id"], string[]> =>
     prices.ladder
       ? `${prices.lineup?.range ?? prices.ladder.gpu} · ${prices.ladder.vram} VRAM · ${prices.ladder.cpu} · ${prices.ladder.ram} RAM`
       : "A dedicated GPU, a whole card to yourself",
-    "Unreal Engine, D5 Render, Blender and Twinmotion preinstalled",
+    "Unreal Engine, Twinmotion and Blender preinstalled",
     prices.currency === "USD"
       ? "Billed per minute, no GST; close it and billing stops"
       : "Billed per minute, GST included; close it and billing stops",

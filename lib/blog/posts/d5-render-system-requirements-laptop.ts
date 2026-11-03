@@ -170,7 +170,7 @@ export const d5RenderSystemRequirementsLaptop: BlogPost = {
     },
     {
       type: "p",
-      text: `D5 Render is preinstalled; you sign in with your own D5 account. Your project files live on a drive that persists between sessions, so the 40 GB of workspace and your assets aren't on your laptop at all. You connect from the Coreframe Connect app, which runs on Windows laptops (not Mac yet). ${BANDWIDTH_SENTENCE}`,
+      text: `Install D5 Render from d5render.com in a few minutes and sign in with your own D5 account. On a persistent workstation it stays installed between sessions. Your project files live on a drive that persists between sessions, so the 40 GB of workspace and your assets aren't on your laptop at all. You connect from the Coreframe Connect app, which runs on Windows laptops (not Mac yet). ${BANDWIDTH_SENTENCE}`,
     },
     ctx.hourly
       ? {
@@ -206,7 +206,7 @@ export const d5RenderSystemRequirementsLaptop: BlogPost = {
     ctx.hourly
       ? {
           q: "What can I do if my laptop can't run D5?",
-          a: `Run D5 on a remote workstation and stream it to the laptop. A Coreframe workstation has an ${NODE.gpu} with ${NODE.vram} and D5 preinstalled, for ${ctx.hourly} billed per minute; you sign in with your own D5 account.`,
+          a: `Run D5 on a remote workstation and stream it to the laptop. A Coreframe workstation has an ${NODE.gpu} with ${NODE.vram}, for ${ctx.hourly} billed per minute; you install D5 and sign in with your own D5 account.`,
         }
       : null,
   ],

@@ -38,7 +38,7 @@ export function buildFaq(storage: StorageTerms, intro: IntroOffer | null, adhocR
     },
     {
       q: "Is it a Linux GPU server I connect to over SSH?",
-      a: "No. Each workstation is a Windows desktop with the applications installed (D5 Render, Blender, Twinmotion, Unreal Engine; Lumion and Enscape on your own licence), streamed to your own laptop through the Coreframe Connect app, with no browser and no terminal. If you need a Linux box, root access or SSH for training or batch jobs, Coreframe isn't the right tool and a GPU cloud built for AI will serve you better.",
+      a: "No. Each workstation is a Windows desktop with the applications installed (Unreal Engine, Twinmotion, Blender; D5 Render, Lumion and Enscape on your own account), streamed to your own laptop through the Coreframe Connect app, with no browser and no terminal. If you need a Linux box, root access or SSH for training or batch jobs, Coreframe isn't the right tool and a GPU cloud built for AI will serve you better.",
     },
     {
       q: "What internet speed do I need?",

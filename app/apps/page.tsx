@@ -15,7 +15,7 @@ import {
 export const metadata: Metadata = {
   title: "Preinstalled software on the workstations",
   description:
-    "Blender, D5 Render, Twinmotion and Unreal Engine are preinstalled on every Coreframe workstation. Bring your own licence for Lumion, Enscape, Revit and more.",
+    "Unreal Engine, Twinmotion and Blender are preinstalled on every Coreframe workstation. Bring your own account or licence for D5 Render, Lumion, Enscape, Revit and more.",
   alternates: { canonical: "/apps" },
 };
 
@@ -52,7 +52,7 @@ const faqs = [
   },
   {
     q: "Can I install my own software on a Coreframe workstation?",
-    a: "We install applications for you. Your session runs as a standard Windows user, which is how we can guarantee the workstation goes back to a clean image before the next customer. D5 Render, Twinmotion, Unreal Engine, Blender and the rest of the standard set are already on the machine. Revit, AutoCAD, 3ds Max, V-Ray, Lumion and Enscape we set up with you once, because those vendors only let you download from your own account. After that they're on every workstation you launch, running on your own licence.",
+    a: "We install most applications for you, and the workstation goes back to a clean image before the next customer. Unreal Engine, Twinmotion, Blender and the rest of the standard set are already on the machine. Revit, AutoCAD, 3ds Max, V-Ray, Lumion and Enscape we set up with you once, because those vendors only let you download from your own account. After that they're on every workstation you launch, running on your own licence. D5 Render you install yourself: download it from d5render.com in a few minutes and sign in with your own D5 account.",
   },
   {
     q: "Does Coreframe provide licences for D5 Render, Lumion or Autodesk software?",
@@ -60,7 +60,7 @@ const faqs = [
   },
   {
     q: "Does software I install stay on the workstation for next time?",
-    a: "Every session starts from an identical clean image, so nothing from the previous customer, or from your own last session, is left on the machine. Your project files are kept separately on NAS storage, and that does persist between sessions. If you need a particular application every day, tell us and we'll add it to the standard image.",
+    a: "Every session starts from an identical clean image, so nothing from the previous customer, or from your own last session, is left on the machine. Your project files are kept separately on NAS storage, and that does persist between sessions. If you need a particular application every day, tell us and we'll add it to the standard image. A persistent workstation, your own Windows disk, keeps apps you install, such as D5 Render, between sessions.",
   },
 ];
 
@@ -134,7 +134,7 @@ export default function AppsPage() {
           </p>
           <PageByline path="/apps" className="mt-4 opacity-75" />
         </div>
-          <OwnImage src="/blog/blender-interior-render-on-cloud-rtx-5080/file-on-workstation.webp" alt="Blender ready on a Coreframe workstation" width={923} height={597} caption="Blender, D5 and Twinmotion come installed." sizes="(max-width: 1024px) 100vw, 480px" />
+          <OwnImage src="/blog/blender-interior-render-on-cloud-rtx-5080/file-on-workstation.webp" alt="Blender ready on a Coreframe workstation" width={923} height={597} caption="Unreal, Blender and Twinmotion come installed." sizes="(max-width: 1024px) 100vw, 480px" />
         </div>
       </section>
       <section className="cf-section px-5 pb-0">
@@ -156,7 +156,7 @@ export default function AppsPage() {
 
       <Group
         title="Your licence, our machine."
-        blurb="These are licensed to you, and the licence stays yours. Adobe Creative Cloud is already installed; you sign in with your own Adobe account. The others we set up with you once, since the vendor only lets you download from your own account. After that they're on every workstation you launch, signed in with your subscription. We never supply licences for commercial software."
+        blurb="These are licensed to you, and the licence stays yours. Adobe Creative Cloud is already installed; you sign in with your own Adobe account. D5 Render you install yourself from d5render.com. The others we set up with you once, since the vendor only lets you download from your own account. After that they're on every workstation you launch, signed in with your subscription. We never supply licences for commercial software."
         items={BRING_YOUR_OWN_LICENCE}
       />
 

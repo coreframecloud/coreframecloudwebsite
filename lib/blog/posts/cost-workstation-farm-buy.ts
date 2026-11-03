@@ -230,7 +230,7 @@ export const costWorkstationFarmBuy: BlogPost = {
       : null,
     {
       q: "Do I need my own software licences on a cloud workstation?",
-      a: "For commercial software, yes. Blender, Twinmotion and D5 Render are preinstalled (D5 with your own D5 account); tools like Revit, 3ds Max, V-Ray and Lumion run with your own licence.",
+      a: "For commercial software, yes. Blender, Twinmotion and Unreal Engine are preinstalled; D5 Render runs on your own D5 account, and tools like Revit, 3ds Max, V-Ray and Lumion run with your own licence.",
     },
   ],
   related: [

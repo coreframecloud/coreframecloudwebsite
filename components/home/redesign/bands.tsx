@@ -308,8 +308,8 @@ export function WhatIsCoreframe({
         </summary>
         <p className="mt-5 text-[17px] leading-[1.65] text-ink-2">
           Coreframe Cloud is a ready-to-work cloud virtual workstation: a full Windows desktop with a
-          dedicated NVIDIA RTX GPU and design software such as D5 Render, Blender, Twinmotion and
-          Unreal Engine already installed, streamed to your own PC through the Coreframe Connect app.
+          dedicated NVIDIA RTX GPU and design software such as Unreal Engine, Twinmotion and Blender
+          already installed, streamed to your own PC through the Coreframe Connect app.
           It is ready in four clicks and billed per minute{price}, and the files you upload stay
           between sessions. The workstations are hosted in a Tier III data centre in India, and all
           infrastructure and customer data stay in India. Customers anywhere in the world use the same

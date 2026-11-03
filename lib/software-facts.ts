@@ -80,7 +80,8 @@ export const SOFTWARE_FACTS: Record<string, SoftwareFacts> = {
     app: "D5 Render",
     short: "D5 Render",
     vendorUrl: "https://www.d5render.com/",
-    preinstalled: true,
+    // 3 Nov 2026: D5 is not on the image.
+    preinstalled: false,
     href: "/d5-render-cloud-workstation",
     measured: RENDER_ROWS("D5 Render"),
   },

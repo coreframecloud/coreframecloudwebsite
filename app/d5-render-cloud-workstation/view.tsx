@@ -38,8 +38,9 @@ import { BANDWIDTH_SENTENCE } from "@/lib/streaming-terms";
  * A static route beats the [slug] dynamic route in Next's matcher, so this file
  * takes over the path and the stub entry has been deleted.
  *
- * FACTS. D5 Render is preinstalled on the image; the customer signs in with
- * their own D5 account. Prices come from the rate card, never typed. No render
+ * FACTS. 3 Nov 2026: D5 is not on the image. The customer installs it from
+ * d5render.com (they are admin on the session) and signs in with their own D5
+ * account; a persistent workstation keeps it between sessions. Prices come from the rate card, never typed. No render
  * times, no speed multiples, no capacity promises -- see the copy rules in
  * coreframe-outreach. VRAM and core counts are published specifications and are
  * the honest way to make the hardware point.
@@ -53,7 +54,7 @@ export function d5Metadata(): Metadata {
   return {
   title: { absolute: "Run D5 Render on a GPU Workstation by the Minute | Coreframe" },
   description:
-    "D5 Render on a Windows GPU workstation with D5 preinstalled, billed per minute. Sign in with your D5 account; your files persist.",
+    "Run D5 Render on a Windows GPU workstation, billed per minute. Install D5 in minutes, sign in with your D5 account; your files persist.",
   keywords: [
     "D5 Render cloud workstation",
     "D5 Render cloud GPU India",
@@ -66,7 +67,7 @@ export function d5Metadata(): Metadata {
     images: [OG_IMAGE],
     title: "D5 Render GPU Workstation — by the minute",
     description:
-      "A full Windows desktop with a workstation-class GPU, D5 Render preinstalled, billed per minute. Tier III data centre, India.",
+      "A full Windows desktop with a workstation-class GPU for D5 Render, billed per minute. Tier III data centre, India.",
     url: "https://www.coreframecloud.com/d5-render-cloud-workstation",
     type: "article",
   },
@@ -80,7 +81,7 @@ const FIXED_SPECS: [string, string][] = [
   ["OS", NODE.osShort],
   ["Access", `Coreframe Connect app, streamed at ${NODE.stream}`],
   ["Display driver", "WDDM, which D5 needs for real-time viewport work"],
-  ["D5 Render", "Preinstalled; sign in with your own D5 account"],
+  ["D5 Render", "Install from d5render.com; sign in with your own D5 account"],
   ["Project storage", "Persistent, separate from the machine"],
   ["Location", NODE.locationShort],
 ];
@@ -97,11 +98,11 @@ export default async function D5View({ currency }: { currency: Currency }) {
   const faqs: { q: string; a: string }[] = [
     {
       q: "Can I run D5 Render on a cloud workstation?",
-      a: `Yes. Coreframe gives you a full Windows desktop (${NODE.os}) with a dedicated NVIDIA RTX GPU, and D5 Render is already installed on it. You sign in with your own D5 account, open your project and work in the live viewport the same way you would on a local machine. It's the full desktop application. You reach it through the Coreframe Connect app rather than a remote desktop, and the stream runs at ${NODE.stream}.`,
+      a: `Yes. Coreframe gives you a full Windows desktop (${NODE.os}) with a dedicated NVIDIA RTX GPU. Install D5 Render from d5render.com in a few minutes and sign in with your own D5 account. On a persistent workstation it stays installed between sessions. Then open your project and work in the live viewport the same way you would on a local machine. It's the full desktop application. You reach it through the Coreframe Connect app rather than a remote desktop, and the stream runs at ${NODE.stream}.`,
     },
     {
       q: "Is D5 Render included, or do I need my own licence?",
-      a: "The application is installed for you, so you never spend paid minutes downloading it. The account is yours: you sign in with your own D5 credentials, and whatever plan you hold with D5 is what applies. We supply the machine. The licence is yours.",
+      a: "D5 Render is not preinstalled. You download it from d5render.com and sign in with your own D5 credentials, and whatever plan you hold with D5 is what applies. You are an administrator on the workstation, so the install takes a few minutes. We supply the machine. The licence is yours.",
     },
     {
       q: "Is this the same as a render farm?",
@@ -113,11 +114,11 @@ export default async function D5View({ currency }: { currency: Currency }) {
     },
     {
       q: "What happens to my D5 project files when the session ends?",
-      a: "Every session starts from an identical clean machine, so anything installed during a session is gone when it ends. Your project files don't live on that machine. They sit on persistent storage that carries over, so a session you open on Friday picks up where Monday's stopped. The clean reset is how we make sure no trace of another customer's work, or yours, is left behind.",
+      a: "Every session starts from an identical clean machine, so anything installed during a session is gone when it ends, unless you use a persistent workstation. Your project files don't live on that machine. They sit on persistent storage that carries over, so a session you open on Friday picks up where Monday's stopped. The clean reset is how we make sure no trace of another customer's work, or yours, is left behind.",
     },
     {
       q: "Can I use D5 Render with Revit, SketchUp, Rhino or 3ds Max on the same machine?",
-      a: "Yes. It's an ordinary Windows desktop, so the D5 plugins and the host applications sit side by side. Blender and Twinmotion are preinstalled alongside D5. Revit, SketchUp, Rhino, 3ds Max and similar licensed applications run on the machine but need your own licence, because those vendors require your own account even to download the installer.",
+      a: "Yes. It's an ordinary Windows desktop, so the D5 plugins and the host applications sit side by side. Blender, Twinmotion and Unreal Engine are preinstalled, and D5 installs alongside them. Revit, SketchUp, Rhino, 3ds Max and similar licensed applications run on the machine but need your own licence, because those vendors require your own account even to download the installer.",
     },
     {
       q: "What internet speed do I need to use a Coreframe workstation?",
@@ -147,7 +148,7 @@ export default async function D5View({ currency }: { currency: Currency }) {
           path: "/d5-render-cloud-workstation",
           name: "D5 Render on a GPU workstation, by the minute",
           description:
-            "A Windows GPU workstation with D5 Render preinstalled, streamed to your laptop and billed per minute. Sign in with your own D5 account; project files persist.",
+            "A Windows GPU workstation for D5 Render, streamed to your laptop and billed per minute. Install D5 and sign in with your own D5 account; project files persist.",
           card,
         })}
       />
@@ -167,7 +168,7 @@ export default async function D5View({ currency }: { currency: Currency }) {
             </h1>
           
             <p className="cf-lead mt-[22px]">
-            A full Windows desktop with a workstation-class GPU and D5 Render installed, streamed to your laptop and billed by the minute. Sign in with your own D5 account.
+            A full Windows desktop with a workstation-class GPU, streamed to your laptop and billed by the minute. Install D5 Render in a few minutes and sign in with your own D5 account.
           </p>
             <PageByline path="/d5-render-cloud-workstation" className="mt-4 opacity-75" />
         </div>
@@ -239,7 +240,7 @@ export default async function D5View({ currency }: { currency: Currency }) {
             {[
               "Sign in and start a workstation. It comes up in about two minutes. Provisioning is free, and billing starts when the stream does.",
               "Your project files are already there, on persistent storage that survives between sessions. Nothing has to be copied onto the machine each time.",
-              "Open D5, sign in with your own account, and work. Twinmotion, Blender and Unreal Engine are on the same desktop if you need them.",
+              "Install D5 from d5render.com (or open it on your persistent workstation), sign in with your own account, and work. Twinmotion, Blender and Unreal Engine are already on the desktop if you need them.",
               "Render at full resolution on the workstation. The finished image is a file you download. It doesn't come through the stream.",
               "Close the session. Billing stops, the machine is wiped back to a clean image, and your files stay where they were.",
             ].map((step, i) => (

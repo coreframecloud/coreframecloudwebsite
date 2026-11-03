@@ -35,10 +35,12 @@ import { FREE_PREVIEWS_PER_DAY, studioMoney, studioPrices } from "@/lib/studio-p
  * seats, shared NAS, plans); this one is organised by software and links to it.
  *
  * Every claim is one an existing page already makes:
- *   - Preinstalled: D5 Render, Twinmotion, Unreal Engine 5.8 with Quixel
- *     Bridge, Blender (lib/software-catalogue.ts PREINSTALLED, the D5 / Twinmotion
- *     / Unreal / Blender pages). D5 and Unreal sign in with the customer's own
- *     account; Twinmotion's free tier covers most individual users.
+ *   - Preinstalled: Twinmotion, Unreal Engine 5.8 with Quixel Bridge, Blender
+ *     (lib/software-catalogue.ts PREINSTALLED, the Twinmotion / Unreal / Blender
+ *     pages). Unreal signs in with the customer's own account; Twinmotion's free
+ *     tier covers most individual users.
+ *   - 3 Nov 2026: D5 is not on the image. The customer installs it from
+ *     d5render.com and signs in with their own D5 account.
  *   - Bring your own licence: Lumion, Enscape (a plugin in Revit, SketchUp,
  *     Rhino or Archicad), V-Ray, 3ds Max (V-Ray, Corona, Vantage with a Chaos
  *     account), Revit, SketchUp Pro, Rhino (lib/software-pages.ts,
@@ -77,7 +79,7 @@ export const archvizMetadata: Metadata = {
   },
 };
 
-type Tool = { name: string; href: string; licence: "Preinstalled" | "Your licence"; body: string };
+type Tool = { name: string; href: string; licence: "Preinstalled" | "Your licence" | "Your account"; body: string };
 type Group = { id: string; title: string; lead: string; tools: Tool[] };
 
 const GROUPS: Group[] = [
@@ -89,8 +91,8 @@ const GROUPS: Group[] = [
       {
         name: "D5 Render",
         href: "/d5-render-cloud-workstation",
-        licence: "Preinstalled",
-        body: "Installed for you; sign in with your own D5 account, and whatever plan you hold with D5 applies.",
+        licence: "Your account",
+        body: "Install D5 Render from d5render.com in a few minutes and sign in with your own D5 account. On a persistent workstation it stays installed between sessions.",
       },
       {
         name: "Lumion",
@@ -206,7 +208,7 @@ export default async function ArchvizView({ currency }: { currency: Currency }) 
   const faqs = [
     {
       q: "Which architectural visualization software is preinstalled?",
-      a: "D5 Render, Twinmotion, Unreal Engine 5.8 with Quixel Bridge and Blender are installed on every Coreframe workstation. D5 and Unreal sign in with your own account; Twinmotion's free tier covers most individual users; Blender needs no licence.",
+      a: "Twinmotion, Unreal Engine 5.8 with Quixel Bridge and Blender are installed on every Coreframe workstation. Unreal signs in with your own account; Twinmotion's free tier covers most individual users; Blender needs no licence. D5 Render is not preinstalled: install it from d5render.com and sign in with your own D5 account.",
     },
     {
       q: "Do I need my own licence for Lumion, Enscape, V-Ray or Revit?",
@@ -237,7 +239,7 @@ export default async function ArchvizView({ currency }: { currency: Currency }) 
     provider: { "@id": ORG_ID },
     areaServed: AREA_SERVED_WORLD,
     url: `${SITE}${PATH}`,
-    description: `A Windows GPU workstation rented by the minute for D5 Render, Lumion, Enscape, Twinmotion, Unreal Engine, V-Ray, 3ds Max, Blender, Revit, SketchUp and Rhino. D5 Render, Twinmotion, Unreal Engine and Blender are preinstalled; the others run on your own licence.`,
+    description: `A Windows GPU workstation rented by the minute for D5 Render, Lumion, Enscape, Twinmotion, Unreal Engine, V-Ray, 3ds Max, Blender, Revit, SketchUp and Rhino. Twinmotion, Unreal Engine and Blender are preinstalled; the others run on your own account or licence.`,
     ...(ladderOffers.length ? { offers: ladderOffers } : {}),
   };
 
@@ -287,7 +289,7 @@ export default async function ArchvizView({ currency }: { currency: Currency }) 
             <h2 className="cf-section-title">Grouped by the job, each with its own page.</h2>
             <p className="cf-section-copy mt-4 max-w-[46rem]">
               Every tool runs on the same machine, so you can model in one, render in another and never move a file between
-              computers. <span className="cfx-hl">Four are preinstalled</span>; the rest run on your own licence.
+              computers. <span className="cfx-hl">Three are preinstalled</span>; the rest run on your own account or licence.
             </p>
             {GROUPS.map((g) => (
               <div key={g.id} id={g.id} className="mt-12 scroll-mt-20">

@@ -85,7 +85,7 @@ export default async function WorkstationVsServerView({ currency }: { currency: 
     ],
     [
       "Software",
-      "Blender, D5 Render, Twinmotion, Unreal Engine, FreeCAD and more preinstalled; Lumion, Enscape, V-Ray, Revit, AutoCAD, SketchUp Pro and Rhino on your own licence",
+      "Unreal Engine, Twinmotion, Blender, FreeCAD and more preinstalled; D5 Render, Lumion, Enscape, V-Ray, Revit, AutoCAD, SketchUp Pro and Rhino on your own licence",
       "Only what is in the base image; you install and license everything else",
     ],
     [
@@ -139,7 +139,7 @@ export default async function WorkstationVsServerView({ currency }: { currency: 
     },
     {
       q: "Can I run SketchUp, Revit or AutoCAD on a cloud GPU workstation?",
-      a: "Yes. A Coreframe workstation is a standard Windows desktop, so SketchUp Pro, Revit, AutoCAD, 3ds Max, Rhino, Lumion, Enscape and V-Ray run on your own licence, signed in exactly as on a new PC. Blender, D5 Render, Twinmotion and Unreal Engine are preinstalled. Each session starts from a clean machine, so software you install is removed when it ends, unless you choose a persistent workstation (available on selected GPUs), which keeps your own Windows disk between sessions.",
+      a: "Yes. A Coreframe workstation is a standard Windows desktop, so SketchUp Pro, Revit, AutoCAD, 3ds Max, Rhino, Lumion, Enscape and V-Ray run on your own licence, signed in exactly as on a new PC. Unreal Engine, Twinmotion and Blender are preinstalled; D5 Render installs in a few minutes on your own D5 account. Each session starts from a clean machine, so software you install is removed when it ends, unless you choose a persistent workstation (available on selected GPUs), which keeps your own Windows disk between sessions.",
     },
     {
       q: "Is a virtual workstation good for interior designers and small design firms?",

@@ -223,8 +223,8 @@ export function PricingSection({
         {/* Licences and GST, as chips */}
         <div className="mt-6 flex flex-wrap gap-2.5 text-[13.5px]">
           {(usdView
-            ? ["Prices in US dollars", "No GST: export of services", "Invoice in US dollars", "D5, Blender, Twinmotion installed", "Your own licence for paid apps like Lumion"]
-            : ["GST included in every price", "Tax invoice with the GST split", "D5, Blender, Twinmotion installed", "Your own licence for paid apps like Lumion"]
+            ? ["Prices in US dollars", "No GST: export of services", "Invoice in US dollars", "Unreal, Twinmotion, Blender installed", "Your own licence for paid apps like Lumion"]
+            : ["GST included in every price", "Tax invoice with the GST split", "Unreal, Twinmotion, Blender installed", "Your own licence for paid apps like Lumion"]
           ).map((c) => (
             <span key={c} className="rounded-full bg-tint-blue px-3.5 py-2 text-ink-2">{c}</span>
           ))}
