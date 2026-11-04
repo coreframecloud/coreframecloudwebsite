@@ -83,7 +83,7 @@ export default async function VastAlternativeView({ currency }: { currency: Curr
     ],
     [
       "Software",
-      "Unreal Engine, Twinmotion and Blender preinstalled; D5 Render, Revit, 3ds Max, SketchUp Pro, Lumion and Enscape on your own account or licence",
+      "D5 Render, Twinmotion, Unreal Engine and Blender preinstalled; Revit, 3ds Max, SketchUp Pro, Lumion and Enscape on your own licence",
       "The image or template you pick; you install and configure the rest",
     ],
     [
@@ -149,7 +149,7 @@ export default async function VastAlternativeView({ currency }: { currency: Curr
           <p className="cf-lead mt-[22px]">
             Vast.ai rents GPU containers and virtual machines, mostly Linux, that you reach by SSH and set up yourself.
             Coreframe rents a <em>ready-to-work Windows desktop</em> with a dedicated RTX GPU and your design software
-            installed: you open Blender, Revit or Unreal and work.
+            installed: you open D5, Revit or Blender and work.
           </p>
           <PageByline path={PAGE_PATH} className="mt-4 opacity-75" />
         </div>

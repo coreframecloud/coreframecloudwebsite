@@ -145,7 +145,7 @@ export default async function GpuLandingView({ currency }: { currency: Currency 
 
         <section className="mt-8 max-w-[760px]" data-cf-section="ladder">
           <h2 className="font-heading text-[22px] leading-tight font-medium text-ink">Pick your GPU</h2>
-          <p className="mt-1 text-[14.5px] text-ink-2">Unreal, Twinmotion and Blender are already installed on every one.</p>
+          <p className="mt-1 text-[14.5px] text-ink-2">D5, Twinmotion, Unreal and Blender are already installed on every one.</p>
           <div className="mt-4">
             <GpuCards card={card} currency={currency} href={SIGNUP} showIntro={false} />
           </div>

@@ -145,7 +145,7 @@ export default async function VsIrenderView({ currency }: { currency: Currency }
   const coreframeWins = usdView
     ? [
         "Billed per minute from a prepaid wallet in US dollars, with no GST (export of services) and nothing added at checkout.",
-        "Unreal Engine, Twinmotion and Blender are already installed when the machine starts. Lumion, Enscape, 3ds Max and Revit run on your own licence: we set them up with you once, and after that they're on every workstation you launch. D5 Render installs from d5render.com in a few minutes, on your own D5 account.",
+        "D5 Render, Twinmotion and Blender are already installed when the machine starts. Lumion, Enscape, 3ds Max and Revit run on your own licence: we set them up with you once, and after that they're on every workstation you launch.",
         intro
           ? `A first top-up of ${introPrice(intro)} (no GST) buys ${hoursLabel(intro.hours)}${intro.gpuName ? ` on ${withArticle(intro.gpuName)}` : ""}${introMoreGpusNote(intro)}, so you can judge it on your own project. (Theirs: ${IRENDER.firstChargeBonus}.)`
           : "Billed per minute, so trying it on your own project costs you minutes instead of a month.",
@@ -158,7 +158,7 @@ export default async function VsIrenderView({ currency }: { currency: Currency }
       : "The published rate is what leaves your account.",
     "An Indian GST invoice for every payment, under SAC 998315. A business importing the same service from abroad generally has to account for IGST itself under reverse charge. Ask your accountant what that costs you, because the sticker price abroad isn't the landed price.",
     "Your files stay on storage in India.",
-    "Unreal Engine, Twinmotion and Blender are already installed when the machine starts. Lumion, Enscape, 3ds Max and Revit run on your own licence: we set them up with you once, and after that they're on every workstation you launch. D5 Render installs from d5render.com in a few minutes, on your own D5 account.",
+    "D5 Render, Twinmotion and Blender are already installed when the machine starts. Lumion, Enscape, 3ds Max and Revit run on your own licence: we set them up with you once, and after that they're on every workstation you launch.",
     intro
       ? `A first top-up of ${introPrice(intro)} buys ${hoursLabel(intro.hours)}${intro.gpuName ? ` on ${withArticle(intro.gpuName)}` : ""}${introMoreGpusNote(intro)}, so you can judge it on your own project. (Theirs: ${IRENDER.firstChargeBonus}.)`
       : "Billed per minute, so trying it on your own project costs you minutes instead of a month.",

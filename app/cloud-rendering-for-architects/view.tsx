@@ -90,7 +90,7 @@ const useCases = [
 const workflow = [
   { n: "01", title: "Open the account.", body: "Sign up, verify your email, add credit to the wallet." },
   { n: "02", title: "Launch a workstation.", body: `One click. A GPU workstation running ${NODE.os} boots and hands you a desktop.` },
-  { n: "03", title: "Sign in to your software.", body: "Twinmotion, Unreal and Blender are on the image already. We set up Revit, AutoCAD, Lumion and Enscape with you once, and after that they're on every workstation you launch, running on your own licence. D5 Render installs from d5render.com in a few minutes, on your own D5 account." },
+  { n: "03", title: "Sign in to your software.", body: "D5 Render, Twinmotion, Unreal and Blender are on the image already. We set up Revit, AutoCAD, Lumion and Enscape with you once, and after that they're on every workstation you launch, running on your own licence." },
   { n: "04", title: "Move the project across.", body: "Drag the scene and its assets in. You don't need FTP, a VPN or a shared drive." },
   { n: "05", title: "Render.", body: "The node does the work. On a committed plan the files stay on NAS, so the next person to open the job has them." },
   { n: "06", title: "Close the window.", body: "Download what you need and shut the session down. Billing stops, and NAS keeps the project." },

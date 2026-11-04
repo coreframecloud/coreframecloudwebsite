@@ -26,7 +26,8 @@ export const PREINSTALLED: SoftwareItem[] = [
     category: "Platforms & runtimes",
     // Here because a session account is not an administrator and Steam's
     // installer elevates, so a customer cannot put it on themselves. Free to
-    // install, and the customer signs into their own account.
+    // install, and the customer signs into their own account — the same shape
+    // as D5 Render.
     note: "Installed and ready; sign in with your own Steam account. Useful for Steam-distributed tools and benchmarks, and for anything you already own there.",
     vendorUrl: "https://store.steampowered.com/",
   },
@@ -50,6 +51,12 @@ export const PREINSTALLED: SoftwareItem[] = [
     category: "3D & rendering",
     note: "Unreal Engine 5.8 with Quixel Bridge, installed and ready. Datasmith imports models from Revit and SketchUp.",
     vendorUrl: "https://www.unrealengine.com/",
+  },
+  {
+    name: "D5 Render",
+    category: "3D & rendering",
+    note: "Installed and ready — sign in with your own D5 account. The free tier covers a lot of individual work.",
+    vendorUrl: "https://www.d5render.com/",
   },
   {
     name: "FreeCAD",
@@ -164,8 +171,6 @@ export const PREINSTALLED: SoftwareItem[] = [
  * follows you onto the workstation exactly as it would onto a new PC.
  */
 export const BRING_YOUR_OWN_LICENCE: SoftwareItem[] = [
-  // 3 Nov 2026: D5 is not on the image; the customer installs it.
-  { name: "D5 Render", category: "Rendering", note: "Download from d5render.com and sign in with your own D5 account. The free tier covers a lot of individual work.", vendorUrl: "https://www.d5render.com/" },
   { name: "Lumion", category: "Rendering", note: "Sign in with your Lumion account.", vendorUrl: "https://lumion.com/" },
   { name: "Enscape", category: "Rendering", note: "A plugin — install its host application (Revit, SketchUp, Rhino or Archicad) first.", vendorUrl: "https://enscape3d.com/" },
   { name: "Chaos V-Ray", category: "Rendering", note: "Chaos account or your licence server.", vendorUrl: "https://www.chaos.com/vray" },

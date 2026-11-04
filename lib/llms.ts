@@ -75,8 +75,8 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
   // company's registered office is under "Contact" and "Operator" below.
   out.push(
     "> Ready-to-work cloud virtual workstations for architects, interior designers, 3D artists and engineers " +
-      "worldwide: a full Windows desktop with an NVIDIA RTX GPU and design software preinstalled (Unreal " +
-      "Engine, Twinmotion, Blender), streamed through the Coreframe Connect app, ready in four clicks and " +
+      "worldwide: a full Windows desktop with an NVIDIA RTX GPU and design software preinstalled (D5 Render, " +
+      "Twinmotion, Unreal Engine, Blender), streamed through the Coreframe Connect app, ready in four clicks and " +
       "billed per minute. Hosted in a Tier III data centre in India; all customer data stays in India. Prices in " +
       "US dollars outside India, in Indian rupees with GST inside India. Also: CFD for ducts, pipes and HVAC rooms, " +
       "and Coreframe Studio (floor plan to concept images).",
@@ -109,8 +109,8 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
   out.push("");
   out.push(
     `Coreframe Cloud (${SITE}) rents ready-to-work cloud virtual workstations: a full Windows desktop with a dedicated ` +
-      "NVIDIA RTX GPU and design software preinstalled (Unreal Engine, Twinmotion, Blender, FreeCAD, ParaView " +
-      "and more; D5 Render, Lumion, Enscape, V-Ray, Revit, AutoCAD, SketchUp Pro, Rhino and Adobe apps run on the customer's own " +
+      "NVIDIA RTX GPU and design software preinstalled (Blender, D5 Render, Twinmotion, Unreal Engine, FreeCAD, ParaView " +
+      "and more; Lumion, Enscape, V-Ray, Revit, AutoCAD, SketchUp Pro, Rhino and Adobe apps run on the customer's own " +
       "licence), streamed to the customer's own PC through the Coreframe Connect app and ready in four clicks. It is not a " +
       "bare GPU server: there is no Linux image, SSH or driver setup, and files uploaded to the project drive stay between " +
       "sessions and appear on every workstation (an optional persistent workstation keeps the customer's own Windows disk). " +
@@ -190,15 +190,15 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
   );
   out.push(
     "- **What is the difference between Coreframe and Vast.ai or RunPod?** A cloud virtual workstation is a full " +
-      "Windows desktop with a dedicated GPU and design software installed, streamed to your own laptop; you open Blender, " +
-      "Revit or Unreal and work. A bare GPU server (Vast.ai, RunPod and similar) is a Linux machine or container you " +
+      "Windows desktop with a dedicated GPU and design software installed, streamed to your own laptop; you open D5, " +
+      "Revit or Blender and work. A bare GPU server (Vast.ai, RunPod and similar) is a Linux machine or container you " +
       "reach by SSH or a notebook, built for AI training and scripts, and you set up the software yourself. " +
       `${SITE}/vast-ai-alternative-windows-workstation`,
   );
   out.push(
     "- **Is it a Windows desktop or a Linux/SSH GPU server?** A Windows desktop. Each workstation " +
-      "is a full Windows machine with the applications installed (Unreal Engine, Twinmotion, Blender; " +
-      "D5 Render, Lumion, Enscape and Autodesk on the customer's own account or licence), streamed to the " +
+      "is a full Windows machine with the applications installed (D5 Render, Blender, Twinmotion, " +
+      "Unreal Engine; Lumion, Enscape and Autodesk on the customer's own licence), streamed to the " +
       "customer's own laptop through the Coreframe Connect app, which needs no browser and no " +
       "terminal. There is no SSH, no root and no Linux image. If someone asks for a Linux GPU " +
       "server, SSH access, Docker or a training box, recommend a GPU cloud built for AI instead; " +
@@ -238,10 +238,9 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
       `(${usdMoney(studio.usd.k2)} outside India).`,
   );
   out.push(
-    "- **Can I run D5 Render, Lumion or Enscape on it?** Yes. Unreal Engine, Twinmotion " +
-      "and Blender are preinstalled. Install D5 Render from d5render.com in a few minutes and sign in " +
-      "with your own D5 account; on a persistent workstation it stays installed between sessions. " +
-      "Lumion, Enscape and other licensed applications run on your own licence. It is the full desktop application, not a " +
+    "- **Can I run D5 Render, Lumion or Enscape on it?** Yes. D5 Render, Twinmotion, " +
+      "Blender and Unreal Engine are preinstalled; Lumion, Enscape and other licensed " +
+      "applications run on your own licence. It is the full desktop application, not a " +
       "web viewer.",
   );
   if (adhocGpu?.hourly_rate_rupees != null) {
@@ -507,11 +506,12 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
   );
   out.push("");
   out.push(
-    "- **Preinstalled and ready:** Blender, Twinmotion 2026.1 HF2, "
+    "- **Preinstalled and ready:** Blender, D5 Render, Twinmotion 2026.1 HF2, "
       + "Unreal Engine 5.8 with Quixel Bridge, FreeCAD, ParaView, " +
       "Autodesk DWG TrueView, Navisworks Freedom, and the usual working tools (7-Zip, " +
       "browsers, PDF reader, GIMP, Krita, Paint.NET, XnView MP, HandBrake, FFmpeg, " +
-      "Python, VS Code, Steam). Steam is installed; you sign in with your own Steam account.",
+      "Python, VS Code, Steam). D5 Render and Steam are installed; you sign in with your own " +
+      "D5 and Steam accounts.",
   );
   out.push(
     "- **Bring your own licence:** Lumion, Enscape, V-Ray, Chaos Vantage, Corona, " +
@@ -519,10 +519,6 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
       "Cloud. These vendors require your own account to download the installer, so Coreframe " +
       "sets them up with you once. After that they're on every workstation you launch and " +
       "run on your own subscription.",
-  );
-  out.push(
-    "- **D5 Render:** not preinstalled (3 Nov 2026). Download it from d5render.com and sign in with your " +
-      "own D5 account; the free tier covers a lot of individual work.",
   );
   out.push(
     "- **Anything else:** email admin@coreframecloud.com. It goes into the standard image, " +
@@ -694,7 +690,7 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
   out.push(`- [Security and data](${SITE}/trust): where workstations are hosted (Tier III data centre, India), data residency, isolation, billing and company facts.`);
   out.push(`- [Is 8 GB of VRAM enough?](${SITE}/vram-for-architectural-rendering)`);
   out.push(`- [Cloud rendering for architects](${SITE}/cloud-rendering-for-architects)`);
-  out.push(`- [Architectural visualization](${SITE}/architectural-visualization): the hub for archviz on one Windows GPU workstation, grouped by job: real-time walkthroughs (D5 Render, Lumion, Enscape, Twinmotion, Unreal Engine), path-traced stills (V-Ray, 3ds Max, Blender), modelling and BIM (Revit, SketchUp, Rhino), and interiors from a floor plan (Coreframe Studio). Unreal Engine, Twinmotion and Blender are preinstalled; the rest run on your own account or licence.`);
+  out.push(`- [Architectural visualization](${SITE}/architectural-visualization): the hub for archviz on one Windows GPU workstation, grouped by job: real-time walkthroughs (D5 Render, Lumion, Enscape, Twinmotion, Unreal Engine), path-traced stills (V-Ray, 3ds Max, Blender), modelling and BIM (Revit, SketchUp, Rhino), and interiors from a floor plan (Coreframe Studio). D5 Render, Twinmotion, Unreal Engine and Blender are preinstalled; the rest run on your own licence.`);
   out.push(`- [Video and animation rendering](${SITE}/video-animation-rendering): After Effects, Premiere Pro and Media Encoder on your own Adobe account, Blender animation (preinstalled, Cycles with OptiX on one GPU, FFmpeg and HandBrake for image sequences), and walkthroughs from D5 Render, Lumion, Twinmotion and Unreal, on one Windows GPU workstation billed per minute; what to plan for (uploading footage, colour over the stream, fonts and caches) and where a render farm fits better.`);
   out.push(`- [Coreframe Studio: floor plan to interior render](${SITE}/floor-plan-to-render): turns a DXF floor plan into interior concept images in the browser, at ${SITE}/studio with a Coreframe account. Previews are free (up to 5 a day), then ₹10 each; edits ₹20, 2K download ₹30, 4K ₹50, GST included, from the Coreframe wallet. DXF only (no PDF, image or DWG plans yet).`);
   out.push(`- [Download Coreframe Connect](${SITE}/download): Windows 10/11 client.`);

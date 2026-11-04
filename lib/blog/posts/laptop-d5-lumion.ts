@@ -125,7 +125,7 @@ export const laptopD5Lumion: BlogPost = {
     { type: "h3", text: "3. Rent a cloud workstation for the heavy days" },
     {
       type: "p",
-      text: `A cloud workstation is a full Windows desktop with a capable GPU, running in a data centre and streamed to your laptop. You keep modelling on the laptop, and when it's time to render, you open the same project on the remote machine. Ours is an ${NODE.gpu} with ${NODE.vram}, ${NODE.ram} of RAM and an ${NODE.cpu}, hosted in ${NODE.location}. Unreal Engine, Twinmotion and Blender come preinstalled. Install D5 Render from d5render.com in a few minutes and sign in with your own D5 account; Lumion and other licensed tools run with your own licence.${ctx.hourly ? ` It costs ${ctx.hourly} ${ctx.taxIncl}, billed by the minute.` : ""}`,
+      text: `A cloud workstation is a full Windows desktop with a capable GPU, running in a data centre and streamed to your laptop. You keep modelling on the laptop, and when it's time to render, you open the same project on the remote machine. Ours is an ${NODE.gpu} with ${NODE.vram}, ${NODE.ram} of RAM and an ${NODE.cpu}, hosted in ${NODE.location}. D5 Render, Blender and Twinmotion come preinstalled; Lumion and other licensed tools run with your own licence.${ctx.hourly ? ` It costs ${ctx.hourly} ${ctx.taxIncl}, billed by the minute.` : ""}`,
     },
     {
       type: "figure",
@@ -178,7 +178,7 @@ export const laptopD5Lumion: BlogPost = {
     },
     {
       q: "Can I use a cloud workstation for D5 or Lumion from my laptop?",
-      a: `Yes, on a Windows laptop. A Coreframe workstation is a Windows desktop with an ${NODE.gpu} streamed to your laptop through the Connect app. You install D5 in a few minutes and sign in with your own D5 account; Lumion runs with your own licence.`,
+      a: `Yes, on a Windows laptop. A Coreframe workstation is a Windows desktop with an ${NODE.gpu} streamed to your laptop through the Connect app. D5 is preinstalled and you sign in with your own D5 account; Lumion runs with your own licence.`,
     },
     {
       q: "Does it work on a Mac?",

@@ -76,7 +76,7 @@ export default async function CloudWorkstationsRoundupView({ currency }: { curre
       examples: [
         {
           name: "Coreframe Cloud",
-          fact: `Windows with an NVIDIA RTX GPU${ladder ? ` (${ladder.vram} VRAM)` : ""}; Unreal Engine, Twinmotion and Blender preinstalled; ready in four clicks through the Coreframe Connect app; billed per minute${price}. Hosted in a Tier III data centre in India; customers worldwide.`,
+          fact: `Windows with an NVIDIA RTX GPU${ladder ? ` (${ladder.vram} VRAM)` : ""}; D5 Render, Twinmotion, Unreal Engine and Blender preinstalled; ready in four clicks through the Coreframe Connect app; billed per minute${price}. Hosted in a Tier III data centre in India; customers worldwide.`,
           href: "/pricing",
         },
       ],
