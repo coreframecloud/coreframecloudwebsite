@@ -254,6 +254,16 @@ const nextConfig: NextConfig = {
        * Short legal URLs (SEO review 18 Oct 2026, T6). Google crawled /terms
        * and got a 404; the page is /terms-of-service. One hop, permanent.
        */
+      /**
+       * Coreframe Spaces private preview (5 Nov 2026) lives on the API host,
+       * behind the same sign-in: https://control.coreframecloud.com/spaces/.
+       * Its "not signed in" hand-off sends people to /login?next=/spaces/,
+       * and /login, /auth/magic and /verify only return to a path on this
+       * site (lib/return-path.ts) -- this hop takes them on to the app.
+       * Temporary (307): the preview may move, and nothing should index it.
+       */
+      { source: "/spaces", destination: "https://control.coreframecloud.com/spaces/", permanent: false },
+      { source: "/spaces/:path*", destination: "https://control.coreframecloud.com/spaces/", permanent: false },
       { source: "/terms", destination: "/terms-of-service", permanent: true },
       { source: "/privacy", destination: "/privacy-policy", permanent: true },
       { source: "/refund", destination: "/refund-policy", permanent: true },
