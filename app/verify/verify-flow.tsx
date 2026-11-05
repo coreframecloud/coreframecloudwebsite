@@ -71,7 +71,7 @@ import {
 import { API_BASE } from "@/lib/api-base";
 import { peekReturnPath, takeReturnPath } from "@/lib/return-path";
 import { goAfterSignIn } from "@/lib/session-cookie";
-import { apiFetch, isSignedIn, rememberUser } from "@/lib/session";
+import { apiFetch, forgetLocalSession, isSignedIn, rememberUser } from "@/lib/session";
 import { apiErrorText, caughtErrorText } from "@/lib/api-error";
 
 const API = API_BASE;
@@ -337,6 +337,11 @@ export default function VerifyFlow() {
   const loadStatus = useCallback(async () => {
     const res = await apiFetch(`${API}/verification/status`, { headers: authHeaders() });
     if (res.status === 401) {
+      // The server has no usable session (apiFetch already tried a renewal).
+      // Forget the cached user BEFORE going to /login: with it still there,
+      // /login reads "already signed in" and its Continue sends them straight
+      // back here -- the /verify <-> /login loop (5 Nov 2026).
+      forgetLocalSession();
       window.location.href = "/login?next=/verify";
       return;
     }
