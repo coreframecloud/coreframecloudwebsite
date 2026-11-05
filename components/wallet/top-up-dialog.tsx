@@ -70,8 +70,6 @@ import {
 } from "@/lib/validation";
 import { API_BASE } from "@/lib/api-base";
 import {
-  BonusLadder,
-  YouGetBar,
   bonusMoney,
   bulkBonusFor,
   tierMin,
@@ -122,17 +120,13 @@ function loadRazorpay(): Promise<boolean> {
 
 const PRESET_LADDER = [500, 1000, 2000, 5000, 10000, 20000];
 const PRESET_LADDER_USD = [20, 50, 100, 200, 500, 1000];
-const MAX_PRESETS = 5;
+// Four amount cards plus "Other" (owner, 5 Nov 2026: one row of cards, the
+// bonus on the cards, no separate tiles), so the row fits one line.
+const MAX_PRESETS = 4;
 
-/** The typed amount as a number, 0 while empty or not a number. */
-function typedRupeesForBonus(amount: string): number {
-  const v = Number(amount);
-  return Number.isFinite(v) && v > 0 ? v : 0;
-}
-
-/** The preset buttons: the customer's floor, every bonus tier in range (so each
- *  tier is one tap away and can carry its "+₹500" badge), then the usual
- *  ladder until there are five. */
+/** The amount cards: the customer's floor, every bonus tier in range (so each
+ *  tier is one tap away and carries its "+₹500"), then the usual ladder until
+ *  there are four. */
 function presetAmounts(floor: number, max: number, ladder: number[], tierMins: number[]): number[] {
   const inRange = (p: number) => p > floor && p <= max;
   const out = new Set<number>([floor, ...tierMins.filter(inRange)]);
@@ -573,24 +567,153 @@ export default function TopUpDialog({
     }
   }, [amount, city, config, countryIso, currency, isFirstTopup, isIndia, isUsd, name, onCredited, onPending, pincode, presets, stateCode, user, starterMode, starterOffer]);
 
+  // "Other": a free amount typed in place of a card. The limits show while the
+  // field has focus, and an out-of-range amount says so in the same slot.
+  const [otherMode, setOtherMode] = useState(false);
+  const [amountFocused, setAmountFocused] = useState(false);
+  const isOther = !starterMode && (otherMode || (amount !== "" && !presets.includes(Number(amount))));
+  // Country search: a text field over the country list. While typing, the
+  // typed text shows; an exact name selects that country; leaving the field
+  // puts back the selected country's name.
+  const [countryText, setCountryText] = useState<string | null>(null);
+
   if (!open) return null;
+
+  const fieldCls =
+    "h-11 w-full rounded-cf border border-rule bg-paper px-3 text-base text-ink outline-none transition-colors focus:border-blue md:text-sm";
+  const labelCls = "block text-sm leading-5 font-medium text-ink";
+  const helperCls = "mt-1 text-[13px] leading-5 text-ink-2";
+
+  const countryField = (options: Country[]) => (
+    <div className="min-w-0">
+      <label htmlFor="cf-topup-country" className={labelCls}>Country</label>
+      <input
+        id="cf-topup-country"
+        list="cf-topup-countries"
+        autoComplete="country-name"
+        placeholder="Search your country"
+        value={countryText ?? options.find((c) => c.iso === countryIso)?.country ?? ""}
+        onFocus={(e) => e.target.select()}
+        onChange={(e) => {
+          const v = e.target.value;
+          setCountryText(v);
+          const hit = options.find((c) => c.country.toLowerCase() === v.trim().toLowerCase());
+          if (hit) {
+            setCountryIso(hit.iso);
+            setCountryTouched(true);
+            setError("");
+          }
+        }}
+        onBlur={() => setCountryText(null)}
+        className={`mt-2 ${fieldCls}`}
+      />
+      <datalist id="cf-topup-countries">
+        {options.map((c) => (
+          <option key={c.iso} value={c.country} />
+        ))}
+      </datalist>
+    </div>
+  );
+
+  const stateField = (
+    <div className="min-w-0">
+      <label htmlFor="cf-topup-state" className={labelCls}>State</label>
+      <select
+        id="cf-topup-state"
+        value={stateCode}
+        onChange={(e) => { setStateCode(e.target.value); setError(""); }}
+        className={`mt-2 cursor-pointer ${fieldCls}`}
+      >
+        {/* Options carry their own colours: Chrome paints the native
+            dropdown itself, so each option states the page's paper and ink. */}
+        <option value="" className="bg-paper text-ink">Select</option>
+        {states.map((s) => (
+          <option key={s.code} value={s.code} className="bg-paper text-ink">
+            {s.name}
+          </option>
+        ))}
+      </select>
+    </div>
+  );
+
+  const errorLine = error ? (
+    <p role="alert" className="mt-6 text-sm leading-5 break-words text-destructive">
+      {error}
+    </p>
+  ) : null;
+
+  // What each card adds. On a first top-up the intro offer takes the place of
+  // the bulk bonus at every amount (they never stack; topup_bonus on the API):
+  // the intro card shows its hours, the others the intro's GPU credit.
+  const sortedTiers = [...(tiers ?? [])].sort((a, b) => tierMin(a) - tierMin(b));
+  const bestTierMin = sortedTiers.length ? tierMin(sortedTiers[sortedTiers.length - 1]) : null;
+  const introLabel = intro ? `${hoursLabel(intro.hours, true).replace(" hrs", " h").replace(" hr", " h")}${intro.gpuName ? ` ${intro.gpuName}` : ""}` : "";
+  const cardNote = (p: number): string => {
+    if (intro) {
+      if (p === intro.price) return introLabel;
+      return p > intro.price && intro.bonus ? `+${bonusMoney(intro.bonus, currency)} GPU` : "";
+    }
+    const b = bulkBonusFor(p, tiers);
+    return b > 0 ? `+${bonusMoney(b, currency)}` : "";
+  };
+
+  // The live summary under the cards: what you pay, what the wallet gets.
+  const paying = Number(amount);
+  const payingOk = Number.isFinite(paying) && paying > 0 && !amountTooLow && !amountTooHigh;
+  let summary: React.ReactNode = null;
+  if (payingOk) {
+    if (intro && paying === intro.price) {
+      summary = (
+        <>
+          You pay <b className="font-semibold text-ink">{money(paying)}</b> · {hoursLabel(intro.hours)}
+          {intro.gpuName ? ` of ${intro.gpuName}` : ""}
+          {intro.validityDays ? `, use within ${intro.validityDays} days` : ""}
+        </>
+      );
+    } else if (intro && paying > intro.price && intro.bonus) {
+      summary = (
+        <>
+          You pay <b className="font-semibold text-ink">{money(paying)}</b> · wallet gets{" "}
+          <b className="font-semibold text-ink">{money(paying + intro.bonus)}</b> (incl. {bonusMoney(intro.bonus, currency)} GPU credit
+          {intro.validityDays ? `, ${intro.validityDays} days` : ""})
+        </>
+      );
+    } else {
+      const b = intro ? 0 : bulkBonusFor(paying, tiers);
+      summary = (
+        <>
+          You pay <b className="font-semibold text-ink">{money(paying)}</b> · wallet gets{" "}
+          <b className="font-semibold text-ink">{bonusMoney(paying + b, currency)}</b>
+        </>
+      );
+    }
+  }
+
+  const trustLine = isUsd
+    ? "Secure payment by Razorpay · international cards · no GST (export of services)"
+    : isIndia
+      ? "Secure payment by Razorpay · UPI, cards, netbanking · GST included"
+      : // Owner decision 16 Oct 2026: on a rupee account, a billing country
+        // outside India is an export (no GST) only when the card was issued
+        // outside India; otherwise GST is included in the same rupee amount.
+        "Secure payment by Razorpay · GST included unless your card was issued outside India";
 
   return (
     <div
-      className="fixed inset-0 z-[100] flex items-start justify-center overflow-y-auto overscroll-contain bg-ink/30 p-4 backdrop-blur-sm sm:items-center"
+      className="fixed inset-0 z-[100] flex items-stretch justify-center overflow-y-auto overscroll-contain bg-ink/30 backdrop-blur-sm sm:items-center sm:p-4"
       onClick={onClose}
       role="dialog"
       aria-modal="true"
-      aria-label="Add funds"
+      aria-labelledby="cf-topup-title"
     >
       <div
-        className="max-h-[calc(100dvh-2rem)] w-full max-w-md overflow-y-auto cf-glass p-5 sm:p-6"
+        className="cf-glass min-h-dvh w-full overflow-y-auto p-5 max-sm:rounded-none max-sm:border-0 max-sm:bg-paper max-sm:shadow-none sm:min-h-0 sm:max-h-[calc(100dvh-2rem)] sm:max-w-xl sm:p-6"
         onClick={(e) => e.stopPropagation()}
       >
         {done ? (
           <div className="text-center">
-            <p className="cf-eyebrow">Paid</p>
-            <p className="mt-2 font-display text-lg font-semibold text-ink">Wallet topped up.</p>
+            <p id="cf-topup-title" className="text-sm leading-5 font-medium text-ink-2">Paid</p>
+            <p className="mt-2 font-heading text-[26px] leading-8 font-medium text-ink">Wallet topped up</p>
             <p className="mt-2 font-display text-3xl font-bold tabular-nums text-blue">
               {money(done.credited)}
             </p>
@@ -604,23 +727,22 @@ export default function TopUpDialog({
           </div>
         ) : (
           <>
-            <div className="flex items-start justify-between">
-              <h2 className="cf-section-title">Add funds.</h2>
+            <div className="flex items-center justify-between">
+              <h2 id="cf-topup-title" className="font-heading text-[26px] leading-8 font-medium tracking-[-0.01em] text-ink">
+                Add funds
+              </h2>
               <button
                 onClick={onClose}
                 aria-label="Close"
-                className="-mr-2 -mt-1 inline-flex h-11 w-11 shrink-0 items-center justify-center text-ink-3 transition hover:text-ink"
+                className="-mr-3 inline-flex h-11 w-11 shrink-0 items-center justify-center text-ink-3 transition hover:text-ink"
               >
                 ✕
               </button>
             </div>
 
             {config && !config.enabled ? (
-              <div className="cf-glass-inset mt-4 border-l-2! border-l-blue! px-4 py-3">
-                <p className="mb-2 font-mono text-[11.5px] leading-none font-medium tracking-[0.2em] uppercase text-ink-2">Action needed</p>
-                <p className="text-sm leading-6 text-ink">
-                  Online recharge is off right now.
-                </p>
+              <div className="mt-6 rounded-cf border border-rule px-4 py-3">
+                <p className="text-sm leading-6 text-ink">Online recharge is off right now.</p>
                 <p className="mt-1 text-sm leading-6 text-ink-2">
                   Email{" "}
                   <a className="break-all text-blue underline" href="mailto:support@coreframecloud.com">
@@ -634,59 +756,15 @@ export default function TopUpDialog({
               // before the first top-up, and it fixes the account's currency:
               // India is billed in rupees with GST, anywhere else in US dollars.
               <>
-                <p className="mt-4 text-[15px] leading-6 text-ink-2">
-                  First, where are you billed? This sets your account&apos;s currency for good: Indian rupees (GST
-                  included) for India, US dollars (no GST) for every other country.
+                <p className="mt-2 text-sm leading-6 text-ink-2">
+                  Where are you billed? This sets your currency for good: rupees in India, US dollars elsewhere.
                 </p>
-                <div className="mt-6 grid grid-cols-1 gap-5">
-                  <div>
-                    <label className="block cf-eyebrow">
-                      Country <span className="text-blue">(required)</span>
-                    </label>
-                    <select
-                      value={countryIso}
-                      onChange={(e) => { setCountryIso(e.target.value); setCountryTouched(true); setError(""); }}
-                      className="mt-2 h-11 w-full cursor-pointer rounded-cf border border-rule bg-paper px-3 text-base text-ink outline-none focus:border-blue md:h-10 md:text-sm"
-                    >
-                      {countryIso === "" && (
-                        <option value="" className="bg-paper text-ink">
-                          Select your country
-                        </option>
-                      )}
-                      {countries.map((c) => (
-                        <option key={c.iso} value={c.iso} className="bg-paper text-ink">
-                          {c.country}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  {isIndia && (
-                    <div>
-                      <label className="block cf-eyebrow">
-                        State <span className="text-blue">(required)</span>
-                      </label>
-                      <select
-                        value={stateCode}
-                        onChange={(e) => { setStateCode(e.target.value); setError(""); }}
-                        className="mt-2 h-11 w-full cursor-pointer rounded-cf border border-rule bg-paper px-3 text-base text-ink outline-none focus:border-blue md:h-10 md:text-sm"
-                      >
-                        <option value="" className="bg-paper text-ink">
-                          Select your state
-                        </option>
-                        {states.map((s) => (
-                          <option key={s.code} value={s.code} className="bg-paper text-ink">
-                            {s.name}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  )}
+                <div className={`mt-6 grid grid-cols-1 gap-5 ${isIndia ? "sm:grid-cols-2 sm:gap-x-3" : ""}`}>
+                  {countryField(countries)}
+                  {isIndia && stateField}
                 </div>
-                {error && (
-                  <p className="mt-5 rounded-cf border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm leading-6 break-words text-destructive">
-                    {error}
-                  </p>
-                )}
+                {isIndia && <p className={helperCls}>For the GST invoice</p>}
+                {errorLine}
                 {askIndia && ipCountry ? (
                   <div className="mt-6 rounded-cf border border-rule px-4 py-3">
                     <p className="text-sm leading-6 text-ink">{ipMismatchMessage(ipCountry)}</p>
@@ -719,20 +797,18 @@ export default function TopUpDialog({
             ) : (
               <>
                 {justFixedUsd && (
-                  <p className="mt-4 rounded-cf border border-blue/30 bg-blue-soft px-4 py-3 text-sm leading-6 text-ink">
-                    Your account is billed in US dollars.
-                  </p>
+                  <p className="mt-2 text-sm leading-6 text-ink-2">Your account is billed in US dollars.</p>
                 )}
+
+                {/* 1. Amount */}
                 {starterOffer && (
-                  <div className={`mt-5 rounded-cf border px-4 py-3 ${starterMode ? "border-blue bg-blue-soft" : "border-rule bg-paper-2"}`}>
-                    <p className="text-sm font-semibold text-ink">
-                      Start with {money(starterOffer.priceRupees)} — get{" "}
-                      {money(starterOffer.totalRupees)} of Studio renders (once per account)
+                  <div className={`mt-6 rounded-cf border px-4 py-3 ${starterMode ? "border-blue bg-blue-soft" : "border-rule"}`}>
+                    <p className="text-sm leading-5 font-semibold text-ink">
+                      {money(starterOffer.priceRupees)} gets {money(starterOffer.totalRupees)} of Studio renders
                     </p>
-                    <p className="mt-1 text-xs leading-5 text-ink-2">
-                      For Studio only: downloads, edits and ray-traced renders.{" "}
-                      {money(starterOffer.totalRupees - starterOffer.priceRupees)} of it is a
-                      bonus that lasts 30 days.
+                    <p className="mt-1 text-[13px] leading-5 text-ink-2">
+                      Once per account. Studio only; {money(starterOffer.totalRupees - starterOffer.priceRupees)} of it
+                      lasts 30 days.
                     </p>
                     <button
                       type="button"
@@ -740,219 +816,155 @@ export default function TopUpDialog({
                         setStarterMode(!starterMode);
                         setAmount(starterMode ? "" : String(starterOffer.priceRupees));
                       }}
-                      className="mt-2 text-xs font-semibold text-blue underline"
+                      className="mt-2 min-h-11 text-[13px] font-semibold text-blue underline underline-offset-2"
                     >
-                      {starterMode ? "Top up a different amount instead" : `Choose the ${money(starterOffer.priceRupees)} starter`}
+                      {starterMode ? "Top up a different amount" : `Choose the ${money(starterOffer.priceRupees)} starter`}
                     </button>
                   </div>
                 )}
-                {!starterMode && (<>
-                {tiers && tiers.length > 0 && (
-                  // The bonus, drawn: three tiles, the best one's bonus the
-                  // view's single yellow. A tap sets the amount to that tier.
-                  <div className="mt-5">
-                    <div className="mb-2 flex flex-col gap-0.5 sm:flex-row sm:items-baseline sm:justify-between sm:gap-2">
-                      <p className="text-sm leading-5 font-semibold text-ink">Top up more, get more.</p>
-                      <p className="text-[12px] leading-4 text-ink-2">
-                        {intro ? "From your second top-up" : isUsd ? "Bonus on GPU time and CFD" : "Bonus on GPU time, CFD and Studio"}
-                      </p>
-                    </div>
-                    <BonusLadder
-                      tiers={tiers}
-                      currency={currency}
-                      amount={typedRupeesForBonus(amount)}
-                      dimmed={Boolean(intro)}
-                      onPick={(v) => pickAmount(v, true)}
-                    />
-                    {intro && (
-                      <p className="mt-2 text-xs leading-5 text-ink-2">
-                        Your first top-up earns the intro offer instead; the bonus applies from the next one, on{" "}
-                        {isUsd ? "GPU time and CFD." : "GPU time, CFD and Studio."}
-                      </p>
-                    )}
-                  </div>
-                )}
-                <div className="mt-4 flex flex-wrap gap-2">
-                  {presets.map((p) => {
-                    const isIntro = intro && p === intro.price;
-                    const presetBonus = intro ? 0 : bulkBonusFor(p, tiers);
-                    return (
+
+                {!starterMode && (
+                  <fieldset className="mt-6 min-w-0">
+                    <legend className={labelCls}>Amount</legend>
+                    <div className="mt-2 grid grid-cols-3 gap-2 sm:grid-cols-5">
+                      {presets.map((p) => {
+                        const selected = !isOther && amount === String(p);
+                        const note = cardNote(p);
+                        // The view's one yellow: the intro card on a first
+                        // top-up, otherwise the best-value tier's bonus.
+                        const yellow = intro ? p === intro.price : p === bestTierMin;
+                        return (
+                          <button
+                            key={p}
+                            type="button"
+                            aria-pressed={selected}
+                            onClick={() => { setOtherMode(false); pickAmount(p, true); }}
+                            className={`flex min-h-16 min-w-0 flex-col items-center justify-center rounded-cf border px-1 py-2 tabular-nums transition-colors ${
+                              selected ? "border-blue bg-blue-soft" : "border-rule bg-paper hover:border-blue/60"
+                            }`}
+                          >
+                            <span className={`text-base leading-6 font-semibold ${selected ? "text-blue-ink" : "text-ink"}`}>
+                              {money(p)}
+                            </span>
+                            <span
+                              className={`mt-0.5 text-[13px] leading-5 whitespace-nowrap ${
+                                yellow && note ? "rounded-[4px] bg-hl px-1 font-semibold text-hl-ink" : "text-ink-2"
+                              }`}
+                            >
+                              {note || " "}
+                            </span>
+                          </button>
+                        );
+                      })}
                       <button
-                        key={p}
                         type="button"
-                        onClick={() => pickAmount(p, true)}
-                        className={`inline-flex min-h-11 flex-col items-center justify-center rounded-cf border px-3.5 py-1 text-sm font-semibold tabular-nums transition sm:px-4 ${
-                          amount === String(p)
-                            ? "border-blue bg-blue-soft text-blue"
-                            : "border-rule bg-paper-2 text-ink-2 hover:text-ink"
-                        }`}
+                        aria-pressed={isOther}
+                        onClick={() => { setOtherMode(true); setError(""); }}
+                        className={`flex min-h-16 min-w-0 flex-col items-center justify-center rounded-cf border px-1 py-2 transition-colors ${
+                          presets.length % 3 === 2 ? "col-span-1" : presets.length % 3 === 1 ? "col-span-2 sm:col-span-1" : ""
+                        } ${isOther ? "border-blue bg-blue-soft" : "border-rule bg-paper hover:border-blue/60"}`}
                       >
-                        {money(p)}
-                        {isIntro && (
-                          <span className="text-[11px] font-medium leading-4 text-blue">
-                            Intro: {hoursLabel(intro.hours)}
-                          </span>
-                        )}
-                        {presetBonus > 0 && (
-                          <span className="text-[11px] font-semibold leading-4 text-blue">
-                            +{bonusMoney(presetBonus, currency)}
-                          </span>
-                        )}
+                        <span className={`text-base leading-6 font-semibold ${isOther ? "text-blue-ink" : "text-ink"}`}>Other</span>
+                        <span className="mt-0.5 text-[13px] leading-5 text-ink-2">Any amount</span>
                       </button>
-                    );
-                  })}
-                </div>
-                {intro && (
-                  <p className="mt-2 text-xs leading-5 text-ink-2">
-                    Intro offer: your first top-up of {money(intro.price)}
-                    {isUsd ? " (no GST)" : ""} buys {hoursLabel(intro.hours)}
-                    {intro.gpuName ? ` of ${intro.gpuName}` : ""}
-                    {intro.validityDays ? `, to use within ${intro.validityDays} days` : ""}.
-                  </p>
-                )}
-
-                </>)}
-                {!starterMode && (<>
-                <label className="mt-5 block cf-eyebrow">
-                  Amount ({isUsd ? "$" : "₹"})
-                </label>
-                <input
-                  type="number"
-                  inputMode={isUsd ? "decimal" : "numeric"}
-                  step={isUsd ? "0.01" : undefined}
-                  value={amount}
-                  onChange={(e) => { setAmount(e.target.value); setError(""); }}
-                  min={config?.min_topup_rupees ?? 500}
-                  max={config?.max_topup_rupees ?? 50000}
-                  className="mt-2 h-12 w-full rounded-cf border border-rule bg-paper px-4 text-base tabular-nums text-ink outline-none focus:border-blue md:h-11 md:text-sm"
-                />
-                {config && (amountTooLow || amountTooHigh) ? (
-                  <div className="cf-glass-inset mt-1 border-l-2! border-l-blue! px-3 py-2.5">
-                    <p className="mb-1.5 font-mono text-[11.5px] leading-none font-medium tracking-[0.2em] uppercase text-ink-2">Change the amount</p>
-                    <p className="text-xs leading-5 text-ink">
-                      {amountTooLow
-                        ? `The smallest top-up is ${money(config.min_topup_rupees)}.`
-                        : `The largest top-up is ${money(config.max_topup_rupees)}.`}
-                    </p>
-                  </div>
-                ) : config ? (
-                  <p className="mt-1 text-xs leading-5 text-ink-2">
-                    Minimum {money(config.min_topup_rupees)}, maximum {money(config.max_topup_rupees)}.{" "}
-                    {isUsd
-                      ? "No GST (export of services). An invoice in US dollars is issued automatically."
-                      : isIndia ? "GST included; a tax invoice is issued automatically." : "An invoice is issued automatically."}
-                  </p>
-                ) : null}
-                {!intro && tiers && tiers.length > 0 && !amountTooLow && !amountTooHigh && (
-                  <YouGetBar amount={typedRupeesForBonus(amount)} tiers={tiers} currency={currency} />
-                )}
-                </>)}
-
-                <div className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-x-3">
-                  <div className="sm:col-span-2">
-                    <label className="block cf-eyebrow">
-                      Country <span className="text-blue">(required)</span>
-                    </label>
-                    <select
-                      value={countryIso}
-                      onChange={(e) => { setCountryIso(e.target.value); setCountryTouched(true); setError(""); }}
-                      className="mt-2 h-11 w-full cursor-pointer rounded-cf border border-rule bg-paper px-3 text-base text-ink outline-none focus:border-blue md:h-10 md:text-sm"
-                    >
-                      {countryIso === "" && (
-                        <option value="" className="bg-paper text-ink">
-                          Select your country
-                        </option>
-                      )}
-                      {countryOptions.map((c) => (
-                        <option key={c.iso} value={c.iso} className="bg-paper text-ink">
-                          {c.country}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  {isIndia && (
-                  <div className="sm:col-span-2">
-                    <label className="block cf-eyebrow">
-                      State <span className="text-blue">(required)</span>
-                    </label>
-                    <select
-                      value={stateCode}
-                      onChange={(e) => { setStateCode(e.target.value); setError(""); }}
-                      className="mt-2 h-11 w-full cursor-pointer rounded-cf border border-rule bg-paper px-3 text-base text-ink outline-none focus:border-blue md:h-10 md:text-sm"
-                    >
-                      {/* Options carry their own colours: Chrome paints the
-                          native dropdown itself, so each option states the
-                          page's own paper and ink rather than inheriting. */}
-                      <option value="" className="bg-paper text-ink">
-                        Select your state
-                      </option>
-                      {states.map((s) => (
-                        <option key={s.code} value={s.code} className="bg-paper text-ink">
-                          {s.name}
-                        </option>
-                      ))}
-                    </select>
-                    <p className="mt-1 text-xs leading-5 text-ink-2">
-                      Your state decides the GST split on the invoice, so it cannot be guessed.
-                    </p>
-                  </div>
-                  )}
-                  {/* Funnel review, 3 Nov 2026: 56 people opened this dialog and
-                      14 pressed Pay. Only country and (in India) state are
-                      needed for the invoice's GST, so the optional fields sit
-                      behind one line and Pay comes up the screen on a phone. */}
-                  <details className="group sm:col-span-2">
-                    <summary className="cursor-pointer list-none text-sm font-medium text-blue-ink">
-                      <span className="underline underline-offset-2">Add a name and address to the invoice</span>{" "}
-                      <span className="font-normal text-ink-2">(optional)</span>
-                    </summary>
-                    <div className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-x-3">
-                      <div className="sm:col-span-2">
-                        <label className="block cf-eyebrow">
-                          Name on the invoice
-                        </label>
-                        <input
-                          value={name}
-                          onChange={(e) => setName(e.target.value)}
-                          className="mt-2 h-11 w-full rounded-cf border border-rule bg-paper px-3 text-base text-ink outline-none focus:border-blue md:h-10 md:text-sm"
-                        />
-                      </div>
-                      <div>
-                        <label className="block cf-eyebrow">
-                          City
-                        </label>
-                        <input
-                          value={city}
-                          onChange={(e) => setCity(e.target.value)}
-                          className="mt-2 h-11 w-full rounded-cf border border-rule bg-paper px-3 text-base text-ink outline-none focus:border-blue md:h-10 md:text-sm"
-                        />
-                      </div>
-                      <div>
-                        <label className="block cf-eyebrow">
-                          {isIndia ? (
-                            <>PIN code <span className="normal-case tracking-normal">(optional)</span></>
-                          ) : (
-                            "Postal code"
-                          )}
-                        </label>
-                        <input
-                          value={pincode}
-                          onChange={(e) => { setPincode(e.target.value); setError(""); }}
-                          inputMode={isIndia ? "numeric" : "text"}
-                          maxLength={isIndia ? 6 : 12}
-                          className="mt-2 h-11 w-full rounded-cf border border-rule bg-paper px-3 text-base tabular-nums text-ink outline-none focus:border-blue md:h-10 md:text-sm"
-                        />
-                      </div>
                     </div>
-                  </details>
-                </div>
 
-                {error && (
-                  <p className="mt-5 rounded-cf border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm leading-6 break-words text-destructive">
-                    {error}
-                  </p>
+                    {isOther && (
+                      <div className="mt-2">
+                        <label htmlFor="cf-topup-amount" className="sr-only">
+                          Amount in {isUsd ? "US dollars" : "rupees"}
+                        </label>
+                        <div className="relative">
+                          <span className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-base text-ink-2 md:text-sm">
+                            {isUsd ? "$" : "₹"}
+                          </span>
+                          <input
+                            id="cf-topup-amount"
+                            type="number"
+                            autoFocus={otherMode}
+                            inputMode={isUsd ? "decimal" : "numeric"}
+                            step={isUsd ? "0.01" : undefined}
+                            value={amount}
+                            onChange={(e) => { setAmount(e.target.value); setError(""); }}
+                            onFocus={() => setAmountFocused(true)}
+                            onBlur={() => setAmountFocused(false)}
+                            min={config?.min_topup_rupees ?? 500}
+                            max={config?.max_topup_rupees ?? 50000}
+                            aria-invalid={amountTooLow || amountTooHigh}
+                            className={`${(amountTooLow || amountTooHigh ? fieldCls.replace("border-rule", "border-destructive").replace("focus:border-blue", "focus:border-destructive") : fieldCls)} pl-7 tabular-nums`}
+                          />
+                        </div>
+                        {config && (amountTooLow || amountTooHigh) ? (
+                          <p className="mt-1 text-[13px] leading-5 text-destructive">
+                            {amountTooLow
+                              ? `The smallest top-up is ${money(config.min_topup_rupees)}.`
+                              : `The largest top-up is ${money(config.max_topup_rupees)}.`}
+                          </p>
+                        ) : config && amountFocused ? (
+                          <p className={helperCls}>
+                            {money(config.min_topup_rupees)} to {money(config.max_topup_rupees)}
+                          </p>
+                        ) : null}
+                      </div>
+                    )}
+
+                    <p className={`text-sm leading-5 text-ink-2 tabular-nums ${summary ? "mt-3" : ""}`} aria-live="polite">
+                      {summary}
+                    </p>
+                  </fieldset>
                 )}
 
+                {/* 2. Billing: country (and state in India) for the invoice. */}
+                <div className={`mt-6 grid grid-cols-1 gap-5 ${isIndia ? "sm:grid-cols-[3fr_2fr] sm:gap-x-3" : ""}`}>
+                  {countryField(countryOptions)}
+                  {isIndia && stateField}
+                </div>
+                <p className={helperCls}>{isIndia ? "For the GST invoice" : "For your invoice"}</p>
+
+                {/* Funnel review, 3 Nov 2026: only country and (in India) state
+                    are needed for the invoice's tax, so the rest is optional
+                    and folded away. */}
+                <details className="group mt-5">
+                  <summary className="inline-flex min-h-11 cursor-pointer list-none items-center gap-1.5 text-sm leading-5 font-medium text-blue-ink">
+                    <span aria-hidden="true" className="inline-block transition-transform group-open:rotate-90">›</span>
+                    Add company details <span className="font-normal text-ink-2">(optional)</span>
+                  </summary>
+                  <div className="mt-3 grid grid-cols-2 gap-x-3 gap-y-5 sm:grid-cols-[2fr_1.4fr_1fr]">
+                    <div className="col-span-2 sm:col-span-1">
+                      <label htmlFor="cf-topup-name" className={labelCls}>Company or name</label>
+                      <input
+                        id="cf-topup-name"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        className={`mt-2 ${fieldCls}`}
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="cf-topup-city" className={labelCls}>City</label>
+                      <input
+                        id="cf-topup-city"
+                        value={city}
+                        onChange={(e) => setCity(e.target.value)}
+                        className={`mt-2 ${fieldCls}`}
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="cf-topup-pin" className={labelCls}>{isIndia ? "PIN code" : "Postal code"}</label>
+                      <input
+                        id="cf-topup-pin"
+                        value={pincode}
+                        onChange={(e) => { setPincode(e.target.value); setError(""); }}
+                        inputMode={isIndia ? "numeric" : "text"}
+                        maxLength={isIndia ? 6 : 12}
+                        className={`mt-2 tabular-nums ${fieldCls}`}
+                      />
+                    </div>
+                  </div>
+                </details>
+
+                {errorLine}
+
+                {/* 3. Pay */}
                 <button
                   onClick={pay}
                   disabled={busy || !config || amountTooLow || amountTooHigh}
@@ -960,19 +972,7 @@ export default function TopUpDialog({
                 >
                   {busy ? "Opening payment…" : `Pay ${money(Number(amount || 0) || 0)}`}
                 </button>
-                <p className="mt-3 text-center text-xs leading-5 text-ink-2">
-                  {/* Owner decision 16 Oct 2026: on a rupee account, a billing
-                      country outside India is an export (no GST) only when the
-                      card was issued outside India; otherwise GST is included
-                      in the same rupee amount. */}
-                  {isUsd
-                    ? "International cards accepted. No GST (export of services). An invoice in US dollars is issued automatically."
-                    : isIndia
-                    ? "International cards accepted. Prices include 18% GST."
-                    : "International cards accepted. No GST (export of services) only when your card was issued outside India; otherwise GST is included in the same amount."}
-                  <br />
-                  Payments are processed by Razorpay. We never see your card details.
-                </p>
+                <p className="mt-3 text-center text-[13px] leading-5 text-ink-2">{trustLine}</p>
               </>
             )}
           </>
