@@ -7,8 +7,8 @@ import { STUDIO_CSP } from "./lib/csp";
 // Unset -> exactly the production policy, unchanged.
 // The Content-Security-Policy lives in lib/csp.ts (security review 17 Oct
 // 2026): pages rendered by Next get it per request, with a nonce, from
-// proxy.ts; the pages Vercel rewrites from the control plane (Studio, the IFC
-// and DWG checkers, shared reports) get STUDIO_CSP below. Neither allows
+// proxy.ts; the pages Vercel rewrites from the control plane (Studio and
+// shared IFC reports) get STUDIO_CSP below. Neither allows
 // inline scripts.
 const securityHeaders = [
   {
@@ -74,7 +74,9 @@ const securityHeaders = [
 
 
 /**
- * The free IFC pre-CFD checker runs on the control plane, not here.
+ * The free IFC pre-CFD checker and DWG dimension checker do their WORK on the
+ * control plane. Their PAGES are app/tools and app/dwg-check (6 Nov 2026);
+ * the browser posts uploads to the same-origin /api/tools/* rewrite below.
  *
  * It is standard-library Python holding a whole IFC in memory (~200 MB and ~6 s
  * for a 100 MB model), which is a poor fit for Vercel's serverless limits and a
@@ -85,8 +87,8 @@ const securityHeaders = [
  * bounce the visitor to a hostname they have to evaluate separately.
  *
  * Returned as a plain ARRAY on purpose. Array rewrites are checked after the
- * filesystem but BEFORE dynamic routes, so `app/[slug]` cannot swallow /tools
- * or /r/:token. In `beforeFiles` they would instead override real pages, which
+ * filesystem but BEFORE dynamic routes, so a dynamic route cannot swallow
+ * /r/:token. In `beforeFiles` they would instead override real pages, which
  * is not what we want.
  *
  * UPLOAD CEILING: Cloudflare caps request bodies at 100 MB on Free and Pro
@@ -153,8 +155,11 @@ const nextConfig: NextConfig = {
         source: "/studio/:path*",
         headers: [{ key: "Content-Security-Policy", value: STUDIO_CSP }],
       },
-      // The other control-plane pages www rewrites: no inline script either.
-      ...["/tools", "/tools/:path*", "/dwg-check", "/r/:token"].map((source) => ({
+      // The shared IFC report is still a control-plane page (no nonce, no
+      // inline script): it gets the same policy. /tools and /dwg-check are
+      // pages of this site since 6 Nov 2026 and get the nonce CSP from
+      // proxy.ts like every other page.
+      ...["/tools/:path*", "/r/:token"].map((source) => ({
         source,
         headers: [{ key: "Content-Security-Policy", value: STUDIO_CSP }],
       })),
@@ -176,13 +181,13 @@ const nextConfig: NextConfig = {
   },
   async rewrites() {
     return [
-      // the checker page and the shared-report view
-      { source: "/tools", destination: `${CONTROL_PLANE}/tools` },
-      { source: "/tools/:path*", destination: `${CONTROL_PLANE}/tools/:path*` },
-      // the free DWG dimension checker. Its API already arrives through the
-      // /api/tools/:path* rule below, so only the page needs a rule here.
-      { source: "/dwg-check", destination: `${CONTROL_PLANE}/dwg-check` },
+      // THE PAGES /tools AND /dwg-check ARE THIS SITE'S (owner, 6 Nov 2026):
+      // app/tools and app/dwg-check. Only the work is proxied: the API rule
+      // below, and the shared-report view, which is data-driven (each report
+      // is a row in the control plane's database, rendered there with the old
+      // tools.html and its script at /tools/app.js -- hence that one file).
       { source: "/r/:token", destination: `${CONTROL_PLANE}/r/:token` },
+      { source: "/tools/app.js", destination: `${CONTROL_PLANE}/tools/app.js` },
       // its API. Scoped to /api/tools so nothing else on /api is proxied.
       { source: "/api/tools/:path*", destination: `${CONTROL_PLANE}/api/tools/:path*` },
       // STUDIO IS BACK ON THIS SITE (16 Oct 2026, owner: one account, one

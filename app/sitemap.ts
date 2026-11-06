@@ -125,16 +125,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.7,
     })),
 
-    // The free IFC pre-CFD checker. Served from the control plane through a
-    // rewrite in next.config.ts, so there is no page under app/ for Next to
-    // discover -- it has to be listed by hand or it is never crawled at all.
-    // /cfd is the conversion step behind it and was likewise missing.
+    // The free IFC pre-CFD checker (app/tools since 6 Nov 2026; it used to be
+    // a control-plane page behind a rewrite). /cfd is the conversion step
+    // behind it.
     { url: `${BASE}/tools`, lastModified: lm("/tools"), changeFrequency: "monthly", priority: 0.8 },
 
-    // The free DWG dimension checker, added 2 Oct 2026. Same situation as
-    // /tools above: served from the control plane through a rewrite, so Next
-    // has no page under app/ to discover and it is crawled only because this
-    // line exists. Priority 0.9 -- it answers a question people type verbatim
+    // The free DWG dimension checker, added 2 Oct 2026 (app/dwg-check since
+    // 6 Nov 2026). Priority 0.9 -- it answers a question people type verbatim
     // ("find missing dimensions in DWG"), which is the kind of page an answer
     // engine can cite, rather than a landing page that describes a product.
     { url: `${BASE}/dwg-check`, lastModified: lm("/dwg-check"), changeFrequency: "monthly", priority: 0.9 },

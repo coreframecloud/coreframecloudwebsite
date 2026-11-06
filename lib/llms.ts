@@ -606,6 +606,11 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
   );
   out.push("- It reads IFC, which every major BIM tool exports. It cannot read .rvt, which is proprietary.");
   out.push("- Upload limit 95 MB. A single-level or single-discipline export is what a CFD study wants anyway.");
+  out.push(
+    "- Nothing to install: it runs in any current web browser on Windows, macOS or Linux, with no plug-in, " +
+      "desktop viewer or Revit add-in. The report comes back in a few seconds and can be turned into a share " +
+      "link (kept 90 days) for whoever owns the model.",
+  );
   out.push("");
 
   // The second free tool, added 2 Oct 2026. Written as facts an answer engine
@@ -738,7 +743,7 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
   out.push(`- [D5 Render workstations](${SITE}/d5-render-cloud-workstation)`);
   out.push(`- [Lumion cloud workstations](${SITE}/lumion-cloud-gpu)`);
   out.push(`- [Enscape cloud workstations](${SITE}/enscape-cloud-gpu)`);
-  out.push(`- [Free IFC pre-CFD check](${SITE}/tools): no account needed.`);
+  out.push(`- [No-install IFC model checker, free pre-CFD check](${SITE}/tools): runs in the browser, nothing to install, no account needed.`);
   out.push(`- [Free DWG dimension check](${SITE}/dwg-check): no account needed.`);
   out.push(`- [CFD for ducts and pipes](${SITE}/cfd): a managed, automatic CFD service. Upload one closed STL of the fluid volume; the geometry is checked automatically, pre-processing / mesh check is Rs ${CFD_PREPROCESS_INR.small} for most duct and pipe models (Rs ${CFD_PREPROCESS_INR.large.toLocaleString("en-IN")} for very large models over 5 million cells; ${usdMoney(usd.cfd_quote_fee_small)} / ${usdMoney(usd.cfd_quote_fee_large)} outside India), from the Coreframe wallet: a wall-resolved mesh is built and quality-checked on our machine, and a mesh report and quote are emailed. Accept it and get a PDF report with pressure drop and loss coefficient, a 3D results viewer and the data files. No CFD licence needed.`);
   out.push(`- [CFD for rooms and HVAC airflow](${SITE}/cfd): steady analysis of one box-shaped room you describe (size, supply diffusers, returns, heat loads; no geometry file). Delivers room averages (mean air speed, PMV/PPD, ADPI) and temperature and air-speed maps in a PDF report. Two mesh choices: Draft (a medium mesh) for early design comparisons, Fine for final numbers; the quote and report state which was used. ${ROOMS_VALIDATION}`);

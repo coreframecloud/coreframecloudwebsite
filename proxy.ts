@@ -147,12 +147,14 @@ export const config = {
     /*
      * Every page. Not: API routes, Next's static files and images, /studio
      * (rewritten from the control plane, its own policy in next.config.ts),
-     * the IFC checker and report rewrites, and anything with a file
+     * the shared IFC report (/r/, also rewritten) and the control-plane files
+     * under /tools/ -- but /tools itself is a page here since 6 Nov 2026 and
+     * MUST match, or Next's scripts run without a nonce --, and anything with a file
      * extension (robots.txt, sitemap.xml, images, fonts).
      */
     {
       source:
-        "/((?!api/|_next/static|_next/image|studio|tools|r/|favicon\\.ico|.*\\.[a-zA-Z0-9]+$).*)",
+        "/((?!api/|_next/static|_next/image|studio|tools/|r/|favicon\\.ico|.*\\.[a-zA-Z0-9]+$).*)",
       missing: [
         { type: "header", key: "next-router-prefetch" },
         { type: "header", key: "purpose", value: "prefetch" },
