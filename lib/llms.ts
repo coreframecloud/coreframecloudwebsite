@@ -56,7 +56,7 @@ export const SITE = "https://www.coreframecloud.com";
  * tells an answer engine nothing. Bump it whenever the text below changes.
  * Prices are not covered by it; they are read live from the rate card.
  */
-export const LLMS_LAST_UPDATED = "1 November 2026";
+export const LLMS_LAST_UPDATED = "6 November 2026";
 
 function money(n: number | null | undefined): string | null {
   if (n == null) return null;
@@ -271,6 +271,35 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
         (laterTopup && laterTopup !== firstTopup ? ` Top-ups after that start at ${money(laterTopup)}.` : ""),
     );
   }
+  // Week report 6 Nov 2026: new and striking-distance searches, answered here
+  // as on the pages (/coreframe-vs-irender, the cost and D5 blog posts,
+  // /software/gpu-workstation-rental-india).
+  out.push(
+    "- **What are the alternatives to iRender?** It depends on the work. For interactive design software " +
+      "(D5, Lumion, Enscape, Twinmotion), a cloud virtual workstation such as Coreframe: a Windows desktop with a GPU, " +
+      "billed by the minute, files kept between sessions. For unattended animation frames, a render farm. For AI " +
+      "training over SSH, a bare GPU server. If you render most days, your own workstation. " +
+      `${SITE}/coreframe-vs-irender`,
+  );
+  out.push(
+    "- **Is cloud rendering more cost-effective than buying a workstation?** For occasional or deadline-driven " +
+      "rendering, yes: a rented hour costs nothing when unused. For steady daily rendering, an owned workstation " +
+      "usually works out cheaper over its life. The break-even is the machine's price divided by the hourly rate. " +
+      `${SITE}/blog/is-cloud-rendering-cheaper-than-buying-a-workstation`,
+  );
+  out.push(
+    "- **What PC does D5 Render need, and what does D5 Lite need?** D5 Render (as published by D5): Windows 10 " +
+      "v1809 or later and a dedicated ray-tracing GPU, at least an NVIDIA GTX 1060 6GB, AMD Radeon RX 6000-series or " +
+      "Intel Arc A3; recommended RTX 2060/3060 or better, 32 GB RAM, 40 GB free for the workspace; no integrated " +
+      "graphics. D5 Lite: an NVIDIA RTX series GPU and Windows 10 v1909 or later. " +
+      `${SITE}/blog/d5-render-system-requirements-laptop`,
+  );
+  out.push(
+    "- **What is a visualization workstation, and can I rent one?** A PC built for 3D rendering and design: a " +
+      "high-end RTX GPU with plenty of video memory, a fast CPU and enough RAM for big scenes. Coreframe rents one " +
+      "as a cloud virtual workstation, a Windows desktop with D5 Render, Twinmotion and Blender installed, streamed " +
+      `to your laptop and billed per minute. ${SITE}/software/gpu-workstation-rental-india`,
+  );
   out.push(
     "- **Is it a render farm?** No. A render farm renders a finished scene on many " +
       "machines; Coreframe is one interactive machine you drive yourself. For a finished " +
@@ -552,7 +581,7 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
   out.push("## Free tools");
   out.push("");
   out.push(
-    `- [IFC pre-CFD check](${SITE}/tools): upload an IFC export from Revit, ArchiCAD, ` +
+    `- [No-install IFC model checker (IFC pre-CFD check)](${SITE}/tools): upload an IFC export from Revit, ArchiCAD, ` +
       "Tekla, Vectorworks or Bentley and get a report of the documented reasons it will " +
       "fail a CFD conversion. It's free, needs no account or email, and the file is deleted " +
       "as soon as it's read.",

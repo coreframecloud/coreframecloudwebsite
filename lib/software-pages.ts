@@ -484,7 +484,7 @@ function buildSoftwarePages(cur: Currency): SoftwarePage[] {
     absoluteTitle: "GPU on Rent in India, Workstations by the Minute | Coreframe",
     h1: "Rent a GPU workstation in India, by the minute",
     livePrice: "answer",
-    lastUpdated: "22 October 2026",
+    lastUpdated: "6 November 2026",
     callouts: [
       {
         h2: "Running your own CFD software?",
@@ -523,6 +523,11 @@ function buildSoftwarePages(cur: Currency): SoftwarePage[] {
       {
         q: "Can I rent an RTX GPU in India by the hour?",
         a: `Yes. Every Coreframe workstation has one dedicated NVIDIA RTX GPU, running ${NODE.os} in ${NODE.location}; the GPUs on offer, with their VRAM, vCPU and RAM, are listed with their prices on the pricing page. You rent the whole machine, not a slice of the card, and billing is per minute of streaming rather than per whole hour.`,
+      },
+      {
+        // "visualization workstation" (week report 6 Nov 2026): 8 impressions at 25.
+        q: "What is a visualization workstation, and can I rent one?",
+        a: "A visualization workstation is a PC built for 3D rendering and design: a professional-class or high-end RTX GPU with plenty of video memory, a fast CPU and enough RAM for big scenes. Coreframe rents one as a cloud virtual workstation: a Windows desktop with an RTX GPU and D5 Render, Twinmotion and Blender installed, streamed to your laptop and billed per minute.",
       },
       {
         q: "Do I need to buy software licences too?",

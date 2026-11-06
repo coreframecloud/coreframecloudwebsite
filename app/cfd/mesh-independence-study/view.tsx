@@ -42,9 +42,12 @@ export const PATH = VERIFIED.path;
 const ART = "/cfd/explainer";
 
 // "Grid independence" in the title (AEO plan 1 Nov 2026, A10): 77 impressions at 19.5.
-const TITLE = "Mesh (Grid) Independence Study with GCI | Coreframe CFD";
+// Second pass 6 Nov 2026 (week report): 903 impressions at 1.3 %, position 8.
+// Most searchers want the method; the title promises it and a worked example,
+// and the description opens with the definition.
+const TITLE = "Mesh Independence Study: 3 Meshes, GCI and a Worked Example";
 const DESCRIPTION =
-  "A mesh independence study for duct and pipe CFD: the same case on three meshes, the grid convergence index (GCI) and a plain verdict. Results in 24 hours.";
+  "A mesh (grid) independence study solves one CFD case on three finer meshes and reports the GCI error band. Method, a worked bend example, done for you in 24 h.";
 
 export const meshStudyMetadata: Metadata = {
   title: { absolute: TITLE },

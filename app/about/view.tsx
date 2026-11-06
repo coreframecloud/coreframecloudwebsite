@@ -57,10 +57,12 @@ import { BANDWIDTH_SENTENCE } from "@/lib/streaming-terms";
 /** One metadata for both copies: the descriptions quote no price. */
 export const aboutMetadata: Metadata = {
   // CTR rewrite (AEO plan 1 Nov 2026, A10): 223 impressions at position 3.5, 1.3 % CTR.
-  title: { absolute: "What is Coreframe Cloud? Cloud workstations, Tier III, India" },
+  // Second pass 6 Nov 2026 (week report): 241 impressions at 1.2 %, position 3.3.
+  // The snippet now says what you get, in the searcher's words, before where it is.
+  title: { absolute: "What is Coreframe Cloud? Ready-to-Work GPU Workstations" },
   description:
     // Under 160 characters (SEO review 18 Oct 2026, T9).
-    "Ready-to-work cloud virtual workstations by the minute, hosted in a Tier III data centre in India. Plus CFD for ducts, pipes and rooms, and Studio renders.",
+    "Coreframe Cloud rents Windows workstations with an RTX GPU and design software installed, streamed to your laptop, by the minute. Tier III data centre.",
   alternates: { canonical: "/about" },
   openGraph: {
     images: [OG_IMAGE],

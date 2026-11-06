@@ -29,7 +29,14 @@ type QA = { q: string; a: string };
  * outside India pay in US dollars, and a team billed in dollars gets a dollar
  * invoice (everything is global, owner 15 Oct 2026).
  */
-export function buildFaq(storage: StorageTerms, intro: IntroOffer | null, adhocRate?: string, currency: Currency = "INR"): QA[] {
+export function buildFaq(
+  storage: StorageTerms,
+  intro: IntroOffer | null,
+  adhocRate?: string,
+  currency: Currency = "INR",
+  /** "Are prices the same worldwide?" (lib/rate-card.ts worldwidePriceFaq), after the outside-India answer. */
+  worldwide?: QA | null,
+): QA[] {
   const usdView = currency === "USD";
   const items: QA[] = [
     {
@@ -82,6 +89,11 @@ export function buildFaq(storage: StorageTerms, intro: IntroOffer | null, adhocR
     },
   ];
 
+  if (worldwide) {
+    const at = items.findIndex((i) => i.q === "Can I pay from outside India?");
+    items.splice(at + 1, 0, worldwide);
+  }
+
   if (intro) {
     items.splice(1, 0, {
       q: "Is there an offer for new customers?",
@@ -97,13 +109,15 @@ export function ExplainerFaq({
   intro,
   adhocRate,
   currency = "INR",
+  worldwide,
 }: {
   storage: StorageTerms;
   intro: IntroOffer | null;
   adhocRate?: string;
   currency?: Currency;
+  worldwide?: QA | null;
 }) {
-  const faq = buildFaq(storage, intro, adhocRate, currency);
+  const faq = buildFaq(storage, intro, adhocRate, currency, worldwide);
 
   return (
     <section id="faq" className="cf-wide scroll-mt-24 px-5 py-20" data-cf-section="faq">

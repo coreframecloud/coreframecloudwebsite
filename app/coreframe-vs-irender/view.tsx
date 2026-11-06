@@ -4,7 +4,7 @@ import { PageByline } from "@/components/seo/page-byline";
 import { GenImage } from "@/components/visuals/media";
 import type { Metadata } from "next";
 import { JsonLd } from "@/components/seo/json-ld";
-import { breadcrumbList, OG_IMAGE } from "@/lib/seo";
+import { breadcrumbList, faqPage, OG_IMAGE } from "@/lib/seo";
 import Link from "next/link";
 import { BackgroundGlow } from "@/components/home/background-glow";
 import { SpecBlock, K, B } from "@/components/home/spec-block";
@@ -86,11 +86,13 @@ export function vsIrenderMetadata(currency: Currency): Metadata {
   title: { absolute: "iRender Alternative: Coreframe Cloud Workstations Compared" },
   // One currency per visitor (owner, 18 Oct 2026): the rupee copy converts
   // iRender's dollar list price, the dollar copy quotes it as listed.
+  // Second pass 6 Nov 2026 (week report): 228 impressions at 0.9 %; "irender
+  // alternatives" (80 impressions, 3.8) is the search, so the snippet opens with it.
   description: usdView
-    ? `iRender lists one RTX 4090 at ${formatMoney(IRENDER.gpu4090.list, "USD")}/hr. ` +
-      "Coreframe bills by the minute. A dated, sourced comparison, including where iRender wins."
-    : `iRender bills in US dollars, about ${inr(IRENDER.gpu4090.list)}/hr for one RTX 4090. ` +
-      "Coreframe bills in rupees, GST included. A dated, sourced comparison, including where iRender wins.",
+    ? "iRender alternatives compared: a Windows cloud workstation by the minute, a render farm, or your own PC. " +
+      `iRender lists an RTX 4090 at ${formatMoney(IRENDER.gpu4090.list, "USD")}/hr.`
+    : "iRender alternatives compared: a cloud workstation billed in rupees by the minute, a render farm, or a PC. " +
+      `iRender: about ${inr(IRENDER.gpu4090.list)}/hr.`,
   keywords: [
     "Coreframe vs iRender",
     "iRender alternative",
@@ -110,6 +112,45 @@ export function vsIrenderMetadata(currency: Currency): Metadata {
   },
   };
 }
+
+/** iRender alternatives by kind of tool (week report 6 Nov 2026). */
+const ALTERNATIVES = [
+  {
+    need: "You work interactively in D5, Lumion, Enscape or Twinmotion:",
+    pick: "a cloud virtual workstation, a whole Windows desktop with the GPU, billed by the minute. That's what Coreframe is.",
+    href: "/best-cloud-workstations-for-architects",
+    link: "Cloud workstations compared",
+  },
+  {
+    need: "You have a finished animation to render unattended:",
+    pick: "a render farm splits the frames across many machines and is usually the cheaper tool for that.",
+    href: "/cloud-workstation-vs-render-farm",
+    link: "Workstation vs render farm",
+  },
+  {
+    need: "You train AI models or run scripts over SSH:",
+    pick: "a bare GPU server from an AI-focused GPU cloud fits better than any desktop.",
+    href: "/virtual-workstation-vs-gpu-server",
+    link: "Virtual workstation vs GPU server",
+  },
+  {
+    need: "You render most days of the week:",
+    pick: "buying your own workstation usually wins over its life.",
+    href: "/blog/is-cloud-rendering-cheaper-than-buying-a-workstation",
+    link: "The break-even hours",
+  },
+];
+
+const ALTERNATIVES_FAQ = [
+  {
+    q: "What are the alternatives to iRender?",
+    a: "It depends on the work. For interactive design software (D5, Lumion, Enscape, Twinmotion), a cloud virtual workstation such as Coreframe, a Windows desktop with a GPU billed by the minute. For unattended animation frames, a render farm. For AI training over SSH, a bare GPU server. If you render most days, your own workstation.",
+  },
+  {
+    q: "Is Coreframe an iRender alternative?",
+    a: "Yes, for interactive work. Both rent a whole remote machine with a GPU by the hour. Coreframe bills by the minute, keeps your files on storage between sessions, and comes with D5 Render, Twinmotion and Blender installed. iRender offers multi-GPU machines with up to eight cards, which Coreframe doesn't.",
+  },
+];
 
 const pad = (s: string, n: number) => (s.length >= n ? s : s + " ".repeat(n - s.length));
 
@@ -168,6 +209,7 @@ export default async function VsIrenderView({ currency }: { currency: Currency }
   return (
     <div className="relative min-h-screen text-ink">
       <JsonLd data={breadcrumbList([{ name: "Coreframe vs iRender", path: "/coreframe-vs-irender" }])} />
+      <JsonLd data={faqPage(ALTERNATIVES_FAQ)} />
       <BackgroundGlow />
       <main className="relative">
         <section className="cf-section px-5 cf-pagehero">
@@ -304,6 +346,26 @@ export default async function VsIrenderView({ currency }: { currency: Currency }
               We&apos;d rather tell you that than take an hour of your money and
               have you run out of memory.
             </p>
+          </div>
+        </section>
+
+        <div className="cf-rule" />
+
+        {/* "irender alternatives" (week report 6 Nov 2026): answered by kind of
+            tool, not by a list of named rivals, so nothing here can go stale. */}
+        <section id="irender-alternatives" className="cf-section px-5">
+          <div className="cf-col">
+            <h2 className="cf-title">iRender alternatives, by what you need</h2>
+            <ul className="mt-7 grid gap-4">
+              {ALTERNATIVES.map((a) => (
+                <li key={a.need} className="cf-card-sm text-ink-2">
+                  <b className="text-ink">{a.need}</b> {a.pick}{" "}
+                  <Link href={a.href} className="text-blue underline underline-offset-2">
+                    {a.link}
+                  </Link>
+                </li>
+              ))}
+            </ul>
           </div>
         </section>
 

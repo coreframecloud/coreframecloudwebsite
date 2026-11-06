@@ -15,6 +15,7 @@ import { RateBars } from "@/components/visuals/diagrams";
 import { GenImage } from "@/components/visuals/media";
 import {
   getRateCard,
+  worldwidePriceFaq,
   adhocRate as adhocRateFrom,
   introOfferFor,
   billingSentence,
@@ -429,7 +430,7 @@ export default async function PricingView({ currency }: { currency: Currency }) 
         </div>
       </section>
 
-      <ExplainerFaq storage={storage} intro={intro} adhocRate={adhocLabel} currency={currency} />
+      <ExplainerFaq storage={storage} intro={intro} adhocRate={adhocLabel} currency={currency} worldwide={worldwidePriceFaq(rateCard, currency)} />
     </main>
   );
 }

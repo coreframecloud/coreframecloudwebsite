@@ -1071,6 +1071,31 @@ export function noConnectSentence(card: RateCard | null): string {
  * Returns null when there is no live price, so the caller drops the question
  * from the FAQ entirely rather than publishing an answer with a blank in it.
  */
+/**
+ * "Are prices the same worldwide?" (AEO plan A12, 6 Nov 2026).
+ *
+ * The plan asked for both currencies in crawler-visible text. The owner's
+ * one-currency rule (18 Oct 2026, proxy.ts) forbids that in anything a visitor
+ * can read, FAQ text included, so each copy quotes ONLY its own currency and
+ * names the other region's rule without a figure. Crawlers get the worldwide
+ * dollar figure from the /usd copy (US-based crawlers are served it) and both
+ * figures from the regional Offers in the JSON-LD (lib/seo.ts regionalOffers).
+ */
+export function worldwidePriceFaq(card: RateCard | null, cur: Currency = "INR"): { q: string; a: string } | null {
+  const rate = adhocRate(card, cur);
+  if (!rate) return null;
+  const from = (ladderRanges(card)?.count ?? 0) > 1 ? "from " : "";
+  const perMinute = card?.billing_granularity === "per_minute" ? ", billed per minute" : "";
+  const same = "The workstations are the same everywhere, hosted in a Tier III data centre in India.";
+  return {
+    q: "Are prices the same worldwide?",
+    a:
+      cur === "USD"
+        ? `Each billing country has one price list. Accounts billed outside India pay in US dollars, ${from}${rate} an hour with no GST (export of services)${perMinute}. Accounts billed in India pay a rupee price list with GST included. ${same}`
+        : `Each billing country has one price list. Accounts billed in India pay in rupees, ${from}${rate} an hour with GST included${perMinute}. Accounts billed outside India pay a US-dollar price list with no GST, and visitors outside India see those prices on this site. ${same}`,
+  };
+}
+
 export function pricingFaqAnswer(card: RateCard | null, cur: Currency = "INR"): string | null {
   const adhoc = adhocRate(card, cur);
   if (!adhoc) return null;

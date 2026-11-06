@@ -19,6 +19,7 @@ import {
   introOfferFor,
   ladderRanges,
   pricingFaqAnswer,
+  worldwidePriceFaq,
   storageSpec,
   type RateCard,
   introPrice,
@@ -211,10 +212,13 @@ export default async function SoftwareView({ slug, currency }: { slug: string; c
   // the page data, and are dropped (not blanked) when it is unreachable.
   const card = await getRateCard();
   const priceAnswer = pricingFaqAnswer(card, currency);
+  const worldwide = worldwidePriceFaq(card, currency);
   const intro = introOfferFaq(card, currency);
   const faqs = [
     ...page.faqs,
     ...(priceAnswer ? [{ q: "How much does a Coreframe workstation cost?", a: priceAnswer }] : []),
+    // AEO plan A12 (6 Nov 2026): the worldwide answer, in this copy's currency only.
+    ...(worldwide ? [worldwide] : []),
     ...(intro ? [intro] : []),
   ];
 

@@ -39,24 +39,31 @@ const IMG = `/blog/${SLUG}`;
  * places and the article says so.
  */
 const CHECKED = "19 October 2026";
+/** D5 Lite line re-read on d5render.com/specs for the 6 Nov 2026 refresh. */
+const D5_LITE_CHECKED = "6 November 2026";
 
 export const d5RenderSystemRequirementsLaptop: BlogPost = {
   slug: SLUG,
   title: "D5 Render system requirements for a laptop, and how much space it needs",
   metaTitle: "D5 Render System Requirements: Laptop & PC",
   // CTR rewrite (AEO plan 1 Nov 2026, A10): 1,231 impressions at 0.2 % CTR.
-  absoluteTitle: "D5 Render System Requirements 2026: Laptop, PC, Minimum",
+  // Second pass 6 Nov 2026 (week report): 1,923 impressions at 0.2 %; adds the
+  // new "d5 pc requirements" and "d5 lite system requirements" searches.
+  absoluteTitle: "D5 Render System Requirements 2026: PC, Laptop & D5 Lite",
   description:
-    "Minimum: GTX 1060 6GB, RX 6000 or Arc A3, Windows 10 1809+. Recommended: RTX 2060/3060, 32 GB RAM, 40 GB free. Or run D5 on a cloud GPU from any laptop.",
+    "D5 needs Windows 10 and a GTX 1060 6GB, RX 6000 or Arc A3 at least; D5 Lite needs an NVIDIA RTX. Recommended: RTX 3060, 32 GB RAM, 40 GB free.",
   targetQueries: [
     "d5 render system requirements laptop",
     "d5 render requirements laptop",
     "d5 render size gb",
     "d5 render amd",
     "d5 download failed",
+    "d5 system requirements",
+    "d5 pc requirements",
+    "d5 lite system requirements",
   ],
   datePublished: "2026-10-19",
-  dateModified: "2026-10-19",
+  dateModified: "2026-11-06",
   draft: false,
   eyebrow: "Guide · Hardware",
   hero: {
@@ -70,7 +77,7 @@ export const d5RenderSystemRequirementsLaptop: BlogPost = {
   answer: () =>
     `D5 Render needs Windows 10 (version 1809 or later) and a dedicated, ray-tracing-capable graphics card. D5's own minimum is an NVIDIA GTX 1060 6GB, an AMD Radeon RX 6000-series card or an Intel Arc A3, and it does not run on integrated graphics. So a laptop can run D5 only if it has a dedicated GPU at that level and D5 is set to use it. D5 doesn't publish an installer size, but it recommends a workspace drive with at least 40 GB free. If your laptop falls short, you can run D5 on a remote workstation and stream it to the laptop instead.`,
   body: (ctx) => [
-    { type: "h2", text: "D5 Render's official system requirements" },
+    { type: "h2", text: "D5 Render system requirements for a PC or laptop" },
     {
       type: "p",
       text: `These are D5's own figures, from its website, as we read them on ${CHECKED}. D5 updates them as new versions ship, so check [D5's requirements page](https://www.d5render.com/specs) before you buy anything.`,
@@ -138,9 +145,11 @@ export const d5RenderSystemRequirementsLaptop: BlogPost = {
       type: "p",
       text: "In practice that means the program itself is the small part. Plan for the 40 GB, then add room for your own projects. On a laptop with a small, nearly full C: drive, choose a workspace on a larger drive when you install.",
     },
+
+    { type: "h2", text: "D5 Lite system requirements" },
     {
       type: "p",
-      text: "D5 Lite, the lighter edition, has its own requirement on the same page: an NVIDIA RTX series GPU and Windows 10 v1909 or later.",
+      text: `D5 Lite, the lighter edition, has its own line on [D5's requirements page](https://www.d5render.com/specs): an NVIDIA RTX series GPU and Windows 10 v1909 or later (checked ${D5_LITE_CHECKED}). That is stricter on the graphics card than full D5 Render: a GTX card, a Radeon or an Intel Arc doesn't qualify, even though full D5 accepts them.`,
     },
 
     { type: "h2", text: "D5 download failed: what to check" },
@@ -190,6 +199,14 @@ export const d5RenderSystemRequirementsLaptop: BlogPost = {
     {
       q: "What is the minimum GPU for D5 Render?",
       a: `As published by D5 on ${CHECKED}: NVIDIA GTX 1060 6GB, AMD Radeon RX 6000 XT (RX 6400 in D5's help centre) or Intel Arc A3, on Windows 10 v1809 or later. D5 recommends an RTX 2060 or RTX 3060 (Ti) or better, depending on the page.`,
+    },
+    {
+      q: "What PC do I need for D5 Render?",
+      a: "A Windows 10 (v1809 or later) or Windows 11 PC with a dedicated ray-tracing GPU: at least a GTX 1060 6GB, a Radeon RX 6000-series card or an Intel Arc A3. D5 recommends an RTX 2060 or RTX 3060 (Ti) or better, 32 GB of RAM and a workspace drive with 40 GB free.",
+    },
+    {
+      q: "What are the D5 Lite system requirements?",
+      a: "An NVIDIA RTX series graphics card and Windows 10 v1909 or later, per D5's requirements page. Unlike full D5 Render, D5 Lite does not list GTX, AMD or Intel cards.",
     },
     {
       q: "Does D5 Render work with AMD graphics cards?",

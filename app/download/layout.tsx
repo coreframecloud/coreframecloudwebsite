@@ -14,9 +14,11 @@ import { breadcrumbList } from "@/lib/seo";
  * other client is published, so no other OS is listed.
  */
 export const metadata: Metadata = {
-  title: "Download Coreframe Connect for Windows",
+  // CTR rewrite 6 Nov 2026 (week report): 104 impressions at position 2.2, no clicks.
+  // Absolute, so the brand is not repeated by the layout's title suffix.
+  title: { absolute: "Coreframe Connect: Free Windows App for Cloud Workstations" },
   description:
-    "Coreframe Connect is the free Windows 10/11 app that streams your Coreframe GPU workstation to your own PC. Sign in to download.",
+    "Download Coreframe Connect, the free, signed app for Windows 10 and 11. Sign in, pick a GPU and your cloud workstation opens on your own PC.",
   alternates: { canonical: "/download" },
 };
 
