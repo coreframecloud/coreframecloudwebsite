@@ -335,14 +335,14 @@ export default async function VsIrenderView({ currency }: { currency: Currency }
             </ul>
             <p className="cf-lead mt-8">
               {usdView ? (
-                <>In short: if your scene fits in {NODE.vram}, we cost less per hour.</>
+                <>In short: if your scene fits in {NODE.vram}, we cost less per hour.{" "}</>
               ) : (
                 <>
-                  In short: if your scene fits in {NODE.vram} and you&apos;re
+                  In short: if your scene fits in {NODE.vram}{" "}and you&apos;re
                   invoicing an Indian client, we&apos;re cheaper and the paperwork is
-                  simpler.
+                  simpler.{" "}
                 </>
-              )} If it doesn&apos;t fit, go and use the bigger card.
+              )}If it doesn&apos;t fit, go and use the bigger card.
               We&apos;d rather tell you that than take an hour of your money and
               have you run out of memory.
             </p>
