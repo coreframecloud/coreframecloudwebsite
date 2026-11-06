@@ -39,7 +39,8 @@ const IMG = `/blog/${SLUG}`;
  * places and the article says so.
  */
 const CHECKED = "19 October 2026";
-/** D5 Lite line re-read on d5render.com/specs for the 6 Nov 2026 refresh. */
+/** D5 Lite read on docs.d5render.com/lite/system-requirements for the 6 Nov 2026 refresh
+ *  (Win 10 20H2+, NVIDIA RTX 20-series+, driver 528.33+, Windows only, no Intel/AMD). */
 const D5_LITE_CHECKED = "6 November 2026";
 
 export const d5RenderSystemRequirementsLaptop: BlogPost = {
@@ -149,7 +150,7 @@ export const d5RenderSystemRequirementsLaptop: BlogPost = {
     { type: "h2", text: "D5 Lite system requirements" },
     {
       type: "p",
-      text: `D5 Lite, the lighter edition, has its own line on [D5's requirements page](https://www.d5render.com/specs): an NVIDIA RTX series GPU and Windows 10 v1909 or later (checked ${D5_LITE_CHECKED}). That is stricter on the graphics card than full D5 Render: a GTX card, a Radeon or an Intel Arc doesn't qualify, even though full D5 accepts them.`,
+      text: `D5 Lite, the lighter edition, has its own [system requirements page](https://docs.d5render.com/lite/system-requirements) (checked ${D5_LITE_CHECKED}): Windows 10 (20H2 or later), an NVIDIA RTX 20-series card or newer with driver 528.33 or later, an internet connection and a signed-in D5 account. D5 Lite supports Windows only, and D5 says Intel and AMD GPUs are not supported. That is stricter on the graphics card than full D5 Render: a GTX card, a Radeon or an Intel Arc doesn't qualify, even though full D5 accepts them.`,
     },
 
     { type: "h2", text: "D5 download failed: what to check" },
@@ -206,7 +207,7 @@ export const d5RenderSystemRequirementsLaptop: BlogPost = {
     },
     {
       q: "What are the D5 Lite system requirements?",
-      a: "An NVIDIA RTX series graphics card and Windows 10 v1909 or later, per D5's requirements page. Unlike full D5 Render, D5 Lite does not list GTX, AMD or Intel cards.",
+      a: "Per D5's D5 Lite requirements page: Windows 10 (20H2 or later), an NVIDIA RTX 20-series GPU or newer with driver 528.33 or later, and an internet connection. Intel and AMD GPUs are not supported, and neither are GTX cards.",
     },
     {
       q: "Does D5 Render work with AMD graphics cards?",

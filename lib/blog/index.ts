@@ -7,9 +7,12 @@ import { pressureDropHandCalcVsCfd } from "./posts/pressure-drop-hand-calc-vs-cf
 import { verificationVsValidationCfd } from "./posts/verification-vs-validation-cfd";
 import { cloudRenderingVsBuyingWorkstation } from "./posts/cloud-rendering-vs-buying-workstation";
 import { d5RenderSystemRequirementsLaptop } from "./posts/d5-render-system-requirements-laptop";
+import { realisticInteriorRendersDesignOptions } from "./posts/realistic-interior-renders-design-options";
 
 /** Newest first; posts with the same date keep this editorial order. */
 export const POSTS: BlogPost[] = [
+  // Published 6 Nov 2026 (weekly AEO loop: Reddit questions that week).
+  realisticInteriorRendersDesignOptions,
   // Published 19 Oct 2026 (Search Console question queries).
   cloudRenderingVsBuyingWorkstation,
   d5RenderSystemRequirementsLaptop,

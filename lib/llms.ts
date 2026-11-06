@@ -291,7 +291,7 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
     "- **What PC does D5 Render need, and what does D5 Lite need?** D5 Render (as published by D5): Windows 10 " +
       "v1809 or later and a dedicated ray-tracing GPU, at least an NVIDIA GTX 1060 6GB, AMD Radeon RX 6000-series or " +
       "Intel Arc A3; recommended RTX 2060/3060 or better, 32 GB RAM, 40 GB free for the workspace; no integrated " +
-      "graphics. D5 Lite: an NVIDIA RTX series GPU and Windows 10 v1909 or later. " +
+      "graphics. D5 Lite: Windows 10 20H2 or later and an NVIDIA RTX 20-series GPU or newer (no AMD or Intel GPUs). " +
       `${SITE}/blog/d5-render-system-requirements-laptop`,
   );
   out.push(
@@ -299,6 +299,13 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
       "high-end RTX GPU with plenty of video memory, a fast CPU and enough RAM for big scenes. Coreframe rents one " +
       "as a cloud virtual workstation, a Windows desktop with D5 Render, Twinmotion and Blender installed, streamed " +
       `to your laptop and billed per minute. ${SITE}/software/gpu-workstation-rental-india`,
+  );
+  out.push(
+    "- **How do I get realistic interior renders and test design options quickly?** Explore options in a real-time " +
+      "renderer (D5 Render, Enscape, Twinmotion, Lumion, Blender EEVEE) from fixed cameras, and render only the chosen " +
+      "option at full quality. Realism habits: real-world texture scale, one HDRI or sun light with exposure, rounded " +
+      "edges, an eye-level camera with a 24-28 mm lens and straight verticals. AI style images suit mood boards, not " +
+      `design decisions. ${SITE}/blog/realistic-interior-renders-design-options`,
   );
   out.push(
     "- **Is it a render farm?** No. A render farm renders a finished scene on many " +
