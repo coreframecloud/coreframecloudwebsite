@@ -117,8 +117,9 @@ export type BlogPost = {
   /**
    * Background for the dark title band (.cf-pagehero), when the site-wide
    * default render would be off-topic for the article (tester, 9 Nov 2026:
-   * visuals match the copy). Site-relative image path; the band's dark
-   * gradient is kept on top so the title stays legible.
+   * visuals match the copy). Site-relative image path. Use a pre-blurred copy
+   * (6-10 px) when the image holds text, so no text sits under the title; the
+   * band's dark gradient is kept on top.
    */
   pageHeroBg?: string;
   /** Share card image (site-relative JPG/PNG, 1200x630) instead of the generated text card (./opengraph-image). */

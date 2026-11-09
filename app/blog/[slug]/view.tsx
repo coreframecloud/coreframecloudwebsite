@@ -142,7 +142,7 @@ export default async function BlogPostView({ slug, currency }: { slug: string; c
         style={
           post.pageHeroBg
             ? {
-                background: `linear-gradient(100deg, rgb(11 13 17 / 0.94) 0%, rgb(11 13 17 / 0.84) 55%, rgb(11 13 17 / 0.66) 100%), url("${post.pageHeroBg}") center 30% / cover no-repeat, var(--color-night)`,
+                background: `linear-gradient(100deg, rgb(11 13 17 / 0.96) 0%, rgb(11 13 17 / 0.9) 55%, rgb(11 13 17 / 0.8) 100%), url("${post.pageHeroBg}") center 30% / cover no-repeat, var(--color-night)`,
               }
             : undefined
         }
