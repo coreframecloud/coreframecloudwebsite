@@ -170,7 +170,8 @@ export default function DwgCheckPage() {
             <nav aria-label="Breadcrumb" className="mb-5 text-[13px] text-ink-3">
               <Link href="/">Coreframe</Link> / <span>Free DWG dimension checker</span>
             </nav>
-            <p className="cf-eyebrow mb-5">Free tool · read-only</p>
+            {/* No "TOOL" here: the Inter build has no T-O kerning pair, so the tracked caps read "T OOL" at 390 px (tester, 9 Nov 2026). */}
+            <p className="cf-eyebrow mb-5">Free · read-only · no signup</p>
             <h1 className="cf-display max-w-[20ch]">
               Free DWG dimension checker: <span className="cf-hl-marker">find missing dimensions</span>
             </h1>

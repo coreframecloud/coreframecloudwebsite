@@ -114,6 +114,15 @@ export type BlogPost = {
   draft: boolean;
   eyebrow: string;
   hero: BlogImage;
+  /**
+   * Background for the dark title band (.cf-pagehero), when the site-wide
+   * default render would be off-topic for the article (tester, 9 Nov 2026:
+   * visuals match the copy). Site-relative image path; the band's dark
+   * gradient is kept on top so the title stays legible.
+   */
+  pageHeroBg?: string;
+  /** Share card image (site-relative JPG/PNG, 1200x630) instead of the generated text card (./opengraph-image). */
+  ogImage?: string;
   /** Small credit line under the hero image, e.g. for a third-party scene. */
   credit?: string;
   /**

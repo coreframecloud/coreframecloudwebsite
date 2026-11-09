@@ -68,7 +68,9 @@ export function blogMetadata(slug: string, currency: Currency): Metadata {
       // Explicit, because a page-level openGraph without `images` drops the
       // file-based one (see OG_IMAGE in lib/seo.ts). This is the per-post
       // card from ./opengraph-image.tsx.
-      images: [{ url: `${url}/opengraph-image`, width: 1200, height: 630, alt: post.title }],
+      images: post.ogImage
+        ? [{ url: post.ogImage, width: 1200, height: 630, alt: post.hero.alt }]
+        : [{ url: `${url}/opengraph-image`, width: 1200, height: 630, alt: post.title }],
       title: post.title,
       description,
       url: `${SITE}${url}`,
@@ -135,7 +137,16 @@ export default async function BlogPostView({ slug, currency }: { slug: string; c
         </div>
       ) : null}
 
-      <section className="cf-section cf-pagehero px-5">
+      <section
+        className="cf-section cf-pagehero px-5"
+        style={
+          post.pageHeroBg
+            ? {
+                background: `linear-gradient(100deg, rgb(11 13 17 / 0.94) 0%, rgb(11 13 17 / 0.84) 55%, rgb(11 13 17 / 0.66) 100%), url("${post.pageHeroBg}") center 30% / cover no-repeat, var(--color-night)`,
+              }
+            : undefined
+        }
+      >
         <div className="cf-col">
               <nav aria-label="Breadcrumb" className="mb-6 font-mono text-[12px] tracking-[0.06em] text-ink-3">
                 <Link href="/blog" className="hover:text-ink">

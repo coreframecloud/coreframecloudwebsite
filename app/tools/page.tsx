@@ -162,7 +162,8 @@ export default function ToolsPage() {
             <nav aria-label="Breadcrumb" className="mb-5 text-[13px] text-ink-3">
               <Link href="/">Coreframe</Link> / <span>Free IFC checker</span>
             </nav>
-            <p className="cf-eyebrow mb-5">Free tool · nothing to install</p>
+            {/* No "TOOL": see app/dwg-check (no T-O kerning pair in Inter, tracked caps read "T OOL"). */}
+            <p className="cf-eyebrow mb-5">Free · nothing to install</p>
             <h1 className="cf-display max-w-[20ch]">
               No-install IFC model checker: <span className="cf-hl-marker">find what breaks a CFD conversion</span>
             </h1>

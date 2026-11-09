@@ -40,6 +40,9 @@ export const checkDwgDimensionsWithoutAutocad: BlogPost = {
     height: 675,
     caption: "A real report from the free checker on Coreframe's own sample 3BHK plan, a test file with no dimensions at all, so every wall position is flagged.",
   },
+  // The title band shows the same real report, not the site-wide interior render.
+  pageHeroBg: `${IMG}/hero-dwg-check-report.webp`,
+  ogImage: `${IMG}/og-dwg-check-report.jpg`,
   answer: () =>
     "To check DWG dimensions online for free without AutoCAD, upload the drawing to a browser-based checker such as Coreframe's free DWG dimension checker (coreframecloud.com/dwg-check). It reads DWG files from AutoCAD 2000 to 2018 and DXF, and lists wall positions that no dimension measures, dimensions whose typed-over text disagrees with the length they span, dimensions printed at a length scale factor, and exploded dimensions that will never update, with no install and no account. To view or measure the drawing yourself, Autodesk's DWG TrueView viewer opens DWG files and measures distances one at a time. In AutoCAD itself, each problem has a manual check with a command or system variable, shown below.",
   body: () => [
