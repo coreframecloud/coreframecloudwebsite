@@ -20,9 +20,12 @@ const PATH = "/dwg-check";
 const PAGE_URL = `${SITE}${PATH}`;
 
 export const metadata: Metadata = {
-  title: { absolute: "Free DWG Dimension Checker: Find Missing Dimensions" },
+  // Snippet rewrite 9 Nov 2026 (AEO week): "dimensions dwg" at 8.4 with no
+  // clicks; the title and description now carry "check DWG dimensions online"
+  // and "without AutoCAD", the two searches the backlog asked us to answer.
+  title: { absolute: "Free DWG Dimension Checker Online: Find Missing Dimensions" },
   description:
-    "Upload a DWG or DXF and get a free report of missing dimensions, dimension text that disagrees with the geometry, and what can be purged. No signup.",
+    "Check DWG dimensions online, free and without AutoCAD: upload a DWG or DXF to find missing dimensions and overridden dimension text. No signup.",
   alternates: { canonical: PATH },
   openGraph: {
     images: [OG_IMAGE],
@@ -34,6 +37,15 @@ export const metadata: Metadata = {
 };
 
 const FAQ: { q: string; a: string }[] = [
+  // Answer-first entries added 9 Nov 2026 (AEO week: promote the DWG checker).
+  {
+    q: "How do I check DWG dimensions online for free?",
+    a: "Upload the DWG or DXF on this page. In a few seconds you get a free report of wall positions that no dimension measures, dimensions whose typed-over text disagrees with the length they span, dimensions printed at a length scale factor and exploded dimensions that will never update. There is no account, email or card, and the file is deleted once it has been read.",
+  },
+  {
+    q: "Can I check a DWG without AutoCAD?",
+    a: "Yes. You upload the file from a web browser and our service reads the DWG itself, so you need no AutoCAD, no DWG viewer and no plug-in, on Windows, macOS or Linux. It reads AutoCAD 2000 to 2018 DWG files and DXF. To view the drawing and measure single distances yourself, Autodesk's DWG TrueView viewer opens DWG files.",
+  },
   {
     q: "How do I find missing dimensions in a DWG file?",
     a: "Upload the DWG to this page. It reads every axis-aligned wall face in the drawing, reads the interval every existing dimension measures, and reports each gap between two wall faces that no dimension locates. A sheet holding several plans is split first, so a dimension string is never measured from one building to another, and an evenly spaced run inside one overall dimension, such as stair treads, louvres or parking bays, counts as dimensioned.",
@@ -64,8 +76,11 @@ const APP_SCHEMA = {
   url: PAGE_URL,
   applicationCategory: "DesignApplication",
   applicationSubCategory: "CAD drawing quality check",
-  operatingSystem: "Any (runs in a web browser)",
+  operatingSystem: "Any (runs in a web browser, nothing to install)",
+  browserRequirements: "A current web browser",
+  inLanguage: "en",
   isAccessibleForFree: true,
+  audience: { "@type": "Audience", audienceType: "Architects, drafters, CAD managers and contractors" },
   offers: [
     { "@type": "Offer", price: "0", priceCurrency: "INR" },
     { "@type": "Offer", price: "0", priceCurrency: "USD" },
@@ -217,6 +232,14 @@ export default function DwgCheckPage() {
             </div>
 
             <p className="mt-8 text-[15px] text-ink-2">
+              Guide:{" "}
+              <Link href="/blog/check-dwg-dimensions-without-autocad" className="text-blue underline underline-offset-2">
+                how to check DWG dimensions without AutoCAD
+              </Link>
+              , with the AutoCAD commands for each check and real questions from drafting forums.
+            </p>
+
+            <p className="mt-4 text-[15px] text-ink-2">
               Also free: the{" "}
               <Link href="/tools" className="text-blue underline underline-offset-2">
                 no-install IFC model checker

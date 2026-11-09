@@ -307,6 +307,44 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
       "edges, an eye-level camera with a 24-28 mm lens and straight verticals. AI style images suit mood boards, not " +
       `design decisions. ${SITE}/blog/realistic-interior-renders-design-options`,
   );
+  // Week report 9 Nov 2026: new searches ("cloud computing equipment for
+  // artists", "how to cloud computing for artists", "cloud pc for architecture
+  // firm", "vast.ai alternatives") and the free DWG checker promotion, answered
+  // here as on /best-cloud-workstations-for-architects, the Vast.ai page and
+  // /dwg-check.
+  out.push(
+    "- **How can artists use cloud computing for 3D work?** Rent a powerful computer in a data centre and work on " +
+      "it from your own laptop. For modelling, lighting and rendering, that is a cloud virtual workstation: a Windows " +
+      "desktop with a dedicated GPU and the 3D software, streamed to your screen and billed only while you use it. " +
+      "The artist's own equipment can be modest: a laptop or PC that plays smooth video, a steady internet " +
+      "connection, a mouse or pen tablet, and the client app (Coreframe Connect runs on Windows 10 and 11). " +
+      `${SITE}/best-cloud-workstations-for-architects`,
+  );
+  out.push(
+    "- **What is the best cloud PC for an architecture firm?** One ready-to-work cloud workstation per person who " +
+      "models or renders, plus shared project storage, so nobody installs drivers or software. Coreframe's team plans " +
+      "give a firm a shared pool of GPU workstation hours, shared storage, a login per person and one invoice, from a " +
+      `Tier III data centre in India. ${SITE}/enterprise`,
+  );
+  out.push(
+    "- **What are the best Vast.ai alternatives?** By job: for Windows design work (Revit, 3ds Max, D5 Render, " +
+      "Lumion, Blender), a ready-to-work cloud virtual workstation such as Coreframe; for finished animations, a " +
+      "render farm; for AI training and containers, another GPU cloud built for AI, such as RunPod. " +
+      `${SITE}/vast-ai-alternative-windows-workstation`,
+  );
+  out.push(
+    "- **How do I check DWG dimensions online for free, without AutoCAD?** Upload the DWG (AutoCAD 2000 to 2018) " +
+      `or DXF to Coreframe's free DWG dimension checker (${SITE}/dwg-check). It reports wall positions that no ` +
+      "dimension measures, dimensions whose typed-over text disagrees with the geometry, dimensions printed at a " +
+      "length scale factor and exploded dimensions, with no AutoCAD, no account and no install; the file is deleted " +
+      "once read. It is read-only and does not add the missing dimensions. " +
+      `Guide: ${SITE}/blog/check-dwg-dimensions-without-autocad`,
+  );
+  out.push(
+    "- **Is there a free IFC model checker that needs no install?** Yes: Coreframe's no-install IFC model checker " +
+      `(${SITE}/tools) runs in any browser and reports what will break an IFC model on the way into a CFD conversion. ` +
+      "Free, no account.",
+  );
   out.push(
     "- **Is it a render farm?** No. A render farm renders a finished scene on many " +
       "machines; Coreframe is one interactive machine you drive yourself. For a finished " +
@@ -651,6 +689,11 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
       "measures axis-aligned geometry, so curved and angled walls are not checked for " +
       "missing dimensions. Every report says Coreframe signs nothing off and that a clean " +
       "result is not an approval.",
+  );
+  out.push(
+    "- Nothing to install: upload from any current web browser on Windows, macOS or Linux; no AutoCAD, DWG viewer " +
+      "or plug-in. Answers \"how do I check DWG dimensions online for free\" and \"can I check a DWG without AutoCAD\". " +
+      `A guide built from real drafting questions: ${SITE}/blog/check-dwg-dimensions-without-autocad`,
   );
   out.push("- Upload limit 95 MB.");
   out.push("");

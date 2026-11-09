@@ -128,7 +128,7 @@ function buildSoftwarePages(cur: Currency): SoftwarePage[] {
         a: "You pay per minute of streaming time at the published GPU-hour rate. There's no setup fee and no monthly minimum, and we don't bill for provisioning time or failed connections.",
       },
     ],
-    related: ["enscape-cloud-gpu", "cloud-rendering-for-architects", "3ds-max-cloud-workstation", "twinmotion-cloud-workstation", "sketchup-cloud-workstation"],
+    related: ["enscape-cloud-gpu", "cloud-rendering-for-architects", "3ds-max-cloud-workstation", "twinmotion-cloud-workstation", "sketchup-cloud-workstation", "dwg-check"],
   },
 
   {
@@ -217,7 +217,7 @@ function buildSoftwarePages(cur: Currency): SoftwarePage[] {
         a: "On ad-hoc hourly sessions, yes, because the machine resets to a clean image each time and the setup time is billed like any other minute. On a committed monthly plan we build your applications into the baseline image on your nodes, so they are there when you sign in. If you tell us what you use before your first session, we install it beforehand so your first hours test your real workflow instead of paying for setup.",
       },
     ],
-    related: ["architectural-visualization", "vray-cloud-rendering", "cloud-workstation-vs-render-farm", "revit-cloud-workstation", "sketchup-cloud-workstation"],
+    related: ["architectural-visualization", "vray-cloud-rendering", "cloud-workstation-vs-render-farm", "revit-cloud-workstation", "sketchup-cloud-workstation", "dwg-check"],
   },
 
   {
@@ -247,7 +247,7 @@ function buildSoftwarePages(cur: Currency): SoftwarePage[] {
       },
       { q: "Do my models persist between sessions?", a: RESET_ANSWER },
     ],
-    related: ["architectural-visualization", "enscape-cloud-gpu", "d5-render-cloud-workstation", "revit-cloud-workstation", "vray-cloud-rendering", "twinmotion-cloud-workstation"],
+    related: ["architectural-visualization", "enscape-cloud-gpu", "d5-render-cloud-workstation", "revit-cloud-workstation", "vray-cloud-rendering", "twinmotion-cloud-workstation", "dwg-check"],
   },
 
   /**
@@ -409,7 +409,7 @@ function buildSoftwarePages(cur: Currency): SoftwarePage[] {
       },
       { q: "Do my Rhino files persist between sessions?", a: RESET_ANSWER },
     ],
-    related: ["vray-cloud-rendering", "sketchup-cloud-workstation", "revit-cloud-workstation"],
+    related: ["vray-cloud-rendering", "sketchup-cloud-workstation", "revit-cloud-workstation", "dwg-check"],
   },
 
   /**

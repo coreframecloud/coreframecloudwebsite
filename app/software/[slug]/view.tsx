@@ -60,6 +60,8 @@ const LANDING_LINKS: Record<string, string> = {
   "vram-for-architectural-rendering": "Is 8 GB of VRAM enough?",
   "cloud-workstation-vs-render-farm": "Cloud workstation vs render farm",
   "coreframe-vs-irender": "Coreframe vs iRender",
+  // Free tool (AEO week 9 Nov 2026): linked from the CAD/BIM pages.
+  "dwg-check": "Free DWG dimension checker (no AutoCAD needed)",
 };
 
 /**

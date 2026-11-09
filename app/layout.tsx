@@ -461,6 +461,8 @@ export default async function RootLayout({
                     "computational fluid dynamics",
                     "duct and pipe pressure drop",
                     "interior concept rendering from floor plans",
+                    "checking DWG drawings for missing dimensions",
+                    "IFC model checking before CFD",
                     "NVIDIA RTX workstation GPUs",
                   ],
                   /**

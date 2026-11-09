@@ -377,6 +377,11 @@ export default async function FloorPlanToRenderView({ currency }: { currency: Cu
               The full guide, with Chief Architect and what Studio takes from the drawing:{" "}
               <a href="/studio/learn" className="underline underline-offset-4">Getting a DXF out of your CAD</a>.
             </p>
+            <p className="mt-3 text-[14px] text-ink-3">
+              Not sure the DWG is fully dimensioned? Run it through the{" "}
+              <Link href="/dwg-check" className="underline underline-offset-4">free DWG dimension checker</Link> first: it
+              lists wall positions no dimension measures, with no AutoCAD and no account.
+            </p>
           </div>
         </section>
 

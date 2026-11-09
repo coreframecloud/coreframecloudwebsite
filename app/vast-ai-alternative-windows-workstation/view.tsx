@@ -33,10 +33,14 @@ export function vastAlternativeMetadata(): Metadata {
   // No price in this metadata: the same for both currency copies.
   return {
     title: { absolute: "Vast.ai Alternative for Windows Design Work | Coreframe" },
+    // Description rewrite 9 Nov 2026 (AEO week): "vast.ai alternatives" at
+    // 27.5. The title stays (first judged on 24 Nov); the plural phrase goes in
+    // the description, a new H2 and an FAQ.
     description:
-      "Vast.ai rents Linux GPU containers and VMs you set up yourself. Coreframe is a Windows desktop with a GPU and design software preinstalled, billed per minute.",
+      "Vast.ai alternatives by job: for Revit, D5 or Blender, a Windows desktop with a GPU and the software installed, billed per minute. For AI, other GPU clouds.",
     keywords: [
       "Vast.ai alternative",
+      "Vast.ai alternatives",
       "Vast.ai alternative Windows",
       "Windows cloud workstation",
       "ready-to-use Windows cloud workstation",
@@ -110,7 +114,37 @@ export default async function VastAlternativeView({ currency }: { currency: Curr
     ],
   ];
 
+  /** "Vast.ai alternatives" (new search, week to 6 Nov 2026): by job, no prices, no rankings. */
+  const alternatives: { need: string; pick: string; href?: string; link?: string }[] = [
+    {
+      need: "You open design software and work in it (Revit, 3ds Max, SketchUp, D5, Lumion, Blender):",
+      pick: "a ready-to-work cloud virtual workstation, a Windows desktop with the GPU, drivers and applications already there.",
+      href: "/pricing",
+      link: "Coreframe's GPUs and prices",
+    },
+    {
+      need: "You want a multi-GPU Windows box and will set it up yourself:",
+      pick: "a remote GPU server reached by remote desktop.",
+      href: "/coreframe-vs-irender",
+      link: "iRender compared",
+    },
+    {
+      need: "You have a finished animation to render:",
+      pick: "a render farm, which renders the frames across many machines.",
+      href: "/cloud-workstation-vs-render-farm",
+      link: "Workstation or farm?",
+    },
+    {
+      need: "You train or serve AI models over SSH or Jupyter:",
+      pick: "another GPU cloud built for AI, such as RunPod, or a large cloud provider's GPU instances. For that job Vast.ai itself is a good fit.",
+    },
+  ];
+
   const faqs: { q: string; a: string }[] = [
+    {
+      q: "What are the best Vast.ai alternatives?",
+      a: "It depends on the job. For Windows design work (Revit, 3ds Max, D5 Render, Lumion, Blender), a ready-to-work cloud virtual workstation such as Coreframe: a Windows desktop with a GPU and the software installed, billed per minute. For finished animations, a render farm. For AI training and containers, another GPU cloud built for AI, such as RunPod.",
+    },
     {
       q: "Is Coreframe a Vast.ai alternative?",
       a: "For Windows design work, yes. Vast.ai rents GPU containers and virtual machines, mostly Linux, that you reach by SSH or Jupyter and set up yourself. Coreframe rents a ready-to-work Windows desktop with a dedicated NVIDIA RTX GPU and design software installed, streamed to your own PC through the Coreframe Connect app. For AI training and containers, Vast.ai is the better fit.",
@@ -223,6 +257,25 @@ export default async function VastAlternativeView({ currency }: { currency: Curr
               project drive between sessions, and the workstation is hosted in a Tier III data centre in India.
             </p>
           </Fold>
+
+          <section className="mt-14" aria-labelledby="alternatives">
+            <h2 id="alternatives" className="cf-section-title">Vast.ai alternatives, by what you need.</h2>
+            <ul className="mt-6 grid gap-3">
+              {alternatives.map((a) => (
+                <li key={a.need} className="rounded-cf border border-rule bg-paper-2 px-5 py-4 text-[15px] leading-7 text-ink-2">
+                  <span className="font-semibold text-ink">{a.need}</span> {a.pick}
+                  {a.href ? (
+                    <>
+                      {" "}
+                      <Link href={a.href} className={LINK}>
+                        {a.link}
+                      </Link>
+                    </>
+                  ) : null}
+                </li>
+              ))}
+            </ul>
+          </section>
 
           <section className="mt-14">
             <h2 className="cf-section-title">What a workstation costs here.</h2>
