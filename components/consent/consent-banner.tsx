@@ -104,16 +104,16 @@ export function ConsentBanner() {
           ) : null}
         </p>
         <div className="grid grid-cols-2 gap-2 sm:flex sm:shrink-0">
+          <button type="button" onClick={() => choose("denied")} className="cf-consent-btn">
+            Only essential
+          </button>
           <button
             ref={firstBtn}
             type="button"
             onClick={() => choose("granted")}
-            className="cf-consent-btn"
+            className="cf-consent-btn cf-consent-btn-primary"
           >
             Accept
-          </button>
-          <button type="button" onClick={() => choose("denied")} className="cf-consent-btn">
-            Only essential
           </button>
         </div>
       </div>

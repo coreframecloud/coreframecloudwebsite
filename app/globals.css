@@ -340,6 +340,14 @@ body {
       @apply bg-paper-2;
     }
   }
+  .cf-consent-btn-primary {
+    @apply border-blue bg-blue text-white;
+  }
+  @media (hover: hover) {
+    .cf-consent-btn-primary:hover {
+      @apply border-blue-ink bg-blue-ink;
+    }
+  }
   .cf-consent-btn:focus-visible {
     @apply outline-2 outline-offset-[3px] outline-blue;
   }
