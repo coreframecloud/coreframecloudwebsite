@@ -9,9 +9,9 @@ export const metadata: Metadata = {
   alternates: { canonical: "/privacy-policy" },
 };
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
+function Section({ title, id, children }: { title: string; id?: string; children: React.ReactNode }) {
   return (
-    <section>
+    <section id={id} className={id ? "scroll-mt-24" : undefined}>
       <h2 className="cf-section-title">{title}</h2>
       <div className="mt-3 space-y-3">{children}</div>
     </section>
@@ -115,6 +115,30 @@ export default function PrivacyPolicyPage() {
               <li>Records of who used our compute services, when and from where (session logs and the subscriber details CERT-In requires) are kept for the periods set by the CERT-In directions: logs for at least 180 days, and subscriber records for five years after your account ends.</li>
               <li>Files uploaded to our free tools are deleted as soon as they are read; shared reports are kept for 90 days.</li>
             </ul>
+          </Section>
+
+          {/* Draft, 10 Nov 2026 (consent bar + first-party attribution). Facts only,
+              each matching the code: lib/consent.ts, lib/web-events.ts,
+              lib/attribution.ts, app/layout.tsx, and the control plane's
+              services/web_events.py and services/meta_capi.py. Numbered 7A so
+              the existing section numbers (and "section 12") stay valid. */}
+          <Section title="7A. Cookies and website analytics" id="cookies">
+            <p>When you first visit our website we ask whether you accept analytics and advertising cookies. You choose &ldquo;Accept&rdquo; or &ldquo;Only essential&rdquo;; the two carry equal weight, and the website works the same either way. We do not use browser fingerprinting.</p>
+            <p><strong className="text-ink">Always on (essential).</strong> Cookies that keep you signed in and protect your session, the payment provider&rsquo;s cookies at checkout, and one cookie, <code>cf_consent</code>, that remembers your choice for 6 months.</p>
+            <p><strong className="text-ink">Only if you choose &ldquo;Accept&rdquo;.</strong></p>
+            <ul className="list-disc space-y-1.5 pl-6">
+              <li>A random visitor ID in a first-party cookie (<code>cf_vid</code>, 13 months). It is not derived from you or your device.</li>
+              <li>Where your visit came from: the campaign tags in the link you followed (utm parameters and the ad click IDs set by Google, Meta, Microsoft or LinkedIn), the website that referred you, the page you landed on and when. Your browser keeps this record; we receive it with your page views and, if you sign up, with your sign-up.</li>
+              <li>The pages you view (the page address only) and the steps you take towards using a service: starting a sign-up, verifying, topping up, launching a workstation, uploading a CFD model or starting a Studio job.</li>
+              <li>If you sign up or sign in, we link the visitor ID to your account, so we can tell which ads and pages lead to customers.</li>
+              <li>Google Analytics and Google Ads (Google), the Meta Pixel (Meta) and Microsoft Clarity load on our pages. They set their own cookies and receive information about your visit under their own privacy policies. Clarity records how our pages are used (clicks, scrolling) so we can find problems.</li>
+              <li>When you sign up, start or complete your first top-up, or start your first session, we may send that event to Meta from our servers with a one-way encoded (hashed) copy of your email address and mobile number, so Meta can match it to an ad you saw. We do this only for accounts whose browser chose &ldquo;Accept&rdquo;.</li>
+            </ul>
+            <p><strong className="text-ink">If you choose &ldquo;Only essential&rdquo;, or make no choice.</strong> None of the above runs. We count page views per traffic source (for example &ldquo;a Google ad&rdquo; or &ldquo;a referring website&rdquo;) as a daily total, with no ID, no cookie and nothing that links the count to you.</p>
+            <p><strong className="text-ink">What we never keep.</strong> Your IP address is not stored with these records; we keep a one-way code of it that changes every day, used only to stop abuse and leave out automated traffic. We keep your country (from our network provider) and whether you used a phone or a computer, not your browser&rsquo;s full details. Visitors in the European Economic Area, the United Kingdom and Switzerland are not given a visitor ID by our own analytics even after &ldquo;Accept&rdquo;.</p>
+            <p><strong className="text-ink">Why.</strong> To learn which ads, searches and pages bring people who become customers, so we spend on what works, and to find where our website loses people so we can fix it.</p>
+            <p><strong className="text-ink">How long.</strong> Visitor and page-view records in our systems are deleted after 13 months; the daily anonymous counts after 13 months as well. Google, Meta and Microsoft keep what they receive for the periods in their own policies.</p>
+            <p><strong className="text-ink">Changing your mind.</strong> Use &ldquo;Cookie settings&rdquo; at the bottom of any page. Choosing &ldquo;Only essential&rdquo; deletes our analytics cookies from your browser and stops the third-party tags from the next page load. To have analytics records already linked to your account deleted, email us (section 8).</p>
           </Section>
 
           <Section title="8. Your rights">
