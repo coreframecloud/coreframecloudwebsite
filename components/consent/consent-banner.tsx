@@ -90,12 +90,12 @@ export function ConsentBanner() {
       ref={ref}
       role="region"
       aria-label="Cookie choice"
-      className="cf-consent fixed inset-x-0 bottom-0 z-[60] border-t border-rule-strong bg-paper/95 backdrop-blur"
+      className="cf-consent fixed inset-x-0 bottom-0 z-[60] border-t border-white/40 bg-paper/70 shadow-[0_-8px_24px_rgba(0,0,0,0.08)] backdrop-blur-xl backdrop-saturate-150"
     >
-      <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:flex-row sm:items-center sm:gap-6 sm:px-6 sm:py-3 lg:px-8">
-        <p className="text-[13px] leading-5 text-ink-2 sm:flex-1">
-          We use cookies to improve your experience, analyse site traffic and measure our marketing. Essential
-          cookies for sign-in and payments are always on.{" "}
+      <div className="mx-auto flex max-w-7xl flex-col gap-2 px-4 pt-2.5 pb-[max(0.625rem,env(safe-area-inset-bottom))] sm:flex-row sm:items-center sm:gap-6 sm:px-6 sm:py-3 lg:px-8">
+        <p className="text-[13px] leading-5 font-medium text-ink sm:flex-1">
+          We use cookies to improve your experience and analyse site traffic.
+          <span className="hidden sm:inline"> Essential cookies for sign-in and payments are always on.</span>{" "}
           <a href="/privacy-policy#cookies" className="whitespace-nowrap text-ink underline underline-offset-2 hover:text-blue">
             How we use cookies
           </a>
