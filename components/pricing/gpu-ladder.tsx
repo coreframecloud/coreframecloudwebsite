@@ -16,12 +16,14 @@ import {
   formatHourly,
   gpuIntroEligible,
   gpuSpecChips,
+  introOfferFor,
   publicGpus,
+  shortGpuName,
   taxWords,
   type RateCard,
 } from "@/lib/rate-card";
 import type { Currency } from "@/lib/money";
-import { TrackedLink } from "@/components/analytics/tracked-link";
+import { GpuLaunchButton } from "@/components/go/gpu-start";
 
 export function GpuLadder({
   card,
@@ -39,9 +41,10 @@ export function GpuLadder({
   compact?: boolean;
   /**
    * A big "Launch" button on every live, priced card (owner, 31 Oct 2026,
-   * GPU workstations page). It goes to /signup, the same start as the hero
-   * CTA; the GPU is picked in the Connect app after sign-in, because /signup
-   * takes no GPU parameter. `location` tells the clicks apart in GA4.
+   * GPU workstations page). Since 10 Nov 2026 (price first, account at Start)
+   * it carries THIS card and the first top-up through sign-up to the
+   * pre-filled payment step, then to Connect (lib/gpu-start.ts); signed in, it
+   * goes straight to the payment step. `location` tells the clicks apart.
    */
   launch?: { location: string };
 }) {
@@ -58,6 +61,7 @@ export function GpuLadder({
     );
   }
   const tax = taxWords(currency);
+  const firstTopup = introOfferFor(card, currency)?.price ?? null;
   return (
     <div data-gpu-ladder="" className="min-w-0">
       {title ? <p className="cf-eyebrow mb-4">{title}</p> : null}
@@ -118,15 +122,13 @@ export function GpuLadder({
                       On request
                     </span>
                   ) : (
-                    <TrackedLink
-                      href="/signup"
-                      event="signup_click"
-                      params={{ location: launch.location, label: "Launch", gpu: g.slug }}
+                    <GpuLaunchButton
+                      slug={g.slug}
+                      name={shortGpuName(g.name)}
+                      amount={firstTopup}
+                      where={launch.location}
                       className="cf-launch flex-1 sm:flex-none"
-                      aria-label={`Launch ${g.name}`}
-                    >
-                      Launch <span aria-hidden>→</span>
-                    </TrackedLink>
+                    />
                   )
                 ) : null}
               </div>

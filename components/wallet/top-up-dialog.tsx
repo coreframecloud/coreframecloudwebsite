@@ -151,6 +151,7 @@ export default function TopUpDialog({
   bulkTiers,
   walletCurrency,
   studioStarter,
+  forGpu,
 }: {
   open: boolean;
   onClose: () => void;
@@ -185,6 +186,9 @@ export default function TopUpDialog({
    *  once per account, Rs 300 of Studio-only money; the only top-up below
    *  the usual minimum. */
   studioStarter?: { priceRupees: number; totalRupees: number } | null;
+  /** The card chosen before sign-up (lib/gpu-start.ts, 10 Nov 2026): named
+   *  here, and "Download Connect" for it once paid. */
+  forGpu?: { name: string; href: string } | null;
 }) {
   const [config, setConfig] = useState<PaymentsConfig | null>(null);
   // The account's currency once /payments/config has answered. An older
@@ -721,9 +725,15 @@ export default function TopUpDialog({
               New balance {money(done.balance)}. Your invoice is in Activity below.
             </p>
 
+            {forGpu ? (
+              <a href={forGpu.href} className="cf-btn-primary mt-6 w-full">
+                Download Connect for your {forGpu.name}
+              </a>
+            ) : (
             <button onClick={onClose} className="cf-btn-primary mt-6 w-full">
               Done
             </button>
+            )}
           </div>
         ) : (
           <>
@@ -739,6 +749,11 @@ export default function TopUpDialog({
                 ✕
               </button>
             </div>
+            {forGpu ? (
+              <p className="mt-1 text-[14px] leading-5 text-ink-2">
+                For your {forGpu.name} workstation. You pay first, then download Connect and start it.
+              </p>
+            ) : null}
 
             {config && !config.enabled ? (
               <div className="mt-6 rounded-cf border border-rule px-4 py-3">

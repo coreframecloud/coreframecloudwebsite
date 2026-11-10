@@ -58,7 +58,9 @@ export const OFFERINGS: Offering[] = [
     headline: "Your laptop, with a workstation-class GPU behind it.",
     line: "A Windows GPU workstation by the minute, streamed to the laptop you own. Unreal Engine, D5, Blender and Twinmotion preinstalled.",
     href: "/software/gpu-workstation-rental-india",
-    cta: { label: "Sign up", href: "/signup" },
+    // 10 Nov 2026 (owner: price first, account at Start): the card and its price
+    // come before sign-up; Launch on a card asks for it (lib/gpu-start.ts).
+    cta: { label: "Pick a GPU", href: "/software/gpu-workstation-rental-india#pick-a-gpu" },
     secondary: { label: "See pricing", href: "/pricing" },
     // The GPU family's cinematic look (owner, 16 Oct 2026). A generated
     // still: no caption, never called a render of ours.

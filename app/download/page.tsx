@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { BANDWIDTH_SHORT } from "@/lib/streaming-terms";
+import { ChosenGpuNote } from "@/components/go/chosen-gpu-note";
 
 interface DownloadInfo {
   // Optional because the route omits them when the release feed on the control
@@ -73,6 +74,9 @@ export default function DownloadPage() {
   return (
     <main className="cf-section px-5">
       <div className="mx-auto w-full max-w-[520px]">
+
+        {/* The card chosen before sign-up (10 Nov 2026), when there is one. */}
+        <ChosenGpuNote />
 
         {/* Header — always shown. Stacks on a phone: the icon and a 36px
             display heading will not sit side by side at 390px. */}

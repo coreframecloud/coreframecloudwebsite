@@ -259,10 +259,21 @@ export default async function SoftwareView({ slug, currency }: { slug: string; c
             </>
           )}
           {priceLine ? <p className="cf-section-copy mt-5">{priceLine}</p> : null}
+          {pointers ? (
+            // GPU entry pages (owner, 10 Nov 2026): ONE action, the same everywhere on the
+            // page: pick a card and Launch. Prices are on the cards below, no account
+            // needed; sign-up comes at Launch, with the card carried through.
+            <div className="mt-8">
+              <a href="#pick-a-gpu" className="cf-btn-go w-full sm:w-auto sm:px-12">
+                Pick a GPU and launch <span aria-hidden>↓</span>
+              </a>
+            </div>
+          ) : (
           <div className="mt-8 flex flex-wrap gap-3">
             <Link href="/signup" className="cf-btn-primary">Sign up</Link>
             <Link href="/pricing" className="cf-btn-secondary">Pricing</Link>
           </div>
+          )}
           {/* Every page carries a byline and date (GEO check 18 Oct 2026). Pages
               without their own lastUpdated were last edited 11 Oct 2026. */}
           <LastUpdated date={page.lastUpdated ?? SOFTWARE_CONTENT_DATE} path={`/software/${page.slug}`} className="mt-6" />
@@ -277,9 +288,9 @@ export default async function SoftwareView({ slug, currency }: { slug: string; c
     {pointers ? (
       // The GPU list with a big Launch on every live card, right under the
       // hero (owner, 31 Oct 2026), the memory bars above it.
-      <section className="cf-section px-5 pb-0" aria-labelledby="pick-a-gpu">
+      <section id="pick-a-gpu-section" className="cf-section scroll-mt-20 px-5 pb-0" aria-labelledby="pick-a-gpu">
         <div className="cf-col">
-          <h2 id="pick-a-gpu" className="cf-section-title">Pick a GPU and launch.</h2>
+          <h2 id="pick-a-gpu" className="cf-section-title scroll-mt-24">Pick a GPU and launch.</h2>
           <MemoryLadder card={card} className="mt-6" />
           <div className="mt-6"><GpuLadder card={card} currency={currency} compact launch={{ location: "gpu_page_ladder" }} /></div>
           <details className="group mt-4 rounded-[20px] border border-rule px-5">
@@ -515,6 +526,16 @@ export default async function SoftwareView({ slug, currency }: { slug: string; c
         </div>
       </section>
 
+      {pointers ? (
+        <div className="cf-col mt-16">
+          <a href="#pick-a-gpu" className="cf-btn-go w-full sm:w-auto sm:px-12">
+            Pick a GPU and launch <span aria-hidden>↑</span>
+          </a>
+          <p className="mt-3 text-[14px] text-ink-3">
+            New to it? <Link href="/how-to-use" className="underline underline-offset-4">How a session works</Link>.
+          </p>
+        </div>
+      ) : (
       <div className="cf-col mt-16 flex flex-wrap gap-3">
         <Link href="/signup" className="cf-btn-primary">
           Sign up
@@ -523,6 +544,7 @@ export default async function SoftwareView({ slug, currency }: { slug: string; c
           How it works
         </Link>
       </div>
+      )}
 
       {related.length > 0 && (
         <section className={`cf-col border-t border-rule ${pointers ? "mt-12 pt-6" : "mt-16 pt-8"}`}>

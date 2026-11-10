@@ -262,7 +262,8 @@ export default async function PricingView({ currency }: { currency: Currency }) 
               : `A full Windows desktop streamed to your laptop, with the applications installed, that you drive yourself; not a Linux server you SSH into. Per GPU-hour, ${taxWords(currency)}, billed per minute.`}
           </p>
           <div className="mt-7">
-            <GpuLadder card={rateCard} currency={currency} />
+            {/* Launch on a card: that card, through sign-up, to the payment step (10 Nov 2026). */}
+            <GpuLadder card={rateCard} currency={currency} launch={{ location: "pricing_ladder" }} />
           </div>
         </div>
       </section>

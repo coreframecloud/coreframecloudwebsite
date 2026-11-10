@@ -6,10 +6,11 @@ import { ViewContent } from "@/components/analytics/view-content";
 import { buildFaq } from "@/components/home/explainer-faq";
 import type { Currency } from "@/lib/money";
 import { storageTerms } from "@/lib/storage-terms";
-import { GpuCards } from "@/components/go/gpu-cards";
+import { GpuPickCards, GpuStartButton, GpuStartSticky } from "@/components/go/gpu-start";
 import { IntroAltLine } from "@/components/go/intro-alt-line";
 import { KeepQueryLink } from "@/components/go/keep-query-link";
 import { StickyCta } from "@/components/go/sticky-cta";
+import { startGpus } from "@/lib/gpu-start-server";
 import { adhocRate, adhocRateHourly, getRateCard, introOfferFor, introOfferShort, introOfferVariant, introPrice, ladderRanges, shortGpuName } from "@/lib/rate-card";
 
 /**
@@ -34,6 +35,12 @@ import { adhocRate, adhocRateHourly, getRateCard, introOfferFor, introOfferShort
  *
  * Rendered twice like every priced page: /go/gpu in rupees and app/usd/go/gpu
  * in dollars (proxy.ts); each plays the reel cut with its own price card.
+ *
+ * PRICE FIRST, ACCOUNT AT START (owner, 10 Nov 2026), and ONE big call to
+ * action: "Start on <GPU>" in the hero, under the cards, at the end and in the
+ * sticky bar. The cards are a choice (the card the first top-up counts on is
+ * chosen), not links to sign-up; Start carries the card and the first top-up
+ * through sign-up to the pre-filled payment step (lib/gpu-start.ts).
  */
 
 const FAQ_PICK = ["Is this a render farm?", "Do I need to install anything?", "What internet speed do I need?"];
@@ -75,6 +82,7 @@ export default async function GpuLandingView({ currency }: { currency: Currency 
   // "intro500" arm's line, shown after mount to visitors in that arm.
   const alt = currency === "INR" && intro ? introOfferVariant(card) : null;
   const short = intro ? introOfferShort(intro) : null;
+  const pick = startGpus(card, currency);
 
   // The render is the page's LCP element on a phone.
   preload("/go/lr1-render.webp", { as: "image", fetchPriority: "high" });
@@ -133,9 +141,13 @@ export default async function GpuLandingView({ currency }: { currency: Currency 
             ) : null}
 
             <div id="cf-hero-cta" className="mt-3 sm:mt-4">
-              <KeepQueryLink href={SIGNUP} event="go_gpu_cta" cta="hero" className="cf-btn-go w-full sm:w-auto sm:px-12">
-                Get started <span aria-hidden>→</span>
-              </KeepQueryLink>
+              {pick.defaultSlug ? (
+                <GpuStartButton gpus={pick.gpus} defaultSlug={pick.defaultSlug} amount={pick.amount} where="go_gpu_hero" />
+              ) : (
+                <KeepQueryLink href={SIGNUP} event="go_gpu_cta" cta="hero" className="cf-btn-go w-full sm:w-auto sm:px-12">
+                  Get started <span aria-hidden>→</span>
+                </KeepQueryLink>
+              )}
               <p className="mt-2 text-center text-[13.5px] text-ink-3 sm:text-left">
                 No monthly plan · billed per minute{hourly ? ` · ${ladder && ladder.count > 1 ? "from " : ""}${hourly} after` : ""}
               </p>
@@ -147,7 +159,9 @@ export default async function GpuLandingView({ currency }: { currency: Currency 
           <h2 className="font-heading text-[22px] leading-tight font-medium text-ink">Pick your GPU</h2>
           <p className="mt-1 text-[14.5px] text-ink-2">D5, Twinmotion, Unreal and Blender are already installed on every one.</p>
           <div className="mt-4">
-            <GpuCards card={card} currency={currency} href={SIGNUP} showIntro={false} />
+            {pick.defaultSlug ? (
+              <GpuPickCards gpus={pick.gpus} defaultSlug={pick.defaultSlug} amount={pick.amount} introHours={pick.introHours} currency={currency} where="go_gpu_cards" />
+            ) : null}
           </div>
         </section>
 
@@ -187,9 +201,13 @@ export default async function GpuLandingView({ currency }: { currency: Currency 
         ) : null}
 
         <div className="mt-10 max-w-[760px]">
-          <KeepQueryLink href={SIGNUP} event="go_gpu_cta_end" cta="end" className="cf-btn-go w-full sm:w-auto sm:px-12">
-            Get started <span aria-hidden>→</span>
-          </KeepQueryLink>
+          {pick.defaultSlug ? (
+            <GpuStartButton gpus={pick.gpus} defaultSlug={pick.defaultSlug} amount={pick.amount} where="go_gpu_end" />
+          ) : (
+            <KeepQueryLink href={SIGNUP} event="go_gpu_cta_end" cta="end" className="cf-btn-go w-full sm:w-auto sm:px-12">
+              Get started <span aria-hidden>→</span>
+            </KeepQueryLink>
+          )}
           <p className="mt-3 text-[12.5px] leading-5 text-ink-3">
             Signed Windows app · {currency === "USD" ? "Indian company, invoice in US dollars" : "Indian company, GST invoice"} · failed connections are never charged
           </p>
@@ -205,7 +223,11 @@ export default async function GpuLandingView({ currency }: { currency: Currency 
         </div>
       </footer>
 
-      <StickyCta href={SIGNUP} label="Get started" offer={intro ? `${introPrice(intro)} = ${intro.hours} h` : hourly ?? undefined} />
+      {pick.defaultSlug ? (
+        <GpuStartSticky gpus={pick.gpus} defaultSlug={pick.defaultSlug} amount={pick.amount} offer={intro ? `${introPrice(intro)} = ${intro.hours} h` : hourly ?? undefined} />
+      ) : (
+        <StickyCta href={SIGNUP} label="Get started" offer={intro ? `${introPrice(intro)} = ${intro.hours} h` : hourly ?? undefined} />
+      )}
     </div>
   );
 }

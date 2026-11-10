@@ -27,8 +27,11 @@ import {
   rupees,
   type IntroOffer,
   introPrice,
+  publicGpus,
+  shortGpuName,
 } from "@/lib/rate-card";
 import { useRateCard } from "@/lib/use-rate-card";
+import { cleanSlug, clearGpuChoice, downloadPath, readGpuChoice, saveGpuChoice } from "@/lib/gpu-start";
 import { API_BASE } from "@/lib/api-base";
 import { formatMoney, parseCurrency, type Currency } from "@/lib/money";
 
@@ -504,10 +507,18 @@ export default function MyActivityPage() {
     if (wallet.paid_access === false) setTopUpOpen(true);
   }, [topUpIfUnpaid, wallet]);
   const [topUpPreset, setTopUpPreset] = useState<number | null>(null);
+  // The card picked before sign-up (lib/gpu-start.ts, 10 Nov 2026): ?gpu= on the
+  // payment link, or this browser's saved choice. Named in the top-up dialog;
+  // after payment the customer goes to /download with it.
+  const [chosenGpu, setChosenGpu] = useState<string | null>(null);
   // Arrived from Studio (?studio=1): the top-up offers the Rs 99 Studio starter.
   const [studioCtx, setStudioCtx] = useState(false);
   const [blocked, setBlocked] = useState<string | null>(null);
   const card = useRateCard();
+  const chosenGpuView = (() => {
+    const g = chosenGpu ? publicGpus(card).find((x) => x.slug === chosenGpu) : null;
+    return g ? { name: shortGpuName(g.name), href: downloadPath(g.slug) } : null;
+  })();
   // The offer in the ACCOUNT's currency: the rupee one, or the dollar one
   // ($20 = 8 hours, owner 18 Oct 2026) while the API publishes it. Shown only
   // when the wallet status says this account can still claim it -- and with
@@ -610,10 +621,17 @@ export default function MyActivityPage() {
         setTopUpOpen(true);
       }
       if (params.get("studio") === "1") setStudioCtx(true);
+      const gpuParam = cleanSlug(params.get("gpu"));
+      if (gpuParam) {
+        saveGpuChoice({ gpu: gpuParam, amount: Number(params.get("amount")) || null });
+        setChosenGpu(gpuParam);
+      } else if (params.get("topup")) {
+        setChosenGpu(readGpuChoice()?.gpu ?? null);
+      }
       // One-shot: drop the trigger from the address so a reload, a bookmark or the
       // Back button never reopens the recharge sheet after the customer has paid.
-      if (params.has("topup") || params.has("amount") || params.has("studio") || window.location.hash === "#add-funds") {
-        ["topup", "amount", "studio"].forEach((k) => params.delete(k));
+      if (params.has("topup") || params.has("amount") || params.has("studio") || params.has("gpu") || window.location.hash === "#add-funds") {
+        ["topup", "amount", "studio", "gpu"].forEach((k) => params.delete(k));
         const q = params.toString();
         window.history.replaceState(window.history.state, "", window.location.pathname + (q ? `?${q}` : ""));
       }
@@ -1100,6 +1118,12 @@ export default function MyActivityPage() {
           void refresh();
         }}
         onCredited={() => {
+          // Paid for a card chosen before sign-up: straight on to Connect, with that card.
+          if (chosenGpu) {
+            const to = downloadPath(chosenGpu);
+            clearGpuChoice();
+            setTimeout(() => window.location.assign(to), 1500);
+          }
           // The verify response's balance is the GPU mirror, not the whole
           // wallet the card shows (wallet_total_rupees), so it is not written
           // into the card: that is how the card kept saying ₹399.63 after a
@@ -1131,6 +1155,7 @@ export default function MyActivityPage() {
         defaultCountry={wallet?.country_code ?? null}
         bulkTiers={wallet?.bulk_topup_tiers ?? null}
         walletCurrency={wallet?.wallet_currency ?? null}
+        forGpu={chosenGpuView}
         studioStarter={
           studioCtx && wallet?.studio_starter_available
             ? {
