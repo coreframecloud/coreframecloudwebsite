@@ -39,7 +39,8 @@ export function WebEvents({ consentDenied }: { consentDenied: boolean }) {
     if (ref === undefined) {
       try {
         const r = document.referrer;
-        if (r && new URL(r).host !== window.location.host) ref = r.slice(0, 120);
+        // The referring site only, never its path or query (10 Nov 2026).
+        if (r && new URL(r).host !== window.location.host) ref = `https://${new URL(r).host}/`.slice(0, 120);
       } catch {
         /* malformed referrer */
       }

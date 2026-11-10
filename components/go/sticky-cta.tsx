@@ -28,7 +28,7 @@ export function StickyCta({ href, label, offer, event = "go_gpu_cta_sticky" }: {
   return (
     <div
       aria-hidden={!show}
-      className={`fixed inset-x-0 bottom-0 z-40 border-t border-rule bg-paper/95 px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur transition-transform duration-300 lg:hidden ${show ? "translate-y-0" : "pointer-events-none translate-y-full"}`}
+      className={`cf-consent-lift fixed inset-x-0 bottom-0 z-40 border-t border-rule bg-paper/95 px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur transition-transform duration-300 lg:hidden ${show ? "translate-y-0" : "pointer-events-none translate-y-full"}`}
     >
       <div className="mx-auto flex max-w-[560px] items-center gap-3">
         {offer ? <p className="min-w-0 flex-1 text-[14px] leading-5 font-semibold text-ink">{offer}</p> : null}

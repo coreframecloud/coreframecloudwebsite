@@ -1,5 +1,7 @@
 "use client";
 
+import { hasConsent } from "@/lib/consent";
+
 type EventParams = Record<string, string | number | boolean | undefined>;
 
 export function trackEvent(
@@ -170,6 +172,18 @@ const META_QUEUE_KEY = "cf_meta_queue";
  *  the pixel snippet in app/layout.tsx. eventID keeps a replay from counting
  *  twice. Kept for a day at most. */
 function queueMetaEvent(event: string, params: Record<string, string | number>, eventID?: string): void {
+  // Before Accept (or after "Only essential") nothing is stored: the event
+  // waits in memory and is replayed only if Accept is given on this page
+  // (the consented tag loader in app/layout.tsx reads __cfMetaQueue).
+  if (!hasConsent()) {
+    try {
+      const w = window as unknown as { __cfMetaQueue?: unknown[] };
+      w.__cfMetaQueue = [...(w.__cfMetaQueue || []), { event, params, eventID, at: Date.now() }].slice(-10);
+    } catch {
+      /* nothing to do */
+    }
+    return;
+  }
   try {
     const list = JSON.parse(localStorage.getItem(META_QUEUE_KEY) || "[]") as unknown[];
     list.push({ event, params, eventID, at: Date.now() });

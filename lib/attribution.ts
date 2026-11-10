@@ -1,5 +1,7 @@
 "use client";
 
+import { hasConsent, onConsentChange } from "@/lib/consent";
+
 /**
  * Where a customer came from, captured once and never rewritten.
  *
@@ -24,6 +26,12 @@
  * would credit nothing and quietly under-report every channel. Once a value
  * is set it is never changed.
  *
+ * CONSENT FIRST (owner decision 10 Nov 2026). Nothing is written to
+ * localStorage or a cookie until the visitor presses Accept on the banner
+ * (lib/consent.ts). Until then each page's touch is held in memory only, and
+ * applied the moment Accept is given, so the visit that brought them still
+ * counts. "Only essential" clears what is stored and nothing is sent.
+ *
  * NOTHING HERE MAY THROW. Private windows, blocked storage and locked-down
  * browsers all fail on localStorage access, and a signup form must not break
  * because a marketing field could not be read.
@@ -42,6 +50,9 @@ export type Attribution = {
   gclid: string | null;
   gbraid: string | null;
   wbraid: string | null;
+  /** Microsoft Ads and LinkedIn Ads click ids (10 Nov 2026). */
+  msclkid?: string | null;
+  li_fat_id?: string | null;
   landing_path: string | null;
   referrer: string | null;
   first_seen_at: string | null;
@@ -79,6 +90,8 @@ export type LastTouch = {
   utm_id: string | null;
   gclid: string | null;
   fbclid: string | null;
+  msclkid?: string | null;
+  li_fat_id?: string | null;
   at: string;
 };
 
@@ -94,7 +107,7 @@ const MAX = 255;
 
 const CAMPAIGN_KEYS = [
   "utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term",
-  "fbclid", "gclid", "gbraid", "wbraid", "utm_id",
+  "fbclid", "gclid", "gbraid", "wbraid", "utm_id", "msclkid", "li_fat_id",
 ] as const;
 
 function clean(v: string | null | undefined): string | null {
@@ -108,7 +121,7 @@ function empty(): Attribution {
   return {
     utm_source: null, utm_medium: null, utm_campaign: null,
     utm_content: null, utm_term: null, fbclid: null,
-    gclid: null, gbraid: null, wbraid: null,
+    gclid: null, gbraid: null, wbraid: null, msclkid: null, li_fat_id: null,
     landing_path: null, referrer: null, first_seen_at: null,
     utm_id: null, last_touch: null, intro_variant: null,
   };
@@ -170,61 +183,113 @@ function save(a: Attribution): void {
   writeCookie(json);
 }
 
+/** One page's touch, as seen when it loaded. Held in memory until Accept. */
+type Touch = { search: string; path: string; referrer: string | null; at: string };
+const pending: Touch[] = [];
+let listening = false;
+
+function currentTouch(): Touch {
+  let ref: string | null = null;
+  try {
+    const r = document.referrer;
+    // Same-origin means they simply clicked through our own site; that is
+    // navigation, not a referral, and recording it would drown the real ones.
+    if (r && new URL(r).host !== window.location.host) ref = r;
+  } catch { /* malformed referrer */ }
+  return { search: window.location.search, path: window.location.pathname, referrer: ref, at: new Date().toISOString() };
+}
+
+function applyTouch(t: Touch): void {
+  const params = new URLSearchParams(t.search);
+  const existing = load();
+  const a: Attribution = existing ?? empty();
+
+  if (!existing) {
+    // The introduction. Frozen from here. The landing path keeps only the
+    // campaign parameters, never anything else a URL might carry.
+    const keep = new URLSearchParams();
+    for (const k of CAMPAIGN_KEYS) { const v = params.get(k); if (v) keep.set(k, v); }
+    const q = keep.toString();
+    a.landing_path = clean(t.path + (q ? `?${q}` : ""));
+    a.first_seen_at = t.at;
+    a.referrer = clean(t.referrer);
+  }
+
+  // Campaign fields: first value wins, whenever it arrives.
+  let touched = !existing;
+  for (const k of CAMPAIGN_KEYS) {
+    if (a[k]) continue;
+    const v = clean(params.get(k));
+    if (v) { a[k] = v; touched = true; }
+  }
+
+  // First top-up A/B: the arm is drawn on the first /go/* landing and then
+  // frozen, so the copy a visitor is shown is the offer their account gets.
+  if (!a.intro_variant && isAdLanding(t.path)) {
+    a.intro_variant = Math.random() < INTRO500_SHARE ? "intro500" : "control";
+    touched = true;
+  }
+
+  // Last touch: any visit that arrives with campaign params replaces it.
+  const p = (k: string) => clean(params.get(k));
+  if (CAMPAIGN_KEYS.some((k) => params.get(k))) {
+    a.last_touch = {
+      utm_source: p("utm_source"), utm_medium: p("utm_medium"),
+      utm_campaign: p("utm_campaign"), utm_content: p("utm_content"),
+      utm_term: p("utm_term"), utm_id: p("utm_id"),
+      gclid: p("gclid"), fbclid: p("fbclid"), msclkid: p("msclkid"), li_fat_id: p("li_fat_id"),
+      at: t.at,
+    };
+    touched = true;
+  }
+
+  if (touched) save(a);
+}
+
 /**
- * Call once per page load. Cheap, idempotent, and safe before hydration.
+ * Call once per page view. Cheap, idempotent, and safe before hydration.
+ * Without consent the touch waits in memory; Accept applies it.
  */
 export function captureAttribution(): void {
   if (typeof window === "undefined") return;
   try {
-    const params = new URLSearchParams(window.location.search);
-    const existing = load();
-    const a: Attribution = existing ?? empty();
-
-    if (!existing) {
-      // The introduction. Frozen from here.
-      a.landing_path = clean(window.location.pathname + window.location.search);
-      a.first_seen_at = new Date().toISOString();
-      let ref: string | null = null;
-      try {
-        const r = document.referrer;
-        // Same-origin means they simply clicked through our own site; that is
-        // navigation, not a referral, and recording it would drown the real ones.
-        if (r && new URL(r).host !== window.location.host) ref = r;
-      } catch { /* malformed referrer */ }
-      a.referrer = clean(ref);
+    const t = currentTouch();
+    if (!hasConsent()) {
+      if (pending.length < 20) pending.push(t);
+      if (!listening) {
+        listening = true;
+        onConsentChange((c) => {
+          if (c !== "granted") { pending.length = 0; return; }
+          try { while (pending.length) applyTouch(pending.shift() as Touch); } catch { /* never break */ }
+        });
+      }
+      return;
     }
-
-    // Campaign fields: first value wins, whenever it arrives.
-    let touched = !existing;
-    for (const k of CAMPAIGN_KEYS) {
-      if (a[k]) continue;
-      const v = clean(params.get(k));
-      if (v) { a[k] = v; touched = true; }
-    }
-
-    // First top-up A/B: the arm is drawn on the first /go/* landing and then
-    // frozen, so the copy a visitor is shown is the offer their account gets.
-    if (!a.intro_variant && isAdLanding(window.location.pathname)) {
-      a.intro_variant = Math.random() < INTRO500_SHARE ? "intro500" : "control";
-      touched = true;
-    }
-
-    // Last touch: any visit that arrives with campaign params replaces it.
-    const p = (k: string) => clean(params.get(k));
-    if (CAMPAIGN_KEYS.some((k) => params.get(k))) {
-      a.last_touch = {
-        utm_source: p("utm_source"), utm_medium: p("utm_medium"),
-        utm_campaign: p("utm_campaign"), utm_content: p("utm_content"),
-        utm_term: p("utm_term"), utm_id: p("utm_id"),
-        gclid: p("gclid"), fbclid: p("fbclid"),
-        at: new Date().toISOString(),
-      };
-      touched = true;
-    }
-
-    if (touched) save(a);
+    applyTouch(t);
   } catch {
     /* Never let analytics break a page. */
+  }
+}
+
+/** The landing source of THIS page load, from memory only, for the anonymous
+ *  page-view count a visitor without consent still contributes to (no id, no
+ *  storage): utm_source / medium / campaign, a click-id flag, the referrer host. */
+export function landingSource(): Record<string, string> | undefined {
+  try {
+    const t = pending[0] ?? currentTouch();
+    const params = new URLSearchParams(t.search);
+    const out: Record<string, string> = {};
+    for (const k of ["utm_source", "utm_medium", "utm_campaign"]) {
+      const v = clean(params.get(k));
+      if (v) out[k] = v.slice(0, 100);
+    }
+    for (const k of ["gclid", "fbclid", "gbraid", "wbraid", "msclkid", "li_fat_id"]) if (params.get(k)) { out[k] = "1"; break; }
+    if (t.referrer) {
+      try { out.referrer = `https://${new URL(t.referrer).host}/`; } catch { /* malformed */ }
+    }
+    return Object.keys(out).length ? out : undefined;
+  } catch {
+    return undefined;
   }
 }
 
@@ -232,10 +297,15 @@ export function captureAttribution(): void {
  * What to send with a signup. Returns null when there is genuinely nothing —
  * so the API can tell "we looked and found nothing" from "we never looked".
  */
-export function readAttribution(): Attribution | null {
+export function readAttribution(): (Attribution & { visitor_id?: string }) | null {
   if (typeof window === "undefined") return null;
-  const a = load();
+  if (!hasConsent()) return null;
+  const a: Attribution & { visitor_id?: string } | null = load();
   if (!a) return null;
+  // The consented visitor id, so the API can link the account even when the
+  // cf_vid cookie does not reach it (lib/web-events.ts sets it after Accept).
+  const vid = readCookie("cf_vid");
+  if (vid && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(vid)) a.visitor_id = vid;
   // Meta's own first-party ids, set by the pixel. Read now, not at landing:
   // the pixel loads lazily and may not have written them on the first page.
   a.fbp = clean(readCookie("_fbp"));
@@ -252,6 +322,8 @@ export function readAttribution(): Attribution | null {
 export function readIntroVariant(): IntroVariant | null {
   if (typeof window === "undefined") return null;
   try {
+    // No consent: no stored arm, so the page shows the standard offer.
+    if (!hasConsent()) return null;
     captureAttribution();
     const v = load()?.intro_variant;
     return v === "intro500" || v === "control" ? v : null;
@@ -264,8 +336,8 @@ export function readIntroVariant(): IntroVariant | null {
  *  plus the A/B landing flag it decides on. */
 const SIGNUP_KEYS = [
   "utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term",
-  "fbclid", "gclid", "gbraid", "wbraid",
-  "landing_path", "referrer", "first_seen_at", "intro_variant",
+  "fbclid", "gclid", "gbraid", "wbraid", "utm_id",
+  "landing_path", "referrer", "first_seen_at", "intro_variant", "visitor_id",
 ] as const;
 
 /**
@@ -278,7 +350,7 @@ const SIGNUP_KEYS = [
  * /auth/google; the API carries it through Google in its signed state and
  * writes it only when the callback creates the account.
  *
- * Only the stored fields are sent (not last_touch) to keep the URL short,
+ * Only the stored fields and last_touch are sent, to keep the URL short,
  * plus the pixel's _fbp/_fbc ids (22 Oct 2026): the API's Conversions API
  * copy of CompleteRegistration (services/meta_capi.py) matches on them, and
  * the Google door is the one place the browser cookie cannot reach otherwise.
@@ -291,10 +363,16 @@ export function googleSignInUrl(api: string): string {
   try {
     const a = readAttribution();
     if (!a) return base;
-    const slim: Record<string, string> = {};
+    const slim: Record<string, unknown> = {};
     for (const k of [...SIGNUP_KEYS, "fbp", "fbc"] as const) {
       const v = a[k];
       if (typeof v === "string" && v) slim[k] = v;
+    }
+    // The last campaign touch (10 Nov 2026: the API keeps it now).
+    if (a.last_touch) {
+      const lt: Record<string, string> = {};
+      for (const [k, v] of Object.entries(a.last_touch)) if (typeof v === "string" && v) lt[k] = v;
+      if (Object.keys(lt).length) slim.last_touch = lt;
     }
     if (Object.keys(slim).length === 0) return base;
     return `${base}?a=${encodeURIComponent(JSON.stringify(slim))}`;
