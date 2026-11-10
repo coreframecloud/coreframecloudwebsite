@@ -94,8 +94,8 @@ export function ConsentBanner() {
     >
       <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:flex-row sm:items-center sm:gap-6 sm:px-6 sm:py-3 lg:px-8">
         <p className="text-[13px] leading-5 text-ink-2 sm:flex-1">
-          We&rsquo;d like to use cookies to see which ads and pages bring people here, so we spend less on the ones that
-          don&rsquo;t. Essential cookies (sign-in, payments) are always on.{" "}
+          We use cookies to improve your experience, analyse site traffic and measure our marketing. Essential
+          cookies for sign-in and payments are always on.{" "}
           <a href="/privacy-policy#cookies" className="whitespace-nowrap text-ink underline underline-offset-2 hover:text-blue">
             How we use cookies
           </a>
