@@ -35,7 +35,7 @@ export function WhatsAppButton() {
       target="_blank"
       rel="noreferrer"
       aria-label="Chat with Coreframe on WhatsApp"
-      className="fixed right-4 bottom-[max(1rem,env(safe-area-inset-bottom))] z-50 flex h-14 w-14 items-center justify-center rounded-full bg-[#0d8040] text-white shadow-lg transition hover:brightness-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink sm:right-6 sm:bottom-6 sm:h-auto sm:w-auto sm:gap-2.5 sm:rounded-full sm:px-5 sm:py-3.5"
+      className="cf-consent-lift fixed right-4 bottom-[max(1rem,env(safe-area-inset-bottom))] z-50 flex h-14 w-14 items-center justify-center rounded-full bg-[#0d8040] text-white shadow-lg transition hover:brightness-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink sm:right-6 sm:bottom-6 sm:h-auto sm:w-auto sm:gap-2.5 sm:rounded-full sm:px-5 sm:py-3.5"
     >
       <WhatsAppIcon className="h-7 w-7 sm:h-5 sm:w-5" />
       <span className="hidden text-sm font-semibold sm:inline">WhatsApp us</span>

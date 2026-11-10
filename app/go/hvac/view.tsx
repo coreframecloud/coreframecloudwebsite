@@ -9,6 +9,7 @@ import { usdRates, type Currency } from "@/lib/money";
 import { CFD_EXPRESS, CFD_NORMAL_HOURS, expressFromAmount, hvacRoomFromAmount, preprocessFee } from "@/lib/cfd-prices";
 import { CLINIC_CASE } from "@/lib/cfd-pages";
 import { ROOMS_DELIVERS } from "@/lib/cfd-rooms";
+import { CookieSettingsLink } from "@/components/consent/consent-banner";
 
 /**
  * /go/hvac — the paid landing page for HVAC room airflow (owner, 26 Oct 2026: "on CFD we only
@@ -189,6 +190,7 @@ export default async function HvacLandingView({ currency }: { currency: Currency
           <Link href="/privacy-policy" className="inline-flex min-h-11 items-center hover:text-ink">Privacy</Link>
           <Link href="/terms-of-service" className="inline-flex min-h-11 items-center hover:text-ink">Terms</Link>
           <Link href="/refund-policy" className="inline-flex min-h-11 items-center hover:text-ink">Refunds</Link>
+          <CookieSettingsLink className="inline-flex min-h-11 items-center hover:text-ink" />
         </div>
       </footer>
 

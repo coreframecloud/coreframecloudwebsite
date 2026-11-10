@@ -329,6 +329,21 @@ body {
     @apply outline-2 outline-offset-[3px] outline-ink;
   }
 
+  /* ── Consent bar (10 Nov 2026, components/consent/consent-banner.tsx) ──
+     Two choices of equal weight: same size, same outline, same fill. Smaller
+     than a page CTA on purpose; the bar should not compete with the page. */
+  .cf-consent-btn {
+    @apply inline-flex min-h-11 items-center justify-center rounded-full border border-ink bg-paper px-5 py-2.5 text-[13px] leading-none font-semibold text-ink transition-colors;
+  }
+  @media (hover: hover) {
+    .cf-consent-btn:hover {
+      @apply bg-paper-2;
+    }
+  }
+  .cf-consent-btn:focus-visible {
+    @apply outline-2 outline-offset-[3px] outline-blue;
+  }
+
   /* ── The fact block ─────────────────────────────────────────────────────
      Specs, rate cards and comparisons live here and nowhere else. Scrolls on
      a narrow screen rather than wrapping, because a wrapped spec table stops
@@ -1626,3 +1641,9 @@ body[data-cf-sticky] a[aria-label*="WhatsApp" i] { bottom: 5.5rem; }
 .cf-cine .cf-ticker-amount { color: var(--color-hl); }
 .cf-cine button > span.bg-ink { background: #fff; }
 .cf-cine button > span.bg-ink\/25 { background: rgb(255 255 255 / 0.3); }
+
+/* While the consent bar is open it publishes its height (--cf-consent-h):
+   the page can scroll its last lines above it, and the fixed bottom controls
+   (.cf-consent-lift) sit on top of it instead of under it. */
+html.cf-consent-open body { padding-bottom: var(--cf-consent-h, 0px); }
+html.cf-consent-open .cf-consent-lift { margin-bottom: var(--cf-consent-h, 0px); }
