@@ -25,7 +25,7 @@ export default function PrivacyPolicyPage() {
       <div className="cf-wide">
             <div className="text-sm font-semibold uppercase tracking-widest text-blue">Legal</div>
             <h1 className="cf-display mt-3">Privacy Policy</h1>
-            <p className="mt-2 text-sm text-ink-3">Last Updated: 23 October 2026 · Effective: 23 October 2026</p>
+            <p className="mt-2 text-sm text-ink-3">Last Updated: 10 November 2026 · Effective: 25 November 2026</p>
       </div>
     </section>
     <main className="relative min-h-screen border-b border-rule text-ink">
