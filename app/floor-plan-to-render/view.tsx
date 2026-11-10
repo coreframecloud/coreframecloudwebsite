@@ -12,6 +12,7 @@ import { getRateCard } from "@/lib/rate-card";
 import { Hl } from "@/components/cfd-explainer";
 import { FREE_PREVIEWS_PER_DAY, MAX_DXF_MB, studioMoney, studioOffers, studioPrices, type StudioMoney, type StudioPrices } from "@/lib/studio-prices";
 import type { Currency } from "@/lib/money";
+import { SamplePlanTry } from "@/components/studio/sample-plan-try";
 
 /**
  * THE INDEXABLE PAGE FOR STUDIO. It did not exist, and that is why Studio is
@@ -178,7 +179,7 @@ function faqs(m: StudioMoney) {
   return [
   {
     q: "What file does Coreframe Studio need?",
-    a: `A DXF floor plan (up to ${MAX_DXF_MB} MB). Studio reads the walls, doors and windows from the drawing's lines, so a PDF, JPG or PNG of a plan can't be read yet, and neither can a DWG. If you work in AutoCAD, Revit or ArchiCAD, exporting a DXF is a Save As; the three-click guide is at coreframecloud.com/studio/learn.`,
+    a: `For room-by-room renders, a DXF floor plan (up to ${MAX_DXF_MB} MB): Studio reads the walls, doors and windows from the drawing's lines. A PDF, JPG or PNG of a plan works too, as one concept visual of the whole plan; a picture has no walls to measure, so it can't be split into rooms. DWG isn't read yet. If you work in AutoCAD, Revit or ArchiCAD, exporting a DXF is a Save As; the three-click guide is at coreframecloud.com/studio/learn. To see it first, try the sample plan: no sign-in.`,
   },
   {
     q: "Does it invent rooms or windows that are not on my plan?",
@@ -237,20 +238,27 @@ export default async function FloorPlanToRenderView({ currency }: { currency: Cu
               </p>
               {/* Answer-first (SEO/AEO review 18 Oct 2026), in the visitor's
                   currency only (owner, 18 Oct 2026). */}
-              <p className="cf-lead mt-5">
+              {/* The actions sit right under the headline (owner, 10 Nov 2026): they
+                  were below a five-line paragraph, off the first screen on a phone. */}
+              <div className="mt-6">
+                <SamplePlanTry where="floor_plan_hero" />
+              </div>
+              {/* What makes it different, in three short lines (landing-page lesson 1). */}
+              <ul className="mt-5 flex flex-wrap gap-x-5 gap-y-1 text-[14px] font-medium">
+                <li>Walls, doors and windows from your drawing</li>
+                <li>Three camera angles per preview</li>
+                <li>Nothing to install</li>
+              </ul>
+              <p className="cf-lead mt-6">
                 Coreframe Studio turns a 2D DXF floor plan into interior concept renders in the browser. It reads the walls,
                 doors and windows from your drawing; you pick a room and a camera, and it furnishes the room. Previews are
                 free ({FREE_PREVIEWS_PER_DAY} a day, then {m.extraPreview} each); a 2K download is {m.k2} and 4K{" "}
                 {m.k4}, {m.tax}.
               </p>
               <p className="mt-3 text-[14.5px] leading-6">Concept visuals for pitching, not construction drawings or a 3D model.</p>
-              <div className="mt-7 flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
-                <a href="/studio" className="cf-btn-primary w-full sm:w-auto">
-                  Try it with your plan
-                </a>
-              </div>
               <p className="mt-4 text-[13.5px] text-ink-3">
-                DXF floor plans only, up to {MAX_DXF_MB} MB. Working in DWG or Revit?{" "}
+                DXF for room-by-room renders, up to {MAX_DXF_MB} MB; a PDF, JPG or PNG gives one visual of the whole plan.
+                Working in DWG or Revit?{" "}
                 <a href="#export-dxf" className="underline underline-offset-4">Export a clean DXF</a>.
               </p>
               <PageByline path="/floor-plan-to-render" updated={LAST_UPDATED.iso} className="mt-2 text-ink-3" />
@@ -356,8 +364,9 @@ export default async function FloorPlanToRenderView({ currency }: { currency: Cu
           <div className="cf-col">
             <h2 className="cf-section-title">Working in DWG or Revit? Export a clean DXF.</h2>
             <p className="cf-section-copy mt-3">
-              Studio reads DXF only: a PDF or scan of a plan has no walls in it to measure, and DWG is not read yet. The
-              export takes a few clicks in most tools. <Hl>Every read of a drawing is free</Hl>, so you can check what Studio
+              Room-by-room renders need a DXF: a PDF or scan of a plan has no walls in it to measure, so it gets one
+              concept visual of the whole plan instead, and DWG is not read yet. The export takes a few clicks in most
+              tools. <Hl>Every read of a drawing is free</Hl>, so you can check what Studio
               measured before you spend anything.
             </p>
             <dl className="mt-6 divide-y divide-rule rounded-[20px] border border-rule">
@@ -406,7 +415,7 @@ export default async function FloorPlanToRenderView({ currency }: { currency: Cu
           <div className="cf-wide">
             <div id="start" className="scroll-mt-24 rounded-[32px] bg-[#2a1f17] px-7 py-12 text-white sm:px-14">
               <p className="text-[11.5px] font-semibold tracking-[0.12em] text-white/75 uppercase">Studio is live</p>
-              <h2 className="mt-3 font-heading text-[28px] font-medium sm:text-[36px]">Try it with your own plan.</h2>
+              <h2 className="mt-3 font-heading text-[28px] font-medium sm:text-[36px]">See it on a sample plan first.</h2>
               <p className="mt-3 text-white/80">
                 Previews are free, up to {FREE_PREVIEWS_PER_DAY} a day, then {m.extraPreview} each. Edits {m.edit}, 2K download{" "}
                 {m.k2}, 4K {m.k4}, {m.tax}, from your Coreframe wallet.
@@ -418,10 +427,9 @@ export default async function FloorPlanToRenderView({ currency }: { currency: Cu
                 </Link>
                 .
               </p>
-              <div className="mt-7 flex flex-wrap gap-3">
-                <a href="/studio" className="cfh-pill-light">
-                  Open Studio
-                </a>
+              {/* The same single action as the hero (owner, 10 Nov 2026). */}
+              <div className="mt-7">
+                <SamplePlanTry where="floor_plan_bottom" />
               </div>
             </div>
           </div>
