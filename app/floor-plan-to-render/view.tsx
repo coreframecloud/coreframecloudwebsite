@@ -243,6 +243,12 @@ export default async function FloorPlanToRenderView({ currency }: { currency: Cu
               <div className="mt-6">
                 <SamplePlanTry where="floor_plan_hero" />
               </div>
+              {/* What makes it different, in three short lines (landing-page lesson 1). */}
+              <ul className="mt-5 flex flex-wrap gap-x-5 gap-y-1 text-[14px] font-medium">
+                <li>Walls, doors and windows from your drawing</li>
+                <li>Three camera angles per preview</li>
+                <li>Nothing to install</li>
+              </ul>
               <p className="cf-lead mt-6">
                 Coreframe Studio turns a 2D DXF floor plan into interior concept renders in the browser. It reads the walls,
                 doors and windows from your drawing; you pick a room and a camera, and it furnishes the room. Previews are
@@ -409,7 +415,7 @@ export default async function FloorPlanToRenderView({ currency }: { currency: Cu
           <div className="cf-wide">
             <div id="start" className="scroll-mt-24 rounded-[32px] bg-[#2a1f17] px-7 py-12 text-white sm:px-14">
               <p className="text-[11.5px] font-semibold tracking-[0.12em] text-white/75 uppercase">Studio is live</p>
-              <h2 className="mt-3 font-heading text-[28px] font-medium sm:text-[36px]">Try it with your own plan.</h2>
+              <h2 className="mt-3 font-heading text-[28px] font-medium sm:text-[36px]">See it on a sample plan first.</h2>
               <p className="mt-3 text-white/80">
                 Previews are free, up to {FREE_PREVIEWS_PER_DAY} a day, then {m.extraPreview} each. Edits {m.edit}, 2K download{" "}
                 {m.k2}, 4K {m.k4}, {m.tax}, from your Coreframe wallet.
@@ -421,10 +427,9 @@ export default async function FloorPlanToRenderView({ currency }: { currency: Cu
                 </Link>
                 .
               </p>
-              <div className="mt-7 flex flex-wrap gap-3">
-                <a href="/studio" className="cfh-pill-light">
-                  Open Studio
-                </a>
+              {/* The same single action as the hero (owner, 10 Nov 2026). */}
+              <div className="mt-7">
+                <SamplePlanTry where="floor_plan_bottom" />
               </div>
             </div>
           </div>

@@ -66,24 +66,28 @@ export function SamplePlanTry({ where = "floor_plan_hero" }: { where?: string })
 
   return (
     <div className="w-full">
-      <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
-        <button
-          type="button"
-          onClick={() => run(result?.room === "living" ? "bedroom" : "living")}
-          disabled={busy !== null}
-          className="cfh-pill-light w-full disabled:opacity-70 sm:w-auto"
-        >
-          {busy ? "Furnishing the room…" : result ? "Try another room" : "Try with a sample plan"}
-        </button>
+      {/* ONE big action (owner, 10 Nov 2026: one clear CTA per landing page, the
+          job itself first, sign-in only for your own plan or paying). "Use your
+          own plan" is a plain link, not a second button. */}
+      <button
+        type="button"
+        onClick={() => run(result?.room === "living" ? "bedroom" : "living")}
+        disabled={busy !== null}
+        className="cfh-pill-light min-h-14 w-full px-8 text-[15px] disabled:opacity-70 sm:w-auto"
+      >
+        {busy ? "Furnishing the room…" : result ? "Try another room" : "Try it on a sample plan"}
+      </button>
+      <p className="mt-3 text-[13.5px]">
+        Free, no sign-in, about a minute. Plan ready?{" "}
         <a
           href="/studio"
-          className="cfh-pill-ghost w-full text-white! sm:w-auto"
+          className="underline underline-offset-4"
           onClick={() => trackWebEvent("cta_click", { cta: "studio_own_plan", href: "/studio", where })}
         >
-          Try it with your plan
+          Use your own plan
         </a>
-      </div>
-      <p className="mt-3 text-[13.5px]">No sign-in for the sample. It takes about a minute.</p>
+        .
+      </p>
 
       {busy && !result ? (
         <p className="mt-4 text-[14px]" aria-live="polite">
@@ -131,6 +135,17 @@ export function SamplePlanTry({ where = "floor_plan_hero" }: { where?: string })
                 {busy === r.key ? "Furnishing…" : `Try the ${r.label.toLowerCase()}`}
               </button>
             ))}
+          </p>
+          <p className="mt-3 text-[14px]">
+            Like it?{" "}
+            <a
+              href="/studio"
+              className="font-semibold underline underline-offset-4"
+              onClick={() => trackWebEvent("cta_click", { cta: "studio_own_plan", href: "/studio", where: `${where}_result` })}
+            >
+              Do the same with your own plan
+            </a>
+            : sign in with your email, upload a DXF, PDF, JPG or PNG, previews stay free.
           </p>
         </div>
       ) : null}
