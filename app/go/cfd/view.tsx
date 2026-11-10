@@ -34,6 +34,8 @@ import { PhoneLaterNote } from "@/components/cfd/phone-later-note";
 
 const FAQ_PICK = ["What file do you need?", "Do I need a CFD licence?", "Do I need a Coreframe account?"];
 const START = "/cfd?service=standard#start"; // form first: the form opens on Standard (10 Nov 2026)
+/** The page's ONE call to action (owner, 10 Nov 2026), the same words everywhere on it. */
+const CTA = "Upload your STL, see the price";
 
 export async function cfdLandingMetadata(currency: Currency): Promise<Metadata> {
   const fee = preprocessFee(currency, usdRates(await getRateCard()));
@@ -120,22 +122,13 @@ export default async function CfdLandingView({ currency }: { currency: Currency 
 
             <div id="cf-hero-cta" className="mt-3 sm:mt-4">
               <KeepQueryLink href={START} event="go_cfd_cta" cta="hero" className="cf-btn-go w-full sm:w-auto sm:px-12">
-                Start a job <span aria-hidden>→</span>
+                {CTA} <span aria-hidden>→</span>
               </KeepQueryLink>
-              <PhoneLaterNote className="mt-3" />
+              <p className="mt-2 text-[13.5px] leading-5 text-ink-3">No account needed to see your price.</p>
+              <PhoneLaterNote className="mt-2" />
             </div>
           </section>
         </div>
-
-        {/* HVAC rooms (owner, 26 Oct 2026: "we also have HVAC"): one quiet card to its own page. */}
-        <KeepQueryLink href="/go/hvac" event="go_cfd_to_hvac" cta="hvac card"
-          className="mt-6 flex max-w-[760px] items-center justify-between gap-3 rounded-[16px] border border-rule bg-paper-2 px-4 py-3.5 transition hover:border-blue/40">
-          <span className="min-w-0">
-            <span className="block text-[12px] font-semibold tracking-[0.06em] text-ink-3 uppercase">Also: HVAC rooms</span>
-            <span className="block text-[15.5px] leading-snug font-medium text-ink">Room airflow and comfort: ADPI, PMV/PPD and draught maps</span>
-          </span>
-          <span aria-hidden className="shrink-0 text-xl text-blue">→</span>
-        </KeepQueryLink>
 
         <section className="mt-8 max-w-[760px]" data-cf-section="deliverables">
           <h2 className="font-heading text-[22px] leading-tight font-medium text-ink">What you get</h2>
@@ -186,9 +179,19 @@ export default async function CfdLandingView({ currency }: { currency: Currency 
           </section>
         ) : null}
 
-        <div className="mt-10 max-w-[760px]">
+        {/* HVAC rooms (owner, 26 Oct 2026: "we also have HVAC"). 10 Nov 2026: a plain text
+            line near the end, not a card beside the hero, so the page has one call to action. */}
+        <p className="mt-8 max-w-[760px] text-[14.5px] leading-6 text-ink-2">
+          Rooms rather than ducts?{" "}
+          <KeepQueryLink href="/go/hvac" event="go_cfd_to_hvac" cta="hvac link" className="text-ink underline underline-offset-4">
+            Room airflow and comfort for HVAC designs
+          </KeepQueryLink>
+          .
+        </p>
+
+        <div className="mt-6 max-w-[760px]">
           <KeepQueryLink href={START} event="go_cfd_cta_end" cta="end" className="cf-btn-go w-full sm:w-auto sm:px-12">
-            Start a job <span aria-hidden>→</span>
+            {CTA} <span aria-hidden>→</span>
           </KeepQueryLink>
           <p className="mt-3 text-[12.5px] leading-5 text-ink-3">
             Indian company; your STL and results stay in India · {currency === "USD" ? "invoice in US dollars" : "GST invoice"}
@@ -205,7 +208,7 @@ export default async function CfdLandingView({ currency }: { currency: Currency 
         </div>
       </footer>
 
-      <StickyCta href={START} label="Start a job" offer={`Verified from ${verifiedFromAmount(currency)}`} event="go_cfd_cta_sticky" />
+      <StickyCta href={START} label="See the price" offer={`Verified from ${verifiedFromAmount(currency)}`} event="go_cfd_cta_sticky" />
     </div>
   );
 }

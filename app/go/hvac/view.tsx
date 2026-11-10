@@ -26,6 +26,8 @@ import { ROOMS_DELIVERS } from "@/lib/cfd-rooms";
  */
 
 const START = "/cfd?service=rooms#start"; // form first: the form opens on the Rooms tile (10 Nov 2026)
+/** The page's ONE call to action (owner, 10 Nov 2026), the same words everywhere on it. */
+const CTA = "Describe your room, see the price";
 const IMG = "/cfd/projects/clinic-floor-hvac";
 
 export async function hvacLandingMetadata(currency: Currency): Promise<Metadata> {
@@ -113,8 +115,9 @@ export default async function HvacLandingView({ currency }: { currency: Currency
 
             <div id="cf-hero-cta" className="mt-3 sm:mt-4">
               <KeepQueryLink href={START} event="go_hvac_cta" cta="hero" className="cf-btn-go w-full sm:w-auto sm:px-12">
-                Start a room job <span aria-hidden>→</span>
+                {CTA} <span aria-hidden>→</span>
               </KeepQueryLink>
+              <p className="mt-2 text-[13.5px] leading-5 text-ink-3">No account needed to see your price.</p>
             </div>
           </section>
         </div>
@@ -175,7 +178,7 @@ export default async function HvacLandingView({ currency }: { currency: Currency
 
         <div className="mt-10 max-w-[760px]">
           <KeepQueryLink href={START} event="go_hvac_cta_end" cta="end" className="cf-btn-go w-full sm:w-auto sm:px-12">
-            Start a room job <span aria-hidden>→</span>
+            {CTA} <span aria-hidden>→</span>
           </KeepQueryLink>
           <p className="mt-3 text-[12.5px] leading-5 text-ink-3">
             Indian company; your inputs and results stay in India · {currency === "USD" ? "invoice in US dollars" : "GST invoice"}
@@ -192,7 +195,7 @@ export default async function HvacLandingView({ currency }: { currency: Currency
         </div>
       </footer>
 
-      <StickyCta href={START} label="Start a room job" offer={`Room study from ${roomFrom}`} event="go_hvac_cta_sticky" />
+      <StickyCta href={START} label="See the price" offer={`Room study from ${roomFrom}`} event="go_hvac_cta_sticky" />
     </div>
   );
 }

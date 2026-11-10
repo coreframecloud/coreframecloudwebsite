@@ -603,7 +603,8 @@ export default async function CfdView({ currency }: { currency: Currency }) {
               ))}
             </div>
             <p className="mt-6">
-              <a href="/cfd/sample-report.pdf" target="_blank" rel="noopener" className="cf-btn-secondary">
+              {/* A text link, not a button (owner, 10 Nov 2026: one call to action per page, the form). */}
+              <a href="/cfd/sample-report.pdf" target="_blank" rel="noopener" className="font-medium text-ink underline underline-offset-4">
                 Download the full sample report (PDF, 6 pages)
               </a>
             </p>
