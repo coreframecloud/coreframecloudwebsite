@@ -75,7 +75,8 @@ import { apiFetch, forgetLocalSession, isSignedIn, rememberUser } from "@/lib/se
 import { apiErrorText, caughtErrorText } from "@/lib/api-error";
 
 const API = API_BASE;
-const DONE_URL = "/my-activity?topup=1";
+// "first": the recharge sheet opens only if the account has not paid yet.
+const DONE_URL = "/my-activity?topup=first";
 
 /* 44px and a 16px font on a phone: anything smaller and iOS Safari zooms the
    page when the field takes focus, and does not zoom back. */

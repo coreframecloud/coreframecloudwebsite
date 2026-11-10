@@ -497,6 +497,12 @@ export default function MyActivityPage() {
   // that hash opens the dialog straight away rather than landing the customer
   // on a page and making them hunt for the button they just clicked.
   const [topUpOpen, setTopUpOpen] = useState(false);
+  const [topUpIfUnpaid, setTopUpIfUnpaid] = useState(false);
+  useEffect(() => {
+    if (!topUpIfUnpaid || !wallet) return;
+    setTopUpIfUnpaid(false);
+    if (wallet.paid_access === false) setTopUpOpen(true);
+  }, [topUpIfUnpaid, wallet]);
   const [topUpPreset, setTopUpPreset] = useState<number | null>(null);
   // Arrived from Studio (?studio=1): the top-up offers the Rs 99 Studio starter.
   const [studioCtx, setStudioCtx] = useState(false);
@@ -593,6 +599,10 @@ export default function MyActivityPage() {
       // #add-funds from the header's wallet chip; ?topup=1 from the end of
       // sign-up and the header's "Add ₹… · … hrs" button.
       const params = new URLSearchParams(window.location.search);
+      // ?topup=first (end of sign-up / verify): open only for an account that has
+      // not paid yet -- decided once the wallet loads (10 Nov 2026: a paid customer
+      // landed on the recharge sheet at every sign-in).
+      if (params.get("topup") === "first") setTopUpIfUnpaid(true);
       if (window.location.hash === "#add-funds" || params.get("topup") === "1") {
         // &amount= from a checkout follow-up link (/pay/<token>): preselect it.
         const preset = Number(params.get("amount"));
@@ -600,6 +610,13 @@ export default function MyActivityPage() {
         setTopUpOpen(true);
       }
       if (params.get("studio") === "1") setStudioCtx(true);
+      // One-shot: drop the trigger from the address so a reload, a bookmark or the
+      // Back button never reopens the recharge sheet after the customer has paid.
+      if (params.has("topup") || params.has("amount") || params.has("studio") || window.location.hash === "#add-funds") {
+        ["topup", "amount", "studio"].forEach((k) => params.delete(k));
+        const q = params.toString();
+        window.history.replaceState(window.history.state, "", window.location.pathname + (q ? `?${q}` : ""));
+      }
     }
     const t = sessionMarker();
     const uRaw = localStorage.getItem("cf_customer_user");
