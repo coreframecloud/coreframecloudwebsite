@@ -459,7 +459,7 @@ export default async function HvacSimulationView({ currency }: { currency: Curre
             </p>
             <p className="mt-6 text-[14.5px] leading-6 text-ink-2">
               Ready with your room?{" "}
-              <Link href="/cfd#start" className="cfh-link text-ink">
+              <Link href="/cfd?service=rooms#start" className="cfh-link text-ink">
                 Start a room job <span aria-hidden>→</span>
               </Link>
             </p>

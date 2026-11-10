@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useSyncExternalStore } from "react";
+import { useEffect, useSyncExternalStore } from "react";
 import type { CfdServiceId, CfdServiceTile } from "@/lib/cfd-services";
 import { CfxFigure } from "@/components/cfd-explainer/figure";
 
@@ -16,22 +16,32 @@ import { CfxFigure } from "@/components/cfd-explainer/figure";
  *
  * The choice lives in this module (both copies share it) and in
  * sessionStorage, so it survives the sign-up round trip back to /cfd#start.
- * Server render has no choice, so hydration always matches.
+ *
+ * FORM FIRST (owner, 10 Nov 2026): the form is never an empty "choose a tile"
+ * box any more. Standard is chosen until the visitor picks another: its ducts
+ * form is also the Verified form (Verified is picked on the quote), every CFD
+ * job so far was a duct job, and /go/cfd sent 146 of the 152 ad visitors (the
+ * Rooms page /go/hvac, 6). A link can choose with ?service=standard|verified|rooms
+ * (/go/cfd, /go/hvac, the mesh-independence page).
  */
 
 const KEY = "cf_cfd_service";
 const IDS: CfdServiceId[] = ["standard", "verified", "rooms"];
-let current: CfdServiceId | null | undefined; // undefined: not read from storage yet
+/** The tile the form opens on when nothing was chosen (see the note above). */
+export const DEFAULT_SERVICE: CfdServiceId = "standard";
+let current: CfdServiceId | undefined; // undefined: not read from the URL / storage yet
 const listeners = new Set<() => void>();
 
-function read(): CfdServiceId | null {
+function read(): CfdServiceId {
   if (current === undefined) {
-    current = null;
+    current = DEFAULT_SERVICE;
     try {
-      const v = sessionStorage.getItem(KEY) as CfdServiceId | null;
+      const fromUrl = new URLSearchParams(window.location.search).get("service") as CfdServiceId | null;
+      const v = fromUrl && IDS.includes(fromUrl) ? fromUrl : (sessionStorage.getItem(KEY) as CfdServiceId | null);
       if (v && IDS.includes(v)) current = v;
+      if (fromUrl && IDS.includes(fromUrl)) sessionStorage.setItem(KEY, fromUrl);
     } catch {
-      /* storage blocked: start with no choice */
+      /* storage blocked: the default */
     }
   }
   return current;
@@ -54,8 +64,8 @@ function subscribe(cb: () => void) {
   };
 }
 
-export function useSelectedService(): CfdServiceId | null {
-  return useSyncExternalStore(subscribe, read, () => null);
+export function useSelectedService(): CfdServiceId {
+  return useSyncExternalStore(subscribe, read, () => DEFAULT_SERVICE);
 }
 
 function scrollToForm() {
@@ -152,5 +162,44 @@ export function ServiceTiles({ tiles, variant }: { tiles: CfdServiceTile[]; vari
         );
       })}
     </ul>
+  );
+}
+
+/**
+ * The compact switcher above the form (owner, 10 Nov 2026: the form opens at
+ * once, the other services one click away). The full tiles stay in #services.
+ */
+export function ServiceSwitch({ tiles }: { tiles: CfdServiceTile[] }) {
+  const selected = useSelectedService();
+  // A client-side visit (next/link) to /cfd?service=... after the choice was first read.
+  useEffect(() => {
+    const v = new URLSearchParams(window.location.search).get("service") as CfdServiceId | null;
+    if (v && IDS.includes(v) && v !== current) selectService(v);
+  }, []);
+  return (
+    <div role="radiogroup" aria-label="CFD service" className="grid grid-cols-3 gap-2">
+      {tiles.map((t) => {
+        const on = selected === t.id;
+        return (
+          <button
+            key={t.id}
+            type="button"
+            role="radio"
+            aria-checked={on}
+            onClick={() => selectService(t.id)}
+            className={`min-w-0 rounded-cf border px-2.5 py-2.5 text-left transition sm:px-4 sm:py-3 ${TINT[t.id]} ${
+              on ? "border-ink outline-2 outline-offset-1 outline-ink" : "border-transparent hover:border-rule-strong"
+            }`}
+          >
+            <span className="hidden text-[12.5px] leading-5 text-ink-3 sm:block">{t.area}</span>
+            <span className="block font-heading text-[14.5px] leading-5 font-medium text-ink sm:text-[16px] sm:leading-6">{t.name}</span>
+            <span className="mt-0.5 block text-[12.5px] leading-5 text-ink-2 sm:text-[13px]">
+              {t.price.pre ? `${t.price.pre} ` : ""}
+              {t.price.figure}
+            </span>
+          </button>
+        );
+      })}
+    </div>
   );
 }

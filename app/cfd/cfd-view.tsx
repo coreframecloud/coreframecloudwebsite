@@ -28,7 +28,7 @@ import { VERIFICATION_POST_SLUG } from "@/lib/blog/posts/verification-vs-validat
 import { HAND_CALC_POST_SLUG } from "@/lib/blog/posts/pressure-drop-hand-calc-vs-cfd";
 import { ROOMS_VALIDATION } from "@/lib/cfd-rooms";
 import { cfdServiceTiles } from "@/lib/cfd-services";
-import { ServiceTiles } from "./service-tiles";
+import { ServiceSwitch, ServiceTiles } from "./service-tiles";
 import { HvacEngineers } from "./hvac-engineers";
 import { PhoneLaterNote } from "@/components/cfd/phone-later-note";
 
@@ -69,9 +69,10 @@ import { PhoneLaterNote } from "@/components/cfd/phone-later-note";
  * current letterhead report (cfd-runner/report.py), titled "Sample: 90° water
  * bend" in place of the internal test job name; the numbers are the run's.
  *
- * ACCOUNT FIRST (owner, 13 Oct 2026): the form is only for a signed-in account
- * that finished sign-up (cfd-start.tsx); the API refuses anything else. The
- * form itself is driven by lib/cfd-categories.ts (one tab per CFD vertical).
+ * FORM FIRST, ACCOUNT AT PAYMENT (owner, 10 Nov 2026; was account first,
+ * 13 Oct 2026): anyone fills the form and uploads the STL as a draft, sees the
+ * check and the price, and signs up (email + WhatsApp) only at "Pay"
+ * (cfd-start.tsx, lib/cfd-draft.ts). The form sits right under the hero.
  *
  * 15 Oct 2026: rendered twice, as /cfd (INR) and /usd/cfd (USD, for visitors
  * outside India; proxy.ts rewrites to it, the browser keeps /cfd). The USD
@@ -173,8 +174,8 @@ const AUDIENCE = [
 
 const STEPS = [
   {
-    title: "Sign in, submit the job and upload one STL",
-    body: "With your Coreframe account: the fluid volume of your duct or pipe as one closed binary STL, the units, the fluid and the inlet flow.",
+    title: "Fill in the job and upload one STL, no account yet",
+    body: "The fluid volume of your duct or pipe as one closed binary STL, the units, the fluid and the inlet flow. You see the pre-processing fee and an estimate of the run price straight away.",
   },
   {
     title: "We check the geometry automatically",
@@ -217,7 +218,7 @@ export const FAQ = [
   },
   {
     q: "Do I need a Coreframe account?",
-    a: "Yes. Sign up with your email and a WhatsApp code to your mobile, the same account and wallet as GPU workstations and Studio. Your name, email and number come from the account, so the form does not ask for them again.",
+    a: "Not to fill in the form, upload your STL and see the price. You sign up when you pay for pre-processing: your email and a WhatsApp code to your mobile, the same account and wallet as GPU workstations and Studio. Your job comes with you, nothing to fill in again, and your name, email and number come from the account.",
   },
   {
     q: "What does it cost to start?",
@@ -412,27 +413,36 @@ export default async function CfdView({ currency }: { currency: Currency }) {
             velocity picture that used to sit here is in the sample section. */}
         <section className="cf-section px-5 cf-pagehero cf-pagehero--paper">
           <div className="cf-wide">
-            <div className="min-w-0 max-w-[640px] min-[900px]:max-w-[52%]">
+            <div className="min-w-0 max-w-[720px] min-[900px]:max-w-[56%]">
               <p className="cf-eyebrow">CFD for ducts and pipes · Live</p>
               <h1 className="cf-display mt-5 max-w-[14ch]">Pressure drop calculation for your duct or pipe, from one STL.</h1>
+              <p className="cf-lead mt-4 max-w-[52ch]">
+                Upload your STL and see the price at once. You sign up only when you pay.
+              </p>
+
+              {/* ── The form, in the first screen (owner, 10 Nov 2026: form first,
+                  account at payment). Opens on Standard; the other services are one
+                  click away in the switch, the full tiles in #services. No account to
+                  fill it in, upload and see the price. */}
+              <div id="start" className="mt-7 scroll-mt-20">
+                <ServiceSwitch tiles={tiles} />
+                <div id="cfd-form" className="mt-4 scroll-mt-20">
+                  <CfdStart currency={currency} />
+                </div>
+              </div>
+
               {/* Answer-first (SEO review 18 Oct 2026, 3.1): price, turnaround and
                   deliverables in one quotable passage, in the page's currency. */}
-              <p className="cf-lead mt-5 max-w-[52ch]">
+              <p className="mt-8 max-w-[60ch] text-[15px] leading-6 text-ink-2">
                 Coreframe CFD calculates the pressure drop and loss coefficient of a duct or pipe fitting from a single STL
                 file. Pre-processing and a mesh check cost {preprocessFee(currency, card)} for most models; you then
                 accept a quote for the run and get a PDF report, a 3D viewer and the data files within {CFD_NORMAL_HOURS}{" "}
-                hours, or in {CFD_EXPRESS.hours} hours with Express at {CFD_EXPRESS.multiple}× the price.
+                hours, or in {CFD_EXPRESS.hours} hours with Express at {CFD_EXPRESS.multiple}× the price. The solver runs on
+                our side, so you need no CFD licence. {preprocessLarge(currency, card)}
               </p>
-              <p className="mt-3 max-w-[52ch] text-[15px] leading-6 text-ink-2">
-                The solver runs on our side, so you need no CFD licence. {preprocessLarge(currency, card)}
-              </p>
-              <div className="mt-8 flex flex-wrap gap-3">
-                <a href="#start" className="cf-btn-primary">Start a job</a>
-                <a href="#sample" className="cf-btn-secondary">See a sample report</a>
-              </div>
               <PhoneLaterNote className="mt-4" />
-              <p className="cfx-quiet mt-6">
-                <a href="#right">How we know the answer is right ↓</a>
+              <p className="cfx-quiet mt-4">
+                <a href="#sample">See a sample report ↓</a> · <a href="#right">How we know the answer is right ↓</a>
               </p>
               <PageByline path={CFD_HOME.path} className="mt-4 text-ink-3" />
             </div>
@@ -871,27 +881,6 @@ export default async function CfdView({ currency }: { currency: Currency }) {
               invoice on every payment.
             </p>
             )}
-          </div>
-        </section>
-
-        {/* ── Form ─────────────────────────────────────────────────────── */}
-        <section id="start" className="cf-section scroll-mt-20 px-5 pt-0">
-          <div className="cf-wide">
-            <div className="mx-auto max-w-[720px]">
-              <p className="cf-eyebrow">Start a job</p>
-              <h2 className="cf-section-title mt-4">Choose the service, then tell us the flow.</h2>
-              <p className="cf-section-copy mt-3">
-                A few fields and a file, from your Coreframe account. Your name, email and WhatsApp number come from the
-                account, and pre-processing is paid from its wallet on your job page.
-              </p>
-            </div>
-            {/* Owner, 19 Oct 2026: the three tiles are the way to choose (they replaced the form's tabs). */}
-            <div className="mt-8">
-              <ServiceTiles tiles={tiles} variant="picker" />
-            </div>
-            <div id="cfd-form" className="mx-auto mt-8 max-w-[720px] scroll-mt-20">
-              <CfdStart currency={currency} />
-            </div>
           </div>
         </section>
 

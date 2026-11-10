@@ -33,7 +33,7 @@ import { PhoneLaterNote } from "@/components/cfd/phone-later-note";
  */
 
 const FAQ_PICK = ["What file do you need?", "Do I need a CFD licence?", "Do I need a Coreframe account?"];
-const START = "/cfd#start";
+const START = "/cfd?service=standard#start"; // form first: the form opens on Standard (10 Nov 2026)
 
 export async function cfdLandingMetadata(currency: Currency): Promise<Metadata> {
   const fee = preprocessFee(currency, usdRates(await getRateCard()));

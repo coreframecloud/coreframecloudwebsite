@@ -25,7 +25,7 @@ import { ROOMS_DELIVERS } from "@/lib/cfd-rooms";
  * Rendered twice: /go/hvac in rupees and app/usd/go/hvac in dollars (proxy.ts).
  */
 
-const START = "/cfd#start";
+const START = "/cfd?service=rooms#start"; // form first: the form opens on the Rooms tile (10 Nov 2026)
 const IMG = "/cfd/projects/clinic-floor-hvac";
 
 export async function hvacLandingMetadata(currency: Currency): Promise<Metadata> {

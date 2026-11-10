@@ -263,7 +263,7 @@ export default async function MeshStudyView({ currency }: { currency: Currency }
               </p>
               <PageByline path={MESH_STUDY.path} published="2026-10-16" className="mt-2 text-ink-3" />
               <div className="mt-8 flex flex-wrap gap-3">
-                <Link href="/cfd#start" className="cf-btn-primary">Start a job</Link>
+                <Link href="/cfd?service=verified#start" className="cf-btn-primary">Start a job</Link>
                 <a href="#example" className="cf-btn-secondary">See a worked example</a>
               </div>
               <PhoneLaterNote className="mt-4" />
@@ -495,7 +495,7 @@ export default async function MeshStudyView({ currency }: { currency: Currency }
           <div className="cf-wide">
             <VerifiedCard currency={currency} learnMore={false} />
             <p className="mt-5 text-[14px] leading-6 text-ink-3">
-              How to order: start a duct or pipe job on <Link href="/cfd#start" className="underline underline-offset-4">/cfd</Link>.
+              How to order: start a duct or pipe job on <Link href="/cfd?service=verified#start" className="underline underline-offset-4">/cfd</Link>.
               After pre-processing / mesh check, Verified appears on your quote next to Draft and Standard whenever your
               model qualifies.
             </p>

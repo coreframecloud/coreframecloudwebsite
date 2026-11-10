@@ -3,31 +3,36 @@
 import { COOKIE_SESSION, apiFetch, sessionMarker } from "@/lib/session";
 import { useCallback, useEffect, useState } from "react";
 import { API_BASE } from "@/lib/api-base";
-import { trackEvent } from "@/lib/analytics";
-import { rememberReturnPath } from "@/lib/return-path";
 import CfdJobForm from "./cfd-job-form";
+import DraftPanel from "./draft-panel";
 import { useSelectedService } from "./service-tiles";
 import type { Currency } from "@/lib/money";
+import { getDraft, type DraftView } from "@/lib/cfd-draft";
 
 /**
- * The "Start a job" area of /cfd. Account first (owner, 13 Oct 2026):
- * CFD customers register like every Coreframe customer, with a verified email
- * and a WhatsApp-verified mobile, and pay from the same wallet as GPU
- * workstations and Studio. POST /cfd-jobs refuses anything else.
+ * The "Start a job" area of /cfd.
  *
- *   signed out  -> why an account, and Sign up / Sign in that come back here;
- *   incomplete  -> finish verification at /verify, which comes back here;
- *   complete    -> the form, without name, email or phone.
+ * FORM FIRST, ACCOUNT AT PAYMENT (owner, 10 Nov 2026; was "account first",
+ * 13 Oct 2026). Evidence: ~390 CFD visitors in 30 days, the form shown 0 times,
+ * because sign-up and WhatsApp came before the form, the upload and the price.
+ * Now:
  *
- * Signed-in state is the site's usual one: the HttpOnly session cookie
- * (lib/session.ts). Completeness is asked of GET /verification/status,
- * which takes both the full and the verification-scoped token and answers
- * with `next_step` ("email" | "mobile" | "done") and `account_active`.
+ *   anyone          -> the form at once, on the chosen tile (Standard unless
+ *                      another was picked); signed out it saves a DRAFT
+ *                      (lib/cfd-draft.ts) and shows the check and the price;
+ *   "Pay" on a draft -> signed in and complete: the draft becomes a job and
+ *                      its page opens at the payment step; otherwise the
+ *                      sign-up / verify wall, which comes back to
+ *                      /cfd?resume=1#start and continues to payment by itself;
+ *   complete account, no draft -> the form submits a job as before.
+ *
+ * Every account still registers like every Coreframe customer (verified email
+ * and WhatsApp mobile, one wallet); POST /cfd-jobs and the draft claim both
+ * refuse anything else. Signed-in state is the site's usual one (lib/session.ts),
+ * completeness from GET /verification/status.
  */
-
 const LEGACY_TOKEN_KEY = "cf_customer_token";
 const USER_KEY = "cf_customer_user";
-const HERE = "/cfd#start";
 
 type Gate =
   | { kind: "loading" }
@@ -46,7 +51,11 @@ function storedEmail(): string | null {
 
 export default function CfdStart({ currency = "INR" }: { currency?: Currency } = {}) {
   const [gate, setGate] = useState<Gate>({ kind: "loading" });
-  // The tile chosen above (app/cfd/service-tiles.tsx); null until one is picked.
+  // undefined: not asked yet; null: this browser has no draft.
+  const [draft, setDraft] = useState<DraftView | null | undefined>(undefined);
+  const [editing, setEditing] = useState(false);
+  const [resume, setResume] = useState(false);
+  // The tile chosen above (app/cfd/service-tiles.tsx); Standard until another is picked.
   const service = useSelectedService();
 
   const check = useCallback(async () => {
@@ -70,17 +79,25 @@ export default function CfdStart({ currency = "INR" }: { currency?: Currency } =
       }
       setGate({ kind: "ready", token: token ?? COOKIE_SESSION, email: storedEmail() });
     } catch {
-      // Could not reach the API. Show the sign-in path rather than a form that cannot submit.
-      setGate({ kind: "signed_out", note: "We could not check your sign-in just now. Reload the page, or sign in again." });
+      // Could not reach the API: the visitor can still fill the form as a draft.
+      setGate({ kind: "signed_out", note: "We could not check your sign-in just now." });
     }
   }, []);
 
   useEffect(() => {
-    // Reading localStorage and the API can only happen in the browser, after mount.
+    // Reading localStorage, the URL and the API can only happen in the browser, after mount.
+    try {
+      setResume(new URLSearchParams(window.location.search).get("resume") === "1");
+    } catch {
+      /* no resume */
+    }
     void check();
+    getDraft()
+      .then((d) => setDraft(d && d.status === "open" ? d : null))
+      .catch(() => setDraft(null));
   }, [check]);
 
-  if (gate.kind === "loading") {
+  if (gate.kind === "loading" || draft === undefined) {
     return (
       <div className="rounded-[24px] border border-rule bg-paper-2 p-6 sm:p-8" aria-busy="true">
         <div className="h-5 w-48 animate-pulse rounded bg-ink/10" />
@@ -90,83 +107,39 @@ export default function CfdStart({ currency = "INR" }: { currency?: Currency } =
     );
   }
 
-  if (gate.kind === "signed_out") {
-    const next = encodeURIComponent("/cfd");
+  const ready = gate.kind === "ready";
+  if (draft && !editing) {
     return (
-      <div className="rounded-[24px] border border-rule bg-paper-2 p-6 sm:p-8">
-        <p className="cf-card-label">Account first</p>
-        <p className="font-heading text-[20px] leading-snug font-medium text-ink sm:text-[22px]">
-          Create your Coreframe account to start a CFD job: one account and one wallet for GPU workstations, CFD and
-          Studio.
-        </p>
-        <p className="mt-3 text-[15px] leading-6 text-ink-2">
-          Sign-up is your email and a WhatsApp code to your mobile, no paperwork. You come straight back here to submit
-          your job, and pre-processing is paid from the same wallet.
-        </p>
-        {gate.note ? <p className="mt-3 text-[14px] leading-6 text-destructive">{gate.note}</p> : null}
-        <div className="mt-6 flex flex-wrap gap-3">
-          <a
-            href={`/signup?next=${next}`}
-            className="cf-btn-primary"
-            onClick={() => { rememberReturnPath(HERE); trackEvent("signup_click", { location: "cfd_intake" }); }}
-          >
-            Sign up
-          </a>
-          <a
-            href={`/login?next=${next}`}
-            className="cf-btn-secondary"
-            onClick={() => { rememberReturnPath(HERE); trackEvent("signin_click", { location: "cfd_intake" }); }}
-          >
-            Sign in
-          </a>
-        </div>
-      </div>
+      <DraftPanel
+        key={draft.expires_at + (draft.file?.uploaded_at ?? "")}
+        draft={draft}
+        gate={ready ? "ready" : gate.kind === "incomplete" ? "incomplete" : "signed_out"}
+        autoClaim={resume}
+        onEdit={() => setEditing(true)}
+        onDiscarded={() => setDraft(null)}
+      />
     );
   }
 
-  if (gate.kind === "incomplete") {
-    const what = gate.step === "email" ? "confirm your email" : gate.step === "mobile" ? "verify your WhatsApp number" : "finish verifying your email and WhatsApp number";
-    return (
-      <div className="rounded-[24px] border border-rule bg-paper-2 p-6 sm:p-8">
-        <p className="cf-card-label">Almost there</p>
-        <p className="font-heading text-[20px] leading-snug font-medium text-ink sm:text-[22px]">
-          Finish setting up your Coreframe account to start a CFD job.
-        </p>
-        <p className="mt-3 text-[15px] leading-6 text-ink-2">
-          One step left: {what}. It takes a minute, and you come straight back here.
-        </p>
-        <div className="mt-6 flex flex-wrap gap-3">
-          <a
-            href="/verify"
-            className="cf-btn-primary"
-            onClick={() => { rememberReturnPath(HERE); trackEvent("finish_signup_click", { location: "cfd_intake" }); }}
-          >
-            Finish verification
-          </a>
-        </div>
-      </div>
-    );
-  }
-
-  if (!service) {
-    return (
-      <div className="rounded-[24px] border border-dashed border-rule-strong bg-paper-2 p-6 sm:p-8">
-        <p className="text-[15px] leading-6 text-ink-2">
-          Choose Standard, Verified or Comfort study above, and its form opens here.
-        </p>
-      </div>
-    );
-  }
-
+  // A complete account with no draft submits a job as before; everyone else fills a draft.
+  const draftMode = !ready || Boolean(draft);
   return (
     <CfdJobForm
+      key={draftMode ? "draft" : "account"}
       service={service}
-      token={gate.token}
-      accountEmail={gate.email}
+      token={ready ? gate.token : null}
+      accountEmail={ready ? gate.email : null}
       currency={currency}
-      onSignedOut={(reason) =>
-        setGate(reason === "incomplete" ? { kind: "incomplete", step: "verify" } : { kind: "signed_out", note: "Your sign-in has ended. Sign in again to submit." })
-      }
+      mode={draftMode ? "draft" : "account"}
+      prefill={editing ? draft?.job : null}
+      onDraft={(d) => {
+        setDraft(d);
+        setEditing(false);
+      }}
+      onSignedOut={() => {
+        // The session ended mid-form: keep what they typed as a draft instead.
+        setGate({ kind: "signed_out" });
+      }}
     />
   );
 }

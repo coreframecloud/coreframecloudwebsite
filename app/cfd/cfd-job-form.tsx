@@ -14,6 +14,7 @@ import { CATEGORY_FIELDS } from "./categories";
 import { ROOMS_VALIDATION } from "@/lib/cfd-rooms";
 import { CFD_PREPROCESS_INR } from "@/lib/cfd-prices";
 import { Field, inputCls, textareaCls } from "./form-ui";
+import { DraftError, saveDraft, uploadDraftFile, type DraftView } from "@/lib/cfd-draft";
 
 /**
  * The CFD intake form, for a signed-in account that has finished sign-up
@@ -35,6 +36,12 @@ import { Field, inputCls, textareaCls } from "./form-ui";
  * no job token; a job opens only for its own account). The single-request upload
  * takes up to 80 MB; a bigger STL (up to 200 MB) goes through the chunked
  * upload on the job page, which we link to.
+ *
+ * DRAFT MODE (owner, 10 Nov 2026: form first, account at payment). Signed out
+ * (or not yet verified), the same form saves a draft instead (lib/cfd-draft.ts:
+ * POST /cfd-drafts, then the file to /cfd-drafts/current/upload) and hands the
+ * draft to CfdStart, which shows the check, the price and "Pay". Nothing is
+ * submitted, emailed or charged; sign-up comes at "Pay".
  */
 
 const SINGLE_UPLOAD_MAX = 80 * 1024 * 1024;
@@ -50,11 +57,17 @@ function detailMessage(body: unknown): string | null {
   return null;
 }
 
-export default function CfdJobForm({ service, token, accountEmail, onSignedOut, currency = "INR" }: {
+export default function CfdJobForm({ service, token, accountEmail, onSignedOut, currency = "INR", mode = "account", prefill, onDraft }: {
   /** The tile chosen above the form. */
   service: CfdServiceId;
-  token: string;
+  token: string | null;
   accountEmail: string | null;
+  /** "draft": no account yet; the form saves a draft (see the note above). */
+  mode?: "account" | "draft";
+  /** A draft's fields, to fill the form again ("Edit details"). */
+  prefill?: Record<string, unknown> | null;
+  /** Draft mode: the saved draft, with its file, to show the check and the price. */
+  onDraft?: (draft: DraftView) => void;
   /** The API no longer accepts the session (expired, revoked, or the account is not complete). */
   onSignedOut: (reason: "signed_out" | "incomplete") => void;
   /** The page's display currency (visitor country, see proxy.ts). The
@@ -63,7 +76,9 @@ export default function CfdJobForm({ service, token, accountEmail, onSignedOut, 
   currency?: Currency;
 }) {
   const [walletCurrency, setWalletCurrency] = useState<Currency | null>(null);
+  const draftMode = mode === "draft";
   useEffect(() => {
+    if (draftMode) return;
     let live = true;
     apiFetch(`${API_BASE}/customer/me/wallet`)
       .then((r) => (r.ok ? r.json() : null))
@@ -74,7 +89,7 @@ export default function CfdJobForm({ service, token, accountEmail, onSignedOut, 
     return () => {
       live = false;
     };
-  }, [token]);
+  }, [token, draftMode]);
   const feeCurrency = walletCurrency ?? currency;
   const rateCard = useRateCard(feeCurrency === "USD");
   const usd = usdRates(rateCard);
@@ -113,9 +128,10 @@ export default function CfdJobForm({ service, token, accountEmail, onSignedOut, 
   const setCat = (patch: Partial<Record<string, unknown>>) =>
     setStates((s) => ({ ...s, [categoryId]: { ...(s[categoryId] as object), ...patch } }));
 
-  const [company, setCompany] = useState("");
-  const [project, setProject] = useState("");
-  const [notes, setNotes] = useState("");
+  const text = (k: string) => (typeof prefill?.[k] === "string" ? (prefill[k] as string) : "");
+  const [company, setCompany] = useState(() => text("company"));
+  const [project, setProject] = useState(() => text("projectName"));
+  const [notes, setNotes] = useState(() => (/submitted from \/cfd$/.test(text("description")) ? "" : text("description")));
 
   const [errors, setErrors] = useState<string[]>([]);
   const [busy, setBusy] = useState<"" | "submitting" | "uploading">("");
@@ -221,6 +237,23 @@ export default function CfdJobForm({ service, token, accountEmail, onSignedOut, 
         description: notes.trim() || `${category.label}, submitted from /cfd`,
         ...fields.toPayload(catState),
       };
+      if (draftMode) {
+        let draft = await saveDraft(service, currency, payload);
+        const geometry = fields.file(catState);
+        if (geometry) {
+          setBusy("uploading");
+          try {
+            draft = await uploadDraftFile(geometry);
+            trackEvent("cfd_stl_uploaded", { location: "cfd_draft" });
+          } catch (err) {
+            trackWebEvent("cfd_error", { stage: "upload", code: err instanceof DraftError && err.status === 413 ? "too_big" : "upload_failed" });
+            throw err;
+          }
+        }
+        setBusy("");
+        onDraft?.(draft);
+        return;
+      }
       const res = await apiFetch(`${API_BASE}/cfd-jobs`, {
         method: "POST",
         headers: { "Content-Type": "application/json", ...auth },
@@ -396,6 +429,12 @@ export default function CfdJobForm({ service, token, accountEmail, onSignedOut, 
             )}
 
             <div className="mt-7 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              {draftMode ? (
+              <p className="text-[13px] leading-5 text-ink-3">
+                No account needed yet. We check your model and show the price first; you sign up only when you pay. Your
+                file stays private and is deleted after 7 days unless you continue.
+              </p>
+              ) : (
               <p className="text-[13px] leading-5 text-ink-3">
                 Submitting as {accountEmail || "your Coreframe account"}. Nothing is charged when you submit. Pre-processing
                 {usdFee
@@ -403,8 +442,13 @@ export default function CfdJobForm({ service, token, accountEmail, onSignedOut, 
                   : ` (${formatMoney(CFD_PREPROCESS_INR.small, "INR")} for most models, ${formatMoney(CFD_PREPROCESS_INR.large, "INR")} over ${cellsLabel(CFD_PREPROCESS_INR.smallMaxCells)} cells)`} is paid later, on your job page, from your Coreframe wallet. By submitting you agree to our{" "}
                 <a href="/terms-of-service" className="underline underline-offset-2">terms</a>.
               </p>
+              )}
               <button type="submit" disabled={busy !== ""} className="cf-btn-primary shrink-0 disabled:opacity-60">
-                {busy === "submitting" ? "Sending…" : busy === "uploading" ? "Uploading…" : "Submit job"}
+                {busy === "submitting"
+                  ? draftMode ? "Saving…" : "Sending…"
+                  : busy === "uploading"
+                    ? draftMode ? "Checking your file…" : "Uploading…"
+                    : draftMode ? "Check my model and see the price" : "Submit job"}
               </button>
             </div>
           </form>
