@@ -9,9 +9,14 @@ import { cloudRenderingVsBuyingWorkstation } from "./posts/cloud-rendering-vs-bu
 import { d5RenderSystemRequirementsLaptop } from "./posts/d5-render-system-requirements-laptop";
 import { realisticInteriorRendersDesignOptions } from "./posts/realistic-interior-renders-design-options";
 import { checkDwgDimensionsWithoutAutocad } from "./posts/check-dwg-dimensions-without-autocad";
+import { lumionSystemRequirements } from "./posts/lumion-system-requirements";
+import { enscapeSystemRequirements } from "./posts/enscape-system-requirements";
 
 /** Newest first; posts with the same date keep this editorial order. */
 export const POSTS: BlogPost[] = [
+  // Published 11 Nov 2026 (content quick wins: the D5 requirements format).
+  lumionSystemRequirements,
+  enscapeSystemRequirements,
   // Published 9 Nov 2026 (weekly AEO loop: promote the free DWG checker).
   checkDwgDimensionsWithoutAutocad,
   // Published 6 Nov 2026 (weekly AEO loop: Reddit questions that week).

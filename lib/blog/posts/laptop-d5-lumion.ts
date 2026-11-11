@@ -194,6 +194,8 @@ export const laptopD5Lumion: BlogPost = {
   related: [
     { href: "/vram-for-architectural-rendering", label: "Is 8 GB of VRAM enough?" },
     { href: "/blog/d5-render-system-requirements-laptop", label: "D5 Render system requirements and size" },
+    { href: "/blog/lumion-system-requirements", label: "Lumion system requirements" },
+    { href: "/blog/enscape-system-requirements", label: "Enscape system requirements" },
     { href: "/d5-render-cloud-workstation", label: "D5 Render on a cloud RTX 5080" },
     { href: "/lumion-cloud-gpu", label: "Lumion on a cloud RTX 5080" },
     { href: "/enscape-cloud-gpu", label: "Enscape on a cloud RTX 5080" },

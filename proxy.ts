@@ -88,6 +88,8 @@ const PAGES = new Set([
   // The free render-time calculator (28 Oct 2026): the one /tools page Next
   // serves itself; every other /tools path is the control plane's IFC checker.
   "/tools/render-time",
+  // Content quick wins (11 Nov 2026): quotes both cards' live rates.
+  "/rtx-a4000-vs-rtx-a5000",
 ]);
 
 /** Dynamic routes with a /usd copy: exactly one segment after the prefix, so

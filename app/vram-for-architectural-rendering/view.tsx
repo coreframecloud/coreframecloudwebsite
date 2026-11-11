@@ -285,6 +285,17 @@ export default async function VramView({ currency }: { currency: Currency }) {
         <section className="cf-section px-5">
           <div className="cf-col">
             <h2 className="cf-title">Questions</h2>
+            <p className="mt-4 text-ink-2">
+              Picking a card for a measured peak?{" "}
+              <Link href="/rtx-a4000-vs-rtx-a5000" className="text-blue underline underline-offset-2">
+                RTX A4000 (16 GB) vs RTX A5000 (24 GB)
+              </Link>
+              . Wondering how long the render takes? The{" "}
+              <Link href="/tools/render-time" className="text-blue underline underline-offset-2">
+                render-time calculator
+              </Link>{" "}
+              gives an estimate per card.
+            </p>
             <div className="mt-7 grid gap-5">
               {FAQ.map((f) => (
                 <div key={f.q} className="cf-card-sm">

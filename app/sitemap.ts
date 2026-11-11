@@ -52,6 +52,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // find late or not at all, so these two lines are not optional.
     { url: `${BASE}/coreframe-vs-irender`, lastModified: lm("/coreframe-vs-irender"), changeFrequency: "monthly", priority: 0.8 },
     { url: `${BASE}/vram-for-architectural-rendering`, lastModified: lm("/vram-for-architectural-rendering"), changeFrequency: "monthly", priority: 0.8 },
+    // Content quick wins (11 Nov 2026): GPU comparison, specs + live prices.
+    { url: `${BASE}/rtx-a4000-vs-rtx-a5000`, lastModified: lm("/rtx-a4000-vs-rtx-a5000"), changeFrequency: "monthly", priority: 0.7 },
     // The architectural visualization hub (19 Oct 2026): every archviz tool page, grouped by job.
     { url: `${BASE}/architectural-visualization`, lastModified: lm("/architectural-visualization"), changeFrequency: "monthly", priority: 0.8 },
     { url: `${BASE}/cloud-rendering-for-architects`, lastModified: lm("/cloud-rendering-for-architects"), changeFrequency: "monthly", priority: 0.8 },

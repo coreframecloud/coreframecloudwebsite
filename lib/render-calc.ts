@@ -22,9 +22,13 @@
  *
  *   2. The absolute anchor when the visitor does not know their own frame
  *      time: our own measured render, Blender's 4.1 splash scene
- *      (blender-4.1-splash.blend, 600 samples, denoise on, OptiX) on our
- *      RTX 5080 workstation, second (warm) render 1:44.6, 27 Oct 2026
- *      (plans/gpu-p-vm-learnings-20261027.md, section 3). The same scene on
+ *      (blender-4.1-splash.blend, 1920×1080 = 3840×2160 at 50 %, 600 samples,
+ *      denoise on, OptiX, Blender 5.2.2) on our RTX 5080 workstation, second
+ *      (warm) render 1:44.6, 27 Oct 2026 (plans/gpu-p-vm-learnings-20261027.md,
+ *      section 3). That is the ONLY GPU we have a scripted measurement for
+ *      (the PRO 6000 test of 31 Oct, plans/pro6000-stream-test-20261031.md,
+ *      stopped at the display driver and rendered nothing), so on the page the
+ *      RTX 5080 row is labelled "measured" and every other row "scaled". The same scene on
  *      our RTX 6000 Ada measured 1:05.3 warm, faster than Open Data's ratio
  *      predicts; we still use the Open Data ratio for every GPU, the more
  *      conservative of the two, and never the single faster run.
@@ -51,9 +55,14 @@ export const BENCH_SOURCE = {
 /** Our measured anchor: Blender 4.1 splash scene, 600 samples, warm render. */
 export const ANCHOR = {
   gpu: "RTX 5080",
+  /** Matched against a rate-card gpu_model, to label that row "measured". */
+  match: /RTX 5080/i,
   score: 9138.2,
   seconds: 104.6,
   scene: "Blender 4.1 splash scene, 600 samples",
+  resolution: "1920 × 1080",
+  settings: "denoise on, OptiX, Blender 5.2.2",
+  measured: "27 Oct 2026",
 } as const;
 
 export type UserGpu = { id: string; label: string; group: "Laptop" | "Desktop" | "Pro" | "Apple"; score: number; runs: number };

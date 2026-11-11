@@ -121,6 +121,17 @@ export default async function ComputeNodesView({ currency }: { currency: Currenc
                     </div>
                   ))}
                 </dl>
+                <p className="mt-6 text-[14px] leading-6 text-ink-2">
+                  Not sure which card?{" "}
+                  <Link href="/tools/render-time" className="text-blue underline underline-offset-2">
+                    Estimate your render time
+                  </Link>{" "}
+                  or compare the{" "}
+                  <Link href="/rtx-a4000-vs-rtx-a5000" className="text-blue underline underline-offset-2">
+                    RTX A4000 and RTX A5000
+                  </Link>
+                  .
+                </p>
 
                 <div className="mt-10 border-t border-rule pt-6">
                   <div className="cf-card-label">Pay as you go</div>

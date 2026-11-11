@@ -285,6 +285,7 @@ export const cloudRenderingVsBuyingWorkstation: BlogPost = {
     { href: "/cloud-workstation-vs-render-farm", label: "Cloud workstation vs render farm" },
     { href: "/coreframe-vs-irender", label: "iRender alternatives compared" },
     { href: "/d5-render-vs-local-gpu", label: "Renting a workstation vs buying one" },
+    { href: "/tools/render-time", label: "Render-time calculator: estimate a job's time and cost" },
     { href: "/pricing", label: "Pricing and monthly plans" },
     { href: "/enterprise", label: "Team plans for studios" },
   ],

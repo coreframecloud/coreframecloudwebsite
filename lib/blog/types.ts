@@ -87,6 +87,14 @@ export type BlogContext = {
   /** "₹6,00,000" / "$6,000": our own estimate of buying an equivalent machine,
    *  in the page's currency (lib/node-spec.ts). */
   replacementCost: string;
+  /**
+   * The public GPU ladder in the page's currency, cheapest first (added 11 Nov
+   * 2026 for the system-requirements posts, which recommend a card per tier).
+   * Empty when the rate card is unreachable: the posts then drop the card line.
+   */
+  gpus: { slug: string; name: string; vramGb: number; ramGb: number; hourly: string }[];
+  /** The cheapest public card with at least `vramGb` of VRAM (and `ramGb` of RAM), or null. */
+  gpuFor: (vramGb: number, ramGb?: number) => { slug: string; name: string; vramGb: number; ramGb: number; hourly: string } | null;
 };
 
 export type BlogPost = {

@@ -16,7 +16,14 @@ import {
 } from "@/lib/render-calc";
 
 /** One public GPU from the live rate card, already priced in the page's currency. */
-export type OurGpu = { name: string; vramGb: number; hourly: number | null; score: number };
+export type OurGpu = {
+  name: string;
+  vramGb: number;
+  hourly: number | null;
+  score: number;
+  /** True for the one card our reference frame was measured on (lib/render-calc ANCHOR). */
+  measured: boolean;
+};
 
 const GROUPS = ["Laptop", "Desktop", "Pro", "Apple"] as const;
 const GROUP_LABEL: Record<(typeof GROUPS)[number], string> = {
@@ -35,9 +42,9 @@ const FRAME_PRESETS = [
 /** "About 2.8× as fast as yours", "About 40% faster than yours", honest both ways. */
 function speedWords(x: number): string {
   if (x < 0.95) return "Slower than your GPU on this benchmark";
-  if (x < 1.05) return "About the same speed as yours";
-  if (x < 1.95) return `About ${Math.round((x - 1) * 100)}% faster than yours`;
-  return `About ${x.toFixed(1)}× as fast as yours`;
+  if (x < 1.05) return "About the same as yours on this benchmark";
+  if (x < 1.95) return `About ${Math.round((x - 1) * 100)}% faster than yours on this benchmark`;
+  return `About ${x.toFixed(1)}× yours on this benchmark`;
 }
 
 /**
@@ -210,8 +217,23 @@ export function RenderCalculator({ ours, currency }: { ours: OurGpu[]; currency:
 
       <section aria-live="polite" className="grid gap-3" data-cf-section="result">
         <h2 className="font-heading text-[22px] leading-tight font-medium text-ink">Estimated render time</h2>
+        <div className="rounded-[12px] border border-rule bg-paper-2 px-4 py-3 text-[13.5px] leading-5 text-ink-2" data-cf-section="assumptions">
+          <p className="font-semibold text-ink">Estimates, not promises. Assumes:</p>
+          <ul className="mt-1 grid gap-0.5">
+            {usingOwnTime ? (
+              <li>Scene, samples and resolution: the same as the frame you timed ({formatDuration(perFrameYours)} per frame).</li>
+            ) : (
+              <>
+                <li>Scene: {ANCHOR.scene.replace(", 600 samples", "")}</li>
+                <li>Samples: 600 · Resolution: {ANCHOR.resolution} · {ANCHOR.settings}</li>
+              </>
+            )}
+            <li>GPU-to-GPU scaling: public median scores (Blender Open Data), Cycles only.</li>
+            <li>Not counted: scene loading, the first render&apos;s warm-up, running out of VRAM.</li>
+          </ul>
+        </div>
         <div className="rounded-[16px] border border-rule bg-paper px-4 py-3">
-          <p className="text-[14px] text-ink-2">On your {gpu.label}</p>
+          <p className="text-[14px] text-ink-2">Estimate on your {gpu.label}</p>
           <p className="font-heading text-[26px] leading-tight font-semibold text-ink">≈ {formatDuration(totalYours)}</p>
           <p className="text-[13px] text-ink-3">
             {frames.toLocaleString("en-US")} {frames === 1 ? "frame" : "frames"} × {formatDuration(perFrameYours)}
@@ -240,6 +262,11 @@ export function RenderCalculator({ ours, currency }: { ours: OurGpu[]; currency:
                 <p className="text-[13.5px] text-ink-2">
                   {speedWords(r.speedup)}
                   {r.cost != null ? ` · ≈ ${fmtJob(r.cost)} for the job` : ""}
+                </p>
+                <p className="mt-0.5 text-[13px] text-ink-3">
+                  {r.measured && !usingOwnTime
+                    ? `Reference frame measured on our ${r.name} (${formatDuration(ANCHOR.seconds)}, ${ANCHOR.measured})`
+                    : "Scaled from public benchmark medians, not measured by us"}
                 </p>
               </li>
             );
