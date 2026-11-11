@@ -179,7 +179,7 @@ function faqs(m: StudioMoney) {
   return [
   {
     q: "What file does Coreframe Studio need?",
-    a: `For room-by-room renders, a DXF floor plan (up to ${MAX_DXF_MB} MB): Studio reads the walls, doors and windows from the drawing's lines. A PDF, JPG or PNG of a plan works too, as one concept visual of the whole plan; a picture has no walls to measure, so it can't be split into rooms. DWG isn't read yet. If you work in AutoCAD, Revit or ArchiCAD, exporting a DXF is a Save As; the three-click guide is at coreframecloud.com/studio/learn. To see it first, try the sample plan: no sign-in.`,
+    a: `For room-by-room renders, a DXF floor plan (up to ${MAX_DXF_MB} MB): Studio reads the walls, doors and windows from the drawing's lines. DWG isn't read yet. If you work in AutoCAD, Revit or ArchiCAD, exporting a DXF is a Save As; the three-click guide is at coreframecloud.com/studio/learn. To see it first, try the sample plan: no sign-in.`,
   },
   {
     q: "Does it invent rooms or windows that are not on my plan?",
@@ -257,7 +257,7 @@ export default async function FloorPlanToRenderView({ currency }: { currency: Cu
               </p>
               <p className="mt-3 text-[14.5px] leading-6">Concept visuals for pitching, not construction drawings or a 3D model.</p>
               <p className="mt-4 text-[13.5px] text-ink-3">
-                DXF for room-by-room renders, up to {MAX_DXF_MB} MB; a PDF, JPG or PNG gives one visual of the whole plan.
+                DXF for room-by-room renders, up to {MAX_DXF_MB} MB.
                 Working in DWG or Revit?{" "}
                 <a href="#export-dxf" className="underline underline-offset-4">Export a clean DXF</a>.
               </p>

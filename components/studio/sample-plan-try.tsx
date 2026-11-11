@@ -145,7 +145,7 @@ export function SamplePlanTry({ where = "floor_plan_hero" }: { where?: string })
             >
               Do the same with your own plan
             </a>
-            : sign in with your email, upload a DXF, PDF, JPG or PNG, previews stay free.
+            : sign in with your email, upload a DXF, previews stay free.
           </p>
         </div>
       ) : null}

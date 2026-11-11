@@ -672,6 +672,9 @@ export default function TopUpDialog({
           You pay <b className="font-semibold text-ink">{money(paying)}</b> · {hoursLabel(intro.hours)}
           {intro.gpuName ? ` of ${intro.gpuName}` : ""}
           {intro.validityDays ? `, use within ${intro.validityDays} days` : ""}
+          {forGpu && intro.gpuName && !intro.gpuName.includes(forGpu.name) && !forGpu.name.includes(intro.gpuName)
+            ? `. The same credit works on your ${forGpu.name}, at its own hourly rate.`
+            : ""}
         </>
       );
     } else if (intro && paying > intro.price && intro.bonus) {
