@@ -4,6 +4,7 @@ import { WALKTHROUGH_YOUTUBE_ID } from "@/components/home/landing/walkthrough-se
 import { RedesignHero } from "@/components/home/redesign/hero";
 import { Bento } from "@/components/home/redesign/bento";
 import { FactsBand, BuiltFor, OfferBand, HowItWorks, LatestPosts, WhatIsCoreframe } from "@/components/home/redesign/bands";
+import { PayrollBand } from "@/components/home/payroll-band";
 import { Testimonials } from "@/components/home/redesign/testimonials";
 import { OfferingBands, offeringPrices } from "@/components/home/redesign/offerings";
 import type { Currency } from "@/lib/money";
@@ -73,6 +74,8 @@ export default async function HomeView({ currency }: { currency: Currency }) {
     <main className="text-ink">
       <RedesignHero introLabel={introLabel} prices={prices} />
       <div className="cfh-sheet">
+        {/* The payroll tagline, first thing on the sheet (owner, 11 Nov 2026). */}
+        <PayrollBand location="home_payroll_band" className="pt-16 sm:pt-20" />
         <WhatIsCoreframe fromRate={adhocRate} currency={currency} vramRange={vramRangeLabel(prices.vramSteps)} />
         <OfferingBands prices={prices} />
         <Bento
