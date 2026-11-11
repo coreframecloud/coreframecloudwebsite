@@ -25,6 +25,7 @@ import {
   introPrice,
 } from "@/lib/rate-card";
 import { GpuLadder } from "@/components/pricing/gpu-ladder";
+import { PayrollBand } from "@/components/home/payroll-band";
 import { LicenceNotice } from "@/components/licence/licence-notice";
 import type { Currency } from "@/lib/money";
 import { NODE } from "@/lib/node-spec";
@@ -305,6 +306,11 @@ export default async function SoftwareView({ slug, currency }: { slug: string; c
           </details>
         </div>
       </section>
+    ) : null}
+    {pointers ? (
+      // The payroll tagline after the hero and the GPU list (owner, 11 Nov 2026);
+      // the list stays right under the hero (owner, 31 Oct 2026).
+      <PayrollBand location="gpu_page_payroll_band" className="cf-section" />
     ) : null}
     {pointers ? (
       // The home page's at-a-glance bubbles (owner, 31 Oct 2026), same
