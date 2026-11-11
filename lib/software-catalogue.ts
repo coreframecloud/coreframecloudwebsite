@@ -177,6 +177,9 @@ export const BRING_YOUR_OWN_LICENCE: SoftwareItem[] = [
   { name: "Chaos Vantage", category: "Rendering", note: "Real-time ray tracing for large scenes.", vendorUrl: "https://www.chaos.com/vantage" },
   { name: "Chaos Corona", category: "Rendering", note: "For 3ds Max and Cinema 4D workflows.", vendorUrl: "https://www.chaos.com/corona" },
   { name: "KeyShot", category: "Rendering", note: "Product and industrial visualisation.", vendorUrl: "https://www.keyshot.com/" },
+  // 11 Nov 2026: pages /software/cinema-4d-cloud-workstation and /software/houdini-cloud-workstation.
+  { name: "Maxon Cinema 4D & Redshift", category: "Rendering", note: "Sign in with your Maxon account.", vendorUrl: "https://www.maxon.net/cinema-4d" },
+  { name: "SideFX Houdini", category: "Rendering", note: "Your SideFX account or licence server; Karma ships with it.", vendorUrl: "https://www.sidefx.com/products/houdini/" },
   { name: "Autodesk Revit", category: "CAD & BIM", note: "Install from your own Autodesk account.", vendorUrl: "https://manage.autodesk.com/" },
   { name: "Autodesk AutoCAD", category: "CAD & BIM", note: "Install from your own Autodesk account.", vendorUrl: "https://manage.autodesk.com/" },
   { name: "Autodesk 3ds Max", category: "CAD & BIM", note: "Install from your own Autodesk account.", vendorUrl: "https://manage.autodesk.com/" },

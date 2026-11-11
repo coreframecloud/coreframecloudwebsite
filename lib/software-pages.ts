@@ -65,6 +65,8 @@ export type SoftwarePage = {
    * Live prices under the lead, from the rate card (never typed here):
    * "answer" = the answer-first passage plus the spec table (GPU rental page);
    * "line" = one line with the hourly rate in the visitor's currency.
+   * Since 11 Nov 2026 every page's hero shows the price block (components/
+   * software/software-start.tsx), so "line" no longer adds a second line.
    */
   livePrice?: "answer" | "line";
   /** Short sections shown open (not folded), each with an optional link. */
@@ -96,7 +98,7 @@ function buildSoftwarePages(cur: Currency): SoftwarePage[] {
     title: "Revit Cloud Workstation — run Revit on a rented RTX GPU",
     metaTitle: "Revit Cloud Workstation, rented RTX GPU",
     teamPlansLink: true,
-    lastUpdated: "22 October 2026",
+    lastUpdated: "11 November 2026",
     description:
       "Run Autodesk Revit on a Windows GPU workstation in India, billed per minute. Bring your Autodesk licence, open large models, and render without buying hardware.",
     intro:
@@ -113,7 +115,7 @@ function buildSoftwarePages(cur: Currency): SoftwarePage[] {
     faqs: [
       {
         q: "Can I run Autodesk Revit on a cloud GPU workstation?",
-        a: "Yes. A Coreframe workstation is a full Windows machine with an RTX GPU, and Revit runs exactly as it would on a local PC. Autodesk only lets you download the installer from your own account, so we set it up with you once in a short session where you sign in. After that, Revit is on every workstation you launch, running on your own subscription.",
+        a: "Yes. A Coreframe workstation is a full Windows machine with an RTX GPU, and Revit runs exactly as it would on a local PC. Autodesk only lets you download the installer from your own account, so you install it and sign in with your own subscription. Each session starts from a clean machine, so software you install is removed when it ends, unless you choose a persistent workstation (available on selected GPUs), which keeps your own Windows disk between sessions.",
       },
       {
         q: "Does Coreframe provide a Revit licence?",
@@ -128,7 +130,7 @@ function buildSoftwarePages(cur: Currency): SoftwarePage[] {
         a: "You pay per minute of streaming time at the published GPU-hour rate. There's no setup fee and no monthly minimum, and we don't bill for provisioning time or failed connections.",
       },
     ],
-    related: ["enscape-cloud-gpu", "cloud-rendering-for-architects", "3ds-max-cloud-workstation", "twinmotion-cloud-workstation", "sketchup-cloud-workstation", "dwg-check"],
+    related: ["enscape-cloud-gpu", "cloud-rendering-for-architects", "3ds-max-cloud-workstation", "twinmotion-cloud-workstation", "sketchup-cloud-workstation", "autocad-cloud-workstation", "archicad-cloud-workstation", "dwg-check"],
   },
 
   {
@@ -153,7 +155,7 @@ function buildSoftwarePages(cur: Currency): SoftwarePage[] {
       },
     ],
     teamPlansLink: true,
-    lastUpdated: "1 November 2026",
+    lastUpdated: "11 November 2026",
     description:
       "3ds Max cloud rendering on a rented GPU workstation: V-Ray GPU and Chaos Vantage on a workstation-class RTX card, your own licence, billed per minute.",
     intro:
@@ -197,7 +199,7 @@ function buildSoftwarePages(cur: Currency): SoftwarePage[] {
     faqs: [
       {
         q: "Can I run 3ds Max and V-Ray on a rented cloud GPU?",
-        a: "Yes. You get a full Windows desktop with an RTX GPU, and 3ds Max, V-Ray, Corona and Chaos Vantage all run normally. Autodesk and Chaos both need your own account to download, so we set these up with you once and they are on every workstation afterwards, running on your own licences.",
+        a: "Yes. You get a full Windows desktop with an RTX GPU, and 3ds Max, V-Ray, Corona and Chaos Vantage all run normally. Autodesk and Chaos both need your own account to download, so you install them and sign in with your own licences. Each session starts from a clean machine, so software you install is removed when it ends, unless you choose a persistent workstation (available on selected GPUs), which keeps your own Windows disk between sessions.",
       },
       {
         q: "Is this a render farm?",
@@ -217,11 +219,12 @@ function buildSoftwarePages(cur: Currency): SoftwarePage[] {
         a: "On ad-hoc hourly sessions, yes, because the machine resets to a clean image each time and the setup time is billed like any other minute. On a committed monthly plan we build your applications into the baseline image on your nodes, so they are there when you sign in. If you tell us what you use before your first session, we install it beforehand so your first hours test your real workflow instead of paying for setup.",
       },
     ],
-    related: ["architectural-visualization", "vray-cloud-rendering", "cloud-workstation-vs-render-farm", "revit-cloud-workstation", "sketchup-cloud-workstation", "dwg-check"],
+    related: ["architectural-visualization", "vray-cloud-rendering", "chaos-vantage-cloud-workstation", "cloud-workstation-vs-render-farm", "revit-cloud-workstation", "sketchup-cloud-workstation", "dwg-check"],
   },
 
   {
     slug: "sketchup-cloud-workstation",
+    lastUpdated: "11 November 2026",
     title: "SketchUp Cloud Workstation with GPU rendering",
     metaTitle: "SketchUp Cloud Workstation, GPU rendering",
     description:
@@ -259,6 +262,7 @@ function buildSoftwarePages(cur: Currency): SoftwarePage[] {
    */
   {
     slug: "blender-cloud-workstation",
+    lastUpdated: "11 November 2026",
     title: "Blender Cloud Workstation — Cycles rendering on a rented RTX GPU",
     metaTitle: "Blender Cloud GPU Workstation for Cycles",
     description:
@@ -286,7 +290,7 @@ function buildSoftwarePages(cur: Currency): SoftwarePage[] {
       },
       { q: "Where should I keep my .blend files?", a: RESET_ANSWER },
     ],
-    related: ["video-animation-rendering", "cloud-workstation-vs-render-farm", "d5-render-cloud-workstation", "3ds-max-cloud-workstation", "twinmotion-cloud-workstation"],
+    related: ["video-animation-rendering", "cloud-workstation-vs-render-farm", "d5-render-cloud-workstation", "3ds-max-cloud-workstation", "twinmotion-cloud-workstation", "houdini-cloud-workstation", "cinema-4d-cloud-workstation"],
   },
 
   {
@@ -301,7 +305,7 @@ function buildSoftwarePages(cur: Currency): SoftwarePage[] {
     intro:
       "A Twinmotion workstation in the cloud: Twinmotion is preinstalled on every Coreframe workstation, and its free tier covers most individual users. All you rent is the GPU workstation that makes it run properly, by the minute.",
     livePrice: "line",
-    lastUpdated: "22 October 2026",
+    lastUpdated: "11 November 2026",
     problem:
       "Twinmotion looks great in demos and stutters on your own laptop, especially with vegetation and reflections turned up.",
     why: [
@@ -323,11 +327,12 @@ function buildSoftwarePages(cur: Currency): SoftwarePage[] {
       },
       { q: "Do my Twinmotion projects persist?", a: RESET_ANSWER },
     ],
-    related: ["architectural-visualization", "unreal-engine-cloud-workstation", "blender-cloud-workstation", "revit-cloud-workstation", "vray-cloud-rendering"],
+    related: ["architectural-visualization", "unreal-engine-cloud-workstation", "blender-cloud-workstation", "revit-cloud-workstation", "archicad-cloud-workstation", "vray-cloud-rendering"],
   },
 
   {
     slug: "vray-cloud-rendering",
+    lastUpdated: "11 November 2026",
     title: "V-Ray Cloud Rendering on a rented GPU workstation",
     metaTitle: "V-Ray Cloud Rendering on a rented RTX GPU",
     description:
@@ -354,7 +359,7 @@ function buildSoftwarePages(cur: Currency): SoftwarePage[] {
       },
       { q: "Is this the same as Chaos Cloud?", a: "No. Chaos Cloud is a render service you submit jobs to. Coreframe rents you an interactive workstation, so you set up and render in one place and can use any software you like on the same machine." },
     ],
-    related: ["architectural-visualization", "3ds-max-cloud-workstation", "sketchup-cloud-workstation", "rhino-cloud-workstation"],
+    related: ["architectural-visualization", "3ds-max-cloud-workstation", "chaos-vantage-cloud-workstation", "sketchup-cloud-workstation", "rhino-cloud-workstation", "cinema-4d-cloud-workstation"],
   },
 
   {
@@ -373,7 +378,7 @@ function buildSoftwarePages(cur: Currency): SoftwarePage[] {
       "Rent for one project instead of buying a machine you'll keep for years.",
     ],
     licence: LICENCE_BYOL + " Rhino uses your own licence key.",
-    lastUpdated: "22 October 2026",
+    lastUpdated: "11 November 2026",
     /**
      * Grasshopper (owner, 19 Oct 2026, page 4 of "build pages 1-4"): a section
      * here, not a page of its own. This page is already "Rhino & Grasshopper
@@ -405,11 +410,11 @@ function buildSoftwarePages(cur: Currency): SoftwarePage[] {
       },
       {
         q: "Can I run Rhino and Grasshopper on a cloud workstation?",
-        a: "Yes. It is a standard Windows desktop, and Rhino, Grasshopper and plugins run normally with your own licence. We set them up with you once, so you aren't reinstalling them every session."
+        a: "Yes. It is a standard Windows desktop, and Rhino, Grasshopper and plugins run normally with your own licence. Each session starts from a clean machine, so software you install is removed when it ends, unless you choose a persistent workstation (available on selected GPUs), which keeps your own Windows disk between sessions."
       },
       { q: "Do my Rhino files persist between sessions?", a: RESET_ANSWER },
     ],
-    related: ["vray-cloud-rendering", "sketchup-cloud-workstation", "revit-cloud-workstation", "dwg-check"],
+    related: ["vray-cloud-rendering", "chaos-vantage-cloud-workstation", "keyshot-cloud-workstation", "sketchup-cloud-workstation", "revit-cloud-workstation", "dwg-check"],
   },
 
   /**
@@ -423,6 +428,7 @@ function buildSoftwarePages(cur: Currency): SoftwarePage[] {
    */
   {
     slug: "after-effects-premiere-cloud-workstation",
+    lastUpdated: "11 November 2026",
     title: "After Effects and Premiere Pro on a rented RTX workstation",
     metaTitle: "After Effects & Premiere Cloud Workstation",
     description:
@@ -437,8 +443,11 @@ function buildSoftwarePages(cur: Currency): SoftwarePage[] {
       "Export and render on the rented machine while your own computer stays usable.",
       "Pay for the busy weeks only. Per-minute billing stops when you end the session.",
     ],
+    // 11 Nov 2026: was "Adobe Creative Cloud is installed on the workstation"; the
+    // cloud image (golden v5) is only confirmed to carry D5, Twinmotion, Unreal and
+    // Blender, so no install claim until the owner confirms (handoff 11 Nov).
     licence:
-      "Adobe Creative Cloud is installed on the workstation. You sign in with your own Adobe account, so it runs on your own subscription.",
+      "Install Creative Cloud and sign in with your own Adobe account, so After Effects and Premiere Pro run on your own subscription.",
     sections: [
       {
         h2: "Two things to check before you move a video project.",
@@ -462,7 +471,7 @@ function buildSoftwarePages(cur: Currency): SoftwarePage[] {
       },
       {
         q: "Does Coreframe provide an Adobe licence?",
-        a: "No. Creative Cloud is installed on the workstation and licensed to you, so you sign in with your own Adobe account.",
+        a: "No. Adobe licenses Creative Cloud to you, so you sign in with your own Adobe account. Coreframe supplies the machine, never the licence.",
       },
       {
         q: "How do I get my footage onto the workstation?",
@@ -474,7 +483,7 @@ function buildSoftwarePages(cur: Currency): SoftwarePage[] {
       },
       { q: "What happens to my project files after a session?", a: RESET_ANSWER },
     ],
-    related: ["video-animation-rendering", "cloud-workstation-vs-render-farm", "blender-cloud-workstation", "gpu-workstation-rental-india"],
+    related: ["video-animation-rendering", "cloud-workstation-vs-render-farm", "blender-cloud-workstation", "cinema-4d-cloud-workstation", "gpu-workstation-rental-india"],
   },
 
   {
@@ -484,7 +493,7 @@ function buildSoftwarePages(cur: Currency): SoftwarePage[] {
     absoluteTitle: "GPU on Rent in India, Workstations by the Minute | Coreframe",
     h1: "Rent a GPU workstation in India, by the minute",
     livePrice: "answer",
-    lastUpdated: "6 November 2026",
+    lastUpdated: "11 November 2026",
     callouts: [
       {
         h2: "Running your own CFD software?",
@@ -588,8 +597,273 @@ function buildSoftwarePages(cur: Currency): SoftwarePage[] {
       },
       { q: "Do my Unreal projects persist between sessions?", a: RESET_ANSWER },
     ],
-    related: ["video-animation-rendering", "twinmotion-cloud-workstation", "d5-render-cloud-workstation", "blender-cloud-workstation", "gpu-workstation-rental-india"],
-    lastUpdated: "22 October 2026",
+    related: ["video-animation-rendering", "twinmotion-cloud-workstation", "d5-render-cloud-workstation", "blender-cloud-workstation", "houdini-cloud-workstation", "gpu-workstation-rental-india"],
+    lastUpdated: "11 November 2026",
+  },
+
+  /**
+   * New pages, 11 Nov 2026 (owner approved the software landing pages): high-
+   * intent applications the site had no page for. Every one is bring your own
+   * licence: the session user installs software on a cloud workstation, and
+   * the machine resets after the session unless the customer keeps a
+   * persistent workstation (same wording as /virtual-workstation-vs-gpu-server).
+   * Nothing here is claimed as preinstalled beyond D5 Render, Twinmotion,
+   * Unreal Engine and Blender (golden image v5, owner 4 Nov 2026). No render
+   * times or speed multiples: none are measured for these applications.
+   * Corona has no page of its own on purpose: it is a CPU renderer and the
+   * honest answer (3ds Max page) is that a GPU workstation will not speed it up.
+   */
+  {
+    slug: "cinema-4d-cloud-workstation",
+    title: "Cinema 4D Cloud Workstation — Redshift and Octane on a rented RTX GPU",
+    metaTitle: "Cinema 4D Cloud Workstation, Redshift & Octane",
+    absoluteTitle: "Cinema 4D Cloud Workstation, Redshift & Octane | Coreframe",
+    lastUpdated: "11 November 2026",
+    description:
+      "Run Cinema 4D with Redshift or Octane on a rented Windows RTX workstation, billed per minute. Bring your Maxon or OTOY licence; files persist.",
+    intro:
+      `Cinema 4D models and animates on the CPU, but Redshift and Octane render on the graphics card, and that is where a laptop runs out. A Coreframe workstation is a full Windows desktop with a ${GPU_CLASS}, streamed to the computer you already own and billed by the minute.`,
+    problem:
+      "Redshift previews crawl on your laptop, a final sequence ties it up overnight, and the card that would fix it costs more than the few weeks a year you need it.",
+    why: [
+      "Redshift and Octane render on the GPU, which is what you are renting.",
+      "Workstation VRAM for heavy textures, volumes and instanced scenes.",
+      "Render on the rented machine while your own computer stays free.",
+      "Pay for the busy weeks only; billing stops when you end the session.",
+    ],
+    licence: LICENCE_BYOL + " Cinema 4D and Redshift sign in with your Maxon account; Octane with your OTOY account.",
+    faqs: [
+      {
+        q: "Can I run Cinema 4D on a cloud GPU workstation?",
+        a: `Yes. A Coreframe workstation is a full Windows desktop (${NODE.os}) with a dedicated NVIDIA RTX GPU, so Cinema 4D installs and runs as it does on a PC under your desk. You install it with your own Maxon account and stream the desktop through the Coreframe Connect app.`,
+      },
+      {
+        q: "Does Redshift or Octane work on a Coreframe workstation?",
+        a: "Yes. Both are GPU renderers built for NVIDIA cards, and every Coreframe workstation has a dedicated NVIDIA RTX GPU. Sign in to Redshift with your Maxon account and to Octane with your OTOY account.",
+      },
+      {
+        q: "Does Coreframe provide a Cinema 4D licence?",
+        a: "No. Maxon licences are issued to you, so you sign in with your own Maxon account. Coreframe supplies the machine, never the licence.",
+      },
+      {
+        q: "Do I reinstall Cinema 4D every session?",
+        a: "On hourly sessions, yes: each session starts from a clean machine and software you install is removed when it ends. A persistent workstation, available on selected GPUs, keeps your own Windows disk with Cinema 4D installed. Project files always stay on your project drive.",
+      },
+    ],
+    related: ["blender-cloud-workstation", "after-effects-premiere-cloud-workstation", "houdini-cloud-workstation", "video-animation-rendering", "cloud-workstation-vs-render-farm"],
+  },
+
+  {
+    slug: "houdini-cloud-workstation",
+    title: "Houdini Cloud Workstation — Houdini and Karma on a rented RTX GPU",
+    metaTitle: "Houdini Cloud Workstation, Karma XPU",
+    absoluteTitle: "Houdini Cloud Workstation by the Minute | Coreframe",
+    lastUpdated: "11 November 2026",
+    description:
+      "Run SideFX Houdini with Karma XPU or Redshift on a rented Windows RTX workstation, billed per minute. Your own SideFX licence; files persist.",
+    intro:
+      `Houdini on a rented Windows desktop with a ${GPU_CLASS} and workstation RAM. You bring your SideFX licence, open your .hip files from persistent storage and pay by the minute, so a heavy shot does not need a machine you own all year.`,
+    problem:
+      "A big simulation or a Karma render takes over the only machine you have, and a workstation that copes costs far more than the shots that need it.",
+    why: [
+      "Karma XPU and Redshift render on the GPU, with workstation-class VRAM.",
+      "Workstation RAM for simulations and caches, listed with each card.",
+      "Your own computer stays free while the shot runs on the rented one.",
+      "Rent it for the shots that need it and stop paying when they are done.",
+    ],
+    licence: LICENCE_BYOL + " Houdini signs in with your SideFX account or your own licence server; Karma ships with Houdini.",
+    sections: [
+      {
+        h2: "Where Houdini uses the GPU, and where it doesn't.",
+        body: [
+          "Most of Houdini's simulation work (FLIP, pyro, Vellum and RBD) runs on the CPU and needs system RAM for its caches. The GPU draws the viewport and runs Karma XPU, Redshift and the OpenCL parts of some solvers.",
+          "So pick the card for your renderer's VRAM and check the workstation's vCPU and RAM, listed with each card, for your simulations. Write caches to your project drive so they are there next session.",
+        ],
+      },
+    ],
+    faqs: [
+      {
+        q: "Can I run Houdini on a cloud workstation?",
+        a: `Yes. A Coreframe workstation is a full Windows desktop (${NODE.os}) with a dedicated NVIDIA RTX GPU, and Houdini runs on it with your own SideFX licence. You reach it through the Coreframe Connect app and pay per minute.`,
+      },
+      {
+        q: "Does Karma XPU work on a Coreframe workstation?",
+        a: "Yes. Karma XPU uses the NVIDIA RTX GPU and the CPU together, and Karma comes with Houdini, so there is nothing extra to license.",
+      },
+      {
+        q: "Will my Houdini simulations run faster?",
+        a: "Only if your own machine is short of CPU cores or RAM. Most Houdini simulation runs on the CPU, so compare the vCPU and RAM listed with each card against what you have. We don't quote simulation times because they depend on the setup.",
+      },
+      {
+        q: "Does Coreframe provide a Houdini licence?",
+        a: "No. You sign in with your own SideFX account or point Houdini at your own licence server. Coreframe supplies the machine.",
+      },
+    ],
+    related: ["cinema-4d-cloud-workstation", "blender-cloud-workstation", "unreal-engine-cloud-workstation", "video-animation-rendering", "cloud-workstation-vs-render-farm"],
+  },
+
+  {
+    slug: "autocad-cloud-workstation",
+    title: "AutoCAD Cloud Workstation — AutoCAD on a rented Windows PC",
+    metaTitle: "AutoCAD Cloud Workstation by the minute",
+    absoluteTitle: "AutoCAD Cloud Workstation, Windows by the Minute | Coreframe",
+    lastUpdated: "11 November 2026",
+    description:
+      "Run Autodesk AutoCAD on a rented Windows GPU workstation, streamed to the laptop you own and billed per minute. Bring your Autodesk licence.",
+    intro:
+      `AutoCAD needs Windows and a capable machine, not necessarily one you own. A Coreframe workstation is a full Windows desktop with a ${GPU_CLASS}, streamed to the laptop you already have, billed by the minute. Install AutoCAD from your own Autodesk account and work as you would at your desk.`,
+    problem:
+      "You need AutoCAD today, on a laptop that is too slow for big drawings or not yours to install software on.",
+    why: [
+      "Full desktop AutoCAD with its add-ins, not a browser viewer.",
+      "The same machine renders: Twinmotion and D5 Render are already installed.",
+      "Drawings stay on your project drive between sessions.",
+      "Pay by the minute for the weeks you need it.",
+    ],
+    licence: LICENCE_BYOL + " Install AutoCAD from your own Autodesk account at manage.autodesk.com, which is what ties the install to your seat.",
+    faqs: [
+      {
+        q: "Can I run AutoCAD on a cloud workstation?",
+        a: `Yes. A Coreframe workstation is a full Windows desktop (${NODE.os}), so the Windows version of AutoCAD installs and runs as it does on a local PC. You install it from your own Autodesk account and reach the desktop through the Coreframe Connect app.`,
+      },
+      {
+        q: "Can I run AutoCAD on a low-end laptop?",
+        a: "Yes. AutoCAD runs on the workstation, and your laptop only shows the stream through the Coreframe Connect app for Windows, so a modest laptop with a steady connection is enough.",
+      },
+      {
+        q: "Does Coreframe provide an AutoCAD licence?",
+        a: "No. Autodesk licences are issued to a named user, so you sign in with your own. Coreframe supplies the machine, never the licence.",
+      },
+      {
+        q: "Do I need a GPU for AutoCAD?",
+        a: "Not much of one. AutoCAD runs mostly on the CPU, so the entry card on the price list is enough. A bigger GPU only matters if you render the model in Twinmotion or D5 on the same machine.",
+      },
+      {
+        q: "Can I check a DWG without AutoCAD?",
+        a: "Yes. Our free DWG checker reads dimensions from a drawing in the browser, with no AutoCAD seat and no sign-up.",
+      },
+    ],
+    related: ["dwg-check", "revit-cloud-workstation", "archicad-cloud-workstation", "sketchup-cloud-workstation", "virtual-workstation-vs-gpu-server"],
+  },
+
+  {
+    slug: "archicad-cloud-workstation",
+    title: "Archicad Cloud Workstation — Archicad on a rented RTX GPU",
+    metaTitle: "Archicad Cloud Workstation, by the minute",
+    absoluteTitle: "Archicad Cloud Workstation by the Minute | Coreframe",
+    lastUpdated: "11 November 2026",
+    description:
+      "Run Graphisoft Archicad on a rented Windows RTX workstation, billed per minute, with Twinmotion and D5 Render already installed. Bring your Archicad licence.",
+    intro:
+      `Archicad on a rented Windows desktop with a ${GPU_CLASS}, streamed to your own laptop and billed by the minute. Twinmotion and D5 Render are already on the machine, so the model and its visualisation sit in one session.`,
+    problem:
+      "The model is fine on your laptop until the 3D window gets heavy or you hand it to a renderer, and buying a workstation for the presentation weeks doesn't add up.",
+    why: [
+      "Twinmotion and D5 Render are preinstalled for the rendering side.",
+      "A full Windows desktop, so Archicad add-ons install as at your desk.",
+      "Model files stay on your project drive between sessions.",
+      "Pay by the minute for the weeks a project needs it.",
+    ],
+    licence: LICENCE_BYOL + " Archicad needs your own Graphisoft licence; use one you can activate on a remote machine, because a USB protection key in your office does not reach it.",
+    faqs: [
+      {
+        q: "Can I run Archicad on a cloud workstation?",
+        a: `Yes. A Coreframe workstation is a full Windows desktop (${NODE.os}) with a dedicated NVIDIA RTX GPU, and Archicad installs and runs on it with your own Graphisoft licence. You stream it through the Coreframe Connect app and pay per minute.`,
+      },
+      {
+        q: "Which Archicad licence works on a remote workstation?",
+        a: "One you can activate over the internet, such as a Graphisoft cloud licence signed in with your Graphisoft ID. A physical USB protection key plugged in at your office cannot reach a remote machine.",
+      },
+      {
+        q: "Can I render an Archicad model in Twinmotion on the same machine?",
+        a: "Yes. Twinmotion and D5 Render are preinstalled, so you can link or export from Archicad and render in the same session.",
+      },
+      {
+        q: "Does Coreframe provide an Archicad licence?",
+        a: "No. You bring your own Graphisoft licence. Coreframe supplies the machine.",
+      },
+    ],
+    related: ["twinmotion-cloud-workstation", "d5-render-cloud-workstation", "enscape-cloud-gpu", "revit-cloud-workstation", "autocad-cloud-workstation", "architectural-visualization"],
+  },
+
+  {
+    slug: "chaos-vantage-cloud-workstation",
+    title: "Chaos Vantage Cloud Workstation — real-time ray tracing on a rented RTX GPU",
+    metaTitle: "Chaos Vantage Cloud Workstation, RTX GPU",
+    absoluteTitle: "Chaos Vantage on a Cloud GPU Workstation | Coreframe",
+    lastUpdated: "11 November 2026",
+    description:
+      "Run Chaos Vantage on a rented Windows RTX workstation, billed per minute. Live link from 3ds Max, SketchUp, Rhino or Revit; bring your Chaos licence.",
+    intro:
+      `Chaos Vantage ray-traces the whole scene in real time on the graphics card, so VRAM decides what you can open. A Coreframe workstation gives you a ${GPU_CLASS} with workstation VRAM, streamed to your laptop and billed by the minute.`,
+    problem:
+      "Your archviz scene opens in Vantage on your laptop only after you strip it down, and the card that holds it whole costs more than the projects that need it.",
+    why: [
+      "Vantage needs a ray-tracing RTX GPU, and every card here has one.",
+      "Workstation VRAM, so big scenes open without cutting textures.",
+      "Live link from 3ds Max, SketchUp, Rhino or Revit on the same machine.",
+      "Pay by the minute for the presentation weeks only.",
+    ],
+    licence: LICENCE_BYOL + " Vantage signs in with your Chaos account or your own licence server.",
+    faqs: [
+      {
+        q: "Can I run Chaos Vantage on a cloud GPU?",
+        a: `Yes, on an NVIDIA RTX card with a display driver, which every Coreframe workstation has. It is a full Windows desktop (${NODE.os}), so you install Vantage with your Chaos account and use it as you would locally, streamed through the Coreframe Connect app.`,
+      },
+      {
+        q: "How much VRAM does Chaos Vantage need?",
+        a: "The whole scene has to fit in VRAM: geometry, textures and lights. Many design laptops have 6 to 8 GB; every Coreframe card has more, and the larger cards on the price list hold more again. Open your scene in a session and watch the VRAM meter.",
+      },
+      {
+        q: "Does the Vantage live link work on the workstation?",
+        a: "Yes. Install the host (3ds Max, SketchUp, Rhino or Revit) with your own licence in the same session and the live link works as it does on your desk.",
+      },
+      {
+        q: "Does Coreframe provide a Vantage licence?",
+        a: "No. Vantage is licensed to you through your Chaos account or licence server. Coreframe supplies the machine.",
+      },
+    ],
+    related: ["vray-cloud-rendering", "3ds-max-cloud-workstation", "sketchup-cloud-workstation", "rhino-cloud-workstation", "vram-for-architectural-rendering"],
+  },
+
+  {
+    slug: "keyshot-cloud-workstation",
+    title: "KeyShot Cloud Workstation — GPU rendering on a rented RTX card",
+    metaTitle: "KeyShot Cloud Workstation, GPU rendering",
+    absoluteTitle: "KeyShot Cloud GPU Workstation by the Minute | Coreframe",
+    lastUpdated: "11 November 2026",
+    description:
+      "Run KeyShot in GPU mode on a rented Windows RTX workstation, billed per minute. Bring your KeyShot licence; product files persist between sessions.",
+    intro:
+      `KeyShot renders on the CPU or, in GPU mode, on an NVIDIA RTX card. A Coreframe workstation gives you a ${GPU_CLASS} on a full Windows desktop, streamed to your laptop and billed by the minute, so product shots and turntables do not tie up your own machine.`,
+    problem:
+      "A batch of product shots or a turntable animation ties up your laptop for hours, and a render workstation sits idle between launches.",
+    why: [
+      "KeyShot's GPU mode runs on the NVIDIA RTX card you rent.",
+      "Workstation VRAM for big assemblies and high-resolution textures.",
+      "Render on the rented machine while your own computer stays free.",
+      "Pay for the launch weeks only.",
+    ],
+    licence: LICENCE_BYOL + " KeyShot activates with your own KeyShot licence.",
+    faqs: [
+      {
+        q: "Can I run KeyShot on a cloud GPU workstation?",
+        a: `Yes. A Coreframe workstation is a full Windows desktop (${NODE.os}) with a dedicated NVIDIA RTX GPU, so KeyShot installs and runs in CPU or GPU mode. You activate your own KeyShot licence and stream the desktop through the Coreframe Connect app.`,
+      },
+      {
+        q: "Does KeyShot GPU mode work on Coreframe?",
+        a: "Yes. KeyShot's GPU mode needs an NVIDIA RTX card, and every Coreframe workstation has one. The scene has to fit in the card's VRAM, so pick a larger card for big assemblies.",
+      },
+      {
+        q: "Does Coreframe provide a KeyShot licence?",
+        a: "No. You bring your own KeyShot licence. Coreframe supplies the machine.",
+      },
+      {
+        q: "Will my KeyShot files be there next time?",
+        a: RESET_ANSWER,
+      },
+    ],
+    related: ["rhino-cloud-workstation", "blender-cloud-workstation", "cinema-4d-cloud-workstation", "cloud-workstation-vs-render-farm"],
   },
   ];
 }

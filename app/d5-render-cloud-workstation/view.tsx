@@ -20,7 +20,8 @@ import {
   ladderRanges,
   pricingFaqAnswer,
 } from "@/lib/rate-card";
-import { GpuLadder } from "@/components/pricing/gpu-ladder";
+import { softwareStart } from "@/lib/software-start";
+import { SoftwareFitPanel, SoftwarePickSection, SoftwareStartEnd, SoftwareStartHero } from "@/components/software/software-start";
 import { NODE, replacementCost } from "@/lib/node-spec";
 import { BANDWIDTH_SENTENCE } from "@/lib/streaming-terms";
 
@@ -94,6 +95,15 @@ export default async function D5View({ currency }: { currency: Currency }) {
   const machineCost = replacementCost(currency);
   const ladder = ladderRanges(card);
 
+  // Price first, one action, account at Start (owner, 10-11 Nov 2026).
+  const start = softwareStart("d5-render-cloud-workstation", card, currency);
+  const gpuFaq =
+    start.fit && start.rec
+      ? {
+          q: `What GPU do I need for ${start.fit.app}?`,
+          a: `For ${start.fit.app} we recommend the ${start.rec.name} with ${start.rec.vram} GB of VRAM. ${start.fit.gpu.why} Every card on the price list runs it; you pick the card when you start.`,
+        }
+      : null;
   const faqs: { q: string; a: string }[] = [
     {
       q: "Can I run D5 Render on a cloud workstation?",
@@ -125,6 +135,7 @@ export default async function D5View({ currency }: { currency: Currency }) {
     },
     ...(priceAnswer ? [{ q: "How much does it cost to render in D5 on Coreframe?", a: priceAnswer }] : []),
     ...(introFaq ? [introFaq] : []),
+    ...(gpuFaq ? [gpuFaq] : []),
   ];
 
   const jsonLd = {
@@ -165,8 +176,9 @@ export default async function D5View({ currency }: { currency: Currency }) {
             <h1 className="cf-display">
               Run D5 Render on a GPU workstation.
             </h1>
-          
-            <p className="cf-lead mt-[22px]">
+            {/* Price first and ONE big action on the first phone screen (11 Nov 2026). */}
+            <SoftwareStartHero data={start} where="sw_d5" appName="D5 Render" />
+            <p className="cf-lead mt-7">
             A full Windows desktop with a workstation-class GPU and D5 Render installed, streamed to your laptop and billed by the minute. Sign in with your own D5 account.
           </p>
             <PageByline path="/d5-render-cloud-workstation" className="mt-4 opacity-75" />
@@ -206,10 +218,13 @@ export default async function D5View({ currency }: { currency: Currency }) {
           </p>
         </section>
 
+        {/* Preinstalled vs your own licence, the recommended card, and the price-first
+            picker in place of the plain ladder (11 Nov 2026). */}
+        <SoftwareFitPanel data={start} className="mt-14" />
+        <SoftwarePickSection data={start} currency={currency} where="sw_d5" title="Pick a GPU for D5 Render." className="mt-14" />
+
         <section className="mt-14">
           <h2 className="cf-section-title">The machine.</h2>
-          {/* The GPU ladder from the live rate card (owner, 21 Oct 2026). */}
-          <div className="mt-6"><GpuLadder card={card} currency={currency} compact /></div>
           <dl className="mt-4 divide-y divide-rule overflow-hidden rounded-cf border border-rule bg-paper-2">
             {FIXED_SPECS.map(([k, v]) => (
               <div key={k} className="flex flex-col gap-1 px-5 py-4 sm:flex-row sm:gap-6">
@@ -324,10 +339,8 @@ export default async function D5View({ currency }: { currency: Currency }) {
             it on ours. You&rsquo;ll learn more from that than from any number we
             could put on this page.
           </p>
-          <Link href="/signup" className="cf-btn-primary mt-6">
-            Get started
-          </Link>
         </section>
+        <SoftwareStartEnd data={start} where="sw_d5" className="mt-8" />
 
         <nav className="mt-14 border-t border-rule pt-8">
           <p className="cf-eyebrow mb-4">Related</p>
