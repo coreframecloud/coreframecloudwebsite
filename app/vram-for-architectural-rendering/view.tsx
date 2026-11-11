@@ -9,8 +9,10 @@ import { breadcrumbList, OG_IMAGE } from "@/lib/seo";
 import Link from "next/link";
 import { BackgroundGlow } from "@/components/home/background-glow";
 import { SpecBlock, K, B } from "@/components/home/spec-block";
-import { NODE } from "@/lib/node-spec";
-import { getRateCard, adhocRateHourly, introOfferFor, hoursLabel, taxWords, introPrice } from "@/lib/rate-card";
+import { getRateCard, publicGpus, formatHourly, shortGpuName, taxWords, type RateCardGpu } from "@/lib/rate-card";
+import { startGpus } from "@/lib/gpu-start-server";
+import { GpuPickCards, GpuStartSticky } from "@/components/go/gpu-start";
+import { formatMoney } from "@/lib/money";
 
 /**
  * How much VRAM architectural rendering actually needs.
@@ -36,10 +38,14 @@ import { getRateCard, adhocRateHourly, introOfferFor, hoursLabel, taxWords, intr
  * each other and will not imply we have. Capacity is checkable; speed here
  * would be marketing.
  *
- * HONEST ABOUT OUR OWN CEILING. Our node has 16 GB. Above that we are the
- * wrong answer and the page says so and names the alternative, same rule as
- * coreframe-vs-irender. A page that concludes "buy from us" regardless of the
- * question is cited by nobody and deserves to be.
+ * WHICH CARD FOR WHICH PEAK (rewritten 11 Nov 2026, owner). The old "Where we
+ * fit" said we had nothing above 16 GB and sent readers to a competitor; the
+ * ladder now runs well past that. The section is built from the live rate
+ * card only: every public card, its VRAM and its price in the visitor's
+ * currency, grouped by the measured peak it suits (VRAM minus the ~2 GB the
+ * page itself tells readers to keep for Windows and the display). No card,
+ * size or price is typed into this file, and with no rate card the section
+ * shows no prices rather than stale ones. No competitor is named or linked.
  */
 
 const VENDOR_CHECKED = "2 October 2026";
@@ -74,6 +80,49 @@ export function vramMetadata(): Metadata {
 
 const pad = (s: string, n: number) => (s.length >= n ? s : s + " ".repeat(n - s.length));
 
+/** Windows and the display take about this much before the renderer sees any (the page's own rule). */
+const HEADROOM_GB = 2;
+
+/** The kind of scene that fits a card of this size, by VRAM band, so a new size on the ladder still reads right. */
+function scenesFor(vram: number): string {
+  if (vram <= 16)
+    return "Interiors, a single building without heavy site context, 2K texture sets, Enscape VR (Chaos asks for 12 GB), stills and short walkthroughs.";
+  if (vram <= 32)
+    return "4K PBR texture sets, site context with scattered trees and grass, a federated model opened together, Lumion\u2019s high-end tier.";
+  if (vram <= 64)
+    return "Scanned point clouds or survey meshes beside the model, city blocks, long animations with full landscape.";
+  return "The heaviest jobs: very large point clouds, whole masterplans with dense vegetation, several heavy scenes or apps open at once.";
+}
+
+type FitRow = { gpu: RateCardGpu; peak: string; note: string };
+
+/**
+ * One row per VRAM size on the live ladder (its cheapest card), plus a row for
+ * any dearer card of the same size that has more CUDA cores (the RTX 5080 next
+ * to the A4000 today). Built from the rate card only.
+ */
+function fitRows(gpus: RateCardGpu[]): FitRow[] {
+  const sizes = [...new Set(gpus.map((g) => g.vram_gb).filter((v) => v > 0))].sort((a, b) => a - b);
+  const rows: FitRow[] = [];
+  sizes.forEach((size, i) => {
+    const same = gpus.filter((g) => g.vram_gb === size); // publicGpus order: cheapest first
+    const lo = i === 0 ? null : sizes[i - 1] - HEADROOM_GB;
+    const hi = size - HEADROOM_GB;
+    const peak = lo == null ? `Peak up to about ${hi} GB` : `Peak about ${lo} to ${hi} GB`;
+    rows.push({ gpu: same[0], peak, note: scenesFor(size) });
+    const base = same[0].cuda_cores ?? 0;
+    for (const g of same.slice(1)) {
+      if (base > 0 && (g.cuda_cores ?? 0) > base)
+        rows.push({
+          gpu: g,
+          peak: `Fits in ${size} GB, you want it faster`,
+          note: `${(g.cuda_cores ?? 0).toLocaleString("en-US")} CUDA cores against ${base.toLocaleString("en-US")} on the ${shortGpuName(same[0].name)}, same ${size} GB.`,
+        });
+    }
+  });
+  return rows;
+}
+
 /**
  * A FAQPage for THIS page's own questions. The one in explainer-faq.tsx is
  * scoped to the home page; two FAQPage nodes on two different URLs is correct
@@ -101,8 +150,12 @@ const FAQ: { q: string; a: string }[] = [
 
 export default async function VramView({ currency }: { currency: Currency }) {
   const card = await getRateCard();
-  const rate = adhocRateHourly(card, currency);
-  const intro = introOfferFor(card, currency);
+  const ours = publicGpus(card);
+  const rows = fitRows(ours);
+  const maxVram = ours.length ? Math.max(...ours.map((g) => g.vram_gb)) : null;
+  const vramSizes = [...new Set(ours.map((g) => g.vram_gb))].sort((a, b) => a - b);
+  const pick = startGpus(card, currency);
+  const cheapest = pick.gpus.find((g) => g.rate != null);
 
   const eightIsFine = [
     "One building, no site context, at 1080p or 1440p.",
@@ -177,11 +230,15 @@ export default async function VramView({ currency }: { currency: Currency }) {
               {"  "}
               <K>{pad("D5 Render, VRAM", 26)}</K>
               {"not published"}
-              {"\n\n"}
-              {"  "}
-              <B>{pad(`Coreframe ${NODE.gpu}`, 26)}</B>
-              <B>{NODE.vram}</B>
-              {"\n"}
+              {vramSizes.length ? (
+                <>
+                  {"\n\n"}
+                  {"  "}
+                  <B>{pad("Coreframe GPUs", 26)}</B>
+                  <B>{vramSizes.map((v) => `${v} GB`).join(" · ")}</B>
+                  {"\n"}
+                </>
+              ) : null}
             </SpecBlock>
             <p className="mt-6 text-sm text-ink-3">
               Enscape figures from Chaos&apos;s published system requirements.
@@ -250,34 +307,67 @@ export default async function VramView({ currency }: { currency: Currency }) {
 
         <div className="cf-rule" />
 
-        <section className="cf-section px-5">
+        <section className="cf-section px-5" data-cf-section="which-card">
           <div className="cf-col">
-<Fold title="Where we fit, and where we don&apos;t">
-            <p className="cf-lead mt-5">
-              A Coreframe workstation has <b className="text-ink">{NODE.vram}</b>. That&apos;s
-              twice Enscape&apos;s recommended figure, with enough headroom for
-              4K textures and a reasonable amount of site context.
-              {rate ? ` It rents at ${rate}, ${taxWords(currency)}.` : ""}
+            <h2 className="cf-title">Which card for your measured peak</h2>
+            {rows.length ? (
+              <>
+                <p className="cf-lead mt-5">
+                  Take the peak from Task Manager, then pick the smallest card that leaves about {HEADROOM_GB} GB
+                  spare. We rent {vramSizes.length > 1 ? `cards from ${vramSizes[0]} GB up to ${maxVram} GB` : `a ${maxVram} GB card`},
+                  one GPU per machine, {taxWords(currency)}, billed per minute.
+                </p>
+                <ul className="mt-7 grid gap-3">
+                  {rows.map((r) => (
+                    <li key={r.gpu.slug} className="cf-card-sm">
+                      <p className="font-semibold text-ink">
+                        {r.peak} → {shortGpuName(r.gpu.name)} ({r.gpu.vram_gb} GB) · {formatHourly(r.gpu, currency, card)}
+                      </p>
+                      <p className="mt-1 text-ink-2">{r.note}</p>
+                    </li>
+                  ))}
+                </ul>
+              </>
+            ) : (
+              <p className="cf-lead mt-5">
+                Take the peak from Task Manager, then pick the smallest card that leaves about {HEADROOM_GB} GB spare.
+                Our current cards and prices are on the{" "}
+                <Link href="/pricing" className="text-blue underline underline-offset-2">pricing page</Link>.
+              </p>
+            )}
+            <p className="mt-6 text-ink-2">
+              Between 16 and 24 GB?{" "}
+              <Link href="/rtx-a4000-vs-rtx-a5000" className="text-blue underline underline-offset-2">
+                RTX A4000 vs RTX A5000
+              </Link>{" "}
+              sets the two side by side. Wondering how long the render takes on each? The{" "}
+              <Link href="/tools/render-time" className="text-blue underline underline-offset-2">
+                render-time calculator
+              </Link>{" "}
+              gives an estimate per card.
             </p>
-            <p className="cf-lead mt-5">
-              It isn&apos;t enough for everything. If your measured peak is above
-              about 14 GB (say a large point cloud, a federated model with
-              services, or serious VR work), you want a 24 GB or 32 GB card, and
-              we don&apos;t have one. Providers like iRender rent single 4090 and
-              5090 nodes by the hour, and that&apos;s the right answer for those
-              scenes. We&apos;d rather tell you than take an hour of your money
-              and have you run out of memory halfway through.
-            </p>
-            <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:gap-4">
-              <Link href="/login" className="cf-btn-primary">
-                {intro ? `Try it: ${introPrice(intro)} for ${hoursLabel(intro.hours)}` : "Create an account"}
-              </Link>
-              <Link href="/coreframe-vs-irender" className="cf-btn-secondary">
-                Compare the two on price
-              </Link>
-            </div>
-          </Fold>
-</div>
+            {pick.defaultSlug ? (
+              <div id="cf-hero-cta" className="mt-9" data-cf-section="vram-start">
+                {cheapest?.rate != null ? (
+                  <p className="mb-4 flex flex-wrap items-baseline gap-x-2 gap-y-1">
+                    <span className="font-heading text-[30px] leading-none font-semibold text-ink sm:text-[36px]">
+                      {pick.gpus.filter((g) => g.rate != null).length > 1 ? "From " : ""}
+                      {formatMoney(cheapest.rate, currency)}
+                    </span>
+                    <span className="text-[15px] leading-5 text-ink-2">an hour, {taxWords(currency)}</span>
+                  </p>
+                ) : null}
+                <GpuPickCards
+                  gpus={pick.gpus}
+                  defaultSlug={pick.defaultSlug}
+                  amount={pick.amount}
+                  introHours={pick.introHours}
+                  currency={currency}
+                  where="vram_guide"
+                />
+              </div>
+            ) : null}
+          </div>
         </section>
 
         <div className="cf-rule" />
@@ -285,17 +375,6 @@ export default async function VramView({ currency }: { currency: Currency }) {
         <section className="cf-section px-5">
           <div className="cf-col">
             <h2 className="cf-title">Questions</h2>
-            <p className="mt-4 text-ink-2">
-              Picking a card for a measured peak?{" "}
-              <Link href="/rtx-a4000-vs-rtx-a5000" className="text-blue underline underline-offset-2">
-                RTX A4000 (16 GB) vs RTX A5000 (24 GB)
-              </Link>
-              . Wondering how long the render takes? The{" "}
-              <Link href="/tools/render-time" className="text-blue underline underline-offset-2">
-                render-time calculator
-              </Link>{" "}
-              gives an estimate per card.
-            </p>
             <div className="mt-7 grid gap-5">
               {FAQ.map((f) => (
                 <div key={f.q} className="cf-card-sm">
@@ -307,6 +386,14 @@ export default async function VramView({ currency }: { currency: Currency }) {
           </div>
         </section>
       </main>
+      {pick.defaultSlug && cheapest?.rate != null ? (
+        <GpuStartSticky
+          gpus={pick.gpus}
+          defaultSlug={pick.defaultSlug}
+          amount={pick.amount}
+          offer={`From ${formatMoney(cheapest.rate, currency)}/hr`}
+        />
+      ) : null}
     </div>
   );
 }
