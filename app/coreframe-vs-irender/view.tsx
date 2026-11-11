@@ -76,9 +76,12 @@ const IRENDER = {
 };
 
 /*
- * No rupee conversion any more (11 Nov 2026, owner): the site has no live
- * exchange rate, and a typed one goes stale. iRender's prices are shown in US
- * dollars exactly as they list them, on both copies of the page.
+ * No rupee conversion (11 Nov 2026, owner): the site has no live exchange
+ * rate, and a typed one goes stale. One currency per visitor (owner, 18 Oct
+ * 2026; applied to this page 11 Nov 2026): iRender's dollar prices appear on
+ * the USD copy only. The rupee copy describes how they price (in US dollars,
+ * per second, minimum top-up, 3h+ discount) without their figures, and keeps
+ * our rupee prices.
  */
 
 export function vsIrenderMetadata(currency: Currency): Metadata {
@@ -227,7 +230,9 @@ export default async function VsIrenderView({ currency }: { currency: Currency }
             <p className="cf-eyebrow mb-5">Comparison</p>
             <h1 className="cf-display">Coreframe vs iRender.</h1>
             <p className="cf-lead mt-6">
-            Both rent you a GPU by the hour. Their prices and ours, side by side, each as listed.
+            {usdView
+              ? "Both rent you a GPU by the hour. Their prices and ours, side by side, each as listed."
+              : "Both rent you a GPU by the hour. How each one charges, side by side, with our prices in rupees."}
           </p>
             <PageByline path="/coreframe-vs-irender" className="mt-4 opacity-75" />
           </div>
@@ -251,18 +256,23 @@ export default async function VsIrenderView({ currency }: { currency: Currency }
               {pad("per hour", 26)}
               {"VRAM"}
               {"\n\n"}
-              {(
-                [
-                  ["iRender 1x RTX 4090", IRENDER.gpu4090.list, IRENDER.gpu4090.vram],
-                  ["   same, 3h+ (−10%)", IRENDER.gpu4090.discounted, IRENDER.gpu4090.vram],
-                  ["iRender 1x RTX 5090", IRENDER.gpu5090.list, IRENDER.gpu5090.vram],
-                  ["   same, 3h+ (−10%)", IRENDER.gpu5090.discounted, IRENDER.gpu5090.vram],
-                ] as [string, number, string][]
+              {(usdView
+                ? ([
+                    ["iRender 1x RTX 4090", theirs(IRENDER.gpu4090.list), IRENDER.gpu4090.vram],
+                    ["   same, 3h+ (−10%)", theirs(IRENDER.gpu4090.discounted), IRENDER.gpu4090.vram],
+                    ["iRender 1x RTX 5090", theirs(IRENDER.gpu5090.list), IRENDER.gpu5090.vram],
+                    ["   same, 3h+ (−10%)", theirs(IRENDER.gpu5090.discounted), IRENDER.gpu5090.vram],
+                  ] as [string, string, string][])
+                : ([
+                    // Rupee copy: no dollar figures (one currency per visitor).
+                    ["iRender 1x RTX 4090", "in USD", IRENDER.gpu4090.vram],
+                    ["iRender 1x RTX 5090", "in USD", IRENDER.gpu5090.vram],
+                  ] as [string, string, string][])
               ).map(([label, price, vram], i) => (
                 <span key={i}>
                   {"  "}
                   <K>{pad(label, 26)}</K>
-                  {pad(theirs(price), 26)}
+                  {pad(price, 26)}
                   {vram}
                   {"\n"}
                 </span>
@@ -288,10 +298,19 @@ export default async function VsIrenderView({ currency }: { currency: Currency }
               )}
             </SpecBlock>
             <p className="mt-6 text-sm text-ink-3">
-              iRender figures as listed on their site, {IRENDER_CHECKED}, in US dollars: billed{" "}
-              {IRENDER.billing}, a minimum top-up of {formatMoney(IRENDER.minTopup, "USD")}, connection over{" "}
-              {IRENDER.access}.{" "}
-              {usdView ? "Any card forex markup is on top." : "Paid in dollars, so your card's forex markup is on top."}{" "}
+              {usdView ? (
+                <>
+                  iRender figures as listed on their site, {IRENDER_CHECKED}, in US dollars: billed{" "}
+                  {IRENDER.billing}, a minimum top-up of {formatMoney(IRENDER.minTopup, "USD")}, connection over{" "}
+                  {IRENDER.access}. Any card forex markup is on top.
+                </>
+              ) : (
+                <>
+                  iRender&apos;s offer as listed on their site, {IRENDER_CHECKED}: priced in US dollars, billed{" "}
+                  {IRENDER.billing}, a ${IRENDER.minTopup} minimum top-up, 10% off sessions of 3 hours or more,
+                  connection over {IRENDER.access}. Paid in dollars, so your card&apos;s forex markup is on top.
+                </>
+              )}{" "}
               Our rate comes live from our
               billing system, so this page can&apos;t quote a price we don&apos;t
               charge.
