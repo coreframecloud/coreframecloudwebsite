@@ -10,6 +10,7 @@ import { usdRates, type Currency } from "@/lib/money";
 import { CFD_EXPRESS, CFD_NORMAL_HOURS, expressFromAmount, preprocessFee } from "@/lib/cfd-prices";
 import { BEND_RECORD, VERIFIED, verifiedFromAmount } from "@/lib/cfd-verified";
 import { PhoneLaterNote } from "@/components/cfd/phone-later-note";
+import { CookieSettingsLink } from "@/components/consent/consent-banner";
 
 /**
  * /go/cfd — the paid landing page for the CFD ads. Paid traffic only, so
@@ -205,6 +206,7 @@ export default async function CfdLandingView({ currency }: { currency: Currency 
           <Link href="/privacy-policy" className="inline-flex min-h-11 items-center hover:text-ink">Privacy</Link>
           <Link href="/terms-of-service" className="inline-flex min-h-11 items-center hover:text-ink">Terms</Link>
           <Link href="/refund-policy" className="inline-flex min-h-11 items-center hover:text-ink">Refunds</Link>
+          <CookieSettingsLink className="inline-flex min-h-11 items-center hover:text-ink" />
         </div>
       </footer>
 

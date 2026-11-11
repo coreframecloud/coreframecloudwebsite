@@ -21,6 +21,7 @@ import { visiblePosts } from "@/lib/blog";
 import { OFFERINGS } from "@/lib/offerings";
 import { SOFTWARE_DIRECTORY } from "@/lib/software-facts";
 import type { Currency } from "@/lib/money";
+import { CookieSettingsLink } from "@/components/consent/consent-banner";
 
 /** `currency`: the visitor's display currency (proxy.ts via the layout). */
 export function SiteFooter({ currency = "INR" }: { currency?: Currency }) {
@@ -159,6 +160,8 @@ export function SiteFooter({ currency = "INR" }: { currency?: Currency }) {
               ].map((l) => (
                 <Link key={l.href} href={l.href} className="flex min-h-11 items-center text-[13.5px] text-ink-2 transition hover:text-ink">{l.label}</Link>
               ))}
+              {/* Reopens the consent bar (10 Nov 2026). */}
+              <CookieSettingsLink className="flex min-h-11 items-center text-left text-[13.5px] text-ink-2 transition hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue" />
             </div>
           </div>
 

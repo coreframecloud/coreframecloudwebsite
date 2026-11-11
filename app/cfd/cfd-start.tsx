@@ -3,6 +3,9 @@
 import { COOKIE_SESSION, apiFetch, sessionMarker } from "@/lib/session";
 import { useCallback, useEffect, useState } from "react";
 import { API_BASE } from "@/lib/api-base";
+import { trackEvent } from "@/lib/analytics";
+import { track as trackWebEvent } from "@/lib/web-events";
+import { rememberReturnPath } from "@/lib/return-path";
 import CfdJobForm from "./cfd-job-form";
 import DraftPanel from "./draft-panel";
 import { useSelectedService } from "./service-tiles";
@@ -96,6 +99,17 @@ export default function CfdStart({ currency = "INR" }: { currency?: Currency } =
       .then((d) => setDraft(d && d.status === "open" ? d : null))
       .catch(() => setDraft(null));
   }, [check]);
+
+  // The sign-up wall (funnel debug 10 Nov 2026: visitors stopped here left no
+  // trace). One cfd_gate_view per state shown: signed_out, incomplete, or
+  // choose_tile (signed in, no study picked yet).
+  const gateState =
+    gate.kind === "signed_out" ? "signed_out"
+      : gate.kind === "incomplete" ? "incomplete"
+        : gate.kind === "ready" && !service ? "choose_tile" : null;
+  useEffect(() => {
+    if (gateState) trackWebEvent("cfd_gate_view", { state: gateState });
+  }, [gateState]);
 
   if (gate.kind === "loading" || draft === undefined) {
     return (

@@ -244,7 +244,7 @@ export default async function MeshStudyView({ currency }: { currency: Currency }
       <JsonLd data={datasetLd} />
       <main className="relative">
         {/* ── Hero (paper variant, the three-meshes sketch on the right) ── */}
-        <section className="cf-section px-5 cf-pagehero cf-pagehero--paper">
+        <section data-cf-section="hero" className="cf-section px-5 cf-pagehero cf-pagehero--paper">
           <div className="cf-wide grid items-center gap-8 min-[900px]:grid-cols-[7fr_5fr]">
             <div className="min-w-0 max-w-[640px]">
               <p className="cf-eyebrow">CFD · Verified · mesh-independence study (GCI)</p>
@@ -280,7 +280,7 @@ export default async function MeshStudyView({ currency }: { currency: Currency }
         </section>
 
         {/* ── 1. What it is ─────────────────────────────────────────── */}
-        <section className="cf-section px-5">
+        <section data-cf-section="why" className="cf-section px-5">
           <div className="cf-wide">
             <SectionHead n={1} tint="teal" eyebrow="The idea" title="What a mesh independence study is.">
               Also called a grid independence study or a mesh convergence study. One case, three meshes, one question: is
@@ -324,7 +324,7 @@ export default async function MeshStudyView({ currency }: { currency: Currency }
         </section>
 
         {/* ── 2. The GCI calculation ────────────────────────────────── */}
-        <section id="gci" className="cf-section scroll-mt-20 px-5 pt-0">
+        <section id="gci" data-cf-section="gci" className="cf-section scroll-mt-20 px-5 pt-0">
           <div className="cf-wide">
             <SectionHead n={2} tint="blue" eyebrow="The method" title="How we do the GCI calculation.">
               The procedure published by Celik et al. (2008) in the Journal of Fluids Engineering, the one most journals ask
@@ -359,7 +359,7 @@ export default async function MeshStudyView({ currency }: { currency: Currency }
         </section>
 
         {/* ── 3. Worked example: our bend ───────────────────────────── */}
-        <section id="example" className="cf-section scroll-mt-20 px-5 pt-0">
+        <section id="example" data-cf-section="example" className="cf-section scroll-mt-20 px-5 pt-0">
           <div className="cf-wide">
             <SectionHead n={3} tint="coral" eyebrow="Worked example" title="Our 90° bend on three meshes.">
               A live Verified run of 17 October, through the same code a customer job uses: {BEND_RECORD.case}.
@@ -417,7 +417,7 @@ export default async function MeshStudyView({ currency }: { currency: Currency }
         </section>
 
         {/* ── 4. Verification vs validation ─────────────────────────── */}
-        <section id="verification" className="cf-section scroll-mt-20 px-5 pt-0">
+        <section id="verification" data-cf-section="verification" className="cf-section scroll-mt-20 px-5 pt-0">
           <div className="cf-wide">
             <SectionHead n={4} tint="teal" eyebrow="CFD verification and validation" title="Verified is not the same as validated.">
               Verification asks whether the equations were solved right. Validation asks whether they were the right
@@ -491,7 +491,7 @@ export default async function MeshStudyView({ currency }: { currency: Currency }
         </section>
 
         {/* ── 6. The package ────────────────────────────────────────── */}
-        <section id="package" className="cf-section scroll-mt-20 px-5 pt-0">
+        <section id="package" data-cf-section="package" className="cf-section scroll-mt-20 px-5 pt-0">
           <div className="cf-wide">
             <VerifiedCard currency={currency} learnMore={false} />
             <p className="mt-5 text-[14px] leading-6 text-ink-3">
@@ -503,7 +503,7 @@ export default async function MeshStudyView({ currency }: { currency: Currency }
         </section>
 
         {/* ── FAQ ───────────────────────────────────────────────────── */}
-        <section className="cf-section px-5 pt-0">
+        <section data-cf-section="cta" className="cf-section px-5 pt-0">
           <div className="cf-col">
             <h2 className="cf-section-title">Questions.</h2>
             {faq.map((f) => (

@@ -39,6 +39,7 @@ import { WhatsAppClickTracker } from "@/components/analytics/whatsapp-click-trac
 import { WebEvents } from "@/components/analytics/web-events";
 import { WhatsAppButton } from "@/components/home/whatsapp-button";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { ConsentBanner } from "@/components/consent/consent-banner";
 import "./globals.css";
 import { SiteHeader } from "@/components/home/site-header";
 import { BareOnLanding, FloatOffOnSignup, NoFooterOnAdPages, NoStripOnAppPages } from "@/components/layout/bare-on-landing";
@@ -79,15 +80,10 @@ const GA4_ID = /^G-[A-Z0-9]{6,16}$/.test(GA4_ENV) ? GA4_ENV : undefined;
 const GTAG_LOADER_ID = GA4_ID ?? GOOGLE_ADS_ID;
 
 /**
- * Google Consent Mode v2 defaults, set BEFORE any `config` call.
- *
- * Visitors in the EEA, the UK and Switzerland start with every storage type
- * denied: Google then sends cookieless pings only, which is what Google Ads
- * requires for traffic from those regions. Everyone else (India first) starts
- * granted -- India's DPDP Act asks for notice and purpose limitation, which the
- * privacy policy covers, and does not require a cookie-consent banner for
- * analytics. If a consent banner is added later it calls
- * gtag('consent','update',{...}) and nothing here changes.
+ * The EEA, the UK and Switzerland. Since the consent bar (10 Nov 2026) every
+ * visitor starts with Consent Mode v2 denied and no tag loaded until Accept;
+ * this list now only keeps the first-party beacon anonymous in these regions
+ * even after Accept (lib/web-events.ts), as it was before the bar.
  */
 const CONSENT_DENIED_REGIONS = [
   "AT","BE","BG","HR","CY","CZ","DK","EE","FI","FR","DE","GR","HU","IE","IT","LV",
@@ -296,76 +292,83 @@ export default async function RootLayout({
         <link rel="alternate" type="application/rss+xml" title="Coreframe Cloud blog" href="/blog/rss.xml" />
       </head>
       <body className="bg-paper text-ink antialiased">
-        {/* Google tag (GA4 + Google Ads), with Consent Mode v2 defaults.
-            The consent defaults and the dataLayer shim run first, in the same
-            inline script, so they precede every config and event call. */}
-        {GTAG_LOADER_ID ? (
-          <>
-            <Script id="google-consent-and-tag" strategy="afterInteractive" nonce={nonce}>
-              {`
-                window.dataLayer = window.dataLayer || [];
-                function gtag(){window.dataLayer.push(arguments);}
-                window.gtag = gtag;
-                gtag('consent', 'default', {
-                  ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied',
-                  analytics_storage: 'denied', wait_for_update: 500,
-                  region: ${JSON.stringify(CONSENT_DENIED_REGIONS)}
-                });
-                gtag('consent', 'default', {
+        {/* The consent bar (10 Nov 2026). First in the DOM so it is the first
+            Tab stop on every page; it is fixed to the bottom and the page's
+            own fixed controls lift above it (globals.css .cf-consent-lift). */}
+        <ConsentBanner />
+        {/* Third-party tags: Google (GA4 + Ads), Meta pixel, Microsoft
+            Clarity. NONE of them loads before the visitor presses Accept on
+            the consent bar (owner decision 10 Nov 2026; lib/consent.ts,
+            components/consent/consent-banner.tsx). This one nonced inline
+            script sets Google Consent Mode v2 to denied for everyone, then
+            waits: if the cf_consent cookie already says "granted" it loads
+            the tags at once, otherwise on the cf-consent event. The scripts
+            it inserts run under the CSP's 'strict-dynamic' (lib/csp.ts).
+            The pixel and Clarity still wait for window load (they cost
+            ~3 s of main thread on a phone; 12 Oct 2026). Meta events fired
+            before the pixel existed are replayed from the in-memory queue
+            (and the stored one, kept only with consent). */}
+        <Script id="cf-consented-tags" strategy="afterInteractive" nonce={nonce}>
+          {`
+            (function () {
+              var w = window, d = document;
+              w.dataLayer = w.dataLayer || [];
+              function gtag(){w.dataLayer.push(arguments);}
+              w.gtag = w.gtag || gtag;
+              w.gtag('consent', 'default', {
+                ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied',
+                analytics_storage: 'denied'
+              });
+              var loaded = false;
+              function granted() { return /(?:^|; )cf_consent=granted(?:;|$)/.test(d.cookie); }
+              function add(src) {
+                var t = d.createElement('script'); t.async = true; t.src = src;
+                d.head.appendChild(t);
+              }
+              function late(fn) {
+                if (d.readyState === 'complete') fn(); else w.addEventListener('load', fn, { once: true });
+              }
+              function load() {
+                if (loaded) return; loaded = true;
+                w.gtag('consent', 'update', {
                   ad_storage: 'granted', ad_user_data: 'granted', ad_personalization: 'granted',
                   analytics_storage: 'granted'
+                });${GTAG_LOADER_ID ? `
+                w.gtag('set', 'url_passthrough', true);
+                w.gtag('js', new Date());${GA4_ID ? `
+                w.gtag('config', '${GA4_ID}');` : ""}${GOOGLE_ADS_ID ? `
+                w.gtag('config', '${GOOGLE_ADS_ID}');` : ""}
+                add('https://www.googletagmanager.com/gtag/js?id=${GTAG_LOADER_ID}');` : ""}${META_PIXEL_ID ? `
+                late(function () {
+                  !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+                  n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+                  n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+                  t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(w,
+                  d,'script','https://connect.facebook.net/en_US/fbevents.js');
+                  w.fbq('init', '${META_PIXEL_ID}');
+                  w.fbq('track', 'PageView');
+                  try {
+                    var q = JSON.parse(localStorage.getItem('cf_meta_queue') || '[]');
+                    localStorage.removeItem('cf_meta_queue');
+                    q = q.concat(w.__cfMetaQueue || []); w.__cfMetaQueue = [];
+                    q.forEach(function (e) {
+                      if (e && e.event && Date.now() - e.at < 864e5)
+                        w.fbq('track', e.event, e.params || {}, e.eventID ? { eventID: e.eventID } : undefined);
+                    });
+                  } catch (err) {}
+                });` : ""}
+                late(function () {
+                  (function(c,l,a,r,i,t,y){
+                    c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+                    t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+                    y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+                  })(w, d, "clarity", "script", "wb428x6n53");
                 });
-                gtag('set', 'url_passthrough', true);
-                gtag('js', new Date());${GA4_ID ? `
-                gtag('config', '${GA4_ID}');` : ""}${GOOGLE_ADS_ID ? `
-                gtag('config', '${GOOGLE_ADS_ID}');` : ""}
-              `}
-            </Script>
-            <Script
-              src={`https://www.googletagmanager.com/gtag/js?id=${GTAG_LOADER_ID}`}
-              strategy="afterInteractive"
-              nonce={nonce}
-            />
-          </>
-        ) : null}
-
-        {/* Meta pixel — only when NEXT_PUBLIC_META_PIXEL_ID is set.
-            lazyOnload (12 Oct 2026): Lighthouse on mobile measured fbevents.js
-            blocking the main thread for ~3.2 s on /pricing, the largest single
-            cost on the page. Its conversions (sign-up, purchase) fire long
-            after load, so waiting for onload loses nothing that matters. The
-            Google tag stays afterInteractive: Ads attribution needs the gclid
-            read on the landing page view. */}
-        {META_PIXEL_ID ? (
-          <Script id="meta-pixel" strategy="lazyOnload" nonce={nonce}>
-            {`
-              !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-              n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
-              n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
-              t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
-              document,'script','https://connect.facebook.net/en_US/fbevents.js');
-              fbq('init', '${META_PIXEL_ID}');
-              fbq('track', 'PageView');
-              try {
-                var q = JSON.parse(localStorage.getItem('cf_meta_queue') || '[]');
-                localStorage.removeItem('cf_meta_queue');
-                q.forEach(function (e) {
-                  if (e && e.event && Date.now() - e.at < 864e5)
-                    fbq('track', e.event, e.params || {}, e.eventID ? { eventID: e.eventID } : undefined);
-                });
-              } catch (err) {}
-            `}
-          </Script>
-        ) : null}
-
-        {/* Microsoft Clarity */}
-        <Script id="microsoft-clarity" strategy="lazyOnload" nonce={nonce}>
-          {`
-            (function(c,l,a,r,i,t,y){
-              c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-              t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-              y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-            })(window, document, "clarity", "script", "wb428x6n53");
+              }
+              w.__cfLoadTags = load;
+              if (granted()) load();
+              w.addEventListener('cf-consent', function (e) { if (e && e.detail === 'granted') load(); });
+            })();
           `}
         </Script>
 

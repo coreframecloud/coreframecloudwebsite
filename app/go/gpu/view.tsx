@@ -12,6 +12,7 @@ import { KeepQueryLink } from "@/components/go/keep-query-link";
 import { StickyCta } from "@/components/go/sticky-cta";
 import { startGpus } from "@/lib/gpu-start-server";
 import { adhocRate, adhocRateHourly, getRateCard, introOfferFor, introOfferShort, introOfferVariant, introPrice, ladderRanges, shortGpuName } from "@/lib/rate-card";
+import { CookieSettingsLink } from "@/components/consent/consent-banner";
 
 /**
  * /go/gpu — the paid landing page for the GPU workstation ads. Paid traffic
@@ -220,6 +221,7 @@ export default async function GpuLandingView({ currency }: { currency: Currency 
           <Link href="/privacy-policy" className="inline-flex min-h-11 items-center hover:text-ink">Privacy</Link>
           <Link href="/terms-of-service" className="inline-flex min-h-11 items-center hover:text-ink">Terms</Link>
           <Link href="/refund-policy" className="inline-flex min-h-11 items-center hover:text-ink">Refunds</Link>
+          <CookieSettingsLink className="inline-flex min-h-11 items-center hover:text-ink" />
         </div>
       </footer>
 
