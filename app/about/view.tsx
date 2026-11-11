@@ -193,7 +193,7 @@ export default async function AboutView({ currency }: { currency: Currency }) {
     },
     {
       q: "What software is already installed on a Coreframe workstation?",
-      a: "Blender, D5 Render, Twinmotion, Unreal Engine with Quixel Bridge, FreeCAD, ParaView, Autodesk DWG TrueView and Navisworks Freedom, plus the usual working tools. Licensed apps like Lumion, Enscape, V-Ray, Revit, 3ds Max, Rhino and SketchUp run on the machine but need your own licence, because those vendors make you use your own account even to download the installer.",
+      a: "Blender, D5 Render, Twinmotion and Unreal Engine with Quixel Bridge. Licensed apps like Lumion, Enscape, V-Ray, Revit, 3ds Max, Rhino and SketchUp run on the machine but need your own licence: you install them from your own vendor account, as on a new PC.",
     },
     ...(hourly
       ? [

@@ -85,7 +85,7 @@ export default async function WorkstationVsServerView({ currency }: { currency: 
     ],
     [
       "Software",
-      "Blender, D5 Render, Twinmotion, Unreal Engine, FreeCAD and more preinstalled; Lumion, Enscape, V-Ray, Revit, AutoCAD, SketchUp Pro and Rhino on your own licence",
+      "Blender, D5 Render, Twinmotion and Unreal Engine preinstalled; Lumion, Enscape, V-Ray, Revit, AutoCAD, SketchUp Pro and Rhino on your own licence",
       "Only what is in the base image; you install and license everything else",
     ],
     [

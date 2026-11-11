@@ -109,8 +109,7 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
   out.push("");
   out.push(
     `Coreframe Cloud (${SITE}) rents ready-to-work cloud virtual workstations: a full Windows desktop with a dedicated ` +
-      "NVIDIA RTX GPU and design software preinstalled (Blender, D5 Render, Twinmotion, Unreal Engine, FreeCAD, ParaView " +
-      "and more; Lumion, Enscape, V-Ray, Revit, AutoCAD, SketchUp Pro, Rhino and Adobe apps run on the customer's own " +
+      "NVIDIA RTX GPU and design software preinstalled (Blender, D5 Render, Twinmotion and Unreal Engine; Lumion, Enscape, V-Ray, Revit, AutoCAD, SketchUp Pro, Rhino and Adobe apps run on the customer's own " +
       "licence), streamed to the customer's own PC through the Coreframe Connect app and ready in four clicks. It is not a " +
       "bare GPU server: there is no Linux image, SSH or driver setup, and files uploaded to the project drive stay between " +
       "sessions and appear on every workstation (an optional persistent workstation keeps the customer's own Windows disk). " +
@@ -573,30 +572,21 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
   out.push("## Software");
   out.push("");
   out.push(
-    "Every workstation is preloaded with a common set of tools. Sessions run as a standard " +
-      "Windows user, not an administrator, which is what lets Coreframe guarantee the machine " +
-      "is reset to a clean image before the next customer. Anything not on the list is added " +
-      "to the standard image on request, usually the same day.",
+    "Four applications are on every workstation; everything else the customer installs " +
+      "with their own licence, as on a new PC. Each session starts from a clean machine, so " +
+      "software you install is removed when it ends, unless you choose a persistent workstation " +
+      "(available on selected GPUs), which keeps your own Windows disk between sessions.",
   );
   out.push("");
   out.push(
-    "- **Preinstalled and ready:** Blender, D5 Render, Twinmotion 2026.1 HF2, "
-      + "Unreal Engine 5.8 with Quixel Bridge, FreeCAD, ParaView, " +
-      "Autodesk DWG TrueView, Navisworks Freedom, and the usual working tools (7-Zip, " +
-      "browsers, PDF reader, GIMP, Krita, Paint.NET, XnView MP, HandBrake, FFmpeg, " +
-      "Python, VS Code, Steam). D5 Render and Steam are installed; you sign in with your own " +
-      "D5 and Steam accounts.",
+    "- **Preinstalled and ready:** Blender, D5 Render, Twinmotion and Unreal Engine 5.8 with " +
+      "Quixel Bridge. D5 Render and Twinmotion sign in with your own D5 / Epic account.",
   );
   out.push(
     "- **Bring your own licence:** Lumion, Enscape, V-Ray, Chaos Vantage, Corona, " +
-      "SketchUp Pro, Rhino, KeyShot, Archicad, AutoCAD, Revit, 3ds Max, Maya, Adobe Creative " +
-      "Cloud. These vendors require your own account to download the installer, so Coreframe " +
-      "sets them up with you once. After that they're on every workstation you launch and " +
-      "run on your own subscription.",
-  );
-  out.push(
-    "- **Anything else:** email admin@coreframecloud.com. It goes into the standard image, " +
-      "usually the same day, and is then on every workstation.",
+      "SketchUp Pro, Rhino, KeyShot, Archicad, AutoCAD, Revit, 3ds Max, Maya, Cinema 4D, " +
+      "Houdini, Adobe Creative Cloud. Install them from your own vendor account and sign in " +
+      "with your own subscription.",
   );
   out.push("");
   out.push(`Full list: ${SITE}/apps`);
