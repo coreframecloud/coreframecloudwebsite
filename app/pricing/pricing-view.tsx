@@ -6,6 +6,7 @@ import { ViewContent } from "@/components/analytics/view-content";
 import { JsonLd } from "@/components/seo/json-ld";
 import { ORG_ID, SITE, breadcrumbList, gpuLadderOffers, regionalOffers } from "@/lib/seo";
 import { GpuLadder } from "@/components/pricing/gpu-ladder";
+import { BlockPasses } from "@/components/pricing/block-passes";
 import { CFD_PREPROCESS_INR } from "@/lib/cfd-prices";
 import { studioPrices } from "@/lib/studio-prices";
 import { PricingSection } from "@/components/home/pricing-section";
@@ -263,10 +264,14 @@ export default async function PricingView({ currency }: { currency: Currency }) 
           </p>
           <div className="mt-7">
             {/* Launch on a card: that card, through sign-up, to the payment step (10 Nov 2026). */}
-            <GpuLadder card={rateCard} currency={currency} launch={{ location: "pricing_ladder" }} />
+            <GpuLadder card={rateCard} currency={currency} launch={{ location: "pricing_ladder" }} licence="full" />
           </div>
         </div>
       </section>
+
+      {/* Day, week and month passes (gpu-product-1110, item 5): only while the
+          rate card carries block_bookings, in this page's currency only. */}
+      <BlockPasses card={rateCard} currency={currency} />
 
       {usdView ? (
         <PricingSection

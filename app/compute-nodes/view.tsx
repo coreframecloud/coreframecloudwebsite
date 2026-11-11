@@ -10,6 +10,7 @@ import { GpuLadder } from "@/components/pricing/gpu-ladder";
 import type { Currency } from "@/lib/money";
 import { storageTerms } from "@/lib/storage-terms";
 import { NODE } from "@/lib/node-spec";
+import { LICENCE_HELP_LINK_TEXT, LICENCE_HELP_PATH, LICENCE_NOTICE_ON, LICENCE_STATEMENT } from "@/lib/licence-notice";
 
 export const computeNodesMetadata = (currency: Currency): Metadata => ({
   // No price in the title or description: both are cached by search engines
@@ -110,7 +111,7 @@ export default async function ComputeNodesView({ currency }: { currency: Currenc
                     the CPU line opposite its label and ran off a
                     390px screen; stacked, nothing can overflow. */}
                 {/* The GPU ladder from the live rate card (owner, 21 Oct 2026). */}
-                <GpuLadder card={card} currency={currency} compact />
+                <GpuLadder card={card} currency={currency} compact licence="short" />
                 <dl className="mt-8 grid grid-cols-1 gap-x-8 gap-y-5 sm:grid-cols-2">
                   {SPECS.map((spec) => (
                     <div key={spec.label} className="min-w-0 border-t border-rule pt-3">
@@ -206,12 +207,29 @@ export default async function ComputeNodesView({ currency }: { currency: Currenc
 
         <section className="cf-section px-5">
           <div className="cf-col">
-            <h2 className="cf-section-title">Licences are yours.</h2>
-            <p className="cf-section-copy mt-4">
-              Bring your own D5 Render, Lumion, Enscape or SolidWorks seat. You install it on the
-              workstation and sign in as yourself. We rent you the hardware and do the install. The
-              licence is always your own.
-            </p>
+            {LICENCE_NOTICE_ON ? (
+              // Licence clarity (gpu-product-1110, item 3): D5 Render is
+              // preinstalled, so this no longer says "bring your own D5".
+              <>
+                <h2 className="cf-section-title">Preinstalled apps, your own licences.</h2>
+                <p className="cf-section-copy mt-4">{LICENCE_STATEMENT}</p>
+                <Link
+                  href={LICENCE_HELP_PATH}
+                  className="mt-2 inline-flex min-h-[44px] items-center text-[15px] text-blue underline underline-offset-4"
+                >
+                  {LICENCE_HELP_LINK_TEXT}
+                </Link>
+              </>
+            ) : (
+              <>
+                <h2 className="cf-section-title">Licences are yours.</h2>
+                <p className="cf-section-copy mt-4">
+                  Bring your own D5 Render, Lumion, Enscape or SolidWorks seat. You install it on the
+                  workstation and sign in as yourself. We rent you the hardware and do the install. The
+                  licence is always your own.
+                </p>
+              </>
+            )}
             <p className="cf-section-copy mt-4">
               Need something this setup doesn&apos;t cover, like more storage, a different image or a
               node that stays up for a month? Ask, and we&apos;ll tell you straight whether we can run

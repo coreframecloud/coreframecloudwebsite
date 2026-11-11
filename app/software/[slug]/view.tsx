@@ -292,7 +292,7 @@ export default async function SoftwareView({ slug, currency }: { slug: string; c
         <div className="cf-col">
           <h2 id="pick-a-gpu" className="cf-section-title scroll-mt-24">Pick a GPU and launch.</h2>
           <MemoryLadder card={card} className="mt-6" />
-          <div className="mt-6"><GpuLadder card={card} currency={currency} compact launch={{ location: "gpu_page_ladder" }} /></div>
+          <div className="mt-6"><GpuLadder card={card} currency={currency} compact launch={{ location: "gpu_page_ladder" }} licence="full" /></div>
           <details className="group mt-4 rounded-[20px] border border-rule px-5">
             <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-4 font-medium text-ink [&::-webkit-details-marker]:hidden">
               Storage, system and location
@@ -456,7 +456,7 @@ export default async function SoftwareView({ slug, currency }: { slug: string; c
               : ` You sign in to ${appName} with your own licence; the price is for the machine.`}
           </p>
           <div className="mt-6">
-            <GpuLadder card={card} currency={currency} compact />
+            <GpuLadder card={card} currency={currency} compact licence="short" />
           </div>
           <p className="mt-4 text-[14px] leading-6 text-ink-2">
             {billingSentence(card, currency)}{" "}
