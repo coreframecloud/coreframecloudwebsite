@@ -6,11 +6,12 @@ import { GpuCineBand } from "@/components/gpu-cine-band";
 import { GPU_HEROES } from "@/lib/gpu-heroes";
 import type { Metadata } from "next";
 import { JsonLd } from "@/components/seo/json-ld";
-import { breadcrumbList } from "@/lib/seo";
+import { breadcrumbList, softwareServiceLd } from "@/lib/seo";
 import { BackgroundGlow } from "@/components/home/background-glow";
 import { PricingCards } from "@/components/pricing/pricing-cards";
 import { getRateCard, ladderPhrase, ladderRanges, pricingFaqAnswer, taxSentence } from "@/lib/rate-card";
-import { GpuLadder } from "@/components/pricing/gpu-ladder";
+import { softwareStart } from "@/lib/software-start";
+import { SoftwareFitPanel, SoftwarePickSection, SoftwareStartEnd, SoftwareStartHero } from "@/components/software/software-start";
 import { storageTerms } from "@/lib/storage-terms";
 import { NODE, replacementCost } from "@/lib/node-spec";
 import Link from "next/link";
@@ -66,6 +67,15 @@ export default async function EnscapeView({ currency }: { currency: Currency }) 
   const ladder = ladderRanges(card);
   const vram = ladder?.vram ?? NODE.vram;
 
+  // Price first, one action, account at Start (owner, 10-11 Nov 2026).
+  const start = softwareStart("enscape-cloud-gpu", card, currency);
+  const gpuFaq =
+    start.fit && start.rec
+      ? {
+          q: `What GPU do I need for ${start.fit.app}?`,
+          a: `For ${start.fit.app} we recommend the ${start.rec.name} with ${start.rec.vram} GB of VRAM. ${start.fit.gpu.why} Every card on the price list runs it; you pick the card when you start.`,
+        }
+      : null;
   const faqs: { q: string; a: string }[] = [
     {
       q: "Does Enscape work on a cloud GPU?",
@@ -86,6 +96,7 @@ export default async function EnscapeView({ currency }: { currency: Currency }) 
     ...(priceAnswer
       ? [{ q: currency === "USD" ? "How much does an Enscape cloud workstation cost?" : "How much does an Enscape cloud workstation cost in India?", a: priceAnswer }]
       : []),
+    ...(gpuFaq ? [gpuFaq] : []),
   ];
 
   const jsonLd = {
@@ -102,6 +113,16 @@ export default async function EnscapeView({ currency }: { currency: Currency }) 
     <div className="relative min-h-screen text-ink">
       <ViewContent name="Enscape cloud GPU workstation" category="workstation" />
       <JsonLd data={breadcrumbList([{ name: "Enscape cloud GPU workstation", path: "/enscape-cloud-gpu" }])} />
+      {/* What is for sale on the page (11 Nov 2026; the /software pages and D5 already had it). */}
+      <JsonLd
+        data={softwareServiceLd({
+          slug: "enscape-cloud-gpu",
+          path: "/enscape-cloud-gpu",
+          name: "Enscape on a GPU workstation, by the minute",
+          description: "A Windows GPU workstation for Enscape, streamed to your laptop and billed per minute. Bring your own Enscape licence; project files persist.",
+          card,
+        })}
+      />
       <BackgroundGlow />
       <script
         type="application/ld+json"
@@ -118,7 +139,9 @@ export default async function EnscapeView({ currency }: { currency: Currency }) 
               Run Enscape on a GPU workstation.
               <br className="hidden md:block" /> Ray tracing included.
             </h1>
-            <p className="cf-lead mt-[22px]">
+            {/* Price first and ONE big action on the first phone screen (11 Nov 2026). */}
+            <SoftwareStartHero data={start} where="sw_enscape" appName={start.fit?.app} />
+            <p className="cf-lead mt-7">
             An Enscape workstation in the cloud. Enscape needs VRAM your modelling laptop doesn&rsquo;t have. Run it on a workstation-class RTX GPU and walk the client through the building.
           </p>
             <p className="cf-section-copy mt-5">
@@ -127,15 +150,7 @@ export default async function EnscapeView({ currency }: { currency: Currency }) 
               what you want from a real-time renderer.
             </p>
 
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Link href="/signup" className="cf-btn-primary">
-                Start a session
-              </Link>
-              <Link href="/enterprise" className="cf-btn-secondary">
-                Team plans
-              </Link>
-            </div>
-            <LastUpdated date="18 October 2026" path="/enscape-cloud-gpu" className="mt-6" />
+            <LastUpdated date="11 November 2026" path="/enscape-cloud-gpu" className="mt-6" />
           </div>
         </div>
         </section>
@@ -174,11 +189,16 @@ export default async function EnscapeView({ currency }: { currency: Currency }) 
           </div>
         </GpuCineBand>
 
+        {/* Preinstalled vs your own licence, the recommended card, and the price-first
+            picker in place of the plain ladder (11 Nov 2026). */}
+        <section className="cf-section px-5 pt-0">
+          <SoftwareFitPanel data={start} />
+          <SoftwarePickSection data={start} currency={currency} where="sw_enscape" title={`Pick a GPU for ${start.fit?.app ?? "it"}.`} className="mt-14" />
+        </section>
+
         <section className="cf-section px-5 pt-0">
           <div className="cf-wide">
             <h2 className="cf-section-title">The machine.</h2>
-            {/* The GPU ladder from the live rate card (owner, 21 Oct 2026). */}
-            <div className="mt-6"><GpuLadder card={card} currency={currency} compact /></div>
             <SpecTable rows={FIXED_SPECS} caption="The Enscape workstation: hardware and access" />
             <SpecTable rows={vramCompare(vram)} caption="VRAM compared" showCaption />
             <p className="cf-section-copy mt-5">
@@ -229,6 +249,10 @@ export default async function EnscapeView({ currency }: { currency: Currency }) 
               ))}
             </div>
           </div>
+        </section>
+
+        <section className="cf-section px-5 pt-0">
+          <SoftwareStartEnd data={start} where="sw_enscape" />
         </section>
 
         <section className="cf-section px-5 pt-0">

@@ -24,6 +24,7 @@ import {
   introPrice,
   introMoreGpusNote,
   withArticle,
+  shortGpuName,
 } from "@/lib/rate-card";
 
 /**
@@ -36,7 +37,7 @@ import {
  *
  * EVERY COMPETITOR FIGURE IS DATED AND SOURCED, because a competitor-pricing
  * page that is wrong is worse than no page at all. Prices read from
- * irendering.net/price on 1 Oct 2026 and recorded in IRENDER below with the
+ * irendering.net/price on 11 Nov 2026 (was 1 Oct) and recorded in IRENDER below with the
  * date attached, so a reader can check them and a future editor can see how
  * stale they are. Do not update one number without updating IRENDER_CHECKED.
  *
@@ -47,8 +48,9 @@ import {
  * Both are carried here and both are labelled.
  *
  * IT HAS TO BE FAIR, same rule as d5-render-vs-local-gpu. iRender beats us on
- * three things that matter -- more VRAM per node, four times the system RAM,
- * and multi-GPU configurations we do not sell at all. All of that is on the
+ * things that matter -- multi-GPU configurations we do not sell at all, more
+ * system RAM on a single-GPU machine, and per-second billing. (11 Nov 2026:
+ * the old "more VRAM per node" point went when our ladder reached 48 GB.) All of that is on the
  * page. The joining offers are compared only from live numbers: ours from the
  * rate card's intro offer, theirs as read on the date below. A comparison that finds for
  * its author on every line reads as marketing and gets cited by nobody.
@@ -61,38 +63,38 @@ import {
  */
 
 /** Read from irendering.net/price. Change both together or neither. */
-const IRENDER_CHECKED = "1 October 2026";
+const IRENDER_CHECKED = "11 November 2026";
 const IRENDER = {
   gpu4090: { list: 8.2, discounted: 7.38, vram: "24 GB" },
   gpu5090: { list: 10.8, discounted: 9.72, vram: "32 GB" },
   ram: "256 GB",
   storage: "2 TB NVMe",
   firstChargeBonus: "100% on the first charge within 24h",
+  minTopup: 50,
+  billing: "per second",
+  access: "RDP",
 };
 
-/**
- * Mid-market rate from Wise on the date shown. Stated, not hidden, because a
- * conversion with an invisible rate is a number nobody can check -- and this
- * one moves. The structural argument below does not depend on it.
+/*
+ * No rupee conversion any more (11 Nov 2026, owner): the site has no live
+ * exchange rate, and a typed one goes stale. iRender's prices are shown in US
+ * dollars exactly as they list them, on both copies of the page.
  */
-const FX = { usdInr: 95.92, asOf: "1 October 2026" };
-
-const inr = (usd: number) => `₹${Math.round(usd * FX.usdInr).toLocaleString("en-IN")}`;
 
 export function vsIrenderMetadata(currency: Currency): Metadata {
   const usdView = currency === "USD";
   return {
   // 1 Nov 2026 (AEO plan A10): "irender alternatives" ranks 3.8 abroad with no clicks.
   title: { absolute: "iRender Alternative: Coreframe Cloud Workstations Compared" },
-  // One currency per visitor (owner, 18 Oct 2026): the rupee copy converts
-  // iRender's dollar list price, the dollar copy quotes it as listed.
+  // One currency per visitor (owner, 18 Oct 2026): the rupee snippet quotes no
+  // iRender price (no live exchange rate since 11 Nov 2026); the dollar copy
+  // quotes it as listed.
   // Second pass 6 Nov 2026 (week report): 228 impressions at 0.9 %; "irender
   // alternatives" (80 impressions, 3.8) is the search, so the snippet opens with it.
   description: usdView
     ? "iRender alternatives compared: a Windows cloud workstation by the minute, a render farm, or your own PC. " +
       `iRender lists an RTX 4090 at ${formatMoney(IRENDER.gpu4090.list, "USD")}/hr.`
-    : "iRender alternatives compared: a cloud workstation billed in rupees by the minute, a render farm, or a PC. " +
-      `iRender: about ${inr(IRENDER.gpu4090.list)}/hr.`,
+    : "iRender alternatives compared: a cloud workstation billed in rupees by the minute, a render farm, or your own PC, with both price lists dated.",
   keywords: [
     "Coreframe vs iRender",
     "iRender alternative",
@@ -148,7 +150,7 @@ const ALTERNATIVES_FAQ = [
   },
   {
     q: "Is Coreframe an iRender alternative?",
-    a: "Yes, for interactive work. Both rent a whole remote machine with a GPU by the hour. Coreframe bills by the minute, keeps your files on storage between sessions, and comes with D5 Render, Twinmotion and Blender installed. iRender offers multi-GPU machines with up to eight cards, which Coreframe doesn't.",
+    a: "Yes, for interactive work. Both rent a whole remote machine with a GPU by the hour. Coreframe bills by the minute, keeps your files on storage between sessions, and comes with D5 Render, Twinmotion, Unreal Engine and Blender installed. iRender offers multi-GPU machines with up to eight cards, which Coreframe doesn't.",
   },
 ];
 
@@ -165,8 +167,15 @@ export default async function VsIrenderView({ currency }: { currency: Currency }
   const rate = baseGpu ? formatHourly(baseGpu, currency, card) : null;
   const rateValue = baseGpu ? hourlyValue(baseGpu, currency, card) : null;
   const intro = introOfferFor(card, currency);
-  /** iRender's dollar list price in the page's currency: as listed, or converted at FX. */
-  const theirs = (usd: number) => (usdView ? formatMoney(usd, "USD") : inr(usd));
+  /** iRender's price, in US dollars exactly as they list it (no conversion since 11 Nov 2026). */
+  const theirs = (usd: number) => formatMoney(usd, "USD");
+  // Our side from the live ladder (11 Nov 2026): every public card, and the
+  // largest VRAM and RAM on it, never the base node alone.
+  const ours = publicGpus(card);
+  const maxVram = ours.length ? Math.max(...ours.map((g) => g.vram_gb)) : null;
+  const maxRam = ours.length ? Math.max(...ours.map((g) => g.ram_gb ?? 0)) : null;
+  const INSTALLED_LINE =
+    "D5 Render, Twinmotion, Unreal Engine and Blender are already installed when the machine starts. Lumion, Enscape, 3ds Max and Revit run on your own licence: you install them from your own account, as on a new PC. Each session starts from a clean machine, unless you choose a persistent workstation (available on selected GPUs), which keeps your own Windows disk between sessions.";
   const overageUsd = usdView ? bestOverageRate(card, "USD") : null;
   // The old percentage bonus, only while no intro offer replaces it.
   const bonus = intro ? null : firstTopupBonus(card);
@@ -174,9 +183,9 @@ export default async function VsIrenderView({ currency }: { currency: Currency }
   const gst = gstClause(card);
 
   const irenderWins = [
-    `More VRAM in a single node. Their 4090 is ${IRENDER.gpu4090.vram} and their 5090 is ${IRENDER.gpu5090.vram}, against our ${NODE.vram}. If a scene won't fit, the price doesn't matter.`,
-    `Four times the system RAM: ${IRENDER.ram} against our ${NODE.ram}. That matters for very large scenes and point clouds.`,
     "Multi-GPU nodes, up to eight cards. We don't sell that at any price.",
+    `More system RAM on a single-GPU machine: ${IRENDER.ram} listed${maxRam ? `, against up to ${maxRam} GB on ours` : ""}. That matters for very large scenes and point clouds.`,
+    `Billing ${IRENDER.billing}, against our per minute.`,
     ...(intro
       ? []
       : [`A bigger joining offer: ${IRENDER.firstChargeBonus}${bonus ? `, against our ${bonus.percent}%` : ""}.`]),
@@ -186,7 +195,7 @@ export default async function VsIrenderView({ currency }: { currency: Currency }
   const coreframeWins = usdView
     ? [
         "Billed per minute from a prepaid wallet in US dollars, with no GST (export of services) and nothing added at checkout.",
-        "D5 Render, Twinmotion and Blender are already installed when the machine starts. Lumion, Enscape, 3ds Max and Revit run on your own licence: we set them up with you once, and after that they're on every workstation you launch.",
+        INSTALLED_LINE,
         intro
           ? `A first top-up of ${introPrice(intro)} (no GST) buys ${hoursLabel(intro.hours)}${intro.gpuName ? ` on ${withArticle(intro.gpuName)}` : ""}${introMoreGpusNote(intro)}, so you can judge it on your own project. (Theirs: ${IRENDER.firstChargeBonus}.)`
           : "Billed per minute, so trying it on your own project costs you minutes instead of a month.",
@@ -199,7 +208,7 @@ export default async function VsIrenderView({ currency }: { currency: Currency }
       : "The published rate is what leaves your account.",
     "An Indian GST invoice for every payment, under SAC 998315. A business importing the same service from abroad generally has to account for IGST itself under reverse charge. Ask your accountant what that costs you, because the sticker price abroad isn't the landed price.",
     "Your files stay on storage in India.",
-    "D5 Render, Twinmotion and Blender are already installed when the machine starts. Lumion, Enscape, 3ds Max and Revit run on your own licence: we set them up with you once, and after that they're on every workstation you launch.",
+    INSTALLED_LINE,
     intro
       ? `A first top-up of ${introPrice(intro)} buys ${hoursLabel(intro.hours)}${intro.gpuName ? ` on ${withArticle(intro.gpuName)}` : ""}${introMoreGpusNote(intro)}, so you can judge it on your own project. (Theirs: ${IRENDER.firstChargeBonus}.)`
       : "Billed per minute, so trying it on your own project costs you minutes instead of a month.",
@@ -218,7 +227,7 @@ export default async function VsIrenderView({ currency }: { currency: Currency }
             <p className="cf-eyebrow mb-5">Comparison</p>
             <h1 className="cf-display">Coreframe vs iRender.</h1>
             <p className="cf-lead mt-6">
-            Both rent you a GPU by the hour. Their prices and ours, side by side, with the conversion shown.
+            Both rent you a GPU by the hour. Their prices and ours, side by side, each as listed.
           </p>
             <PageByline path="/coreframe-vs-irender" className="mt-4 opacity-75" />
           </div>
@@ -239,7 +248,7 @@ export default async function VsIrenderView({ currency }: { currency: Currency }
             <SpecBlock label={`Published rates (iRender read ${IRENDER_CHECKED})`}>
               {"  "}
               {pad("", 26)}
-              {pad(usdView ? "per hour" : `per hour, at ₹${FX.usdInr}/$`, 26)}
+              {pad("per hour", 26)}
               {"VRAM"}
               {"\n\n"}
               {(
@@ -259,18 +268,30 @@ export default async function VsIrenderView({ currency }: { currency: Currency }
                 </span>
               ))}
               {"\n"}
-              {"  "}
-              <B>{pad(`Coreframe 1x ${NODE.gpu}`, 26)}</B>
-              {pad(rate ?? "see pricing", 26)}
-              <B>{NODE.vram}</B>
-              {"\n"}
+              {ours.length ? (
+                ours.map((g) => (
+                  <span key={g.slug}>
+                    {"  "}
+                    <B>{pad(`Coreframe 1x ${shortGpuName(g.name)}`, 26)}</B>
+                    {pad(formatHourly(g, currency, card), 26)}
+                    <B>{`${g.vram_gb} GB`}</B>
+                    {"\n"}
+                  </span>
+                ))
+              ) : (
+                <span>
+                  {"  "}
+                  <B>{pad("Coreframe", 26)}</B>
+                  {pad(rate ?? "see pricing", 26)}
+                  {"\n"}
+                </span>
+              )}
             </SpecBlock>
             <p className="mt-6 text-sm text-ink-3">
-              iRender rates read from their public price page on{" "}
-              {IRENDER_CHECKED}.{" "}
-              {usdView
-                ? "They list in US dollars; any card forex markup is on top."
-                : `They list in US dollars; converted here at the mid-market rate of ₹${FX.usdInr} to the dollar on ${FX.asOf}. That rate moves and your bank will add its own markup on top.`}{" "}
+              iRender figures as listed on their site, {IRENDER_CHECKED}, in US dollars: billed{" "}
+              {IRENDER.billing}, a minimum top-up of {formatMoney(IRENDER.minTopup, "USD")}, connection over{" "}
+              {IRENDER.access}.{" "}
+              {usdView ? "Any card forex markup is on top." : "Paid in dollars, so your card's forex markup is on top."}{" "}
               Our rate comes live from our
               billing system, so this page can&apos;t quote a price we don&apos;t
               charge.
@@ -293,14 +314,13 @@ export default async function VsIrenderView({ currency }: { currency: Currency }
                 We work that figure out from the rate card; nobody types it in.
               </p>
             ) : null}
-            {rateValue ? (
+            {rateValue && usdView ? (
               <p className="mt-4 text-sm text-ink-2">
                 At those figures a Coreframe hour is about{" "}
                 <b className="text-ink">
-                  {Math.round((rateValue / (IRENDER.gpu4090.list * (usdView ? 1 : FX.usdInr))) * 100)}%
+                  {Math.round((rateValue / IRENDER.gpu4090.list) * 100)}%
                 </b>{" "}
-                of iRender&apos;s list price for a single-4090 node
-                {usdView ? "." : ", before any forex markup on your card."}
+                of iRender&apos;s list price for a single-4090 node.
               </p>
             ) : null}
           </div>
@@ -335,16 +355,14 @@ export default async function VsIrenderView({ currency }: { currency: Currency }
             </ul>
             <p className="cf-lead mt-8">
               {usdView ? (
-                <>In short: if your scene fits in {NODE.vram}, we cost less per hour.{" "}</>
+                <>In short: for one GPU at a time{maxVram ? `, up to ${maxVram} GB of VRAM` : ""}, we cost less per hour.{" "}</>
               ) : (
                 <>
-                  In short: if your scene fits in {NODE.vram}{" "}and you&apos;re
-                  invoicing an Indian client, we&apos;re cheaper and the paperwork is
-                  simpler.{" "}
+                  In short: for one GPU at a time{maxVram ? `, up to ${maxVram} GB of VRAM` : ""}, and
+                  invoicing an Indian client, we&apos;re cheaper and the paperwork is simpler.{" "}
                 </>
-              )}If it doesn&apos;t fit, go and use the bigger card.
-              We&apos;d rather tell you that than take an hour of your money and
-              have you run out of memory.
+              )}If you need several GPUs in one machine, use theirs.
+              We&apos;d rather tell you that than take an hour of your money.
             </p>
           </div>
         </section>

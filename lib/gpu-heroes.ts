@@ -36,4 +36,12 @@ export const GPU_HEROES: Record<string, HeroImage> = {
   "d5-render-cloud-workstation": H("hero-d5", "Flying cars and light trails on a rain-soaked street between neon-lit towers at night", "72% 50%"),
   "lumion-cloud-gpu": H("hero-lumion-v3", "A small white craft flying through morning mist between green, waterfall-covered towers", "60% 50%", "56% 50%"),
   "enscape-cloud-gpu": H("hero-enscape", "The glass atrium of a future building, with a craft passing the window outside", "65% 50%"),
+  // New software pages (11 Nov 2026) reuse existing invented stills: no new
+  // images, no software UI in any of them (software-visual-match rule).
+  "cinema-4d-cloud-workstation": H("hero-ae", "Two glowing neon racers speeding through a holographic tunnel", "65% 50%"),
+  "houdini-cloud-workstation": H("hero-3dsmax", "A hover-speeder tearing through a red desert canyon, kicking up dust", "65% 50%"),
+  "autocad-cloud-workstation": H("hero-revit", "A sleek craft gliding between towering night-lit skyscrapers in the mist", "70% 50%"),
+  "archicad-cloud-workstation": H("hero-enscape", "The glass atrium of a future building, with a craft passing the window outside", "65% 50%"),
+  "chaos-vantage-cloud-workstation": H("hero-vray-v3", "A slender bronze, seed-pod-shaped spacecraft gliding past the dark side of a planet as the sun rises over its rim", "62% 50%", "60% 50%"),
+  "keyshot-cloud-workstation": H("hero-lumion-v3", "A small white craft flying through morning mist between green, waterfall-covered towers", "60% 50%", "56% 50%"),
 };

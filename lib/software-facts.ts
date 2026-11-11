@@ -236,6 +236,69 @@ export const SOFTWARE_FACTS: Record<string, SoftwareFacts> = {
       { label: "Workstation ready after Launch (sign-in to desktop)", value: null },
     ],
   },
+  // New pages, 11 Nov 2026: all bring your own licence, nothing measured yet.
+  "cinema-4d-cloud-workstation": {
+    app: "Cinema 4D",
+    short: "Cinema 4D",
+    vendorUrl: "https://www.maxon.net/cinema-4d",
+    preinstalled: false,
+    href: "/software/cinema-4d-cloud-workstation",
+    measured: RENDER_ROWS("Cinema 4D + Redshift"),
+  },
+  "houdini-cloud-workstation": {
+    app: "Houdini",
+    short: "Houdini",
+    vendorUrl: "https://www.sidefx.com/products/houdini/",
+    preinstalled: false,
+    href: "/software/houdini-cloud-workstation",
+    measured: [
+      // TODO(owner): measure on gpu-node-01 and fill value + measuredOn + measuredAt.
+      { label: "Karma XPU 4K still, our reference scene", value: null },
+      { label: "Peak VRAM used by that reference scene", value: null },
+      { label: "Workstation ready after Launch (sign-in to desktop)", value: null },
+    ],
+  },
+  "autocad-cloud-workstation": {
+    app: "AutoCAD",
+    short: "AutoCAD",
+    vendorUrl: "https://www.autodesk.com/products/autocad/overview",
+    preinstalled: false,
+    href: "/software/autocad-cloud-workstation",
+    measured: [
+      // TODO(owner): measure on gpu-node-01 and fill value + measuredOn + measuredAt.
+      { label: "Time to open a large DWG from the project drive", value: null },
+      { label: "Workstation ready after Launch (sign-in to desktop)", value: null },
+    ],
+  },
+  "archicad-cloud-workstation": {
+    app: "Archicad",
+    short: "Archicad",
+    vendorUrl: "https://graphisoft.com/solutions/archicad",
+    preinstalled: false,
+    href: "/software/archicad-cloud-workstation",
+    measured: [
+      // TODO(owner): measure on gpu-node-01 and fill value + measuredOn + measuredAt.
+      { label: "Time to open a mid-size Archicad model from the project drive", value: null },
+      { label: "Twinmotion live link from that model: time to first frame", value: null },
+      { label: "Workstation ready after Launch (sign-in to desktop)", value: null },
+    ],
+  },
+  "chaos-vantage-cloud-workstation": {
+    app: "Chaos Vantage",
+    short: "Chaos Vantage",
+    vendorUrl: "https://www.chaos.com/vantage",
+    preinstalled: false,
+    href: "/software/chaos-vantage-cloud-workstation",
+    measured: RENDER_ROWS("Chaos Vantage"),
+  },
+  "keyshot-cloud-workstation": {
+    app: "KeyShot",
+    short: "KeyShot",
+    vendorUrl: "https://www.keyshot.com/",
+    preinstalled: false,
+    href: "/software/keyshot-cloud-workstation",
+    measured: RENDER_ROWS("KeyShot"),
+  },
 };
 
 /** The application pages in footer/directory order: preinstalled first, then by name. */

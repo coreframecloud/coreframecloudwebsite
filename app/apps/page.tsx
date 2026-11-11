@@ -8,6 +8,7 @@ import Link from "next/link";
 import { NODE } from "@/lib/node-spec";
 import {
   BRING_YOUR_OWN_LICENCE,
+  FREE_TO_INSTALL,
   PREINSTALLED,
   type SoftwareItem,
 } from "@/lib/software-catalogue";
@@ -48,11 +49,11 @@ const preinstalledSentence =
 const faqs = [
   {
     q: "What software is preinstalled on a Coreframe GPU workstation?",
-    a: `Every workstation ships with ${preinstalledSentence}, along with the NVIDIA Studio driver and the Visual C++ and .NET runtimes. They are ready the moment the desktop appears.`,
+    a: `Every workstation ships with ${preinstalledSentence}, ready the moment the desktop appears. Everything else you install yourself, with your own licence where the software needs one.`,
   },
   {
     q: "Can I install my own software on a Coreframe workstation?",
-    a: "We install applications for you. Your session runs as a standard Windows user, which is how we can guarantee the workstation goes back to a clean image before the next customer. D5 Render, Twinmotion, Unreal Engine, Blender and the rest of the standard set are already on the machine. Revit, AutoCAD, 3ds Max, V-Ray, Lumion and Enscape we set up with you once, because those vendors only let you download from your own account. After that they're on every workstation you launch, running on your own licence.",
+    a: "Yes. D5 Render, Twinmotion, Unreal Engine and Blender are already on the machine. Revit, AutoCAD, 3ds Max, V-Ray, Lumion, Enscape and the rest you install from your own vendor account and sign in with your own licence, exactly as on a new PC. Each session starts from a clean machine, so software you install is removed when it ends, unless you choose a persistent workstation (available on selected GPUs), which keeps your own Windows disk between sessions.",
   },
   {
     q: "Does Coreframe provide licences for D5 Render, Lumion or Autodesk software?",
@@ -60,7 +61,7 @@ const faqs = [
   },
   {
     q: "Does software I install stay on the workstation for next time?",
-    a: "Every session starts from an identical clean image, so nothing from the previous customer, or from your own last session, is left on the machine. Your project files are kept separately on NAS storage, and that does persist between sessions. If you need a particular application every day, tell us and we'll add it to the standard image.",
+    a: "Not on an hourly session. Every session starts from an identical clean image, so nothing from the previous customer, or from your own last session, is left on the machine. A persistent workstation (available on selected GPUs) keeps your own Windows disk, with your installed software, between sessions. Your project files are kept separately on your project drive, which always persists.",
   },
 ];
 
@@ -130,11 +131,11 @@ export default function AppsPage() {
           <p className="cf-eyebrow mb-5">Software</p>
           <h1 className="cf-display">What&apos;s already on the machine.</h1>
           <p className="cf-lead mt-6">
-            A full Windows desktop ({NODE.os}) with the tools already installed. Sign in with your own licences.
+            A full Windows desktop ({NODE.os}) with Blender, D5 Render, Twinmotion and Unreal Engine already installed. Install anything else with your own licence.
           </p>
           <PageByline path="/apps" className="mt-4 opacity-75" />
         </div>
-          <OwnImage src="/blog/blender-interior-render-on-cloud-rtx-5080/file-on-workstation.webp" alt="Blender ready on a Coreframe workstation" width={923} height={597} caption="Blender, D5 and Twinmotion come installed." sizes="(max-width: 1024px) 100vw, 480px" />
+          <OwnImage src="/blog/blender-interior-render-on-cloud-rtx-5080/file-on-workstation.webp" alt="Blender ready on a Coreframe workstation" width={923} height={597} caption="Blender, D5, Twinmotion and Unreal Engine come installed." sizes="(max-width: 1024px) 100vw, 480px" />
         </div>
       </section>
       <section className="cf-section px-5 pb-0">
@@ -148,7 +149,7 @@ export default function AppsPage() {
 
       <Group
         title="Ready to use, no licence needed."
-        blurb="Free and open-source software on the standard image. Open it and start working."
+        blurb="On every workstation the moment the desktop appears. Open it and start working; D5 and Twinmotion sign in with your own free or paid account."
         items={PREINSTALLED}
       />
 
@@ -156,8 +157,16 @@ export default function AppsPage() {
 
       <Group
         title="Your licence, our machine."
-        blurb="These are licensed to you, and the licence stays yours. Adobe Creative Cloud is already installed; you sign in with your own Adobe account. The others we set up with you once, since the vendor only lets you download from your own account. After that they're on every workstation you launch, signed in with your subscription. We never supply licences for commercial software."
+        blurb="These are licensed to you, and the licence stays yours. Install them from your own vendor account and sign in with your subscription, as on a new PC. Each session starts from a clean machine, so software you install is removed when it ends, unless you choose a persistent workstation (available on selected GPUs), which keeps your own Windows disk between sessions. We never supply licences for commercial software."
         items={BRING_YOUR_OWN_LICENCE}
+      />
+
+      <div className="cf-rule" />
+
+      <Group
+        title="Free tools you can add."
+        blurb="Not on the image, but free to install in a session when you need them. Like anything you install, they go when the session ends unless you keep a persistent workstation."
+        items={FREE_TO_INSTALL}
       />
 
       <div className="cf-rule" />
@@ -179,12 +188,13 @@ export default function AppsPage() {
               every workstation you launch.
             </p>
             <p className="cf-section-copy mt-4">
-              Using the same application every day?{" "}
+              Using the same application every day? A persistent workstation (available on
+              selected GPUs) keeps your own Windows disk, with your installed software, between
+              sessions.{" "}
               <Link href="/contact" className="text-blue underline underline-offset-4">
-                Tell us
+                Ask us
               </Link>{" "}
-              and we&apos;ll add it to the standard image, so it&apos;s waiting for
-              you next time.
+              which cards offer it.
             </p>
           </div>
         </div>

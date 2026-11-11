@@ -53,14 +53,14 @@ const STEPS = [
   },
   {
     title: "6. Work, then end the session.",
-    body: "You get a full Windows desktop with the professional applications already installed. Your storage is mapped as drive N:, labelled Coreframe Datalake. Save project files there and nowhere else. When you're done, end the session from Connect. Billing stops right then, and everything on N: stays where you left it. You can also close the stream, or switch off your own computer, and leave your work running. The session keeps running, and billing continues, until you end it in Connect or your wallet runs out.",
+    body: "You get a full Windows desktop with Blender, D5 Render, Twinmotion and Unreal Engine already installed. Your storage is mapped as drive N:, labelled Coreframe Datalake. Save project files there and nowhere else. When you're done, end the session from Connect. Billing stops right then, and everything on N: stays where you left it. You can also close the stream, or switch off your own computer, and leave your work running. The session keeps running, and billing continues, until you end it in Connect or your wallet runs out.",
   },
 ];
 
 const FAQS = [
   {
     q: "What is Coreframe?",
-    a: `Coreframe rents Windows GPU workstations by the minute, hosted in India. You stream a real Windows desktop, with the applications already installed, to the laptop you already own through the Coreframe Connect app (no browser, no terminal) and use it like a workstation under your desk, for D5 Render, Lumion, Enscape, Revit, 3ds Max, Blender, CFD work or anything else that needs a GPU. You drive the machine yourself. There's no job queue, because it isn't a render farm, and it isn't a Linux GPU server you reach over SSH: if you need root, SSH or Linux, a GPU cloud built for AI is the better fit.`,
+    a: `Coreframe rents Windows GPU workstations by the minute, hosted in India. You stream a real Windows desktop, with Blender, D5 Render, Twinmotion and Unreal Engine already installed, to the laptop you already own through the Coreframe Connect app (no browser, no terminal) and use it like a workstation under your desk, for D5 Render, Lumion, Enscape, Revit, 3ds Max, Blender, CFD work or anything else that needs a GPU. You drive the machine yourself. There's no job queue, because it isn't a render farm, and it isn't a Linux GPU server you reach over SSH: if you need root, SSH or Linux, a GPU cloud built for AI is the better fit.`,
   },
   {
     q: "How is Coreframe billed?",
@@ -68,11 +68,11 @@ const FAQS = [
   },
   {
     q: "Do I need my own software licences?",
-    a: "For commercial applications, yes. Lumion, Enscape, V-Ray, Revit, AutoCAD, 3ds Max and the like are licensed to you, not the machine, so we set them up with you once and you sign in with your own subscription. Already installed: D5 Render (you sign in with your own D5 account), Blender, Twinmotion, Unreal Engine, the Autodesk viewers and the usual utilities.",
+    a: "For commercial applications, yes. Lumion, Enscape, V-Ray, Revit, AutoCAD, 3ds Max and the like are licensed to you, not the machine, so you install them from your own account and sign in with your own subscription. Each session starts from a clean machine, so software you install is removed when it ends, unless you choose a persistent workstation (available on selected GPUs), which keeps your own Windows disk between sessions. Already installed: D5 Render (you sign in with your own D5 account), Blender, Twinmotion and Unreal Engine.",
   },
   {
     q: "Can I install my own software on the workstation?",
-    a: "We install the applications for you. Your session runs as a standard Windows user, which is how we can promise the machine goes back to a clean image before the next customer, with nothing you or anyone else ran surviving the reset. Portable software that doesn't need an installer will run. If you need an application we don't carry, email admin@coreframecloud.com. We add free software to the standard image, usually the same day. Licensed software from Autodesk, Chaos or Lumion needs your own account even to download, so we arrange a short setup session with you. After that it's on every workstation you launch.",
+    a: "Yes. Install it the way you would on a new PC, from your own vendor account where the software needs one, and sign in with your own licence. Each session starts from a clean machine, so software you install is removed when it ends, unless you choose a persistent workstation (available on selected GPUs), which keeps your own Windows disk between sessions. The reset is how we promise the machine is clean before the next customer.",
   },
   {
     q: "Where exactly do I save my files?",
@@ -191,7 +191,8 @@ export default function HowToUsePage() {
         <Fold title="Read this before your first session.">
           <p className="cf-section-copy mt-3">
             The workstation resets between sessions. Software you install, and anything left on the
-            Desktop, in Documents or on C:, is wiped when you finish. Only drive{" "}
+            Desktop, in Documents or on C:, is wiped when you finish, unless you choose a persistent
+            workstation (available on selected GPUs), which keeps your own Windows disk. Only drive{" "}
             <span className="font-mono font-semibold text-ink">N:</span>, labelled Coreframe
             Datalake, survives. Save your work there and you won&apos;t lose any of it.
           </p>

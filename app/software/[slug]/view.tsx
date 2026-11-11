@@ -25,6 +25,7 @@ import {
   introPrice,
 } from "@/lib/rate-card";
 import { GpuLadder } from "@/components/pricing/gpu-ladder";
+import { LicenceNotice } from "@/components/licence/licence-notice";
 import type { Currency } from "@/lib/money";
 import { NODE } from "@/lib/node-spec";
 import { LastUpdated, SpecTable } from "@/components/gpu/spec-table";
@@ -40,6 +41,8 @@ import { Pointers, ReadMore, type Pointer } from "@/components/visuals/pointers"
 import { AtAGlance, glanceProps } from "@/components/home/redesign/at-a-glance";
 import { Reveal } from "@/components/home/redesign/reveal";
 import { HowItWorksStrip, MemoryLadder } from "@/components/visuals/gpu-infographics";
+import { softwareStart } from "@/lib/software-start";
+import { SoftwareFitPanel, SoftwarePickSection, SoftwareStartEnd, SoftwareStartHero } from "@/components/software/software-start";
 
 /**
  * `related` may name a top-level landing page as well as a /software slug.
@@ -167,17 +170,20 @@ function rentalAnswer(card: RateCard | null, currency: Currency): string | null 
  * in the visitor's currency, and drop out when it is unreachable. The full
  * wording stays below in a <details>.
  */
-function rentalPointers(card: RateCard | null, currency: Currency): Pointer[] {
+function rentalPointers(card: RateCard | null, currency: Currency, priceInHero = true): Pointer[] {
   const r = liveRate(card, currency);
   const intro = introOfferFor(card, currency);
   const many = (ladderRanges(card)?.count ?? 0) > 1;
   const usd = currency === "USD";
   return [
     { lead: `A real ${NODE.os.split(" ")[0]} RTX desktop`, line: "Streamed to the computer you already own." },
-    ...(r
+    // The hourly price and the first top-up moved into the hero's price block
+    // above the pointers (11 Nov 2026: price first, one action); shown there,
+    // not twice. They stay in the answer passage in the <details>.
+    ...(r && !priceInHero
       ? [{ lead: `${many ? "From " : ""}${r.rate} an hour`, line: `${r.tax.charAt(0).toUpperCase()}${r.tax.slice(1)}${r.perMinute ? ", billed per minute" : ""}.` }]
       : []),
-    ...(intro ? [{ lead: `${introPrice(intro)} = ${hoursLabel(intro.hours)}`, line: "On your first top-up." }] : []),
+    ...(intro && !priceInHero ? [{ lead: `${introPrice(intro)} = ${hoursLabel(intro.hours)}`, line: "On your first top-up." }] : []),
     usd
       ? { lead: "Hosted in India", line: "Low latency in and near India, billed in US dollars." }
       : { lead: "Hosted in India", line: "Low latency for Indian users, GST invoices." },
@@ -216,8 +222,19 @@ export default async function SoftwareView({ slug, currency }: { slug: string; c
   const priceAnswer = pricingFaqAnswer(card, currency);
   const worldwide = worldwidePriceFaq(card, currency);
   const intro = introOfferFaq(card, currency);
+  // Price first, one action, account at Start (owner, 10-11 Nov 2026).
+  const start = softwareStart(page.slug, card, currency);
+  const where = `sw_${page.slug.replace(/-cloud-(workstation|rendering)$/, "")}`;
+  const gpuFaq =
+    start.fit && start.rec
+      ? {
+          q: `What GPU do I need for ${start.fit.app}?`,
+          a: `For ${start.fit.app} we recommend the ${start.rec.name} with ${start.rec.vram} GB of VRAM. ${start.fit.gpu.why} Every card on the price list runs it; you pick the card when you start.`,
+        }
+      : null;
   const faqs = [
     ...page.faqs,
+    ...(gpuFaq && !page.faqs.some((f) => /(what|which) gpu|need a gpu/i.test(f.q)) ? [gpuFaq] : []),
     ...(priceAnswer ? [{ q: "How much does a Coreframe workstation cost?", a: priceAnswer }] : []),
     // AEO plan A12 (6 Nov 2026): the worldwide answer, in this copy's currency only.
     ...(worldwide ? [worldwide] : []),
@@ -227,10 +244,6 @@ export default async function SoftwareView({ slug, currency }: { slug: string; c
   const answer = page.livePrice === "answer" ? rentalAnswer(card, currency) : null;
   // The GPU rental page (the nav's "GPU workstations"): pointers + bubbles.
   const pointers = page.livePrice === "answer" ? rentalPointers(card, currency) : null;
-  const rates = page.livePrice === "line" ? liveRate(card, currency) : null;
-  const priceLine = rates
-    ? `${rates.rate} an hour, ${rates.tax}${rates.perMinute ? ", billed per minute" : ""}.`
-    : null;
 
   const hero = HERO_BY_SLUG[page.slug] ?? HERO_BY_SLUG.default;
   const heroBg = GPU_HEROES[page.slug];
@@ -244,6 +257,8 @@ export default async function SoftwareView({ slug, currency }: { slug: string; c
       <div className={heroBg ? "cf-wide" : "cf-wide grid items-center gap-10 lg:grid-cols-[1.05fr_1fr]"}>
         <div className={heroBg ? "min-w-0 max-w-[620px]" : "min-w-0"}>
           <h1 className="cf-display">{page.h1 ?? page.title}</h1>
+          {/* Price first and ONE big action, on the first phone screen (owner, 10-11 Nov 2026). */}
+          <SoftwareStartHero data={start} where={where} appName={start.fit?.app} />
           {pointers ? (
             <>
               <Pointers items={pointers} className="mt-7" />
@@ -254,26 +269,12 @@ export default async function SoftwareView({ slug, currency }: { slug: string; c
             </>
           ) : (
             <>
-              <p className="cf-lead mt-[22px]">{page.intro}</p>
+              <p className="cf-lead mt-7">{page.intro}</p>
               {answer ? <p className="cf-section-copy mt-5">{answer}</p> : null}
             </>
           )}
-          {priceLine ? <p className="cf-section-copy mt-5">{priceLine}</p> : null}
-          {pointers ? (
-            // GPU entry pages (owner, 10 Nov 2026): ONE action, the same everywhere on the
-            // page: pick a card and Launch. Prices are on the cards below, no account
-            // needed; sign-up comes at Launch, with the card carried through.
-            <div className="mt-8">
-              <a href="#pick-a-gpu" className="cf-btn-go w-full sm:w-auto sm:px-12">
-                Pick a GPU and launch <span aria-hidden>↓</span>
-              </a>
-            </div>
-          ) : (
-          <div className="mt-8 flex flex-wrap gap-3">
-            <Link href="/signup" className="cf-btn-primary">Sign up</Link>
-            <Link href="/pricing" className="cf-btn-secondary">Pricing</Link>
-          </div>
-          )}
+          {/* The hero's "Sign up / Pricing" pair and the GPU page's "Pick a GPU and launch"
+              link were replaced by the one Start above (11 Nov 2026). */}
           {/* Every page carries a byline and date (GEO check 18 Oct 2026). Pages
               without their own lastUpdated were last edited 11 Oct 2026. */}
           <LastUpdated date={page.lastUpdated ?? SOFTWARE_CONTENT_DATE} path={`/software/${page.slug}`} className="mt-6" />
@@ -375,6 +376,9 @@ export default async function SoftwareView({ slug, currency }: { slug: string; c
 
       {/* "The machine." moved up under the hero as "Pick a GPU and launch." (31 Oct 2026). */}
 
+      {/* Preinstalled vs bring your own licence, and the recommended card (11 Nov 2026). */}
+      {pointers ? null : <SoftwareFitPanel data={start} />}
+
       {pointers ? (
         // One accordion for the long answers (owner, 31 Oct 2026): the
         // callouts, the detail sections and the licensing note, all still in
@@ -446,26 +450,35 @@ export default async function SoftwareView({ slug, currency }: { slug: string; c
           2026): the GPU ladder from the live rate card, the visitor's currency
           only, and the billing sentence from the API's own fields. The GPU
           rental page already shows the ladder in its answer passage. */}
+      {/* What it costs per hour, on every software page (SEO plan 22 Oct 2026), now
+          the price-first picker (11 Nov 2026): every live card with its price in the
+          visitor's currency only, the recommended one chosen, and Start. */}
       {page.livePrice !== "answer" ? (
-        <section className="cf-col mt-16">
-          <h2 className="cf-section-title">What {appName} costs per hour here.</h2>
-          <p className="cf-section-copy mt-4">
-            One price per GPU-hour{currency === "USD" ? ", in US dollars" : ", in rupees"}; you pick the GPU when you launch.
-            {facts?.preinstalled
-              ? ` ${appName} is already on the machine, so no paid minutes go on installing it.`
-              : ` You sign in to ${appName} with your own licence; the price is for the machine.`}
-          </p>
-          <div className="mt-6">
-            <GpuLadder card={card} currency={currency} compact licence="short" />
-          </div>
-          <p className="mt-4 text-[14px] leading-6 text-ink-2">
-            {billingSentence(card, currency)}{" "}
-            <Link href="/pricing" className="text-ink underline underline-offset-4">
-              Full pricing
-            </Link>
-            .
-          </p>
-        </section>
+        <SoftwarePickSection
+          data={start}
+          currency={currency}
+          where={where}
+          title={`What ${appName} costs per hour here.`}
+          className="mt-16"
+          footnote={
+            <>
+            <LicenceNotice variant="short" className="mb-3" />
+            {/* licence notice (11 Nov 2026): the licence statement from branch gpu-product-1110
+                (<LicenceNotice variant="short" />, which that branch hangs under the old
+                <GpuLadder licence="short" /> here) belongs on this line when both merge. */}
+            <p>
+              {facts?.preinstalled
+                ? `${appName} is already on the machine, so no paid minutes go on installing it. `
+                : `You sign in to ${appName} with your own licence; the price is for the machine. `}
+              {billingSentence(card, currency)}{" "}
+              <Link href="/pricing" className="text-ink underline underline-offset-4">
+                Full pricing
+              </Link>
+              .
+            </p>
+            </>
+          }
+        />
       ) : null}
 
       {facts ? <MeasuredFacts app={facts.app} rows={facts.measured} className="cf-col mt-16" /> : null}
@@ -475,8 +488,8 @@ export default async function SoftwareView({ slug, currency }: { slug: string; c
           <h2 className="cf-section-title">The details.</h2>
           <div className="mt-6 divide-y divide-rule rounded-[24px] border border-rule">
             {page.sections.map((section) => (
-              <details key={section.h2} className="group px-6 py-5">
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-medium text-ink">
+              <details key={section.h2} className="group px-6 py-3">
+                <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-4 font-medium text-ink [&::-webkit-details-marker]:hidden">
                   {section.h2}
                   <span aria-hidden className="text-ink-3 transition group-open:rotate-45">+</span>
                 </summary>
@@ -526,25 +539,8 @@ export default async function SoftwareView({ slug, currency }: { slug: string; c
         </div>
       </section>
 
-      {pointers ? (
-        <div className="cf-col mt-16">
-          <a href="#pick-a-gpu" className="cf-btn-go w-full sm:w-auto sm:px-12">
-            Pick a GPU and launch <span aria-hidden>↑</span>
-          </a>
-          <p className="mt-3 text-[14px] text-ink-3">
-            New to it? <Link href="/how-to-use" className="underline underline-offset-4">How a session works</Link>.
-          </p>
-        </div>
-      ) : (
-      <div className="cf-col mt-16 flex flex-wrap gap-3">
-        <Link href="/signup" className="cf-btn-primary">
-          Sign up
-        </Link>
-        <Link href="/how-to-use" className="cf-btn-secondary">
-          How it works
-        </Link>
-      </div>
-      )}
+      {/* The same one action at the foot, and on phones the sticky bar (11 Nov 2026). */}
+      <SoftwareStartEnd data={start} where={where} className={pointers ? "mt-12" : "mt-16"} />
 
       {related.length > 0 && (
         <section className={`cf-col border-t border-rule ${pointers ? "mt-12 pt-6" : "mt-16 pt-8"}`}>

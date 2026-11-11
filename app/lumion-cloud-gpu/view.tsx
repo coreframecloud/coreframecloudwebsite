@@ -6,11 +6,12 @@ import { GpuCineBand } from "@/components/gpu-cine-band";
 import { GPU_HEROES } from "@/lib/gpu-heroes";
 import type { Metadata } from "next";
 import { JsonLd } from "@/components/seo/json-ld";
-import { breadcrumbList } from "@/lib/seo";
+import { breadcrumbList, softwareServiceLd } from "@/lib/seo";
 import { BackgroundGlow } from "@/components/home/background-glow";
 import { PricingCards } from "@/components/pricing/pricing-cards";
 import { getRateCard, ladderPhrase, ladderRanges, pricingFaqAnswer, taxSentence } from "@/lib/rate-card";
-import { GpuLadder } from "@/components/pricing/gpu-ladder";
+import { softwareStart } from "@/lib/software-start";
+import { SoftwareFitPanel, SoftwarePickSection, SoftwareStartEnd, SoftwareStartHero } from "@/components/software/software-start";
 import { storageTerms } from "@/lib/storage-terms";
 import { NODE } from "@/lib/node-spec";
 import Link from "next/link";
@@ -70,6 +71,15 @@ export default async function LumionView({ currency }: { currency: Currency }) {
    * schema. Keeping them separate is how a page ends up telling Google one
    * thing and the reader another.
    */
+  // Price first, one action, account at Start (owner, 10-11 Nov 2026).
+  const start = softwareStart("lumion-cloud-gpu", card, currency);
+  const gpuFaq =
+    start.fit && start.rec
+      ? {
+          q: `What GPU do I need for ${start.fit.app}?`,
+          a: `For ${start.fit.app} we recommend the ${start.rec.name} with ${start.rec.vram} GB of VRAM. ${start.fit.gpu.why} Every card on the price list runs it; you pick the card when you start.`,
+        }
+      : null;
   const faqs: { q: string; a: string }[] = [
     {
       q: "Does Lumion work on a cloud GPU?",
@@ -90,6 +100,7 @@ export default async function LumionView({ currency }: { currency: Currency }) {
     ...(priceAnswer
       ? [{ q: currency === "USD" ? "How much does a Lumion cloud GPU cost?" : "How much does Lumion cloud GPU cost in India?", a: priceAnswer }]
       : []),
+    ...(gpuFaq ? [gpuFaq] : []),
   ];
 
   const jsonLd = {
@@ -106,6 +117,16 @@ export default async function LumionView({ currency }: { currency: Currency }) {
     <div className="relative min-h-screen text-ink">
       <ViewContent name="Lumion cloud GPU workstation" category="workstation" />
       <JsonLd data={breadcrumbList([{ name: "Lumion cloud GPU workstation", path: "/lumion-cloud-gpu" }])} />
+      {/* What is for sale on the page (11 Nov 2026; the /software pages and D5 already had it). */}
+      <JsonLd
+        data={softwareServiceLd({
+          slug: "lumion-cloud-gpu",
+          path: "/lumion-cloud-gpu",
+          name: "Lumion on a GPU workstation, by the minute",
+          description: "A Windows GPU workstation for Lumion, streamed to your laptop and billed per minute. Bring your own Lumion licence; project files persist.",
+          card,
+        })}
+      />
       <BackgroundGlow />
       <script
         type="application/ld+json"
@@ -122,7 +143,9 @@ export default async function LumionView({ currency }: { currency: Currency }) {
               Run Lumion on a GPU workstation.
               <br className="hidden md:block" /> Nothing to buy.
             </h1>
-            <p className="cf-lead mt-[22px]">
+            {/* Price first and ONE big action on the first phone screen (11 Nov 2026). */}
+            <SoftwareStartHero data={start} where="sw_lumion" appName={start.fit?.app} />
+            <p className="cf-lead mt-7">
             A Lumion workstation in the cloud. Lumion needs a strong GPU: run your own Lumion licence on a workstation-class RTX GPU while your laptop stays free.
           </p>
             <p className="cf-section-copy mt-5">
@@ -131,15 +154,7 @@ export default async function LumionView({ currency }: { currency: Currency }) {
               queue to submit a file to and wait on.
             </p>
 
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Link href="/signup" className="cf-btn-primary">
-                Start a session
-              </Link>
-              <Link href="/enterprise" className="cf-btn-secondary">
-                Team plans
-              </Link>
-            </div>
-            <LastUpdated date="18 October 2026" path="/lumion-cloud-gpu" className="mt-6" />
+            <LastUpdated date="11 November 2026" path="/lumion-cloud-gpu" className="mt-6" />
           </div>
         </div>
         </section>
@@ -161,8 +176,8 @@ export default async function LumionView({ currency }: { currency: Currency }) {
                   body: `Geometry, textures and vegetation all have to fit on the card. Coreframe workstations carry ${vram} of VRAM. Many laptops and entry desktops sold for design work have 6 to 8 GB, and that's what forces you to cut a scene down.`,
                 },
                 {
-                  title: "Consumer RTX drivers",
-                  body: "Lumion needs a WDDM display driver. This is a consumer card running the consumer driver. Lumion refuses to start on a datacentre card with a compute-only driver.",
+                  title: "A display driver, not compute-only",
+                  body: "Lumion needs a WDDM display driver. Every card here runs one, so Lumion starts as it does on a desktop. It refuses to start on a datacentre card with a compute-only driver.",
                 },
                 {
                   title: "Files stay in India",
@@ -178,11 +193,16 @@ export default async function LumionView({ currency }: { currency: Currency }) {
           </div>
         </GpuCineBand>
 
+        {/* Preinstalled vs your own licence, the recommended card, and the price-first
+            picker in place of the plain ladder (11 Nov 2026). */}
+        <section className="cf-section px-5 pt-0">
+          <SoftwareFitPanel data={start} />
+          <SoftwarePickSection data={start} currency={currency} where="sw_lumion" title={`Pick a GPU for ${start.fit?.app ?? "it"}.`} className="mt-14" />
+        </section>
+
         <section className="cf-section px-5 pt-0">
           <div className="cf-wide">
             <h2 className="cf-section-title">The machine.</h2>
-            {/* The GPU ladder from the live rate card (owner, 21 Oct 2026). */}
-            <div className="mt-6"><GpuLadder card={card} currency={currency} compact /></div>
             <SpecTable rows={FIXED_SPECS} caption="The Lumion workstation: hardware and access" />
             <SpecTable rows={vramCompare(vram)} caption="VRAM compared" showCaption />
             <p className="cf-section-copy mt-5">
@@ -225,6 +245,10 @@ export default async function LumionView({ currency }: { currency: Currency }) {
               ))}
             </div>
           </div>
+        </section>
+
+        <section className="cf-section px-5 pt-0">
+          <SoftwareStartEnd data={start} where="sw_lumion" />
         </section>
 
         <section className="cf-section px-5 pt-0">

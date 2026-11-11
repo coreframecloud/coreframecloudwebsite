@@ -6,9 +6,9 @@
  * drift a customer reads on one page that Lumion is preinstalled and discovers
  * on the machine that it is bring-your-own-licence.
  *
- * Mirrors apps/node-setup/install-baseline-software.ps1 in the control-plane
- * repo — that script is what actually puts these on the node before the
- * Reboot Restore baseline is taken. If you add software there, add it here.
+ * PREINSTALLED mirrors the cloud golden image (control-plane
+ * apps/node-setup/cloudpe-gpu/, golden v5 confirmed by the owner 4 Nov 2026).
+ * If software is added to the image, add it here.
  */
 
 export type SoftwareItem = {
@@ -19,18 +19,16 @@ export type SoftwareItem = {
   vendorUrl?: string;
 };
 
-/** Installed on every workstation. Ready the moment the desktop appears. */
+/**
+ * Installed on every workstation. Ready the moment the desktop appears.
+ *
+ * 11 Nov 2026 (owner): only what is verified on the cloud image (golden v5,
+ * 4 Nov 2026) is claimed: Blender, Twinmotion, Unreal Engine and D5 Render.
+ * The longer list this replaced (Steam, FreeCAD, ParaView, DWG TrueView,
+ * Navisworks Freedom, GIMP, Krita, utilities…) came from the old on-prem
+ * node baseline and is not on the cloud build; those moved to FREE_TO_INSTALL.
+ */
 export const PREINSTALLED: SoftwareItem[] = [
-  {
-    name: "Steam",
-    category: "Platforms & runtimes",
-    // Here because a session account is not an administrator and Steam's
-    // installer elevates, so a customer cannot put it on themselves. Free to
-    // install, and the customer signs into their own account — the same shape
-    // as D5 Render.
-    note: "Installed and ready; sign in with your own Steam account. Useful for Steam-distributed tools and benchmarks, and for anything you already own there.",
-    vendorUrl: "https://store.steampowered.com/",
-  },
   {
     name: "Blender",
     category: "3D & rendering",
@@ -40,10 +38,7 @@ export const PREINSTALLED: SoftwareItem[] = [
   {
     name: "Twinmotion",
     category: "3D & rendering",
-    // Installed 10 Sep 2026 into the Reboot Restore baseline, so it is on the
-    // machine the moment the desktop appears -- no download, ever. The Epic
-    // sign-in is the customer's own and is wiped with their session.
-    note: "Twinmotion 2026.1 HF2, installed and ready. Sign in with your own Epic account when you need a commercial licence; the free tier covers most individual users.",
+    note: "Installed and ready. Sign in with your own Epic account when you need a commercial licence; the free tier covers most individual users.",
     vendorUrl: "https://www.twinmotion.com/",
   },
   {
@@ -58,111 +53,20 @@ export const PREINSTALLED: SoftwareItem[] = [
     note: "Installed and ready — sign in with your own D5 account. The free tier covers a lot of individual work.",
     vendorUrl: "https://www.d5render.com/",
   },
-  {
-    name: "FreeCAD",
-    category: "3D & rendering",
-    note: "Parametric CAD that opens the STEP, IGES and DXF files engineering consultants send.",
-    vendorUrl: "https://www.freecad.org/",
-  },
-  {
-    name: "ParaView",
-    category: "3D & rendering",
-    note: "Post-processing and visualisation for CFD and simulation results.",
-    vendorUrl: "https://www.paraview.org/",
-  },
-  {
-    name: "Autodesk DWG TrueView",
-    category: "CAD viewers",
-    note: "Open, measure and plot DWG drawings without needing an AutoCAD seat.",
-    vendorUrl: "https://www.autodesk.com/products/dwg-trueview/overview",
-  },
-  {
-    name: "Autodesk Navisworks Freedom",
-    category: "CAD viewers",
-    note: "Review NWD coordination models from consultants.",
-    vendorUrl: "https://www.autodesk.com/products/navisworks/3d-viewers",
-  },
-  {
-    name: "GIMP",
-    category: "Images & textures",
-    note: "Texture work and render post-processing without a Photoshop subscription.",
-    vendorUrl: "https://www.gimp.org/",
-  },
-  {
-    name: "Krita",
-    category: "Images & textures",
-    note: "Digital painting and texture authoring.",
-    vendorUrl: "https://krita.org/",
-  },
-  {
-    name: "Paint.NET",
-    category: "Images & textures",
-    note: "Quick crops, resizes and touch-ups.",
-    vendorUrl: "https://www.getpaint.net/",
-  },
-  {
-    name: "XnView MP",
-    category: "Images & textures",
-    note: "Browse, batch-convert and contact-sheet a whole folder of renders at once.",
-    vendorUrl: "https://www.xnview.com/en/xnviewmp/",
-  },
-  {
-    name: "7-Zip",
-    category: "Utilities",
-    note: "Unpack the .zip, .rar and .7z scene archives clients send.",
-    vendorUrl: "https://www.7-zip.org/",
-  },
-  {
-    name: "Google Chrome & Mozilla Firefox",
-    category: "Utilities",
-    note: "Sign in to asset libraries and your own software licence portals.",
-  },
-  {
-    name: "Adobe Acrobat Reader",
-    category: "Utilities",
-    note: "Drawings, specifications and tender documents arrive as PDF.",
-    vendorUrl: "https://get.adobe.com/reader/",
-  },
-  {
-    name: "VLC",
-    category: "Utilities",
-    note: "Play back rendered walkthrough video before you download it.",
-    vendorUrl: "https://www.videolan.org/vlc/",
-  },
-  {
-    name: "Notepad++",
-    category: "Utilities",
-    note: "Edit config, material and script files.",
-    vendorUrl: "https://notepad-plus-plus.org/",
-  },
-  {
-    name: "Python",
-    category: "Utilities",
-    note: "Run Blender and Revit automation scripts.",
-    vendorUrl: "https://www.python.org/",
-  },
-  {
-    name: "Visual Studio Code",
-    category: "Utilities",
-    note: "Write and debug Blender, Dynamo and Revit scripts.",
-    vendorUrl: "https://code.visualstudio.com/",
-  },
-  {
-    name: "HandBrake & FFmpeg",
-    category: "Utilities",
-    note: "Turn a rendered image sequence into a video file before you download it.",
-    vendorUrl: "https://handbrake.fr/",
-  },
-  {
-    name: "NVIDIA Studio driver",
-    category: "System",
-    note: "The GPU driver tuned for creative applications rather than games.",
-  },
-  {
-    name: "Visual C++ & .NET runtimes",
-    category: "System",
-    note: "The runtime libraries every render engine and CAD add-in expects to find.",
-  },
+];
+
+/**
+ * Free software you can install yourself in a session (11 Nov 2026). Not on
+ * the image: like any software you install, it is removed when the session
+ * ends unless you keep a persistent workstation.
+ */
+export const FREE_TO_INSTALL: SoftwareItem[] = [
+  { name: "FreeCAD", category: "Free tools", note: "Parametric CAD for the STEP, IGES and DXF files consultants send.", vendorUrl: "https://www.freecad.org/" },
+  { name: "ParaView", category: "Free tools", note: "Post-processing and visualisation for CFD and simulation results.", vendorUrl: "https://www.paraview.org/" },
+  { name: "Autodesk DWG TrueView", category: "Free tools", note: "Open, measure and plot DWG drawings without an AutoCAD seat.", vendorUrl: "https://www.autodesk.com/products/dwg-trueview/overview" },
+  { name: "GIMP", category: "Free tools", note: "Texture work and render post-processing.", vendorUrl: "https://www.gimp.org/" },
+  { name: "HandBrake", category: "Free tools", note: "Turn a rendered image sequence into a video file before you download it.", vendorUrl: "https://handbrake.fr/" },
+  { name: "7-Zip", category: "Free tools", note: "Unpack the .zip, .rar and .7z scene archives clients send.", vendorUrl: "https://www.7-zip.org/" },
 ];
 
 /**
@@ -177,6 +81,9 @@ export const BRING_YOUR_OWN_LICENCE: SoftwareItem[] = [
   { name: "Chaos Vantage", category: "Rendering", note: "Real-time ray tracing for large scenes.", vendorUrl: "https://www.chaos.com/vantage" },
   { name: "Chaos Corona", category: "Rendering", note: "For 3ds Max and Cinema 4D workflows.", vendorUrl: "https://www.chaos.com/corona" },
   { name: "KeyShot", category: "Rendering", note: "Product and industrial visualisation.", vendorUrl: "https://www.keyshot.com/" },
+  // 11 Nov 2026: pages /software/cinema-4d-cloud-workstation and /software/houdini-cloud-workstation.
+  { name: "Maxon Cinema 4D & Redshift", category: "Rendering", note: "Sign in with your Maxon account.", vendorUrl: "https://www.maxon.net/cinema-4d" },
+  { name: "SideFX Houdini", category: "Rendering", note: "Your SideFX account or licence server; Karma ships with it.", vendorUrl: "https://www.sidefx.com/products/houdini/" },
   { name: "Autodesk Revit", category: "CAD & BIM", note: "Install from your own Autodesk account.", vendorUrl: "https://manage.autodesk.com/" },
   { name: "Autodesk AutoCAD", category: "CAD & BIM", note: "Install from your own Autodesk account.", vendorUrl: "https://manage.autodesk.com/" },
   { name: "Autodesk 3ds Max", category: "CAD & BIM", note: "Install from your own Autodesk account.", vendorUrl: "https://manage.autodesk.com/" },
@@ -184,7 +91,7 @@ export const BRING_YOUR_OWN_LICENCE: SoftwareItem[] = [
   { name: "SketchUp Pro", category: "CAD & BIM", note: "Sign in with your Trimble account.", vendorUrl: "https://www.sketchup.com/download/all" },
   { name: "Rhino", category: "CAD & BIM", note: "Evaluation available; then your own licence key.", vendorUrl: "https://www.rhino3d.com/download/" },
   { name: "Archicad", category: "CAD & BIM", note: "Graphisoft licence required.", vendorUrl: "https://graphisoft.com/downloads" },
-  { name: "Adobe Creative Cloud", category: "Images & textures", note: "Installed; sign in with your own Adobe account.", vendorUrl: "https://creativecloud.adobe.com/apps/download/creative-cloud" },
+  { name: "Adobe Creative Cloud", category: "Images & textures", note: "Install Creative Cloud and sign in with your own Adobe account.", vendorUrl: "https://creativecloud.adobe.com/apps/download/creative-cloud" },
 ];
 
 export const CATEGORIES = [
@@ -192,6 +99,7 @@ export const CATEGORIES = [
   "Rendering",
   "CAD & BIM",
   "CAD viewers",
+  "Free tools",
   "Real-time",
   "Images & textures",
   "Utilities",
