@@ -233,6 +233,9 @@ export const d5RenderSystemRequirementsLaptop: BlogPost = {
     { href: "/blog/can-my-laptop-run-d5-render-or-lumion", label: "Can your laptop run D5 Render or Lumion?" },
     { href: "/vram-for-architectural-rendering", label: "Is 8 GB of VRAM enough?" },
     { href: "/d5-render-vs-local-gpu", label: "Renting a workstation vs buying one" },
+    { href: "/blog/lumion-system-requirements", label: "Lumion system requirements" },
+    { href: "/blog/enscape-system-requirements", label: "Enscape system requirements" },
+    { href: "/tools/render-time", label: "Render-time calculator" },
     { href: "/pricing", label: "Pricing" },
   ],
 };

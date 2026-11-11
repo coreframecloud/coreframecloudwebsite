@@ -102,6 +102,7 @@ export function SiteFooter({ currency = "INR" }: { currency?: Currency }) {
               {[
                 { label: "Everything preinstalled", href: "/apps" },
                 { label: "No-install IFC model checker", href: "/tools" },
+                { label: "Render-time calculator", href: "/tools/render-time" },
                 { label: "About Coreframe", href: "/about" },
                 { label: "Security and data", href: "/trust" },
                 // Only when /blog exists on this build: published posts on the
@@ -129,6 +130,9 @@ export function SiteFooter({ currency = "INR" }: { currency?: Currency }) {
                 { label: "Is 8 GB of VRAM enough?", href: "/vram-for-architectural-rendering" },
                 // Week report 6 Nov 2026: the site's most-shown page, at position 8.7.
                 { label: "D5 Render system requirements", href: "/blog/d5-render-system-requirements-laptop" },
+                { label: "Lumion system requirements", href: "/blog/lumion-system-requirements" },
+                { label: "Enscape system requirements", href: "/blog/enscape-system-requirements" },
+                { label: "RTX A4000 vs RTX A5000", href: "/rtx-a4000-vs-rtx-a5000" },
                 { label: "iRender alternative: Coreframe compared", href: "/coreframe-vs-irender" },
                 { label: "Vast.ai alternative for Windows", href: "/vast-ai-alternative-windows-workstation" },
                 { label: "Cloud workstations for architects", href: "/best-cloud-workstations-for-architects" },

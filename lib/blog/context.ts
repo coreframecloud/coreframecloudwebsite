@@ -6,6 +6,10 @@ import {
   introOfferFor,
   perMinuteRate,
   planTiers,
+  publicGpus,
+  formatHourly,
+  hourlyValue,
+  shortGpuName,
   rupees,
   type RateCard,
   type RateCardPlan,
@@ -41,7 +45,12 @@ export function blogContext(card: RateCard | null, currency: Currency = "INR"): 
   const planOverage = (p: RateCardPlan): number | null =>
     usd ? (p.usd_overage_hourly_rate && p.usd_overage_hourly_rate > 0 ? p.usd_overage_hourly_rate : null) : p.overage_hourly_rate_rupees;
   const plans = planTiers(card);
+  const gpus = publicGpus(card)
+    .filter((g) => hourlyValue(g, currency, card) != null)
+    .map((g) => ({ slug: g.slug, name: shortGpuName(g.name), vramGb: g.vram_gb, ramGb: g.ram_gb, hourly: formatHourly(g, currency, card) }));
   return {
+    gpus,
+    gpuFor: (vramGb: number, ramGb = 0) => gpus.find((g) => g.vramGb >= vramGb && g.ramGb >= ramGb) ?? null,
     currency,
     taxIncl: usd ? "with no GST" : "with GST included",
     taxShort: usd ? "no GST" : "GST included",

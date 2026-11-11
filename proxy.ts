@@ -85,6 +85,11 @@ const PAGES = new Set([
   "/go/gpu",
   "/go/cfd",
   "/go/hvac",
+  // The free render-time calculator (28 Oct 2026): the one /tools page Next
+  // serves itself; every other /tools path is the control plane's IFC checker.
+  "/tools/render-time",
+  // Content quick wins (11 Nov 2026): quotes both cards' live rates.
+  "/rtx-a4000-vs-rtx-a5000",
 ]);
 
 /** Dynamic routes with a /usd copy: exactly one segment after the prefix, so
@@ -149,12 +154,13 @@ export const config = {
      * (rewritten from the control plane, its own policy in next.config.ts),
      * the shared IFC report (/r/, also rewritten) and the control-plane files
      * under /tools/ -- but /tools itself is a page here since 6 Nov 2026 and
-     * MUST match, or Next's scripts run without a nonce --, and anything with a file
+     * MUST match, or Next's scripts run without a nonce --, (so must the
+     * render-time calculator, /tools/render-time), and anything with a file
      * extension (robots.txt, sitemap.xml, images, fonts).
      */
     {
       source:
-        "/((?!api/|_next/static|_next/image|studio|tools/|r/|favicon\\.ico|.*\\.[a-zA-Z0-9]+$).*)",
+        "/((?!api/|_next/static|_next/image|studio|tools/(?!render-time)|r/|favicon\\.ico|.*\\.[a-zA-Z0-9]+$).*)",
       missing: [
         { type: "header", key: "next-router-prefetch" },
         { type: "header", key: "purpose", value: "prefetch" },

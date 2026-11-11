@@ -52,6 +52,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // find late or not at all, so these two lines are not optional.
     { url: `${BASE}/coreframe-vs-irender`, lastModified: lm("/coreframe-vs-irender"), changeFrequency: "monthly", priority: 0.8 },
     { url: `${BASE}/vram-for-architectural-rendering`, lastModified: lm("/vram-for-architectural-rendering"), changeFrequency: "monthly", priority: 0.8 },
+    // Content quick wins (11 Nov 2026): GPU comparison, specs + live prices.
+    { url: `${BASE}/rtx-a4000-vs-rtx-a5000`, lastModified: lm("/rtx-a4000-vs-rtx-a5000"), changeFrequency: "monthly", priority: 0.7 },
     // The architectural visualization hub (19 Oct 2026): every archviz tool page, grouped by job.
     { url: `${BASE}/architectural-visualization`, lastModified: lm("/architectural-visualization"), changeFrequency: "monthly", priority: 0.8 },
     { url: `${BASE}/cloud-rendering-for-architects`, lastModified: lm("/cloud-rendering-for-architects"), changeFrequency: "monthly", priority: 0.8 },
@@ -129,6 +131,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // a control-plane page behind a rewrite). /cfd is the conversion step
     // behind it.
     { url: `${BASE}/tools`, lastModified: lm("/tools"), changeFrequency: "monthly", priority: 0.8 },
+    // The free render-time calculator (28 Oct 2026), a page of this site.
+    { url: `${BASE}/tools/render-time`, lastModified: lm("/tools/render-time"), changeFrequency: "monthly", priority: 0.7 },
 
     // The free DWG dimension checker, added 2 Oct 2026 (app/dwg-check since
     // 6 Nov 2026). Priority 0.9 -- it answers a question people type verbatim
