@@ -14,6 +14,7 @@
 
 import { API_BASE } from "@/lib/api-base";
 import { formatMoney, usdRates, type Currency, type UsdRateCard } from "@/lib/money";
+import type { RateCardBlockBookings } from "@/lib/block-bookings";
 
 const API = API_BASE;
 
@@ -253,6 +254,9 @@ export type RateCard = {
    *  an older control plane omits it and usdRates() in lib/money.ts falls back
    *  to the approved constants. */
   usd?: Partial<UsdRateCard>;
+  /** Day, week and month passes (gpu-product-1110, item 5). Sent only while
+   *  the API's BLOCK_BOOKINGS_ENABLED is on; absent means no section. */
+  block_bookings?: RateCardBlockBookings | null;
 };
 
 /**

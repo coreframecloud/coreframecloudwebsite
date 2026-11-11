@@ -24,6 +24,7 @@ import {
 } from "@/lib/rate-card";
 import type { Currency } from "@/lib/money";
 import { GpuLaunchButton } from "@/components/go/gpu-start";
+import { LicenceNotice } from "@/components/licence/licence-notice";
 
 export function GpuLadder({
   card,
@@ -31,6 +32,7 @@ export function GpuLadder({
   title,
   compact = false,
   launch,
+  licence,
 }: {
   card: RateCard | null;
   /** The visitor's display currency (proxy.ts): one currency per page. */
@@ -47,6 +49,11 @@ export function GpuLadder({
    * goes straight to the payment step. `location` tells the clicks apart.
    */
   launch?: { location: string };
+  /**
+   * The licence statement under the list (gpu-product-1110, item 3): "full"
+   * (S1) or "short" (S2). Renders only with NEXT_PUBLIC_LICENCE_NOTICE=1.
+   */
+  licence?: "full" | "short";
 }) {
   const gpus = publicGpus(card);
   if (!gpus.length) {
@@ -136,6 +143,7 @@ export function GpuLadder({
           );
         })}
       </ul>
+      {licence ? <LicenceNotice variant={licence} className="mt-3" /> : null}
     </div>
   );
 }

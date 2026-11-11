@@ -17,6 +17,7 @@ import SignInSecurity from "@/components/account/sign-in-security";
 import MobileNumberCard from "@/components/account/mobile-number-card";
 import MyTeamCard from "@/components/team/my-team-card";
 import PersistentWorkstationCard from "@/components/account/persistent-workstation-card";
+import { LicenceCard, PassesCard, StorageAllowanceCard, useGpuExtras } from "@/components/my-activity/gpu-extras";
 import { apiFetch, forgetLocalSession, isSignedIn, rememberUser, sessionMarker } from "@/lib/session";
 import { trackEvent } from "@/lib/analytics";
 import {
@@ -515,6 +516,9 @@ export default function MyActivityPage() {
   const [studioCtx, setStudioCtx] = useState(false);
   const [blocked, setBlocked] = useState<string | null>(null);
   const card = useRateCard();
+  // GPU extras (gpu-product-1110): licence statement, working disk allowance,
+  // passes. null (nothing rendered) unless the API sends them.
+  const { extras: gpuExtras, reload: reloadGpuExtras } = useGpuExtras(Boolean(token));
   const chosenGpuView = (() => {
     const g = chosenGpu ? publicGpus(card).find((x) => x.slug === chosenGpu) : null;
     return g ? { name: shortGpuName(g.name), href: downloadPath(g.slug) } : null;
@@ -861,6 +865,11 @@ export default function MyActivityPage() {
           </div>
         </section>
 
+        {/* Licence statement (gpu-product-1110, item 3): only while the API
+            sends it. Next to "Where your work is saved": both are about what
+            happens when a session ends. */}
+        <LicenceCard licence={gpuExtras?.licence} />
+
         {/* How to start: the intro offer, or "add funds to start" when the
             account has no paid access yet. Retail only — an org's wallet is
             the org admin's to fund. */}
@@ -1071,6 +1080,20 @@ export default function MyActivityPage() {
             re-reads the balance and the ledger. Renders nothing while the API has
             the feature switched off. */}
         <PersistentWorkstationCard onChanged={() => void refresh()} />
+
+        {/* Working disk allowance and day / week / month passes
+            (gpu-product-1110, items 1 and 5): each only while the API sends
+            its section. A pass is paid from the wallet, so buying one
+            re-reads the balance too. */}
+        <StorageAllowanceCard allowance={gpuExtras?.storage_allowance} />
+        <PassesCard
+          bookings={gpuExtras?.block_bookings}
+          currency={gpuExtras?.currency}
+          onBought={() => {
+            void reloadGpuExtras();
+            void refresh();
+          }}
+        />
 
         {/* CFD jobs (16 Oct 2026): the account's simulations, each opening its
             job page with the session. Above Activity: a job waiting on the
