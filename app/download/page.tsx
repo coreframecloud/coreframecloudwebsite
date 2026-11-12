@@ -279,7 +279,7 @@ export default function DownloadPage() {
             <ul className="mb-6 space-y-2 text-sm leading-6 text-ink-2">
               <li className="flex gap-2">
                 <span className="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-blue" />
-                macOS 10.15 or later, Apple silicon or Intel
+                macOS 11 or later, Apple silicon or Intel
               </li>
               <li className="flex gap-2">
                 <span className="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-blue" />

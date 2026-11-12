@@ -27,7 +27,7 @@ const connectApp = {
   "@type": "SoftwareApplication",
   name: "Coreframe Connect",
   applicationCategory: "UtilitiesApplication",
-  operatingSystem: "Windows 10, Windows 11 (64-bit), macOS 10.15 or later (Apple silicon and Intel)",
+  operatingSystem: "Windows 10, Windows 11 (64-bit), macOS 11 or later (Apple silicon and Intel)",
   description:
     "Desktop client that signs in to Coreframe Cloud and streams a Windows GPU workstation to your own computer.",
   url: "https://www.coreframecloud.com/download",
