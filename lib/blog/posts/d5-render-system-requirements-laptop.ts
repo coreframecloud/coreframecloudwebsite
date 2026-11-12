@@ -180,7 +180,7 @@ export const d5RenderSystemRequirementsLaptop: BlogPost = {
     },
     {
       type: "p",
-      text: `D5 Render is preinstalled; you sign in with your own D5 account. Your project files live on a drive that persists between sessions, so the 40 GB of workspace and your assets aren't on your laptop at all. You connect from the Coreframe Connect app, which runs on Windows laptops (not Mac yet). ${BANDWIDTH_SENTENCE}`,
+      text: `D5 Render is preinstalled; you sign in with your own D5 account. Your project files live on a drive that persists between sessions, so the 40 GB of workspace and your assets aren't on your laptop at all. You connect from the Coreframe Connect app, which runs on Windows laptops and Macs. ${BANDWIDTH_SENTENCE}`,
     },
     ctx.hourly
       ? {
@@ -219,7 +219,7 @@ export const d5RenderSystemRequirementsLaptop: BlogPost = {
     },
     {
       q: "Does D5 Render run on a Mac?",
-      a: "D5's requirements list Windows 10 or later only. Coreframe's Connect app is Windows only too for now, so a remote workstation doesn't help on a Mac yet.",
+      a: "D5's requirements list Windows 10 or later only. A remote workstation gets around that: Coreframe's Connect app runs on Mac, and D5 runs on the Windows workstation it opens.",
     },
     ctx.hourly
       ? {

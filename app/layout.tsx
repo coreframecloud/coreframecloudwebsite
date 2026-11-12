@@ -514,17 +514,17 @@ export default async function RootLayout({
                 /**
                  * The Connect client as its own entity (AEO plan A3): the
                  * thing "four clicks" happens in, which answer engines can
-                 * attach that claim to. Free download, Windows only.
+                 * attach that claim to. Free download, Windows and Mac.
                  */
                 {
                   "@type": "SoftwareApplication",
                   "@id": "https://www.coreframecloud.com/#connect-app",
                   name: "Coreframe Connect",
                   applicationCategory: "BusinessApplication",
-                  operatingSystem: "Windows 10, Windows 11",
+                  operatingSystem: "Windows 10, Windows 11, macOS",
                   url: "https://www.coreframecloud.com/download",
                   description:
-                    "The Windows app that launches a Coreframe cloud virtual workstation in four clicks and streams its desktop to your own PC.",
+                    "The Mac and Windows app that launches a Coreframe cloud virtual workstation in four clicks and streams its desktop to your own computer.",
                   publisher: { "@id": "https://www.coreframecloud.com/#organization" },
                   offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
                 },

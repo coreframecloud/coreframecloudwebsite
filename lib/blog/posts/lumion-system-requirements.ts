@@ -152,7 +152,7 @@ export const lumionSystemRequirements: BlogPost = {
     { type: "h2", text: "Does Lumion run on a Mac?" },
     {
       type: "p",
-      text: "Not officially. Lumion's requirements page says Lumion Pro is not officially supported on Mac, and describes running it through Windows with Apple's Boot Camp on a relatively new Mac with a fast GPU. Coreframe's Connect app is Windows-only for now as well, so a remote workstation doesn't help on a Mac yet.",
+      text: "Not officially. Lumion's requirements page says Lumion Pro is not officially supported on Mac, and describes running it through Windows with Apple's Boot Camp on a relatively new Mac with a fast GPU. A remote workstation is another way round it: Coreframe's Connect app runs on Mac, and Lumion runs on the Windows workstation it opens.",
     },
 
     { type: "h2", text: "Can Lumion run on a cloud or virtual workstation?" },
@@ -202,7 +202,7 @@ export const lumionSystemRequirements: BlogPost = {
       },
       {
         q: "Does Lumion work on a Mac?",
-        a: "Lumion says Lumion Pro is not officially supported on Mac; it describes running Windows through Boot Camp instead. Coreframe's Connect app is Windows-only for now too.",
+        a: "Lumion says Lumion Pro is not officially supported on Mac; it describes running Windows through Boot Camp instead. Coreframe's Connect app runs on Mac, so Lumion can run on a Windows cloud workstation you reach from your Mac.",
       },
       rec
         ? {

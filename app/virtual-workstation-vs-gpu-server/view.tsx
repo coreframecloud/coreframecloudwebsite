@@ -150,7 +150,7 @@ export default async function WorkstationVsServerView({ currency }: { currency: 
       a:
         "Sign up with an email address and a mobile number, " +
         (usdView ? "top up your wallet by card (international cards are accepted)" : "top up your wallet by UPI or card") +
-        " and install the Coreframe Connect app for Windows. After that a workstation is four clicks away and its desktop appears in about two minutes. Preparing it is free; billing starts when you connect.",
+        " and install the Coreframe Connect app for Windows or Mac. After that a workstation is four clicks away and its desktop appears in about two minutes. Preparing it is free; billing starts when you connect.",
     },
     {
       q: "How is it billed?",
@@ -269,7 +269,7 @@ export default async function WorkstationVsServerView({ currency }: { currency: 
           <Fold title="How fast you can start.">
             <p className="mt-4 leading-8 text-ink-2">
               Sign up with an email address and a mobile number, top up your wallet and install the Coreframe
-              Connect app for Windows. From then on a workstation is four clicks away and the desktop appears in
+              Connect app for Windows or Mac. From then on a workstation is four clicks away and the desktop appears in
               about two minutes. Preparing it is free; billing starts when you connect.{" "}
               <Link href="/how-to-use" className={LINK}>
                 How to use Coreframe

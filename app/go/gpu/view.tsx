@@ -210,7 +210,7 @@ export default async function GpuLandingView({ currency }: { currency: Currency 
             </KeepQueryLink>
           )}
           <p className="mt-3 text-[12.5px] leading-5 text-ink-3">
-            Signed Windows app · {currency === "USD" ? "Indian company, invoice in US dollars" : "Indian company, GST invoice"} · failed connections are never charged
+            Signed Mac and Windows app · {currency === "USD" ? "Indian company, invoice in US dollars" : "Indian company, GST invoice"} · failed connections are never charged
           </p>
         </div>
       </main>

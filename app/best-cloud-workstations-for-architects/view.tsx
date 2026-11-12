@@ -173,7 +173,7 @@ export default async function CloudWorkstationsRoundupView({ currency }: { curre
     },
     {
       q: "Do I need an IT team to use a cloud workstation?",
-      a: "Not for a ready-to-work one. With Coreframe you install one Windows app, sign in, pick a GPU and launch. Hyperscaler virtual desktops are usually set up and run by an IT team inside the firm's own cloud account.",
+      a: "Not for a ready-to-work one. With Coreframe you install one app on your Windows PC or Mac, sign in, pick a GPU and launch. Hyperscaler virtual desktops are usually set up and run by an IT team inside the firm's own cloud account.",
     },
   ];
 

@@ -82,7 +82,7 @@ export default async function VastAlternativeView({ currency }: { currency: Curr
     ],
     [
       "How you connect",
-      "The Coreframe Connect app for Windows streams the desktop; four clicks to launch",
+      "The Coreframe Connect app for Windows or Mac streams the desktop; four clicks to launch",
       "SSH, Jupyter or a custom entrypoint (virtual machines by SSH)",
     ],
     [
@@ -166,7 +166,7 @@ export default async function VastAlternativeView({ currency }: { currency: Curr
     },
     {
       q: "Do I need a Linux or command-line background to use Coreframe?",
-      a: "No. You install the Coreframe Connect app for Windows, sign in, pick a GPU and launch. The desktop appears in about two minutes. There is no SSH, no terminal and no image to build.",
+      a: "No. You install the Coreframe Connect app for Windows or Mac, sign in, pick a GPU and launch. The desktop appears in about two minutes. There is no SSH, no terminal and no image to build.",
     },
   ];
 

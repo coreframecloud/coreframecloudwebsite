@@ -61,7 +61,7 @@ export function buildFaq(
     },
     {
       q: "Do I need to install anything?",
-      a: "One small Windows app, Coreframe Connect. You download it after signing up, sign in with the same email, and launch a workstation from inside it.",
+      a: "One small app for Windows or Mac, Coreframe Connect. You download it after signing up, sign in with the same email, and launch a workstation from inside it.",
     },
     {
       q: "How am I charged?",

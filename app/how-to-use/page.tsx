@@ -45,7 +45,7 @@ const STEPS = [
   },
   {
     title: "4. Install Coreframe Connect.",
-    body: "Connect is the Windows client. It handles the private network link and the stream, so there's nothing else to set up. Download it from your account, run the installer and sign in. The installer is signed by Coreframe Compute Labs Private Limited, so Windows shows our name as the publisher.",
+    body: "Connect is the desktop app for Windows and Mac. It handles the private network link and the stream, so there's nothing else to set up. Download it from your account, install it and sign in. The Windows installer and the Mac app are signed by Coreframe Compute Labs Private Limited, so Windows and macOS show our name as the publisher; on a Mac, open the .dmg and drag Coreframe Cloud Connect to Applications.",
   },
   {
     title: "5. Press Connect.",

@@ -316,7 +316,7 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
       "it from your own laptop. For modelling, lighting and rendering, that is a cloud virtual workstation: a Windows " +
       "desktop with a dedicated GPU and the 3D software, streamed to your screen and billed only while you use it. " +
       "The artist's own equipment can be modest: a laptop or PC that plays smooth video, a steady internet " +
-      "connection, a mouse or pen tablet, and the client app (Coreframe Connect runs on Windows 10 and 11). " +
+      "connection, a mouse or pen tablet, and the client app (Coreframe Connect runs on Windows 10 and 11 and on macOS, Apple silicon or Intel). " +
       `${SITE}/best-cloud-workstations-for-architects`,
   );
   out.push(
@@ -360,8 +360,8 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
       "Billing is per minute while the session runs.",
   );
   out.push(
-    "- **Does it work from a Mac?** The Coreframe Connect client is published for " +
-      "Windows 10 and 11 (64-bit) only.",
+    "- **Does it work from a Mac?** Yes. Coreframe Connect is published for " +
+      "Windows 10 and 11 (64-bit) and for macOS (Apple silicon and Intel), signed and notarized.",
   );
   out.push(
     "- **How fast will my render be?** Coreframe does not quote render times for your scene; they depend " +
@@ -595,7 +595,7 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
   out.push("## How a session works");
   out.push("");
   out.push("1. Sign up with email and mobile (a code on WhatsApp or by SMS), then add credit.");
-  out.push("2. Install Coreframe Connect, the Windows client, and sign in.");
+  out.push("2. Install Coreframe Connect (Windows or Mac) and sign in.");
   out.push("3. Press Connect. A workstation is provisioned and the desktop streams to you.");
   out.push("4. Work as normal. Project files live on your NAS drive, mapped inside the session.");
   out.push("5. End the session. Billing stops; your NAS files stay.");

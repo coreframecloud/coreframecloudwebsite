@@ -16,7 +16,7 @@ const STEPS = [
   {
     n: "1",
     title: "Install Coreframe Connect",
-    body: "A small Windows app. Sign in with your email — the same account your whole team uses.",
+    body: "A small app for Windows or Mac. Sign in with your email — the same account your whole team uses.",
     link: { href: "/download", label: "Download Connect" },
   },
   {

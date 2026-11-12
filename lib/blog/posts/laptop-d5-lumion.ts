@@ -137,7 +137,7 @@ export const laptopD5Lumion: BlogPost = {
     },
     {
       type: "p",
-      text: `Two things decide whether this works for you. The first is your connection: ${BANDWIDTH_SENTENCE} The second is your laptop's operating system. The Connect app is Windows only today, so a MacBook can't use it yet.`,
+      text: `Two things decide whether this works for you. The first is your connection: ${BANDWIDTH_SENTENCE} The second is your laptop's operating system. The Connect app runs on Windows and on Mac (Apple silicon or Intel), so a MacBook works too.`,
     },
     { type: "h3", text: "4. Skip the renderer for early concepts" },
     {
@@ -182,7 +182,7 @@ export const laptopD5Lumion: BlogPost = {
     },
     {
       q: "Does it work on a Mac?",
-      a: "Not yet. The Coreframe Connect app is Windows only for now.",
+      a: "Yes. The Coreframe Connect app runs on Mac (Apple silicon or Intel) as well as Windows, and D5 and Lumion run on the Windows workstation it opens.",
     },
     ctx.introPrice && ctx.introHours
       ? {

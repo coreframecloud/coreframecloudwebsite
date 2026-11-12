@@ -33,7 +33,7 @@ export const metadata: Metadata = {
     images: [OG_IMAGE],
     title: "Security and data at Coreframe Cloud",
     description:
-      "Tier III data centre in India, data stays in India, one customer per GPU, a clean machine every session, signed Windows client.",
+      "Tier III data centre in India, data stays in India, one customer per GPU, a clean machine every session, signed Mac and Windows app.",
     url: `https://www.coreframecloud.com${PATH}`,
     type: "article",
   },
@@ -47,7 +47,7 @@ const FACTS: { k: string; v: string }[] = [
   { k: "Encrypted streaming", v: `The desktop streams at ${NODE.stream} over an encrypted private network.` },
   { k: "Clean every session", v: "The workstation is wiped and restored to a clean image when a session ends." },
   { k: "Files kept, by you", v: "Project files stay on your own project drive between sessions; a persistent workstation is optional." },
-  { k: "Signed Windows client", v: `The Coreframe Connect installer is signed by ${COMPANY.displayName}.` },
+  { k: "Signed Mac and Windows app", v: `The Coreframe Connect installer is signed by ${COMPANY.displayName}; the Mac app is also notarized by Apple.` },
   { k: "Per-minute billing", v: "Prepaid wallet, billed per minute, no lock-in and nothing charged automatically." },
 ];
 
@@ -70,7 +70,7 @@ const FAQS: { q: string; a: string }[] = [
   },
   {
     q: "How is the desktop streamed?",
-    a: `Through the Coreframe Connect app for Windows, over an encrypted private network, at up to ${NODE.stream}. There is no browser session and no remote desktop port for you to open.`,
+    a: `Through the Coreframe Connect app for Windows or Mac, over an encrypted private network, at up to ${NODE.stream}. There is no browser session and no remote desktop port for you to open.`,
   },
   {
     q: "Who is the company behind Coreframe Cloud?",

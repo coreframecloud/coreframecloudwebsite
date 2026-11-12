@@ -25,11 +25,71 @@ interface DownloadInfo {
   signed?: boolean;
 }
 
-type Stage = "loading" | "unauthenticated" | "ready" | "unavailable" | "paused" | "error";
+// The Mac answer from /api/download/client?platform=mac (latest-mac.yml).
+// Two DMGs per release, one per chip; both are Developer ID signed and
+// notarized, so there is no checksum or Gatekeeper walkthrough to show.
+interface MacFile {
+  filename: string;
+  size: number | null;
+  url: string;
+}
+interface MacInfo {
+  version?: string;
+  releaseDate?: string | null;
+  available: boolean;
+  arm64?: MacFile | null;
+  x64?: MacFile | null;
+}
+
+type Platform = "mac" | "windows";
+type Chip = "arm64" | "x64";
+
+// Mac or not, from the browser. iPadOS also says "Macintosh" in its user agent
+// but has touch points, and cannot install a .dmg, so it is not a Mac here.
+// Anything that is not a Mac gets the Windows build first, as before.
+function detectPlatform(): Platform {
+  if (typeof navigator === "undefined") return "windows";
+  const uaData = (navigator as Navigator & { userAgentData?: { platform?: string } }).userAgentData;
+  const platform = uaData?.platform || navigator.platform || "";
+  const isMac = /mac/i.test(platform) || /Macintosh|Mac OS X/.test(navigator.userAgent);
+  if (isMac && navigator.maxTouchPoints > 1) return "windows";
+  return isMac ? "mac" : "windows";
+}
+
+// A Mac browser cannot reliably say which chip it runs on, so Apple silicon is
+// the default. Chromium's high-entropy hint does say it ("arm" / "x86") when
+// it is offered; Safari and Firefox keep the default and the visitor's choice.
+async function detectChip(): Promise<Chip | null> {
+  const uaData = (navigator as Navigator & {
+    userAgentData?: { getHighEntropyValues?: (hints: string[]) => Promise<{ architecture?: string }> };
+  }).userAgentData;
+  if (!uaData?.getHighEntropyValues) return null;
+  try {
+    const { architecture } = await uaData.getHighEntropyValues(["architecture"]);
+    if (architecture === "arm") return "arm64";
+    if (architecture === "x86") return "x64";
+  } catch {
+    /* hint refused: keep the default */
+  }
+  return null;
+}
+
+// Decimal megabytes, the way Finder and Explorer's download bar show size.
+function formatSize(bytes: number | null | undefined): string | null {
+  if (!bytes) return null;
+  return `${Math.round(bytes / 1_000_000)} MB`;
+}
+
+const CHIP_LABEL: Record<Chip, string> = { arm64: "Apple silicon", x64: "Intel" };
+
+type Stage = "loading" | "unauthenticated" | "ready" | "paused" | "error";
 
 export default function DownloadPage() {
   const [stage, setStage] = useState<Stage>("loading");
   const [info, setInfo] = useState<DownloadInfo | null>(null);
+  const [mac, setMac] = useState<MacInfo | null>(null);
+  const [platform, setPlatform] = useState<Platform>("windows");
+  const [chip, setChip] = useState<Chip>("arm64");
   const [downloading, setDownloading] = useState(false);
 
   useEffect(() => {
@@ -40,6 +100,11 @@ export default function DownloadPage() {
     const signedIn = isSignedIn()
       ? apiFetch(`${API_BASE}/me`).then((r) => r.ok).catch(() => false)
       : Promise.resolve(false);
+    // The Mac feed is fetched alongside; if it fails the Windows download still
+    // works and the Mac side simply reads as "being prepared".
+    const macInfo: Promise<MacInfo> = fetch("/api/download/client?platform=mac")
+      .then((r) => (r.ok ? r.json() : { available: false }))
+      .catch(() => ({ available: false }));
     fetch("/api/download/client")
       .then(async (res) => {
         const token = await signedIn;
@@ -54,22 +119,54 @@ export default function DownloadPage() {
         if (!token) { setStage("unauthenticated"); return; }
         const data: DownloadInfo = await res.json();
         setInfo(data);
-        setStage(data.available ? "ready" : "unavailable");
+        setMac(await macInfo);
+        // OS detection happens here, on the client and only once there is a
+        // download to show: the server render cannot see the browser.
+        const detected = detectPlatform();
+        if (detected === "mac") {
+          const c = await detectChip();
+          if (c) setChip(c);
+        }
+        setPlatform(detected);
+        setStage("ready");
       })
       .catch(() => setStage("error"));
   }, []);
 
+  const macFile = mac?.available ? (mac[chip] ?? null) : null;
+  const winReady = Boolean(info?.available && info.url);
+  const current = platform === "mac" ? Boolean(macFile) : winReady;
+  const other: Platform = platform === "mac" ? "windows" : "mac";
+
   function handleDownload() {
-    if (!info?.url) return;
-    trackWebEvent("download_click", { platform: "windows", version: info.version ?? undefined });
+    const url = platform === "mac" ? macFile?.url : info?.url;
+    if (!url) return;
+    trackWebEvent("download_click", {
+      platform: platform === "mac" ? `mac-${chip}` : "windows",
+      version: (platform === "mac" ? mac?.version : info?.version) ?? undefined,
+    });
     flushWebEvents();
     setDownloading(true);
     const a = document.createElement("a");
-    a.href = info.url;
-    if (info.filename) a.download = info.filename;
+    a.href = url;
+    const filename = platform === "mac" ? macFile?.filename : info?.filename;
+    if (filename) a.download = filename;
     a.click();
     setTimeout(() => setDownloading(false), 3000);
   }
+
+  // The other OS, offered quietly under the card: one primary button per page.
+  const alsoOn = (
+    <p className="mt-6 text-center text-sm text-ink-2">
+      <button
+        type="button"
+        onClick={() => setPlatform(other)}
+        className="min-h-[44px] text-blue underline underline-offset-4"
+      >
+        {other === "mac" ? "Also on Mac" : "Also on Windows"}
+      </button>
+    </p>
+  );
 
   return (
     <main className="cf-section px-5">
@@ -89,8 +186,8 @@ export default function DownloadPage() {
           <div className="min-w-0">
             <h1 className="cf-display">Coreframe Cloud Connect</h1>
             <p className="mt-2 text-sm text-ink-2">
-              The Windows client. It opens the private link to your workstation and streams the
-              desktop back.
+              The desktop app for Mac and Windows. It opens the private link to your workstation
+              and streams the desktop back.
             </p>
           </div>
         </div>
@@ -134,8 +231,86 @@ export default function DownloadPage() {
           </div>
         )}
 
-        {/* Download ready */}
-        {stage === "ready" && info && (
+        {/* Download ready: Mac */}
+        {stage === "ready" && platform === "mac" && mac && macFile && (
+          <div className="rounded-cf border border-rule bg-paper-2 p-6 sm:p-8">
+            <div className="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <div className="min-w-0 rounded-cf border border-rule bg-paper p-4">
+                <p className="cf-card-label">Version</p>
+                <p className="text-lg leading-6 font-semibold break-words text-ink">{mac.version}</p>
+              </div>
+              <div className="min-w-0 rounded-cf border border-rule bg-paper p-4">
+                <p className="cf-card-label">Platform</p>
+                <p className="text-lg leading-6 font-semibold text-ink">Mac</p>
+              </div>
+            </div>
+
+            {/* Chip choice. Apple silicon unless the browser says Intel; a Mac
+                browser usually cannot tell, so the visitor can switch. Spacing
+                follows the form system: label 8, choice 20 before the list. */}
+            <fieldset className="mb-5">
+              <legend className="mb-2 text-sm leading-5 text-ink-2">Your Mac&apos;s chip</legend>
+              <div className="flex flex-wrap gap-2" role="radiogroup">
+                {(["arm64", "x64"] as Chip[]).map((c) => {
+                  const file = mac[c];
+                  if (!file) return null;
+                  const on = chip === c;
+                  return (
+                    <button
+                      key={c}
+                      type="button"
+                      role="radio"
+                      aria-checked={on}
+                      onClick={() => setChip(c)}
+                      className={`min-h-[44px] rounded-full border px-4 text-sm transition-colors ${
+                        on ? "border-ink bg-ink text-white" : "border-rule-strong bg-transparent text-ink"
+                      }`}
+                    >
+                      {c === "arm64" ? "Apple silicon (M1 and later)" : "Intel"}
+                    </button>
+                  );
+                })}
+              </div>
+              <p className="mt-1 text-xs leading-5 text-ink-3">
+                Not sure? Apple menu, About This Mac: it says Chip (Apple silicon) or Processor (Intel).
+              </p>
+            </fieldset>
+
+            <ul className="mb-6 space-y-2 text-sm leading-6 text-ink-2">
+              <li className="flex gap-2">
+                <span className="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-blue" />
+                macOS 10.15 or later, Apple silicon or Intel
+              </li>
+              <li className="flex gap-2">
+                <span className="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-blue" />
+                Moonlight is bundled. Nothing else to install
+              </li>
+              <li className="flex gap-2">
+                <span className="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-blue" />
+                {BANDWIDTH_SHORT}
+              </li>
+            </ul>
+
+            <button
+              onClick={handleDownload}
+              disabled={downloading}
+              className="cf-btn-go cf-btn-flash w-full disabled:opacity-60"
+            >
+              {downloading ? "Starting download" : "Download for Mac"}
+            </button>
+            <p className="mt-1 text-center text-xs leading-5 text-ink-3">
+              v{mac.version} · {CHIP_LABEL[chip]}
+              {formatSize(macFile.size) ? ` · ${formatSize(macFile.size)}` : ""} · .dmg
+            </p>
+
+            <p className="mt-5 text-sm leading-6 text-ink-2">
+              Open the .dmg and drag Coreframe Cloud Connect to Applications.
+            </p>
+          </div>
+        )}
+
+        {/* Download ready: Windows */}
+        {stage === "ready" && platform === "windows" && info && winReady && (
           <div className="rounded-cf border border-rule bg-paper-2 p-6 sm:p-8">
             {/* Version block — one column on a phone, two from 640px. */}
             <div className="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -173,6 +348,10 @@ export default function DownloadPage() {
             >
               {downloading ? "Starting download" : `Download Coreframe Connect v${info.version}`}
             </button>
+            <p className="mt-1 text-center text-xs leading-5 text-ink-3">
+              v{info.version} · Windows
+              {formatSize(info.size) ? ` · ${formatSize(info.size)}` : ""} · .exe
+            </p>
 
             {/* SHA-256. Sixty-four characters with no break opportunity in
                 them: without break-all this single line is wider than a phone
@@ -261,11 +440,11 @@ export default function DownloadPage() {
           </div>
         )}
 
-        {/* File not yet uploaded */}
-        {stage === "unavailable" && info && (
+        {/* File not yet uploaded for the platform being shown */}
+        {stage === "ready" && !current && (
           <div className="rounded-cf border border-rule bg-paper-2 p-6 text-center sm:p-8">
             <p className="text-base leading-6 text-ink-2">
-              {info.version ? `v${info.version} is` : "The Windows installer is"} being prepared.
+              {platform === "mac" ? "The Mac app is" : "The Windows installer is"} being prepared.
               Check back shortly, or email{" "}
               <a
                 href="mailto:support@coreframecloud.com"
@@ -277,6 +456,8 @@ export default function DownloadPage() {
             </p>
           </div>
         )}
+
+        {stage === "ready" && alsoOn}
 
         {/* Error */}
         {stage === "error" && (

@@ -61,6 +61,63 @@ function parseLatestYml(text: string): Omit<Release, "sha256"> | null {
   };
 }
 
+// latest-mac.yml (electron-builder, mac target) lists every file under
+// `files:` as `- url:` with its own `sha512:` and `size:`; the column-0 `path:`
+// points at a .zip (what electron-updater uses), never at the .dmg a person
+// should download. So the DMGs are found in the list by arch suffix. There is
+// no .sha256 sidecar for the Mac files: the DMGs are Developer ID signed and
+// notarized, and macOS checks that on open.
+type MacFile = { filename: string; size: number | null };
+type MacRelease = {
+  version: string;
+  releaseDate: string | null;
+  arm64: MacFile | null;
+  x64: MacFile | null;
+};
+
+function parseLatestMacYml(text: string): MacRelease | null {
+  const version = text.match(/^version:\s*(.+?)\s*$/m)?.[1];
+  if (!version) return null;
+  const releaseDate = text.match(/^releaseDate:\s*'?([^'\n]+?)'?\s*$/m)?.[1] ?? null;
+
+  // One entry per "- url:" line; its size is the first `size:` before the
+  // next entry (or before the column-0 keys that follow the list).
+  const entries: MacFile[] = [];
+  const lines = text.split(/\r?\n/);
+  for (let i = 0; i < lines.length; i++) {
+    const url = lines[i].match(/^\s*-\s*url:\s*'?(.+?)'?\s*$/)?.[1];
+    if (!url) continue;
+    let size: number | null = null;
+    for (let j = i + 1; j < lines.length; j++) {
+      if (/^\s*-\s*url:/.test(lines[j]) || /^\S/.test(lines[j])) break;
+      const m = lines[j].match(/^\s*size:\s*(\d+)\s*$/);
+      if (m) { size = Number(m[1]); break; }
+    }
+    entries.push({ filename: url, size });
+  }
+
+  const dmg = (arch: "arm64" | "x64") =>
+    entries.find((e) => e.filename.endsWith(`-${arch}.dmg`)) ?? null;
+  const arm64 = dmg("arm64");
+  const x64 = dmg("x64");
+  if (!arm64 && !x64) return null;
+  return { version, releaseDate, arm64, x64 };
+}
+
+async function fetchMacRelease(): Promise<MacRelease | null> {
+  try {
+    const res = await fetch(RELEASES_BASE + "latest-mac.yml", { cache: "no-store" });
+    if (!res.ok) return null;
+    return parseLatestMacYml(await res.text());
+  } catch {
+    return null;
+  }
+}
+
+function macFileJson(file: MacFile | null) {
+  return file ? { filename: file.filename, size: file.size, url: releaseUrl(file.filename) } : null;
+}
+
 function releaseUrl(filename: string): string {
   return RELEASES_BASE + encodeURIComponent(filename);
 }
@@ -110,7 +167,20 @@ export async function GET(req: NextRequest) {
   // server never sees; the download page checks it with the API itself. This
   // route only describes the public release feed (the installer is served
   // publicly from /releases/; using Connect is what needs an account).
-  void req;
+  // ?platform=mac answers from latest-mac.yml; anything else is Windows, as
+  // it always was, so existing callers are unchanged.
+  if (req.nextUrl.searchParams.get("platform") === "mac") {
+    const mac = await fetchMacRelease();
+    if (!mac) return NextResponse.json({ platform: "mac", available: false });
+    return NextResponse.json({
+      platform: "mac",
+      version: mac.version,
+      releaseDate: mac.releaseDate,
+      available: true,
+      arm64: macFileJson(mac.arm64),
+      x64: macFileJson(mac.x64),
+    });
+  }
 
   const release = await fetchRelease();
 
@@ -119,12 +189,14 @@ export async function GET(req: NextRequest) {
     // cannot stand behind rather than serving a stale number next to a
     // checksum that may no longer match the file.
     return NextResponse.json({
+      platform: "windows",
       available: false,
       signed: INSTALLER_SIGNED,
     });
   }
 
   return NextResponse.json({
+    platform: "windows",
     version: release.version,
     sha256: release.sha256,
     filename: release.filename,

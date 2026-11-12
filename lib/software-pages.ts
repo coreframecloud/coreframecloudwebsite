@@ -728,7 +728,7 @@ function buildSoftwarePages(cur: Currency): SoftwarePage[] {
       },
       {
         q: "Can I run AutoCAD on a low-end laptop?",
-        a: "Yes. AutoCAD runs on the workstation, and your laptop only shows the stream through the Coreframe Connect app for Windows, so a modest laptop with a steady connection is enough.",
+        a: "Yes. AutoCAD runs on the workstation, and your laptop only shows the stream through the Coreframe Connect app for Windows or Mac, so a modest laptop with a steady connection is enough.",
       },
       {
         q: "Does Coreframe provide an AutoCAD licence?",

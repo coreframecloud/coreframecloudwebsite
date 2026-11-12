@@ -52,7 +52,7 @@ export const blenderInteriorRender: BlogPost = {
     { type: "h2", text: "What you need before you start" },
     {
       type: "p",
-      text: `A Windows laptop or desktop with the [Coreframe Connect app](/download) installed, a Coreframe account, and a .blend file. Connect runs on Windows 10 and 11 only at the moment, so a Mac can't reach the workstation yet. Your own machine doesn't do any rendering, so its graphics card doesn't matter. What matters is the connection: ${BANDWIDTH_SENTENCE}`,
+      text: `A Windows PC or a Mac with the [Coreframe Connect app](/download) installed, a Coreframe account, and a .blend file. Connect runs on Windows 10 and 11 and on macOS (Apple silicon or Intel). Your own machine doesn't do any rendering, so its graphics card doesn't matter. What matters is the connection: ${BANDWIDTH_SENTENCE}`,
     },
     {
       type: "p",
