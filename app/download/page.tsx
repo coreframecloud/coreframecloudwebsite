@@ -3,7 +3,7 @@
 import { API_BASE } from "@/lib/api-base";
 import { flush as flushWebEvents, track as trackWebEvent } from "@/lib/web-events";
 import { apiFetch, isSignedIn } from "@/lib/session";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { BANDWIDTH_SHORT } from "@/lib/streaming-terms";
@@ -84,13 +84,146 @@ const CHIP_LABEL: Record<Chip, string> = { arm64: "Apple silicon", x64: "Intel" 
 
 type Stage = "loading" | "unauthenticated" | "ready" | "paused" | "error";
 
+// What the primary button started, kept until the page is left (15 Nov 2026).
+// A customer on Chrome/macOS clicked Download five times: the file is
+// cross-origin, so Chrome ignores the download attribute and drops it into its
+// download bubble without a word, and the old 3 s "Starting download" flash
+// then put the button back as if nothing had happened. Now the button is
+// replaced by what to look for and what to do next, and a plain link is the
+// deliberate retry.
+interface Started {
+  platform: Platform;
+  chip: Chip;
+  filename: string;
+  size: number | null;
+  url: string;
+  version?: string;
+}
+
+// The props both download events carry: platform as mac-arm64 / mac-x64 /
+// windows, the release version.
+function eventProps(s: Pick<Started, "platform" | "chip" | "version">) {
+  return {
+    platform: s.platform === "mac" ? `mac-${s.chip}` : "windows",
+    version: s.version ?? undefined,
+  };
+}
+
+/**
+ * After the click: a persistent "it has started" panel with the next steps for
+ * the OS, then the fallback links. Plain <a href>s, not script: a normal link
+ * the customer clicks is the most reliable way to get a cross-origin file, and
+ * a click on it is tracked as download_fallback_click so a failing primary path
+ * shows up in the numbers.
+ */
+function StartedPanel({
+  started,
+  otherChip,
+}: {
+  started: Started;
+  otherChip: (MacFile & { chip: Chip }) | null;
+}) {
+  const headingRef = useRef<HTMLParagraphElement>(null);
+  // Move focus here so a screen reader announces the change; the button that
+  // had focus no longer exists.
+  useEffect(() => headingRef.current?.focus(), []);
+  const size = formatSize(started.size);
+  const file = (
+    <>
+      <strong className="break-words text-ink">{started.filename}</strong>
+      {size ? ` (${size})` : ""}
+    </>
+  );
+  const onFallback = (chip: Chip) => () => {
+    trackWebEvent("download_fallback_click", eventProps({ ...started, chip }));
+    flushWebEvents();
+  };
+  return (
+    <div role="status" aria-live="polite">
+      <div className="cf-note">
+        <p
+          ref={headingRef}
+          tabIndex={-1}
+          className="flex items-center gap-2 text-base leading-6 font-semibold text-ink outline-none"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-5 w-5 shrink-0 text-blue" aria-hidden="true">
+            <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+          </svg>
+          Your download has started
+        </p>
+        <p className="mt-2 text-sm leading-6 text-ink-2">
+          Check the <span aria-hidden="true">↓</span>
+          <span className="sr-only">downloads</span> icon at the top right of your browser, or your
+          Downloads folder, for {file}.
+        </p>
+        <ol className="mt-4 space-y-2 text-sm leading-6 text-ink-2">
+          {started.platform === "mac" ? (
+            <>
+              <li><strong className="text-ink">1.</strong> Open the .dmg file.</li>
+              <li>
+                <strong className="text-ink">2.</strong> Drag Coreframe Cloud Connect into
+                Applications.
+              </li>
+              <li>
+                <strong className="text-ink">3.</strong> Open it from Applications and sign in with
+                this account.
+              </li>
+            </>
+          ) : (
+            <>
+              <li><strong className="text-ink">1.</strong> Open the .exe file.</li>
+              <li>
+                <strong className="text-ink">2.</strong> Follow the installer. If Windows asks to
+                allow changes, click Yes.
+              </li>
+              <li>
+                <strong className="text-ink">3.</strong> Open Coreframe Cloud Connect and sign in
+                with this account.
+              </li>
+            </>
+          )}
+        </ol>
+      </div>
+
+      {/* The deliberate retry, right under it. Real links: 24 before them,
+          per the form spacing system. */}
+      <div className="mt-6 space-y-1 text-center text-sm leading-6 text-ink-2">
+        <p>
+          Didn&apos;t start?{" "}
+          <a
+            href={started.url}
+            onClick={onFallback(started.chip)}
+            className="inline-flex min-h-[44px] items-center text-blue underline underline-offset-4"
+          >
+            Download directly
+          </a>
+        </p>
+        {otherChip && (
+          <p>
+            {otherChip.chip === "x64" ? "Intel Mac?" : "Apple silicon Mac?"}{" "}
+            <a
+              href={otherChip.url}
+              onClick={onFallback(otherChip.chip)}
+              className="inline-flex min-h-[44px] items-center text-blue underline underline-offset-4"
+            >
+              {otherChip.chip === "x64"
+                ? "Download the Intel version"
+                : "Download the Apple silicon version"}
+            </a>
+          </p>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function DownloadPage() {
   const [stage, setStage] = useState<Stage>("loading");
   const [info, setInfo] = useState<DownloadInfo | null>(null);
   const [mac, setMac] = useState<MacInfo | null>(null);
   const [platform, setPlatform] = useState<Platform>("windows");
   const [chip, setChip] = useState<Chip>("arm64");
-  const [downloading, setDownloading] = useState(false);
+  const [started, setStarted] = useState<Started | null>(null);
 
   useEffect(() => {
     // Ask the server first even when signed out: while downloads are paused the
@@ -138,21 +271,37 @@ export default function DownloadPage() {
   const current = platform === "mac" ? Boolean(macFile) : winReady;
   const other: Platform = platform === "mac" ? "windows" : "mac";
 
+  // The panel belongs to the OS it was started for: "Also on Windows" after a
+  // Mac download shows the Windows button as normal.
+  const startedHere = started?.platform === platform ? started : null;
+  const otherChipFile: (MacFile & { chip: Chip }) | null = (() => {
+    if (!startedHere || startedHere.platform !== "mac" || !mac?.available) return null;
+    const c: Chip = startedHere.chip === "arm64" ? "x64" : "arm64";
+    const f = mac[c];
+    return f ? { ...f, chip: c } : null;
+  })();
+
   function handleDownload() {
-    const url = platform === "mac" ? macFile?.url : info?.url;
-    if (!url) return;
-    trackWebEvent("download_click", {
-      platform: platform === "mac" ? `mac-${chip}` : "windows",
-      version: (platform === "mac" ? mac?.version : info?.version) ?? undefined,
-    });
+    // One click, one download: the button is gone once this runs, and the
+    // "Download directly" link is the deliberate retry.
+    if (startedHere) return;
+    const file =
+      platform === "mac"
+        ? macFile && { filename: macFile.filename, size: macFile.size, url: macFile.url, version: mac?.version }
+        : info?.url && info.filename
+          ? { filename: info.filename, size: info.size ?? null, url: info.url, version: info.version }
+          : null;
+    if (!file) return;
+    const s: Started = { platform, chip, ...file };
+    trackWebEvent("download_click", eventProps(s));
     flushWebEvents();
-    setDownloading(true);
+    setStarted(s);
+    // Cross-origin, so no download attribute (Chrome ignores it): the file is
+    // served as an attachment and the browser keeps this page open.
     const a = document.createElement("a");
-    a.href = url;
-    const filename = platform === "mac" ? macFile?.filename : info?.filename;
-    if (filename) a.download = filename;
+    a.href = file.url;
+    a.rel = "noopener";
     a.click();
-    setTimeout(() => setDownloading(false), 3000);
   }
 
   // The other OS, offered quietly under the card: one primary button per page.
@@ -245,67 +394,69 @@ export default function DownloadPage() {
               </div>
             </div>
 
-            {/* Chip choice. Apple silicon unless the browser says Intel; a Mac
-                browser usually cannot tell, so the visitor can switch. Spacing
-                follows the form system: label 8, choice 20 before the list. */}
-            <fieldset className="mb-5">
-              <legend className="mb-2 text-sm leading-5 text-ink-2">Your Mac&apos;s chip</legend>
-              <div className="flex flex-wrap gap-2" role="radiogroup">
-                {(["arm64", "x64"] as Chip[]).map((c) => {
-                  const file = mac[c];
-                  if (!file) return null;
-                  const on = chip === c;
-                  return (
-                    <button
-                      key={c}
-                      type="button"
-                      role="radio"
-                      aria-checked={on}
-                      onClick={() => setChip(c)}
-                      className={`min-h-[44px] rounded-full border px-4 text-sm transition-colors ${
-                        on ? "border-ink bg-ink text-white" : "border-rule-strong bg-transparent text-ink"
-                      }`}
-                    >
-                      {c === "arm64" ? "Apple silicon (M1 and later)" : "Intel"}
-                    </button>
-                  );
-                })}
-              </div>
-              <p className="mt-1 text-xs leading-5 text-ink-3">
-                Not sure? Apple menu, About This Mac: it says Chip (Apple silicon) or Processor (Intel).
-              </p>
-            </fieldset>
+            {startedHere ? (
+              <StartedPanel started={startedHere} otherChip={otherChipFile} />
+            ) : (
+              <>
+                {/* Chip choice. Apple silicon unless the browser says Intel; a Mac
+                    browser usually cannot tell, so the visitor can switch. Spacing
+                    follows the form system: label 8, choice 20 before the list. */}
+                <fieldset className="mb-5">
+                  <legend className="mb-2 text-sm leading-5 text-ink-2">Your Mac&apos;s chip</legend>
+                  <div className="flex flex-wrap gap-2" role="radiogroup">
+                    {(["arm64", "x64"] as Chip[]).map((c) => {
+                      const file = mac[c];
+                      if (!file) return null;
+                      const on = chip === c;
+                      return (
+                        <button
+                          key={c}
+                          type="button"
+                          role="radio"
+                          aria-checked={on}
+                          onClick={() => setChip(c)}
+                          className={`min-h-[44px] rounded-full border px-4 text-sm transition-colors ${
+                            on ? "border-ink bg-ink text-white" : "border-rule-strong bg-transparent text-ink"
+                          }`}
+                        >
+                          {c === "arm64" ? "Apple silicon (M1 and later)" : "Intel"}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  <p className="mt-1 text-xs leading-5 text-ink-3">
+                    Not sure? Apple menu, About This Mac: it says Chip (Apple silicon) or Processor (Intel).
+                  </p>
+                </fieldset>
 
-            <ul className="mb-6 space-y-2 text-sm leading-6 text-ink-2">
-              <li className="flex gap-2">
-                <span className="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-blue" />
-                macOS 11 or later, Apple silicon or Intel
-              </li>
-              <li className="flex gap-2">
-                <span className="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-blue" />
-                Moonlight is bundled. Nothing else to install
-              </li>
-              <li className="flex gap-2">
-                <span className="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-blue" />
-                {BANDWIDTH_SHORT}
-              </li>
-            </ul>
+                <ul className="mb-6 space-y-2 text-sm leading-6 text-ink-2">
+                  <li className="flex gap-2">
+                    <span className="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-blue" />
+                    macOS 11 or later, Apple silicon or Intel
+                  </li>
+                  <li className="flex gap-2">
+                    <span className="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-blue" />
+                    Moonlight is bundled. Nothing else to install
+                  </li>
+                  <li className="flex gap-2">
+                    <span className="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-blue" />
+                    {BANDWIDTH_SHORT}
+                  </li>
+                </ul>
 
-            <button
-              onClick={handleDownload}
-              disabled={downloading}
-              className="cf-btn-go cf-btn-flash w-full disabled:opacity-60"
-            >
-              {downloading ? "Starting download" : "Download for Mac"}
-            </button>
-            <p className="mt-1 text-center text-xs leading-5 text-ink-3">
-              v{mac.version} · {CHIP_LABEL[chip]}
-              {formatSize(macFile.size) ? ` · ${formatSize(macFile.size)}` : ""} · .dmg
-            </p>
+                <button onClick={handleDownload} className="cf-btn-go cf-btn-flash w-full">
+                  Download for Mac
+                </button>
+                <p className="mt-1 text-center text-xs leading-5 text-ink-3">
+                  v{mac.version} · {CHIP_LABEL[chip]}
+                  {formatSize(macFile.size) ? ` · ${formatSize(macFile.size)}` : ""} · .dmg
+                </p>
 
-            <p className="mt-5 text-sm leading-6 text-ink-2">
-              Open the .dmg and drag Coreframe Cloud Connect to Applications.
-            </p>
+                <p className="mt-5 text-sm leading-6 text-ink-2">
+                  Open the .dmg and drag Coreframe Cloud Connect to Applications.
+                </p>
+              </>
+            )}
           </div>
         )}
 
@@ -340,18 +491,20 @@ export default function DownloadPage() {
               </li>
             </ul>
 
-            {/* Download button */}
-            <button
-              onClick={handleDownload}
-              disabled={downloading}
-              className="cf-btn-go cf-btn-flash w-full disabled:opacity-60"
-            >
-              {downloading ? "Starting download" : `Download Coreframe Connect v${info.version}`}
-            </button>
-            <p className="mt-1 text-center text-xs leading-5 text-ink-3">
-              v{info.version} · Windows
-              {formatSize(info.size) ? ` · ${formatSize(info.size)}` : ""} · .exe
-            </p>
+            {/* Download button, or what happens next once it was clicked */}
+            {startedHere ? (
+              <StartedPanel started={startedHere} otherChip={null} />
+            ) : (
+              <>
+                <button onClick={handleDownload} className="cf-btn-go cf-btn-flash w-full">
+                  {`Download Coreframe Connect v${info.version}`}
+                </button>
+                <p className="mt-1 text-center text-xs leading-5 text-ink-3">
+                  v{info.version} · Windows
+                  {formatSize(info.size) ? ` · ${formatSize(info.size)}` : ""} · .exe
+                </p>
+              </>
+            )}
 
             {/* SHA-256. Sixty-four characters with no break opportunity in
                 them: without break-all this single line is wider than a phone
