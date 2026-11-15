@@ -56,20 +56,45 @@ function detectPlatform(): Platform {
   return isMac ? "mac" : "windows";
 }
 
-// A Mac browser cannot reliably say which chip it runs on, so Apple silicon is
-// the default. Chromium's high-entropy hint does say it ("arm" / "x86") when
-// it is offered; Safari and Firefox keep the default and the visitor's choice.
+// Which chip, if the browser can tell. NEVER a default (15 Nov 2026): a
+// customer on Brave/Intel got the Apple silicon DMG because this returned null
+// and the page then assumed arm64, and macOS said "this application is not
+// supported on this Mac". So:
+//  - Chromium's high-entropy hint ("arm" / "x86") is trusted when offered.
+//  - Otherwise (Safari, Firefox, Brave refuses the hint) the WebGL renderer is
+//    read as a hint only: "Apple M..." means Apple silicon, "Intel" / "AMD"
+//    means an Intel Mac. Many browsers mask it ("Apple GPU"); then nothing.
+//  - Nothing either way: no chip is picked and the button waits for one.
+// The "Not sure?" helper is always shown beside the choice.
 async function detectChip(): Promise<Chip | null> {
   const uaData = (navigator as Navigator & {
     userAgentData?: { getHighEntropyValues?: (hints: string[]) => Promise<{ architecture?: string }> };
   }).userAgentData;
-  if (!uaData?.getHighEntropyValues) return null;
+  if (uaData?.getHighEntropyValues) {
+    try {
+      const { architecture } = await uaData.getHighEntropyValues(["architecture"]);
+      if (architecture === "arm") return "arm64";
+      if (architecture === "x86") return "x64";
+    } catch {
+      /* hint refused: try the renderer */
+    }
+  }
+  return chipFromWebGl();
+}
+
+function chipFromWebGl(): Chip | null {
   try {
-    const { architecture } = await uaData.getHighEntropyValues(["architecture"]);
-    if (architecture === "arm") return "arm64";
-    if (architecture === "x86") return "x64";
+    const gl = document.createElement("canvas").getContext("webgl");
+    if (!gl) return null;
+    const ext = gl.getExtension("WEBGL_debug_renderer_info");
+    const renderer = String(
+      ext ? gl.getParameter(ext.UNMASKED_RENDERER_WEBGL) : gl.getParameter(gl.RENDERER),
+    );
+    gl.getExtension("WEBGL_lose_context")?.loseContext();
+    if (/Apple M\d/i.test(renderer)) return "arm64";
+    if (/Intel|AMD|Radeon/i.test(renderer)) return "x64";
   } catch {
-    /* hint refused: keep the default */
+    /* no WebGL: no hint */
   }
   return null;
 }
@@ -168,6 +193,10 @@ function StartedPanel({
                 <strong className="text-ink">3.</strong> Open it from Applications and sign in with
                 this account.
               </li>
+              <li className="pt-1">
+                If macOS says the app is not supported on this Mac, you downloaded the wrong chip
+                version. Use the other link below.
+              </li>
             </>
           ) : (
             <>
@@ -222,7 +251,7 @@ export default function DownloadPage() {
   const [info, setInfo] = useState<DownloadInfo | null>(null);
   const [mac, setMac] = useState<MacInfo | null>(null);
   const [platform, setPlatform] = useState<Platform>("windows");
-  const [chip, setChip] = useState<Chip>("arm64");
+  const [chip, setChip] = useState<Chip | null>(null);
   const [started, setStarted] = useState<Started | null>(null);
 
   useEffect(() => {
@@ -266,9 +295,10 @@ export default function DownloadPage() {
       .catch(() => setStage("error"));
   }, []);
 
-  const macFile = mac?.available ? (mac[chip] ?? null) : null;
+  const macAvailable = Boolean(mac?.available && (mac.arm64 || mac.x64));
+  const macFile = mac?.available && chip ? (mac[chip] ?? null) : null;
   const winReady = Boolean(info?.available && info.url);
-  const current = platform === "mac" ? Boolean(macFile) : winReady;
+  const current = platform === "mac" ? macAvailable : winReady;
   const other: Platform = platform === "mac" ? "windows" : "mac";
 
   // The panel belongs to the OS it was started for: "Also on Windows" after a
@@ -292,7 +322,9 @@ export default function DownloadPage() {
           ? { filename: info.filename, size: info.size ?? null, url: info.url, version: info.version }
           : null;
     if (!file) return;
-    const s: Started = { platform, chip, ...file };
+    // A Mac download needs a chip the customer chose or the browser told us.
+    if (platform === "mac" && !chip) return;
+    const s: Started = { platform, chip: chip ?? "x64", ...file };
     trackWebEvent("download_click", eventProps(s));
     flushWebEvents();
     setStarted(s);
@@ -381,7 +413,7 @@ export default function DownloadPage() {
         )}
 
         {/* Download ready: Mac */}
-        {stage === "ready" && platform === "mac" && mac && macFile && (
+        {stage === "ready" && platform === "mac" && mac && macAvailable && (
           <div className="rounded-cf border border-rule bg-paper-2 p-6 sm:p-8">
             <div className="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
               <div className="min-w-0 rounded-cf border border-rule bg-paper p-4">
@@ -398,9 +430,10 @@ export default function DownloadPage() {
               <StartedPanel started={startedHere} otherChip={otherChipFile} />
             ) : (
               <>
-                {/* Chip choice. Apple silicon unless the browser says Intel; a Mac
-                    browser usually cannot tell, so the visitor can switch. Spacing
-                    follows the form system: label 8, choice 20 before the list. */}
+                {/* Chip choice. Preselected only when the browser told us (see
+                    detectChip); otherwise none, and the button waits for a pick.
+                    Spacing follows the form system: label 8, choice 20 before
+                    the list. */}
                 <fieldset className="mb-5">
                   <legend className="mb-2 text-sm leading-5 text-ink-2">Your Mac&apos;s chip</legend>
                   <div className="flex flex-wrap gap-2" role="radiogroup">
@@ -425,7 +458,8 @@ export default function DownloadPage() {
                     })}
                   </div>
                   <p className="mt-1 text-xs leading-5 text-ink-3">
-                    Not sure? Apple menu, About This Mac: it says Chip (Apple silicon) or Processor (Intel).
+                    Not sure? Apple menu → About This Mac: &ldquo;Chip: Apple M…&rdquo; = Apple
+                    silicon, &ldquo;Processor: Intel&rdquo; = Intel.
                   </p>
                 </fieldset>
 
@@ -444,12 +478,19 @@ export default function DownloadPage() {
                   </li>
                 </ul>
 
-                <button onClick={handleDownload} className="cf-btn-go cf-btn-flash w-full">
-                  Download for Mac
+                <button
+                  onClick={handleDownload}
+                  disabled={!macFile}
+                  className="cf-btn-go cf-btn-flash w-full disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {macFile ? "Download for Mac" : "Choose your chip first"}
                 </button>
                 <p className="mt-1 text-center text-xs leading-5 text-ink-3">
-                  v{mac.version} · {CHIP_LABEL[chip]}
-                  {formatSize(macFile.size) ? ` · ${formatSize(macFile.size)}` : ""} · .dmg
+                  v{mac.version}
+                  {chip && macFile
+                    ? ` · ${CHIP_LABEL[chip]}${formatSize(macFile.size) ? ` · ${formatSize(macFile.size)}` : ""}`
+                    : ""}{" "}
+                  · .dmg
                 </p>
 
                 <p className="mt-5 text-sm leading-6 text-ink-2">

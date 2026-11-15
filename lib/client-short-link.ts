@@ -2,9 +2,12 @@ import { NextResponse, type NextRequest } from "next/server";
 import { currentFileUrl, type ClientTarget } from "@/lib/client-release";
 
 /**
- * The short links support can hand out: /download/mac, /download/mac/intel and
+ * The short links support can hand out: /download/mac/apple-silicon (alias
+ * /download/mac/arm64), /download/mac/intel and
  * /download/windows 302 to the current file on the control server, so the
- * link never goes stale when a release ships (15 Nov 2026).
+ * link never goes stale when a release ships (15 Nov 2026). /download/mac
+ * itself is a chooser page (app/download/mac/page.tsx): it never guesses the
+ * chip, since the Apple silicon DMG will not open on an Intel Mac.
  *
  * PUBLIC, unlike the /download page. The website's session is an HttpOnly
  * cookie on control.coreframecloud.com that this server never sees (security

@@ -4,7 +4,7 @@
  * The installer, its checksum and its version all come from the release feed
  * nginx serves out of /home/coreframe/releases on the control server. That is
  * the same latest.yml electron-updater reads, so the download page, the short
- * links (/download/mac, /download/mac/intel, /download/windows) and the in-app
+ * links (/download/mac/apple-silicon, /download/mac/intel, /download/windows) and the in-app
  * auto-updater can never disagree about what the current build is.
  *
  * This replaced three hand-edited Vercel env vars (CLIENT_VERSION,

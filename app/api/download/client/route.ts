@@ -10,7 +10,7 @@ import {
 
 // The feed parsing, the kill switch and the signed flag live in
 // lib/client-release.ts, shared with the short links under app/download/
-// (/download/mac, /download/mac/intel, /download/windows). This route only
+// (/download/mac/apple-silicon, /download/mac/intel, /download/windows). This route only
 // shapes the JSON the download page reads.
 
 function macFileJson(file: MacFile | null) {
