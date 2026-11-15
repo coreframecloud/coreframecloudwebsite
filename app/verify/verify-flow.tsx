@@ -73,6 +73,7 @@ import { peekReturnPath, takeReturnPath } from "@/lib/return-path";
 import { goAfterSignIn } from "@/lib/session-cookie";
 import { apiFetch, forgetLocalSession, isSignedIn, rememberUser } from "@/lib/session";
 import { apiErrorText, caughtErrorText } from "@/lib/api-error";
+import { WRONG_NUMBER_HINT, shownNumber, showWrongNumberHint, splitDisplayNumber } from "@/lib/phone-display";
 
 const API = API_BASE;
 // "first": the recharge sheet opens only if the account has not paid yet.
@@ -118,6 +119,9 @@ interface VerificationStatus {
   needs_mobile_otp?: boolean;
   has_phone_number: boolean;
   phone_masked?: string | null;
+  // The whole number, grouped for reading ("+44 7944 306988"), for the
+  // account's own session only (API, 15 Nov 2026). Older APIs: masked only.
+  phone_display?: string | null;
   // The declared country (null for a Google sign-up that has not chosen one).
   country_code?: string | null;
   otp_channels?: OtpChannels;
@@ -289,6 +293,10 @@ export default function VerifyFlow() {
   const [channel, setChannel] = useState<Channel | null>(null);
   const [sentVia, setSentVia] = useState<Channel | null>(null);
   const [fallbackFrom, setFallbackFrom] = useState<Channel | null>(null);
+  // Codes asked for on this screen (first + resends + channel switches).
+  const [sends, setSends] = useState(0);
+  // "Wrong number? Change it" from the code screen: back to the number form.
+  const [changingNumber, setChangingNumber] = useState(false);
   const [emailResent, setEmailResent] = useState(false);
   // Business steps: the GSTIN field (prefilled from sign-up), the live Rs 1
   // UPI request, and a non-error note while we wait for that payment.
@@ -403,12 +411,38 @@ export default function VerifyFlow() {
       if (!res.ok) throw new Error(apiErrorText(res.status, data));
       // The response is a status; keep any next_step it carries, and if it is
       // an older shape without the phone flag, the number is now on file.
+      // A new number starts the code screen afresh: nothing was sent to it yet.
+      setChangingNumber(false);
+      setOtpSent(false);
+      setOtpCode("");
+      setSentVia(null);
+      setChannel(null);
+      setFallbackFrom(null);
+      setSends(0);
       apply({ ...data, has_phone_number: data.has_phone_number ?? true });
     } catch (err: unknown) {
       setError(caughtErrorText(err, "Could not save that number. Try again."));
     } finally {
       setBusy(false);
     }
+  }
+
+  /** "Wrong number? Change it": the number form, prefilled with what is on file. */
+  function changeNumber() {
+    setError("");
+    const split = splitDisplayNumber(status?.phone_display, countries, status?.country_code);
+    if (split) {
+      setPhoneCountry(split.country);
+      setPhone(split.national);
+    }
+    setChangingNumber(true);
+    setPhase("phone");
+  }
+
+  function keepNumber() {
+    setError("");
+    setChangingNumber(false);
+    setPhase("otp");
   }
 
   // ── the mobile code (WhatsApp or SMS) ─────────────────────────────────────
@@ -421,6 +455,7 @@ export default function VerifyFlow() {
     setChannel(want);
     setError("");
     setFallbackFrom(null);
+    setSends((n) => n + 1);
     setBusy(true);
     try {
       const res = await apiFetch(`${API}/verification/mobile-otp/send`, {
@@ -1049,9 +1084,11 @@ export default function VerifyFlow() {
       <Card>
         <Header
           icon={<Phone className="h-5 w-5" />}
-          title="Add your mobile number."
+          title={changingNumber ? "Change your mobile number." : "Add your mobile number."}
           sub={
-            status?.country_code === "IN"
+            changingNumber
+              ? "Type the number again carefully. We'll send the code to the new number, and codes sent to the old one stop working."
+              : status?.country_code === "IN"
               ? `We'll send a one-time code to confirm it, because Indian regulations (CERT-In) require a verified contact number for compute rental. ${INDIAN_MOBILE_HINT}`
               : "We'll send a one-time code to confirm it, because Indian regulations (CERT-In) require a verified contact number for compute rental. Any country code works."
           }
@@ -1099,6 +1136,16 @@ export default function VerifyFlow() {
             {busy ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
             Save number
           </Button>
+          {changingNumber && (
+            <button
+              type="button"
+              onClick={keepNumber}
+              disabled={busy}
+              className="cf-btn-secondary min-h-11 w-full disabled:opacity-60"
+            >
+              Keep {shownNumber(status) ?? "the number on file"}
+            </button>
+          )}
         </form>
       </Card>
     );
@@ -1106,7 +1153,30 @@ export default function VerifyFlow() {
 
   // phase === "otp"
   const current: Channel = sentVia ?? chosen;
-  const number = <span className="font-medium text-ink">{status?.phone_masked ?? "the number on your account"}</span>;
+  const shown = shownNumber(status);
+  const changeLink = (
+    <button
+      type="button"
+      onClick={changeNumber}
+      disabled={busy}
+      className="inline-flex min-h-11 items-center text-[13px] font-medium text-blue hover:underline disabled:opacity-60"
+    >
+      Wrong number? Change it
+    </button>
+  );
+  /* The whole number, big enough to read digit by digit, with the way out
+     right beside it (15 Nov 2026: one wrong digit sent five codes to a stranger). */
+  const numberRow = (
+    <div className="cf-glass-inset mb-6 flex flex-wrap items-center justify-between gap-x-4 gap-y-1 px-4 py-2">
+      <span
+        className="font-medium tabular-nums tracking-[0.02em] text-ink text-[19px] leading-7 sm:text-[21px]"
+        aria-label="Your mobile number"
+      >
+        {shown ?? "The number on your account"}
+      </span>
+      {changeLink}
+    </div>
+  );
   const switchLabel = otherChannel ? `Send ${viaChannel(otherChannel)} instead` : null;
   return (
     <Card>
@@ -1116,15 +1186,16 @@ export default function VerifyFlow() {
         sub={
           otpSent ? (
             <>
-              We sent a 6-digit code {viaChannel(current)} to {number}. It works for ten minutes.
+              We sent a 6-digit code {viaChannel(current)} to this number. It works for ten minutes.
             </>
           ) : (
             <>
-              We&apos;ll send a 6-digit code {viaChannel(current)} to {number}.
+              We&apos;ll send a 6-digit code {viaChannel(current)} to this number. Check every digit first.
             </>
           )
         }
       />
+      {numberRow}
       {!otpSent ? (
         <div className="grid gap-3">
           {error && <p className={errorBox}>{error}</p>}
@@ -1190,11 +1261,18 @@ export default function VerifyFlow() {
               </button>
             )}
           </div>
-          <p className="text-xs leading-5 text-ink-3">
-            {current === "sms"
-              ? "Nothing after a minute? Check the number above, then try the other way."
-              : "Nothing after a minute? Check that this number has WhatsApp, or try the other way."}
-          </p>
+          {showWrongNumberHint(sends) ? (
+            <div className="cf-glass-inset border-l-2 border-l-blue px-4 py-2 text-sm leading-6 text-ink-2">
+              <p className="pt-1">{WRONG_NUMBER_HINT}</p>
+              {changeLink}
+            </div>
+          ) : (
+            <p className="text-xs leading-5 text-ink-3">
+              {current === "sms"
+                ? "Nothing after a minute? Check the number above, then try the other way."
+                : "Nothing after a minute? Check that this number has WhatsApp, or try the other way."}
+            </p>
+          )}
         </form>
       )}
     </Card>
