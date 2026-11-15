@@ -31,7 +31,13 @@ interface Option {
   price: number;
   backup_price?: number;
   currency: string;
+  // false = shown greyed out (e.g. "Coming soon") and not offered for purchase.
+  available?: boolean;
+  unavailable_text?: string | null;
 }
+
+const isOpen = (o: Option) => o.available !== false;
+const firstOpenSize = (opts: Option[]) => opts.find(isOpen)?.size_gb ?? null;
 
 interface Choice {
   id: string;
@@ -39,6 +45,8 @@ interface Choice {
   available_on_text?: string;
   options: Option[];
   backup_available?: boolean;
+  // GB used by Windows and the preinstalled applications on this GPU's disk.
+  system_gb?: number | null;
 }
 
 interface Workstation {
@@ -113,7 +121,7 @@ export default function PersistentWorkstationCard({ onChanged }: { onChanged?: (
       const s = res.ok ? ((await res.json()) as Status) : null;
       setStatus(s);
       const groups = s ? choicesOf(s) : [];
-      if (s && size == null && groups.length === 1) setSize(groups[0].options[0].size_gb);
+      if (s && size == null && groups.length === 1) setSize(firstOpenSize(groups[0].options));
     } catch {
       setStatus(null);
     } finally {
@@ -140,13 +148,13 @@ export default function PersistentWorkstationCard({ onChanged }: { onChanged?: (
   const groups = choicesOf(status);
   const group = groups.length === 1 ? groups[0] : groups.find((c) => c.id === choiceId) ?? null;
   const groupOptions = group?.options ?? [];
-  const chosen = groupOptions.find((o) => o.size_gb === size) ?? (group ? groupOptions[0] : undefined);
+  const chosen = groupOptions.find((o) => o.size_gb === size && isOpen(o)) ?? (group ? groupOptions.find(isOpen) : undefined);
   const backupPrice = (o: Option | undefined) => Number(o?.backup_price ?? 0);
   const canBackup = Boolean(group && group.backup_available !== false && groupOptions.some((o) => o.backup_price != null));
   const withBackup = canBackup && backup;
   const hasBackupPrices = ws ? ws.backup_available !== false && status.options.some((o) => o.backup_price != null) : canBackup;
   const setupTotal = chosen ? chosen.price + (withBackup ? backupPrice(chosen) : 0) : 0;
-  const fromPrice = (c: Choice) => Math.min(...c.options.map((o) => o.price));
+  const fromPrice = (c: Choice) => Math.min(...(c.options.some(isOpen) ? c.options.filter(isOpen) : c.options).map((o) => o.price));
 
   const toggleBackup = async (on: boolean) => {
     setBusy(true);
@@ -338,7 +346,7 @@ export default function PersistentWorkstationCard({ onChanged }: { onChanged?: (
                     aria-checked={group?.id === c.id}
                     onClick={() => {
                       setChoiceId(c.id);
-                      setSize(c.options[0]?.size_gb ?? null);
+                      setSize(firstOpenSize(c.options));
                       setBackup(false);
                       setConfirmSetup(false);
                     }}
@@ -363,16 +371,23 @@ export default function PersistentWorkstationCard({ onChanged }: { onChanged?: (
                 type="button"
                 role="radio"
                 aria-checked={chosen?.size_gb === o.size_gb}
+                aria-disabled={!isOpen(o)}
+                disabled={!isOpen(o)}
                 onClick={() => {
+                  if (!isOpen(o)) return;
                   setSize(o.size_gb);
                   setConfirmSetup(false);
                 }}
                 className={`rounded-cf border px-3 py-3 text-left transition ${
-                  chosen?.size_gb === o.size_gb ? "border-blue bg-blue-soft" : "border-rule hover:bg-paper-2"
+                  !isOpen(o)
+                    ? "cursor-not-allowed border-rule opacity-50"
+                    : chosen?.size_gb === o.size_gb ? "border-blue bg-blue-soft" : "border-rule hover:bg-paper-2"
                 }`}
               >
                 <div className="font-display text-lg font-bold tabular-nums text-ink">{o.size_gb} GB</div>
-                <div className="font-mono text-xs tabular-nums text-ink-2">{formatMoney(o.price, cur)}/month</div>
+                <div className="font-mono text-xs tabular-nums text-ink-2">
+                  {isOpen(o) ? `${formatMoney(o.price, cur)}/month` : (o.unavailable_text || "Not available yet")}
+                </div>
               </button>
             ))}
           </div>
@@ -389,7 +404,7 @@ export default function PersistentWorkstationCard({ onChanged }: { onChanged?: (
             </label>
           )}
           <p className="text-xs leading-5 text-ink-3">
-            Set it up from Coreframe Connect (Profile) or here. The size is chosen once; there is no resize. Windows and the preinstalled applications use about 30 GB of it.
+            Set it up from Coreframe Connect (Profile) or here. The size is chosen once; there is no resize. Windows and the preinstalled applications use about {group?.system_gb ?? 30} GB of it.
             The first month is taken from your wallet now and it renews each month; if the wallet cannot cover a renewal you
             have {status.grace_days} days to add funds before the disk is deleted. You can remove it at any time (no refund
             of the current month).
