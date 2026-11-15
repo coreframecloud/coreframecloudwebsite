@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { MacHelp } from "@/components/download/mac-help";
+import { fetchMacRelease } from "@/lib/client-release";
 
 /**
  * /download/mac: the chip chooser behind the short link support hands out
@@ -21,7 +23,10 @@ const CHOICES = [
   { href: "/download/mac/intel", title: "Intel", sub: "Older Macs with an Intel processor" },
 ];
 
-export default function MacChooser() {
+export default async function MacChooser() {
+  // Sizes for the help section, read on the server from the same feed the
+  // short links use. Feed down: the help still shows, without sizes.
+  const mac = await fetchMacRelease();
   return (
     <main className="cf-section px-5">
       <div className="mx-auto w-full max-w-[520px]">
@@ -53,6 +58,8 @@ export default function MacChooser() {
             app is not supported on this Mac, you picked the other chip: come back and choose
             again.
           </p>
+
+          <MacHelp sizes={{ arm64: mac?.arm64?.size, x64: mac?.x64?.size }} className="mt-6" />
         </div>
 
         <p className="mt-6 text-center text-sm text-ink-2">

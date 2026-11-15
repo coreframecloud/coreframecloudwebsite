@@ -8,6 +8,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { BANDWIDTH_SHORT } from "@/lib/streaming-terms";
 import { ChosenGpuNote } from "@/components/go/chosen-gpu-note";
+import { MacHelp, formatMacSize } from "@/components/download/mac-help";
 
 interface DownloadInfo {
   // Optional because the route omits them when the release feed on the control
@@ -99,11 +100,9 @@ function chipFromWebGl(): Chip | null {
   return null;
 }
 
-// Decimal megabytes, the way Finder and Explorer's download bar show size.
-function formatSize(bytes: number | null | undefined): string | null {
-  if (!bytes) return null;
-  return `${Math.round(bytes / 1_000_000)} MB`;
-}
+// Decimal megabytes with one decimal, the way Finder's Get Info shows size
+// (271.7 MB), so it matches the "Trouble opening" help a customer checks against.
+const formatSize = formatMacSize;
 
 const CHIP_LABEL: Record<Chip, string> = { arm64: "Apple silicon", x64: "Intel" };
 
@@ -498,6 +497,12 @@ export default function DownloadPage() {
                 </p>
               </>
             )}
+
+            {/* Collapsed help, before and after the click (15 Nov 2026). */}
+            <MacHelp
+              sizes={{ arm64: mac.arm64?.size, x64: mac.x64?.size }}
+              className="mt-6"
+            />
           </div>
         )}
 
