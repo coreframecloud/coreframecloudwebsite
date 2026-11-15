@@ -18,6 +18,12 @@ import { errMsg, errorText, inputCls, jsonBody, okMsg, quietBtn, readJson, short
  * v2 (owner, 24 Oct 2026): the disk alone by default; "Also keep a backup" is a
  * paid add-on (a copy of the disk from the last session end), at setup or later
  * (the rest of the month charged now). Without it there is one copy only.
+ *
+ * GPU first (owner, 15 Nov 2026): the API's "choices" are GPU groups, each with
+ * its own sizes and prices (the RTX 5080 only for accounts that can see it, no
+ * backup add-on there). With more than one, the customer picks the GPU, then a
+ * size; POST sends the choice id. An API without "choices" is one group made
+ * of `options`.
  */
 
 interface Option {
@@ -25,6 +31,14 @@ interface Option {
   price: number;
   backup_price?: number;
   currency: string;
+}
+
+interface Choice {
+  id: string;
+  title: string;
+  available_on_text?: string;
+  options: Option[];
+  backup_available?: boolean;
 }
 
 interface Workstation {
@@ -43,6 +57,7 @@ interface Workstation {
   saving?: boolean;
   boots: number;
   message?: string;
+  backup_available?: boolean;
 }
 
 interface Status {
@@ -58,6 +73,15 @@ interface Status {
   remove_confirm_word?: string;
   workstation: Workstation | null;
   wallet_pooled: boolean;
+  choices?: Choice[];
+}
+
+function choicesOf(s: Status): Choice[] {
+  const list = (s.choices ?? []).filter((c) => c && c.id && c.options?.length);
+  if (list.length) return list;
+  return s.options.length
+    ? [{ id: "", title: "", available_on_text: s.available_on_text, options: s.options, backup_available: true }]
+    : [];
 }
 
 const STATUS_TEXT: Record<string, string> = {
@@ -74,6 +98,7 @@ const STATUS_TEXT: Record<string, string> = {
 export default function PersistentWorkstationCard({ onChanged }: { onChanged?: () => void }) {
   const [status, setStatus] = useState<Status | null>(null);
   const [loaded, setLoaded] = useState(false);
+  const [choiceId, setChoiceId] = useState<string | null>(null);
   const [size, setSize] = useState<number | null>(null);
   const [backup, setBackup] = useState(false);
   const [confirmSetup, setConfirmSetup] = useState(false);
@@ -87,7 +112,8 @@ export default function PersistentWorkstationCard({ onChanged }: { onChanged?: (
       const res = await teamApi("/me/persistent-workstation");
       const s = res.ok ? ((await res.json()) as Status) : null;
       setStatus(s);
-      if (s && size == null && s.options.length) setSize(s.options[0].size_gb);
+      const groups = s ? choicesOf(s) : [];
+      if (s && size == null && groups.length === 1) setSize(groups[0].options[0].size_gb);
     } catch {
       setStatus(null);
     } finally {
@@ -111,10 +137,16 @@ export default function PersistentWorkstationCard({ onChanged }: { onChanged?: (
 
   const cur: Currency = parseCurrency(status.currency) ?? "INR";
   const ws = status.workstation;
-  const chosen = status.options.find((o) => o.size_gb === size) ?? status.options[0];
+  const groups = choicesOf(status);
+  const group = groups.length === 1 ? groups[0] : groups.find((c) => c.id === choiceId) ?? null;
+  const groupOptions = group?.options ?? [];
+  const chosen = groupOptions.find((o) => o.size_gb === size) ?? (group ? groupOptions[0] : undefined);
   const backupPrice = (o: Option | undefined) => Number(o?.backup_price ?? 0);
-  const hasBackupPrices = status.options.some((o) => o.backup_price != null);
-  const setupTotal = chosen ? chosen.price + (backup ? backupPrice(chosen) : 0) : 0;
+  const canBackup = Boolean(group && group.backup_available !== false && groupOptions.some((o) => o.backup_price != null));
+  const withBackup = canBackup && backup;
+  const hasBackupPrices = ws ? ws.backup_available !== false && status.options.some((o) => o.backup_price != null) : canBackup;
+  const setupTotal = chosen ? chosen.price + (withBackup ? backupPrice(chosen) : 0) : 0;
+  const fromPrice = (c: Choice) => Math.min(...c.options.map((o) => o.price));
 
   const toggleBackup = async (on: boolean) => {
     setBusy(true);
@@ -147,7 +179,10 @@ export default function PersistentWorkstationCard({ onChanged }: { onChanged?: (
     setBusy(true);
     setMsg(null);
     try {
-      const res = await teamApi("/me/persistent-workstation", jsonBody("POST", { size_gb: chosen.size_gb, backup }));
+      const res = await teamApi(
+        "/me/persistent-workstation",
+        jsonBody("POST", { size_gb: chosen.size_gb, backup: withBackup, ...(group?.id ? { choice: group.id } : {}) }),
+      );
       const body = await readJson(res);
       if (!res.ok) {
         setMsg({ ok: false, text: errorText(body, "The persistent workstation could not be set up.") });
@@ -202,7 +237,7 @@ export default function PersistentWorkstationCard({ onChanged }: { onChanged?: (
         )}
       </div>
       <p className="mt-2 text-sm leading-6 text-ink-2">{status.line}</p>
-      {status.available_on_text && (
+      {status.available_on_text && (ws || groups.length <= 1) && (
         <p className="mt-1 text-xs leading-5 text-ink-3">{status.available_on_text}.</p>
       )}
 
@@ -291,8 +326,38 @@ export default function PersistentWorkstationCard({ onChanged }: { onChanged?: (
         </div>
       ) : (
         <div className="mt-4 space-y-3">
+          {groups.length > 1 && (
+            <>
+              <p className="text-xs font-semibold text-ink">Which GPU will you use it on?</p>
+              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2" role="radiogroup" aria-label="GPU">
+                {groups.map((c) => (
+                  <button
+                    key={c.id}
+                    type="button"
+                    role="radio"
+                    aria-checked={group?.id === c.id}
+                    onClick={() => {
+                      setChoiceId(c.id);
+                      setSize(c.options[0]?.size_gb ?? null);
+                      setBackup(false);
+                      setConfirmSetup(false);
+                    }}
+                    className={`rounded-cf border px-3 py-3 text-left transition ${
+                      group?.id === c.id ? "border-blue bg-blue-soft" : "border-rule hover:bg-paper-2"
+                    }`}
+                  >
+                    <div className="font-display text-base font-bold text-ink">{c.title}</div>
+                    <div className="font-mono text-xs tabular-nums text-ink-2">from {formatMoney(fromPrice(c), cur)}/month</div>
+                  </button>
+                ))}
+              </div>
+              {!group && <p className="text-xs leading-5 text-ink-3">Your disk works on the GPU you choose here.</p>}
+              {group?.available_on_text && <p className="text-xs leading-5 text-ink-3">{group.available_on_text}.</p>}
+            </>
+          )}
+          {group && (
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4" role="radiogroup" aria-label="Disk size">
-            {status.options.map((o) => (
+            {groupOptions.map((o) => (
               <button
                 key={o.size_gb}
                 type="button"
@@ -311,7 +376,8 @@ export default function PersistentWorkstationCard({ onChanged }: { onChanged?: (
               </button>
             ))}
           </div>
-          {hasBackupPrices && chosen && (
+          )}
+          {canBackup && chosen && (
             <label className="flex items-start gap-2 text-sm text-ink">
               <input type="checkbox" className="mt-1" checked={backup} onChange={(e) => { setBackup(e.target.checked); setConfirmSetup(false); }} />
               <span>
@@ -331,11 +397,11 @@ export default function PersistentWorkstationCard({ onChanged }: { onChanged?: (
           {confirmSetup && chosen ? (
             <div className="cf-glass-inset border-l-2! border-l-blue! px-4 py-3">
               <p className="text-sm font-semibold text-ink">
-                Set up a {chosen.size_gb} GB persistent workstation{backup ? " with backup" : ""} for {formatMoney(setupTotal, cur)} a month?
+                Set up a {chosen.size_gb} GB persistent workstation{groups.length > 1 && group ? ` for the ${group.title}` : ""}{withBackup ? " with backup" : ""} for {formatMoney(setupTotal, cur)} a month?
               </p>
               <p className="mt-1 text-xs leading-5 text-ink-2">
                 {formatMoney(setupTotal, cur)} is taken from {status.wallet_pooled ? "your team's wallet" : "your wallet"} now
-                for the first month. It is ready in about 10 minutes.
+                for the first month. It is ready in {group?.backup_available === false ? "a few minutes" : "about 10 minutes"}.
               </p>
               <div className="mt-3 flex flex-wrap gap-2">
                 <button type="button" className={solidBtn} disabled={busy} onClick={() => void setup()}>
