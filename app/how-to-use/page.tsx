@@ -141,7 +141,9 @@ export default function HowToUsePage() {
               GPU ladder with VRAM and the live per-hour price on every card.
               The previous image was the 0.3 app with one GPU at a rate that
               is no longer charged. */}
-          <OwnImage src="/home/connect-1312-catalogue.webp" alt="Coreframe Connect: choose a workstation, with the RTX A4000, RTX A5000, RTX 5080 and RTX 6000 Ada cards showing VRAM, CUDA cores, vCPU and RAM" width={1090} height={490} caption="Step one: pick your workstation and launch." sizes="(max-width: 1024px) 100vw, 480px" />
+          {/* 15 Nov 2026: the catalogue capture showed retired cards (A5000, 6000 Ada); this frame
+              names no GPU until a fresh capture of the two-card catalogue replaces it. */}
+          <OwnImage src="/home/connect-1312-03-starting.webp" alt="Coreframe Connect starting a workstation, each step ticking off: reserving, starting the machine, setting up Windows" width={2048} height={1152} caption="Pick your GPU, press Launch, and your workstation starts." sizes="(max-width: 1024px) 100vw, 480px" />
         </div>
     </section>
       <section className="cf-section px-5 pb-0">

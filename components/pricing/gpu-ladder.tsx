@@ -13,6 +13,8 @@
  */
 
 import {
+  comingSoonChips,
+  comingSoonGpus,
   formatHourly,
   gpuIntroEligible,
   gpuSpecChips,
@@ -142,6 +144,31 @@ export function GpuLadder({
             </li>
           );
         })}
+        {comingSoonGpus(card).map((g) => (
+          // Coming soon (owner, 15 Nov 2026): what the card is, no price, nothing to press.
+          <li
+            key={g.slug}
+            data-coming-soon=""
+            className={`grid min-w-0 gap-x-6 gap-y-2 ${compact ? "px-5 py-4" : "px-5 py-5 sm:px-6"} sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center`}
+          >
+            <div className="min-w-0">
+              <p className={`font-heading font-medium text-ink-2 ${compact ? "text-[17px]" : "text-[19px]"}`}>{g.name}</p>
+              <ul className="mt-1.5 flex flex-wrap gap-x-1.5 gap-y-1 text-[13.5px] leading-5 text-ink-3">
+                {comingSoonChips(g).map((c, i) => (
+                  <li key={c} className="flex items-center gap-1.5">
+                    {i > 0 ? <span aria-hidden="true">·</span> : null}
+                    <span>{c}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className={launch ? "flex sm:justify-end" : "sm:text-right"}>
+              <span className="inline-flex min-h-10 items-center rounded-full border border-dashed border-rule px-4 text-[13px] font-semibold tracking-[0.04em] text-ink-2 uppercase">
+                Coming soon
+              </span>
+            </div>
+          </li>
+        ))}
       </ul>
       {licence ? <LicenceNotice variant={licence} className="mt-3" /> : null}
     </div>

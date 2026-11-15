@@ -1,4 +1,4 @@
-import { publicGpus, type RateCard } from "@/lib/rate-card";
+import { comingSoonGpus, publicGpus, type RateCard } from "@/lib/rate-card";
 
 /**
  * Infographics for the GPU workstations page (owner, 31 Oct 2026: "shorten
@@ -57,7 +57,9 @@ export function MemoryLadder({ card, className = "" }: { card: RateCard | null; 
   const gpus = publicGpus(card);
   if (!gpus.length) return null;
   const sizes = [...new Set(gpus.map((g) => g.vram_gb))].sort((a, b) => a - b);
-  const max = sizes[sizes.length - 1];
+  // Coming-soon cards (15 Nov 2026) get their own pale bar after the live ones, labelled as such.
+  const soon = comingSoonGpus(card).filter((g) => g.vram_gb > 0);
+  const max = Math.max(sizes[sizes.length - 1], ...soon.map((g) => g.vram_gb));
   return (
     <figure className={className}>
       <figcaption className="text-[13px] font-semibold tracking-[0.08em] text-ink-2 uppercase">GPU memory by card</figcaption>
@@ -78,6 +80,19 @@ export function MemoryLadder({ card, className = "" }: { card: RateCard | null; 
             </li>
           );
         })}
+        {soon.map((g) => (
+          <li key={g.slug} data-coming-soon="" className="grid grid-cols-[4.2rem_minmax(0,1fr)] items-center gap-3">
+            <span className="font-heading text-[19px] leading-none font-semibold text-ink-3 tabular-nums">{g.vram_gb} GB</span>
+            <span className="min-w-0">
+              <span
+                className="block h-3 rounded-full border border-dashed border-blue/50 bg-tint-blue"
+                style={{ width: `${Math.max(14, Math.round((g.vram_gb / max) * 100))}%` }}
+                aria-hidden
+              />
+              <span className="mt-1 block text-[13px] leading-snug text-ink-3">{g.name} · coming soon</span>
+            </span>
+          </li>
+        ))}
       </ul>
     </figure>
   );

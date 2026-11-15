@@ -6,7 +6,7 @@ import { GpuPickCards } from "@/components/go/gpu-start";
 import { breadcrumbList, faqPage, OG_IMAGE, SITE } from "@/lib/seo";
 import { formatMoney, type Currency } from "@/lib/money";
 import { startGpus } from "@/lib/gpu-start-server";
-import { getRateCard, hourlyValue, publicGpus, shortGpuName, taxWords, type RateCardGpu } from "@/lib/rate-card";
+import { comingSoonGpus, comingSoonName, getRateCard, hourlyValue, publicGpus, shortGpuName, taxWords, type RateCardGpu } from "@/lib/rate-card";
 
 /**
  * /rtx-a4000-vs-rtx-a5000 — "RTX A4000 vs RTX A5000 for rendering"
@@ -28,6 +28,14 @@ import { getRateCard, hourlyValue, publicGpus, shortGpuName, taxWords, type Rate
  *
  * ONE big call to action (owner, 10 Nov 2026): the price-first card picker
  * with these two cards, Start → sign-up → pre-filled payment.
+ *
+ * 15 Nov 2026 (owner): the RTX A5000 is no longer offered. The page stays
+ * (not a 308): it ranks for "a4000 gpu rental" / "a4000 vs a5000", the A4000
+ * half is still for rent, and the spec comparison is still true. Redirecting
+ * a comparison to the price list would read as a soft 404 and drop both the
+ * ranking and the links into it. Instead, while the A5000 is not on the live
+ * rate card, the page says so at the top, prices only what we rent, and
+ * points scenes over 16 GB to the coming-soon card, never to the A5000.
  */
 
 const PATH = "/rtx-a4000-vs-rtx-a5000";
@@ -65,8 +73,8 @@ export function compareMetadata(): Metadata {
   return {
     title: { absolute: "RTX A4000 vs RTX A5000 for Rendering: Specs & Which to Pick" },
     description:
-      "RTX A4000 (16 GB, 6,144 CUDA cores) vs RTX A5000 (24 GB, 8,192 CUDA cores) for rendering: NVIDIA's specs side by side, which scene sizes fit each, and the hourly price.",
-    keywords: ["a4000 vs a5000", "rtx a4000 vs rtx a5000 rendering", "rtx a4000 rental", "rtx a5000 rental", "a4000 gpu rental"],
+      "RTX A4000 (16 GB, 6,144 CUDA cores) vs RTX A5000 (24 GB, 8,192 CUDA cores) for rendering: NVIDIA's specs side by side, which scene sizes fit each, and the RTX A4000 to rent by the hour.",
+    keywords: ["a4000 vs a5000", "rtx a4000 vs rtx a5000 rendering", "rtx a4000 rental", "a4000 gpu rental"],
     alternates: { canonical: PATH },
     openGraph: {
       images: [OG_IMAGE],
@@ -99,8 +107,13 @@ export default async function CompareView({ currency }: { currency: Currency }) 
     .filter((g) => g.vram_gb === 16 && (g.cuda_cores ?? 0) > SPEC.a4000.cuda && hourlyValue(g, currency, card) != null)
     .sort((x, y) => (y.cuda_cores ?? 0) - (x.cuda_cores ?? 0))[0];
 
+  // The A5000 left the catalogue on 15 Nov 2026: while it is not on the live rate card the page
+  // says so and offers the A4000 and the 16 GB card with more CUDA cores instead.
+  const a5Offered = a5 != null;
+  const soon = comingSoonGpus(card).filter((g) => g.vram_gb > SPEC.a5000.vramGb);
+  const soonLine = soon.length ? soon.map(comingSoonName).join(" and ") : null;
   const pick = startGpus(card, currency);
-  const pairSlugs = [a4?.slug, a5?.slug].filter(Boolean) as string[];
+  const pairSlugs = [a4?.slug, a5Offered ? a5?.slug : fast16?.slug].filter(Boolean) as string[];
   const pairGpus = pick.gpus.filter((g) => pairSlugs.includes(g.slug));
   const pairDefault = a4?.slug ?? pairGpus[0]?.slug ?? null;
 
@@ -111,7 +124,8 @@ export default async function CompareView({ currency }: { currency: Currency }) 
   const answer =
     `The RTX A5000 has 24 GB of memory, 8,192 CUDA cores and 768 GB/s of memory bandwidth; the RTX A4000 has 16 GB, 6,144 CUDA cores and 448 GB/s (NVIDIA's datasheets). ` +
     `For rendering, memory decides first: if your scene peaks under about 14 GB, the A4000 holds it; between about 14 and 22 GB, you need the A5000.` +
-    (p4 && p5 ? ` On Coreframe the A4000 is ${price(p4)} and the A5000 ${price(p5)}, ${tax}, billed per minute.` : "");
+    (p4 && p5 ? ` On Coreframe the A4000 is ${price(p4)} and the A5000 ${price(p5)}, ${tax}, billed per minute.` : "") +
+    (!a5Offered && p4 ? ` On Coreframe you can rent the A4000 at ${price(p4)}, ${tax}, billed per minute; we no longer offer the A5000.` : "");
 
   const rows: { label: string; a: string; b: string; win?: "a" | "b" }[] = [
     { label: "GPU memory (VRAM)", a: `${SPEC.a4000.vramGb} GB`, b: `${SPEC.a5000.vramGb} GB`, win: "b" },
@@ -145,7 +159,9 @@ export default async function CompareView({ currency }: { currency: Currency }) 
     },
     {
       q: "When should I pick the RTX A5000 over the RTX A4000?",
-      a: "When your scene's measured peak memory is above about 14 GB, or close enough that it might grow past it. The A5000's 24 GB holds scenes the 16 GB A4000 cannot load; a scene that doesn't fit doesn't render more slowly, it fails or spills to system memory.",
+      a:
+        "When your scene's measured peak memory is above about 14 GB, or close enough that it might grow past it. The A5000's 24 GB holds scenes the 16 GB A4000 cannot load; a scene that doesn't fit doesn't render more slowly, it fails or spills to system memory." +
+        (a5Offered ? "" : ` Coreframe no longer offers the RTX A5000${soonLine ? `; the ${soonLine} is coming soon for scenes over 16 GB` : ""}.`),
     },
     ...(p4 && p5
       ? [
@@ -173,6 +189,17 @@ export default async function CompareView({ currency }: { currency: Currency }) 
             <h1 className="cf-display">RTX A4000 vs RTX A5000 for rendering</h1>
             <p className="cf-lead mt-6">{answer}</p>
             <PageByline path={PATH} className="mt-4 opacity-75" />
+            {!a5Offered ? (
+              <p data-retired-gpu="" className="mt-6 rounded-[16px] border border-rule bg-paper-2 px-4 py-3 text-[15px] leading-6 text-ink-2">
+                <b className="text-ink">The RTX A5000 is no longer offered on Coreframe.</b> Rent the RTX A4000
+                {fast16 ? ` or the ${shortGpuName(fast16.name)}` : ""} by the minute
+                {soonLine ? `; the ${soonLine} is coming soon for scenes over 16 GB` : ""}.{" "}
+                <Link href="/pricing" className="text-blue underline underline-offset-2">
+                  See the GPUs and prices
+                </Link>
+                .
+              </p>
+            ) : null}
           </div>
         </section>
 
@@ -278,7 +305,10 @@ export default async function CompareView({ currency }: { currency: Currency }) 
                 </p>
               </li>
               <li className="cf-card-sm">
-                <p className="font-semibold text-ink">Peak about 14 to 22 GB → RTX A5000 (24 GB){p5 ? ` · ${price(p5)}` : ""}</p>
+                <p className="font-semibold text-ink">
+                  Peak about 14 to 22 GB → RTX A5000 (24 GB){p5 ? ` · ${price(p5)}` : ""}
+                  {!a5Offered ? (soonLine ? ` · not offered on Coreframe; ${soonLine} coming soon` : " · not offered on Coreframe") : ""}
+                </p>
                 <p className="mt-1 text-ink-2">
                   4K PBR texture sets, site context with scattered trees and grass, a federated model, Enscape VR (Chaos
                   recommends 12 GB) or Lumion&apos;s high-end tier (16 GB or more).
@@ -325,7 +355,7 @@ export default async function CompareView({ currency }: { currency: Currency }) 
               <Link href="/tools/render-time" className="text-blue underline underline-offset-2">
                 render-time calculator
               </Link>
-              . Or run your own scene on both: you pay per minute for the time you use.
+              . Or run your own scene on {a5Offered ? "both" : "the cards we rent"}: you pay per minute for the time you use.
             </p>
           </div>
         </section>
@@ -354,7 +384,9 @@ export default async function CompareView({ currency }: { currency: Currency }) 
         {pairDefault && pairGpus.length ? (
           <section className="cf-section px-5 pb-20" data-cf-section="start">
             <div className="cf-col">
-              <h2 className="cf-title">Try your scene on either card</h2>
+              <h2 className="cf-title">
+                {a5Offered ? "Try your scene on either card" : `Try your scene on the ${pairGpus.map((g) => g.name).join(" or ")}`}
+              </h2>
               <p className="mt-3 mb-6 text-[15px] leading-6 text-ink-2">
                 A Windows workstation with the card you pick, streamed to your laptop. Billed per minute, {tax}.
               </p>
@@ -365,6 +397,7 @@ export default async function CompareView({ currency }: { currency: Currency }) 
                 introHours={pick.introHours}
                 currency={currency}
                 where="a4000_vs_a5000"
+                soon={pick.soon}
               />
             </div>
           </section>

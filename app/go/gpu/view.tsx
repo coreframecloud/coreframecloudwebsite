@@ -161,7 +161,7 @@ export default async function GpuLandingView({ currency }: { currency: Currency 
           <p className="mt-1 text-[14.5px] text-ink-2">D5, Twinmotion, Unreal and Blender are already installed on every one.</p>
           <div className="mt-4">
             {pick.defaultSlug ? (
-              <GpuPickCards gpus={pick.gpus} defaultSlug={pick.defaultSlug} amount={pick.amount} introHours={pick.introHours} currency={currency} where="go_gpu_cards" />
+              <GpuPickCards gpus={pick.gpus} defaultSlug={pick.defaultSlug} amount={pick.amount} introHours={pick.introHours} currency={currency} where="go_gpu_cards" soon={pick.soon} />
             ) : null}
           </div>
         </section>

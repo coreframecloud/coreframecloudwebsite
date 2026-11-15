@@ -165,6 +165,7 @@ export function SoftwarePickSection({
           introHours={data.introHours}
           currency={currency}
           where={`${where}_cards`}
+          soon={data.soon}
         />
       </div>
       {footnote ? <div className="mt-4 text-[14px] leading-6 text-ink-2">{footnote}</div> : null}

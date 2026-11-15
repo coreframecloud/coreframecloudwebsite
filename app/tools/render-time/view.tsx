@@ -150,14 +150,8 @@ export default async function RenderTimeView({ currency }: { currency: Currency 
               introHours={pick.introHours}
               currency={currency}
               where="render_calc"
+              soon={pick.soon}
             />
-            <p className="mt-6 text-[14px] leading-6 text-ink-2">
-              Choosing between the two entry cards?{" "}
-              <Link href="/rtx-a4000-vs-rtx-a5000" className="text-blue underline underline-offset-2">
-                RTX A4000 vs RTX A5000 for rendering
-              </Link>
-              .
-            </p>
           </section>
         ) : (
           <div className="pb-16" />

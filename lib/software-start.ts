@@ -1,7 +1,7 @@
 import { adhocRate, introOfferFor, introPrice, hoursLabel, ladderRanges, publicGpus, shortGpuName, type RateCard } from "@/lib/rate-card";
 import { startGpus } from "@/lib/gpu-start-server";
 import type { Currency } from "@/lib/money";
-import type { StartGpu } from "@/components/go/gpu-start";
+import type { SoonGpu, StartGpu } from "@/components/go/gpu-start";
 import { softwareFit, type SoftwareFit } from "@/lib/software-fit";
 
 /**
@@ -19,6 +19,8 @@ import { softwareFit, type SoftwareFit } from "@/lib/software-fit";
 export type SoftwareStartData = {
   fit: SoftwareFit | undefined;
   gpus: StartGpu[];
+  /** Coming-soon cards, listed after the choices. */
+  soon: SoonGpu[];
   amount: number | null;
   introHours: number | null;
   /** The picker's default: the recommended card when there is one. */
@@ -50,6 +52,7 @@ export function softwareStart(slug: string, card: RateCard | null, currency: Cur
   return {
     fit,
     gpus: pick.gpus,
+    soon: pick.soon,
     amount: pick.amount,
     introHours: pick.introHours,
     defaultSlug: rec?.slug ?? pick.defaultSlug,

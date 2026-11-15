@@ -364,6 +364,7 @@ export default async function VramView({ currency }: { currency: Currency }) {
                   introHours={pick.introHours}
                   currency={currency}
                   where="vram_guide"
+                  soon={pick.soon}
                 />
               </div>
             ) : null}

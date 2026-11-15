@@ -27,6 +27,9 @@ export type StartGpu = {
   hours: number | null;
 };
 
+/** A coming-soon card (15 Nov 2026): shown after the choices, never chosen, never priced. */
+export type SoonGpu = { slug: string; name: string; vram: number };
+
 let chosen: string | null = null;
 const listeners = new Set<() => void>();
 
@@ -94,6 +97,7 @@ export function GpuPickCards({
   introHours,
   currency,
   where,
+  soon = [],
 }: {
   gpus: StartGpu[];
   defaultSlug: string;
@@ -101,6 +105,8 @@ export function GpuPickCards({
   introHours: number | null;
   currency: Currency;
   where: string;
+  /** Coming-soon cards from the rate card, listed after the choices. */
+  soon?: SoonGpu[];
 }) {
   const slug = useChosen(defaultSlug);
   const g = gpus.find((x) => x.slug === slug);
@@ -154,6 +160,23 @@ export function GpuPickCards({
           );
         })}
       </ul>
+      {soon.length ? (
+        <ul aria-label="Coming soon" className="mt-3 grid gap-3 sm:grid-cols-2">
+          {soon.map((x) => (
+            <li key={x.slug} data-coming-soon="" className="rounded-cf border border-dashed border-rule px-4 py-3.5">
+              <span className="flex items-baseline justify-between gap-3">
+                <span className="font-heading text-[17px] font-medium text-ink-2">{x.name}</span>
+                <span className="shrink-0 rounded-full border border-rule px-2.5 py-0.5 text-[11.5px] font-semibold tracking-[0.04em] text-ink-2 uppercase">
+                  Coming soon
+                </span>
+              </span>
+              <span className="mt-2 block text-[13.5px] leading-5 text-ink-3">
+                <b className="font-semibold text-ink-2">{x.vram} GB</b> VRAM · not available to start yet
+              </span>
+            </li>
+          ))}
+        </ul>
+      ) : null}
       <div className="mt-4">
         <GpuStartButton gpus={gpus} defaultSlug={defaultSlug} amount={amount} where={where} />
         <p className="mt-2 text-[13.5px] leading-5 text-ink-3">

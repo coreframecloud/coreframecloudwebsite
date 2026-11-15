@@ -1,6 +1,6 @@
-import { gpuIntroEligible, hourlyValue, introCredit, introOfferFor, publicGpus, shortGpuName, type RateCard } from "@/lib/rate-card";
+import { comingSoonGpus, gpuIntroEligible, hourlyValue, introCredit, introOfferFor, publicGpus, shortGpuName, type RateCard } from "@/lib/rate-card";
 import type { Currency } from "@/lib/money";
-import type { StartGpu } from "@/components/go/gpu-start";
+import type { SoonGpu, StartGpu } from "@/components/go/gpu-start";
 
 /**
  * The cards and defaults for the GPU Start picker (components/go/gpu-start.tsx),
@@ -13,6 +13,8 @@ export function startGpus(card: RateCard | null, currency: Currency): {
   defaultSlug: string | null;
   amount: number | null;
   introHours: number | null;
+  /** Coming-soon cards (15 Nov 2026): listed after the choices, never chosen. */
+  soon: SoonGpu[];
 } {
   const intro = introOfferFor(card, currency);
   const credit = intro ? introCredit(intro) : null;
@@ -41,5 +43,6 @@ export function startGpus(card: RateCard | null, currency: Currency): {
   });
   const byIntro = intro?.gpuName ? publicGpus(card).find((g) => g.name === intro.gpuName)?.slug : undefined;
   const defaultSlug = byIntro ?? gpus.find((g) => g.rate != null)?.slug ?? null;
-  return { gpus, defaultSlug, amount: intro ? intro.price : null, introHours: intro ? intro.hours : null };
+  const soon: SoonGpu[] = comingSoonGpus(card).map((g) => ({ slug: g.slug, name: shortGpuName(g.name), vram: g.vram_gb }));
+  return { gpus, defaultSlug, amount: intro ? intro.price : null, introHours: intro ? intro.hours : null, soon };
 }

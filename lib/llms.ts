@@ -31,6 +31,7 @@ import {
   cheapestGpu,
   gpuSpecLine,
   ladderRanges,
+  comingSoonGpus,
   publicGpus,
   storageSpec,
   usdHourlyValue,
@@ -472,6 +473,10 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
         `- **${gpu.name}**: ${gpu.gpu_count}× ${gpu.gpu_model}, ${gpuSpecLine(gpu)}, ${storageSpec(gpu.storage_gb)} NVMe` +
           `${rate ? `, ${rate} per GPU-hour in India` : ""}${usdRate != null ? ` (${usdMoney(usdRate)} per GPU-hour outside India, no GST)` : ""}.`,
       );
+    }
+    // Announced, not yet rentable (owner, 15 Nov 2026): no price, never in the list above.
+    for (const soon of comingSoonGpus(card)) {
+      out.push(`- **${soon.name}**: coming soon (${[soon.architecture, `${soon.vram_gb} GB VRAM`].filter(Boolean).join(", ")}). Not yet available to rent; no price yet.`);
     }
     out.push("");
     const first = money(minFirstTopup(card));

@@ -89,6 +89,23 @@ export type RateCardGpu = {
   badge?: string | null;
 };
 
+/**
+ * A GPU announced but not launchable (owner, 15 Nov 2026: "NVIDIA RTX PRO
+ * 5000 Blackwell 48 GB, coming soon"). The control plane publishes these from
+ * gpu_profiles rows with status "coming_soon": what the card is, never a
+ * price. Shown wherever the site lists GPUs, after the live cards, with no
+ * price and no Start button. The day it goes live it moves to `gpus` with a
+ * price, and drops out of this list, without a site deploy.
+ */
+export type ComingSoonGpu = {
+  slug: string;
+  name: string;
+  gpu_model?: string;
+  architecture?: string | null;
+  cuda_cores?: number | null;
+  vram_gb: number;
+};
+
 export type TrialTerms = {
   enabled: boolean;
   gpu_minutes: number;
@@ -250,6 +267,9 @@ export type RateCard = {
    *  False means the rate above is published but nobody is billed by it. */
   storage_billing_active?: boolean;
   gpus: RateCardGpu[];
+  /** GPUs coming soon (15 Nov 2026). Optional: a control plane from before
+   *  it omits the key and the site lists no coming-soon card. */
+  coming_soon?: ComingSoonGpu[];
   /** USD prices for accounts billed outside India (15 Oct 2026). Optional:
    *  an older control plane omits it and usdRates() in lib/money.ts falls back
    *  to the approved constants. */
@@ -461,8 +481,8 @@ export function introOfferShort(o: IntroOffer): { main: string; alt: string | nu
 
 /**
  * The lineup, cheapest first, priced cards only (a quote-on-request or
- * staff-only profile is never named): range "RTX A4000 to RTX 6000 Ada",
- * list "RTX A4000 16 GB, RTX A5000 24 GB, RTX 5080 16 GB, RTX 6000 Ada 48 GB",
+ * staff-only profile is never named): range "RTX A4000 to RTX 5080",
+ * list "RTX A4000 16 GB, RTX 5080 16 GB",
  * from "from ₹99/hour" / "from $1.49/hour" (the visitor's currency only).
  * Null without a rate card.
  */
@@ -757,8 +777,37 @@ export function publicGpus(card: RateCard | null): RateCardGpu[] {
 }
 
 /** Used only when the rate card is unreachable: the public card sizes as of
- *  31 Oct 2026 (owner's counter brief). */
-export const VRAM_STEPS_FALLBACK = [16, 24, 48, 96];
+ *  15 Nov 2026 (owner: RTX A4000 and RTX 5080, both 16 GB). */
+export const VRAM_STEPS_FALLBACK = [16];
+
+/** The coming-soon cards the control plane publishes, in its order; [] without one. */
+export function comingSoonGpus(card: RateCard | null): ComingSoonGpu[] {
+  const gpus = new Set((card?.gpus ?? []).map((g) => g.slug));
+  return (card?.coming_soon ?? []).filter((g) => g && g.name && g.slug && !gpus.has(g.slug));
+}
+
+/** "RTX PRO 5000 Blackwell 48 GB": the short name with its memory. */
+export function comingSoonName(g: ComingSoonGpu): string {
+  const short = shortGpuName(g.name);
+  return g.vram_gb > 0 ? `${short} ${g.vram_gb} GB` : short;
+}
+
+/** "RTX PRO 5000 Blackwell 48 GB coming soon" (several joined with "and"), or null. */
+export function comingSoonLine(card: RateCard | null): string | null {
+  const names = comingSoonGpus(card).map(comingSoonName);
+  if (!names.length) return null;
+  const list = names.length === 1 ? names[0] : `${names.slice(0, -1).join(", ")} and ${names[names.length - 1]}`;
+  return `${list} coming soon`;
+}
+
+/** Spec chips for a coming-soon card: architecture, CUDA cores, VRAM (no CPU/RAM, no price). */
+export function comingSoonChips(g: ComingSoonGpu): string[] {
+  const chips: string[] = [];
+  if (g.architecture) chips.push(g.architecture);
+  if (g.cuda_cores != null && g.cuda_cores > 0) chips.push(`${Math.round(g.cuda_cores).toLocaleString("en-US")} CUDA cores`);
+  if (g.vram_gb > 0) chips.push(`${g.vram_gb} GB VRAM`);
+  return chips;
+}
 
 /**
  * The distinct GPU memory sizes on the public ladder, smallest first

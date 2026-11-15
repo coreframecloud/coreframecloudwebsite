@@ -61,7 +61,7 @@ export const SOFTWARE_FIT: Record<string, SoftwareFit> = {
     preinstalled: ["D5 Render", "Twinmotion"],
     byol: ["Autodesk 3ds Max", "V-Ray", "Corona", "Chaos Vantage"],
     licenceNote: "3ds Max installs from your Autodesk account and your renderer from your Chaos account.",
-    gpu: { minVram: 24, why: "V-Ray GPU and Vantage have to fit the whole scene in VRAM; 24 GB leaves room for heavy textures." },
+    gpu: { minVram: 16, prefer: "rtx-5080", why: "V-Ray GPU and Vantage have to fit the whole scene in VRAM; 16 GB holds most archviz scenes, and the RTX 5080 has the most CUDA cores we offer." },
   }),
   "sketchup-cloud-workstation": fit({
     app: "SketchUp",
@@ -82,14 +82,14 @@ export const SOFTWARE_FIT: Record<string, SoftwareFit> = {
     preinstalled: ["Twinmotion", "Unreal Engine", "D5 Render"],
     byol: ["A paid Twinmotion seat, if you have one"],
     licenceNote: "Twinmotion's free tier covers most individual users; sign in with your Epic account for a paid seat.",
-    gpu: { minVram: 16, why: "Twinmotion keeps the scene in VRAM; 16 GB suits most projects, pick 24 GB for dense vegetation." },
+    gpu: { minVram: 16, why: "Twinmotion keeps the scene in VRAM; 16 GB suits most projects. Check the peak of a scene with dense vegetation before you start." },
   }),
   "vray-cloud-rendering": fit({
     app: "V-Ray",
     preinstalled: ["D5 Render", "Twinmotion"],
     byol: ["Chaos V-Ray", "Your host: 3ds Max, SketchUp, Rhino or Revit"],
     licenceNote: "V-Ray signs in with your Chaos account or your own licence server.",
-    gpu: { minVram: 24, why: "V-Ray GPU fails or drops texture resolution when a scene outgrows VRAM; 24 GB gives production headroom." },
+    gpu: { minVram: 16, prefer: "rtx-5080", why: "V-Ray GPU fails or drops texture resolution when a scene outgrows VRAM; check your scene fits in 16 GB. The RTX 5080 has the most CUDA cores we offer." },
   }),
   "rhino-cloud-workstation": fit({
     app: "Rhino",
@@ -110,14 +110,14 @@ export const SOFTWARE_FIT: Record<string, SoftwareFit> = {
     preinstalled: ["Unreal Engine", "Twinmotion", "D5 Render", "Blender"],
     byol: [],
     licenceNote: "Sign in with your own Epic account; Epic's licence terms apply to your project as on your own PC.",
-    gpu: { minVram: 24, why: "Nanite, Lumen and high-resolution textures fill VRAM quickly; 24 GB gives a big level room." },
+    gpu: { minVram: 16, prefer: "rtx-5080", why: "Nanite, Lumen and high-resolution textures fill VRAM quickly; 16 GB holds a typical archviz level, and the RTX 5080 has the most CUDA cores we offer." },
   }),
   "d5-render-cloud-workstation": fit({
     app: "D5 Render",
     preinstalled: ["D5 Render", "Twinmotion", "Unreal Engine", "Blender"],
     byol: ["A paid D5 plan, if you have one"],
     licenceNote: "D5 is installed; you sign in with your own D5 account and your D5 plan applies.",
-    gpu: { minVram: 16, why: "D5 keeps the scene in VRAM; 16 GB holds a typical interior, pick 24 GB for large exteriors with dense planting." },
+    gpu: { minVram: 16, why: "D5 keeps the scene in VRAM; 16 GB holds a typical interior. Check the peak of a large exterior with dense planting before you start." },
   }),
   "lumion-cloud-gpu": fit({
     app: "Lumion",
@@ -139,14 +139,14 @@ export const SOFTWARE_FIT: Record<string, SoftwareFit> = {
     preinstalled: ["Blender", "Twinmotion"],
     byol: ["Maxon Cinema 4D", "Redshift", "Octane"],
     licenceNote: "Cinema 4D and Redshift sign in with your Maxon account; Octane with your OTOY account.",
-    gpu: { minVram: 24, why: "Redshift and Octane render on the GPU and slow down or fail when the scene outgrows VRAM; 24 GB gives headroom." },
+    gpu: { minVram: 16, prefer: "rtx-5080", why: "Redshift and Octane render on the GPU and slow down or fail when the scene outgrows VRAM; check the scene fits in 16 GB. The RTX 5080 has the most CUDA cores we offer." },
   }),
   "houdini-cloud-workstation": fit({
     app: "Houdini",
     preinstalled: ["Blender"],
     byol: ["SideFX Houdini", "Karma (included with Houdini)", "Redshift, if you use it"],
     licenceNote: "Houdini signs in with your SideFX licence; Karma ships with Houdini.",
-    gpu: { minVram: 24, why: "Karma XPU and GPU renderers keep the scene in VRAM; most simulation runs on the CPU and system RAM, listed with each card." },
+    gpu: { minVram: 16, prefer: "rtx-5080", why: "Karma XPU and GPU renderers keep the scene in the card's 16 GB of VRAM; most simulation runs on the CPU and system RAM, listed with each card." },
   }),
   "autocad-cloud-workstation": fit({
     app: "AutoCAD",
@@ -167,14 +167,14 @@ export const SOFTWARE_FIT: Record<string, SoftwareFit> = {
     preinstalled: ["D5 Render", "Twinmotion"],
     byol: ["Chaos Vantage", "Your host: 3ds Max, SketchUp, Rhino or Revit"],
     licenceNote: "Vantage signs in with your Chaos account or your own licence server.",
-    gpu: { minVram: 24, why: "Vantage ray-traces the whole scene from VRAM; 24 GB fits large archviz scenes; pick more VRAM for the biggest." },
+    gpu: { minVram: 16, prefer: "rtx-5080", why: "Vantage ray-traces the whole scene from VRAM; 16 GB fits typical archviz scenes, so check the biggest ones fit first." },
   }),
   "keyshot-cloud-workstation": fit({
     app: "KeyShot",
     preinstalled: ["Blender"],
     byol: ["KeyShot"],
     licenceNote: "KeyShot activates with your own KeyShot licence.",
-    gpu: { minVram: 16, why: "KeyShot's GPU mode keeps the scene in VRAM; product models fit in 16 GB, big assemblies want 24 GB." },
+    gpu: { minVram: 16, why: "KeyShot's GPU mode keeps the scene in VRAM; product models fit in 16 GB. Check a very large assembly before you start." },
   }),
 };
 

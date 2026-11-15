@@ -132,7 +132,6 @@ export function SiteFooter({ currency = "INR" }: { currency?: Currency }) {
                 { label: "D5 Render system requirements", href: "/blog/d5-render-system-requirements-laptop" },
                 { label: "Lumion system requirements", href: "/blog/lumion-system-requirements" },
                 { label: "Enscape system requirements", href: "/blog/enscape-system-requirements" },
-                { label: "RTX A4000 vs RTX A5000", href: "/rtx-a4000-vs-rtx-a5000" },
                 { label: "iRender alternative: Coreframe compared", href: "/coreframe-vs-irender" },
                 { label: "Vast.ai alternative for Windows", href: "/vast-ai-alternative-windows-workstation" },
                 { label: "Cloud workstations for architects", href: "/best-cloud-workstations-for-architects" },
