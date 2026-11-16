@@ -23,27 +23,34 @@
    comparison — goes in a `.cf-term` block. Prose explains; the block states.
    Every price comes from the live rate card.
 
+   Colour (16 Nov 2026): every token is written in OKLCH, converted from the
+   approved hex (kept beside each one), so equal L reads as equal lightness and
+   the brand looks the same. No hex fallback: Tailwind v4 itself needs
+   Safari 16.4 / Chrome 111 / Firefox 128, which all support oklch(). Borders
+   are alpha (ink or white at a few %) so they blend on any ground; gradients
+   interpolate `in oklch` so they never go grey in the middle.
+
    Tailwind v4 is CSS-first: these @theme entries generate the utilities
    (bg-paper, text-ink-2, border-rule, font-heading, …). There is no
    tailwind.config.
    ───────────────────────────────────────────────────────────────────────── */
 @theme {
-  --color-paper: #ffffff;
-  --color-paper-2: #faf9f7;
-  --color-ink: #101113;
-  --color-ink-2: #5b6068;
-  --color-ink-3: #6b7079; /* 4.98:1 on paper, 4.73:1 on the off-white card. Was #8a9099 = 3.22:1, which is
+  --color-paper: oklch(100% 0 0); /* #ffffff */
+  --color-paper-2: oklch(98.23% 0.0029 84.56); /* #faf9f7 */
+  --color-ink: oklch(17.74% 0.0044 264.46); /* #101113 */
+  --color-ink-2: oklch(48.75% 0.0143 259.82); /* #5b6068 */
+  --color-ink-3: oklch(54.39% 0.0153 262.34); /* #6b7079.  4.98:1 on paper, 4.73:1 on the off-white card. Was #8a9099 = 3.22:1, which is
      under the 4.5 floor for small text -- and this is the colour of every
      eyebrow (11.5px, uppercase, letterspaced) and every footer column
      heading on the site, i.e. exactly the sizes that need the contrast most. */
-  --color-rule: #1011131a;
-  --color-rule-strong: #10111333;
-  --color-blue: #2f6be0;
-  --color-blue-ink: #24549f;
-  --color-blue-soft: #2f6be00f;
+  --color-rule: oklch(17.74% 0.0044 264.46 / 0.1); /* ink at 10%: an alpha border blends on any ground */
+  --color-rule-strong: oklch(17.74% 0.0044 264.46 / 0.2); /* ink at 20% */
+  --color-blue: oklch(55.62% 0.1894 261.92); /* #2f6be0, the FRAME blue */
+  --color-blue-ink: oklch(45.53% 0.1326 259.18); /* #24549f */
+  --color-blue-soft: oklch(55.62% 0.1894 261.92 / 0.059); /* #2f6be00f */
   /* The owner's highlight yellow (15 Oct 2026): ONE phrase per view, behind
      ink text, never as text on paper. Used by the top-up bonus ladder. */
-  --color-hl: #ffd43b;
+  --color-hl: oklch(88.26% 0.1648 92.22); /* #ffd43b */
   /* 31 Oct 2026 (owner: "base + main + ONE highlight"): the same yellow,
      promoted from the bonus ladder to the site's single highlight colour.
      60/30/10: paper + ink are the base, blue/ink the main, yellow the 10%.
@@ -52,16 +59,16 @@
      a hover fill (12.9:1 on --color-night). On paper it stays a marker
      behind ink text or a decorative dot -- never yellow text on white, and
      never a focus ring (1.4:1). One highlight per view. */
-  --color-hl-on-dark: #ffd43b;
+  --color-hl-on-dark: oklch(88.26% 0.1648 92.22); /* #ffd43b */
   --color-hl-ink: var(--color-ink); /* text that sits ON the yellow */
 
   /* The dark monospace panel. Deliberately near-black rather than the page
      inverted: it has to read as a terminal, not as a dark card. */
-  --color-term: #0b0d11;
-  --color-term-ink: #d8dee9;
-  --color-term-dim: #7c8798;
-  --color-term-key: #6fa0ff;
-  --color-term-comment: #7a8799; /* 5.33:1 on the terminal ground. Was #5e6b7e
+  --color-term: oklch(15.87% 0.0091 264.27); /* #0b0d11 */
+  --color-term-ink: oklch(89.93% 0.0164 262.75); /* #d8dee9 */
+  --color-term-dim: oklch(62.02% 0.0288 259.04); /* #7c8798 */
+  --color-term-key: oklch(71.31% 0.1491 262.56); /* #6fa0ff */
+  --color-term-comment: oklch(61.91% 0.0312 256.53); /* #7a8799.  5.33:1 on the terminal ground. Was #5e6b7e
      = 3.59:1 -- a comment is still text, and these carry the labels that
      explain what the spec block is showing. */
 
@@ -98,15 +105,15 @@
   --color-popover: var(--color-paper);
   --color-popover-foreground: var(--color-ink);
   --color-primary: var(--color-blue);
-  --color-primary-foreground: #ffffff;
+  --color-primary-foreground: var(--color-paper);
   --color-secondary: var(--color-paper-2);
   --color-secondary-foreground: var(--color-ink);
   --color-muted: var(--color-paper-2);
   --color-muted-foreground: var(--color-ink-2);
   --color-accent: var(--color-blue-soft);
   --color-accent-foreground: var(--color-blue-ink);
-  --color-destructive: #b3261e;
-  --color-destructive-foreground: #ffffff;
+  --color-destructive: oklch(50.13% 0.1783 28.7); /* #b3261e */
+  --color-destructive-foreground: var(--color-paper);
   --color-border: var(--color-rule);
   --color-input: var(--color-rule);
   --color-ring: var(--color-blue);
@@ -232,7 +239,7 @@ body {
   /* A highlighter marker behind ONE phrase of a heading on paper or a pale
      tint (31 Oct 2026): ink text on the yellow, never yellow text. */
   .cf-hl-marker {
-    background: linear-gradient(transparent 14%, var(--color-hl) 14%, var(--color-hl) 90%, transparent 90%);
+    background: linear-gradient(in oklch, transparent 14%, var(--color-hl) 14%, var(--color-hl) 90%, transparent 90%);
     color: var(--color-hl-ink);
     padding: 0 0.12em;
     margin: 0 -0.04em;
@@ -430,22 +437,8 @@ body {
      triggers vestibular discomfort. */
   .cf-strip {
     @apply relative overflow-hidden py-1.5;
-  }
-
-  .cf-strip::before,
-  .cf-strip::after {
-    content: "";
-    @apply pointer-events-none absolute inset-y-0 z-2 w-[70px];
-  }
-
-  .cf-strip::before {
-    left: 0;
-    background: linear-gradient(90deg, var(--color-paper), transparent);
-  }
-
-  .cf-strip::after {
-    right: 0;
-    background: linear-gradient(270deg, var(--color-paper), transparent);
+    -webkit-mask-image: linear-gradient(90deg, transparent, black 15% 85%, transparent);
+    mask-image: linear-gradient(90deg, transparent, black 15% 85%, transparent);
   }
 
   .cf-track {
@@ -479,9 +472,9 @@ body {
       animation: none;
       @apply w-auto flex-wrap justify-center;
     }
-    .cf-strip::before,
-    .cf-strip::after {
-      display: none;
+    .cf-strip {
+      -webkit-mask-image: none;
+      mask-image: none;
     }
   }
 
@@ -708,10 +701,10 @@ body {
     z-index: -1;
     pointer-events: none;
     background:
-      radial-gradient(45rem 32rem at 8% -6%, color-mix(in srgb, var(--color-blue) 30%, transparent), transparent 64%),
-      radial-gradient(40rem 30rem at 94% 2%, color-mix(in srgb, #7c6cf0 26%, transparent), transparent 66%),
-      radial-gradient(44rem 30rem at 52% 104%, color-mix(in srgb, var(--color-blue) 20%, transparent), transparent 62%),
-      radial-gradient(30rem 24rem at 78% 52%, color-mix(in srgb, #f0a2c0 12%, transparent), transparent 70%),
+      radial-gradient(45rem 32rem at 8% -6% in oklch, color-mix(in oklch, var(--color-blue) 30%, transparent), transparent 64%),
+      radial-gradient(40rem 30rem at 94% 2% in oklch, color-mix(in oklch, #7c6cf0 26%, transparent), transparent 66%),
+      radial-gradient(44rem 30rem at 52% 104% in oklch, color-mix(in oklch, var(--color-blue) 20%, transparent), transparent 62%),
+      radial-gradient(30rem 24rem at 78% 52% in oklch, color-mix(in oklch, #f0a2c0 12%, transparent), transparent 70%),
       var(--color-paper);
   }
 
@@ -725,7 +718,8 @@ body {
   }
 
   .cf-segment-item {
-    @apply min-h-11 flex-1 rounded-[7px] px-3 text-sm font-medium text-ink-2 transition;
+    /* Nested radius: the segment is 18px with 4px padding + 1px border, so 13px. */
+    @apply min-h-11 flex-1 rounded-[13px] px-3 text-sm font-medium text-ink-2 transition;
   }
 
   .cf-segment-item[data-active="true"] {
@@ -753,11 +747,11 @@ body {
    ───────────────────────────────────────────────────────────────────────── */
 @theme {
   --font-heading: var(--font-poppins), var(--font-inter), -apple-system, "Segoe UI", sans-serif;
-  --color-tint-blue: #e8effb;
-  --color-tint-lilac: #eeebfa;
-  --color-tint-mint: #e3f3ec;
-  --color-tint-sand: #f6f1e4;
-  --color-night: #0f1115;
+  --color-tint-blue: oklch(95.04% 0.0178 261.34); /* #e8effb */
+  --color-tint-lilac: oklch(94.68% 0.0203 295.18); /* #eeebfa */
+  --color-tint-mint: oklch(95.03% 0.0193 167.93); /* #e3f3ec */
+  --color-tint-sand: oklch(95.85% 0.018 89.36); /* #f6f1e4 */
+  --color-night: oklch(17.73% 0.0089 264.32); /* #0f1115 */
 }
 
 @layer components {
@@ -826,7 +820,7 @@ body {
   isolation: isolate;
   color: #fff;
   background:
-    linear-gradient(100deg, rgb(11 13 17 / 0.96) 0%, rgb(11 13 17 / 0.86) 55%, rgb(11 13 17 / 0.7) 100%),
+    linear-gradient(100deg in oklch, rgb(11 13 17 / 0.96) 0%, rgb(11 13 17 / 0.86) 55%, rgb(11 13 17 / 0.7) 100%),
     url("/heroes/default-hero-pro-2560.webp") center 40% / cover no-repeat,
     var(--color-night);
   border-bottom-left-radius: 40px;
@@ -966,7 +960,7 @@ body:has([data-usd-view]) .cf-ticker {
   .cfx-quiet a { @apply text-ink-2 underline underline-offset-4; }
   /* The one highlighter per view. */
   .cfx-hl {
-    background: linear-gradient(transparent 12%, var(--color-hl) 12%, var(--color-hl) 88%, transparent 88%);
+    background: linear-gradient(in oklch, transparent 12%, var(--color-hl) 12%, var(--color-hl) 88%, transparent 88%);
     padding: 0 0.14em;
     -webkit-box-decoration-break: clone;
     box-decoration-break: clone;
@@ -998,7 +992,7 @@ body:has([data-usd-view]) .cf-ticker {
     inset: 8% -10% 0 -6%;
     z-index: -1;
     border-radius: 46% 54% 60% 40% / 50% 40% 60% 50%;
-    background: radial-gradient(closest-side, var(--cfx-wash, var(--cfx-wash-aqua)) 0%, transparent 100%);
+    background: radial-gradient(closest-side in oklch, var(--cfx-wash, var(--cfx-wash-aqua)) 0%, transparent 100%);
     opacity: 0.55;
     filter: blur(2px);
   }
@@ -1056,7 +1050,7 @@ body:has([data-usd-view]) .cf-ticker {
     inset: 22% -10% -8% -8%;
     z-index: -1;
     border-radius: 46% 54% 60% 40% / 50% 40% 60% 50%;
-    background: radial-gradient(farthest-side, var(--cfx-wash) 0%, var(--cfx-wash) 45%, transparent 100%);
+    background: radial-gradient(farthest-side in oklch, var(--cfx-wash) 0%, var(--cfx-wash) 45%, transparent 100%);
     opacity: 0.75;
     filter: blur(1.5px);
   }
@@ -1189,7 +1183,7 @@ body:has([data-usd-view]) .cf-ticker {
     font-size: 12.8px;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    border: 1px solid var(--color-ink-3);
+    border: 1px solid oklch(17.74% 0.0044 264.46 / 0.62); /* ink-3 as an alpha of ink */
     color: var(--color-ink-2);
     border-radius: 999px;
     padding: 0.25em 0.8em;
@@ -1200,7 +1194,7 @@ body:has([data-usd-view]) .cf-ticker {
     display: grid;
     gap: 38px;
     padding: 48px 0;
-    border-top: 1px dashed #10111333;
+    border-top: 1px dashed var(--color-rule-strong);
   }
   .cfx-check:first-of-type { border-top: 0; padding-top: 0; }
   .cfx-check > * { min-width: 0; }
@@ -1241,11 +1235,11 @@ body:has([data-usd-view]) .cf-ticker {
   position: absolute;
   inset: 0;
   z-index: -1;
-  background: linear-gradient(100deg, rgb(11 13 17 / 0.9) 0%, rgb(11 13 17 / 0.84) 45%, rgb(11 13 17 / 0.35) 74%, rgb(11 13 17 / 0.15) 100%);
+  background: linear-gradient(100deg in oklch, rgb(11 13 17 / 0.9) 0%, rgb(11 13 17 / 0.84) 45%, rgb(11 13 17 / 0.35) 74%, rgb(11 13 17 / 0.15) 100%);
 }
 @media (max-width: 899px) {
   .cf-pagehero:has(> .cf-pagehero-bg)::before {
-    background: linear-gradient(180deg, rgb(11 13 17 / 0.62) 0%, rgb(11 13 17 / 0.82) 40%, rgb(11 13 17 / 0.9) 100%);
+    background: linear-gradient(180deg in oklch, rgb(11 13 17 / 0.62) 0%, rgb(11 13 17 / 0.82) 40%, rgb(11 13 17 / 0.9) 100%);
   }
   .cf-pagehero-bg img { object-position: var(--hero-pos-m, 50% 50%); }
 }
@@ -1272,7 +1266,7 @@ body:has([data-usd-view]) .cf-ticker {
     linear-gradient(var(--cfx-grid-line) 1px, transparent 1px),
     linear-gradient(90deg, var(--cfx-grid-line) 1px, transparent 1px);
   background-size: var(--cfx-grid-size) var(--cfx-grid-size);
-  border-bottom: 1px solid #10111314;
+  border-bottom: 1px solid oklch(17.74% 0.0044 264.46 / 0.08);
 }
 .cf-pagehero.cf-pagehero--paper::before { display: none; }
 .cf-pagehero--paper :is(.cf-display, .cf-section-title, .text-ink, h1, h2, h3, strong) { color: var(--color-ink); }
@@ -1284,7 +1278,7 @@ body:has([data-usd-view]) .cf-ticker {
 .cf-pagehero--paper a:not([class*="cf-btn"]) { color: var(--color-blue-ink); }
 .cf-pagehero--paper .cf-btn-primary { background: var(--color-ink); color: #fff; }
 @media (hover: hover) { .cf-pagehero--paper .cf-btn-primary:hover { background: #2a2d33; } }
-.cf-pagehero--paper .cf-btn-secondary { border-color: #10111355; color: var(--color-ink); }
+.cf-pagehero--paper .cf-btn-secondary { border-color: oklch(17.74% 0.0044 264.46 / 0.33); color: var(--color-ink); }
 @media (hover: hover) { .cf-pagehero--paper .cf-btn-secondary:hover { background: #1011130a; } }
 .cf-pagehero--paper .border-rule { border-color: var(--color-rule); }
 .cf-pagehero--paper :is(.cf-glass, .cf-glass-inset, .cf-note, .bg-paper, .bg-paper-2) {
@@ -1328,9 +1322,9 @@ body:has([data-usd-view]) .cf-ticker {
   overflow: hidden;
   color: #fff;
   background:
-    radial-gradient(ellipse 55% 70% at 0% 0%, rgb(42 157 147 / 0.2), transparent 62%),
-    radial-gradient(ellipse 50% 65% at 100% 100%, rgb(238 122 90 / 0.17), transparent 62%),
-    linear-gradient(165deg, #121722 0%, #0b0d12 60%, #0a0c10 100%);
+    radial-gradient(ellipse 55% 70% at 0% 0% in oklch, rgb(42 157 147 / 0.2), transparent 62%),
+    radial-gradient(ellipse 50% 65% at 100% 100% in oklch, rgb(238 122 90 / 0.17), transparent 62%),
+    linear-gradient(165deg in oklch, #121722 0%, #0b0d12 60%, #0a0c10 100%);
 }
 .cf-cine::before {
   content: "";
@@ -1360,19 +1354,21 @@ body:has([data-usd-view]) .cf-ticker {
 /* pastel cards -> dark glass, glow alternating teal / orange */
 .cf-cine :is(.cf-card, .cf-note, .bg-tint-blue, .bg-tint-lilac, .bg-tint-mint, .bg-tint-sand, .bg-paper-2) {
   background:
-    radial-gradient(120% 90% at 0% 0%, rgb(42 157 147 / 0.16), transparent 55%),
-    linear-gradient(160deg, rgb(255 255 255 / 0.075), rgb(255 255 255 / 0.025));
+    radial-gradient(120% 90% at 0% 0% in oklch, rgb(42 157 147 / 0.16), transparent 55%),
+    linear-gradient(160deg in oklch, rgb(255 255 255 / 0.09), rgb(255 255 255 / 0.04));
   border: 1px solid rgb(255 255 255 / 0.11);
-  box-shadow: 0 20px 50px -30px rgb(0 0 0 / 0.8), inset 0 1px 0 rgb(255 255 255 / 0.06);
+  /* Depth on a dark ground comes from a LIGHTER surface and a lit top edge
+     (16 Nov 2026), not a drop shadow: black on near-black does not read. */
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.08);
   -webkit-backdrop-filter: blur(6px);
   backdrop-filter: blur(6px);
 }
 .cf-cine :is(.cf-card:nth-child(even), .bg-tint-mint, .bg-tint-sand) {
   background:
-    radial-gradient(120% 90% at 100% 0%, rgb(238 122 90 / 0.15), transparent 55%),
-    linear-gradient(160deg, rgb(255 255 255 / 0.075), rgb(255 255 255 / 0.025));
+    radial-gradient(120% 90% at 100% 0% in oklch, rgb(238 122 90 / 0.15), transparent 55%),
+    linear-gradient(160deg in oklch, rgb(255 255 255 / 0.09), rgb(255 255 255 / 0.04));
 }
-.cf-cine .cfh-lift:hover { box-shadow: 0 24px 50px -20px rgb(42 157 147 / 0.35); }
+.cf-cine .cfh-lift:hover { background-color: rgb(255 255 255 / 0.05); box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.12); }
 /* testimonial dots */
 .cf-cine button.bg-ink { background: #fff; }
 .cf-cine button.bg-ink\/25 { background: rgb(255 255 255 / 0.3); }
@@ -1419,7 +1415,7 @@ body:has([data-usd-view]) .cf-ticker {
 }
 .cfx-paper .bg-tint-sand { border-left: 5px solid var(--cfx-wash-coral); }
 .cfx-paper .cf-card-label { color: var(--cfx-teal-ink); }
-.cfx-paper .bg-paper-2 { background: #fffffff2; box-shadow: inset 0 0 0 1px var(--color-rule-strong); }
+.cfx-paper .bg-paper-2 { background: oklch(100% 0 0 / 0.95); box-shadow: inset 0 0 0 1px var(--color-rule-strong); }
 
 /* ── Studio: warm architectural interiors (16 Oct 2026) ───────────────────
    Cream and sand, a terracotta accent, soft shadows; used for every Studio
@@ -1428,16 +1424,16 @@ body:has([data-usd-view]) .cf-ticker {
 .cf-warm {
   color: var(--color-ink);
   background:
-    radial-gradient(ellipse 60% 80% at 100% 0%, rgb(232 176 120 / 0.18), transparent 60%),
-    linear-gradient(160deg, #fbf7f0 0%, #f4ebdd 100%);
-  border: 1px solid #e7d9c3;
+    radial-gradient(ellipse 60% 80% at 100% 0% in oklch, rgb(232 176 120 / 0.18), transparent 60%),
+    linear-gradient(160deg in oklch, #fbf7f0 0%, #f4ebdd 100%);
+  border: 1px solid rgb(140 95 40 / 0.17); /* was #e7d9c3 on the cream */
 }
 .cf-warm :is(h2, h3, strong, .cf-section-title, .cfh-h2, .text-ink) { color: #1d1712; }
 .cf-warm :is(p, li, .cf-section-copy, .text-ink-2) { color: #5a4d40; }
 .cf-warm .text-ink-3 { color: #6e5f50; }
 .cf-warm-page :is(.cf-card, .bg-tint-blue, .bg-tint-lilac, .bg-tint-mint, .bg-tint-sand) {
-  background: linear-gradient(170deg, #fffaf3, #f7efe2);
-  border: 1px solid #eadcc6;
+  background: linear-gradient(170deg in oklch, #fffaf3, #f7efe2);
+  border: 1px solid rgb(140 95 40 / 0.15); /* was #eadcc6 */
   box-shadow: 0 18px 40px -26px rgb(90 60 30 / 0.35);
 }
 .cf-warm-page .cf-card-label { color: #9a4a26; }
@@ -1458,7 +1454,7 @@ body:has([data-usd-view]) .cf-ticker {
 /* Pale-left pictures (e.g. the SketchUp sky): a darker scrim under the text. */
 @media (min-width: 900px) {
   .cf-pagehero:has(> .cf-pagehero-bg--strong)::before {
-    background: linear-gradient(100deg, rgb(11 13 17 / 0.93) 0%, rgb(11 13 17 / 0.9) 48%, rgb(11 13 17 / 0.5) 76%, rgb(11 13 17 / 0.2) 100%);
+    background: linear-gradient(100deg in oklch, rgb(11 13 17 / 0.93) 0%, rgb(11 13 17 / 0.9) 48%, rgb(11 13 17 / 0.5) 76%, rgb(11 13 17 / 0.2) 100%);
   }
 }
 
@@ -1486,7 +1482,7 @@ body[data-cf-sticky] a[aria-label*="WhatsApp" i] { bottom: 5.5rem; }
    a moving brand gradient and a soft pulse ring; still when the visitor asks for less motion. */
 .cf-btn-flash {
   position: relative;
-  background: linear-gradient(110deg, #2f6be0, #7b5cff, #19b3c9, #2f6be0);
+  background: linear-gradient(110deg in oklch, #2f6be0, #7b5cff, #19b3c9, #2f6be0);
   background-size: 300% 100%;
   animation: cf-flash-bg 3.5s linear infinite, cf-flash-ring 2s ease-out infinite;
 }
@@ -1655,3 +1651,65 @@ body[data-cf-sticky] a[aria-label*="WhatsApp" i] { bottom: 5.5rem; }
    (.cf-consent-lift) sit on top of it instead of under it. */
 html.cf-consent-open body { padding-bottom: var(--cf-consent-h, 0px); }
 html.cf-consent-open .cf-consent-lift { margin-bottom: var(--cf-consent-h, 0px); }
+
+/* ── Full-height: dynamic viewport (16 Nov 2026) ──────────────────────────
+   Tailwind's min-h-screen / h-screen are 100vh, which on a phone is the
+   height with the browser bars hidden, so a "full-height" block runs under
+   the address bar. 100dvh follows the bars; the 100vh line stays first as
+   the fallback. In the utilities layer and after Tailwind's own rule, so it
+   wins on source order. */
+@layer utilities {
+  /* The 100vh fallback is a separate rule (the minifier drops a duplicate
+     declaration in the same rule once its targets all know dvh). */
+  .min-h-screen { min-height: 100vh; }
+  .h-screen { height: 100vh; }
+  .max-h-screen { max-height: 100vh; }
+  @supports (height: 100dvh) {
+    .min-h-screen { min-height: 100dvh; }
+    .h-screen { height: 100dvh; }
+    .max-h-screen { max-height: 100dvh; }
+  }
+}
+
+/* ── Horizontal scrollers fade at both edges (16 Nov 2026) ────────────────
+   A mask, not a paper-coloured overlay, so the fade works on any ground. Only
+   on things that actually travel sideways (marquee, testimonial track). */
+.cf-edge-fade {
+  -webkit-mask-image: linear-gradient(90deg, transparent, black 15% 85%, transparent);
+  mask-image: linear-gradient(90deg, transparent, black 15% 85%, transparent);
+}
+/* On a phone 15% (58px) reached into the text of the card at rest; there the
+   fade stays inside the track's 16px gutter. */
+@media (max-width: 639px) {
+  .cf-edge-fade {
+    -webkit-mask-image: linear-gradient(90deg, transparent, black 16px calc(100% - 16px), transparent);
+    mask-image: linear-gradient(90deg, transparent, black 16px calc(100% - 16px), transparent);
+  }
+}
+
+/* ── Icon swap (menu ⇄ close, 16 Nov 2026) ────────────────────────────────
+   Both icons sit in one grid cell; the outgoing one fades AND blurs out
+   while the incoming one sharpens in. Reduced motion: an instant swap. */
+.cf-icon-swap { display: inline-grid; place-items: center; }
+.cf-icon-swap > * {
+  grid-area: 1 / 1;
+  transition:
+    opacity 0.2s var(--cf-ease),
+    filter 0.2s var(--cf-ease),
+    transform 0.2s var(--cf-ease);
+}
+.cf-icon-swap > [data-on="false"] {
+  opacity: 0;
+  filter: blur(4px);
+  transform: scale(0.6);
+}
+@media (prefers-reduced-motion: reduce) {
+  .cf-icon-swap > * { transition: none; }
+  .cf-icon-swap > [data-on="false"] { filter: none; transform: none; }
+}
+
+/* ── Product shots on white (16 Nov 2026) ─────────────────────────────────
+   For a picture whose own background is white (a diagram, a cut-out product
+   shot, a chart on white): multiply makes that white take the colour of the
+   card under it, so no white box shows. Never on photos or renders. */
+.cf-on-white { mix-blend-mode: multiply; }

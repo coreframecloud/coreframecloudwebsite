@@ -45,7 +45,7 @@ export function FactsBand({ currency = "INR", ladder = null }: { currency?: Curr
   return (
     <section className="relative isolate overflow-hidden bg-night py-24 text-white sm:py-28">
       <ParallaxBg src="/home/blender-optix.webp" className="opacity-[0.16]" />
-      <div className="absolute inset-0 -z-10 bg-gradient-to-b from-night via-night/60 to-night" />
+      <div className="absolute inset-0 -z-10 bg-linear-to-b/oklch from-night via-night/60 to-night" />
       <div className="cfh-wrap grid gap-14 lg:grid-cols-[0.9fr_1.1fr]">
         <Reveal>
           <h2 className="cfh-h2">What&rsquo;s <span className="cf-hl-underline">in the box</span></h2>
@@ -227,7 +227,7 @@ export function OfferBand({
           sizes="(max-width: 1180px) 100vw, 1180px"
           className="-z-20 object-cover object-[50%_65%] opacity-40"
         />
-        <div className="absolute inset-0 -z-10 bg-gradient-to-r from-night via-night/75 to-night/20" />
+        <div className="absolute inset-0 -z-10 bg-linear-to-r/oklch from-night via-night/75 to-night/20" />
         <div className="max-w-[34rem]">
           <h2 className="cfh-h2">Start with one top-up</h2>
           {intro ? (

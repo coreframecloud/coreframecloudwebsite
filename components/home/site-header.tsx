@@ -106,6 +106,7 @@ interface AuthState {
   wallet: WalletData | null;
 }
 
+// Stroke 2.25 (~1.2px at 13px) matches the stem of the 12px semibold balance beside it.
 function WalletIcon() {
   return (
     <svg
@@ -115,7 +116,7 @@ function WalletIcon() {
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      strokeWidth="2"
+      strokeWidth="2.25"
       strokeLinecap="round"
       strokeLinejoin="round"
     >
@@ -493,7 +494,12 @@ export function SiteHeader() {
             overHero ? "border-white/30 bg-white/10 text-white" : "border-rule bg-paper-2 text-ink"
           }`}
         >
-          {open ? <X size={18} /> : <Menu size={18} />}
+          {/* Both icons stay mounted so the swap can blur-fade (app/globals.css,
+              .cf-icon-swap). Stroke 1.75 matches the 14px medium nav text. */}
+          <span className="cf-icon-swap" aria-hidden="true">
+            <Menu size={18} strokeWidth={1.75} data-on={!open} />
+            <X size={18} strokeWidth={1.75} data-on={open} />
+          </span>
         </button>
       </div>
 

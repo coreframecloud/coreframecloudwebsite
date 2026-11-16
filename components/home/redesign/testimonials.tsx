@@ -218,7 +218,7 @@ function DriftCarousel({ items }: { items: Testimonial[] }) {
     <>
       <div
         ref={viewport}
-        className="mt-12 cursor-grab touch-pan-y overflow-hidden active:cursor-grabbing"
+        className="cf-edge-fade mt-12 cursor-grab touch-pan-y overflow-hidden active:cursor-grabbing"
         onMouseEnter={() => setHover(true)}
         onMouseLeave={() => setHover(false)}
         onFocus={() => setFocus(true)}
