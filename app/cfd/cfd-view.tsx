@@ -613,7 +613,7 @@ export default async function CfdView({ currency }: { currency: Currency }) {
               {GALLERY.map((g) => (
                 <figure key={g.src} className="min-w-0">
                   <div className="overflow-hidden rounded-[20px] border border-rule bg-white p-2">
-                    <Image src={g.src} alt={g.cap} width={g.w} height={g.h} sizes="(max-width: 640px) 100vw, 470px" className="h-auto w-full" />
+                    <Image src={g.src} alt={g.cap} width={g.w} height={g.h} sizes="(max-width: 640px) 100vw, 470px" className="h-auto w-full rounded-[12px]" />
                   </div>
                   <figcaption className="mt-2.5 text-[13px] text-ink-3">{g.cap}</figcaption>
                 </figure>

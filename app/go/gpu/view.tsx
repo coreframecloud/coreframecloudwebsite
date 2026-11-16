@@ -109,7 +109,7 @@ export default async function GpuLandingView({ currency }: { currency: Currency 
               className="aspect-[16/10] w-full object-cover lg:aspect-[4/3]"
               fetchPriority="high"
             />
-            <figcaption className="absolute inset-x-0 bottom-0 flex flex-col gap-1.5 bg-gradient-to-t from-black/75 to-transparent px-3 pt-8 pb-2.5">
+            <figcaption className="absolute inset-x-0 bottom-0 flex flex-col gap-1.5 bg-linear-to-t/oklch from-black/75 to-transparent px-3 pt-8 pb-2.5">
               {/* Blender's own status strip from the session: the proof. */}
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src="/go/lr1-timer.png" alt="Blender status bar: Frame 0, Time 01:28.58" width={300} height={42} className="h-[18px] w-auto self-start rounded-[4px]" />

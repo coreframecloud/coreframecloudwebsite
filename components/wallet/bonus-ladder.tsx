@@ -190,7 +190,7 @@ export function YouGetBar({
           className="h-full min-w-1.5 flex-1"
           style={{
             backgroundImage:
-              "repeating-linear-gradient(135deg, color-mix(in srgb, var(--color-blue) 45%, transparent) 0 3px, transparent 3px 6px)",
+              "repeating-linear-gradient(135deg in oklch, color-mix(in oklch, var(--color-blue) 45%, transparent) 0 3px, transparent 3px 6px)",
           }}
         />
       </div>

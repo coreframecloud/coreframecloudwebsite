@@ -22,7 +22,7 @@ export function PlanImage({ className = "", caption = "The plan (real drawing)" 
   return (
     <figure className={className}>
       <div className="overflow-hidden rounded-[20px] border border-rule bg-white p-3">
-        <Image src="/home/plan-3bhk.webp" alt={PLAN_ALT} width={1800} height={1642} unoptimized className="h-auto w-full" />
+        <Image src="/home/plan-3bhk.webp" alt={PLAN_ALT} width={1800} height={1642} unoptimized className="h-auto w-full rounded-[8px]" />
       </div>
       <figcaption className="mt-2 text-[13px] text-ink-3">{caption}</figcaption>
     </figure>

@@ -28,8 +28,8 @@ export function RedesignHero({ introLabel, prices }: { introLabel: IntroShort | 
         alt="Two rooms side by side: a Scandinavian dining room with a round oak table and wishbone chairs, and an industrial living room with an oxblood leather sofa and black steel windows"
         mobile={{ src: "/heroes/home-hero-pro-m780.webp", width: 780, height: 1040 }}
       />
-      <div className="absolute inset-0 -z-10 bg-gradient-to-r from-[#0b0d11]/92 via-[#0b0d11]/70 to-[#0b0d11]/35" />
-      <div className="absolute inset-x-0 bottom-0 -z-10 h-2/3 bg-gradient-to-t from-[#0b0d11]/85 to-transparent" />
+      <div className="absolute inset-0 -z-10 bg-linear-to-r/oklch from-[#0b0d11]/92 via-[#0b0d11]/70 to-[#0b0d11]/35" />
+      <div className="absolute inset-x-0 bottom-0 -z-10 h-2/3 bg-linear-to-t/oklch from-[#0b0d11]/85 to-transparent" />
 
       <div className="cfh-wrap pt-24 pb-8 sm:pt-28 sm:pb-12">
         {/* Never animated: the headline is the LCP text (18 Oct 2026). */}
