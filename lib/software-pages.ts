@@ -534,6 +534,12 @@ function buildSoftwarePages(cur: Currency): SoftwarePage[] {
         a: `Yes. Every Coreframe workstation has one dedicated NVIDIA RTX GPU, running ${NODE.os} in ${NODE.location}; the GPUs on offer, with their VRAM, vCPU and RAM, are listed with their prices on the pricing page. You rent the whole machine, not a slice of the card, and billing is per minute of streaming rather than per whole hour.`,
       },
       {
+        // "cloud gpu rental" and "cloud gpu india" (week report 16 Nov 2026,
+        // new searches at about 28). No card names or prices typed here.
+        q: "Is there cloud GPU rental in India?",
+        a: "Yes. Cloud GPU rental means paying by the minute or hour for a GPU in a data centre instead of buying the card. Coreframe's cloud GPUs are hosted in a Tier III data centre in India, and each rental is a whole Windows desktop with one dedicated NVIDIA RTX GPU, streamed to your own computer. The cards on offer, with their VRAM and prices, are on the pricing page. If you need a Linux GPU server for AI training over SSH rather than a desktop, a GPU cloud built for AI fits that job better.",
+      },
+      {
         // "visualization workstation" (week report 6 Nov 2026): 8 impressions at 25.
         q: "What is a visualization workstation, and can I rent one?",
         a: "A visualization workstation is a PC built for 3D rendering and design: a professional-class or high-end RTX GPU with plenty of video memory, a fast CPU and enough RAM for big scenes. Coreframe rents one as a cloud virtual workstation: a Windows desktop with an RTX GPU and D5 Render, Twinmotion and Blender installed, streamed to your laptop and billed per minute.",

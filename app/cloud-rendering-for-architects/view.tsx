@@ -349,6 +349,7 @@ export default async function ArchitectsView({ currency }: { currency: Currency 
               ["/lumion-cloud-gpu", "Lumion"],
               ["/enscape-cloud-gpu", "Enscape"],
               ["/cloud-workstation-vs-render-farm", "Cloud workstation vs render farm"],
+              ["/coreframe-vs-irender", "iRender vs Coreframe"],
               ["/floor-plan-to-render", "Floor plan to interior render (Studio)"],
             ].map(([href, label]) => (
               <Link

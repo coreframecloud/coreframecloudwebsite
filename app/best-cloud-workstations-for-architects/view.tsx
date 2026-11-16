@@ -31,9 +31,11 @@ export function roundupMetadata(): Metadata {
     // Snippet rewrite 9 Nov 2026 (AEO week): 163 impressions, 1 click at 8.1;
     // the searches it answers say "cloud PC for an architecture firm" and
     // "cloud computing for artists", so the snippet now uses those words.
-    title: { absolute: "Cloud PCs for Architecture Firms and 3D Artists (2026)" },
+    // Second pass 16 Nov 2026 (week report): 356 impressions at 1.4 %, position
+    // 6.1. The page's own name leads, with the five kinds it compares.
+    title: { absolute: "Cloud Workstations for Architects: 5 Options Compared (2026)" },
     description:
-      "How artists and architecture firms use cloud computing: a ready-to-work Windows workstation, a GPU server, a render farm, an AI GPU cloud or virtual desktops.",
+      "Five kinds of cloud workstation for architects and 3D artists and what each suits: Windows desktops, GPU servers, render farms, AI clouds, virtual desktops.",
     keywords: [
       "best cloud workstations for architects",
       "cloud workstation for architects",

@@ -11,9 +11,12 @@ import { realisticInteriorRendersDesignOptions } from "./posts/realistic-interio
 import { checkDwgDimensionsWithoutAutocad } from "./posts/check-dwg-dimensions-without-autocad";
 import { lumionSystemRequirements } from "./posts/lumion-system-requirements";
 import { enscapeSystemRequirements } from "./posts/enscape-system-requirements";
+import { switchingToD5RenderModelChanges } from "./posts/switching-to-d5-render-model-changes";
 
 /** Newest first; posts with the same date keep this editorial order. */
 export const POSTS: BlogPost[] = [
+  // Published 16 Nov 2026 (weekly loop: that week's Reddit pain point).
+  switchingToD5RenderModelChanges,
   // Published 11 Nov 2026 (content quick wins: the D5 requirements format).
   lumionSystemRequirements,
   enscapeSystemRequirements,

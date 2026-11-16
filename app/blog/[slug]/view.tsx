@@ -11,6 +11,7 @@ import { SITE, breadcrumbList, faqPage } from "@/lib/seo";
 import { ArticleBody } from "@/components/blog/article-body";
 import { BlogCta } from "@/components/blog/blog-cta";
 import { plainText } from "@/components/blog/rich-text";
+import { PreferredSourceButton } from "@/components/seo/preferred-source";
 import type { Currency } from "@/lib/money";
 
 /**
@@ -214,6 +215,11 @@ export default async function BlogPostView({ slug, currency }: { slug: string; c
               ))}
             </ul>
           </nav>
+
+          {/* Owner, 16 Nov 2026: one quiet "preferred source" link per post. */}
+          <div className="mt-10 border-t border-rule pt-8">
+            <PreferredSourceButton />
+          </div>
         </article>
       </main>
     </div>

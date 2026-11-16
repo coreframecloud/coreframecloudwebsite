@@ -88,16 +88,19 @@ export function vsIrenderMetadata(currency: Currency): Metadata {
   const usdView = currency === "USD";
   return {
   // 1 Nov 2026 (AEO plan A10): "irender alternatives" ranks 3.8 abroad with no clicks.
-  title: { absolute: "iRender Alternative: Coreframe Cloud Workstations Compared" },
+  // Third pass 16 Nov 2026 (week report): 815 impressions at 0.5 %, position
+  // 3.3, and the bare search "irender" (178 impressions, 6.4). The title leads
+  // with the name people type and says what the page holds.
+  title: { absolute: "iRender vs Coreframe: Prices, GPUs & Alternatives" },
   // One currency per visitor (owner, 18 Oct 2026): the rupee snippet quotes no
   // iRender price (no live exchange rate since 11 Nov 2026); the dollar copy
   // quotes it as listed.
   // Second pass 6 Nov 2026 (week report): 228 impressions at 0.9 %; "irender
   // alternatives" (80 impressions, 3.8) is the search, so the snippet opens with it.
   description: usdView
-    ? "iRender alternatives compared: a Windows cloud workstation by the minute, a render farm, or your own PC. " +
-      `iRender lists an RTX 4090 at ${formatMoney(IRENDER.gpu4090.list, "USD")}/hr.`
-    : "iRender alternatives compared: a cloud workstation billed in rupees by the minute, a render farm, or your own PC, with both price lists dated.",
+    ? `iRender lists an RTX 4090 at ${formatMoney(IRENDER.gpu4090.list, "USD")}/hr and an RTX 5090 at ${formatMoney(IRENDER.gpu5090.list, "USD")}/hr, billed per second. ` +
+      "Coreframe's per-minute workstations compared, and where iRender wins."
+    : "iRender rents RTX 4090 and 5090 machines by the second in US dollars. How that compares with a per-minute workstation in rupees, and where iRender wins.",
   keywords: [
     "Coreframe vs iRender",
     "iRender alternative",
@@ -147,6 +150,13 @@ const ALTERNATIVES = [
 ];
 
 const ALTERNATIVES_FAQ = [
+  {
+    // "irender" (week report 16 Nov 2026: 178 impressions at 6.4). Facts from
+    // the IRENDER record above, read on IRENDER_CHECKED; no price, so the
+    // same answer suits both currency copies.
+    q: "What is iRender?",
+    a: `iRender is a cloud rendering service that rents remote machines with GPUs by the hour: single RTX 4090 (${IRENDER.gpu4090.vram}) and RTX 5090 (${IRENDER.gpu5090.vram}) machines, and multi-GPU machines with up to eight cards. You reach the machine over ${IRENDER.access} and pay from a prepaid balance in US dollars, billed ${IRENDER.billing}. Details as listed on iRender's site on ${IRENDER_CHECKED}.`,
+  },
   {
     q: "What are the alternatives to iRender?",
     a: "It depends on the work. For interactive design software (D5, Lumion, Enscape, Twinmotion), a cloud virtual workstation such as Coreframe, a Windows desktop with a GPU billed by the minute. For unattended animation frames, a render farm. For AI training over SSH, a bare GPU server. If you render most days, your own workstation.",
@@ -403,6 +413,24 @@ export default async function VsIrenderView({ currency }: { currency: Currency }
                 </li>
               ))}
             </ul>
+          </div>
+        </section>
+
+        <div className="cf-rule" />
+
+        {/* The FAQ was in the JSON-LD only; FAQ markup has to match questions
+            a reader can see (16 Nov 2026, with "What is iRender?" added). */}
+        <section id="questions" className="cf-section px-5">
+          <div className="cf-col">
+            <h2 className="cf-title">Questions about iRender</h2>
+            <div className="mt-7 space-y-7">
+              {ALTERNATIVES_FAQ.map((f) => (
+                <div key={f.q}>
+                  <h3 className="font-semibold text-ink">{f.q}</h3>
+                  <p className="mt-2 leading-7 text-ink-2">{f.a}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </section>
 

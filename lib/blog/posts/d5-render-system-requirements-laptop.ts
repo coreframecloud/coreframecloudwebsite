@@ -50,9 +50,12 @@ export const d5RenderSystemRequirementsLaptop: BlogPost = {
   // CTR rewrite (AEO plan 1 Nov 2026, A10): 1,231 impressions at 0.2 % CTR.
   // Second pass 6 Nov 2026 (week report): 1,923 impressions at 0.2 %; adds the
   // new "d5 pc requirements" and "d5 lite system requirements" searches.
-  absoluteTitle: "D5 Render System Requirements 2026: PC, Laptop & D5 Lite",
+  // Third pass 16 Nov 2026 (week report): 3,981 impressions at 0.2 %, position
+  // 6.8. The title now names the three things people check (GPU, RAM, laptop)
+  // and the description gives the minimum and recommended lines straight away.
+  absoluteTitle: "D5 Render System Requirements: Min GPU, RAM, Laptop Check",
   description:
-    "D5 needs Windows 10 and a GTX 1060 6GB, RX 6000 or Arc A3 at least; D5 Lite needs an NVIDIA RTX. Recommended: RTX 3060, 32 GB RAM, 40 GB free.",
+    "Minimum: Windows 10 plus a GTX 1060 6GB, RX 6000 or Arc A3; no integrated graphics. Recommended: RTX 3060, 32 GB RAM, 40 GB free. Plus a laptop check.",
   targetQueries: [
     "d5 render system requirements laptop",
     "d5 render requirements laptop",
@@ -64,7 +67,7 @@ export const d5RenderSystemRequirementsLaptop: BlogPost = {
     "d5 lite system requirements",
   ],
   datePublished: "2026-10-19",
-  dateModified: "2026-11-06",
+  dateModified: "2026-11-16",
   draft: false,
   eyebrow: "Guide · Hardware",
   hero: {
@@ -202,7 +205,8 @@ export const d5RenderSystemRequirementsLaptop: BlogPost = {
       a: `As published by D5 on ${CHECKED}: NVIDIA GTX 1060 6GB, AMD Radeon RX 6000 XT (RX 6400 in D5's help centre) or Intel Arc A3, on Windows 10 v1809 or later. D5 recommends an RTX 2060 or RTX 3060 (Ti) or better, depending on the page.`,
     },
     {
-      q: "What PC do I need for D5 Render?",
+      // "d5 system requirements" (week report 16 Nov 2026: 72 impressions at 9.0).
+      q: "What are the D5 system requirements for a PC?",
       a: "A Windows 10 (v1809 or later) or Windows 11 PC with a dedicated ray-tracing GPU: at least a GTX 1060 6GB, a Radeon RX 6000-series card or an Intel Arc A3. D5 recommends an RTX 2060 or RTX 3060 (Ti) or better, 32 GB of RAM and a workspace drive with 40 GB free.",
     },
     {
@@ -235,6 +239,7 @@ export const d5RenderSystemRequirementsLaptop: BlogPost = {
     { href: "/d5-render-vs-local-gpu", label: "Renting a workstation vs buying one" },
     { href: "/blog/lumion-system-requirements", label: "Lumion system requirements" },
     { href: "/blog/enscape-system-requirements", label: "Enscape system requirements" },
+    { href: "/blog/switching-to-d5-render-model-changes", label: "Switching to D5 Render: what breaks when the model changes" },
     { href: "/tools/render-time", label: "Render-time calculator" },
     { href: "/pricing", label: "Pricing" },
   ],

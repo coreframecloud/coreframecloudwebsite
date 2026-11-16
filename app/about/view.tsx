@@ -263,7 +263,11 @@ export default async function AboutView({ currency }: { currency: Currency }) {
                   ? ` (${ladder && ladder.count > 1 ? "from " : ""}${hourly}, ${usdView ? "no GST" : "incl. GST"}${intro ? `; first ${introPrice(intro)} = ${hoursLabel(intro.hours)}` : ""})`
                   : ""}
                 , CFD pressure-drop and room-airflow reports from one STL or a room description (mesh check{" "}
-                {meshCheck}), and Studio concept
+                {meshCheck}; a{" "}
+                <Link href="/cfd/mesh-independence-study" className="text-ink underline underline-offset-4">
+                  mesh independence study
+                </Link>{" "}
+                for ducts and pipes), and Studio concept
                 renders from a DXF floor plan (previews free).
               </p>
               </ReadMore>

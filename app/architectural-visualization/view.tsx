@@ -410,6 +410,8 @@ export default async function ArchvizView({ currency }: { currency: Currency }) 
                 ["/cloud-rendering-for-architects", "Cloud rendering for architecture studios: seats, shared files, plans"],
                 ["/vram-for-architectural-rendering", "Is 8 GB of VRAM enough for architectural rendering?"],
                 ["/blog/can-my-laptop-run-d5-render-or-lumion", "Can your laptop run D5 Render or Lumion?"],
+                ["/blog/realistic-interior-renders-design-options", "Realistic interior rendering: which renderer has the most realistic lighting?"],
+                ["/blog/switching-to-d5-render-model-changes", "Switching to D5 Render: what breaks when the model changes"],
                 ["/cloud-workstation-vs-render-farm", "Cloud workstation vs render farm"],
                 ["/video-animation-rendering", "Video and animation rendering: After Effects, Premiere, Blender"],
                 ["/blog/cloud-workstation-vs-render-farm-vs-buying-cost-india", "Workstation, render farm or a new PC: what each costs"],

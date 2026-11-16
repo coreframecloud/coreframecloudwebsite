@@ -276,6 +276,7 @@ export const blenderInteriorRender: BlogPost = {
   related: [
     { href: "/software/blender-cloud-workstation", label: "Blender on a cloud workstation" },
     { href: "/vram-for-architectural-rendering", label: "Is 8 GB of VRAM enough?" },
+    { href: "/blog/realistic-interior-renders-design-options", label: "Which renderer has the most realistic lighting?" },
     { href: "/cloud-workstation-vs-render-farm", label: "Cloud workstation vs render farm" },
     { href: "/how-to-use", label: "How a session works" },
     { href: "/pricing", label: "Pricing" },

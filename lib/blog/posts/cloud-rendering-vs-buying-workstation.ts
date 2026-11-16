@@ -49,9 +49,12 @@ export const cloudRenderingVsBuyingWorkstation: BlogPost = {
   // CTR rewrite (AEO plan 1 Nov 2026, A10): position 3.8, zero clicks.
   // Second pass 6 Nov 2026 (week report): 266 impressions at 0.4 %; the new
   // search "is cloud rendering more cost-effective" (89 impressions, 1.8) leads.
-  absoluteTitle: "Is Cloud Rendering More Cost-Effective? The Break-even Hours",
+  // Third pass 16 Nov 2026 (week report): 528 impressions at 0.4 %, position
+  // 3.2. The title now states the comparison people are making; the
+  // description gives the rule and what the tables cover.
+  absoluteTitle: "Cloud Rendering vs Buying a Workstation: Which Is Cheaper?",
   description:
-    "Cloud rendering is more cost-effective if you render fewer hours than machine price ÷ hourly rate. Worked example at today's rate, and when buying wins.",
+    "Renting is cheaper until your hours pass machine price ÷ hourly rate. Tables for 10 to 160 hours a month at today's rate, and when buying or a plan wins.",
   targetQueries: [
     "is cloud rendering cheaper than buying a render workstation",
     "cloud vs workstation rendering",
@@ -61,7 +64,7 @@ export const cloudRenderingVsBuyingWorkstation: BlogPost = {
     "is cloud rendering more cost-effective",
   ],
   datePublished: "2026-10-19",
-  dateModified: "2026-11-06",
+  dateModified: "2026-11-16",
   draft: false,
   eyebrow: "Guide · Cost",
   hero: {

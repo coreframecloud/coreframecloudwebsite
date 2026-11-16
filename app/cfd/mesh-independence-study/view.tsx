@@ -45,9 +45,12 @@ const ART = "/cfd/explainer";
 // Second pass 6 Nov 2026 (week report): 903 impressions at 1.3 %, position 8.
 // Most searchers want the method; the title promises it and a worked example,
 // and the description opens with the definition.
-const TITLE = "Mesh Independence Study: 3 Meshes, GCI and a Worked Example";
+// Third pass 16 Nov 2026 (week report): 1,462 impressions at 1.1 %, position
+// 8.0. Searchers want to know how to do one, so the title says "how to" and
+// the description gives the steps and our real bend result (BEND_RECORD).
+const TITLE = "Mesh Independence Study in CFD: How to Do It, With GCI";
 const DESCRIPTION =
-  "A mesh (grid) independence study solves one CFD case on three finer meshes and reports the GCI error band. Method, a worked bend example, done for you in 24 h.";
+  `How to do a mesh independence study: solve on 3 meshes (r ≈ 1.3), compare the result, compute the GCI. Formulas and a worked bend: ${BEND_RECORD.resultPa.toFixed(2)} Pa ± ${BEND_RECORD.bandPct} %.`;
 
 export const meshStudyMetadata: Metadata = {
   title: { absolute: TITLE },
@@ -120,6 +123,11 @@ function faqs(cur: Currency) {
     {
       q: "What is a mesh independence study?",
       a: "A check that your CFD answer no longer depends on the mesh. The same case is solved on at least three meshes of increasing fineness; if the result of interest, here the pressure drop, stops changing in a consistent way as the cells get smaller, the mesh is no longer a significant source of error. The grid convergence index (GCI) puts a number on the error that is left.",
+    },
+    {
+      // "mesh independence study" (week report 16 Nov 2026: 109 impressions at 11.2).
+      q: "How do you do a mesh independence study?",
+      a: "Make three meshes of the same geometry, each about 1.3 times finer than the last in every direction, with the same boundary conditions and wall-layer rule. Solve each to convergence and read the same result from each, such as the pressure drop. If the change between meshes shrinks as the cells get smaller, calculate the grid convergence index (GCI) on the finest mesh and report the result with that band. If the answers do not settle, the mesh is still part of the answer and needs refining.",
     },
     {
       q: "Is a grid independence study the same as a mesh convergence study?",

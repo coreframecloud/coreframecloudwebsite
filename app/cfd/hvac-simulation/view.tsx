@@ -335,6 +335,15 @@ export default async function HvacSimulationView({ currency }: { currency: Curre
                 ))}
               </dl>
             </div>
+            {/* Week report 16 Nov 2026: in-context link to the mesh study page. */}
+            <p className="mt-6 max-w-[68ch] text-[15.5px] leading-7 text-ink-2">
+              How far a finer mesh still moves the answer is what a{" "}
+              <Link href={MESH_STUDY.path} className="text-ink underline underline-offset-4">
+                mesh independence study
+              </Link>{" "}
+              measures: the same case on three meshes, with the grid convergence index as the error band. We offer it for
+              duct and pipe jobs.
+            </p>
           </div>
         </section>
 

@@ -22,6 +22,7 @@ import { OFFERINGS } from "@/lib/offerings";
 import { SOFTWARE_DIRECTORY } from "@/lib/software-facts";
 import type { Currency } from "@/lib/money";
 import { CookieSettingsLink } from "@/components/consent/consent-banner";
+import { PreferredSourceFooterLink } from "@/components/seo/preferred-source";
 
 /** `currency`: the visitor's display currency (proxy.ts via the layout). */
 export function SiteFooter({ currency = "INR" }: { currency?: Currency }) {
@@ -205,6 +206,8 @@ export function SiteFooter({ currency = "INR" }: { currency?: Currency }) {
                 <LinkedInIcon className="h-[15px] w-[15px]" />
                 Follow us on LinkedIn
               </Link>
+              {/* Owner, 16 Nov 2026: Google's "preferred source" for Top Stories. */}
+              <PreferredSourceFooterLink />
               {/* The building, linked to the Business Profile — this is the
                   address a visitor navigates to. The registered survey-number
                   address stays in the bottom bar, labelled, so the two read as

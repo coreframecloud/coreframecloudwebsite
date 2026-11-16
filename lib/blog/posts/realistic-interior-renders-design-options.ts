@@ -30,9 +30,11 @@ export const realisticInteriorRendersDesignOptions: BlogPost = {
     "how to make interior renders look realistic",
     "explore design options quickly rendering",
     "ai images for design decisions architecture",
+    "which renderer has the most realistic lighting",
+    "realistic interior rendering",
   ],
   datePublished: "2026-11-06",
-  dateModified: "2026-11-06",
+  dateModified: "2026-11-16",
   draft: false,
   eyebrow: "Guide · Visualization",
   hero: {
@@ -111,7 +113,8 @@ export const realisticInteriorRendersDesignOptions: BlogPost = {
       text: "A throw on the sofa, books not perfectly aligned, a slight variation between repeated objects. Real rooms are slightly imperfect; a render without any of that reads as a model.",
     },
 
-    { type: "h2", text: "Which software gives realistic interior renders?" },
+    // "realistic interior rendering" (week report 16 Nov 2026, new search).
+    { type: "h2", text: "Which software is best for realistic interior rendering?" },
     {
       type: "p",
       text: `All of the tools below can produce a realistic interior; the habits above matter more than the choice. What differs is how they work, what they plug into, and what they run on. Facts as published by each vendor, read on ${CHECKED}:`,
@@ -138,6 +141,23 @@ export const realisticInteriorRendersDesignOptions: BlogPost = {
       text: "A rough way to choose: if you model in Revit, SketchUp, Rhino or Archicad and want to stay inside it, Enscape is the shortest path. If you want a separate real-time scene with a large asset library, D5, Twinmotion or Lumion. If you want full control and no licence cost, Blender. If you already model in 3ds Max and need the most accurate final stills, V-Ray or Corona.",
     },
 
+    // "which renderer has the most realistic lighting" (week report 16 Nov
+    // 2026: 66 impressions at 4.7). How each kind of engine handles light,
+    // nothing measured, no ranking of named products beyond that.
+    { type: "h2", text: "Which renderer has the most realistic lighting?" },
+    {
+      type: "p",
+      text: "A path tracer. Blender Cycles, V-Ray, Corona and Twinmotion's Path Tracer follow light as it bounces around the room, so indirect light, soft shadows and colour picked up from a wall or a floor come out the way they would in a photograph. The price is time: each image builds up over many samples, from seconds to minutes or more, depending on the scene and the card.",
+    },
+    {
+      type: "p",
+      text: "Real-time engines (D5 Render, Enscape, Lumion, Twinmotion's default mode and Blender's EEVEE) estimate parts of that bounce so the view keeps up while you work. D5 uses the graphics card's hardware ray tracing for this. The gap is smallest in bright, simple rooms and largest in dim corners, deep rooms lit from one window, and glass or glossy surfaces.",
+    },
+    {
+      type: "p",
+      text: "In practice, the light setup decides more than the engine. A path tracer with a weak sky and fill lights everywhere looks less real than a real-time render with one honest sun, an HDRI sky and correct exposure. Set up the light properly in the tool you have, and switch to a path tracer for the final stills only if the client needs that last step.",
+    },
+
     { type: "h2", text: "When your laptop can't keep up" },
     {
       type: "p",
@@ -158,6 +178,10 @@ export const realisticInteriorRendersDesignOptions: BlogPost = {
       a: "Textures at real-world scale, one believable light source (HDRI or sun) with camera exposure, slightly rounded edges, a camera at eye height with a 24–28 mm lens and straight verticals, and a little lived-in detail.",
     },
     {
+      q: "Which renderer has the most realistic lighting?",
+      a: "A path tracer: Blender Cycles, V-Ray, Corona or Twinmotion's Path Tracer. They follow light through many bounces, so indirect light and soft shadows behave as in a photograph, but each image takes longer. Real-time engines such as D5 Render, Enscape and Lumion estimate parts of that to stay interactive. A good light setup (one sun, an HDRI sky, correct exposure) matters more than the engine.",
+    },
+    {
       q: "Which software gives the most realistic interior renders?",
       a: "Any of D5 Render, Enscape, Twinmotion, Lumion, Blender, V-Ray or Corona can produce realistic interiors. Path tracers such as Blender Cycles, V-Ray and Corona are the most physically accurate for final stills; real-time tools are faster for exploring options.",
     },
@@ -171,5 +195,6 @@ export const realisticInteriorRendersDesignOptions: BlogPost = {
     { href: "/blog/blender-interior-render-on-cloud-rtx-5080", label: "A Blender interior on a cloud RTX 5080, step by step" },
     { href: "/architectural-visualization", label: "Architectural visualization on a cloud workstation" },
     { href: "/vram-for-architectural-rendering", label: "Is 8 GB of VRAM enough?" },
+    { href: "/blog/switching-to-d5-render-model-changes", label: "Switching to D5 Render: what breaks when the model changes" },
   ],
 };

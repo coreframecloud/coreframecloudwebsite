@@ -215,6 +215,7 @@ export const lumionSystemRequirements: BlogPost = {
   related: [
     { href: "/lumion-cloud-gpu", label: "Lumion on a cloud GPU" },
     { href: "/blog/can-my-laptop-run-d5-render-or-lumion", label: "Can your laptop run D5 Render or Lumion?" },
+    { href: "/blog/d5-render-system-requirements-laptop", label: "D5 Render system requirements" },
     { href: "/vram-for-architectural-rendering", label: "Is 8 GB of VRAM enough?" },
     { href: "/rtx-a4000-vs-rtx-a5000", label: "RTX A4000 vs RTX A5000 for rendering" },
     { href: "/tools/render-time", label: "Render-time calculator" },

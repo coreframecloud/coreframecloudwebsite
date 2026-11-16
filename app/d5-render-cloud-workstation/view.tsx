@@ -270,7 +270,12 @@ export default async function D5View({ currency }: { currency: Currency }) {
             <Link href="/how-to-use" className="text-blue underline underline-offset-4">
               The full setup walkthrough
             </Link>{" "}
-            covers sign-up and installing Coreframe Connect.
+            covers sign-up and installing Coreframe Connect. Checking whether your own laptop is enough first? D5&rsquo;s
+            published minimums are in{" "}
+            <Link href="/blog/d5-render-system-requirements-laptop" className="text-blue underline underline-offset-4">
+              D5 Render system requirements
+            </Link>
+            .
           </p>
         </section>
 
