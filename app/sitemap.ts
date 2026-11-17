@@ -78,6 +78,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // The 3BHK worked example (SEO review 18 Oct 2026, action 17).
     { url: `${BASE}/floor-plan-to-render/3bhk-example`, lastModified: lm("/floor-plan-to-render/3bhk-example"), changeFrequency: "monthly", priority: 0.7 },
     { url: `${BASE}/enterprise`, lastModified: lm("/enterprise"), changeFrequency: "monthly", priority: 0.9 },
+    { url: `${BASE}/education`, lastModified: lm("/education"), changeFrequency: "monthly", priority: 0.8 },
     // New route: pricing left the homepage anchor and became a page when the
     // landing page was rebuilt. High priority — it is the second thing anyone
     // looks for after what the product is.

@@ -74,6 +74,7 @@ export function SiteFooter({ currency = "INR" }: { currency?: Currency }) {
               {[
                 { label: "Pricing", href: "/pricing" },
                 { label: "Team plans", href: "/enterprise" },
+                { label: "Colleges and universities", href: "/education" },
               ].map((l) => (
                 <Link key={l.href} href={l.href} className="flex min-h-11 items-center text-[13.5px] text-ink-2 transition hover:text-ink">{l.label}</Link>
               ))}

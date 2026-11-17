@@ -83,6 +83,7 @@ Selected GPU: ${gpu || "Not selected"}`;
             >
               <option>RTX / 3D Rendering</option>
               <option>AI / Linux Workloads</option>
+              <option>Education / student labs</option>
             </select>
           </FormField>
 

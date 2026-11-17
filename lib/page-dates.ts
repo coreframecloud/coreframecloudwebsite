@@ -28,6 +28,7 @@ export const PAGE_UPDATED: Record<string, string> = {
   "/floor-plan-to-render": "2026-11-09",
   "/floor-plan-to-render/3bhk-example": "2026-10-18",
   "/enterprise": "2026-10-18",
+  "/education": "2026-11-17",
   "/pricing": "2026-11-01",
   "/compute-nodes": "2026-11-01",
   "/solutions": "2026-11-01",
