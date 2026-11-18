@@ -38,7 +38,6 @@ import { AttributionCapture } from "@/components/attribution-capture";
 import { WhatsAppClickTracker } from "@/components/analytics/whatsapp-click-tracker";
 import { WebEvents } from "@/components/analytics/web-events";
 import { WhatsAppButton } from "@/components/home/whatsapp-button";
-import { PersistentDiskNotice } from "@/components/home/persistent-disk-notice";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { ConsentBanner } from "@/components/consent/consent-banner";
 import "./globals.css";
@@ -624,8 +623,6 @@ export default async function RootLayout({
         <FloatOffOnSignup>
         <WhatsAppButton />
         </FloatOffOnSignup>
-        {/* Persistent-disk notice (18 Nov 2026): GPU pages only, dismissible. */}
-        <PersistentDiskNotice />
         <SpeedInsights />
       </body>
     </html>

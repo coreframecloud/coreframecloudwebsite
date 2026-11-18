@@ -9,6 +9,7 @@ import Link from "next/link";
 import { BANDWIDTH_SHORT } from "@/lib/streaming-terms";
 import { ChosenGpuNote } from "@/components/go/chosen-gpu-note";
 import { MacHelp, formatMacSize } from "@/components/download/mac-help";
+import { PersistentDiskTip } from "@/components/account/persistent-disk-tip";
 
 interface DownloadInfo {
   // Optional because the route omits them when the release feed on the control
@@ -657,6 +658,13 @@ export default function DownloadPage() {
         )}
 
         {stage === "ready" && alsoOn}
+
+        {/* After you install (owner, 18 Nov 2026): the persistent disk on the
+            RTX 5080 is set up inside Connect, so the tip sits right after the
+            installer. Signed out too: they are the ones who have not heard. */}
+        {(stage === "ready" || stage === "unauthenticated") && (
+          <PersistentDiskTip className="cf-note mt-6" />
+        )}
 
         {/* Error */}
         {stage === "error" && (

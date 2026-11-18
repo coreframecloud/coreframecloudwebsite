@@ -1,6 +1,7 @@
 "use client";
 
 import { TutorialCard } from "@/components/my-activity/tutorial-card";
+import { PersistentDiskTip } from "@/components/account/persistent-disk-tip";
 import { useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
 import TopUpDialog, { type BulkTier } from "@/components/wallet/top-up-dialog";
@@ -1074,6 +1075,11 @@ export default function MyActivityPage() {
         {/* Disk. Rendered for every segment: a B2B engineer on the org's
             pooled wallet still has their own storage. */}
         <UsageCards wallet={wallet} />
+
+        {/* Persistent disk on the RTX 5080 (owner, 18 Nov 2026): set up in
+            the Connect app (Disk in the menu). With the storage cards, since
+            "Where your work is saved" says C: and installed apps are erased. */}
+        <PersistentDiskTip className="cf-glass p-5 sm:p-6" />
 
         {/* Persistent workstation (22 Oct 2026): the customer's own Windows disk on
             the per-session workstations. Paid from the wallet, so a change here

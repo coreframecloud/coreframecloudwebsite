@@ -1713,17 +1713,3 @@ html.cf-consent-open .cf-consent-lift { margin-bottom: var(--cf-consent-h, 0px);
    shot, a chart on white): multiply makes that white take the colour of the
    card under it, so no white box shows. Never on photos or renders. */
 .cf-on-white { mix-blend-mode: multiply; }
-
-/* ── Persistent-disk notice (18 Nov 2026) ─────────────────────────────────
-   components/home/persistent-disk-notice.tsx. The owner asked for the
-   headline in red bold on the yellow marker: #b3261e on #ffd43b is 5.5:1.
-   It fades up on arrival unless the visitor asks for reduced motion. */
-.cf-notice-hl { color: var(--color-destructive); }
-@keyframes cf-notice-in {
-  from { opacity: 0; transform: translateY(12px); }
-  to { opacity: 1; transform: none; }
-}
-.cf-notice { animation: cf-notice-in 320ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
-@media (prefers-reduced-motion: reduce) {
-  .cf-notice { animation: none; }
-}
