@@ -96,7 +96,7 @@ export function PersistentDiskNotice() {
     <aside
       role="region"
       aria-label="Persistent disk on the RTX 5080"
-      className="cf-notice cf-consent-lift fixed inset-x-3 bottom-[calc(max(1rem,env(safe-area-inset-bottom))+4.25rem)] z-50 rounded-[20px] border border-rule bg-paper p-1.5 shadow-[0_12px_32px_-8px_rgba(16,17,19,0.22)] sm:inset-x-auto sm:bottom-6 sm:left-6 sm:w-[360px]"
+      className="cf-notice cf-consent-lift fixed inset-x-3 bottom-[calc(max(1rem,env(safe-area-inset-bottom))+4.25rem)] z-50 rounded-[20px] border border-rule bg-paper p-1.5 shadow-[0_12px_32px_-8px_rgba(16,17,19,0.22)] sm:inset-x-auto sm:bottom-6 sm:left-6 sm:w-[400px]"
     >
       <div className="relative rounded-[14px] border border-rule bg-paper-2 py-4 pr-12 pl-4">
         <p className="font-display text-[17px] leading-snug font-semibold tracking-[-0.01em]">
