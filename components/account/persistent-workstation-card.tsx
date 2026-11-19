@@ -103,7 +103,14 @@ const STATUS_TEXT: Record<string, string> = {
   deleting: "Being removed",
 };
 
-export default function PersistentWorkstationCard({ onChanged }: { onChanged?: () => void }) {
+export default function PersistentWorkstationCard({
+  onChanged,
+  onHasDisk,
+}: {
+  onChanged?: () => void;
+  /** Told once the status is read: does this customer already have a disk? (My Activity hides the disk tip then.) */
+  onHasDisk?: (has: boolean) => void;
+}) {
   const [status, setStatus] = useState<Status | null>(null);
   const [loaded, setLoaded] = useState(false);
   const [choiceId, setChoiceId] = useState<string | null>(null);
@@ -120,13 +127,16 @@ export default function PersistentWorkstationCard({ onChanged }: { onChanged?: (
       const res = await teamApi("/me/persistent-workstation");
       const s = res.ok ? ((await res.json()) as Status) : null;
       setStatus(s);
+      onHasDisk?.(Boolean(s?.workstation));
       const groups = s ? choicesOf(s) : [];
       if (s && size == null && groups.length === 1) setSize(firstOpenSize(groups[0].options));
     } catch {
       setStatus(null);
+      onHasDisk?.(false);
     } finally {
       setLoaded(true);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- onHasDisk is a notifier, not an input
   }, [size]);
 
   useEffect(() => {

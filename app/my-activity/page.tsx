@@ -476,6 +476,8 @@ async function openInvoice(invoiceId: number) {
 
 export default function MyActivityPage() {
   const [mounted, setMounted] = useState(false);
+  // Disk tip only for customers without a disk yet (owner, 19 Nov 2026); null = not known yet.
+  const [hasDisk, setHasDisk] = useState<boolean | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [user, setUser] = useState<UserInfo | null>(null);
   const [wallet, setWallet] = useState<WalletData | null>(null);
@@ -1079,13 +1081,13 @@ export default function MyActivityPage() {
         {/* Persistent disk on the RTX 5080 (owner, 18 Nov 2026): set up in
             the Connect app (Disk in the menu). With the storage cards, since
             "Where your work is saved" says C: and installed apps are erased. */}
-        <PersistentDiskTip className="cf-glass p-5 sm:p-6" />
+        {hasDisk === false && <PersistentDiskTip className="cf-glass p-5 sm:p-6" />}
 
         {/* Persistent workstation (22 Oct 2026): the customer's own Windows disk on
             the per-session workstations. Paid from the wallet, so a change here
             re-reads the balance and the ledger. Renders nothing while the API has
             the feature switched off. */}
-        <PersistentWorkstationCard onChanged={() => void refresh()} />
+        <PersistentWorkstationCard onChanged={() => void refresh()} onHasDisk={setHasDisk} />
 
         {/* Working disk allowance and day / week / month passes
             (gpu-product-1110, items 1 and 5): each only while the API sends
