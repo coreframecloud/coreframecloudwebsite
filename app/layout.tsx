@@ -45,6 +45,7 @@ import { SiteHeader } from "@/components/home/site-header";
 import { BareOnLanding, FloatOffOnSignup, NoFooterOnAdPages, NoStripOnAppPages } from "@/components/layout/bare-on-landing";
 import { SiteFooter } from "@/components/home/site-footer";
 import { ScrollReveal } from "@/components/scroll-reveal";
+import { UiSounds } from "@/components/ui-sounds";
 import { IntroStrip } from "@/components/home/intro-strip";
 import { getIntroOffer, getUsdIntroOffer, hoursLabel, getRateCard, ladderRanges, planTiers } from "@/lib/rate-card";
 import { usdRates } from "@/lib/money";
@@ -617,6 +618,7 @@ export default async function RootLayout({
           <SiteFooter currency={currency} />
         </NoFooterOnAdPages>
         <ScrollReveal />
+        <UiSounds />
 
         {/* Floating WhatsApp button — every page except /signup, where it
             covers the terms line. The ad landing pages keep it (owner, 20 Oct). */}

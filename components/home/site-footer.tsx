@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { SoundToggle } from "@/components/ui-sounds";
 import { CoreframeWordmarkAtlas } from "@/components/brand/coreframe-wordmark-atlas";
 import {
   MailIcon,
@@ -238,6 +239,7 @@ export function SiteFooter({ currency = "INR" }: { currency?: Currency }) {
           <p className="text-[12.5px] leading-5 text-ink-2">
             © {new Date().getFullYear()} {COMPANY.displayName} · CIN {COMPANY.cin}
           </p>
+          <SoundToggle className="order-last" />
           <div className="text-[12.5px] leading-5 text-ink-2 sm:text-right">
             <p>Registered office: {COMPANY_ADDRESS_LINE}</p>
             <p className="mt-0.5">

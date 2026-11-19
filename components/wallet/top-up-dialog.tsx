@@ -720,7 +720,7 @@ export default function TopUpDialog({
         {done ? (
           <div className="text-center">
             <p id="cf-topup-title" className="text-sm leading-5 font-medium text-ink-2">Paid</p>
-            <p className="mt-2 font-heading text-[26px] leading-8 font-medium text-ink">Wallet topped up</p>
+            <p data-sound="success" className="mt-2 font-heading text-[26px] leading-8 font-medium text-ink">Wallet topped up</p>
             <p className="mt-2 font-display text-3xl font-bold tabular-nums text-blue">
               {money(done.credited)}
             </p>

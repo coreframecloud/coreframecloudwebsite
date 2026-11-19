@@ -735,6 +735,7 @@ export default function VerifyFlow() {
   if (phase === "done") {
     return (
       <Card>
+        <span data-sound="success" hidden>done</span>
         <Header
           icon={<CheckCircle2 className="h-5 w-5" />}
           title={bankJustVerified ? "Bank account confirmed." : "You're all set."}
