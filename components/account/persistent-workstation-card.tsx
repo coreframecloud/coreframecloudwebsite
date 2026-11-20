@@ -45,6 +45,8 @@ interface Choice {
   available_on_text?: string;
   options: Option[];
   backup_available?: boolean;
+  // Short tag from the API, e.g. "Newest generation · faster" on the RTX 5080 (owner, 20 Nov 2026).
+  badge?: string | null;
   // GB used by Windows and the preinstalled applications on this GPU's disk.
   system_gb?: number | null;
 }
@@ -364,7 +366,14 @@ export default function PersistentWorkstationCard({
                       group?.id === c.id ? "border-blue bg-blue-soft" : "border-rule hover:bg-paper-2"
                     }`}
                   >
-                    <div className="font-display text-base font-bold text-ink">{c.title}</div>
+                    <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                      <span className="font-display text-base font-bold text-ink">{c.title}</span>
+                      {c.badge && (
+                        <span className="inline-flex items-center rounded-full border border-blue/25 bg-blue-soft px-2 py-0.5 text-[11px] leading-4 font-medium whitespace-nowrap text-blue">
+                          {c.badge}
+                        </span>
+                      )}
+                    </div>
                     <div className="font-mono text-xs tabular-nums text-ink-2">from {formatMoney(fromPrice(c), cur)}/month</div>
                   </button>
                 ))}
