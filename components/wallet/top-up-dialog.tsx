@@ -651,11 +651,12 @@ export default function TopUpDialog({
   // the intro card shows its hours, the others the intro's GPU credit.
   const sortedTiers = [...(tiers ?? [])].sort((a, b) => tierMin(a) - tierMin(b));
   const bestTierMin = sortedTiers.length ? tierMin(sortedTiers[sortedTiers.length - 1]) : null;
-  const introLabel = intro ? `${hoursLabel(intro.hours, true).replace(" hrs", " h").replace(" hr", " h")}${intro.gpuName ? ` ${intro.gpuName}` : ""}` : "";
+  // Owner, 22 Nov 2026: the intro bonus is a fixed credit (Rs 800 / $8), the same on every
+  // card from the intro price up, so every card says "+Rs 800 credit". The GPU's long name
+  // never goes on a card: it overflowed the narrow card on phones.
   const cardNote = (p: number): string => {
     if (intro) {
-      if (p === intro.price) return introLabel;
-      return p > intro.price && intro.bonus ? `+${bonusMoney(intro.bonus, currency)} GPU` : "";
+      return p >= intro.price && intro.bonus ? `+${bonusMoney(intro.bonus, currency)} credit` : "";
     }
     const b = bulkBonusFor(p, tiers);
     return b > 0 ? `+${bonusMoney(b, currency)}` : "";
@@ -666,23 +667,16 @@ export default function TopUpDialog({
   const payingOk = Number.isFinite(paying) && paying > 0 && !amountTooLow && !amountTooHigh;
   let summary: React.ReactNode = null;
   if (payingOk) {
-    if (intro && paying === intro.price) {
-      summary = (
-        <>
-          You pay <b className="font-semibold text-ink">{money(paying)}</b> · {hoursLabel(intro.hours)}
-          {intro.gpuName ? ` of ${intro.gpuName}` : ""}
-          {intro.validityDays ? `, use within ${intro.validityDays} days` : ""}
-          {forGpu && intro.gpuName && !intro.gpuName.includes(forGpu.name) && !forGpu.name.includes(intro.gpuName)
-            ? `. The same credit works on your ${forGpu.name}, at its own hourly rate.`
-            : ""}
-        </>
-      );
-    } else if (intro && paying > intro.price && intro.bonus) {
+    if (intro && paying >= intro.price && intro.bonus) {
       summary = (
         <>
           You pay <b className="font-semibold text-ink">{money(paying)}</b> · wallet gets{" "}
-          <b className="font-semibold text-ink">{money(paying + intro.bonus)}</b> (incl. {bonusMoney(intro.bonus, currency)} GPU credit
-          {intro.validityDays ? `, ${intro.validityDays} days` : ""})
+          <b className="font-semibold text-ink">{bonusMoney(paying + intro.bonus, currency)}</b> (incl. {bonusMoney(intro.bonus, currency)} bonus credit
+          {intro.validityDays ? `, use within ${intro.validityDays} days` : ""})
+          {paying === intro.price && intro.hours && intro.gpuName ? ` · about ${hoursLabel(intro.hours)} of ${intro.gpuName}` : ""}
+          {forGpu && intro.gpuName && !intro.gpuName.includes(forGpu.name) && !forGpu.name.includes(intro.gpuName)
+            ? `. The credit works on your ${forGpu.name} too, at its own hourly rate.`
+            : ""}
         </>
       );
     } else {
