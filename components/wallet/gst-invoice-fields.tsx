@@ -63,8 +63,19 @@ export function GstInvoiceFields({
 
   useEffect(() => {
     let alive = true;
-    apiFetch(`${API}/payments/gst-profile`, { cache: "no-store" })
-      .then((r) => (r.ok ? r.json() : null))
+    // Mounted only once /payments/config has answered, and a moment later
+    // still: /api/payments/ is rate limited per address (nginx pay_limit), and
+    // this must never take the config request's place.
+    const load = (tries: number) =>
+      apiFetch(`${API}/payments/gst-profile`, { cache: "no-store" })
+        .then((r) => {
+          if (r.status === 429 && tries > 0) {
+            return new Promise<GstState | null>((res) => setTimeout(() => res(load(tries - 1)), 1500));
+          }
+          return r.ok ? (r.json() as Promise<GstState>) : null;
+        });
+    const t = setTimeout(() => {
+      load(2)
       .then((d: GstState | null) => {
         if (!alive || !d) return;
         setSt(d);
@@ -73,8 +84,10 @@ export function GstInvoiceFields({
         if (d.gstin) setGstin(d.gstin);
       })
       .catch(() => {});
+    }, 1100);
     return () => {
       alive = false;
+      clearTimeout(t);
     };
   }, []);
 

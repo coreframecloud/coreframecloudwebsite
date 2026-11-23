@@ -265,7 +265,14 @@ export default function TopUpDialog({
     const token = sessionMarker();
     if (!token) return null;
     try {
-      const r = await apiFetch(`${API}/payments/config`);
+      let r = await apiFetch(`${API}/payments/config`);
+      // nginx allows /api/payments/ about one request a second (burst 3);
+      // the page's own history calls can use that up as the dialog opens.
+      // A 429 is "wait", not "recharge is off": try again once.
+      if (r.status === 429) {
+        await new Promise((res) => setTimeout(res, 1500));
+        r = await apiFetch(`${API}/payments/config`);
+      }
       const c: PaymentsConfig | null = r.ok ? await r.json() : null;
       if (!c) return null;
       // The effective floor is the higher of the gateway's minimum and this
@@ -966,7 +973,7 @@ export default function TopUpDialog({
                 {/* Funnel review, 3 Nov 2026: only country and (in India) state
                     are needed for the invoice's tax, so the rest is optional
                     and folded away. */}
-                {isIndia && !isUsd && !starterMode ? (
+                {config?.enabled && isIndia && !isUsd && !starterMode ? (
                   <GstInvoiceFields fieldCls={fieldCls} labelCls={labelCls} helperCls={helperCls} onChange={onGstChange} />
                 ) : null}
 
