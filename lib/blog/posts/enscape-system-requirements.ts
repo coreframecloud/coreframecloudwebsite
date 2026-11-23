@@ -77,6 +77,7 @@ export const enscapeSystemRequirements: BlogPost = {
     "enscape workstation",
   ],
   datePublished: "2026-11-11",
+  dateModified: "2026-11-23",
   draft: false,
   eyebrow: "Guide · Hardware",
   hero: {

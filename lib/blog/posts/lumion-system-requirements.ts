@@ -93,6 +93,7 @@ export const lumionSystemRequirements: BlogPost = {
     "lumion size gb",
   ],
   datePublished: "2026-11-11",
+  dateModified: "2026-11-23",
   draft: false,
   eyebrow: "Guide · Hardware",
   hero: {
