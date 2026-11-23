@@ -91,7 +91,10 @@ export function vsIrenderMetadata(currency: Currency): Metadata {
   // Third pass 16 Nov 2026 (week report): 815 impressions at 0.5 %, position
   // 3.3, and the bare search "irender" (178 impressions, 6.4). The title leads
   // with the name people type and says what the page holds.
-  title: { absolute: "iRender vs Coreframe: Prices, GPUs & Alternatives" },
+  // 23 Nov 2026 (week report): 1,056 impressions at 0.2 %, position 2.9.
+  // Most "irender" searches look for iRender itself, so the title says this
+  // is an independent comparison and names the alternative in one line.
+  title: { absolute: "iRender Alternative 2026: iRender vs Coreframe Prices" },
   // One currency per visitor (owner, 18 Oct 2026): the rupee snippet quotes no
   // iRender price (no live exchange rate since 11 Nov 2026); the dollar copy
   // quotes it as listed.

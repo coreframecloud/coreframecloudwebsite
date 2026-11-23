@@ -53,9 +53,12 @@ export const d5RenderSystemRequirementsLaptop: BlogPost = {
   // Third pass 16 Nov 2026 (week report): 3,981 impressions at 0.2 %, position
   // 6.8. The title now names the three things people check (GPU, RAM, laptop)
   // and the description gives the minimum and recommended lines straight away.
-  absoluteTitle: "D5 Render System Requirements: Min GPU, RAM, Laptop Check",
+  // Fourth pass 23 Nov 2026: "d5 render requirements" fell from 1.0 to 11.1
+  // after the third pass dropped the phrase from the front of the title;
+  // it leads again, with the year.
+  absoluteTitle: "D5 Render Requirements 2026: Will Your Laptop Run It?",
   description:
-    "Minimum: Windows 10 plus a GTX 1060 6GB, RX 6000 or Arc A3; no integrated graphics. Recommended: RTX 3060, 32 GB RAM, 40 GB free. Plus a laptop check.",
+    "D5 Render system requirements for 2026, minimum and recommended, and a 30-second check of your own laptop's GPU, VRAM and RAM. Falls short? What to do next.",
   targetQueries: [
     "d5 render system requirements laptop",
     "d5 render requirements laptop",
@@ -67,7 +70,7 @@ export const d5RenderSystemRequirementsLaptop: BlogPost = {
     "d5 lite system requirements",
   ],
   datePublished: "2026-10-19",
-  dateModified: "2026-11-16",
+  dateModified: "2026-11-23",
   draft: false,
   eyebrow: "Guide · Hardware",
   hero: {
