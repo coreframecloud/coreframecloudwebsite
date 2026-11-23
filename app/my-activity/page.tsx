@@ -1,6 +1,6 @@
 "use client";
 
-import { TutorialCard } from "@/components/my-activity/tutorial-card";
+import { TutorialThumb } from "@/components/my-activity/tutorial-card";
 import ConnectionCheck from "@/components/my-activity/connection-check";
 import { FilesTile, MonthTile, NowTile, RecentSessions, type GlanceSession } from "@/components/my-activity/glance-tiles";
 import { PersistentDiskTip } from "@/components/account/persistent-disk-tip";
@@ -818,6 +818,7 @@ export default function MyActivityPage() {
               Install it once on each computer you work from, sign in with this account, and launch.
               Already installed? Open Connect from your Start menu.
             </p>
+            <TutorialThumb className="mt-4" />
             <div className="mt-auto flex flex-wrap items-center gap-3 pt-5">
               <Link href="/download" className="cf-btn-dl w-full gap-2 px-6 sm:w-auto">
                 <svg viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4" aria-hidden="true">
@@ -1099,8 +1100,6 @@ export default function MyActivityPage() {
             Studio, each opening the project at /studio. */}
         <MyStudioProjects token={token} />
 
-        <TutorialCard />
-
         {/* Saving your work. Above the wallet on purpose: a customer who
             loses a project cares about nothing else on this page. Named the
             drive explicitly after a customer ended a session unsure which
@@ -1183,11 +1182,13 @@ export default function MyActivityPage() {
           onOpenInvoice={openInvoice}
         />
         </div>
-      </div>
 
-      <div className="mt-6 grid gap-6">
-        <MobileNumberCard />
-        <SignInSecurity />
+        {/* Account (owner, 23 Nov 2026): the two account cards side by side
+            inside the page column, sized like the tiles above. */}
+        <div className="grid grid-cols-1 items-start gap-4 md:grid-cols-2">
+          <MobileNumberCard />
+          <SignInSecurity />
+        </div>
       </div>
 
       <TopUpDialog

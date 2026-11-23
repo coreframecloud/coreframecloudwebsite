@@ -1,5 +1,6 @@
 "use client";
 
+import { LIST_PAGE, Pager } from "@/components/ui/pager";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { fetchMyCfdJobs, type MyCfdJob } from "@/lib/cfd-my-jobs";
@@ -15,7 +16,7 @@ import { formatMoney, parseCurrency } from "@/lib/money";
  * Each row opens /cfd/jobs/<ref>, which loads with the session (no email link).
  */
 
-const PAGE = 10;
+const PAGE = 10; // fetched per request; shown five a page (LIST_PAGE)
 
 const TONE: Record<MyCfdJob["tone"], string> = {
   attention: "border-ink/30 text-ink",
@@ -46,7 +47,7 @@ export function JobRow({ job }: { job: MyCfdJob }) {
         className="flex items-start justify-between gap-4 px-4 py-3.5 transition hover:bg-paper-2 focus-visible:bg-paper-2 sm:px-6"
       >
         <div className="min-w-0">
-          <p className="text-[15px] leading-6 font-medium break-words text-ink">
+          <p className="text-sm leading-5 font-medium break-words text-ink">
             {job.name}
             <span
               className={`ml-2 inline-block rounded-full border bg-paper px-2 py-0.5 align-[1px] text-[11px] leading-4 font-medium whitespace-nowrap ${TONE[job.tone] ?? TONE.active}`}
@@ -55,7 +56,7 @@ export function JobRow({ job }: { job: MyCfdJob }) {
             </span>
           </p>
           <p className="mt-0.5 text-xs leading-5 text-ink-2">
-            <span className="font-mono text-[11px] tracking-[0.08em] text-ink-3 uppercase">{job.ref}</span>
+            <span className="font-mono text-[10.5px] tracking-[0.08em] text-ink-3 uppercase">{job.ref}</span>
             <span className="text-ink-3"> · </span>
             <span className="whitespace-nowrap">{day(job.created_at)}</span>
             {dp != null ? (
@@ -73,7 +74,7 @@ export function JobRow({ job }: { job: MyCfdJob }) {
           ) : null}
         </div>
         <div className="shrink-0 text-right">
-          <p className="text-[15px] leading-6 font-medium whitespace-nowrap tabular-nums text-ink">
+          <p className="text-sm leading-5 font-medium whitespace-nowrap tabular-nums text-ink">
             {spent > 0 ? amount(job.spent, job.currency) : "—"}
           </p>
           <p className="mt-0.5 text-xs whitespace-nowrap tabular-nums text-ink-3">
@@ -98,6 +99,7 @@ export function CfdJobsList({
   onMore?: () => void;
   state?: "loading" | "error" | "ok";
 }) {
+  const [pg, setPg] = useState(0);
   return (
     <section id="cfd-jobs" className="cf-glass scroll-mt-24 overflow-hidden" aria-labelledby="cfd-jobs-title">
       <div className="border-b border-rule px-4 py-4 sm:px-6">
@@ -120,22 +122,21 @@ export function CfdJobsList({
       ) : (
         <>
           <ul className="divide-y divide-rule">
-            {jobs.map((j) => (
+            {jobs.slice(pg * LIST_PAGE, (pg + 1) * LIST_PAGE).map((j) => (
               <JobRow key={j.ref} job={j} />
             ))}
           </ul>
-          {more ? (
-            <div className="border-t border-rule px-4 py-3 sm:px-6">
-              <button
-                type="button"
-                onClick={onMore}
-                disabled={loadingMore}
-                className="min-h-9 text-[13px] font-medium text-ink-2 transition hover:text-ink disabled:opacity-60"
-              >
-                {loadingMore ? "Loading…" : "Show more"}
-              </button>
-            </div>
-          ) : null}
+          <Pager
+            page={pg}
+            total={jobs.length}
+            more={!!more}
+            loading={loadingMore}
+            onPage={(n) => {
+              const to = Math.max(0, n);
+              if (more && (to + 1) * LIST_PAGE >= jobs.length) onMore?.();
+              setPg(to);
+            }}
+          />
         </>
       )}
     </section>

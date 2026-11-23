@@ -33,19 +33,19 @@ export default function SignInSecurity() {
   }
 
   return (
-    <section className="cf-glass p-5 sm:p-6" aria-labelledby="sign-in-security">
-      <h2 id="sign-in-security" className="cf-section-title">
+    <section className="cf-glass flex h-full flex-col p-5" aria-labelledby="sign-in-security">
+      <h2 id="sign-in-security" className="cf-eyebrow self-start">
         Sign-in and security
       </h2>
-      <p className="mt-2 text-[15px] leading-7 text-ink-2">
-        Signed in on a computer you no longer use, or lost a device? End every session at once:
-        this browser, other browsers, Studio and Coreframe Connect.
+      <p className="mt-3 font-display text-lg leading-6 font-semibold text-ink">Lost a device?</p>
+      <p className="mt-1 text-sm leading-6 text-ink-2">
+        End every session at once: this browser, other browsers, Studio and Coreframe Connect.
       </p>
       {!confirming ? (
         <button
           type="button"
           onClick={() => setConfirming(true)}
-          className="mt-4 rounded-cf border border-rule-strong px-3 py-2 text-sm font-semibold text-ink transition hover:bg-paper-2"
+          className="cf-btn-secondary mt-4 min-h-10 self-start px-5 text-[13px]"
         >
           Sign out of all devices
         </button>
@@ -58,7 +58,7 @@ export default function SignInSecurity() {
             type="button"
             disabled={busy}
             onClick={() => void endEverywhere()}
-            className="rounded-cf bg-ink px-3 py-2 text-sm font-semibold text-paper transition disabled:opacity-60"
+            className="cf-btn-primary min-h-10 px-5 text-[13px] disabled:opacity-60"
           >
             {busy ? "Signing out…" : "Yes, sign out everywhere"}
           </button>
@@ -66,14 +66,14 @@ export default function SignInSecurity() {
             type="button"
             disabled={busy}
             onClick={() => setConfirming(false)}
-            className="rounded-cf px-3 py-2 text-sm font-semibold text-ink-2 hover:text-ink"
+            className="inline-flex min-h-10 items-center text-[13px] text-ink-3 hover:text-ink-2"
           >
             Cancel
           </button>
         </div>
       )}
       {error ? (
-        <p role="alert" className="mt-3 text-[14px] leading-6 text-destructive">
+        <p role="alert" className="mt-3 text-sm leading-6 text-destructive">
           {error}
         </p>
       ) : null}

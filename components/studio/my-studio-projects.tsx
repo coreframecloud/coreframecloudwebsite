@@ -1,5 +1,6 @@
 "use client";
 
+import { LIST_PAGE, Pager } from "@/components/ui/pager";
 import { apiFetch } from "@/lib/session";
 import { useEffect, useState } from "react";
 import { API_BASE } from "@/lib/api-base";
@@ -81,7 +82,7 @@ export default function MyStudioProjects({ token }: { token: string | null }) {
   const [rows, setRows] = useState<StudioProject[]>([]);
   const [currency, setCurrency] = useState("INR");
   const [state, setState] = useState<"loading" | "error" | "ok">("loading");
-  const [showAll, setShowAll] = useState(false);
+  const [pg, setPg] = useState(0);
 
   useEffect(() => {
     if (!token) return;
@@ -105,7 +106,7 @@ export default function MyStudioProjects({ token }: { token: string | null }) {
 
   if (!token) return null;
   const cur = parseCurrency(currency) ?? "INR";
-  const shown = showAll ? rows : rows.slice(0, 10);
+  const shown = rows.slice(pg * LIST_PAGE, (pg + 1) * LIST_PAGE);
 
   return (
     <section id="studio-projects" className="cf-glass scroll-mt-24 overflow-hidden" aria-labelledby="studio-projects-title">
@@ -136,12 +137,12 @@ export default function MyStudioProjects({ token }: { token: string | null }) {
               <li key={p.job_id}>
                 <a
                   href={`/studio?project=${encodeURIComponent(p.job_id)}`}
-                  className="flex items-center justify-between gap-4 px-4 py-3.5 transition hover:bg-paper-2 focus-visible:bg-paper-2 sm:px-6"
+                  className="flex items-center justify-between gap-4 px-4 py-3 transition hover:bg-paper-2 focus-visible:bg-paper-2 sm:px-6"
                 >
                   <span className="flex min-w-0 items-center gap-3.5">
                     <Thumb token={token} project={p} />
                     <span className="min-w-0">
-                      <span className="block text-[15px] leading-6 font-medium break-words text-ink">{p.name}</span>
+                      <span className="block text-sm leading-5 font-medium break-words text-ink">{p.name}</span>
                       <span className="mt-0.5 block text-xs leading-5 text-ink-2">
                         <span className="whitespace-nowrap">{day(p.created_at)}</span>
                         <span className="text-ink-3"> · </span>
@@ -163,7 +164,7 @@ export default function MyStudioProjects({ token }: { token: string | null }) {
                     </span>
                   </span>
                   <span className="shrink-0 text-right">
-                    <span className="block text-[15px] leading-6 font-medium whitespace-nowrap tabular-nums text-ink">
+                    <span className="block text-sm leading-5 font-medium whitespace-nowrap tabular-nums text-ink">
                       {p.charged > 0 ? formatMoney(p.charged, cur) : "—"}
                     </span>
                     <span className="mt-0.5 block text-xs whitespace-nowrap text-ink-3">
@@ -174,17 +175,7 @@ export default function MyStudioProjects({ token }: { token: string | null }) {
               </li>
             ))}
           </ul>
-          {rows.length > 10 && !showAll ? (
-            <div className="border-t border-rule px-4 py-3 sm:px-6">
-              <button
-                type="button"
-                onClick={() => setShowAll(true)}
-                className="min-h-9 text-[13px] font-medium text-ink-2 transition hover:text-ink"
-              >
-                Show all {rows.length}
-              </button>
-            </div>
-          ) : null}
+          <Pager page={pg} total={rows.length} onPage={(n) => setPg(Math.max(0, n))} />
         </>
       )}
     </section>

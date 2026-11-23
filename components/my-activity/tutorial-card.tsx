@@ -19,6 +19,106 @@ function youtubeId(url: string | null | undefined): string | null {
   return m ? m[1] : null;
 }
 
+/** The play button over a thumbnail. */
+function PlayIcon({ small = false }: { small?: boolean }) {
+  return (
+    <span
+      className={`flex items-center justify-center rounded-full bg-blue text-white shadow-lg transition group-hover:scale-105 ${
+        small ? "h-9 w-9" : "h-16 w-16"
+      }`}
+    >
+      <svg viewBox="0 0 24 24" fill="currentColor" className={small ? "ml-0.5 h-4 w-4" : "ml-1 h-7 w-7"} aria-hidden="true">
+        <path d="M8 5.14v13.72a1 1 0 0 0 1.52.85l10.6-6.86a1 1 0 0 0 0-1.7L9.52 4.29A1 1 0 0 0 8 5.14Z" />
+      </svg>
+    </span>
+  );
+}
+
+function Player({ id }: { id: string }) {
+  return (
+    <iframe
+      className="absolute inset-0 h-full w-full"
+      src={`https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0`}
+      title="Coreframe Connect tutorial"
+      allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+      allowFullScreen
+    />
+  );
+}
+
+/**
+ * Compact version for the top of My Activity (owner, 23 Nov 2026: "a good
+ * small decent size thumbnail so users can check right away if they are
+ * confused"). A small thumbnail beside one line; a tap opens the player at
+ * full tile width in place.
+ */
+export function TutorialThumb({ className = "" }: { className?: string }) {
+  const id = useTutorialId();
+  const [playing, setPlaying] = useState(false);
+  if (!id) return null;
+  if (playing) {
+    return (
+      <div className={className}>
+        <div className="relative aspect-video w-full overflow-hidden rounded-cf bg-night">
+          <Player id={id} />
+        </div>
+        <a
+          href={`https://youtu.be/${id}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-2 inline-block text-xs text-blue underline-offset-2 hover:underline"
+        >
+          Open on YouTube
+        </a>
+      </div>
+    );
+  }
+  return (
+    <button
+      type="button"
+      onClick={() => setPlaying(true)}
+      className={`group cf-glass-inset flex w-full items-center gap-4 p-2 pr-4 text-left transition hover:bg-paper-2 ${className}`}
+      aria-label="Play the 3-minute Coreframe tutorial"
+    >
+      <span className="relative block aspect-video w-32 shrink-0 overflow-hidden rounded-[calc(var(--radius-cf)-4px)] bg-night sm:w-40">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={`https://i.ytimg.com/vi/${id}/mqdefault.jpg`}
+          alt=""
+          className="h-full w-full object-cover opacity-90 transition group-hover:opacity-100"
+          loading="lazy"
+        />
+        <span className="absolute inset-0 flex items-center justify-center">
+          <PlayIcon small />
+        </span>
+      </span>
+      <span className="min-w-0">
+        <span className="block text-sm leading-5 font-semibold text-ink">New here? Watch the 3-minute tour</span>
+        <span className="mt-1 block text-xs leading-5 text-ink-2">
+          Install Connect, launch, save to N:, and end a session.
+        </span>
+      </span>
+    </button>
+  );
+}
+
+function useTutorialId(): string | null {
+  const [id, setId] = useState<string | null>(null);
+  useEffect(() => {
+    let alive = true;
+    apiFetch(`${API_BASE}/me/session-state`, { cache: "no-store" })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        if (alive) setId(youtubeId(d?.connect_tutorial_url));
+      })
+      .catch(() => {});
+    return () => {
+      alive = false;
+    };
+  }, []);
+  return id;
+}
+
 export function TutorialCard() {
   const [id, setId] = useState<string | null>(null);
   const [playing, setPlaying] = useState(false);

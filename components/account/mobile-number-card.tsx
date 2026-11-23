@@ -64,9 +64,8 @@ const inputCls =
   "h-11 w-full min-w-0 rounded-cf border border-rule bg-paper px-3 text-base text-ink outline-none transition placeholder:text-ink-3 focus:border-blue focus:ring-2 focus:ring-blue/20 md:h-10 md:text-sm";
 const errorBox =
   "rounded-cf border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm leading-6 break-words text-destructive";
-const btnPrimary = "cf-btn-primary min-h-11 px-4 disabled:opacity-60";
-const btnQuiet =
-  "rounded-cf border border-rule-strong px-3 py-2 text-sm font-semibold text-ink transition hover:bg-paper-2 disabled:opacity-60";
+const btnPrimary = "cf-btn-primary min-h-10 px-5 text-[13px] disabled:opacity-60";
+const btnQuiet = "cf-btn-secondary min-h-10 px-5 text-[13px] disabled:opacity-60";
 const linkBtn = "inline-flex min-h-11 items-center text-[13px] text-ink-3 hover:text-ink-2 disabled:opacity-60";
 
 export default function MobileNumberCard() {
@@ -162,14 +161,17 @@ export default function MobileNumberCard() {
   const capped = info.changes_left <= 0;
 
   return (
-    <section className="cf-glass p-5 sm:p-6" aria-labelledby="mobile-number">
-      <h2 id="mobile-number" className="cf-section-title">
+    <section className="cf-glass flex h-full flex-col p-5" aria-labelledby="mobile-number">
+      <h2 id="mobile-number" className="cf-eyebrow self-start">
         Mobile number
       </h2>
-      <p className="mt-2 text-[15px] leading-7 text-ink-2">
-        <span className="font-medium whitespace-nowrap text-ink">{info.phone_number_masked ?? "Not added"}</span>
-        {info.phone_number_masked && info.mobile_verified ? " · verified" : ""}
+      <p className="mt-3 font-display text-lg leading-6 font-semibold tabular-nums text-ink">
+        <span className="whitespace-nowrap">{info.phone_number_masked ?? "Not added"}</span>
+        {info.phone_number_masked && info.mobile_verified ? (
+          <span className="ml-2 align-[2px] text-xs font-medium text-blue">Verified</span>
+        ) : null}
       </p>
+      <p className="mt-1 text-sm leading-6 text-ink-2">Sign-in codes and account notices go here.</p>
 
       {step === "done" ? (
         <p className="mt-2 text-sm leading-6 text-ink-2">
@@ -185,7 +187,7 @@ export default function MobileNumberCard() {
             change it again, contact support@coreframecloud.com.
           </p>
         ) : (
-          <button type="button" onClick={() => setStep("enter")} className={`mt-4 ${btnQuiet}`}>
+          <button type="button" onClick={() => setStep("enter")} className={`mt-4 self-start ${btnQuiet}`}>
             Change mobile number
           </button>
         )
@@ -193,7 +195,7 @@ export default function MobileNumberCard() {
 
       {step === "enter" ? (
         <form
-          className={`mt-6 max-w-md ${FORM.stack}`}
+          className={`mt-5 ${FORM.stack}`}
           onSubmit={(e) => {
             e.preventDefault();
             void send();
@@ -231,7 +233,7 @@ export default function MobileNumberCard() {
       ) : null}
 
       {step === "code" ? (
-        <form className={`mt-6 max-w-md ${FORM.stack}`} onSubmit={confirm}>
+        <form className={`mt-5 ${FORM.stack}`} onSubmit={confirm}>
           <div className={FORM.fields}>
           <p className="text-sm leading-6 text-ink-2">
             We sent a 6-digit code {viaChannel(current)} to{" "}

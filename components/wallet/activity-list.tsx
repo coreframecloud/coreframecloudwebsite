@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { LIST_PAGE, Pager } from "@/components/ui/pager";
 import { formatMoney, type Currency } from "@/lib/money";
 
 /**
@@ -18,7 +19,7 @@ import { formatMoney, type Currency } from "@/lib/money";
  *   - a session still running, or a payment still being confirmed, has no
  *     ledger line yet, so it is shown on its own with no balance.
  *
- * Ten lines at a time, no inner scroll box; "Show more" adds ten.
+ * Five lines a page (owner, 23 Nov 2026), no inner scroll box; Prev / Next pages through.
  */
 
 export interface LedgerRow {
@@ -88,7 +89,7 @@ interface Item {
   invoice?: { id: number; number: string | null } | { url: string };
 }
 
-const PAGE = 10;
+const PAGE = LIST_PAGE;
 
 function ts(s: string | null | undefined): number {
   const t = s ? Date.parse(s) : NaN;
@@ -291,7 +292,7 @@ export default function ActivityList({
   onOpenInvoice: (invoiceId: number) => void;
 }) {
   const [filter, setFilter] = useState<"all" | Cat>("all");
-  const [visible, setVisible] = useState(PAGE);
+  const [pg, setPg] = useState(0);
 
   const items = useMemo(
     () => buildActivity(pooled ? [] : ledger, sessions, payments, !moreOnServer, currency),
@@ -300,18 +301,16 @@ export default function ActivityList({
   const present = useMemo(() => new Set(items.map((i) => i.cat)), [items]);
   const chips = FILTERS.filter((f) => f.key === "all" || present.has(f.key));
   const shown = filter === "all" ? items : items.filter((i) => i.cat === filter);
-  const page = shown.slice(0, visible);
-  const canShowMore = shown.length > visible || moreOnServer;
+  const page = shown.slice(pg * PAGE, (pg + 1) * PAGE);
+
+  // Older lines live on the server: fetch them a page before they are needed.
+  useEffect(() => {
+    if (moreOnServer && !loadingMore && (pg + 2) * PAGE > shown.length) onLoadMore();
+  }, [pg, shown.length, moreOnServer, loadingMore, onLoadMore]);
 
   function pick(k: "all" | Cat) {
     setFilter(k);
-    setVisible(PAGE);
-  }
-
-  function more() {
-    const next = visible + PAGE;
-    setVisible(next);
-    if (moreOnServer && shown.length < next + PAGE) onLoadMore();
+    setPg(0);
   }
 
   return (
@@ -352,14 +351,14 @@ export default function ActivityList({
 
       {page.length === 0 ? (
         <p className="px-4 py-8 text-sm text-ink-3 sm:px-6">
-          {filter === "all" ? "Nothing yet." : "Nothing here yet."}
+          {loadingMore ? "Loading…" : filter === "all" ? "Nothing yet." : "Nothing here yet."}
         </p>
       ) : (
         <ul className="divide-y divide-rule">
           {page.map((i) => (
-            <li key={i.key} className="flex items-start justify-between gap-4 px-4 py-3.5 sm:px-6">
+            <li key={i.key} className="flex items-start justify-between gap-4 px-4 py-3 sm:px-6">
               <div className="min-w-0">
-                <p className="text-[15px] leading-6 font-medium text-ink">
+                <p className="text-sm leading-5 font-medium text-ink">
                   {i.title}
                   {i.status && (
                     <span className="ml-2 rounded-full border border-rule-strong bg-paper-2 px-2 py-0.5 align-[1px] text-[11px] font-medium whitespace-nowrap text-ink-2">
@@ -367,8 +366,8 @@ export default function ActivityList({
                     </span>
                   )}
                 </p>
-                <p className="mt-0.5 text-xs leading-5 text-ink-2">
-                  <span className="font-mono text-[11px] tracking-[0.08em] text-ink-3 uppercase">
+                <p className="mt-0.5 text-[12px] leading-5 text-ink-2">
+                  <span className="font-mono text-[10.5px] tracking-[0.08em] text-ink-3 uppercase">
                     {CAT_LABEL[i.cat]}
                   </span>
                   <span className="text-ink-3"> · </span>
@@ -405,13 +404,13 @@ export default function ActivityList({
               </div>
               <div className="shrink-0 text-right">
                 <p
-                  className={`text-[15px] leading-6 font-medium whitespace-nowrap tabular-nums ${
+                  className={`text-sm leading-5 font-medium whitespace-nowrap tabular-nums ${
                     i.amount != null && i.amount > 0 ? "text-[#1d6b43]" : "text-ink"
                   }`}
                 >
                   {i.amount == null ? "—" : `${i.amount > 0 ? "+" : i.amount < 0 ? "−" : ""}${money(i.amount, currency)}`}
                 </p>
-                <p className="mt-0.5 text-xs whitespace-nowrap tabular-nums text-ink-3">
+                <p className="mt-0.5 text-[12px] whitespace-nowrap tabular-nums text-ink-3">
                   {i.balance != null ? `Balance ${money(i.balance, currency)}` : " "}
                 </p>
               </div>
@@ -420,24 +419,13 @@ export default function ActivityList({
         </ul>
       )}
 
-      {(canShowMore || shown.length > PAGE) && (
-        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-rule px-4 py-3 sm:px-6">
-          <p className="text-xs tabular-nums text-ink-3">
-            Showing {page.length} of {shown.length}
-            {moreOnServer ? "+" : ""}
-          </p>
-          {canShowMore && (
-            <button
-              type="button"
-              onClick={more}
-              disabled={loadingMore}
-              className="cf-btn-secondary min-h-10 px-4 text-sm disabled:opacity-60"
-            >
-              {loadingMore ? "Loading…" : "Show more"}
-            </button>
-          )}
-        </div>
-      )}
+      <Pager
+        page={pg}
+        total={shown.length}
+        more={moreOnServer}
+        loading={loadingMore}
+        onPage={(n) => setPg(Math.max(0, n))}
+      />
     </section>
   );
 }
