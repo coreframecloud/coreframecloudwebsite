@@ -36,6 +36,7 @@ import {
   taxWords,
   publicGpus,
   introOfferShort,
+  introBonusPhrase,
 } from "@/lib/rate-card";
 import { storageTerms } from "@/lib/storage-terms";
 import Link from "next/link";
@@ -192,7 +193,7 @@ export default async function PricingView({ currency }: { currency: Currency }) 
               o: offering("gpu"),
               price: adhocLabel ? `${adhocLabel} an hour` : "By the minute",
               note: intro
-                ? `First top-up ${introOfferShort(intro).main}${introOfferShort(intro).alt ? `, ${introOfferShort(intro).alt}` : ""}${usdView ? ", no GST" : ""}`
+                ? `First top-up ${introOfferShort(intro).main}${introOfferShort(intro).alt ? `, ${introOfferShort(intro).alt}` : ""}${usdView ? ", no GST" : ""}${introBonusPhrase(intro) ? ` · ${introBonusPhrase(intro)!.replace(" on your first top-up", "")}` : ""}`
                 : usdView
                   ? "No GST (export of services), billed per minute"
                   : "GST included, billed per minute",

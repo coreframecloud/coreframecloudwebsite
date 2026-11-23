@@ -78,9 +78,11 @@ function cardTable(ctx: BlogContext): MaybeBlock[] {
 export const lumionSystemRequirements: BlogPost = {
   slug: SLUG,
   title: "Lumion system requirements 2026: PC, laptop and graphics card",
-  absoluteTitle: "Lumion System Requirements 2026: PC, Laptop & Graphics Card",
+  // 23 Nov 2026 (week report): 1,527 impressions at 0.5 %; new searches
+  // "lumion graphics card requirements", "lumion latest version system requirements".
+  absoluteTitle: "Lumion System Requirements 2026 (Latest Version): GPU & Laptop",
   description:
-    "Lumion Pro needs Windows 10 (2004+) or 11, a dedicated GPU with 6 GB VRAM at least; Lumion recommends 10 GB VRAM and 32 GB RAM, 16 GB and 64 GB for high-end.",
+    "Lumion graphics card requirements for the latest version, minimum to high-end, and how to check your laptop in 30 seconds. Not enough VRAM? Your options.",
   targetQueries: [
     "lumion system requirements",
     "lumion 2026 system requirements",
@@ -91,6 +93,7 @@ export const lumionSystemRequirements: BlogPost = {
     "lumion size gb",
   ],
   datePublished: "2026-11-11",
+  dateModified: "2026-11-23",
   draft: false,
   eyebrow: "Guide · Hardware",
   hero: {

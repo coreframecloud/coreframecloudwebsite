@@ -63,9 +63,10 @@ function cardTable(ctx: BlogContext): MaybeBlock[] {
 export const enscapeSystemRequirements: BlogPost = {
   slug: SLUG,
   title: "Enscape system requirements 2026: graphics card, VRAM and laptops",
-  absoluteTitle: "Enscape System Requirements 2026: GPU, VRAM & Laptop",
+  // 23 Nov 2026 (week report): 881 impressions at 0.1 %.
+  absoluteTitle: "Enscape System Requirements 2026: Will Your GPU Run It?",
   description:
-    "Enscape needs Windows 10+ and a GPU with 4 GB VRAM and Vulkan 1.2 at least; Chaos recommends 8 GB VRAM, 12 GB for VR. Full specs, laptops, Mac and hosts.",
+    "Enscape system requirements for 2026: the GPU and VRAM Chaos asks for, a quick check of your own laptop, Mac options, and what to do if it falls short.",
   targetQueries: [
     "enscape system requirements",
     "enscape requirements",
@@ -76,6 +77,7 @@ export const enscapeSystemRequirements: BlogPost = {
     "enscape workstation",
   ],
   datePublished: "2026-11-11",
+  dateModified: "2026-11-23",
   draft: false,
   eyebrow: "Guide · Hardware",
   hero: {

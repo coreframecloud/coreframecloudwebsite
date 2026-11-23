@@ -128,6 +128,10 @@ export type IntroOfferApi = {
   price_rupees: number;
   hours?: number;
   bonus_rupees?: number;
+  /** 23 Nov 2026: the first top-up earns this percent of itself as bonus,
+   *  up to `bonus_cap`; `bonus_rupees` is then the bonus AT the minimum. */
+  bonus_percent?: number | null;
+  bonus_cap?: number | null;
   validity_days?: number;
   one_per_customer?: boolean;
   /** The GPU the hours are counted on (owner, 21 Oct 2026), and every GPU
@@ -380,6 +384,10 @@ export type IntroOffer = {
   hours: number;
   /** Credited on top of `price`, in `currency`. */
   bonus: number | null;
+  /** 23 Nov 2026: bonus = this percent of the first top-up, up to bonusCap
+   *  (so a bigger first top-up earns more). Null = the fixed `bonus` only. */
+  bonusPercent: number | null;
+  bonusCap: number | null;
   validityDays: number | null;
   onePerCustomer: boolean;
   /** The GPU the hours are counted on. */
@@ -403,7 +411,23 @@ export function introOfferVariant(card: RateCard | null): IntroOffer | null {
   const base = getIntroOffer(card);
   const v = card?.intro_offer?.intro500;
   if (!base || !v || !(v.price_rupees > 0) || !(v.hours > 0)) return null;
-  return { ...base, price: v.price_rupees, hours: v.hours, bonus: v.bonus_rupees ?? null };
+  return { ...base, price: v.price_rupees, hours: v.hours, bonus: v.bonus_rupees ?? null, bonusPercent: null, bonusCap: null };
+}
+
+/**
+ * "50% extra credit on your first top-up, up to Rs 2,500" (owner, 23 Nov
+ * 2026), in the offer's own currency; null while only the fixed bonus runs.
+ * One wording for every page and for llms.txt.
+ */
+export function introBonusPhrase(o: IntroOffer | null): string | null {
+  if (!o || !o.bonusPercent || o.bonusPercent <= 0) return null;
+  let cap = "";
+  if (o.bonusCap && o.bonusCap > 0) {
+    cap = o.currency === "USD"
+      ? `, up to $${Number.isInteger(o.bonusCap) ? o.bonusCap : o.bonusCap.toFixed(2)}`
+      : `, up to ₹${Math.round(o.bonusCap).toLocaleString("en-IN")}`;
+  }
+  return `${o.bonusPercent}% extra credit on your first top-up${cap}`;
 }
 
 /** The GPUs the intro hours also apply to, besides the one they are counted on. */
@@ -555,6 +579,8 @@ export function getIntroOffer(card: RateCard | null): IntroOffer | null {
     price: io.price_rupees,
     hours,
     bonus: io.bonus_rupees ?? null,
+    bonusPercent: io.bonus_percent ?? null,
+    bonusCap: io.bonus_cap ?? null,
     validityDays: io.validity_days ?? null,
     onePerCustomer: io.one_per_customer ?? true,
     gpuName,
@@ -579,6 +605,8 @@ export function getUsdIntroOffer(card: RateCard | null): IntroOffer | null {
     price: io.price,
     hours: io.hours,
     bonus: io.bonus ?? null,
+    bonusPercent: io.bonus_percent ?? null,
+    bonusCap: io.bonus_cap ?? null,
     validityDays: io.validity_days ?? null,
     onePerCustomer: true,
     gpuName,

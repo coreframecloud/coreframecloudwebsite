@@ -493,7 +493,7 @@ function buildSoftwarePages(cur: Currency): SoftwarePage[] {
     absoluteTitle: "GPU on Rent in India, Workstations by the Minute | Coreframe",
     h1: "Rent a GPU workstation in India, by the minute",
     livePrice: "answer",
-    lastUpdated: "11 November 2026",
+    lastUpdated: "23 November 2026",
     callouts: [
       {
         h2: "Running your own CFD software?",

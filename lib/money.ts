@@ -76,6 +76,9 @@ export type UsdIntroOfferApi = {
   /** Every GPU the hours may be spent on, cheapest first (owner, 21 Oct 2026). */
   eligible_gpus?: string[];
   eligible_slugs?: string[];
+  /** 23 Nov 2026: the bonus is this percent of the first top-up, up to `bonus_cap`. */
+  bonus_percent?: number | null;
+  bonus_cap?: number | null;
 };
 
 /** The `usd` block of GET /public/rate-card. */

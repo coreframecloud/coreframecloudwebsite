@@ -10,12 +10,12 @@ import { CFD_DEMO, CFD_HOME, CLINIC_CASE, HVAC_PAGE, HVAC_SERVICE, MESH_STUDY } 
  * their own (lib/cfd-pages.ts, blog posts, software pages).
  */
 export const PAGE_UPDATED: Record<string, string> = {
-  "/": "2026-11-01",
+  "/": "2026-11-23",
   "/lumion-cloud-gpu": "2026-11-01",
   "/enscape-cloud-gpu": "2026-11-01",
   "/d5-render-cloud-workstation": "2026-11-01",
   "/d5-render-vs-local-gpu": "2026-10-18",
-  "/coreframe-vs-irender": "2026-11-01",
+  "/coreframe-vs-irender": "2026-11-23",
   "/vram-for-architectural-rendering": "2026-10-11",
   "/cloud-rendering-for-architects": "2026-10-18",
   "/architectural-visualization": "2026-10-19",
@@ -29,7 +29,7 @@ export const PAGE_UPDATED: Record<string, string> = {
   "/floor-plan-to-render/3bhk-example": "2026-10-18",
   "/enterprise": "2026-10-18",
   "/education": "2026-11-17",
-  "/pricing": "2026-11-01",
+  "/pricing": "2026-11-23",
   "/compute-nodes": "2026-11-01",
   "/solutions": "2026-11-01",
   "/how-to-use": "2026-11-01",

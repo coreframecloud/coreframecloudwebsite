@@ -21,6 +21,7 @@ import {
   getIntroOffer,
   getUsdIntroOffer,
   hoursLabel,
+  introBonusPhrase,
   introMoreGpusNote,
   minFirstTopup,
   planTiers,
@@ -57,7 +58,7 @@ export const SITE = "https://www.coreframecloud.com";
  * tells an answer engine nothing. Bump it whenever the text below changes.
  * Prices are not covered by it; they are read live from the rate card.
  */
-export const LLMS_LAST_UPDATED = "6 November 2026";
+export const LLMS_LAST_UPDATED = "23 November 2026";
 
 function money(n: number | null | undefined): string | null {
   if (n == null) return null;
@@ -251,7 +252,8 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
         `streaming${ladder && ladder.count > 1 ? ` (${ladder.gpu}; each GPU's own rate is under "Machines and pricing")` : ""}. Team plans (monthly, for studios and firms) are listed below.` +
         (introQ
           ? ` New customers: the first top-up of ${money(introQ.price)} buys ` +
-            `${hoursLabel(introQ.hours)}${introQ.validityDays ? `, used within ${introQ.validityDays} days` : ""}.`
+            `${hoursLabel(introQ.hours)}${introQ.validityDays ? `, used within ${introQ.validityDays} days` : ""}.` +
+            (introBonusPhrase(introQ) ? ` New customers get ${introBonusPhrase(introQ)}, so a larger first top-up gets more.` : "")
           : ""),
     );
   } else {
@@ -554,14 +556,16 @@ export function buildLlmsTxt(card: RateCard | null): string[] {
       `- Intro offer: the first top-up of ${money(intro.price)} buys ${hoursLabel(intro.hours)}` +
         `${intro.gpuName ? ` of ${intro.gpuName}` : ""}${introMoreGpusNote(intro)}` +
         `${intro.validityDays ? `, to be used within ${intro.validityDays} days` : ""}` +
-        `${intro.onePerCustomer ? ", one per customer" : ""}.`,
+        `${intro.onePerCustomer ? ", one per customer" : ""}.` +
+        (introBonusPhrase(intro) ? ` It works as ${introBonusPhrase(intro)}.` : ""),
     );
   }
   if (usdIntro) {
     out.push(
       `- Intro offer outside India: the first top-up of ${usdMoney(usdIntro.price)} buys ${hoursLabel(usdIntro.hours)}` +
         `${usdIntro.gpuName ? ` of ${usdIntro.gpuName}` : ""}${introMoreGpusNote(usdIntro)}, no GST` +
-        `${usdIntro.validityDays ? `, to be used within ${usdIntro.validityDays} days` : ""}, one per customer.`,
+        `${usdIntro.validityDays ? `, to be used within ${usdIntro.validityDays} days` : ""}, one per customer.` +
+        (introBonusPhrase(usdIntro) ? ` It works as ${introBonusPhrase(usdIntro)}.` : ""),
     );
   }
   const minFirst = minFirstTopup(card);

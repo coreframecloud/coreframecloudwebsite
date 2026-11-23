@@ -35,7 +35,7 @@ import { JsonLd } from "@/components/seo/json-ld";
 import { breadcrumbList, faqPage, OG_IMAGE, softwareServiceLd } from "@/lib/seo";
 import { MeasuredFacts } from "@/components/gpu/measured-facts";
 import { softwareFacts } from "@/lib/software-facts";
-import { billingSentence } from "@/lib/rate-card";
+import { billingSentence, introBonusPhrase } from "@/lib/rate-card";
 import { GpuCineBand } from "@/components/gpu-cine-band";
 import { GPU_HEROES } from "@/lib/gpu-heroes";
 import { Pointers, ReadMore, type Pointer } from "@/components/visuals/pointers";
@@ -158,7 +158,7 @@ function rentalAnswer(card: RateCard | null, currency: Currency): string | null 
   const from = many ? "from " : "";
   return [
     intro
-      ? `Your first ${introPrice(intro)} top-up buys ${hoursLabel(intro.hours)} of ${many ? `a ${gpu?.name ?? "GPU"} workstation running ${NODE.os}` : machine}. After that it is ${from}${r.rate} an hour ${r.tax}${billed}.`
+      ? `Your first ${introPrice(intro)} top-up buys ${hoursLabel(intro.hours)} of ${many ? `a ${gpu?.name ?? "GPU"} workstation running ${NODE.os}` : machine}${introBonusPhrase(intro) ? `, because new customers get ${introBonusPhrase(intro)}` : ""}. After that it is ${from}${r.rate} an hour ${r.tax}${billed}.`
       : `${machine.charAt(0).toUpperCase()}${machine.slice(1)} costs ${from}${r.rate} an hour, ${r.tax}${billed}.`,
     `Hosted in ${NODE.location}, streamed to your laptop with the Coreframe Connect app.`,
   ].join(" ");
