@@ -1497,6 +1497,33 @@ body[data-cf-sticky] a[aria-label*="WhatsApp" i] { bottom: 5.5rem; }
   .cf-btn-flash { animation: none; background-position: 0% 50%; }
 }
 
+/* Download Connect on the My Activity dashboard (owner, 23 Nov 2026: "definitely
+   highlight our download"): the page's ONE yellow highlight -- yellow fill, ink
+   text, a soft pulse ring. Still for prefers-reduced-motion. */
+.cf-btn-dl {
+  display: inline-flex;
+  min-height: 3.5rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  background: var(--color-hl);
+  color: var(--color-hl-ink);
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  box-shadow: 0 0 0 1px color-mix(in oklch, var(--color-ink) 12%, transparent) inset;
+  animation: cf-dl-ring 2.2s ease-out infinite;
+  transition: filter 0.15s;
+}
+@media (hover: hover) { .cf-btn-dl:hover { filter: brightness(0.96); } }
+.cf-btn-dl:focus-visible { outline: 2px solid var(--color-blue); outline-offset: 3px; }
+@keyframes cf-dl-ring {
+  0% { box-shadow: 0 0 0 1px color-mix(in oklch, var(--color-ink) 12%, transparent) inset, 0 0 0 0 color-mix(in oklch, var(--color-hl) 70%, transparent); }
+  70% { box-shadow: 0 0 0 1px color-mix(in oklch, var(--color-ink) 12%, transparent) inset, 0 0 0 12px color-mix(in oklch, var(--color-hl) 0%, transparent); }
+  100% { box-shadow: 0 0 0 1px color-mix(in oklch, var(--color-ink) 12%, transparent) inset, 0 0 0 0 transparent; }
+}
+@media (prefers-reduced-motion: reduce) { .cf-btn-dl { animation: none; } }
+
 /* ── At-a-glance bubbles (home "What is Coreframe?", 31 Oct 2026) ─────────
    components/home/redesign/at-a-glance.tsx. A packed cluster of circles,
    each placed by its centre (--mx/--my) and diameter (--md) in % of the

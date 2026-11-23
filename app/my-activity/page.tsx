@@ -1,6 +1,8 @@
 "use client";
 
 import { TutorialCard } from "@/components/my-activity/tutorial-card";
+import ConnectionCheck from "@/components/my-activity/connection-check";
+import { FilesTile, MonthTile, NowTile, RecentSessions, type GlanceSession } from "@/components/my-activity/glance-tiles";
 import { PersistentDiskTip } from "@/components/account/persistent-disk-tip";
 import { useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
@@ -532,6 +534,19 @@ export default function MyActivityPage() {
   // THIS account's own price and hours (first top-up A/B, 22 Oct 2026: an
   // intro500 account sees ₹500 = 3 hours; everyone else the standing offer).
   const introOffer = introOfferForAccount(introOfferFor(card, cur), wallet);
+  // Tiles name the card each session ran on. /me/sessions has no GPU name, but
+  // each settled session stores the hourly rate it was billed at, and every
+  // public card has its own rate (in the account's currency), so the rate names it.
+  const glance: GlanceSession[] = sessions.map((sx) => {
+    const r = Number((sx as unknown as { hourly_rate_rupees_per_hour?: number | null }).hourly_rate_rupees_per_hour);
+    const g = Number.isFinite(r) && r > 0
+      ? publicGpus(card).find((x) => {
+          const rate = cur === "USD" ? x.usd_hourly_rate : x.hourly_rate_rupees;
+          return rate != null && Math.abs(rate - r) < 0.005;
+        })
+      : undefined;
+    return { ...(sx as GlanceSession), gpu_name: g ? shortGpuName(g.name) : null };
+  });
 
   const apply = useCallback((d: ActivityData) => {
     if (d.wallet) {
@@ -772,7 +787,7 @@ export default function MyActivityPage() {
   return (
     <main className="relative min-h-screen text-ink">
       <div className="cf-aurora" />
-      <div className="mx-auto max-w-4xl space-y-10 px-4 py-12 sm:px-6 sm:py-16">
+      <div className="mx-auto max-w-5xl space-y-8 px-4 py-12 sm:px-6 sm:py-16">
 
         {/* Header */}
         <div className="flex flex-wrap items-start justify-between gap-4">
@@ -787,91 +802,39 @@ export default function MyActivityPage() {
               )}
             </h1>
           </div>
-          {/* Permanent and unconditional. Connect is unlocked by verification,
-              not by payment, and someone signing in from a different machine
-              needs the installer again — so this is not onboarding that should
-              disappear once they have used it. */}
-          {/* Owner, 26 Oct 2026: "too plain ... add flashing colours so it catches the eye".
-              Moving brand gradient + a soft pulse; still for prefers-reduced-motion (globals.css). */}
-          <Link
-            href="/download"
-            className="cf-btn-go cf-btn-flash w-full gap-2 px-6 sm:w-auto"
-          >
-            <svg viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4" aria-hidden="true">
-              <path d="M10 2a1 1 0 0 1 1 1v8.586l2.293-2.293a1 1 0 1 1 1.414 1.414l-4 4a1 1 0 0 1-1.414 0l-4-4a1 1 0 1 1 1.414-1.414L9 11.586V3a1 1 0 0 1 1-1Z" />
-              <path d="M3 15a1 1 0 0 1 1 1v1h12v-1a1 1 0 1 1 2 0v1a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-1a1 1 0 0 1 1-1Z" />
-            </svg>
-            Download Coreframe Connect
-          </Link>
         </div>
 
-        <TutorialCard />
-
-        {/* Saving your work. Above the wallet on purpose: a customer who
-            loses a project cares about nothing else on this page. Named the
-            drive explicitly after a customer ended a session unsure which
-            location survived — "your NAS drive" is not an instruction, "N:" is. */}
-        <section className="cf-glass border-l-2! border-l-blue! p-5 sm:p-6">
-          <div className="flex items-start gap-3">
-            <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"
-                 className="mt-0.5 h-5 w-5 shrink-0 text-blue">
-              <path fillRule="evenodd" clipRule="evenodd" d="M10 1.5a1 1 0 0 1 .87.5l8 14A1 1 0 0 1 18 17.5H2a1 1 0 0 1-.87-1.5l8-14a1 1 0 0 1 .87-.5Zm0 5a.9.9 0 0 0-.9.98l.35 3.87a.55.55 0 0 0 1.1 0l.35-3.87A.9.9 0 0 0 10 6.5Zm0 7a1 1 0 1 0 0 2 1 1 0 0 0 0-2Z" />
-            </svg>
-            <div className="min-w-0">
-              <h2 className="cf-section-title">Where your work is saved.</h2>
-              <p className="mt-2 text-[15px] leading-7 text-ink-2">
-                Inside a session, save everything to{" "}
-                <span className="rounded-cf border border-rule-strong bg-paper-2 px-1.5 py-0.5 font-mono text-sm font-semibold whitespace-nowrap text-ink">
-                  N:
-                </span>,
-                the drive labelled <span className="font-semibold text-ink">Coreframe Datalake</span>.
-                It&rsquo;s already mapped when the desktop appears, and it&rsquo;s the only
-                place that survives the session.
-              </p>
-
-              <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-3">
-                <div className="cf-glass-inset p-4">
-                  <p className="font-mono text-[11.5px] leading-none font-medium tracking-[0.2em] uppercase text-blue">Kept</p>
-                  <p className="mt-2 text-sm leading-6 text-ink-2">
-                    Anything under <span className="font-mono text-ink">N:\</span>. It&rsquo;ll be
-                    waiting next session, and you can download it from here any time.
-                  </p>
-                </div>
-                <div className="cf-glass-inset p-4">
-                  <p className="font-mono text-[11.5px] leading-none font-medium tracking-[0.2em] uppercase text-destructive">Erased</p>
-                  <p className="mt-2 text-sm leading-6 text-ink-2">
-                    Desktop, Documents, Downloads, <span className="font-mono text-ink">C:\</span>,
-                    and anything you installed. Wiped when the session ends.
-                  </p>
-                </div>
-                <div className="cf-glass-inset p-4">
-                  <p className="font-mono text-[11.5px] leading-none font-medium tracking-[0.2em] uppercase text-blue">Linked assets</p>
-                  <p className="mt-2 text-sm leading-6 text-ink-2">
-                    Keep the whole project folder on N:, not just the scene file. D5, Twinmotion
-                    and 3ds Max break if textures move.
-                  </p>
-                </div>
-              </div>
-
-              <p className="mt-5 text-sm leading-6 text-ink-2">
-                Working from a local copy? Save to <span className="font-mono text-ink">N:</span> before
-                you finish, or use <span className="text-ink">Save As</span> and point it there at the
-                start so every later save lands in the right place.
-              </p>
-
-              <div className="mt-5 flex flex-wrap gap-3">
-                <a href="/how-to-use#saving-your-work" className="cf-btn-secondary w-full sm:w-auto">
-                  Read the full guide
-                </a>
-              </div>
+        {/* Dashboard (owner, 23 Nov 2026): tiles first. Row 1 is how to start
+            (Download Connect, the page's ONE yellow highlight: permanent, because a
+            customer on a new machine needs the installer again) and how it will
+            feel from here (the connection check). */}
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-5">
+          <section className="cf-glass flex flex-col p-5 sm:p-6 md:col-span-3">
+            <h2 className="cf-eyebrow">Start working</h2>
+            <p className="mt-3 font-display text-xl leading-7 font-semibold text-balance text-ink">
+              Your GPU workstation opens in the Coreframe Connect app.
+            </p>
+            <p className="mt-2 text-sm leading-6 text-ink-2">
+              Install it once on each computer you work from, sign in with this account, and launch.
+              Already installed? Open Connect from your Start menu.
+            </p>
+            <div className="mt-auto flex flex-wrap items-center gap-3 pt-5">
+              <Link href="/download" className="cf-btn-dl w-full gap-2 px-6 sm:w-auto">
+                <svg viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4" aria-hidden="true">
+                  <path d="M10 2a1 1 0 0 1 1 1v8.586l2.293-2.293a1 1 0 1 1 1.414 1.414l-4 4a1 1 0 0 1-1.414 0l-4-4a1 1 0 1 1 1.414-1.414L9 11.586V3a1 1 0 0 1 1-1Z" />
+                  <path d="M3 15a1 1 0 0 1 1 1v1h12v-1a1 1 0 1 1 2 0v1a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-1a1 1 0 0 1 1-1Z" />
+                </svg>
+                Download Coreframe Connect
+              </Link>
+              <a href="/how-to-use" className="text-sm text-blue underline-offset-2 hover:underline">How it works</a>
             </div>
-          </div>
-        </section>
+          </section>
+          <ConnectionCheck
+            inIndia={(wallet?.country_code ?? "IN").toUpperCase() === "IN"}
+            className="md:col-span-2"
+          />
+        </div>
 
-        {/* Licence statement (gpu-product-1110, item 3): only while the API
-            sends it. Next to "Where your work is saved": both are about what
-            happens when a session ends. */}
-        <LicenceCard licence={gpuExtras?.licence} />
 
         {/* How to start: the intro offer, or "add funds to start" when the
             account has no paid access yet. Retail only — an org's wallet is
@@ -885,46 +848,25 @@ export default function MyActivityPage() {
           />
         )}
 
-        {/* Wallet section — layout depends on role */}
-        {user?.role === "org_admin" ? (
-          /* B2B Org admin: balance card + link to org portal */
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <div className="cf-glass border-l-2! border-l-blue! p-5 sm:p-6">
-              <h2 className="cf-eyebrow mb-4">
-                Org wallet balance
-              </h2>
-              <p className="font-display text-3xl font-bold tabular-nums text-blue">
+        {/* At a glance (owner, 23 Nov 2026): the session, the wallet, the month
+            and the files, as tiles. Detail cards follow below. */}
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <NowTile sessions={glance} currency={cur} />
+          {user?.role === "org_admin" ? (
+            <section className="cf-glass flex flex-col border-l-2! border-l-blue! p-5">
+              <h2 className="cf-eyebrow">Org wallet</h2>
+              <p className="mt-3 font-display text-2xl leading-none font-bold tabular-nums text-blue">
                 {balSym}{wallet ? wallet.wallet_balance_rupees.toFixed(2) : "0.00"}
               </p>
-              <p className="mt-1 text-xs text-ink-2">Shared across your organisation</p>
-            </div>
-            <div className="cf-glass flex flex-col justify-between p-5 sm:p-6">
-              <div>
-                <h2 className="cf-eyebrow mb-2">
-                  Team and wallet
-                </h2>
-                <p className="text-sm leading-6 text-ink-2">
-                  Top up the org wallet, invite people and read usage in the org portal.
-                </p>
-              </div>
-              <a href="/org-admin" className="cf-btn-primary mt-6 w-full sm:w-auto">
-                Go to org portal
-              </a>
-            </div>
-          </div>
-        ) : user?.customer_type !== "b2b" ? (
-          /* `role === "r_customer"` — a role deleted in the roles refresh and
-             mapped to `member`. This condition was therefore false for every
-             user, so no B2C customer saw their wallet or recharge option here
-             at all. Keyed on customer_type now: retail is a SEGMENT, not a
-             capability, which is the whole reason the role was removed. */
-          /* B2C retail customer: balance + recharge coming soon */
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <div className="cf-glass border-l-2! border-l-blue! p-5 sm:p-6">
-              <h2 className="cf-eyebrow mb-4">
+              <p className="mt-2 text-xs text-ink-2">Shared across your organisation</p>
+              <a href="/org-admin" className="cf-btn-secondary mt-auto w-full">Org portal</a>
+            </section>
+          ) : user?.customer_type !== "b2b" ? (
+            <section className="cf-glass flex flex-col border-l-2! border-l-blue! p-5">
+              <h2 className="cf-eyebrow">
                 Wallet
               </h2>
-              <p className="font-display text-3xl font-bold tabular-nums text-blue">
+              <p className="mt-3 font-display text-2xl leading-none font-bold tabular-nums text-blue">
                 {wallet
                   ? cur === "USD"
                     ? formatMoney(wallet.wallet_total_rupees ?? wallet.wallet_balance_rupees, "USD")
@@ -999,7 +941,60 @@ export default function MyActivityPage() {
                   })}
                 </p>
               )}
+              <div className="mt-auto pt-4">
+                <button
+                  type="button"
+                  onClick={() => openTopUp(null, "add_funds")}
+                  className="cf-btn-primary w-full"
+                >
+                  Add funds
+                </button>
+              </div>
+            </section>
+          ) : (
+            <section className="cf-glass flex flex-col p-5">
+              <h2 className="cf-eyebrow">Wallet</h2>
+              <p className="mt-3 font-display text-2xl leading-none font-bold tabular-nums text-blue">
+                {balSym}{wallet ? wallet.wallet_balance_rupees.toFixed(2) : "0.00"}
+              </p>
+              <p className="mt-2 text-xs text-ink-2">Managed by your org admin</p>
+            </section>
+          )}
+          <MonthTile sessions={glance} currency={cur} />
+          <FilesTile
+            usedBytes={wallet?.storage_used_bytes ?? 0}
+            quotaGb={wallet ? (wallet.storage_quota_gb || (wallet.storage_quota_bytes ? Math.round(wallet.storage_quota_bytes / 1024 ** 3) : null)) : null}
+          />
+        </div>
+
+        <RecentSessions sessions={glance} currency={cur} />
+
+        {/* Wallet section — layout depends on role */}
+        {user?.role === "org_admin" ? (
+          /* B2B Org admin: the balance is in the tiles; the portal link here */
+          <div className="grid grid-cols-1 gap-4">
+            <div className="cf-glass flex flex-col justify-between p-5 sm:p-6">
+              <div>
+                <h2 className="cf-eyebrow mb-2">
+                  Team and wallet
+                </h2>
+                <p className="text-sm leading-6 text-ink-2">
+                  Top up the org wallet, invite people and read usage in the org portal.
+                </p>
+              </div>
+              <a href="/org-admin" className="cf-btn-primary mt-6 w-full sm:w-auto">
+                Go to org portal
+              </a>
             </div>
+          </div>
+        ) : user?.customer_type !== "b2b" ? (
+          /* `role === "r_customer"` — a role deleted in the roles refresh and
+             mapped to `member`. This condition was therefore false for every
+             user, so no B2C customer saw their wallet or recharge option here
+             at all. Keyed on customer_type now: retail is a SEGMENT, not a
+             capability, which is the whole reason the role was removed. */
+          /* B2C retail customer: balance + recharge coming soon */
+          <div className="grid grid-cols-1 gap-4">
             <div id="add-funds" className="cf-glass flex flex-col justify-between p-5 sm:p-6">
               <div>
                 <h2 className="cf-eyebrow mb-2">
@@ -1046,16 +1041,8 @@ export default function MyActivityPage() {
             </div>
           </div>
         ) : (
-          /* B2B engineer: balance only, managed by org admin */
-          <div className="cf-glass p-5 sm:p-6">
-            <h2 className="cf-eyebrow mb-4">
-              Wallet balance
-            </h2>
-            <p className="font-display text-3xl font-bold tabular-nums text-blue">
-              {balSym}{wallet ? wallet.wallet_balance_rupees.toFixed(2) : "0.00"}
-            </p>
-            <p className="mt-1 text-xs text-ink-2">Managed by your org admin</p>
-          </div>
+          /* B2B engineer: the balance is in the tiles (managed by the org admin) */
+          null
         )}
 
         {/* Teams v2 (20 Oct 2026): "Your team" for a member, "Connect with my
@@ -1112,6 +1099,75 @@ export default function MyActivityPage() {
             Studio, each opening the project at /studio. */}
         <MyStudioProjects token={token} />
 
+        <TutorialCard />
+
+        {/* Saving your work. Above the wallet on purpose: a customer who
+            loses a project cares about nothing else on this page. Named the
+            drive explicitly after a customer ended a session unsure which
+            location survived — "your NAS drive" is not an instruction, "N:" is. */}
+        <section id="where-work-is-saved" className="cf-glass border-l-2! border-l-blue! p-5 sm:p-6 scroll-mt-24">
+          <div className="flex items-start gap-3">
+            <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"
+                 className="mt-0.5 h-5 w-5 shrink-0 text-blue">
+              <path fillRule="evenodd" clipRule="evenodd" d="M10 1.5a1 1 0 0 1 .87.5l8 14A1 1 0 0 1 18 17.5H2a1 1 0 0 1-.87-1.5l8-14a1 1 0 0 1 .87-.5Zm0 5a.9.9 0 0 0-.9.98l.35 3.87a.55.55 0 0 0 1.1 0l.35-3.87A.9.9 0 0 0 10 6.5Zm0 7a1 1 0 1 0 0 2 1 1 0 0 0 0-2Z" />
+            </svg>
+            <div className="min-w-0">
+              <h2 className="cf-section-title">Where your work is saved.</h2>
+              <p className="mt-2 text-[15px] leading-7 text-ink-2">
+                Inside a session, save everything to{" "}
+                <span className="rounded-cf border border-rule-strong bg-paper-2 px-1.5 py-0.5 font-mono text-sm font-semibold whitespace-nowrap text-ink">
+                  N:
+                </span>,
+                the drive labelled <span className="font-semibold text-ink">Coreframe Datalake</span>.
+                It&rsquo;s already mapped when the desktop appears, and it&rsquo;s the only
+                place that survives the session.
+              </p>
+
+              <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-3">
+                <div className="cf-glass-inset p-4">
+                  <p className="font-mono text-[11.5px] leading-none font-medium tracking-[0.2em] uppercase text-blue">Kept</p>
+                  <p className="mt-2 text-sm leading-6 text-ink-2">
+                    Anything under <span className="font-mono text-ink">N:\</span>. It&rsquo;ll be
+                    waiting next session, and you can download it from here any time.
+                  </p>
+                </div>
+                <div className="cf-glass-inset p-4">
+                  <p className="font-mono text-[11.5px] leading-none font-medium tracking-[0.2em] uppercase text-destructive">Erased</p>
+                  <p className="mt-2 text-sm leading-6 text-ink-2">
+                    Desktop, Documents, Downloads, <span className="font-mono text-ink">C:\</span>,
+                    and anything you installed. Wiped when the session ends.
+                  </p>
+                </div>
+                <div className="cf-glass-inset p-4">
+                  <p className="font-mono text-[11.5px] leading-none font-medium tracking-[0.2em] uppercase text-blue">Linked assets</p>
+                  <p className="mt-2 text-sm leading-6 text-ink-2">
+                    Keep the whole project folder on N:, not just the scene file. D5, Twinmotion
+                    and 3ds Max break if textures move.
+                  </p>
+                </div>
+              </div>
+
+              <p className="mt-5 text-sm leading-6 text-ink-2">
+                Working from a local copy? Save to <span className="font-mono text-ink">N:</span> before
+                you finish, or use <span className="text-ink">Save As</span> and point it there at the
+                start so every later save lands in the right place.
+              </p>
+
+              <div className="mt-5 flex flex-wrap gap-3">
+                <a href="/how-to-use#saving-your-work" className="cf-btn-secondary w-full sm:w-auto">
+                  Read the full guide
+                </a>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Licence statement (gpu-product-1110, item 3): only while the API
+            sends it. Next to "Where your work is saved": both are about what
+            happens when a session ends. */}
+        <LicenceCard licence={gpuExtras?.licence} />
+
+        <div id="activity" className="scroll-mt-24">
         {/* Activity: ONE list (owner, 16 Oct 2026). Wallet history, Recent
             sessions and Payment history showed the same charges two or three
             times, each in its own scrolling table. See activity-list.tsx. */}
@@ -1126,6 +1182,7 @@ export default function MyActivityPage() {
           onLoadMore={loadMoreLedger}
           onOpenInvoice={openInvoice}
         />
+        </div>
       </div>
 
       <div className="mt-6 grid gap-6">
