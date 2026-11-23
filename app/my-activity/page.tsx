@@ -105,6 +105,9 @@ interface WalletData {
   intro_offer_price_rupees_now?: number | null;
   intro_offer_hours_now?: number | null;
   intro_offer_bonus_rupees_now?: number | null;
+  /** 23 Nov 2026: the first top-up's bonus is this percent of it, capped. */
+  intro_offer_bonus_percent_now?: number | null;
+  intro_offer_bonus_cap_now?: number | null;
   /** ISO-3166 alpha-2 from sign-up; preselects the billing country. */
   country_code?: string | null;
   /** 15 Oct 2026: "INR" | "USD" (null: no country yet). Every `*_rupees`
@@ -164,6 +167,15 @@ function StartCard({
           {hoursLabel(offer.hours)}
           {offer.gpuName ? <span className="text-ink-2"> of {offer.gpuName}</span> : null}
         </p>
+        {wallet.intro_offer_bonus_percent_now ? (
+          <p className="mt-2 text-[15px] leading-6 font-medium text-ink">
+            {wallet.intro_offer_bonus_percent_now}% extra credit on your first top-up
+            {wallet.intro_offer_bonus_cap_now
+              ? `, up to ${cur === "USD" ? formatMoney(wallet.intro_offer_bonus_cap_now, "USD") : rupees(wallet.intro_offer_bonus_cap_now)}`
+              : ""}
+            .
+          </p>
+        ) : null}
         <p className="mt-2 text-sm leading-6 text-ink-2">
           {needsPayment
             ? "Your account is ready, and your first top-up unlocks sessions. It\u2019s "

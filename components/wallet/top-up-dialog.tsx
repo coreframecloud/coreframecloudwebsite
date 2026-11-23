@@ -75,6 +75,7 @@ import {
   tierMin,
   type BulkTier,
 } from "@/components/wallet/bonus-ladder";
+import { GstInvoiceFields } from "@/components/wallet/gst-invoice-fields";
 
 export { bulkBonusFor, type BulkTier };
 
@@ -96,6 +97,9 @@ type PaymentsConfig = {
   /** The bonus ladder in the account's currency, straight from the server
    *  (topup_bonus.public_tiers); empty when the bonus is switched off. */
   bulk_topup_tiers?: BulkTier[] | null;
+  /** First top-up bonus as a percent of the amount, capped (23 Nov 2026). */
+  intro_offer_bonus_percent_now?: number | null;
+  intro_offer_bonus_cap_now?: number | null;
 };
 
 // Razorpay attaches itself to window; typed loosely because we only ever call
@@ -230,6 +234,12 @@ export default function TopUpDialog({
     if (Number.isFinite(n) && n > 0) trackWebEvent("topup_amount_selected", { amount: n, currency: walletCurrency ?? undefined, preset });
   };
   const [name, setName] = useState(user?.full_name ?? "");
+  // GST invoice (23 Nov 2026): ticked and both checks passed, or not.
+  const [gst, setGst] = useState({ wanted: false, ready: false });
+  const onGstChange = useCallback((v: { wanted: boolean; ready: boolean }) => {
+    setGst((g) => (g.wanted === v.wanted && g.ready === v.ready ? g : v));
+    setError("");
+  }, []);
   // Bundled list until the API answers; then the API's list (every country a
   // sign-up could have chosen) with the bundled ones kept, so it never shrinks.
   const [countries, setCountries] = useState<Country[]>(COUNTRIES);
@@ -402,6 +412,9 @@ export default function TopUpDialog({
     }
     if (!countryIso) return setError("Select your country.");
     if (isUsd && isIndia) return setError("Your account is billed in US dollars. Select your country outside India.");
+    if (gst.wanted && !gst.ready && isIndia && !isUsd && !starterMode) {
+      return setError("Finish the GSTIN and bank account checks for a GST invoice, or untick it.");
+    }
     if (isIndia) {
       if (!stateCode) return setError("Select your state. It decides the GST split on your invoice.");
       // Optional (owner, 16 Oct 2026): checked only when one is typed.
@@ -425,6 +438,7 @@ export default function TopUpDialog({
           currency,
           amount_rupees: rupees,
           ...(starterMode ? { purpose: "studio_starter" } : {}),
+          ...(gst.wanted && gst.ready && isIndia && !isUsd && !starterMode ? { gst_invoice: true } : {}),
           billing_address: {
             name: name.trim() || undefined,
             city: city.trim() || undefined,
@@ -569,7 +583,7 @@ export default function TopUpDialog({
     } finally {
       setBusy(false);
     }
-  }, [amount, city, config, countryIso, currency, isFirstTopup, isIndia, isUsd, name, onCredited, onPending, pincode, presets, stateCode, user, starterMode, starterOffer]);
+  }, [amount, city, config, countryIso, currency, isFirstTopup, isIndia, isUsd, name, onCredited, onPending, pincode, presets, stateCode, user, starterMode, starterOffer, gst.wanted, gst.ready]);
 
   // "Other": a free amount typed in place of a card. The limits show while the
   // field has focus, and an out-of-range amount says so in the same slot.
@@ -654,9 +668,23 @@ export default function TopUpDialog({
   // Owner, 22 Nov 2026: the intro bonus is a fixed credit (Rs 800 / $8), the same on every
   // card from the intro price up, so every card says "+Rs 800 credit". The GPU's long name
   // never goes on a card: it overflowed the narrow card on phones.
+  // 23 Nov 2026: the intro bonus is a percent of the amount, capped (50%, up
+  // to Rs 2,500 / $50), so each card shows its own. Fixed bonus on an older server.
+  const introPct = config?.intro_offer_bonus_percent_now ?? null;
+  const introCap = config?.intro_offer_bonus_cap_now ?? null;
+  const introBonusFor = (p: number): number => {
+    if (!intro || p < intro.price) return 0;
+    if (introPct && introPct > 0) {
+      let b = (p * introPct) / 100;
+      if (introCap && introCap > 0) b = Math.min(b, introCap);
+      return isUsd ? Math.round(b * 100) / 100 : Math.floor(b);
+    }
+    return intro.bonus ?? 0;
+  };
   const cardNote = (p: number): string => {
     if (intro) {
-      return p >= intro.price && intro.bonus ? `+${bonusMoney(intro.bonus, currency)} credit` : "";
+      const b = introBonusFor(p);
+      return b > 0 ? `+${bonusMoney(b, currency)} credit` : "";
     }
     const b = bulkBonusFor(p, tiers);
     return b > 0 ? `+${bonusMoney(b, currency)}` : "";
@@ -667,11 +695,13 @@ export default function TopUpDialog({
   const payingOk = Number.isFinite(paying) && paying > 0 && !amountTooLow && !amountTooHigh;
   let summary: React.ReactNode = null;
   if (payingOk) {
-    if (intro && paying >= intro.price && intro.bonus) {
+    const ib = introBonusFor(paying);
+    if (intro && ib > 0) {
       summary = (
         <>
           You pay <b className="font-semibold text-ink">{money(paying)}</b> · wallet gets{" "}
-          <b className="font-semibold text-ink">{bonusMoney(paying + intro.bonus, currency)}</b> (incl. {bonusMoney(intro.bonus, currency)} bonus credit
+          <b className="font-semibold text-ink">{bonusMoney(paying + ib, currency)}</b> (incl. {bonusMoney(ib, currency)} bonus credit
+          {introPct ? ` (${introPct}% of your first top-up${introCap ? `, up to ${bonusMoney(introCap, currency)}` : ""})` : ""}
           {intro.validityDays ? `, use within ${intro.validityDays} days` : ""})
           {paying === intro.price && intro.hours && intro.gpuName ? ` · about ${hoursLabel(intro.hours)} of ${intro.gpuName}` : ""}
           {forGpu && intro.gpuName && !intro.gpuName.includes(forGpu.name) && !forGpu.name.includes(intro.gpuName)
@@ -936,14 +966,18 @@ export default function TopUpDialog({
                 {/* Funnel review, 3 Nov 2026: only country and (in India) state
                     are needed for the invoice's tax, so the rest is optional
                     and folded away. */}
-                <details className="group mt-5">
+                {isIndia && !isUsd && !starterMode ? (
+                  <GstInvoiceFields fieldCls={fieldCls} labelCls={labelCls} helperCls={helperCls} onChange={onGstChange} />
+                ) : null}
+
+                <details className={`group mt-5 ${gst.wanted && isIndia && !isUsd && !starterMode ? "hidden" : ""}`}>
                   <summary className="inline-flex min-h-11 cursor-pointer list-none items-center gap-1.5 text-sm leading-5 font-medium text-blue-ink">
                     <span aria-hidden="true" className="inline-block transition-transform group-open:rotate-90">›</span>
-                    Add company details <span className="font-normal text-ink-2">(optional)</span>
+                    Add name and address <span className="font-normal text-ink-2">(optional)</span>
                   </summary>
                   <div className="mt-3 grid grid-cols-2 gap-x-3 gap-y-5 sm:grid-cols-[2fr_1.4fr_1fr]">
                     <div className="col-span-2 sm:col-span-1">
-                      <label htmlFor="cf-topup-name" className={labelCls}>Company or name</label>
+                      <label htmlFor="cf-topup-name" className={labelCls}>Name on invoice</label>
                       <input
                         id="cf-topup-name"
                         value={name}
@@ -979,7 +1013,7 @@ export default function TopUpDialog({
                 {/* 3. Pay */}
                 <button
                   onClick={pay}
-                  disabled={busy || !config || amountTooLow || amountTooHigh}
+                  disabled={busy || !config || amountTooLow || amountTooHigh || (gst.wanted && !gst.ready && isIndia && !isUsd && !starterMode)}
                   className="cf-btn-primary mt-6 w-full tabular-nums disabled:opacity-50"
                 >
                   {busy ? "Opening payment…" : `Pay ${money(Number(amount || 0) || 0)}`}
