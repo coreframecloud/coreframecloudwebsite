@@ -1,6 +1,8 @@
 "use client";
 
 import { hasConsent } from "@/lib/consent";
+import { checkoutEventId, newEventId, payInfoEventId, pxProps } from "@/lib/meta-ids";
+import { trackPx } from "@/lib/web-events";
 
 type EventParams = Record<string, string | number | boolean | undefined>;
 
@@ -151,19 +153,109 @@ export function trackConversion(name: ConversionName, params: ConversionParams =
     }
     if (name === "sign_up") metaParams.status = "registered";
     const eventID = params.event_id ?? params.transaction_id;
-    if (typeof window.fbq === "function") {
-      window.fbq("track", metaEvent, metaParams, eventID ? { eventID } : undefined);
-    } else {
-      // The pixel loads lazyOnload, so a conversion that fires early (the
-      // magic-link page verifies and redirects within ~1 s) used to find no
-      // fbq and was silently lost - the 12 Oct test sign-up never reached
-      // Meta. Park it; the pixel snippet in app/layout.tsx replays it right
-      // after init, on this page or the next one.
-      queueMetaEvent(metaEvent, metaParams, eventID);
-    }
+    fireMeta(metaEvent, metaParams, eventID);
   }
 
   trackClarityEvent(`conversion_${name}`);
+}
+
+/**
+ * One Meta pixel event, now or later. fbq exists only after the banner's
+ * Accept (app/layout.tsx), so before that the event waits in memory and is
+ * replayed only if Accept is given on this page. The pixel loads lazyOnload,
+ * so a conversion that fires early (the magic-link page verifies and
+ * redirects within ~1 s) used to find no fbq and was silently lost - the
+ * 12 Oct test sign-up never reached Meta. Parked events are replayed by the
+ * pixel snippet right after init, on this page or the next one. eventID is
+ * what the Conversions API sends too, so Meta keeps one copy.
+ */
+export function fireMeta(event: string, params: Record<string, string | number>, eventID?: string): void {
+  if (typeof window === "undefined") return;
+  try {
+    if (typeof window.fbq === "function") {
+      window.fbq("track", event, params, eventID ? { eventID } : undefined);
+    } else {
+      queueMetaEvent(event, params, eventID);
+    }
+  } catch {
+    // never let analytics break the page
+  }
+}
+
+/** fireMeta plus the beacon's server copy (`px`, consented batches only) for
+ *  the events the server cannot see itself: PageView, ViewContent, Lead,
+ *  AddPaymentInfo. */
+function fireMirrored(event: string, params: Record<string, string | number>, eventID: string): void {
+  fireMeta(event, params, eventID);
+  try {
+    const px = pxProps(event, eventID, params);
+    if (px) trackPx(px);
+  } catch {
+    /* never break the page */
+  }
+}
+
+/**
+ * PageView on a client-side route change (components/analytics/web-events.tsx).
+ * The pixel's own PageView at init covers the first page of the load only, so
+ * every later route fires here with a fresh `pv.<uuid>`. Only when the pixel
+ * is already loaded: if it is not, its init PageView (which reads
+ * window.__cfPvId, the latest id) covers the current page, and queueing here
+ * would send that page twice. The server copy goes either way.
+ */
+export function trackRoutePageView(eventID: string, loaded: boolean): void {
+  if (typeof window === "undefined") return;
+  if (loaded && typeof window.fbq === "function") {
+    try { window.fbq("track", "PageView", {}, { eventID }); } catch { /* ignore */ }
+  }
+  mirrorPageView(eventID);
+}
+
+const mirroredPv = new Set<string>();
+
+/** The server copy of a PageView, once per id. */
+export function mirrorPageView(eventID: string): void {
+  if (!eventID || mirroredPv.has(eventID)) return;
+  mirroredPv.add(eventID);
+  const px = pxProps("PageView", eventID);
+  if (px) trackPx(px);
+}
+
+/** Forget that a PageView id was mirrored (a consent change dropped it from
+ *  the queue before it was sent; the caller mirrors it again). */
+export function remirrorPageView(eventID: string): void {
+  mirroredPv.delete(eventID);
+  mirrorPageView(eventID);
+}
+
+let leadFired = false;
+
+/** Meta Lead, once per page load, when a sign-up form is started. Browser
+ *  only (the server mirror rides the beacon); no PII. */
+export function trackSignupLead(where: string): void {
+  if (leadFired || typeof window === "undefined") return;
+  leadFired = true;
+  fireMirrored("Lead", { content_name: "signup", content_category: where.slice(0, 40) }, newEventId("lead"));
+}
+
+/** Meta InitiateCheckout for a top-up order the API just created. The server
+ *  sends the same `checkout_<topup id>`; without an id there is nothing to
+ *  pair with, so the browser stays quiet and the server copy stands. */
+export function trackCheckoutStarted(topupId: unknown, value: number, currency: string): void {
+  const id = checkoutEventId(topupId);
+  if (!id || !Number.isFinite(value)) return;
+  fireMeta("InitiateCheckout", { value, currency, content_type: "product", num_items: 1 }, id);
+}
+
+const payInfoSent = new Set<string>();
+
+/** Meta AddPaymentInfo: the customer actually tried to pay this order
+ *  (Razorpay's success handler, or its payment.failed). Once per order. */
+export function trackPaymentAttempt(topupId: unknown, value: number, currency: string): void {
+  const id = payInfoEventId(topupId);
+  if (!id || payInfoSent.has(id) || !Number.isFinite(value)) return;
+  payInfoSent.add(id);
+  fireMirrored("AddPaymentInfo", { value, currency }, id);
 }
 
 const META_QUEUE_KEY = "cf_meta_queue";
@@ -279,12 +371,9 @@ export function trackViewContent(contentName: string, contentCategory: string): 
     content_category: contentCategory,
     content_type: "product",
   };
-  if (typeof window.fbq === "function") {
-    window.fbq("track", "ViewContent", params);
-  } else {
-    // The pixel loads lazyOnload and is usually not there yet on a phone
-    // (funnel audit, 22 Oct 2026: 2 ViewContents against 3,657 landing-page
-    // views). Park it; the pixel snippet replays the queue right after init.
-    queueMetaEvent("ViewContent", params);
-  }
+  // The pixel loads lazyOnload and is usually not there yet on a phone
+  // (funnel audit, 22 Oct 2026: 2 ViewContents against 3,657 landing-page
+  // views); fireMeta parks it for the replay. `vc.<uuid>` pairs it with the
+  // server copy the beacon carries (24 Nov 2026).
+  fireMirrored("ViewContent", params, newEventId("vc"));
 }

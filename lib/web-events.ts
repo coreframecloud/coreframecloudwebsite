@@ -27,7 +27,11 @@ import { landingSource } from "@/lib/attribution";
 import { hasConsent, onConsentChange } from "@/lib/consent";
 
 type Props = Record<string, string | number | boolean | undefined>;
-type Ev = { n: string; p: string; props?: Props; t: number };
+type Ev = { n: string; p: string; props?: Props; t: number; l?: 1 };
+
+/* Anonymous batches carry only these (cookieless funnel counts, 24 Nov 2026):
+ * page_view (with l: 1 when it is a landing) and signup_click, never props. */
+const ANON_EVENTS = new Set(["page_view", "signup_click"]);
 
 const URL = `${API_BASE}/events/web`;
 const COOKIE = "cf_vid";
@@ -145,7 +149,7 @@ export function init(denied: boolean): void {
     identify();
     // Without consent only page views ever leave this page.
     if (!identified) {
-      for (let i = queue.length - 1; i >= 0; i--) if (queue[i].n !== "page_view") queue.splice(i, 1);
+      for (let i = queue.length - 1; i >= 0; i--) if (!ANON_EVENTS.has(queue[i].n)) queue.splice(i, 1);
     }
   });
   const hide = () => { if (document.visibilityState === "hidden") flush(); };
@@ -154,13 +158,16 @@ export function init(denied: boolean): void {
 }
 
 /** Queue one event. Sent within 5 s, or at once when the page goes away.
- *  Without consent: page_view only. */
-export function track(n: string, props?: Props): void {
+ *  Without consent: page_view and signup_click only, without props.
+ *  `landing` marks a page view as the visit's landing (cookieless count). */
+export function track(n: string, props?: Props, landing = false): void {
   if (typeof window === "undefined") return;
   try {
     // Before a choice, keep funnel events in the queue for a moment: an
     // Accept within the 5 s window sends them; otherwise flush drops them.
-    queue.push({ n, p: location.pathname, props, t: Date.now() });
+    const ev: Ev = { n, p: location.pathname, props, t: Date.now() };
+    if (landing && n === "page_view") ev.l = 1;
+    queue.push(ev);
     if (queue.length >= 25) flush();
     else if (!timer) timer = setTimeout(flush, 5000);
   } catch {
@@ -178,11 +185,12 @@ export function flush(): void {
       const chunk = queue.splice(0, 25);
       let body: string;
       if (identified && vid) {
-        const e = chunk.map((x) => ({ n: x.n, p: x.p, props: x.props, dt: now - x.t }));
+        const e = chunk.map((x) => ({ n: x.n, p: x.p, props: x.props, dt: now - x.t, ...(x.l ? { l: 1 } : {}) }));
         body = JSON.stringify({ v: 1, c: 1, vid, sid, ...touches(), e });
       } else {
-        // Anonymous: page views only, no id, no props beyond nothing.
-        const e = chunk.filter((x) => x.n === "page_view").map((x) => ({ n: x.n, p: x.p }));
+        // Anonymous: page views (landing flag) and sign-up clicks only; no
+        // id, no props. The `px` pixel mirror never leaves without consent.
+        const e = chunk.filter((x) => ANON_EVENTS.has(x.n)).map((x) => ({ n: x.n, p: x.p, ...(x.l ? { l: 1 } : {}) }));
         if (!e.length) continue;
         body = JSON.stringify({ v: 1, anon: true, a: landingSource(), e });
       }
@@ -195,4 +203,24 @@ export function flush(): void {
   } catch {
     /* nothing to do */
   }
+}
+
+/* ── Sign-up intent and the pixel mirror (24 Nov 2026) ──────────────────── */
+
+let signupClicked = false;
+
+/** The first sign-up intent of this page load (a sign-up link or CTA, the
+ *  Google sign-up button, the email submitted in sign-up mode): one
+ *  `signup_click`. Counted for every visitor, cookieless without consent. */
+export function markSignupIntent(): void {
+  if (signupClicked) return;
+  signupClicked = true;
+  track("signup_click");
+}
+
+/** The server copy of a pixel event (`px`), so the Conversions API can send
+ *  it with the same event id when the pixel is blocked. Consented batches
+ *  only: flush drops it from anonymous ones. */
+export function trackPx(props: { e: string; id: string; cn?: string; cc?: string; v?: number; cur?: string }): void {
+  track("px", props);
 }

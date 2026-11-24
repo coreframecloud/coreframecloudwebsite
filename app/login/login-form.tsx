@@ -18,8 +18,8 @@ import {
   type GstState,
 } from "@/lib/validation";
 import { goToGoogleSignIn, readAttribution } from "@/lib/attribution";
-import { markPendingSignup, trackSignupIfNew } from "@/lib/analytics";
-import { flush as flushWebEvents, track as trackWebEvent } from "@/lib/web-events";
+import { markPendingSignup, trackSignupIfNew, trackSignupLead } from "@/lib/analytics";
+import { flush as flushWebEvents, markSignupIntent, track as trackWebEvent } from "@/lib/web-events";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { OtpInput } from "@/components/ui/otp-input";
@@ -41,6 +41,12 @@ type CodeStep = "email" | "code" | "done";
  *  when its hand-off token is redeemed). Flushed now: the page is leaving. */
 function googleClicked(where: "signup" | "login"): void {
   trackWebEvent("signup_google_clicked", { where });
+  // On the sign-up card the Google button starts a sign-up: Meta Lead and the
+  // cookieless signup_click, once per page load each (24 Nov 2026).
+  if (where === "signup") {
+    trackSignupLead("google");
+    markSignupIntent();
+  }
   flushWebEvents();
 }
 
@@ -507,6 +513,7 @@ export default function LoginForm({
     setError("");
     if (!linkEmail.trim()) return setError("Enter your email address.");
     if (!looksLikeEmail(linkEmail)) return setError("Enter a full email address, like name@gmail.com.");
+    if (isStart) markSignupIntent();
     setLinkLoading(true);
     try {
       const res = await fetch(`${API}/auth/request-magic-link`, {
@@ -518,6 +525,8 @@ export default function LoginForm({
       if (res.status === 422 && typeof data?.detail === "string" && data.detail.includes("full_name")) {
         // Server says new user — need details
         trackWebEvent("signup_email_submitted", { door: "link", step: "email" });
+        trackSignupLead("email");
+        markSignupIntent();
         setLinkIsNew(true);
         setLinkStep("details");
         return;
@@ -798,7 +807,12 @@ export default function LoginForm({
                   <Input
                     type="email"
                     value={linkEmail}
-                    onChange={(e) => { setLinkEmail(e.target.value); setError(""); }}
+                    onChange={(e) => {
+                      setLinkEmail(e.target.value);
+                      setError("");
+                      // Sign-up form started (typing, not the autofocus): Meta Lead, once.
+                      if (isStart) trackSignupLead("email");
+                    }}
                     className={inputCls}
                     placeholder="you@studio.com"
                     autoComplete="email"

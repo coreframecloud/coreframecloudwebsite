@@ -50,7 +50,7 @@
 
 import { apiFetch, sessionMarker } from "@/lib/session";
 import { useCallback, useEffect, useState } from "react";
-import { trackConversion } from "@/lib/analytics";
+import { trackCheckoutStarted, trackConversion, trackPaymentAttempt } from "@/lib/analytics";
 import { flush as flushWebEvents, track as trackWebEvent } from "@/lib/web-events";
 import { hoursLabel, type IntroOffer } from "@/lib/rate-card";
 import { useRateCard } from "@/lib/use-rate-card";
@@ -106,7 +106,10 @@ type PaymentsConfig = {
 // one constructor on it.
 declare global {
   interface Window {
-    Razorpay?: new (options: Record<string, unknown>) => { open: () => void };
+    Razorpay?: new (options: Record<string, unknown>) => {
+      open: () => void;
+      on?: (event: string, handler: (resp: unknown) => void) => void;
+    };
   }
 }
 
@@ -470,6 +473,12 @@ export default function TopUpDialog({
         );
       }
 
+      // Meta InitiateCheckout, paired with the server's copy by
+      // checkout_<topup id> (24 Nov 2026). No id in the response: the
+      // server's copy stands alone.
+      const orderCurrency: string = order.currency ?? currency;
+      trackCheckoutStarted(order.topup_id, rupees, orderCurrency);
+
       // Funnel: the checkout is about to open (the API writes the same step
       // when the order is created; a visitor counts once). Flushed now: the
       // Razorpay window takes the page's attention.
@@ -510,6 +519,8 @@ export default function TopUpDialog({
           // Razorpay hands us three fields; the SERVER decides whether they
           // constitute a paid order. Nothing is credited on this side.
           handler: async (resp: Record<string, string>) => {
+            // They paid: AddPaymentInfo (once per order) before the verify.
+            trackPaymentAttempt(order.topup_id, rupees, orderCurrency);
             try {
               const vr = await apiFetch(`${API}/payments/verify`, {
                 method: "POST",
@@ -572,6 +583,13 @@ export default function TopUpDialog({
             },
           },
         });
+        // A failed attempt is still payment details entered: AddPaymentInfo,
+        // once per order (the success handler shares the guard).
+        try {
+          rzp.on?.("payment.failed", () => trackPaymentAttempt(order.topup_id, rupees, orderCurrency));
+        } catch {
+          /* older checkout.js: no event hook */
+        }
         rzp.open();
       });
     } catch (e) {
