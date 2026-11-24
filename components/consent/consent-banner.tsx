@@ -107,7 +107,7 @@ export function ConsentBanner() {
             <span className="text-ink-3"> · Now: {current === "granted" ? "accepted" : "only essential"}</span>
           ) : null}
         </p>
-        <div className="grid grid-cols-2 gap-2 sm:flex sm:shrink-0">
+        <div className="grid grid-cols-2 gap-2 sm:shrink-0">
           <button type="button" onClick={() => choose("denied")} className="cf-consent-btn">
             Only essential
           </button>
