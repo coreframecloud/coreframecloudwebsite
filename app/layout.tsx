@@ -347,7 +347,11 @@ export default async function RootLayout({
                   t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(w,
                   d,'script','https://connect.facebook.net/en_US/fbevents.js');
                   w.fbq('init', '${META_PIXEL_ID}');
-                  w.fbq('track', 'PageView');
+                  if (!w.__cfPvId) {
+                    try { w.__cfPvId = 'pv.' + w.crypto.randomUUID(); }
+                    catch (err) { w.__cfPvId = 'pv.' + Date.now().toString(16) + '-' + Math.random().toString(16).slice(2, 14); }
+                  }
+                  w.fbq('track', 'PageView', {}, { eventID: w.__cfPvId });
                   try {
                     var q = JSON.parse(localStorage.getItem('cf_meta_queue') || '[]');
                     localStorage.removeItem('cf_meta_queue');
