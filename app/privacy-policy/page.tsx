@@ -25,7 +25,7 @@ export default function PrivacyPolicyPage() {
       <div className="cf-wide">
             <div className="text-sm font-semibold uppercase tracking-widest text-blue">Legal</div>
             <h1 className="cf-display mt-3">Privacy Policy</h1>
-            <p className="mt-2 text-sm text-ink-3">Last Updated: 24 November 2026 · Effective: 9 December 2026</p>
+            <p className="mt-2 text-sm text-ink-3">Last Updated: 24 November 2026 · Effective: 24 November 2026 for accounts created on or after that date; 9 December 2026 for existing accounts</p>
       </div>
     </section>
     <main className="relative min-h-screen border-b border-rule text-ink">
@@ -167,7 +167,7 @@ export default function PrivacyPolicyPage() {
               <li>So Meta does not show our ads to people who are already customers.</li>
             </ul>
             <p>Meta matches the hashed details against its own users and does not receive the readable values from us.</p>
-            <p><strong className="text-ink">Whose data.</strong> We send these events for accounts whose browser chose &ldquo;Accept&rdquo; on our cookie bar, and for accounts created after 9 December 2026 under these terms, which you accept when you create an account. We do not send them for accounts in the European Economic Area, the United Kingdom or Switzerland. We do not send them for anyone who has chosen &ldquo;Only essential&rdquo; or opted out as described below.</p>
+            <p><strong className="text-ink">Whose data.</strong> We send these events for accounts whose browser chose &ldquo;Accept&rdquo; on our cookie bar, and for accounts created on or after 24 November 2026 under these terms, which you accept when you create an account. We do not send them for accounts in the European Economic Area, the United Kingdom or Switzerland. We do not send them for anyone who has chosen &ldquo;Only essential&rdquo; or opted out as described below.</p>
             <p><strong className="text-ink">How long.</strong> The copy of each event in our systems is kept for 30 days, then reduced to a record that it was sent (event type, date and a reference number), which is deleted after 13 months. Meta keeps what it receives under its own policy. Customer lists we upload to Meta for audiences are matched and then deleted by Meta under its <Link href="https://www.facebook.com/legal/terms/customaudience" target="_blank" rel="noreferrer" className="text-blue hover:underline">Custom Audiences terms</Link>.</p>
             <p><strong className="text-ink">Opting out.</strong> Any of these stops all future events and removes you from the next customer-list upload:</p>
             <ul className="list-disc space-y-1.5 pl-6">
