@@ -90,9 +90,10 @@ function GoogleTermsNote() {
   return (
     <p className="text-center text-xs leading-5 text-ink-3">
       By continuing with Google, you agree to our{" "}
-      <a href="/terms-of-service" target="_blank" rel="noopener" className="text-blue hover:underline">Terms of Service</a>{" "}
-      and{" "}
-      <a href="/fair-use-policy" target="_blank" rel="noopener" className="text-blue hover:underline">Fair Use Policy</a>.
+      <a href="/terms-of-service" target="_blank" rel="noopener" className="text-blue hover:underline">Terms of Service</a>,{" "}
+      <a href="/fair-use-policy" target="_blank" rel="noopener" className="text-blue hover:underline">Fair Use Policy</a> and{" "}
+      <a href="/privacy-policy" target="_blank" rel="noopener" className="text-blue hover:underline">Privacy Policy</a>, including{" "}
+      <a href="/privacy-policy#meta" target="_blank" rel="noopener" className="text-blue hover:underline">advertising measurement with Meta</a>.
     </p>
   );
 }
@@ -1128,11 +1129,26 @@ export default function LoginForm({
 
       {/* Footer */}
       <p className="mt-6 text-center text-xs leading-6 text-ink-3">
-        {isStart ? "By creating an account, you agree to our" : "By signing in, you agree to our"}{" "}
-        <a href="/terms-of-service" className="text-blue hover:underline">Terms of Service</a>,{" "}
-        <a href="/fair-use-policy" className="text-blue hover:underline">Fair Use Policy</a>,{" "}
-        <a href="/privacy-policy" className="text-blue hover:underline">Privacy Policy</a>, and{" "}
-        <a href="/refunds" className="text-blue hover:underline">Refunds and chargebacks</a>.
+        {/* Sign-up wording approved by the owner 24 Nov 2026; sign-in keeps its line. */}
+        {isStart ? (
+          <>
+            By creating an account, you agree to our{" "}
+            <a href="/terms-of-service" className="text-blue hover:underline">Terms of Service</a>,{" "}
+            <a href="/fair-use-policy" className="text-blue hover:underline">Fair Use Policy</a>,{" "}
+            <a href="/privacy-policy" className="text-blue hover:underline">Privacy Policy</a> (including{" "}
+            <a href="/privacy-policy#meta" className="text-blue hover:underline">advertising measurement with Meta</a>, which you can
+            turn off at any time) and{" "}
+            <a href="/refunds" className="text-blue hover:underline">Refunds and chargebacks</a>.
+          </>
+        ) : (
+          <>
+            By signing in, you agree to our{" "}
+            <a href="/terms-of-service" className="text-blue hover:underline">Terms of Service</a>,{" "}
+            <a href="/fair-use-policy" className="text-blue hover:underline">Fair Use Policy</a>,{" "}
+            <a href="/privacy-policy" className="text-blue hover:underline">Privacy Policy</a>, and{" "}
+            <a href="/refunds" className="text-blue hover:underline">Refunds and chargebacks</a>.
+          </>
+        )}
       </p>
     </div>
   );

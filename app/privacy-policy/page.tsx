@@ -25,7 +25,7 @@ export default function PrivacyPolicyPage() {
       <div className="cf-wide">
             <div className="text-sm font-semibold uppercase tracking-widest text-blue">Legal</div>
             <h1 className="cf-display mt-3">Privacy Policy</h1>
-            <p className="mt-2 text-sm text-ink-3">Last Updated: 10 November 2026 · Effective: 25 November 2026</p>
+            <p className="mt-2 text-sm text-ink-3">Last Updated: 24 November 2026 · Effective: 9 December 2026</p>
       </div>
     </section>
     <main className="relative min-h-screen border-b border-rule text-ink">
@@ -64,6 +64,7 @@ export default function PrivacyPolicyPage() {
               <li><strong className="text-ink">Studio:</strong> the floor plans (DXF), reference images and prompts you upload or type, and the images we generate for you</li>
               <li><strong className="text-ink">Free tools:</strong> the file you upload is read and then deleted; if you create a share link, we keep the report (not the file) and any email you give for 90 days</li>
               <li>Records of the choices you make, such as WhatsApp marketing consent, with the time and IP address</li>
+              <li>The pixel identifiers Meta&rsquo;s advertising cookies set in your browser (<code>_fbp</code>, <code>_fbc</code>), the IP address and browser details of the request that created your account, and where your first visit came from (see section 7A). We keep these only if your browser chose &ldquo;Accept&rdquo;, or under the terms you accepted at sign-up (section 7B).</li>
             </ul>
             <p>When you visit our website without signing in, we may collect anonymised traffic data (browser type, approximate IP location, pages visited) to improve our service.</p>
           </Section>
@@ -76,12 +77,14 @@ export default function PrivacyPolicyPage() {
               <li>Meeting legal obligations, including CERT-In record keeping and tax law</li>
               <li>Responding to support requests</li>
               <li>Improving our platform and detecting fraud and abuse</li>
+              <li>Measuring and improving our advertising. We tell advertising platforms (Meta) when an ad led to a sign-up, a payment or a first session, so the platforms show our ads to people likely to need our service and stop showing them to existing customers (section 7B).</li>
+              <li>Estimating, at sign-up, how valuable a new account is likely to be to us over its first 60 days. We use only your email domain type (company or personal), your country and currency, how you reached our website and the page you landed on. The estimate is a number sent to Meta for ad optimisation and kept on your account. It never changes your price, your access, or any decision about you.</li>
             </ul>
             <p>We do not use your files, drawings or results to train or improve AI models, unless you opt in for a particular file (for example, the optional &ldquo;let Coreframe learn from this file&rdquo; box in Studio). Where you opt in, the file is used internally only.</p>
           </Section>
 
           <Section title="3. Email and WhatsApp communications">
-            <p>We send transactional messages related to your account and jobs. Marketing messages on WhatsApp (for example Studio tips and offers) are sent only if you tick the optional box to receive them, and you can turn them off at any time in your account or from the link in the message. We do not send unsolicited marketing email without your consent. Contact us to opt out of non-essential communications.</p>
+            <p>We send transactional messages about your account and jobs by email and WhatsApp. After you create an account, wherever you are, we may send you one WhatsApp message about finishing your set-up (for example, verifying your mobile or making your first top-up). These are service messages about the account you just opened. They are not advertising, and they stop once the step is done. To stop them, change your WhatsApp settings in your account or message our support WhatsApp. Marketing messages on WhatsApp (for example Studio tips and offers) are sent only if you tick the optional box, and you can turn them off at any time in your account or from the link in the message. We do not send unsolicited marketing email without your consent.</p>
           </Section>
 
           <Section title="4. Data sharing">
@@ -91,6 +94,7 @@ export default function PrivacyPolicyPage() {
               <li><strong className="text-ink">Resend</strong>: transactional email delivery</li>
               <li><strong className="text-ink">WhatsApp</strong>: delivery of verification codes and messages to your mobile</li>
               <li><strong className="text-ink">Google</strong>: if you use &ldquo;Sign in with Google&rdquo;, your Google profile email and name are shared with us via OAuth</li>
+              <li><strong className="text-ink">Meta Platforms</strong> (Facebook, Instagram): advertising measurement and audiences, as described in section 7B (<Link href="https://www.facebook.com/privacy/policy/" target="_blank" rel="noreferrer" className="text-blue hover:underline">Meta Privacy Policy</Link>). Meta receives one-way encoded (hashed) contact details, not your files, drawings, results or payment card details.</li>
               <li><strong className="text-ink">YouTube</strong>: we publish our own videos to our YouTube channel through the YouTube API Services, and read aggregate statistics (views, watch time, subscriber counts) for that channel only. We do not collect, store or use any data about YouTube viewers or your YouTube account through these services. YouTube&rsquo;s use of data is governed by the <Link href="https://www.youtube.com/t/terms" target="_blank" rel="noreferrer" className="text-blue hover:underline">YouTube Terms of Service</Link> and the <Link href="https://policies.google.com/privacy" target="_blank" rel="noreferrer" className="text-blue hover:underline">Google Privacy Policy</Link></li>
               <li><strong className="text-ink">Computing infrastructure providers</strong>: the machines that run CFD jobs. Each job runs on a machine started for it alone and deleted when the job ends</li>
               <li><strong className="text-ink">An outside AI service</strong>: for Studio Plus and Pro ray-traced renders only, the plan, prompt and any reference image needed to make that image. All other Studio images are made on our own machines</li>
@@ -114,6 +118,8 @@ export default function PrivacyPolicyPage() {
               <li>Tax invoices and billing records are kept for as long as GST and tax law require.</li>
               <li>Records of who used our compute services, when and from where (session logs and the subscriber details CERT-In requires) are kept for the periods set by the CERT-In directions: logs for at least 180 days, and subscriber records for five years after your account ends.</li>
               <li>Files uploaded to our free tools are deleted as soon as they are read; shared reports are kept for 90 days.</li>
+              <li>Advertising events sent to Meta: our copy is kept for 30 days, then only a sent-record for 13 months (section 7B).</li>
+              <li>Daily anonymous visit and step counts: 13 months.</li>
             </ul>
           </Section>
 
@@ -132,13 +138,44 @@ export default function PrivacyPolicyPage() {
               <li>The pages you view (the page address only) and the steps you take towards using a service: starting a sign-up, verifying, topping up, launching a workstation, uploading a CFD model or starting a Studio job.</li>
               <li>If you sign up or sign in, we link the visitor ID to your account, so we can tell which ads and pages lead to customers.</li>
               <li>Google Analytics and Google Ads (Google), the Meta Pixel (Meta) and Microsoft Clarity load on our pages. They set their own cookies and receive information about your visit under their own privacy policies. Clarity records how our pages are used (clicks, scrolling) so we can find problems.</li>
-              <li>When you sign up, start or complete your first top-up, or start your first session, we may send that event to Meta from our servers with a one-way encoded (hashed) copy of your email address and mobile number, so Meta can match it to an ad you saw. We do this only for accounts whose browser chose &ldquo;Accept&rdquo;.</li>
+              <li>The Meta Pixel sends Meta the pages you view and the steps you take, each with a random event number. Our servers send Meta the same steps with the same number, so Meta counts each step once even when an ad blocker stopped the pixel.</li>
             </ul>
-            <p><strong className="text-ink">If you choose &ldquo;Only essential&rdquo;, or make no choice.</strong> None of the above runs. We count page views per traffic source (for example &ldquo;a Google ad&rdquo; or &ldquo;a referring website&rdquo;) as a daily total, with no ID, no cookie and nothing that links the count to you.</p>
+            <p><strong className="text-ink">If you choose &ldquo;Only essential&rdquo;, or make no choice.</strong> None of the above runs, and we never send your visit to Meta, Google or Microsoft. We still keep daily totals: how many visits arrived from each traffic source (for example &ldquo;a Google ad&rdquo; or &ldquo;a referring website&rdquo;) and how many of them clicked &ldquo;Sign up&rdquo;, created an account, confirmed a mobile number, made a first payment or started a first session. These are counts only. There is no ID, no cookie, no IP address, and nothing that links a count to you.</p>
             <p><strong className="text-ink">What we never keep.</strong> Your IP address is not stored with these records; we keep a one-way code of it that changes every day, used only to stop abuse and leave out automated traffic. We keep your country (from our network provider) and whether you used a phone or a computer, not your browser&rsquo;s full details. Visitors in the European Economic Area, the United Kingdom and Switzerland are not given a visitor ID by our own analytics even after &ldquo;Accept&rdquo;.</p>
             <p><strong className="text-ink">Why.</strong> To learn which ads, searches and pages bring people who become customers, so we spend on what works, and to find where our website loses people so we can fix it.</p>
             <p><strong className="text-ink">How long.</strong> Visitor and page-view records in our systems are deleted after 13 months; the daily anonymous counts after 13 months as well. Google, Meta and Microsoft keep what they receive for the periods in their own policies.</p>
             <p><strong className="text-ink">Changing your mind.</strong> Use &ldquo;Cookie settings&rdquo; at the bottom of any page. Choosing &ldquo;Only essential&rdquo; deletes our analytics cookies from your browser and stops the third-party tags from the next page load. To have analytics records already linked to your account deleted, email us (section 8).</p>
+          </Section>
+
+          {/* 24 Nov 2026, owner-approved wording (plans/privacy-tracking-drafts-20261124.md, A6).
+              Numbered 7B so "section 8" and "section 12" stay valid. The anchor
+              #meta is linked from the sign-up consent line. */}
+          <Section title="7B. Advertising measurement with Meta" id="meta">
+            <p><strong className="text-ink">What we send.</strong> When you create an account, start or complete a top-up, top up again, or start your first workstation session, our servers send that event to Meta through Meta&rsquo;s Conversions API. With it go:</p>
+            <ul className="list-disc space-y-1.5 pl-6">
+              <li>your email address, your verified mobile number, your first and last name, and your city, state, postcode and country (from your billing details, when you have given them), each one-way encoded (hashed with SHA-256) before it leaves our servers;</li>
+              <li>a one-way encoded copy of your account number;</li>
+              <li>the IP address and browser details of the request, as Meta requires;</li>
+              <li>Meta&rsquo;s own pixel identifiers, when your browser has them;</li>
+              <li>for payments, the amount and currency, and the value estimate described in section 2.</li>
+            </ul>
+            <p>We never send your files, drawings, results, prompts, workstation activity or card details.</p>
+            <p><strong className="text-ink">Why.</strong></p>
+            <ul className="list-disc space-y-1.5 pl-6">
+              <li>To learn which ads lead to customers.</li>
+              <li>So Meta shows our ads to people similar to our customers (a &ldquo;lookalike audience&rdquo;, built from a hashed list of customers and what they have spent with us).</li>
+              <li>So Meta does not show our ads to people who are already customers.</li>
+            </ul>
+            <p>Meta matches the hashed details against its own users and does not receive the readable values from us.</p>
+            <p><strong className="text-ink">Whose data.</strong> We send these events for accounts whose browser chose &ldquo;Accept&rdquo; on our cookie bar, and for accounts created after 9 December 2026 under these terms, which you accept when you create an account. We do not send them for accounts in the European Economic Area, the United Kingdom or Switzerland. We do not send them for anyone who has chosen &ldquo;Only essential&rdquo; or opted out as described below.</p>
+            <p><strong className="text-ink">How long.</strong> The copy of each event in our systems is kept for 30 days, then reduced to a record that it was sent (event type, date and a reference number), which is deleted after 13 months. Meta keeps what it receives under its own policy. Customer lists we upload to Meta for audiences are matched and then deleted by Meta under its <Link href="https://www.facebook.com/legal/terms/customaudience" target="_blank" rel="noreferrer" className="text-blue hover:underline">Custom Audiences terms</Link>.</p>
+            <p><strong className="text-ink">Opting out.</strong> Any of these stops all future events and removes you from the next customer-list upload:</p>
+            <ul className="list-disc space-y-1.5 pl-6">
+              <li>choose &ldquo;Only essential&rdquo; under &ldquo;Cookie settings&rdquo; at the bottom of any page while signed in;</li>
+              <li>write to <Link href="mailto:admin@coreframecloud.com" className="text-blue hover:underline">admin@coreframecloud.com</Link>;</li>
+              <li>message us on <Link href="https://wa.me/916366889488" target="_blank" rel="noreferrer" className="text-blue hover:underline">WhatsApp</Link>.</li>
+            </ul>
+            <p>Opting out does not affect your account or your service. You can also control how Meta uses this information in your Facebook or Instagram settings, under &ldquo;Ad preferences&rdquo; and &ldquo;Activity off Meta technologies&rdquo;.</p>
           </Section>
 
           <Section title="8. Your rights">
@@ -150,8 +187,10 @@ export default function PrivacyPolicyPage() {
               <li>Withdraw consent you have given, such as for marketing messages</li>
               <li>Nominate another person to exercise your rights if you die or become incapacitated</li>
               <li>Have a grievance about your data handled by our Grievance Officer (section 12)</li>
+              <li>Object to, or withdraw consent for, advertising measurement at any time (section 7B), without any effect on your service.</li>
             </ul>
             <p>To exercise any of these rights, email us at <Link href="mailto:admin@coreframecloud.com" className="text-blue hover:underline">admin@coreframecloud.com</Link>.</p>
+            <p>For deletion, see <Link href="/data-deletion" className="text-blue hover:underline">how to delete your data</Link>.</p>
           </Section>
 
           <Section title="9. Children">
@@ -189,6 +228,8 @@ export default function PrivacyPolicyPage() {
           <Link href="/refund-policy" className="text-blue hover:underline">Refund Policy</Link>
           <span className="mx-3">·</span>
           <Link href="/terms-of-service" className="text-blue hover:underline">Terms of Service</Link>
+          <span className="mx-3">·</span>
+          <Link href="/data-deletion" className="text-blue hover:underline">Delete your data</Link>
           <span className="mx-3">·</span>
           <Link href="/login" className="text-blue hover:underline">Sign in</Link>
           <span className="mx-3">·</span>

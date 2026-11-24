@@ -94,8 +94,12 @@ export function ConsentBanner() {
     >
       <div className="mx-auto flex max-w-7xl flex-col gap-2 px-4 pt-2.5 pb-[max(0.625rem,env(safe-area-inset-bottom))] sm:flex-row sm:items-center sm:gap-6 sm:px-6 sm:py-3 lg:px-8">
         <p className="text-[13px] leading-5 font-medium text-ink sm:flex-1">
-          We use cookies to improve your experience and analyse site traffic.
-          <span className="hidden sm:inline"> Essential cookies for sign-in and payments are always on.</span>{" "}
+          {/* Owner-approved wording, 24 Nov 2026. Phones (under 640 px) get the short line. */}
+          <span className="sm:hidden">Analytics and ad cookies help us keep prices low. The site works the same either way.</span>
+          <span className="hidden sm:inline">
+            Accept analytics and ad cookies? They tell us which pages and ads help people find us, so we can keep prices
+            low and show fewer irrelevant ads. Sign-in and payments work the same either way.
+          </span>{" "}
           <a href="/privacy-policy#cookies" className="whitespace-nowrap text-ink underline underline-offset-2 hover:text-blue">
             How we use cookies
           </a>
