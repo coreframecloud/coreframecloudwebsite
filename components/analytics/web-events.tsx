@@ -2,8 +2,11 @@
 
 import { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
+import { mirrorPageView, remirrorPageView, trackRoutePageView } from "@/lib/analytics";
 import { readIntroVariant } from "@/lib/attribution";
-import { flush, init, track } from "@/lib/web-events";
+import { onConsentChange } from "@/lib/consent";
+import { isLanding, isSignupHref, newEventId } from "@/lib/meta-ids";
+import { flush, init, markSignupIntent, track } from "@/lib/web-events";
 
 /**
  * The site's funnel beacon, mounted once in the root layout (lib/web-events.ts).
@@ -28,6 +31,13 @@ export function WebEvents({ consentDenied }: { consentDenied: boolean }) {
     init(consentDenied);
   }, [consentDenied]);
 
+  // Accept given after the first page view: that PageView's server copy was
+  // dropped with the anonymous batch, so queue it again (the server keeps one
+  // copy per event id whatever happens).
+  useEffect(() => onConsentChange((choice) => {
+    if (choice === "granted" && window.__cfPvId) remirrorPageView(window.__cfPvId);
+  }), []);
+
   useEffect(() => {
     let path = "/";
     try {
@@ -35,6 +45,7 @@ export function WebEvents({ consentDenied }: { consentDenied: boolean }) {
     } catch {
       return;
     }
+    const first = prev.current === null;
     let ref: string | undefined = prev.current ?? undefined;
     if (ref === undefined) {
       try {
@@ -46,7 +57,30 @@ export function WebEvents({ consentDenied }: { consentDenied: boolean }) {
       }
     }
     prev.current = path;
-    track("page_view", { ref, title: (document.title || "").slice(0, 80) });
+    let landing = false;
+    try {
+      landing = isLanding(first, document.referrer, window.location.host);
+    } catch {
+      /* no referrer access */
+    }
+    track("page_view", { ref, title: (document.title || "").slice(0, 80) }, landing);
+
+    // Meta PageView with an event id (24 Nov 2026). The pixel's init fires
+    // the first page's PageView itself with window.__cfPvId; every later
+    // route gets a fresh id and its own PageView. Both get a server copy.
+    try {
+      if (first) {
+        window.__cfPvId = window.__cfPvId || newEventId("pv");
+        mirrorPageView(window.__cfPvId);
+      } else {
+        const loaded = typeof window.fbq === "function";
+        const id = newEventId("pv");
+        window.__cfPvId = id;
+        trackRoutePageView(id, loaded);
+      }
+    } catch {
+      /* never break the page */
+    }
 
     // The page's own view event, derived here so a page needs no code.
     const isGo = path === "/go" || path.startsWith("/go/");
@@ -102,6 +136,7 @@ export function WebEvents({ consentDenied }: { consentDenied: boolean }) {
       const href = el.getAttribute("href") || undefined;
       const cta = (el.dataset.cfCta || el.textContent || "").trim().replace(/\s+/g, " ").slice(0, 40);
       track("cta_click", { cta, href: href?.slice(0, 120), where: path });
+      if (isSignupHref(href)) markSignupIntent();
       if (href && !href.startsWith("#")) flush();
     };
     document.addEventListener("click", onClick, true);
