@@ -29,6 +29,7 @@ import { API_BASE } from "@/lib/api-base";
 import { apiErrorText, caughtErrorText, looksLikeEmail } from "@/lib/api-error";
 import { suggestEmail } from "@/lib/email-typo";
 import { TERMS_REQUIRED_TEXT, TermsConsent, isTermsRequired } from "@/components/account/terms-consent";
+import { setConsent } from "@/lib/consent";
 import { FORM, FormDivider, FormField, SocialButtons } from "@/components/ui/form-field";
 
 const API = API_BASE;
@@ -411,6 +412,8 @@ export default function LoginForm({
   // Sign-up boxes (components/account/terms-consent.tsx): Terms required, offers optional.
   const [termsOk, setTermsOk] = useState(false);
   const [waOffers, setWaOffers] = useState(false);
+  // Optional third box (26 Nov 2026): the same choice as Accept on the cookie prompt.
+  const [measureOk, setMeasureOk] = useState(false);
   // The code door creates an account too; the API answers 409 terms_required
   // for a NEW address, and only then are the boxes shown.
   const [codeNeedsTerms, setCodeNeedsTerms] = useState(false);
@@ -574,6 +577,7 @@ export default function LoginForm({
       if (!gstinCheck.ok) return setError(gstinCheck.error);
     }
     if (!termsOk) return setError(TERMS_REQUIRED_TEXT);
+    if (measureOk) setConsent("granted");
     setLinkLoading(true);
     try {
       const res = await fetch(`${API}/auth/request-magic-link`, {
@@ -653,6 +657,7 @@ export default function LoginForm({
     e.preventDefault();
     setError("");
     if (!/^\d{6}$/.test(codeValue.trim())) return setError("Enter the 6-digit code from your email.");
+    if (codeNeedsTerms && termsOk && measureOk) setConsent("granted");
     setCodeLoading(true);
     try {
       const res = await fetch(`${API}/auth/verify-login-code`, {
@@ -1032,6 +1037,8 @@ export default function LoginForm({
                   onTerms={(v) => { setTermsOk(v); setError(""); }}
                   offers={waOffers}
                   onOffers={setWaOffers}
+                  measure={measureOk}
+                  onMeasure={setMeasureOk}
                 />
                 {error && <ErrorBox msg={error} />}
                 </div>
@@ -1110,6 +1117,8 @@ export default function LoginForm({
                     onTerms={(v) => { setTermsOk(v); setError(""); }}
                     offers={waOffers}
                     onOffers={setWaOffers}
+                    measure={measureOk}
+                    onMeasure={setMeasureOk}
                   />
                 )}
                 {error && <ErrorBox msg={error} />}

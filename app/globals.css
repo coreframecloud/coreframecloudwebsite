@@ -337,10 +337,10 @@ body {
   }
 
   /* ── Consent bar (10 Nov 2026, components/consent/consent-banner.tsx) ──
-     Two choices of equal weight: same size, same outline, same fill. Smaller
-     than a page CTA on purpose; the bar should not compete with the page. */
+     Two choices of equal weight: same size, same outline, same fill (26 Nov
+     2026: Accept no longer blue, so neither choice is nudged). */
   .cf-consent-btn {
-    @apply inline-flex min-h-11 items-center justify-center rounded-full border border-ink bg-paper px-5 py-2.5 text-[13px] leading-none font-semibold text-ink transition-colors;
+    @apply inline-flex min-h-11 items-center justify-center rounded-full border border-ink bg-paper px-5 py-2.5 text-[15px] leading-none font-semibold text-ink transition-colors;
   }
   @media (hover: hover) {
     .cf-consent-btn:hover {
@@ -1673,11 +1673,9 @@ body[data-cf-sticky] a[aria-label*="WhatsApp" i] { bottom: 5.5rem; }
 .cf-cine button > span.bg-ink { background: #fff; }
 .cf-cine button > span.bg-ink\/25 { background: rgb(255 255 255 / 0.3); }
 
-/* While the consent bar is open it publishes its height (--cf-consent-h):
-   the page can scroll its last lines above it, and the fixed bottom controls
-   (.cf-consent-lift) sit on top of it instead of under it. */
-html.cf-consent-open body { padding-bottom: var(--cf-consent-h, 0px); }
-html.cf-consent-open .cf-consent-lift { margin-bottom: var(--cf-consent-h, 0px); }
+/* While the cookie prompt is open (26 Nov 2026: a centred prompt, not a bar)
+   the page behind does not scroll. */
+html.cf-consent-open { overflow: hidden; }
 
 /* ── Full-height: dynamic viewport (16 Nov 2026) ──────────────────────────
    Tailwind's min-h-screen / h-screen are 100vh, which on a phone is the

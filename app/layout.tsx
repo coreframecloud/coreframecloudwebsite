@@ -86,6 +86,15 @@ const GTAG_LOADER_ID = GA4_ID ?? GOOGLE_ADS_ID;
  * this list now only keeps the first-party beacon anonymous in these regions
  * even after Accept (lib/web-events.ts), as it was before the bar.
  */
+/**
+ * Owner decision 26 Nov 2026: in India the analytics and ad tags run by default
+ * (notice in the privacy policy, opt-out under "Cookie settings") until the DPDP
+ * Act's consent provisions take effect; then remove "IN" here and visitors are
+ * asked first again. lib/consent.ts records these visitors as "notice", never as
+ * "granted", so the later re-ask knows who never pressed Accept.
+ */
+const CONSENT_NOTICE_REGIONS = ["IN"];
+
 const CONSENT_DENIED_REGIONS = [
   "AT","BE","BG","HR","CY","CZ","DK","EE","FI","FR","DE","GR","HU","IE","IT","LV",
   "LT","LU","MT","NL","PL","PT","RO","SK","SI","ES","SE","IS","LI","NO","GB","CH",
@@ -191,6 +200,7 @@ export default async function RootLayout({
   // visitor there gets no visitor cookie and no identifying row.
   const visitorCountry = (await headers()).get("x-cf-country") ?? "";
   const consentDenied = CONSENT_DENIED_REGIONS.includes(visitorCountry);
+  const consentNotice = CONSENT_NOTICE_REGIONS.includes(visitorCountry);
   // The visitor's display currency (proxy.ts): the strip, the footer's tax
   // line and the text fields below show that currency only (owner, 18 Oct 2026).
   const currency = await requestCurrency();
@@ -287,15 +297,15 @@ export default async function RootLayout({
     <html
       lang="en-IN"
       className={`${inter.variable} ${plexMono.variable} ${poppins.variable}`}
+      data-cf-consent-default={consentNotice ? "notice" : undefined}
     >
       <head>
         {/* The blog feed (GEO check 18 Oct 2026), on every page so it is found from anywhere. */}
         <link rel="alternate" type="application/rss+xml" title="Coreframe Cloud blog" href="/blog/rss.xml" />
       </head>
       <body className="bg-paper text-ink antialiased">
-        {/* The consent bar (10 Nov 2026). First in the DOM so it is the first
-            Tab stop on every page; it is fixed to the bottom and the page's
-            own fixed controls lift above it (globals.css .cf-consent-lift). */}
+        {/* The cookie prompt (10 Nov 2026; centred prompt since 26 Nov 2026).
+            First in the DOM so it is the first Tab stop on every page. */}
         <ConsentBanner />
         {/* Third-party tags: Google (GA4 + Ads), Meta pixel, Microsoft
             Clarity. NONE of them loads before the visitor presses Accept on
@@ -321,7 +331,16 @@ export default async function RootLayout({
                 analytics_storage: 'denied'
               });
               var loaded = false;
-              function granted() { return /(?:^|; )cf_consent=granted(?:;|$)/.test(d.cookie); }
+              // Accept, or the India default ("notice", owner 26 Nov 2026): written here on
+              // the first page so the tags start at once (lib/consent.ts writes it too).
+              if (!/(?:^|; )cf_consent=/.test(d.cookie) && d.documentElement.getAttribute('data-cf-consent-default') === 'notice') {
+                try {
+                  var h = location.hostname;
+                  var dom = (h === 'coreframecloud.com' || h.slice(-19) === '.coreframecloud.com') ? '; domain=.coreframecloud.com' : '';
+                  d.cookie = 'cf_consent=notice; path=/; max-age=15724800; SameSite=Lax' + dom + (location.protocol === 'https:' ? '; Secure' : '');
+                } catch (err) {}
+              }
+              function granted() { return /(?:^|; )cf_consent=(?:granted|notice)(?:;|$)/.test(d.cookie); }
               function add(src) {
                 var t = d.createElement('script'); t.async = true; t.src = src;
                 d.head.appendChild(t);

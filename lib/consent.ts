@@ -19,6 +19,13 @@
  */
 
 export type ConsentChoice = "granted" | "denied";
+/** What the cookie can hold: a choice, or "notice" (owner decision 26 Nov 2026):
+ *  visitors in India get the tags ON by default, with notice in the privacy
+ *  policy and an opt-out under "Cookie settings", until the DPDP Act's consent
+ *  provisions take effect. app/layout.tsx marks those pages with
+ *  <html data-cf-consent-default="notice">; the first read writes the cookie, so
+ *  the API sees it too and the records keep "on by default" apart from Accept. */
+export type ConsentState = ConsentChoice | "notice";
 
 export const CONSENT_COOKIE = "cf_consent";
 export const CONSENT_EVENT = "cf-consent";
@@ -34,19 +41,36 @@ function cookieDomain(): string {
   }
 }
 
-export function readConsent(): ConsentChoice | null {
+function writeCookie(value: ConsentState): void {
+  const secure = window.location.protocol === "https:" ? "; Secure" : "";
+  document.cookie = `${CONSENT_COOKIE}=${value}; path=/; max-age=${MAX_AGE_S}; SameSite=Lax${cookieDomain()}${secure}`;
+}
+
+export function readConsent(): ConsentState | null {
   if (typeof document === "undefined") return null;
   try {
     const hit = document.cookie.split("; ").find((c) => c.startsWith(`${CONSENT_COOKIE}=`));
     const v = hit ? hit.slice(CONSENT_COOKIE.length + 1) : "";
-    return v === "granted" || v === "denied" ? v : null;
+    if (v === "granted" || v === "denied" || v === "notice") return v;
+    // No choice yet: the India default, when this page carries it.
+    if (document.documentElement.dataset.cfConsentDefault === "notice") {
+      try {
+        writeCookie("notice");
+      } catch {
+        /* cookies blocked: the default still applies to this page */
+      }
+      return "notice";
+    }
+    return null;
   } catch {
     return null;
   }
 }
 
+/** Tracking may run: Accept, or the India default. */
 export function hasConsent(): boolean {
-  return readConsent() === "granted";
+  const c = readConsent();
+  return c === "granted" || c === "notice";
 }
 
 /** Cookies and storage the non-essential tags and our attribution leave
@@ -82,8 +106,7 @@ export function setConsent(choice: ConsentChoice): void {
   if (typeof document === "undefined") return;
   const before = readConsent();
   try {
-    const secure = window.location.protocol === "https:" ? "; Secure" : "";
-    document.cookie = `${CONSENT_COOKIE}=${choice}; path=/; max-age=${MAX_AGE_S}; SameSite=Lax${cookieDomain()}${secure}`;
+    writeCookie(choice);
   } catch {
     /* cookies blocked: the choice lasts for this page only */
   }
@@ -95,7 +118,7 @@ export function setConsent(choice: ConsentChoice): void {
   }
   // Tags already running on this page cannot be unloaded; a reload is the
   // only honest way to stop them after a change of mind.
-  if (before === "granted" && choice === "denied") {
+  if ((before === "granted" || before === "notice") && choice === "denied") {
     try {
       window.location.reload();
     } catch {
