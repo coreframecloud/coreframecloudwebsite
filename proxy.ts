@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { newNonce, pageCsp } from "@/lib/csp";
 import { CURRENCY_HEADER, currencyForCountry, parseCurrency } from "@/lib/money";
+import { usdTargetPath } from "@/lib/usd-path";
 
 /** Request header carrying CF-IPCountry to the root layout (see proxy()). */
 export const COUNTRY_HEADER = "x-cf-country";
@@ -121,7 +122,10 @@ export function proxy(request: NextRequest) {
 
   if (pathname === "/usd" || pathname.startsWith("/usd/")) {
     const target = request.nextUrl.clone();
-    target.pathname = pathname.slice(4) || "/";
+    // Collapse leading slashes (security audit 26 Nov 2026): "/usd//evil.example"
+    // must land on "/evil.example" on this site, never a protocol-relative
+    // "//evil.example" that a browser would treat as another host.
+    target.pathname = usdTargetPath(pathname);
     target.searchParams.set("currency", "USD");
     return NextResponse.redirect(target, 307);
   }
