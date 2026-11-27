@@ -251,7 +251,7 @@ export default function JobViewer({
               type="button"
               onClick={() => toggleRef.current(k)}
               aria-pressed={!!visible[k]}
-              className={`rounded-full px-3 py-1.5 text-[12px] font-medium transition-colors ${
+              className={`min-h-11 rounded-full px-3 py-1.5 text-[13px] font-medium transition-colors ${
                 visible[k] ? "bg-white text-ink" : "bg-white/10 text-white hover:bg-white/20"
               }`}
             >

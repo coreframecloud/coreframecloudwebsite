@@ -153,7 +153,7 @@ export function RenderCalculator({ ours, currency }: { ours: OurGpu[]; currency:
                   setFramesRaw(String(p.n));
                   touched();
                 }}
-                className={`min-h-10 rounded-full border px-3.5 text-[13.5px] font-medium transition ${
+                className={`min-h-11 rounded-full border px-3.5 text-[13.5px] font-medium transition ${
                   frames === p.n ? "border-ink bg-ink text-white" : "border-rule bg-paper text-ink hover:border-ink/40"
                 }`}
               >

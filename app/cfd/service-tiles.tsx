@@ -105,7 +105,7 @@ export function ServiceTiles({ tiles, variant }: { tiles: CfdServiceTile[]; vari
             </ul>
             {t.validation ? (
               <details className="group mt-4 text-[13.5px] leading-5 text-ink-3">
-                <summary className="cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+                <summary className="min-h-11 cursor-pointer list-none py-1 [&::-webkit-details-marker]:hidden">
                   {t.validation.short}{" "}
                   <span className="whitespace-nowrap font-medium text-ink-2 underline underline-offset-2">
                     Details<span aria-hidden className="ml-1 inline-block group-open:rotate-45">+</span>
@@ -118,22 +118,22 @@ export function ServiceTiles({ tiles, variant }: { tiles: CfdServiceTile[]; vari
               <CfxFigure label="Price" {...t.price} />
               <CfxFigure label="Turnaround" tone="coral" {...t.turnaround} />
             </div>
-            <p className="mt-4 flex flex-wrap gap-x-4 gap-y-1 text-[14px] leading-6">
+            <p className="mt-2 flex flex-wrap gap-x-4 text-[14px] leading-6">
               {t.sample.pdf ? (
-                <a href={t.sample.href} target="_blank" rel="noopener" className="text-ink underline underline-offset-4">
+                <a href={t.sample.href} target="_blank" rel="noopener" className="inline-flex min-h-11 items-center text-ink underline underline-offset-4">
                   {t.sample.label}
                 </a>
               ) : (
-                <Link href={t.sample.href} className="text-ink underline underline-offset-4">
+                <Link href={t.sample.href} className="inline-flex min-h-11 items-center text-ink underline underline-offset-4">
                   {t.sample.label}
                 </Link>
               )}
               {t.details.href.startsWith("#") ? (
-                <a href={t.details.href} className="text-ink-2 underline underline-offset-4">
+                <a href={t.details.href} className="inline-flex min-h-11 items-center text-ink-2 underline underline-offset-4">
                   {t.details.label}
                 </a>
               ) : (
-                <Link href={t.details.href} className="text-ink-2 underline underline-offset-4">
+                <Link href={t.details.href} className="inline-flex min-h-11 items-center text-ink-2 underline underline-offset-4">
                   {t.details.label}
                 </Link>
               )}

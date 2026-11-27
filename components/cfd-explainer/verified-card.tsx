@@ -63,7 +63,7 @@ export function VerifiedCard({
           Start a job <span aria-hidden>→</span>
         </Link>
         {learnMore ? (
-          <Link href={VERIFIED.path} className="text-ink-2 underline underline-offset-4">
+          <Link href={VERIFIED.path} className="inline-flex min-h-11 items-center text-ink-2 underline underline-offset-4">
             How a mesh independence study works
           </Link>
         ) : null}

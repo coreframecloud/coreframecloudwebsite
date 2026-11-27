@@ -66,7 +66,7 @@ export function PricingCards({
           named seats for your studio.
           {storage ? ` Extra NAS storage ${storage}/TB/month.` : ""}
         </p>
-        <Link href="/enterprise" className="mt-4 inline-block text-sm text-blue hover:underline">
+        <Link href="/enterprise" className="mt-2 inline-flex min-h-11 items-center text-sm text-blue hover:underline">
           See plans →
         </Link>
       </div>

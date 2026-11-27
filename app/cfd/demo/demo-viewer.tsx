@@ -72,7 +72,7 @@ export function DemoViewer({ cases }: { cases: DemoCase[] }) {
             type="button"
             onClick={() => setId(x.id)}
             aria-pressed={x.id === id}
-            className={`rounded-full border-[1.5px] px-4 py-2 text-[14px] font-medium transition-colors ${
+            className={`min-h-11 rounded-full border-[1.5px] px-4 py-2 text-[14px] font-medium transition-colors ${
               x.id === id ? "border-ink bg-ink text-white" : "border-ink/30 bg-paper text-ink hover:border-ink"
             }`}
           >
@@ -90,7 +90,7 @@ export function DemoViewer({ cases }: { cases: DemoCase[] }) {
               <button
                 type="button"
                 onClick={() => setArmed(true)}
-                className="absolute right-3 bottom-3 rounded-full bg-white px-4 py-2 text-[13px] font-medium text-ink"
+                className="absolute right-3 bottom-3 min-h-11 rounded-full bg-white px-4 py-2 text-[13px] font-medium text-ink"
               >
                 Open the 3D view ({c.sizeLabel})
               </button>

@@ -18,6 +18,7 @@ import {
 import { Clock, Cloud, UserRound, ReceiptText } from "lucide-react";
 import { GenImage } from "@/components/visuals/media";
 import { TeamStorageDiagram } from "@/components/visuals/diagrams";
+import { FaqList } from "@/components/ui/faq-list";
 
 const TITLE = "Team Plans: Shared GPU Hours for Studios | Coreframe";
 const KEYWORDS = [
@@ -295,17 +296,7 @@ export default async function EnterpriseView({ currency }: { currency: Currency 
         <section className="cf-section px-5 pt-0">
           <div className="cf-col">
             <h2 className="cf-section-title">Questions</h2>
-            <div className="mt-6 divide-y divide-rule rounded-[24px] border border-rule">
-              {faqs.map((f) => (
-                <details key={f.q} className="group px-6 py-5">
-                  <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-medium text-ink">
-                    {f.q}
-                    <span aria-hidden className="text-ink-3 transition group-open:rotate-45">+</span>
-                  </summary>
-                  <p className="mt-3 text-[15px] leading-6 text-ink-2">{f.a}</p>
-                </details>
-              ))}
-            </div>
+            <FaqList items={faqs} className="mt-6" />
           </div>
         </section>
 
@@ -383,8 +374,10 @@ function PlanCard({
         presentation.highlight ? "bg-ink text-white" : "bg-paper-2"
       }`}
     >
+      {/* A white tint, not a solid blue pill (27 Nov 2026): the dark card already
+          marks the plan, and blue fill is kept for buttons. 12px, up from 11. */}
       {presentation.highlight ? (
-        <span className="absolute top-6 right-6 rounded-full bg-blue px-3 py-1 text-[11px] font-semibold tracking-[0.06em] text-white uppercase">
+        <span className="absolute top-6 right-6 rounded-full bg-white/16 px-3 py-1 text-[12px] font-semibold tracking-[0.06em] text-white uppercase">
           Most popular
         </span>
       ) : null}
