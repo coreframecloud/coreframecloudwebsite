@@ -24,6 +24,7 @@ import { softwareStart } from "@/lib/software-start";
 import { SoftwareFitPanel, SoftwarePickSection, SoftwareStartEnd, SoftwareStartHero } from "@/components/software/software-start";
 import { NODE, replacementCost } from "@/lib/node-spec";
 import { BANDWIDTH_SENTENCE } from "@/lib/streaming-terms";
+import { FaqList } from "@/components/ui/faq-list";
 
 /**
  * The D5 Render page, promoted out of the app/[slug] stub renderer.
@@ -327,14 +328,7 @@ export default async function D5View({ currency }: { currency: Currency }) {
 
         <section className="mt-14">
           <h2 className="cf-section-title">Questions.</h2>
-          <div className="mt-6 space-y-7">
-            {faqs.map((f) => (
-              <div key={f.q}>
-                <h3 className="font-semibold text-ink">{f.q}</h3>
-                <p className="mt-2 leading-7 text-ink-2">{f.a}</p>
-              </div>
-            ))}
-          </div>
+          <FaqList items={faqs} openFirst heading className="mt-6" />
         </section>
 
         <section className="mt-14 rounded-cf border border-blue/20 bg-blue/[0.05] p-6">

@@ -44,6 +44,7 @@ import { Reveal } from "@/components/home/redesign/reveal";
 import { HowItWorksStrip, MemoryLadder } from "@/components/visuals/gpu-infographics";
 import { softwareStart } from "@/lib/software-start";
 import { SoftwareFitPanel, SoftwarePickSection, SoftwareStartEnd, SoftwareStartHero } from "@/components/software/software-start";
+import { FaqList } from "@/components/ui/faq-list";
 
 /**
  * `related` may name a top-level landing page as well as a /software slug.
@@ -532,17 +533,7 @@ export default async function SoftwareView({ slug, currency }: { slug: string; c
 
       <section className={`cf-col ${pointers ? "mt-12" : "mt-16"}`}>
         <h2 className="cf-section-title">Questions.</h2>
-        <div className="mt-6 divide-y divide-rule rounded-[24px] border border-rule">
-          {faqs.map((faq) => (
-            <details key={faq.q} className="group px-6">
-              <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 py-4 font-medium text-ink [&::-webkit-details-marker]:hidden">
-                {faq.q}
-                <span aria-hidden className="text-ink-3 transition group-open:rotate-45">+</span>
-              </summary>
-              <p className="pb-5 text-[15px] leading-6 break-words text-ink-2">{faq.a}</p>
-            </details>
-          ))}
-        </div>
+        <FaqList items={faqs} className="mt-6" />
       </section>
 
       {/* The same one action at the foot, and on phones the sticky bar (11 Nov 2026). */}

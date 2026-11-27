@@ -280,6 +280,10 @@ body {
     margin-right: -0.1em;
     text-box: trim-both cap alphabetic;
   }
+  /* "New": a quiet tint. It was a solid blue pill, the same fill as the
+     Launch and Start buttons, so on a card it competed with the action. */
+  .cf-badge-new { background: oklch(55.62% 0.1894 261.92 / 0.12); color: var(--color-blue-ink); }
+  :is(.bg-night, .cf-cine, .cf-footer) .cf-badge-new { background: oklch(100% 0 0 / 0.16); color: #fff; }
   .cf-badge-dot { display: block; width: 6px; height: 6px; border-radius: 9999px; flex: none; }
   .cf-live-dot { background: #fff; }
   /* The main CTA on a dark band: a solid yellow pill with ink text. */

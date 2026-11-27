@@ -57,12 +57,10 @@ const navLinks: NavLink[] = [
 ];
 
 function NavTag({ status, overHero }: { status: OfferingStatus; overHero: boolean }) {
-  const tone =
-    status === "New"
-      ? "bg-[#2f6be0] text-white"
-      : overHero
-        ? "bg-white/15 text-white"
-        : "bg-[#fff1c7] text-[#6b4e00]";
+  // Quiet on purpose (27 Nov 2026). A solid blue "New" beside two nav links
+  // was the loudest thing in the bar, louder than "Get started": the accent
+  // belongs to the one action. Tint and ink here; blue fill on the button.
+  const tone = overHero ? "bg-white/15 text-white" : "bg-blue/10 text-blue-ink";
   return (
     <span className={`rounded-full px-1.5 py-0.5 text-[11px] leading-none font-semibold tracking-[0.08em] uppercase ${tone}`}>
       {status === "Opening soon" ? "Soon" : status}
@@ -469,10 +467,14 @@ export function SiteHeader() {
               >
                 Sign in
               </Link>
+              {/* The bar's one filled control, in the action blue (27 Nov 2026):
+                  it was ink, the same weight as the wordmark beside it. It goes
+                  to /signup, the page headed "Create your account"; "Sign in"
+                  beside it keeps /login. Both pages run the same form. */}
               <Link
-                href="/login"
-                className={`inline-flex items-center justify-center rounded-full px-5 py-2 text-sm font-semibold transition ${
-                  overHero ? "bg-white text-ink hover:bg-white/90" : "bg-ink text-white hover:bg-[#2a2d33]"
+                href="/signup"
+                className={`inline-flex min-h-10 items-center justify-center rounded-full px-5 py-2 text-sm font-semibold transition ${
+                  overHero ? "bg-white text-ink hover:bg-white/90" : "bg-blue text-white hover:bg-blue-ink"
                 }`}
                 onClick={() => trackEvent("signup_click", { location: "header_cta" })}
               >
@@ -490,7 +492,7 @@ export function SiteHeader() {
             setOpen((p) => !p);
             trackEvent("mobile_menu_toggle", { open: !open });
           }}
-          className={`inline-flex h-10 w-10 items-center justify-center rounded-full border xl:hidden ${
+          className={`inline-flex h-11 w-11 items-center justify-center rounded-full border xl:hidden ${
             overHero ? "border-white/30 bg-white/10 text-white" : "border-rule bg-paper-2 text-ink"
           }`}
         >
@@ -613,14 +615,14 @@ export function SiteHeader() {
                 <Link
                   href="/login"
                   onClick={() => { setOpen(false); trackEvent("signin_click", { location: "mobile_menu" }); }}
-                  className="flex-1 inline-flex items-center justify-center rounded-cf border border-rule px-5 py-2.5 text-sm font-medium text-ink-2"
+                  className="flex-1 inline-flex min-h-11 items-center justify-center rounded-cf border border-rule px-5 py-2.5 text-sm font-medium text-ink-2"
                 >
                   Sign in
                 </Link>
                 <Link
-                  href="/login"
+                  href="/signup"
                   onClick={() => { setOpen(false); trackEvent("signup_click", { location: "mobile_menu" }); }}
-                  className="flex-1 inline-flex items-center justify-center rounded-cf bg-blue px-5 py-2.5 text-sm font-semibold text-white"
+                  className="flex-1 inline-flex min-h-11 items-center justify-center rounded-cf bg-blue px-5 py-2.5 text-sm font-semibold text-white"
                 >
                   Get started
                 </Link>

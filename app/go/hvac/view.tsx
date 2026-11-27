@@ -10,6 +10,7 @@ import { CFD_EXPRESS, CFD_NORMAL_HOURS, expressFromAmount, hvacRoomFromAmount, p
 import { CLINIC_CASE } from "@/lib/cfd-pages";
 import { ROOMS_DELIVERS } from "@/lib/cfd-rooms";
 import { CookieSettingsLink } from "@/components/consent/consent-banner";
+import { FaqList } from "@/components/ui/faq-list";
 
 /**
  * /go/hvac — the paid landing page for HVAC room airflow (owner, 26 Oct 2026: "on CFD we only
@@ -161,20 +162,7 @@ export default async function HvacLandingView({ currency }: { currency: Currency
 
         <section className="mt-12 max-w-[760px]" data-cf-section="faq">
           <h2 className="font-heading text-[22px] leading-tight font-medium text-ink">Questions</h2>
-          <div className="mt-4 flex flex-col gap-2.5">
-            {faq.map((f) => (
-              <details key={f.q} className="group rounded-cf border border-rule bg-paper-2 px-5 py-4 transition open:border-blue/25">
-                <summary className="flex cursor-pointer items-center justify-between gap-4 text-[15.5px] font-semibold text-ink [&::-webkit-details-marker]:hidden">
-                  {f.q}
-                  <span aria-hidden className="shrink-0 text-xl font-light leading-none text-blue">
-                    <span className="group-open:hidden">+</span>
-                    <span className="hidden group-open:inline">−</span>
-                  </span>
-                </summary>
-                <p className="mt-3 max-w-[68ch] text-[14.5px] leading-6 text-ink-2">{f.a}</p>
-              </details>
-            ))}
-          </div>
+          <FaqList items={faq} className="mt-4" />
         </section>
 
         <div className="mt-10 max-w-[760px]">

@@ -71,7 +71,8 @@ const BADGE: Record<BadgeStatus, string> = {
   // Live wears the highlight yellow (31 Oct 2026); the "soon" states went
   // neutral so they no longer read as a second, paler yellow.
   Live: "cf-hl-fill",
-  New: "bg-[#2f6be0] text-white",
+  // Tint, not a solid blue fill (27 Nov 2026): blue fill is for buttons.
+  New: "cf-badge-new",
   "Opening soon": "bg-[#e9ebef] text-[#101113]",
   "Coming soon": "bg-[#e9ebef] text-[#101113]",
 };

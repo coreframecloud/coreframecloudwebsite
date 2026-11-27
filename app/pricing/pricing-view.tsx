@@ -235,24 +235,13 @@ export default async function PricingView({ currency }: { currency: Currency }) 
 
       <div id="gpu-workstations" className="scroll-mt-20" />
 
-      {/* The billing idea as motion, not a paragraph: a session meter at the
-          live rate, the two rates side by side, and a generated scene. */}
-      <section className="cf-section px-5">
-        <div className="cf-wide grid items-center gap-8 lg:grid-cols-2">
-          <BillingMeter ratePerHour={adhocNum} currency={currency} />
-          <div>
-            <p className="text-[11.5px] font-semibold tracking-[0.12em] text-ink-2 uppercase">GPU workstations</p>
-            <h2 className="cf-section-title mt-3">Pay for the minutes you use.</h2>
-            <p className="cf-section-copy mt-3">End the session and billing stops.</p>
-            {rateBars.length ? <div className="mt-7"><RateBars rows={rateBars} /></div> : null}
-          </div>
-        </div>
-      </section>
-
-      {/* The GPU ladder: every public GPU from the rate card, cheapest first,
+      {/* First on the page since 27 Nov 2026 (it sat under the billing meter):
+          the price of each GPU and its Launch button are what a visitor came
+          for, so they come before the explanation of how billing works.
+          The GPU ladder: every public GPU from the rate card, cheapest first,
           in this page's currency only (owner, 21 Oct 2026). One row today,
           more as profiles go public; never a typed list. */}
-      <section className="cf-section px-5 pt-0" data-cf-section="ladder">
+      <section className="cf-section px-5 pb-0" data-cf-section="ladder">
         <div className="cf-wide">
           <p className="text-[11.5px] font-semibold tracking-[0.12em] text-ink-2 uppercase">Pick your GPU</p>
           <h2 className="cf-section-title mt-3">
@@ -266,6 +255,20 @@ export default async function PricingView({ currency }: { currency: Currency }) 
           <div className="mt-7">
             {/* Launch on a card: that card, through sign-up, to the payment step (10 Nov 2026). */}
             <GpuLadder card={rateCard} currency={currency} launch={{ location: "pricing_ladder" }} licence="full" />
+          </div>
+        </div>
+      </section>
+
+      {/* The billing idea as motion, not a paragraph: a session meter at the
+          live rate, the two rates side by side, and a generated scene. */}
+      <section className="cf-section px-5">
+        <div className="cf-wide grid items-center gap-8 lg:grid-cols-2">
+          <BillingMeter ratePerHour={adhocNum} currency={currency} />
+          <div>
+            <p className="text-[11.5px] font-semibold tracking-[0.12em] text-ink-2 uppercase">GPU workstations</p>
+            <h2 className="cf-section-title mt-3">Pay for the minutes you use.</h2>
+            <p className="cf-section-copy mt-3">End the session and billing stops.</p>
+            {rateBars.length ? <div className="mt-7"><RateBars rows={rateBars} /></div> : null}
           </div>
         </div>
       </section>

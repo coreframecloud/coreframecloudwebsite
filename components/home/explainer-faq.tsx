@@ -20,6 +20,7 @@ import type { StorageTerms } from "@/lib/storage-terms";
 import { hoursLabel, type IntroOffer, introBonusPhrase, introMoreGpusNote, introPrice, withArticle } from "@/lib/rate-card";
 import { BANDWIDTH_SENTENCE } from "@/lib/streaming-terms";
 import type { Currency } from "@/lib/money";
+import { FaqList } from "@/components/ui/faq-list";
 
 type QA = { q: string; a: string };
 
@@ -124,33 +125,7 @@ export function ExplainerFaq({
       <p className="cf-eyebrow">Questions people actually ask</p>
       <h2 className="cf-section-title mt-4">Straight answers.</h2>
 
-      {/* Full width of the container, NOT max-w-4xl. It used to be 896px
-          inside a 1280px section while the pricing cards above filled the
-          whole 1280 — so the FAQ read as indented, which is what it looked
-          like: a column that had slipped. Each answer caps its own line
-          length instead, which is where a measure actually belongs. */}
-      <div className="mt-9 flex flex-col gap-3">
-        {faq.map((item, i) => (
-          <details
-            key={item.q}
-            open={i === 0}
-            className="group rounded-cf border border-rule bg-paper-2 px-6 py-5 transition open:border-blue/25"
-          >
-            <summary className="flex cursor-pointer items-center justify-between gap-4 text-[17px] font-semibold text-ink [&::-webkit-details-marker]:hidden">
-              {item.q}
-              <span aria-hidden className="shrink-0 text-2xl font-light leading-none text-blue">
-                <span className="group-open:hidden">+</span>
-                <span className="hidden group-open:inline">−</span>
-              </span>
-            </summary>
-            {/* The answer caps its own line length. The list now spans the full
-                container so it lines up with the cards above, but a 960px line
-                of prose is unreadable — a measure belongs on the text, not on
-                the box around it. */}
-            <p className="mt-3.5 max-w-[68ch] text-[15px] leading-7 text-ink-2">{item.a}</p>
-          </details>
-        ))}
-      </div>
+      <FaqList items={faq} openFirst className="mt-9" />
 
       <script
         type="application/ld+json"

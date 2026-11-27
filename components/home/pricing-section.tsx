@@ -230,18 +230,9 @@ export function PricingSection({
           ))}
         </div>
 
-        <div className="mt-8 flex flex-wrap gap-4">
-          <Link
-            href="/signup"
-            className="cf-btn-primary"
-            onClick={() => trackEvent("signup_click", { location: "pricing_section_bottom" })}
-          >
-            Sign up
-          </Link>
-          <Link href="/enterprise" className="cf-btn-secondary" onClick={() => trackEvent("enterprise_click", { location: "pricing_bottom" })}>
-            Compare plans
-          </Link>
-        </div>
+        {/* The "Sign up" / "Compare plans" pair that closed this block went
+            27 Nov 2026: each repeated the button of a card just above it, so
+            the section offered four choices where there are two. */}
       </div>
     </section>
   );

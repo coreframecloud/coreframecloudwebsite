@@ -16,6 +16,7 @@ import { storageTerms } from "@/lib/storage-terms";
 import { NODE } from "@/lib/node-spec";
 import Link from "next/link";
 import { LastUpdated, SpecTable } from "@/components/gpu/spec-table";
+import { FaqList } from "@/components/ui/faq-list";
 
 export function lumionMetadata(currency: Currency): Metadata {
   const usdView = currency === "USD";
@@ -236,14 +237,7 @@ export default async function LumionView({ currency }: { currency: Currency }) {
         <section className="cf-section px-5 pt-0">
           <div className="cf-col">
             <h2 className="cf-section-title">Questions.</h2>
-            <div className="mt-8 space-y-7">
-              {faqs.map((f) => (
-                <div key={f.q}>
-                  <h3 className="font-semibold text-ink">{f.q}</h3>
-                  <p className="cf-section-copy mt-2 break-words">{f.a}</p>
-                </div>
-              ))}
-            </div>
+            <FaqList items={faqs} openFirst heading className="mt-6" />
           </div>
         </section>
 
