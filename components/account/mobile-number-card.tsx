@@ -65,7 +65,7 @@ const inputCls =
 const errorBox =
   "rounded-cf border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm leading-6 break-words text-destructive";
 const btnPrimary = "cf-btn-primary min-h-10 px-5 text-[13px] disabled:opacity-60";
-const btnQuiet = "cf-btn-secondary min-h-10 px-5 text-[13px] disabled:opacity-60";
+const btnQuiet = "cf-btn-secondary min-h-11 px-5 text-[13px] disabled:opacity-60";
 const linkBtn = "inline-flex min-h-11 items-center text-[13px] text-ink-3 hover:text-ink-2 disabled:opacity-60";
 
 export default function MobileNumberCard() {

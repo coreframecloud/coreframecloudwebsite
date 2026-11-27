@@ -14,6 +14,7 @@ import ActivityList, {
   type SessionRow,
 } from "@/components/wallet/activity-list";
 import { announceWallet } from "@/components/wallet/wallet-events";
+import { SignupSteps } from "@/components/ui/signup-steps";
 import MyCfdJobs from "@/components/cfd/my-cfd-jobs";
 import MyStudioProjects from "@/components/studio/my-studio-projects";
 import SignInSecurity from "@/components/account/sign-in-security";
@@ -154,6 +155,8 @@ function StartCard({
   if (introLive) {
     return (
       <section className="cf-glass border-l-2! border-l-blue! p-5 sm:p-6">
+        {/* Step 3 of sign-up, until the first top-up is paid (27 Nov 2026). */}
+        {needsPayment ? <SignupSteps current={3} gpuFlowOnly className="mb-5" /> : null}
         <div className="flex flex-wrap items-baseline justify-between gap-2">
           <h2 className="cf-eyebrow">Intro offer</h2>
           {offer.validityDays ? (
@@ -201,6 +204,7 @@ function StartCard({
   const fmt = (v: number) => (cur === "USD" ? formatMoney(v, "USD") : rupees(v));
   return (
     <section className="cf-glass border-l-2! border-l-blue! p-5 sm:p-6">
+      <SignupSteps current={3} gpuFlowOnly className="mb-5" />
       <h2 className="cf-eyebrow">Ready when you are</h2>
       <p className="mt-3 font-display text-2xl leading-tight font-bold text-ink">
         {min ? `Add ${fmt(min)} to start.` : "Add funds to start."}
@@ -839,7 +843,7 @@ export default function MyActivityPage() {
                 </svg>
                 Download Coreframe Connect
               </Link>
-              <a href="/how-to-use" className="text-sm text-blue underline-offset-2 hover:underline">How it works</a>
+              <a href="/how-to-use" className="inline-flex min-h-11 items-center text-sm text-blue underline-offset-2 hover:underline">How it works</a>
             </div>
           </section>
           <ConnectionCheck

@@ -45,7 +45,7 @@ export default function SignInSecurity() {
         <button
           type="button"
           onClick={() => setConfirming(true)}
-          className="cf-btn-secondary mt-4 min-h-10 self-start px-5 text-[13px]"
+          className="cf-btn-secondary mt-4 min-h-11 self-start px-5 text-[13px]"
         >
           Sign out of all devices
         </button>

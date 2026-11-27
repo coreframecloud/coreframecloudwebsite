@@ -113,7 +113,7 @@ export default function MyStudioProjects({ token }: { token: string | null }) {
       <div className="border-b border-rule px-4 py-4 sm:px-6">
         <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
           <h2 id="studio-projects-title" className="cf-section-title">Studio projects.</h2>
-          <a href="/studio" className="text-xs font-medium text-blue underline-offset-2 hover:text-blue-ink hover:underline">
+          <a href="/studio" className="inline-flex min-h-11 items-center text-[13px] font-medium text-blue underline-offset-2 hover:text-blue-ink hover:underline">
             Open Studio
           </a>
         </div>
