@@ -800,6 +800,15 @@ export default function MyActivityPage() {
     );
   }
 
+  // How to start: the intro offer, or "add funds to start" when the account
+  // has no paid access yet. Retail only — an org's wallet is the org admin's
+  // to fund.
+  const retail = user?.customer_type !== "b2b" && user?.role !== "org_admin";
+  const unpaidRetail = retail && wallet?.paid_access === false;
+  const startCard = retail ? (
+    <StartCard wallet={wallet} offer={introOffer} fallbackMin={minFirstTopup(card)} onAdd={openTopUp} />
+  ) : null;
+
   return (
     <main className="relative min-h-screen text-ink">
       <div className="cf-aurora" />
@@ -819,6 +828,11 @@ export default function MyActivityPage() {
             </h1>
           </div>
         </div>
+
+        {/* Unpaid account (owner, 27 Nov 2026): the top-up card comes first,
+            so step 3 of sign-up sits above step 4 (Download). Once paid it
+            drops back below the Download row. */}
+        {unpaidRetail && startCard}
 
         {/* Dashboard (owner, 23 Nov 2026): tiles first. Row 1 is how to start
             (Download Connect, the page's ONE yellow highlight: permanent, because a
@@ -853,17 +867,7 @@ export default function MyActivityPage() {
         </div>
 
 
-        {/* How to start: the intro offer, or "add funds to start" when the
-            account has no paid access yet. Retail only — an org's wallet is
-            the org admin's to fund. */}
-        {user?.customer_type !== "b2b" && user?.role !== "org_admin" && (
-          <StartCard
-            wallet={wallet}
-            offer={introOffer}
-            fallbackMin={minFirstTopup(card)}
-            onAdd={openTopUp}
-          />
-        )}
+        {!unpaidRetail && startCard}
 
         {/* At a glance (owner, 23 Nov 2026): the session, the wallet, the month
             and the files, as tiles. Detail cards follow below. */}

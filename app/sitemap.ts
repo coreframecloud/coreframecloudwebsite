@@ -83,6 +83,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // landing page was rebuilt. High priority — it is the second thing anyone
     // looks for after what the product is.
     { url: `${BASE}/pricing`, lastModified: lm("/pricing"), changeFrequency: "weekly", priority: 0.9 },
+    { url: `${BASE}/help/software-licences`, lastModified: lm("/help/software-licences"), changeFrequency: "monthly", priority: 0.4 },
     { url: `${BASE}/compute-nodes`, lastModified: lm("/compute-nodes"), changeFrequency: "monthly", priority: 0.7 },
     { url: `${BASE}/solutions`, lastModified: lm("/solutions"), changeFrequency: "monthly", priority: 0.7 },
 

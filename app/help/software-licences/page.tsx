@@ -1,18 +1,18 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
 import { JsonLd } from "@/components/seo/json-ld";
 import { breadcrumbList } from "@/lib/seo";
-import { LICENCE_NOTICE_ON, LICENCE_STATEMENT } from "@/lib/licence-notice";
+import { LICENCE_STATEMENT } from "@/lib/licence-notice";
 
 /**
  * How to sign out of common apps before a session ends (gpu-product-1110,
  * item 3; owner, 11 Nov 2026). Linked from the licence statement on the GPU
  * ladder, /compute-nodes, the software pages and My Activity.
  *
- * Hidden (404) unless NEXT_PUBLIC_LICENCE_NOTICE=1. No prices, so no /usd copy
- * (proxy.ts rewrites only the pages in its PAGES list). Not in the sitemap
- * yet: add it there (and to lib/page-dates.ts) when the flag goes on for good.
+ * Always live (27 Nov 2026): Connect and My Activity link here from the API's
+ * gpu_licence_help_url, which is on in production, so a flagged-off page was a
+ * 404 for customers. NEXT_PUBLIC_LICENCE_NOTICE still gates the statements on
+ * the other pages. No prices, so no /usd copy.
  *
  * Factual only: where the sign-out sits in each app today, with the note that
  * menus move between versions and a link to each vendor's own help. No claim
@@ -20,7 +20,6 @@ import { LICENCE_NOTICE_ON, LICENCE_STATEMENT } from "@/lib/licence-notice";
  */
 
 export async function generateMetadata(): Promise<Metadata> {
-  if (!LICENCE_NOTICE_ON) return {};
   return {
     title: "Sign out of licensed apps before you end",
     description:
@@ -76,8 +75,6 @@ const APPS: { name: string; steps: string; vendor: { label: string; href: string
 ];
 
 export default function SoftwareLicencesHelpPage() {
-  if (!LICENCE_NOTICE_ON) notFound();
-
   return (
     <main className="text-ink">
       <JsonLd

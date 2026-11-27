@@ -15,8 +15,8 @@ import {
  * No hooks: usable from server pages (the GPU ladder) and client ones.
  * `text` overrides the wording (My Activity passes what the API sent, which is
  * the same S1); `force` shows it whatever the site flag says (My Activity,
- * where the API's own flag decides), and then the link appears only while
- * the help page exists (site flag on).
+ * where the API's own flag decides). The help page is always live, so the
+ * link shows whenever the notice does.
  */
 export function LicenceNotice({
   variant = "full",
@@ -34,7 +34,7 @@ export function LicenceNotice({
   return (
     <div data-licence-notice="" className={`rounded-[16px] border border-rule bg-paper-2 px-4 py-3 sm:px-5 ${className}`}>
       <p className="text-[14px] leading-6 break-words text-ink-2">{body}</p>
-      {LICENCE_NOTICE_ON ? (
+      {LICENCE_NOTICE_ON || force ? (
         <Link
           href={LICENCE_HELP_PATH}
           className="inline-flex min-h-[44px] items-center text-[14px] text-blue underline underline-offset-4"
