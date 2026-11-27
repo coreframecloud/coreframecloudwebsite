@@ -12,6 +12,7 @@ import {
   PREINSTALLED,
   type SoftwareItem,
 } from "@/lib/software-catalogue";
+import { FaqList } from "@/components/ui/faq-list";
 
 export const metadata: Metadata = {
   title: "Preinstalled software on the workstations",
@@ -206,14 +207,7 @@ export default function AppsPage() {
         <div className="cf-col">
           <p className="cf-eyebrow mb-5">Questions</p>
           <h2 className="cf-section-title">What people ask about the software.</h2>
-          <dl className="mt-10 divide-y divide-rule border-y border-rule">
-            {faqs.map((f) => (
-              <div key={f.q} className="py-6">
-                <dt className="text-lg font-semibold tracking-[-0.02em] break-words text-ink">{f.q}</dt>
-                <dd className="mt-2.5 text-base leading-[1.62] break-words text-ink-2">{f.a}</dd>
-              </div>
-            ))}
-          </dl>
+          <FaqList items={faqs} openFirst className="mt-6" />
         </div>
       </section>
 

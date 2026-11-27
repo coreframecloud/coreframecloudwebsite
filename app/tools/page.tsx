@@ -5,6 +5,7 @@ import { PageByline } from "@/components/seo/page-byline";
 import { breadcrumbList, faqPage, OG_IMAGE, ORG_ID, SITE } from "@/lib/seo";
 import { pageUpdated } from "@/lib/page-dates";
 import { IfcChecker } from "./ifc-checker";
+import { FaqList } from "@/components/ui/faq-list";
 
 /**
  * /tools: the free IFC pre-CFD checker.
@@ -272,20 +273,7 @@ export default function ToolsPage() {
         <section className="cf-section px-5">
           <div className="cf-wide">
             <h2 className={H2}>Questions</h2>
-            <div className="mt-6 space-y-3">
-              {FAQ.map((f) => (
-                <details key={f.q} className="group rounded-cf border border-rule bg-paper-2 px-5 py-4 transition open:border-blue/25">
-                  <summary className="flex min-h-11 cursor-pointer items-center justify-between gap-4 text-[15.5px] font-semibold text-ink [&::-webkit-details-marker]:hidden">
-                    {f.q}
-                    <span aria-hidden className="shrink-0 text-xl leading-none font-light text-blue">
-                      <span className="group-open:hidden">+</span>
-                      <span className="hidden group-open:inline">−</span>
-                    </span>
-                  </summary>
-                  <p className="mt-3 max-w-[68ch] text-[14.5px] leading-6 text-ink-2">{f.a}</p>
-                </details>
-              ))}
-            </div>
+            <FaqList items={FAQ} className="mt-6" />
 
             <p className="mt-10 text-[15px] text-ink-2">
               Working from a DWG? The free{" "}

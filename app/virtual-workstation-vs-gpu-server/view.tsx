@@ -9,6 +9,7 @@ import { BackgroundGlow } from "@/components/home/background-glow";
 import { JsonLd } from "@/components/seo/json-ld";
 import { breadcrumbList, faqPage, OG_IMAGE } from "@/lib/seo";
 import { getRateCard, adhocRateHourly, billingSentence, ladderRanges } from "@/lib/rate-card";
+import { FaqList } from "@/components/ui/faq-list";
 
 /**
  * "Ready-to-work cloud virtual workstation vs a bare GPU server" -- added
@@ -307,14 +308,7 @@ export default async function WorkstationVsServerView({ currency }: { currency: 
 
           <section className="mt-14">
             <h2 className="cf-section-title">Questions.</h2>
-            <div className="mt-6 space-y-7">
-              {faqs.map((f) => (
-                <div key={f.q}>
-                  <h3 className="font-semibold text-ink">{f.q}</h3>
-                  <p className="mt-2 leading-7 text-ink-2">{f.a}</p>
-                </div>
-              ))}
-            </div>
+            <FaqList items={faqs} openFirst heading className="mt-6" />
           </section>
 
           <section className="mt-14 rounded-cf border border-blue/20 bg-blue/[0.05] p-6">

@@ -13,6 +13,7 @@ import { BlogCta } from "@/components/blog/blog-cta";
 import { plainText } from "@/components/blog/rich-text";
 import { PreferredSourceButton } from "@/components/seo/preferred-source";
 import type { Currency } from "@/lib/money";
+import { FaqList } from "@/components/ui/faq-list";
 
 /**
  * One blog post. Statically generated from lib/blog.
@@ -190,14 +191,7 @@ export default async function BlogPostView({ slug, currency }: { slug: string; c
           {faqs.length ? (
             <section className="mt-16 border-t border-rule pt-10">
               <h2 className="cf-section-title">Questions</h2>
-              <div className="mt-6 space-y-7">
-                {faqs.map((f) => (
-                  <div key={f.q}>
-                    <h3 className="font-semibold text-ink">{f.q}</h3>
-                    <p className="mt-2 leading-7 text-ink-2">{f.a}</p>
-                  </div>
-                ))}
-              </div>
+              <FaqList items={faqs} openFirst heading className="mt-6" />
             </section>
           ) : null}
 

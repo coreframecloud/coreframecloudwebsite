@@ -8,6 +8,7 @@ import { PlanImage } from "@/components/visuals/studio-compare";
 import { Hl } from "@/components/cfd-explainer";
 import { FREE_PREVIEWS_PER_DAY, MAX_DXF_MB, studioMoney, studioPrices, type StudioMoney } from "@/lib/studio-prices";
 import { formatMoney, type Currency } from "@/lib/money";
+import { FaqList } from "@/components/ui/faq-list";
 
 /**
  * /floor-plan-to-render/3bhk-example: one real 3BHK drawing taken through
@@ -262,17 +263,7 @@ export default async function ThreeBhkExampleView({ currency }: { currency: Curr
         <section className="cf-section px-5 pt-0">
           <div className="cf-col">
             <h2 className="cf-section-title">Questions.</h2>
-            <div className="mt-6 divide-y divide-rule rounded-[24px] border border-rule">
-              {faq.map((f) => (
-                <details key={f.q} className="group px-6 py-5">
-                  <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-medium text-ink">
-                    {f.q}
-                    <span aria-hidden className="text-ink-3 transition group-open:rotate-45">+</span>
-                  </summary>
-                  <p className="mt-3 text-[15px] leading-6 break-words text-ink-2">{f.a}</p>
-                </details>
-              ))}
-            </div>
+            <FaqList items={faq} className="mt-6" />
           </div>
         </section>
 

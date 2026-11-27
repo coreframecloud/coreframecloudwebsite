@@ -26,6 +26,7 @@ import {
   withArticle,
   shortGpuName,
 } from "@/lib/rate-card";
+import { FaqList } from "@/components/ui/faq-list";
 
 /**
  * Coreframe against iRender, with the arithmetic shown.
@@ -426,14 +427,7 @@ export default async function VsIrenderView({ currency }: { currency: Currency }
         <section id="questions" className="cf-section px-5">
           <div className="cf-col">
             <h2 className="cf-title">Questions about iRender</h2>
-            <div className="mt-7 space-y-7">
-              {ALTERNATIVES_FAQ.map((f) => (
-                <div key={f.q}>
-                  <h3 className="font-semibold text-ink">{f.q}</h3>
-                  <p className="mt-2 leading-7 text-ink-2">{f.a}</p>
-                </div>
-              ))}
-            </div>
+            <FaqList items={ALTERNATIVES_FAQ} openFirst heading className="mt-6" />
           </div>
         </section>
 

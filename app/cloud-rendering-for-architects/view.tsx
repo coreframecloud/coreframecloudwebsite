@@ -2,7 +2,6 @@ import { formatMoney, type Currency } from "@/lib/money";
 import { StreamDiagram } from "@/components/visuals/diagrams";
 import { PageByline } from "@/components/seo/page-byline";
 import { ViewContent } from "@/components/analytics/view-content";
-import { Fold } from "@/components/visuals/fold";
 import { GenImage } from "@/components/visuals/media";
 import type { Metadata } from "next";
 import { JsonLd } from "@/components/seo/json-ld";
@@ -23,6 +22,7 @@ import {
 } from "@/lib/rate-card";
 import { GpuLadder } from "@/components/pricing/gpu-ladder";
 import { storageTerms } from "@/lib/storage-terms";
+import { FaqList } from "@/components/ui/faq-list";
 
 export function architectsMetadata(): Metadata {
   // No price in this metadata: the same for both currency copies.
@@ -327,16 +327,10 @@ export default async function ArchitectsView({ currency }: { currency: Currency 
 
         <section className="cf-section px-5">
           <div className="cf-col">
-<Fold title="What studios ask before they start.">
-            <dl className="mt-10 divide-y divide-rule border-y border-rule">
-              {faqs.map((f) => (
-                <div key={f.q} className="py-6">
-                  <dt className="text-lg font-semibold tracking-[-0.02em] break-words text-ink">{f.q}</dt>
-                  <dd className="mt-2.5 text-base leading-[1.62] break-words text-ink-2">{f.a}</dd>
-                </div>
-              ))}
-            </dl>
-          </Fold>
+            {/* Was a fold around a list of open answers: one tap showed all ten.
+                Now the heading is plain and each question folds on its own. */}
+            <h2 className="cf-section-title">What studios ask before they start.</h2>
+            <FaqList items={faqs} className="mt-6" />
 </div>
         </section>
 

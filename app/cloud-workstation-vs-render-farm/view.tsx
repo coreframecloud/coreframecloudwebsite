@@ -17,6 +17,7 @@ import {
   pricingFaqAnswer,
 } from "@/lib/rate-card";
 import { NODE, replacementCost } from "@/lib/node-spec";
+import { FaqList } from "@/components/ui/faq-list";
 
 /**
  * "Cloud workstation vs render farm" -- added 10 Oct 2026.
@@ -218,14 +219,7 @@ export default async function WorkstationVsFarmView({ currency }: { currency: Cu
 
           <section className="mt-14">
             <h2 className="cf-section-title">Questions.</h2>
-            <div className="mt-6 space-y-7">
-              {faqs.map((f) => (
-                <div key={f.q}>
-                  <h3 className="font-semibold text-ink">{f.q}</h3>
-                  <p className="mt-2 leading-7 text-ink-2">{f.a}</p>
-                </div>
-              ))}
-            </div>
+            <FaqList items={faqs} openFirst heading className="mt-6" />
           </section>
 
           <section className="mt-14 rounded-cf border border-blue/20 bg-blue/[0.05] p-6">

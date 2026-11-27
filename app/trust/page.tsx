@@ -7,6 +7,7 @@ import { BackgroundGlow } from "@/components/home/background-glow";
 import { breadcrumbList, faqPage, OG_IMAGE } from "@/lib/seo";
 import { COMPANY, COMPANY_ADDRESS_FULL } from "@/lib/company";
 import { NODE } from "@/lib/node-spec";
+import { FaqList } from "@/components/ui/faq-list";
 
 /**
  * /trust, "Security and data" (AEO plan 1 Nov 2026, A9).
@@ -178,19 +179,7 @@ export default function TrustPage() {
 
           <section className="mt-14">
             <h2 className="cf-section-title">Questions.</h2>
-            <div className="mt-4">
-              {FAQS.map((f) => (
-                <details key={f.q} className="group border-b border-rule">
-                  <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-4 py-4 [&::-webkit-details-marker]:hidden">
-                    <h3 className="font-semibold text-ink">{f.q}</h3>
-                    <span aria-hidden className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-ink/[0.06] text-ink-2 transition group-open:rotate-45">
-                      +
-                    </span>
-                  </summary>
-                  <p className="pb-5 leading-7 text-ink-2">{f.a}</p>
-                </details>
-              ))}
-            </div>
+            <FaqList items={FAQS} heading className="mt-6" />
           </section>
 
           <section className="mt-14 rounded-cf border border-rule p-6">

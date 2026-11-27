@@ -5,6 +5,7 @@ import { JsonLd } from "@/components/seo/json-ld";
 import { PageByline } from "@/components/seo/page-byline";
 import { GenImage } from "@/components/visuals/media";
 import { breadcrumbList, faqPage } from "@/lib/seo";
+import { FaqList } from "@/components/ui/faq-list";
 
 /**
  * /education: GPU workstations for colleges, universities, design schools and
@@ -173,17 +174,7 @@ export default function EducationPage() {
         <section className="cf-section px-5 pt-0">
           <div className="cf-col">
             <h2 className="cf-section-title">Questions</h2>
-            <div className="mt-6 divide-y divide-rule rounded-[24px] border border-rule">
-              {FAQS.map((f) => (
-                <details key={f.q} className="group px-6 py-5">
-                  <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-medium text-ink">
-                    {f.q}
-                    <span aria-hidden className="text-ink-3 transition group-open:rotate-45">+</span>
-                  </summary>
-                  <p className="mt-3 text-[15px] leading-6 text-ink-2">{f.a}</p>
-                </details>
-              ))}
-            </div>
+            <FaqList items={FAQS} className="mt-6" />
           </div>
         </section>
 

@@ -3,7 +3,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { AREA_SERVED_WORLD, ORG_ID, SITE, breadcrumbList, faqPage, regionalOffers } from "@/lib/seo";
 import { JsonLd } from "@/components/seo/json-ld";
-import { Fold } from "@/components/visuals/fold";
 import { Callout, ExplainFigure, Hl, SectionHead } from "@/components/cfd-explainer";
 import { getRateCard } from "@/lib/rate-card";
 import { usdRates, type Currency } from "@/lib/money";
@@ -11,6 +10,7 @@ import { CFD_NORMAL_HOURS, CFD_PREPROCESS_INR, preprocessFee, preprocessLarge } 
 import { CLINIC_CASE, HVAC_PAGE, HVAC_SERVICE } from "@/lib/cfd-pages";
 import { PageByline } from "@/components/seo/page-byline";
 import { ROOMS_DELIVERS, ROOMS_VALIDATION } from "@/lib/cfd-rooms";
+import { FaqList } from "@/components/ui/faq-list";
 
 /**
  * /cfd/room-airflow-hvac — the Rooms / HVAC steady service's own page (SEO
@@ -316,11 +316,7 @@ export default async function RoomAirflowHvacView({ currency }: { currency: Curr
         <section className="cf-section px-5 pt-0">
           <div className="cf-col">
             <h2 className="cf-section-title">Questions.</h2>
-            {faq.map((f) => (
-              <Fold key={f.q} title={f.q}>
-                <p className="mt-3 text-[15px] leading-6 break-words text-ink-2">{f.a}</p>
-              </Fold>
-            ))}
+            <FaqList items={faq} heading className="mt-6" />
             <p className="mt-8 text-[14.5px] leading-6 text-ink-2">
               Related: <Link href={HVAC_SERVICE.path} className="text-ink underline underline-offset-4">HVAC simulation service: who it is for, price and turnaround</Link>
               {" · "}

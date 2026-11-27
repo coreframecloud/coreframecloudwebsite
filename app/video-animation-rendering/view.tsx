@@ -6,7 +6,6 @@ import { JsonLd } from "@/components/seo/json-ld";
 import { PageByline } from "@/components/seo/page-byline";
 import { BackgroundGlow } from "@/components/home/background-glow";
 import { GenImage } from "@/components/visuals/media";
-import { Fold } from "@/components/visuals/fold";
 import { SpecTable } from "@/components/gpu/spec-table";
 import { GpuLadder } from "@/components/pricing/gpu-ladder";
 import { AREA_SERVED_WORLD, ORG_ID, SITE, breadcrumbList, faqPage, gpuLadderOffers } from "@/lib/seo";
@@ -26,6 +25,7 @@ import {
   storageSpec,
   type RateCard,
 } from "@/lib/rate-card";
+import { FaqList } from "@/components/ui/faq-list";
 
 /**
  * /video-animation-rendering — video and animation work on the RTX 5080
@@ -408,11 +408,7 @@ export default async function VideoView({ currency }: { currency: Currency }) {
         <section className="cf-section px-5 pt-0">
           <div className="cf-col">
             <h2 className="cf-section-title">Questions.</h2>
-            {faqs.map((f) => (
-              <Fold key={f.q} title={f.q}>
-                <p className="mt-3 text-[15px] leading-6 break-words text-ink-2">{f.a}</p>
-              </Fold>
-            ))}
+            <FaqList items={faqs} heading className="mt-6" />
             <p className="mt-8 text-[14.5px] leading-6 text-ink-2">
               Ready to try one project?{" "}
               <Link href="/signup" className="text-ink underline underline-offset-4">

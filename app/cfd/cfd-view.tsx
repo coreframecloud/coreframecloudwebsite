@@ -3,7 +3,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { AREA_SERVED_WORLD, ORG_ID, SITE, breadcrumbList, faqPage, howTo, regionalOffers } from "@/lib/seo";
 import { JsonLd } from "@/components/seo/json-ld";
-import { Fold } from "@/components/visuals/fold";
 import { PageHeroBg, type HeroImage } from "@/components/page-hero-bg";
 import { Callout, CheckRow, ExplainFigure, Hl, SectionHead, Stamp } from "@/components/cfd-explainer";
 import { VelocityProfileOverlay } from "@/components/cfd-explainer/velocity-profile";
@@ -31,6 +30,7 @@ import { cfdServiceTiles } from "@/lib/cfd-services";
 import { ServiceSwitch, ServiceTiles } from "./service-tiles";
 import { HvacEngineers } from "./hvac-engineers";
 import { PhoneLaterNote } from "@/components/cfd/phone-later-note";
+import { FaqList } from "@/components/ui/faq-list";
 
 /**
  * /cfd — CFD for ducts and pipes (managed, automatic). Live 13 Oct 2026.
@@ -718,7 +718,7 @@ export default async function CfdView({ currency }: { currency: Currency }) {
                 mesh-independent, 12.30 Pa ± 0.13 %.
               </p>
               <p>
-                <a href="#verified" className="cfx-chip no-underline">
+                <a href="#verified" className="cfx-chip inline-flex! min-h-11 items-center no-underline">
                   Verified package · {verifiedFrom(currency)}
                 </a>
               </p>
@@ -929,11 +929,7 @@ export default async function CfdView({ currency }: { currency: Currency }) {
         <section className="cf-section px-5 pt-0">
           <div className="cf-col">
             <h2 className="cf-section-title">Questions.</h2>
-            {faq.map((f) => (
-              <Fold key={f.q} title={f.q}>
-                <p className="mt-3 text-[15px] leading-6 break-words text-ink-2">{f.a}</p>
-              </Fold>
-            ))}
+            <FaqList items={faq} heading className="mt-6" />
           </div>
         </section>
       </main>

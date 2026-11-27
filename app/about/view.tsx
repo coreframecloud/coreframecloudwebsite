@@ -30,6 +30,7 @@ import { GpuLadder } from "@/components/pricing/gpu-ladder";
 import { formatMoney, usdRates, type Currency } from "@/lib/money";
 import { CFD_PREPROCESS_INR } from "@/lib/cfd-prices";
 import { BANDWIDTH_SENTENCE } from "@/lib/streaming-terms";
+import { FaqList } from "@/components/ui/faq-list";
 
 /**
  * The page that answers "what is Coreframe Cloud".
@@ -476,17 +477,7 @@ export default async function AboutView({ currency }: { currency: Currency }) {
             <h2 className="cf-section-title">Questions.</h2>
             {/* An accordion since 31 Oct 2026 (owner: "too much to read"); every
                 answer stays in the HTML and matches the FAQPage schema above. */}
-            <div className="mt-6 divide-y divide-rule rounded-[24px] border border-rule">
-              {faqs.map((f) => (
-                <details key={f.q} className="group px-6">
-                  <summary className="flex min-h-14 cursor-pointer list-none py-4 items-center justify-between gap-4 font-semibold break-words text-ink [&::-webkit-details-marker]:hidden">
-                    {f.q}
-                    <span aria-hidden className="shrink-0 text-ink-3 transition group-open:rotate-45">+</span>
-                  </summary>
-                  <p className="pb-5 leading-7 break-words text-ink-2">{f.a}</p>
-                </details>
-              ))}
-            </div>
+            <FaqList items={faqs} className="mt-6" />
           </section>
 
           <section className="cf-note mt-14">

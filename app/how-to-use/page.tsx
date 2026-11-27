@@ -8,6 +8,7 @@ import Link from "next/link";
 import { Fold } from "@/components/visuals/fold";
 import { NODE } from "@/lib/node-spec";
 import { BANDWIDTH_SENTENCE } from "@/lib/streaming-terms";
+import { FaqList } from "@/components/ui/faq-list";
 
 export const metadata: Metadata = {
   title: "How to use Coreframe Cloud, step by step",
@@ -206,14 +207,7 @@ export default function HowToUsePage() {
 
         <section className="mt-14">
           <h2 className="cf-section-title">Common questions.</h2>
-          <div className="mt-8 space-y-7">
-            {FAQS.map((faq) => (
-              <div key={faq.q}>
-                <h3 className="font-semibold break-words text-ink">{faq.q}</h3>
-                <p className="mt-2 leading-7 break-words text-ink-2">{faq.a}</p>
-              </div>
-            ))}
-          </div>
+          <FaqList items={FAQS} openFirst heading className="mt-6" />
         </section>
 
         <div className="mt-14 flex flex-wrap gap-4">

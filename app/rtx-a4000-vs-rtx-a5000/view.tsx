@@ -7,6 +7,7 @@ import { breadcrumbList, faqPage, OG_IMAGE, SITE } from "@/lib/seo";
 import { formatMoney, type Currency } from "@/lib/money";
 import { startGpus } from "@/lib/gpu-start-server";
 import { comingSoonGpus, comingSoonName, getRateCard, hourlyValue, publicGpus, shortGpuName, taxWords, type RateCardGpu } from "@/lib/rate-card";
+import { FaqList } from "@/components/ui/faq-list";
 
 /**
  * /rtx-a4000-vs-rtx-a5000 — "RTX A4000 vs RTX A5000 for rendering"
@@ -365,19 +366,7 @@ export default async function CompareView({ currency }: { currency: Currency }) 
         <section className="cf-section px-5" data-cf-section="faq">
           <div className="cf-col">
             <h2 className="cf-title">Questions</h2>
-            <div className="mt-6 grid gap-3">
-              {faqs.map((f) => (
-                <details key={f.q} className="group rounded-[16px] border border-rule bg-paper px-4">
-                  <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-3 py-3 [&::-webkit-details-marker]:hidden">
-                    <span className="font-semibold text-ink">{f.q}</span>
-                    <span aria-hidden className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-ink/[0.06] text-ink-2 transition group-open:rotate-45">
-                      +
-                    </span>
-                  </summary>
-                  <p className="pb-4 text-ink-2">{f.a}</p>
-                </details>
-              ))}
-            </div>
+            <FaqList items={faqs} className="mt-6" />
           </div>
         </section>
 

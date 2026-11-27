@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { AREA_SERVED_WORLD, ORG_ID, SITE, breadcrumbList, faqPage, regionalOffers } from "@/lib/seo";
 import { JsonLd } from "@/components/seo/json-ld";
-import { Fold } from "@/components/visuals/fold";
 import { Callout, ExplainFigure, Hl, SectionHead } from "@/components/cfd-explainer";
 import { VerifiedCard } from "@/components/cfd-explainer/verified-card";
 import { CountUp } from "@/components/cfd-explainer/count-up";
@@ -13,6 +12,7 @@ import type { Currency } from "@/lib/money";
 import { CLINIC_CASE, HVAC_PAGE, MESH_STUDY } from "@/lib/cfd-pages";
 import { PageByline } from "@/components/seo/page-byline";
 import { PhoneLaterNote } from "@/components/cfd/phone-later-note";
+import { FaqList } from "@/components/ui/faq-list";
 
 /**
  * /cfd/mesh-independence-study — the Verified package's landing page (owner,
@@ -514,11 +514,7 @@ export default async function MeshStudyView({ currency }: { currency: Currency }
         <section data-cf-section="cta" className="cf-section px-5 pt-0">
           <div className="cf-col">
             <h2 className="cf-section-title">Questions.</h2>
-            {faq.map((f) => (
-              <Fold key={f.q} title={f.q}>
-                <p className="mt-3 text-[15px] leading-6 break-words text-ink-2">{f.a}</p>
-              </Fold>
-            ))}
+            <FaqList items={faq} heading className="mt-6" />
           </div>
         </section>
       </main>

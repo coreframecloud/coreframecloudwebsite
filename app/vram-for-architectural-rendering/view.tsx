@@ -13,6 +13,7 @@ import { getRateCard, publicGpus, formatHourly, shortGpuName, taxWords, type Rat
 import { startGpus } from "@/lib/gpu-start-server";
 import { GpuPickCards, GpuStartSticky } from "@/components/go/gpu-start";
 import { formatMoney } from "@/lib/money";
+import { FaqList } from "@/components/ui/faq-list";
 
 /**
  * How much VRAM architectural rendering actually needs.
@@ -376,14 +377,7 @@ export default async function VramView({ currency }: { currency: Currency }) {
         <section className="cf-section px-5">
           <div className="cf-col">
             <h2 className="cf-title">Questions</h2>
-            <div className="mt-7 grid gap-5">
-              {FAQ.map((f) => (
-                <div key={f.q} className="cf-card-sm">
-                  <p className="font-semibold text-ink">{f.q}</p>
-                  <p className="mt-2 text-ink-2">{f.a}</p>
-                </div>
-              ))}
-            </div>
+            <FaqList items={FAQ} openFirst className="mt-6" />
           </div>
         </section>
       </main>

@@ -2,11 +2,11 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { ORG_ID, SITE, breadcrumbList, faqPage } from "@/lib/seo";
-import { Fold } from "@/components/visuals/fold";
 import { CLINIC_CASE, HVAC_PAGE, HVAC_SERVICE } from "@/lib/cfd-pages";
 import { PageByline } from "@/components/seo/page-byline";
 import { VERIFIED } from "@/lib/cfd-verified";
 import { JsonLd } from "@/components/seo/json-ld";
+import { FaqList } from "@/components/ui/faq-list";
 
 /**
  * /cfd/projects/clinic-floor-hvac — case study (owner request, 13 Oct 2026).
@@ -438,11 +438,7 @@ export default function ClinicFloorHvacPage() {
         <section className="cf-section px-5 pt-0">
           <div className="cf-col">
             <h2 className="cf-section-title">Questions.</h2>
-            {FAQ.map((f) => (
-              <Fold key={f.q} title={f.q}>
-                <p className="mt-3 text-[15px] leading-6 break-words text-ink-2">{f.a}</p>
-              </Fold>
-            ))}
+            <FaqList items={FAQ} heading className="mt-6" />
             <p className="mt-8 text-[14.5px] leading-6 text-ink-2">
               Related: <Link href="/cfd" className="text-ink underline underline-offset-4">CFD for ducts and pipes</Link>
               {" · "}
