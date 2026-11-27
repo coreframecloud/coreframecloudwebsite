@@ -61,7 +61,9 @@ export function FlowSteps({
                 active ? "font-semibold text-ink" : done ? "text-ink-2" : "text-ink-3",
               )}
             >
-              {done ? <Check aria-hidden className="h-3.5 w-3.5 shrink-0 text-blue" strokeWidth={2.5} /> : null}
+              {/* The tick needs 18px a 390px card does not have once three steps are
+                  done ("Add funds" was cut short): phones show done by the bar. */}
+              {done ? <Check aria-hidden className="hidden h-3.5 w-3.5 shrink-0 text-blue min-[440px]:block" strokeWidth={2.5} /> : null}
               <span className="truncate">{name}</span>
               {done ? <span className="sr-only"> (done)</span> : null}
             </span>
