@@ -75,7 +75,9 @@ import {
   tierMin,
   type BulkTier,
 } from "@/components/wallet/bonus-ladder";
+import Link from "next/link";
 import { GstInvoiceFields } from "@/components/wallet/gst-invoice-fields";
+import { SignupSteps } from "@/components/ui/signup-steps";
 
 export { bulkBonusFor, type BulkTier };
 
@@ -254,6 +256,9 @@ export default function TopUpDialog({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [done, setDone] = useState<null | { credited: number; balance: number }>(null);
+  // This payment was the account's first (27 Nov 2026). Kept apart from the
+  // prop, which turns false as soon as the wallet is re-read after paying.
+  const [paidFirst, setPaidFirst] = useState(false);
   // Starter mode: the order is the Rs 99 Studio starter, not a free amount.
   const [starterMode, setStarterMode] = useState(false);
   useEffect(() => {
@@ -560,6 +565,7 @@ export default function TopUpDialog({
                   location: "wallet_topup",
                 });
               }
+              setPaidFirst(Boolean(isFirstTopup) && !starterMode);
               setDone({
                 credited: v.net_wallet_credit_rupees ?? rupees,
                 balance: v.wallet_balance_rupees ?? 0,
@@ -768,6 +774,9 @@ export default function TopUpDialog({
       >
         {done ? (
           <div className="text-center">
+            {/* The end of sign-up (27 Nov 2026): three steps ticked, one left,
+                and that one is the button below. */}
+            {paidFirst ? <SignupSteps current={4} gpuFlowOnly className="mb-6 text-left" /> : null}
             <p id="cf-topup-title" className="text-sm leading-5 font-medium text-ink-2">Paid</p>
             <p data-sound="success" className="mt-2 font-heading text-[26px] leading-8 font-medium text-ink">Wallet topped up</p>
             <p className="mt-2 font-display text-3xl font-bold tabular-nums text-blue">
@@ -778,9 +787,21 @@ export default function TopUpDialog({
             </p>
 
             {forGpu ? (
-              <a href={forGpu.href} className="cf-btn-primary mt-6 w-full">
+              <a href={forGpu.href} className="cf-btn-dl mt-6 w-full px-6">
                 Download Connect for your {forGpu.name}
               </a>
+            ) : paidFirst ? (
+              /* A first top-up with no card chosen beforehand still ends on
+                 the next thing to do, not on "Done". The yellow pill is the
+                 same one My Activity uses for the download. */
+              <>
+                <Link href="/download?step=4" className="cf-btn-dl mt-6 w-full px-6">
+                  Download Connect
+                </Link>
+                <button onClick={onClose} className="mt-2 inline-flex min-h-11 items-center justify-center px-4 text-[14px] font-medium text-ink-2 hover:text-ink">
+                  Not now
+                </button>
+              </>
             ) : (
             <button onClick={onClose} className="cf-btn-primary mt-6 w-full">
               Done
@@ -789,6 +810,7 @@ export default function TopUpDialog({
           </div>
         ) : (
           <>
+            {isFirstTopup && !starterMode ? <SignupSteps current={3} gpuFlowOnly className="mb-5" /> : null}
             <div className="flex items-center justify-between">
               <h2 id="cf-topup-title" className="font-heading text-[26px] leading-8 font-medium tracking-[-0.01em] text-ink">
                 Add funds

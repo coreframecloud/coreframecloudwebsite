@@ -24,13 +24,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { OtpInput } from "@/components/ui/otp-input";
 // CheckCircle went with the password tab's "signed in" state.
-import { Loader2, Mail, ArrowRight, Check, LogIn, UserPlus } from "lucide-react";
+import { Loader2, Mail, ArrowRight, Check, LogIn } from "lucide-react";
 import { API_BASE } from "@/lib/api-base";
 import { apiErrorText, caughtErrorText, looksLikeEmail } from "@/lib/api-error";
 import { suggestEmail } from "@/lib/email-typo";
 import { TERMS_REQUIRED_TEXT, TermsConsent, isTermsRequired } from "@/components/account/terms-consent";
 import { setConsent } from "@/lib/consent";
 import { FORM, FormDivider, FormField, SocialButtons } from "@/components/ui/form-field";
+import { SignupSteps } from "@/components/ui/signup-steps";
 
 const API = API_BASE;
 
@@ -126,8 +127,8 @@ function CardHeader({
   title,
   sub,
 }: {
-  icon: React.ReactNode;
-  eyebrow: string;
+  icon?: React.ReactNode;
+  eyebrow?: string;
   title: string;
   sub?: React.ReactNode;
   /** Kept for callers; the header gap is the same 24px on both variants now. */
@@ -136,10 +137,15 @@ function CardHeader({
   return (
     // Subtitle -> first field 24px on both variants (form spacing system).
     <div className={FORM.header}>
-      <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-full bg-blue/10 text-blue">
-        {icon}
-      </div>
-      <p className="cf-eyebrow mb-2">{eyebrow}</p>
+      {/* The round icon and the eyebrow gave way to the step strip on sign-up
+          (27 Nov 2026): three ornaments above one field was one too many, and
+          the strip already says "Sign up". Sign-in keeps both. */}
+      {icon ? (
+        <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-full bg-blue/10 text-blue">
+          {icon}
+        </div>
+      ) : null}
+      {eyebrow ? <p className="cf-eyebrow mb-2">{eyebrow}</p> : null}
       <h1 className="font-display text-[27px] leading-[1.14] tracking-[-0.01em] text-ink sm:text-[32px]">
         {title}
       </h1>
@@ -748,10 +754,13 @@ export default function LoginForm({
       )}
 
       <div className="cf-glass w-full p-5 sm:p-7 md:p-8">
+        {/* Step 1 of 4 (27 Nov 2026): the same strip follows the customer to
+            the mobile code, the first top-up and the Connect download. */}
+        {isStart && <SignupSteps current={1} className="mb-6" />}
         <CardHeader
           compact={isStart}
-          icon={isStart ? <UserPlus className="h-5 w-5" /> : <LogIn className="h-5 w-5" />}
-          eyebrow={isStart ? "Sign up" : "Your account"}
+          icon={isStart ? undefined : <LogIn className="h-5 w-5" />}
+          eyebrow={isStart ? undefined : "Your account"}
           title={isStart ? "Create your account" : "Sign in"}
           sub={
             isStart

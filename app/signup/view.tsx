@@ -11,6 +11,9 @@ import {
   introOfferShort,
   ladderRanges,
 } from "@/lib/rate-card";
+import Link from "next/link";
+import { CoreframeWordmarkAtlas } from "@/components/brand/coreframe-wordmark-atlas";
+import { CookieSettingsLink } from "@/components/consent/consent-banner";
 import LoginForm from "../login/login-form";
 
 /**
@@ -76,8 +79,14 @@ export default async function SignupView({ currency }: { currency: Currency }) {
   return (
     <div className="relative min-h-screen text-ink">
       <div className="cf-aurora" />
-      <main className="relative flex min-h-screen justify-center px-5 py-10 sm:items-center sm:py-16">
+      <main className="relative flex min-h-[calc(100dvh-5rem)] justify-center px-5 pt-5 pb-10 sm:items-center sm:py-12">
         <div className="w-full max-w-lg">
+          {/* The wordmark (27 Nov 2026). This page has no site header, and the
+              form's own logo went when the header took it over, so sign-up
+              showed no brand at all. 32px, and the one way back to the site. */}
+          <Link href="/" aria-label="COREFRAME Home" className="mb-4 inline-flex min-h-11 items-center">
+            <CoreframeWordmarkAtlas iconSize={32} animated={false} />
+          </Link>
           {/* The offer used to be a box here, above the card. It read well and
               it cost us the campaign: it pushed the email input to 673px on a
               657px viewport, so 87 people landed and none reached the field.
@@ -87,11 +96,15 @@ export default async function SignupView({ currency }: { currency: Currency }) {
             <LoginForm variant="start" offer={offer} />
           </div>
 
-          {/* Quiet, like the card above it: an inset panel and a small heading,
-              not a section-sized title competing with "Create your account". */}
-          <section className="cf-glass-inset mt-6 p-5 sm:p-6" data-cf-section="how">
-            <h2 className="font-display text-lg leading-snug font-medium text-ink">How sign-up works</h2>
-            <ol className="mt-4 space-y-3 text-sm leading-6 text-ink-2">
+          {/* The three steps in full, collapsed (27 Nov 2026): the strip in the
+              card names them, so the detail waits behind one tap. Still in the
+              HTML for search, as <details>. */}
+          <details className="group cf-glass-inset mt-6 px-5 sm:px-6" data-cf-section="how">
+            <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 py-4 [&::-webkit-details-marker]:hidden">
+              <h2 className="font-display text-[17px] leading-snug font-medium text-ink">How sign-up works</h2>
+              <span aria-hidden className="shrink-0 text-xl leading-none font-light text-ink-3 transition-transform duration-200 group-open:rotate-45">+</span>
+            </summary>
+            <ol className="space-y-3 text-sm leading-6 text-ink-2">
               <li>
                 <b className="font-medium text-ink">1. Your email.</b> We send you a link, so
                 there&rsquo;s no password to remember.
@@ -110,13 +123,29 @@ export default async function SignupView({ currency }: { currency: Currency }) {
                   ? "Pay by card in US dollars, with no GST, and the invoice is issued automatically."
                   : "Pay by card, UPI or netbanking (international cards work too), and the invoice is issued automatically."}
               </li>
+              <li>
+                <b className="font-medium text-ink">4. Download Connect.</b> The Mac and Windows app
+                that opens your workstation.
+              </li>
             </ol>
-            <p className="mt-4 text-xs leading-5 text-ink-3">
+            <p className="mt-4 pb-5 text-xs leading-5 text-ink-3">
               You don&rsquo;t upload Aadhaar, a passport or any other ID.
             </p>
-          </section>
+          </details>
         </div>
       </main>
+      {/* The legal links only, like the /go pages (27 Nov 2026). The full site
+          footer put about seventy links under a page with one job: on a phone
+          it was four fifths of the page. */}
+      <footer className="relative border-t border-rule">
+        <div className="mx-auto flex max-w-lg flex-wrap items-center gap-x-5 gap-y-1 px-5 py-4 text-[13px] text-ink-3">
+          <span>© {new Date().getFullYear()} Coreframe Compute Labs Private Limited</span>
+          <Link href="/privacy-policy" className="inline-flex min-h-11 items-center hover:text-ink">Privacy</Link>
+          <Link href="/terms-of-service" className="inline-flex min-h-11 items-center hover:text-ink">Terms</Link>
+          <Link href="/refund-policy" className="inline-flex min-h-11 items-center hover:text-ink">Refunds</Link>
+          <CookieSettingsLink className="inline-flex min-h-11 items-center hover:text-ink" />
+        </div>
+      </footer>
     </div>
   );
 }

@@ -3,13 +3,16 @@
 import { API_BASE } from "@/lib/api-base";
 import { flush as flushWebEvents, track as trackWebEvent } from "@/lib/web-events";
 import { apiFetch, isSignedIn } from "@/lib/session";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { BANDWIDTH_SHORT } from "@/lib/streaming-terms";
 import { ChosenGpuNote } from "@/components/go/chosen-gpu-note";
 import { MacHelp, formatMacSize } from "@/components/download/mac-help";
 import { PersistentDiskTip } from "@/components/account/persistent-disk-tip";
+import { SignupSteps } from "@/components/ui/signup-steps";
+
+const noopSubscribe = () => () => {};
 
 interface DownloadInfo {
   // Optional because the route omits them when the release feed on the control
@@ -253,6 +256,13 @@ export default function DownloadPage() {
   const [platform, setPlatform] = useState<Platform>("windows");
   const [chip, setChip] = useState<Chip | null>(null);
   const [started, setStarted] = useState<Started | null>(null);
+  // Arrived from the first top-up: the payment step links here with ?gpu= or
+  // ?step=4. Read once on the client; the server render shows no strip.
+  const fromSignup = useSyncExternalStore(
+    noopSubscribe,
+    () => /[?&](gpu|step)=/.test(window.location.search),
+    () => false,
+  );
 
   useEffect(() => {
     // Ask the server first even when signed out: while downloads are paused the
@@ -352,6 +362,14 @@ export default function DownloadPage() {
   return (
     <main className="cf-section px-5">
       <div className="mx-auto w-full max-w-[520px]">
+
+        {/* The last of the four sign-up steps (27 Nov 2026), shown to someone
+            who arrives from the first top-up (?gpu= or step=4 on the link):
+            all four tick once the download has started. A returning customer
+            fetching an update sees no strip. */}
+        {stage === "ready" && fromSignup ? (
+          <SignupSteps current={startedHere ? 5 : 4} gpuFlowOnly className="mb-6" />
+        ) : null}
 
         {/* The card chosen before sign-up (10 Nov 2026), when there is one. */}
         <ChosenGpuNote />

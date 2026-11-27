@@ -73,6 +73,7 @@ import { peekReturnPath, takeReturnPath } from "@/lib/return-path";
 import { goAfterSignIn } from "@/lib/session-cookie";
 import { apiFetch, forgetLocalSession, isSignedIn, rememberUser } from "@/lib/session";
 import { apiErrorText, caughtErrorText } from "@/lib/api-error";
+import { SignupSteps } from "@/components/ui/signup-steps";
 import { WRONG_NUMBER_HINT, shownNumber, showWrongNumberHint, splitDisplayNumber } from "@/lib/phone-display";
 
 const API = API_BASE;
@@ -223,13 +224,19 @@ function Card({ children }: { children: React.ReactNode }) {
   return <div className="cf-glass w-full max-w-lg p-5 sm:p-7 md:p-8">{children}</div>;
 }
 
-function Header({ icon, title, sub }: { icon: React.ReactNode; title: string; sub?: React.ReactNode }) {
+/**
+ * `step` is where this screen sits in the four-step sign-up strip
+ * (components/ui/flow-steps.tsx, 27 Nov 2026): 1 email, 2 mobile and the
+ * business checks, 3 add funds. 0 hides the strip (the load-error screen).
+ */
+function Header({ icon, title, sub, step = 2 }: { icon: React.ReactNode; title: string; sub?: React.ReactNode; step?: number }) {
   return (
     <div className={FORM.header}>
+      {step > 0 ? <SignupSteps current={step} className="mb-6" /> : null}
       <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-full bg-blue/10 text-blue">
         {icon}
       </div>
-      <p className="cf-eyebrow mb-2">Finish sign-up</p>
+      {step > 0 ? null : <p className="cf-eyebrow mb-2">Finish sign-up</p>}
       <h1 className="font-display text-[27px] leading-[1.14] tracking-[-0.01em] text-ink sm:text-[32px]">
         {title}
       </h1>
@@ -723,7 +730,7 @@ export default function VerifyFlow() {
   if (phase === "error") {
     return (
       <Card>
-        <Header icon={<Clock className="h-5 w-5" />} title="We couldn't load your account." />
+        <Header step={0} icon={<Clock className="h-5 w-5" />} title="We couldn't load your account." />
         <p className={errorBox}>{error}</p>
         <Button onClick={() => window.location.reload()} className={`${btnPrimary} mt-5`}>
           Try again
@@ -737,6 +744,7 @@ export default function VerifyFlow() {
       <Card>
         <span data-sound="success" hidden>done</span>
         <Header
+          step={3}
           icon={<CheckCircle2 className="h-5 w-5" />}
           title={bankJustVerified ? "Bank account confirmed." : "You're all set."}
           sub={
@@ -1052,6 +1060,7 @@ export default function VerifyFlow() {
     return (
       <Card>
         <Header
+          step={1}
           icon={<Mail className="h-5 w-5" />}
           title="Confirm your email."
           sub="Open the sign-in link we emailed you. That confirms the address and brings you back here for the last step."

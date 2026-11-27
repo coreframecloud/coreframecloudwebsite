@@ -57,10 +57,13 @@ export function NoStripOnAppPages({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
-/** Drops the site footer (menus, guides, blog) on the paid-ad landing pages only. */
+/**
+ * Drops the site footer (menus, guides, blog) on the paid-ad landing pages and,
+ * since 27 Nov 2026, on /signup: each carries its own one-line legal footer.
+ */
 export function NoFooterOnAdPages({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  if (pathname && AD_LANDING_PATHS.has(pathname)) return null;
+  if (pathname && (AD_LANDING_PATHS.has(pathname) || pathname === "/signup")) return null;
   return <>{children}</>;
 }
 
